@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <managed-bean>
+    <managed-bean-name>kernelConfigBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.KernelConfigBean</managed-bean-class>
+    <managed-bean-scope>application</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>personBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.PersonBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>personSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.PersonSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>personMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.PersonMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>personAddressesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.PersonAddressesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>personContactsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.PersonContactsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>personRepresentantsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.PersonRepresentantsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>personDocumentsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.PersonDocumentsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>personPersonsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.PersonPersonsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>addressBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.AddressBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>addressSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.AddressSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>addressMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.AddressMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>addressPersonsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.AddressPersonsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>roomBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.RoomBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>roomSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.RoomSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>roomMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.RoomMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>addressRoomsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.AddressRoomsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>countryBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.CountryBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>provinceBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.ProvinceBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>cityBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.CityBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>streetBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.StreetBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>countryToStreetBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.kernel.web.CountryToStreetBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+
+    <navigation-case>
+      <from-outcome>person_search</from-outcome>
+      <to-view-id>/common/kernel/person_search.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>person_main</from-outcome>
+      <to-view-id>/common/kernel/person_main.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>person_contacts</from-outcome>
+      <to-view-id>/common/kernel/person_contacts.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>person_representants</from-outcome>
+      <to-view-id>/common/kernel/person_representants.xhtml</to-view-id>
+    </navigation-case>
+ 
+    <navigation-case>
+      <from-outcome>person_addresses</from-outcome>
+      <to-view-id>/common/kernel/person_addresses.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+     <from-outcome>person_documents</from-outcome>
+     <to-view-id>/common/kernel/person_documents.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+     <from-outcome>person_persons</from-outcome>
+     <to-view-id>/common/kernel/person_persons.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>address_search</from-outcome>
+      <to-view-id>/common/kernel/address_search.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>address_main</from-outcome>
+      <to-view-id>/common/kernel/address_main.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>address_persons</from-outcome>
+      <to-view-id>/common/kernel/address_persons.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>room_search</from-outcome>
+      <to-view-id>/common/kernel/room_search.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>room_main</from-outcome>
+      <to-view-id>/common/kernel/room_main.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>address_rooms</from-outcome>
+      <to-view-id>/common/kernel/address_rooms.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>country</from-outcome>
+      <to-view-id>/common/kernel/country.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>province</from-outcome>
+      <to-view-id>/common/kernel/province.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>city</from-outcome>
+      <to-view-id>/common/kernel/city.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>street</from-outcome>
+      <to-view-id>/common/kernel/street.xhtml</to-view-id>
+    </navigation-case>
+
+  </navigation-rule>
+</faces-config>

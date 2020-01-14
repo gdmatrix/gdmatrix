@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Configuració del client de Matrix</title>
+    <link href="styles.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body class="conf-page">
+    <script type="text/javascript" src="/plugins/client/matrix-client.js">
+    </script>
+    <script type="text/javascript">
+      window.onload = function()
+      {
+        registerClientId(); 
+      }
+    </script>
+    <!--<div id="status"></div>-->
+    <!--<a href="test.jsp">test</a>-->
+    <div id="check-status"></div>
+    <div>
+      <div id="title" class="conf-title">CONFIGURACIÓ <span id="appname">CLIENT DE MATRIX</span></div>              
+      <table class="conf-panel">
+        <tr id="conf-clientid"><td class="label">ID:</td> <td id="clientid" class="value"></td></tr>        
+        <tr id="conf-data"><td class="label">Navegador:</td> <td id="browser" class="value"></td></tr>
+        <tr id="conf-host"><td class="label">Servidor:</td> <td id="hostname" class="value"></td></tr>      
+        <tr id="conf-status"><td class="label">Estat:</td> <td id="status" class="value">NO configurat</td></tr>      
+      </table>
+      <div id="warning" class="conf-warning">
+        <div>
+          <img src="warning.png" alt="" />
+        </div>
+        <div>
+          <div id="message"></div>
+          <textarea id="url" class="conf-url" onclick="select()"></textarea>
+        </div>
+      </div>
+    </div>
+         
+  </body>
+</html>

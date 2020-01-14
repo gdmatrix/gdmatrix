@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/obj/object.xhtml">
+    <ui:param name="css" value="/common/agenda/css/agenda.css" />
+    <ui:define name="tab">
+
+      <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
+        var="agendaBundle" />
+
+      <t:div>
+        <h:outputText value="ThemeId:" styleClass="textBox"
+          style="width:18%" />
+        <h:outputText value="#{themeMainBean.theme.themeId}" styleClass="outputBox"
+          style="width:20%" />
+      </t:div>
+
+      <t:div>
+        <h:outputText value="#{agendaBundle.theme_description}:" styleClass="textBox"
+          style="width:18%" />
+        <h:inputText value="#{themeMainBean.theme.description}" styleClass="inputBox"
+          style="width:78%" 
+          maxlength="#{themeMainBean.propertySize.description}" />
+      </t:div>
+
+    </ui:define>
+  </ui:composition>
+</html>

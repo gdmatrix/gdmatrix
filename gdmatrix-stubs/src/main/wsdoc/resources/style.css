@@ -1,0 +1,331 @@
+/* HTMLModuleGenerator styles */
+
+body
+{
+  font-size: 14px;
+  font-family: "Arial";
+}
+
+table.outer
+{
+  border: solid 2px black;
+  border-collapse: collapse;
+  width:100%;
+  margin-top:24px;
+}
+
+table.outer tr td
+{
+  border-top: solid 1px black;
+  border-bottom: solid 1px gray;
+  padding-left: 3px;
+}
+
+table.outer tr td.col1
+{
+  background: #F0F0F0;
+  border-right: solid 1px black;
+  width:20%;
+  vertical-align:top;
+}
+
+table.outer tr td.col2
+{
+  background: white;
+  width:80%;
+}
+
+table.outer tr td.col2multiline
+{
+  background: white;
+  width:80%;
+  padding:8px;
+}
+
+table.inner
+{
+  border: solid 2px #C0C0C0;
+  border-collapse: collapse;
+  width:100%;
+  margin-top:6px;
+  margin-bottom:6px;
+}
+
+table.inner tr.columns td
+{
+  background: #F0F0F0;
+  font-style: italic;
+}
+
+table.inner tr td
+{
+  border-top: solid 1px #C0C0C0;
+  border-bottom: solid 1px #C0C0C0;
+  border-right: solid 1px #C0C0C0;
+  padding: 1px;
+}
+
+table.inner tr:hover
+{
+  background: #FFFFA0;
+}
+
+
+/* index */
+
+table.index
+{
+  border: solid 2px #C0C0C0;
+  border-collapse: collapse;
+  width:100%;
+}
+
+table.index tr.columns td
+{
+  background: #F0F0F0;
+  font-style: italic;
+}
+
+table.index tr td
+{
+  border-top: solid 1px #C0C0C0;
+  border-bottom: solid 1px #C0C0C0;
+  border-right: solid 1px #C0C0C0;
+}
+
+table.index tr:hover
+{
+  background: #FFFFA0;
+}
+
+
+/* types */
+
+.module
+{
+  color:black;
+}
+
+.operation
+{
+  color:black;
+}
+
+.entity
+{
+  color:#000080;
+}
+
+.struct
+{
+  color:#003000;
+}
+
+.enumeration
+{
+  color:#600000;
+}
+
+tr.module td
+{
+  background:aqua;
+  font-size: 24px;
+}
+
+tr.entity td
+{
+  background:#B0FFA0;
+  font-size: 20px;
+}
+
+tr.struct td
+{
+  background:#B0FFA0;
+  font-size: 20px;
+}
+
+tr.enumeration td
+{
+  background:#B0FFA0;
+  font-size: 20px;
+}
+
+tr.operation td
+{
+  background:#F0A0A0;
+  font-size: 20px;
+}
+
+span.entity
+{
+  font-family: "Courier New",courier,monospace;  
+}
+
+span.struct
+{
+  font-family: "Courier New",courier,monospace;
+}
+
+span.enumeration
+{
+  font-family: "Courier New",courier,monospace;
+}
+
+.code
+{
+  font-family: "Courier New",courier,monospace;
+}
+
+pre.xml
+{
+  font-family: "Courier New",courier,monospace;
+  color: #808080;
+  margin:0;
+  padding:0;
+}
+
+.tag
+{
+  color: #0000B0;
+}
+
+.attribute
+{
+  color: red;
+}
+
+.identifier
+{
+  font-family: "Courier New",courier,monospace;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.operationName
+{
+  color:black;
+}
+
+.parameterName
+{
+  color:#404080;
+  font-style: italic;
+}
+
+.error
+{
+  font-family: "Courier New",courier,monospace;
+  color: #A00000;
+}
+
+
+/* general tags */
+
+h1
+{
+  font-size: 20px;
+}
+
+h2
+{
+  font-size: 18px;
+}
+
+h3
+{
+  font-size: 16px;
+}
+
+ul
+{
+  margin-top:2px;
+  margin-bottom:2px;
+}
+
+a
+{
+  color: #0000C0;
+  text-decoration: none;
+}
+
+a:visited
+{
+  color: #0000C0;
+}
+
+a:hover
+{
+  text-decoration:underline;
+}
+
+ul, li
+{
+  margin-left: 12px;
+  padding-left: 0px;
+}
+
+
+/* documentation styles */
+.documentation p,
+.documentation div
+{
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.documentation h1
+{
+  font-size:15px;
+  font-weight: bold;
+  margin-top:4px;
+  margin-bottom:4px;
+}
+
+.documentation i
+{
+  font-style: italic;
+}
+
+.documentation ul,
+.documentation li
+{
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.documentation ul.num,
+.documentation ul.num > li
+{
+  list-style-type: none;
+}
+
+.documentation td
+{
+  vertical-align: top;
+}
+
+.documentation pre.java
+{
+  font-family: "Courier New",courier,monospace;
+  border:solid 1px #D0D0D0;
+  background: #F4F4F4;
+  padding:6px;
+  margin-top:4px;
+  margin-bottom:10px;
+}
+
+.documentation pre.java i
+{
+  color:#808080;
+}
+
+.documentation a img
+{
+  border:none;
+}
+
+.documentation div.figure
+{
+  font-size:smaller;
+  text-align:center;
+}

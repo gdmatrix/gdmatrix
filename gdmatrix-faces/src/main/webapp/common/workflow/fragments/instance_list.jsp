@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:t="http://myfaces.apache.org/tomahawk"
+          xmlns:sf="http://www.santfeliu.org/jsf">
+
+<f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
+
+  <t:saveState value="#{instanceListBean}" />
+
+  <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
+    showSummary="true"
+    warnClass="warnMessage"
+    errorClass="errorMessage"
+    fatalClass="fatalMessage" />
+
+  <t:div rendered="#{userSessionBean.anonymousUser}">
+    <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties.loginDocId}"
+       rendered="#{userSessionBean.selectedMenuItem.properties.loginDocId != null}"
+       translator="#{applicationBean.translator}"
+       translationGroup="workflow" />
+
+    <h:outputText value="#{workflowBundle.anonymousProcList}"
+      rendered="#{userSessionBean.selectedMenuItem.properties.loginDocId == null}"
+      styleClass="workflowMessage" />
+  </t:div>
+
+  <t:div styleClass="instanceList"
+     rendered="#{not userSessionBean.anonymousUser}">
+
+    <t:div styleClass="filter">
+      <t:div styleClass="header">
+        <h:outputText value="#{workflowBundle.searchTitle}"
+          styleClass="searchTitle"/>
+      </t:div>
+
+      <t:div styleClass="row">
+        <h:outputText value="#{workflowBundle.show}:" />
+        <t:selectOneMenu value="#{instanceListBean.state}" styleClass="stateSelector">
+          <f:selectItem itemLabel="#{workflowBundle.userPendentProceduresState}" itemValue="P" />
+          <f:selectItem itemLabel="#{workflowBundle.userStartedProceduresState}" itemValue="S" />
+          <f:selectItems value="#{instanceListBean.allSelectItems}" />
+        </t:selectOneMenu>
+      </t:div>
+
+      <h:panelGroup rendered="#{instanceListBean.workflowAdmin}">
+        <t:div styleClass="row">
+          <h:outputText value="#{workflowBundle.withVariableName}:" />
+          <h:inputText value="#{instanceListBean.variables[0].name}" styleClass="variableBox" />
+          <h:outputText value="#{workflowBundle.andVariableValue}:" />
+          <h:inputText value="#{instanceListBean.variables[0].value}" styleClass="variableBox" />
+        </t:div>
+        <t:div styleClass="row">
+          <h:outputText value="#{workflowBundle.withVariableName}:" />
+          <h:inputText value="#{instanceListBean.variables[1].name}" styleClass="variableBox" />
+          <h:outputText value="#{workflowBundle.andVariableValue}:" />
+          <h:inputText value="#{instanceListBean.variables[1].value}" styleClass="variableBox" />
+        </t:div>
+        <t:div styleClass="row">
+          <h:outputText value="#{workflowBundle.withVariableName}:" />
+          <h:inputText value="#{instanceListBean.variables[2].name}" styleClass="variableBox" />
+          <h:outputText value="#{workflowBundle.andVariableValue}:" />
+          <h:inputText value="#{instanceListBean.variables[2].value}" styleClass="variableBox" />
+        </t:div>
+      </h:panelGroup>
+      
+      <t:div styleClass="row">
+        <h:outputText value="#{workflowBundle.startedAfter}:" />
+        <sf:calendar value="#{instanceListBean.startDate}"
+          styleClass="calendarBox" buttonStyleClass="calendarButton"  />
+
+        <h:outputText value="#{workflowBundle.startedBefore}:" />
+        <sf:calendar value="#{instanceListBean.endDate}"
+          styleClass="calendarBox" buttonStyleClass="calendarButton"  />
+
+        <h:commandButton value="#{workflowBundle.search}"
+          action="#{instanceListBean.findInstances}"
+          styleClass="searchButton" onclick="showOverlay();return true;" />
+      </t:div>
+    </t:div>
+
+    <h:dataTable
+      value="#{instanceListBean.instanceList}" 
+      styleClass="instanceListTable" 
+      headerClass="header"
+      columnClasses="col1, col2, col3, col4, col5"
+      rowClasses="row1, row2"
+      footerClass="footer"
+      cellpadding="4" cellspacing="0" var="instance">
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{workflowBundle.shortNumber}" />
+        </f:facet>
+        <h:outputText value="#{instance.instanceId}" />
+      </h:column>
+      <h:column>
+        <h:graphicImage 
+          url="#{instance.simulation ? '/common/workflow/images/simulation.gif' : '/common/workflow/images/real.gif'}" 
+          alt="#{instance.simulation ? '#{workflowBundle.simulation}' : '#{workflowBundle.realProcessing}'}" />
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{workflowBundle.descriptionState}" />
+        </f:facet>
+        <sf:outputText value="#{instance.description}"
+          translator="#{applicationBean.translator}" 
+          translationGroup="wf:instanceList"
+          styleClass="instanceUserState" />
+        <h:outputText value=": "
+          styleClass="instanceUserState"
+          rendered="#{instance.state != null}" />
+        <sf:outputText value="#{instance.state}"
+          translator="#{applicationBean.translator}" 
+          translationGroup="wf:instanceList"
+          styleClass="instanceUserState"
+          rendered="#{instance.state != null}" />
+        <h:outputText value="(#{instanceListBean.instanceStartDate})"
+          styleClass="instanceStartDate"
+          rendered="#{instance.startDateTime != null}" />
+        <h:outputText value=" #{instanceListBean.instanceInternalState}" 
+          styleClass="instanceInternalState"
+          rendered="#{instanceListBean.workflowAdmin}" />
+      </h:column>
+      <h:column>
+        <h:panelGroup>
+          <sf:longCommandLink 
+            value="#{instance.activeNodes == null ?
+                   workflowBundle.show : workflowBundle.continue}"
+            styleClass="workflowCommandLink"
+            action="#{instanceListBean.forward}" />
+          <h:commandLink value="#{workflowBundle.destroy}" 
+            styleClass="workflowCommandLink"
+            action="#{instanceListBean.destroyInstance}" 
+            rendered="#{instanceListBean.workflowAdmin ||
+                        instance.destroyButtonEnabled}" />
+        </h:panelGroup>
+      </h:column>
+
+      <f:facet name="footer">
+        <h:panelGrid columns="2" styleClass="legend" 
+          rowClasses="frow"
+          columnClasses="fcol1, fcol2" width="100%" 
+          cellpadding="0" cellspacing="0">
+          <h:panelGroup>
+            <h:outputText 
+              value="#{instanceListBean.instanceCount} #{workflowBundle.instances}" />
+          </h:panelGroup>
+          <h:panelGroup>
+            <h:graphicImage url="/common/workflow/images/simulation.gif" 
+              style="vertical-align:middle"/>
+            <h:outputText value="#{workflowBundle.upperSimulation}" />
+            <h:graphicImage url="/common/workflow/images/real.gif" 
+              style="vertical-align:middle"/>
+            <h:outputText value="#{workflowBundle.upperRealProcessing}" />
+          </h:panelGroup>
+        </h:panelGrid>
+      </f:facet>      
+    </h:dataTable>
+
+    <t:div styleClass="userPanel">
+      
+      <h:outputLink
+        value="/go.faces?xmid=#{userSessionBean.selectedMenuItem.properties.showCatalogueMid}"
+        styleClass="workflowCommandLink"
+        rendered="#{userSessionBean.selectedMenuItem.properties.showCatalogueMid != null}">
+        <h:outputText value="#{workflowBundle.startProcedure}" />
+      </h:outputLink>
+
+    </t:div>
+
+    <h:panelGrid columns="2" styleClass="adminPanel"
+      rendered="#{instanceListBean.workflowAdmin}">
+      <h:outputText value="#{workflowBundle.newInstance}:" />
+      <h:panelGroup>
+        <h:inputText value="#{instanceListBean.workflowName}"
+          style="vertical-align:middle; width:100px" />
+        <sf:longCommandLink value="#{workflowBundle.simulate}"
+          styleClass="workflowCommandLink"
+          action="#{instanceListBean.simulate}" />
+        <sf:longCommandLink value="#{workflowBundle.process}"
+          styleClass="workflowCommandLink"
+          action="#{instanceListBean.transact}" />
+        <h:outputLink value="/javawebstart/matrix-ide.jnlp"
+          styleClass="workflowCommandLink">
+          <h:outputText value="Matrix IDE" />
+        </h:outputLink>
+      </h:panelGroup>
+
+      <h:outputText value="#{workflowBundle.showInstance}:" />
+      <h:panelGroup>
+        <h:inputText value="#{instanceListBean.instanceId}"
+          style="vertical-align:middle; width:100px" />
+        <sf:longCommandLink value="#{workflowBundle.show}"
+          styleClass="workflowCommandLink"
+          action="#{instanceListBean.showInstanceById}" />
+      </h:panelGroup>
+    </h:panelGrid>
+  </t:div>
+
+</jsp:root>

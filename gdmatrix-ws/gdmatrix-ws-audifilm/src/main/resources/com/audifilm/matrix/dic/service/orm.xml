@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+  <description>AudiDictionary</description>
+  <package>com.audifilm.matrix.dic.service</package>
+
+  <named-query name="findCaseType">
+    <query>
+      SELECT t
+      FROM CaseType t
+      WHERE
+      (trim(t.typeId) = :typeId)
+      ORDER BY t.typeId
+    </query>
+  </named-query>
+
+
+
+  <named-query name="countCaseTypes">
+    <query>
+      SELECT count(t)
+      FROM CaseType t
+      WHERE
+      (TRIM(t.typeId) = :typeId OR :typeId IS NULL) AND
+      (CONCAT(' ', CONCAT(UPPER(t.description),' ')) LIKE :description OR :description IS NULL) AND
+      (TRIM(CONCAT(t.stddmod, t.stdhmod)) &gt;= :minChangeDateTime OR :minChangeDateTime IS NULL) AND
+      (TRIM(CONCAT(t.stddmod, t.stdhmod)) &lt;= :maxChangeDateTime OR :maxChangeDateTime IS NULL)
+      AND (t.typeId &lt;&gt; 'ACTA' AND  t.typeId &lt;&gt; 'ACTI')
+    </query>
+  </named-query>
+
+  <named-query name="findCaseTypes">
+    <query>
+      SELECT t
+      FROM CaseType t
+      WHERE
+      (trim(t.typeId) = :typeId OR :typeId IS NULL) AND
+      (CONCAT(' ', CONCAT(UPPER(t.description),' ')) LIKE :description OR :description IS NULL) AND
+      (TRIM(CONCAT(t.stddmod, t.stdhmod)) &gt;= :minChangeDateTime OR :minChangeDateTime IS NULL) AND
+      (TRIM(CONCAT(t.stddmod, t.stdhmod)) &lt;= :maxChangeDateTime OR :maxChangeDateTime IS NULL)
+      AND (t.typeId &lt;&gt; 'ACTA' AND  t.typeId &lt;&gt; 'ACTI')
+      ORDER BY t.typeId
+    </query>
+  </named-query>
+
+  <named-query name="listModifiedCaseTypes">
+    <query>
+      SELECT t.typeId
+      FROM CaseType t
+      WHERE
+      TRIM(CONCAT(t.stddmod, t.stdhmod)) &gt;= :dateTime1 AND TRIM(CONCAT(t.stddmod, t.stdhmod)) &lt; :dateTime2
+      ORDER BY t.typeId
+    </query>
+  </named-query>
+
+  <named-query name="countActaTypes">
+    <query>
+      SELECT count(t)
+      FROM CaseType t
+      WHERE
+      (trim(t.typeId) = :typeId OR :typeId IS NULL) AND
+      (CONCAT(' ', CONCAT(UPPER(t.description),' ')) LIKE :description OR :description IS NULL) AND
+      (TRIM(CONCAT(t.stddmod, t.stdhmod)) &gt;= :minChangeDateTime OR :minChangeDateTime IS NULL) AND
+      (TRIM(CONCAT(t.stddmod, t.stdhmod)) &lt;= :maxChangeDateTime OR :maxChangeDateTime IS NULL)
+      AND (t.typeId = 'ACTA' OR t.typeId = 'ACTI')
+    </query>
+  </named-query>
+
+  <named-query name="findActaTypes">
+    <query>
+      SELECT t
+      FROM CaseType t
+      WHERE
+      (trim(t.typeId) = :typeId OR :typeId IS NULL) AND
+      (CONCAT(' ', CONCAT(UPPER(t.description),' ')) LIKE :description OR :description IS NULL) AND
+      (TRIM(CONCAT(t.stddmod, t.stdhmod)) &gt;= :minChangeDateTime OR :minChangeDateTime IS NULL) AND
+      (TRIM(CONCAT(t.stddmod, t.stdhmod)) &lt;= :maxChangeDateTime OR :maxChangeDateTime IS NULL)
+      AND (t.typeId = 'ACTA' OR t.typeId = 'ACTI')
+      ORDER BY t.typeId
+    </query>
+  </named-query>
+
+  <named-query name="loadTaulaConfig" >
+    <query>
+      SELECT t
+      FROM TaulaConfig t
+      WHERE
+      (trim(t.tccodi0)=trim(:tccodi0))
+      AND (trim(t.tccodi1)=trim(:tccodi1))
+    </query>
+  </named-query>
+
+  <named-query name="findTaulaConfig" >
+    <query>
+      SELECT t
+      FROM TaulaConfig t
+      WHERE
+      (trim(t.tccodi0)=trim(:tccodi0) OR :tccodi0 IS NULL)
+      AND (trim(t.tccodi1) like :tccodi1 OR :tccodi1 IS NULL)
+      AND (trim(t.tccodi2)=trim(:tccodi2) OR :tccodi2 IS NULL)
+      AND (UPPER(trim(t.description)) LIKE :description OR :description IS NULL)
+      ORDER BY t.tccodi0, t.tccodi1, t.tccodi2, t.description
+    </query>
+  </named-query>
+
+  <named-query name="countTaulaConfig" >
+    <query>
+      SELECT count(t)
+      FROM TaulaConfig t
+      WHERE
+      (trim(t.tccodi0)=trim(:tccodi0) OR :tccodi0 IS NULL)
+      AND (trim(t.tccodi1) like :tccodi1 OR :tccodi1 IS NULL)
+      AND (trim(t.tccodi2)=trim(:tccodi2) OR :tccodi2 IS NULL)
+      AND (UPPER(trim(t.description)) LIKE :description OR :description IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="listModifiedTaulaConfig">
+    <query>
+      SELECT
+      t.tccodi1
+      FROM
+      TaulaConfig t
+      WHERE
+      (trim(t.tccodi0)=trim(:tccodi0))
+      AND (trim(t.tccodi1) like :tccodi1 OR :tccodi1 IS NULL)
+      AND TRIM(CONCAT(t.stddmod, t.stdhmod)) &gt;= :dateTime1
+      AND TRIM(CONCAT(t.stddmod, t.stdhmod)) &lt; :dateTime2
+      ORDER BY t.tccodi0
+    </query>
+  </named-query>
+
+  <named-query name="listCaseTypeVariables" >
+    <query>
+      SELECT
+      va
+      FROM
+      Variable va
+      WHERE
+      va.caseTypeId = :caseTypeId
+      ORDER BY va.varcod
+    </query>
+  </named-query>
+
+  <entity class="DBCaseType" name="CaseType">
+    <table name="WKF_EXPEDIENT" />
+    <attributes>
+      <id name="typeId">
+        <column name="TEXPCOD" />
+      </id>
+      <basic name="description">
+        <column name="TEXPDESC" updatable="false" />
+      </basic>
+      <basic name="stdugr"  />
+      <basic name="stdumod"  />
+      <basic name="stddgr"  />
+      <basic name="stddmod"  />
+      <basic name="stdhgr"  />
+      <basic name="stdhmod"  />
+    </attributes>
+  </entity>
+
+  <entity name="TaulaConfig" class="DBTaulaConfig" >
+    <table name="NCL_TAULA" />
+    <id-class class="DBTaulaConfigPK" />
+    <attributes>
+      <id name="tccodi0" >
+        <column name="TCCODI0"  updatable="false"/>
+      </id>
+      <id name="tccodi1" >
+        <column name="TCCODI1"  updatable="false"/>
+      </id>
+      <basic name="tccodi2" >
+        <column name="TCCODI2" updatable="false"/>
+      </basic>
+      <basic name="description" >
+        <column name="TCDESC" updatable="false" />
+      </basic>
+      <basic name="tcdesc2" >
+        <column name="TCDESC2" updatable="false" />
+      </basic>
+      <basic name="tcqual" >
+        <column name="TCQUAL" updatable="false" />
+      </basic>
+      <basic name="tcvnum" >
+        <column name="TCVNUM" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <!-- Table: WKF_VARIABLE-->
+  <entity name="Variable" class="DBVariableDefinition" >
+    <table name="WKF_VARIABLE" />
+    <id-class class="DBVariableDefinitionPK" />
+    <attributes>
+      <id name="caseTypeId" >
+        <column name="TEXPCOD"  updatable="false"/>
+      </id>
+      <id name="varcod" >
+        <column name="VARCOD"  updatable="false"/>
+      </id>
+      <basic name="varlabel" >
+        <column name="VARLABEL" updatable="false" />
+      </basic>
+      <basic name="vartip" >
+        <column name="VARTIP" updatable="false" />
+      </basic>
+      <basic name="varsize" >
+        <column name="VARSIZE" updatable="false" />
+      </basic>
+      <basic name="vardecim" >
+        <column name="VARDECIM" updatable="false" />
+      </basic>
+      <basic name="vardesc" >
+        <column name="VARDESC" updatable="false" />
+      </basic>
+      <basic name="varambit" >
+        <column name="VARAMBIT" updatable="false" />
+      </basic>
+      <basic name="varopc" >
+        <column name="VAROPC" updatable="false" />
+      </basic>
+      <basic name="agrupcod" >
+        <column name="AGRUPCOD" updatable="false" />
+      </basic>
+      <basic name="swseg" >
+        <column name="SWSEG" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+</entity-mappings>

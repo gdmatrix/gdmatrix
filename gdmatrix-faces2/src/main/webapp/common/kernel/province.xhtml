@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/kernel/country_to_street.xhtml">
+    <ui:param name="css" value="/common/kernel/css/kernel.css" />
+    <ui:define name="object">
+
+      <t:div styleClass="header">
+        <h:outputText value="#{kernelBundle.province} #{countryToStreetBean.province.provinceId}:" />
+      </t:div>
+      <t:div styleClass="tabs" style="height:10px" />
+
+      <t:div styleClass="sheet"
+        style="padding-top:10px;padding-bottom:20px">
+        <t:div>
+          <h:outputText value="#{kernelBundle.province}:"
+            styleClass="textBox" style="width:15%" />
+          <h:inputText value="#{countryToStreetBean.province.name}" 
+            styleClass="inputBox" style="width:70%" />
+        </t:div>
+      </t:div>
+
+      <t:div styleClass="footer">
+        <h:commandButton value="#{objectBundle.store}"
+          action="#{countryToStreetBean.storeProvince}" 
+          styleClass="storeButton" />
+        <h:commandButton value="#{objectBundle.cancel}"
+          action="#{countryToStreetBean.cancel}" 
+          immediate="true"
+          styleClass="cancelButton" />
+      </t:div>
+
+    </ui:define>
+  </ui:composition>
+</html>

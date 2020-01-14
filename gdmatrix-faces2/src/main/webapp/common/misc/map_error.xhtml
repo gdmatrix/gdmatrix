@@ -1,0 +1,45 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/templates/#{userSessionBean.template}/template.xhtml">
+    <ui:param name="css" value="/common/misc/css/map_viewer.css" />
+    <ui:define name="body">
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
+                var="objectBundle"/>
+  <f:loadBundle basename="org.santfeliu.misc.mapviewer.web.resources.MapViewerBundle"
+                var="mapViewerBundle"/>
+
+  <t:panelGroup id="mapViewer" forceId="true">
+
+    <t:div id="subHeader" forceId="true">
+      <t:div id="screenTitle" forceId="true">
+        <t:outputText value="ERROR" />
+      </t:div>
+      <t:div id="buttonsBar" forceId="true">
+        <t:commandLink value="#{mapViewerBundle.catalogue}"
+          action="#{mapViewerBean.showCatalogue}" styleClass="barViewButton"
+          rendered="#{mapViewerBean.catalogueVisible}" />
+      </t:div>
+    </t:div>
+
+    <t:div id="screenBody" forceId="true">
+      <t:div id="map" forceId="true">
+        <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
+          showSummary="true"
+          infoClass="infoMessage"
+          warnClass="warnMessage"
+          errorClass="errorMessage"
+          fatalClass="fatalMessage" />
+      </t:div>
+    </t:div>
+  </t:panelGroup>
+
+    </ui:define>
+  </ui:composition>
+</html>
+

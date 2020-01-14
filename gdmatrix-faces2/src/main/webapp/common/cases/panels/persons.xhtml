@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+    <t:div styleClass="personsPanel">
+      <t:dataTable value="#{panel.casePersons}" var="row"
+                   summary="#{panel.tableSummary}"
+                   rowClasses="row1,row2" footerClass="footer" headerClass="header"
+                   bodyStyle="#{empty panel.casePersons ? 'display:none' : ''}"
+                   styleClass="resultList" style="width:100%">
+        <t:columns value="#{panel.resultsManager.columnNames}" var="column"
+                   style="#{panel.resultsManager.columnStyle}"
+                   styleClass="#{panel.resultsManager.columnStyleClass}"
+                   sortPropertyName="casePersonTypeId" sortable="#{panel.resultsManager.groupBy}">
+          <f:facet name="header">
+            <t:commandSortHeader columnName="#{panel.resultsManager.localizedColumnName}"
+               arrow="true" immediate="false" action="#{panel.sort}" >
+                <h:outputText value="#{panel.resultsManager.localizedColumnName}" />
+            </t:commandSortHeader>
+          </f:facet>
+          <h:outputText value="#{panel.resultsManager.columnValue}"
+            styleClass="#{panel.formerPerson ? 'formerPerson' : null}"/>
+        </t:columns>
+      </t:dataTable>
+    </t:div>
+
+</html>

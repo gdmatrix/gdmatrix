@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+ <managed-bean>
+  <managed-bean-name>loginBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.LoginBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>registerBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.RegisterBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>passwordBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.PasswordBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>userBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.UserBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>userSearchBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.UserSearchBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>userMainBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.UserMainBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>userRolesBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.UserRolesBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>roleBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.RoleBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>roleSearchBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.RoleSearchBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>roleMainBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.RoleMainBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>roleUsersBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.RoleUsersBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>roleRolesBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.RoleRolesBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>mobileIdBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.MobileIdBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>validBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.ValidBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+
+  <navigation-case>
+   <from-outcome>login</from-outcome>
+   <to-view-id>/common/security/login.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>password</from-outcome>
+   <to-view-id>/common/security/password.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-action>#{passwordBean.changePassword}</from-action>
+   <from-outcome>ok</from-outcome>
+   <to-view-id>/common/security/password_changed.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>register</from-outcome>
+   <to-view-id>/common/security/register.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-action>#{registerBean.register}</from-action>
+   <from-outcome>ok</from-outcome>
+   <to-view-id>/common/security/register_completed.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>user_search</from-outcome>
+   <to-view-id>/common/security/user_search.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>user_main</from-outcome>
+   <to-view-id>/common/security/user_main.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>user_roles</from-outcome>
+   <to-view-id>/common/security/user_roles.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>role_search</from-outcome>
+   <to-view-id>/common/security/role_search.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>role_main</from-outcome>
+   <to-view-id>/common/security/role_main.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>role_users</from-outcome>
+   <to-view-id>/common/security/role_users.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>role_roles</from-outcome>
+   <to-view-id>/common/security/role_roles.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>login_mobileid</from-outcome>
+   <to-view-id>/common/security/login_mobileid.jsp</to-view-id>
+  </navigation-case>
+
+ </navigation-rule>
+ 
+</faces-config>

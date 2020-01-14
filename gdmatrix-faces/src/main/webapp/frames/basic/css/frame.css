@@ -1,0 +1,40 @@
+div.centralPage
+{
+  width:800px;
+  background: white;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top:0px;
+  padding:0;
+}
+
+.centralPage div.headerPanel
+{
+  height:50px;
+  background:orange;
+}
+
+.centralPage div.footerPanel
+{
+  height:20px;
+  background:orange;
+}
+
+/* Accessibilitat - Skip links */
+
+div.skipDiv#templateSkipTop
+{
+  background: transparent;
+  position: absolute;
+}
+
+div.skipDiv a
+{
+  background-image: none !important;
+}
+
+div.skipDiv#templateSkipTop img
+{
+  margin-top: 3px;
+  margin-left: 3px;
+}

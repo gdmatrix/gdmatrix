@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+  <managed-bean>
+    <managed-bean-name>surveyBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.survey.web.SurveyBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  <managed-bean>
+    <managed-bean-name>adminSurveyBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.survey.web.AdminSurveyBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  <navigation-rule>
+    <navigation-case>
+      <from-outcome>survey_admin</from-outcome>
+      <to-view-id>/common/survey/survey_admin.jsp</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>survey_index</from-outcome>
+      <to-view-id>/common/survey/survey_index.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+</faces-config>

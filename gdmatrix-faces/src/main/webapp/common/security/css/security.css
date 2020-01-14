@@ -1,0 +1,280 @@
+/* security */
+body.loginPage
+{
+  padding:4px;
+  background-color: #F0F0F0;
+  font-size: 14px;
+  font-family: "Arial";
+}
+
+/* generic styles */
+
+.loginPage .button
+{
+  padding: 2px 6px 2px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: #eee;
+  -webkit-appearance: none;
+  -moz-appearance: nones;
+  box-sizing: border-box;
+  outline:none;
+  border: 1px solid #c0c0c0;
+  color:#333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: border-color ease-in-out .3s, box-shadow ease-in-out .3s;
+  width:auto;
+  overflow:visible;
+}
+
+.loginPage .button:hover
+{
+  background-color: #ddd;
+  border-color: #b0b0b0;
+}
+
+.loginPage .button:focus
+{
+  border-color:#B0B0F0;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.08),0 0 6px #C0C0FF;  
+}
+
+.loginPage .button:active
+{
+  border-color: #8080FF;
+}
+
+.loginPage input[type=text],
+.loginPage input[type=password],
+.loginPage input:not([type]),
+.loginPage textarea
+{
+  font-family: Arial;
+  border: 1px solid #C0C0C0;
+  outline: none;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.08);
+  transition: border-color ease-in-out .3s, box-shadow ease-in-out .3s;
+  padding-left: 1px;
+  padding-right: 1px;
+  box-sizing:border-box;
+}
+
+.loginPage input[type=text]:focus,
+.loginPage input[type=password]:focus,
+.loginPage input:not([type]):focus,
+.loginPage textarea:focus
+{
+  border-color:#B0B0F0;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.08),0 0 6px #C0C0FF;
+}
+
+.loginPage select
+{
+  outline: none;
+  border: 1px solid #C0C0C0;
+  font-family: Arial;
+  vertical-align: middle;
+  background-color: white;
+  background-position: 100% 50%;
+  background-repeat: no-repeat;
+  padding: 0 2px 0 2px;
+  box-sizing: border-box;
+  transition: border-color ease-in-out .3s, box-shadow ease-in-out .3s;
+  line-height: 20px;
+  height: 20px;
+}
+
+.loginPage select::-ms-expand 
+{
+  display: none;
+}
+
+.loginPage select:focus
+{
+  border-color:#B0B0F0;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.08),0 0 6px #C0C0FF;  
+}
+
+/* login form */
+
+.loginForm
+{
+  margin-top:60px;
+  background:white;
+  padding:10px;
+  display:block;
+  border:1px solid #404040;
+  width:100%;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 25px;
+  margin-top: 10px;
+  box-sizing:border-box;
+  -webkit-box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
+  border: 1px solid #808080;
+  background-color: #FFF;
+  border-radius: 10px;
+  box-sizing:border-box;
+}
+
+.loginForm .header
+{
+  margin:4px 0 4px 0;
+  text-align:center;
+  color:black;
+  display: block;
+}
+
+.loginForm .loginImage
+{
+  display:block;
+  text-align:center;
+}
+
+.loginForm .loginTitle
+{
+  display:block;
+  text-align:center;
+  font-size: 13px;
+  margin-top:10px;
+  font-weight: bold;
+}
+
+.loginForm .body
+{
+  margin:8px 0 0px 0;
+  text-align:center;
+  display:block;
+  margin: 0 auto;
+}
+
+.loginForm .footer
+{
+  margin: 0px 0 4px 0;
+  text-align:right;
+  display:block;
+  font-size:11px;
+}
+
+.loginForm .footer a
+{
+  text-decoration: none;
+}
+
+.loginForm .message
+{
+  margin:10px 0 10px 0;
+  text-align:center;
+  display:block;
+}
+
+.loginForm .loginMessage
+{
+  color:red;
+  font-weight: bold;
+  font-size:13px;
+}
+
+.loginForm label
+{
+  display: block;
+  text-align: left;
+  width:100%;
+  margin-top: 6px;
+}
+
+.loginForm input
+{
+  width: 100%;
+  font-size: 14px;
+}
+
+.loginForm .button
+{
+  display:block;
+  width:100%;
+  margin: 6px auto;
+  line-height: 28px;
+  background-repeat: no-repeat;
+  background-position: 4px center;
+}
+
+.loginForm .button.password
+{
+  background-image: url(../images/password_icon.png);
+}
+
+.loginForm .button.certificate
+{
+  background-image: url(../images/certificate_icon.png);
+}
+
+.loginForm .button.valid
+{
+  background-image: url(../images/valid_icon.png);
+}
+
+.loginForm .button.mobileid
+{
+  background-image: url(../images/mobileid_icon.png);
+}
+
+/* UserInRole */
+
+.futureUserInRole
+{
+  color: #0000FF;
+}
+
+.oldUserInRole
+{
+  color: #AAAAAA;
+}
+
+.existingUserInRole
+{
+}
+
+/* register form */
+.register .column1
+{
+  float:left;
+  width: 30%;
+  padding: 2px;
+}
+
+.register .column2
+{
+  width: 70%;
+  padding: 2px;
+}
+
+/* Element invisible */
+
+h1.element-invisible,
+h2.element-invisible,
+h3.element-invisible,
+h4.element-invisible,
+h5.element-invisible,
+h6.element-invisible
+{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  left: -10000px;
+  top: auto;
+  overflow: hidden;
+  display: block;
+  visibility: visible;
+}

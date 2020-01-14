@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <managed-bean>
+    <managed-bean-name>presenceConfigBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.PresenceConfigBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>presenceMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.PresenceMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>workerWeekBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.WorkerWeekBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>absencesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.AbsencesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>entriesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.EntriesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>absenceCountersBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.AbsenceCountersBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>presenceStatsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.PresenceStatsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>presenceAdminBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.PresenceAdminBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>workerCalendarBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.WorkerCalendarBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>groupalViewBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.presence.web.GroupalViewBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+
+    <navigation-case>
+      <from-outcome>worker_id</from-outcome>
+      <to-view-id>/common/presence/worker_id.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>worker_week</from-outcome>
+      <to-view-id>/common/presence/worker_week.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>worker_calendar</from-outcome>
+      <to-view-id>/common/presence/worker_calendar.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>presence_stats</from-outcome>
+      <to-view-id>/common/presence/presence_stats.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>absences</from-outcome>
+      <to-view-id>/common/presence/absences.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>entries</from-outcome>
+      <to-view-id>/common/presence/entries.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>absence_counters</from-outcome>
+      <to-view-id>/common/presence/absence_counters.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>groupal_view</from-outcome>
+      <to-view-id>/common/presence/groupal_view.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>presence_admin</from-outcome>
+      <to-view-id>/common/presence/presence_admin.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>presence_blank</from-outcome>
+      <to-view-id>/common/presence/presence_blank.jsp</to-view-id>
+    </navigation-case>
+
+  </navigation-rule>
+</faces-config>

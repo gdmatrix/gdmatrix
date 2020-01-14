@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <description>Education</description>
+    <package>org.santfeliu.edu.service</package>
+
+    <named-query name="findInscriptions">
+      <query>
+         SELECT i.inscriptionId, i.code, i.personId, c.name, s.name FROM
+           DBInscription i, DBCourse c, DBSchool s
+         WHERE           
+           i.courseId = c.courseId AND
+           c.schoolId = s.schoolId AND
+           (i.courseId = :courseId OR :courseId IS NULL) AND
+           (locate(concat(',', concat(i.personId, ',')), :personIdList) > 0  OR :personIdList IS NULL) AND
+           (i.code = :code OR :code IS NULL)
+      </query>
+    </named-query>
+
+    <named-query name="countInscriptions">
+      <query>
+         SELECT count(i) FROM
+           DBInscription i, DBCourse c, DBSchool s
+         WHERE
+           i.courseId = c.courseId AND
+           c.schoolId = s.schoolId AND
+           (i.courseId = :courseId OR :courseId IS NULL) AND
+           (locate(concat(',', concat(i.personId, ',')), :personIdList) > 0  OR :personIdList IS NULL) AND
+           (i.code = :code OR :code IS NULL)
+      </query>
+    </named-query>
+
+    <named-query name="loadInscriptionProperties">
+      <query>
+         SELECT ip FROM
+           DBInscriptionProperty ip
+         WHERE
+           ip.inscriptionId = :inscriptionId
+      </query>
+    </named-query>
+
+    <named-query name="removeInscriptionProperties">
+      <query>
+         DELETE FROM
+           DBInscriptionProperty ip
+         WHERE
+           ip.inscriptionId = :inscriptionId
+      </query>
+    </named-query>
+
+    <named-query name="findCourses">
+      <query>
+        SELECT c.courseId, s.name, c.name FROM
+          DBCourse c, DBSchool s
+        WHERE
+          c.schoolId = s.schoolId AND
+          (upper(s.name) LIKE :schoolName OR :schoolName IS NULL) AND
+          (upper(c.name) LIKE :courseName OR :courseName IS NULL)
+        ORDER BY s.name, c.name
+      </query>
+    </named-query>
+
+    <named-query name="countCourses">
+      <query>
+        SELECT count(c) FROM
+          DBCourse c, DBSchool s
+        WHERE
+          c.schoolId = s.schoolId AND
+          (upper(s.name) LIKE :schoolName OR :schoolName IS NULL) AND
+          (upper(c.name) LIKE :courseName OR :courseName IS NULL)
+      </query>
+    </named-query>
+
+    <named-query name="findSchools">
+      <query>
+        SELECT s FROM
+          DBSchool s
+        WHERE
+          (upper(s.code) LIKE :schoolCode OR :schoolCode IS NULL) AND
+          (upper(s.name) LIKE :schoolName OR :schoolName IS NULL)
+        ORDER BY s.name
+      </query>
+    </named-query>
+
+    <named-query name="countSchools">
+      <query>
+        SELECT count(s) FROM
+          DBSchool s
+        WHERE
+          (upper(s.code) LIKE :schoolCode OR :schoolCode IS NULL) AND
+          (upper(s.name) LIKE :schoolName OR :schoolName IS NULL)
+        ORDER BY s.name
+      </query>
+    </named-query>
+
+    <entity class="org.santfeliu.edu.service.DBInscription" 
+      name="DBInscription">
+      <table name="EDU_MATRICULA" />
+      <attributes>
+        <id name="inscriptionId">
+          <column name="MATCOD" />
+          <generated-value strategy="TABLE" generator="edu.inscription"/>
+          <table-generator name="edu.inscription" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1"/> 
+        </id>
+        <basic name="code">
+            <column name="CODI" />
+        </basic>
+        <basic name="startDate">
+            <column name="DATAINICI" />
+        </basic>
+        <basic name="endDate">
+            <column name="DATAFINAL" />
+        </basic>
+        <basic name="personId">
+            <column name="PERSCOD" />
+        </basic>
+        <basic name="courseId">
+            <column name="CURSCOD" />
+        </basic>
+        <transient name="properties" />
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.edu.service.DBInscriptionProperty" 
+      name="DBInscriptionProperty">
+      <table name="EDU_MATPROP" />
+      <id-class class="org.santfeliu.edu.service.DBInscriptionPropertyPK" />
+      <attributes>
+        <id name="inscriptionId">
+          <column name="MATCOD" />
+        </id>
+        <id name="name">
+          <column name="PROPNOM" />
+        </id>
+        <basic name="value">
+          <column name="PROPVAL" />
+        </basic>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.edu.service.DBCourse" 
+      name="DBCourse">
+      <table name="EDU_CURS" />
+      <attributes>
+        <id name="courseId">
+          <column name="CURSCOD" />
+          <generated-value strategy="TABLE" generator="edu.course"/>
+          <table-generator name="edu.course" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1"/> 
+        </id>
+        <basic name="code">
+            <column name="CODI" />
+        </basic>
+        <basic name="name">
+            <column name="NOM" />
+        </basic>
+        <basic name="schoolId">
+            <column name="CENTRECOD" />
+        </basic>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.edu.service.DBSchool" 
+      name="DBSchool">
+      <table name="EDU_CENTRE" />
+      <attributes>
+        <id name="schoolId">
+          <column name="CENTRECOD" />
+          <generated-value strategy="TABLE" generator="edu.school"/>
+          <table-generator name="edu.school" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1"/> 
+        </id>
+        <basic name="code">
+            <column name="CODI" />
+        </basic>
+        <basic name="name">
+            <column name="NOM" />
+        </basic>
+      </attributes>
+    </entity>
+    
+</entity-mappings>

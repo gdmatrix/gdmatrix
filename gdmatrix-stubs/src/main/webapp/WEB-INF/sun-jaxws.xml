@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoints version="2.0" xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime">
+  <endpoint implementation="org.santfeliu.security.service.SecurityManager" name="security" service="{http://security.matrix.org/}SecurityManagerService" url-pattern="/services/security"/>
+  <endpoint implementation="com.audifilm.matrix.kernel.service.KernelManager" name="kernel" service="{http://kernel.matrix.org/}KernelManagerService" url-pattern="/services/kernel"/>
+  <endpoint implementation="org.santfeliu.edu.service.EducationManager" name="edu" service="{http://edu.matrix.org/}EducationManagerService" url-pattern="/services/edu"/>
+  <endpoint implementation="org.santfeliu.forum.service.ForumManager" name="forum" service="{http://forum.matrix.org/}ForumManagerService" url-pattern="/services/forum"/>
+  <endpoint implementation="org.santfeliu.search.service.SearchManager" name="search" service="{http://search.matrix.org/}SearchManagerService" url-pattern="/services/search"/>
+  <endpoint implementation="org.santfeliu.sign.service.SignatureManager" name="sign" service="{http://sign.matrix.org/}SignatureManagerService" url-pattern="/services/sign"/>
+  <endpoint implementation="org.santfeliu.signature.service.SignatureManager" name="signature" service="{http://signature.matrix.org/}SignatureManagerService" url-pattern="/services/signature"/>
+  <endpoint implementation="org.santfeliu.survey.service.SurveyManager" name="survey" service="{http://survey.matrix.org/}SurveyManagerService" url-pattern="/services/survey"/>
+  <endpoint implementation="org.santfeliu.translation.service.TranslationManager" name="translation" service="{http://translation.matrix.org/}TranslationManagerService" url-pattern="/services/translation"/>
+  <endpoint implementation="org.santfeliu.report.service.ReportManager" name="report" service="{http://report.matrix.org/}ReportManagerService" url-pattern="/services/report"/>
+  <endpoint enable-mtom="true" implementation="org.santfeliu.report.service.ReportManager" name="lreport" service="{http://report.matrix.org/}ReportManagerService" url-pattern="/services/lreport"/>
+  <endpoint implementation="org.santfeliu.agenda.service.AgendaManager" name="agenda" service="{http://agenda.matrix.org/}AgendaManagerService" url-pattern="/services/agenda"/>
+  <endpoint implementation="org.santfeliu.classif.service.ClassificationManager" name="classif" service="{http://classif.matrix.org/}ClassificationManagerService" url-pattern="/services/classif"/>
+  <endpoint enable-mtom="false" implementation="org.santfeliu.doc.service.DocumentManager" name="doc" service="{http://doc.matrix.org/}DocumentManagerService" url-pattern="/services/doc"/>
+  <endpoint enable-mtom="true" implementation="org.santfeliu.doc.service.DocumentManager" name="ldoc" service="{http://doc.matrix.org/}DocumentManagerService" url-pattern="/services/ldoc"/>
+  <endpoint implementation="org.santfeliu.cases.service.CaseManager" name="cases_sf" service="{http://cases.matrix.org/}CaseManagerService" url-pattern="/services/cases_sf"/>
+  <!--
+    <endpoint
+        name="cases_g5"
+        implementation="com.audifilm.matrix.cases.service.CaseManager"
+        service="{http://cases.matrix.org/}CaseManagerService"
+        url-pattern="/services/cases_g5" />
+-->
+  <endpoint implementation="com.audifilm.matrix.cases.bpm.service.CaseManager" name="cases_g5" service="{http://cases.matrix.org/}CaseManagerService" url-pattern="/services/cases_g5"/>
+  <endpoint implementation="org.santfeliu.cases.proxy.CaseManager" name="cases" service="{http://cases.matrix.org/}CaseManagerService" url-pattern="/services/cases"/>
+  <endpoint implementation="org.santfeliu.policy.service.PolicyManager" name="policy" service="{http://policy.matrix.org/}PolicyManagerService" url-pattern="/services/policy"/>
+  <endpoint implementation="org.santfeliu.dic.service.DictionaryManager" name="dic_sf" service="{http://dic.matrix.org/}DictionaryManagerService" url-pattern="/services/dic_sf"/>
+  <endpoint implementation="com.audifilm.matrix.dic.service.DictionaryManager" name="dic_g5" service="{http://dic.matrix.org/}DictionaryManagerService" url-pattern="/services/dic_g5"/>
+  <endpoint implementation="org.santfeliu.dic.proxy.DictionaryManager" name="dic" port="{http://dic.matrix.org/}DictionaryManagerPort" service="{http://dic.matrix.org/}DictionaryManagerService" url-pattern="/services/dic"/>
+  <endpoint implementation="org.santfeliu.elections.service.ElectionsManager" name="elections" service="{http://elections.matrix.org/}ElectionsManagerService" url-pattern="/services/elections"/>
+  <endpoint implementation="org.santfeliu.news.service.NewsManager" name="news" service="{http://news.matrix.org/}NewsManagerService" url-pattern="/services/news"/>
+  <endpoint implementation="org.santfeliu.sql.service.SQLManager" name="sql" service="{http://sql.matrix.org/}SQLManagerService" url-pattern="/services/sql"/>
+  <endpoint implementation="org.santfeliu.workflow.service.WorkflowManager" name="workflow" service="{http://workflow.matrix.org/}WorkflowManagerService" url-pattern="/services/workflow"/>
+  <!--
+    <endpoint
+        name="notify"
+        implementation="org.santfeliu.notify.service.NotifyManager"
+        service="{http://notify.matrix.org/}NotifyManagerService"
+        url-pattern="/services/notify"/>
+-->
+  <endpoint implementation="org.santfeliu.cms.service.CMSManager" name="cms" service="{http://cms.matrix.org/}CMSManagerService" url-pattern="/services/cms"/>
+  <endpoint implementation="org.santfeliu.feed.service.FeedManager" name="feed" service="{http://feed.matrix.org/}FeedManagerService" url-pattern="/services/feed"/>
+  <endpoint implementation="org.santfeliu.presence.service.PresenceManager" name="presence" service="{http://presence.matrix.org/}PresenceManagerService" url-pattern="/services/presence"/>
+  <endpoint implementation="org.santfeliu.kernel.service.KernelManager" name="KernelManagerService" url-pattern="/KernelManagerService"/>
+  <endpoint implementation="com.audifilm.matrix.cases.service.CaseManager" name="CaseManagerService" url-pattern="/CaseManagerService"/>
+</endpoints>

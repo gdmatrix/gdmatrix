@@ -1,0 +1,300 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"      
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/obj/object_search.xhtml">
+    <ui:param name="css" value="/common/policy/css/policy.css" />
+    <ui:define name="filterlist">
+
+  <f:loadBundle basename="org.santfeliu.policy.web.resources.PolicyBundle"
+    var="policyBundle" />
+
+  <h:panelGrid columns="2" styleClass="filterPanel" summary=""
+    columnClasses="column1, column2"
+    headerClass="header" footerClass="footer">
+    <f:facet name="header">
+      <h:outputText />
+    </f:facet>
+
+    <h:outputText value="#{policyBundle.casePolicySearch_caseId}:" />
+    <h:inputText value="#{casePolicySearchBean.filter.caseId}" 
+      styleClass="inputBox" style="width:14%" />
+    
+    <h:outputText value="#{policyBundle.casePolicySearch_policy}:" />
+    <h:panelGroup>
+      <t:selectOneMenu value="#{casePolicySearchBean.filter.policyId}"
+                       styleClass="selectBox" style="width:70%">
+        <f:selectItems value="#{policyBean.selectItems}" />
+      </t:selectOneMenu>
+      <h:commandButton action="#{casePolicySearchBean.searchPolicy}" 
+                       styleClass="searchButton" value="#{objectBundle.search}"
+                       image="#{userSessionBean.icons.search}"
+                       alt="#{objectBundle.search}" title="#{objectBundle.search}" />
+    </h:panelGroup>
+    
+    <h:outputText value="#{policyBundle.casePolicySearch_state}:" />
+    <t:selectOneMenu value="#{casePolicySearchBean.filter.state}"
+      styleClass="selectBox" style="width:20%" >
+      <f:selectItem itemLabel=" " itemValue="" />
+      <f:selectItems value="#{casePolicySearchBean.stateSelectItems}" />
+      <f:converter converterId="EnumConverter" />
+      <f:attribute name="enum" value="org.matrix.policy.PolicyState" />
+    </t:selectOneMenu>
+
+    <h:outputText value="#{policyBundle.casePolicySearch_creationDates}" />
+    <t:div>
+      <sf:calendar value="#{casePolicySearchBean.filter.startCreationDate}"
+        styleClass="calendarBox" buttonStyleClass="calendarButton"
+        style="width:14%"/>
+      <h:outputText value=" #{policyBundle.casePolicySearch_and} " />
+      <sf:calendar value="#{casePolicySearchBean.filter.endCreationDate}"
+        styleClass="calendarBox" buttonStyleClass="calendarButton"
+        style="width:14%"/>
+    </t:div>
+
+    <h:outputText value="#{policyBundle.casePolicySearch_approvalDates}" />
+    <t:div>
+      <sf:calendar value="#{casePolicySearchBean.filter.startApprovalDate}"
+        styleClass="calendarBox" buttonStyleClass="calendarButton"
+        style="width:14%"/>
+      <h:outputText value=" #{policyBundle.casePolicySearch_and} " />
+      <sf:calendar value="#{casePolicySearchBean.filter.endApprovalDate}"
+        styleClass="calendarBox" buttonStyleClass="calendarButton"
+        style="width:14%"/>
+    </t:div>
+
+    <h:outputText value="#{policyBundle.casePolicySearch_activationDates}" />
+    <t:div>
+      <sf:calendar value="#{casePolicySearchBean.filter.startActivationDate}"
+        styleClass="calendarBox" buttonStyleClass="calendarButton"
+        style="width:14%"/>
+      <h:outputText value=" #{policyBundle.casePolicySearch_and} " />
+      <sf:calendar value="#{casePolicySearchBean.filter.endActivationDate}"
+        styleClass="calendarBox" buttonStyleClass="calendarButton"
+        style="width:14%"/>
+    </t:div>
+    
+    <h:outputText value="#{policyBundle.casePolicySearch_executionDates}" />
+    <t:div>
+      <sf:calendar value="#{casePolicySearchBean.filter.startExecutionDate}"
+        styleClass="calendarBox" buttonStyleClass="calendarButton"
+        style="width:14%"/>
+      <h:outputText value=" #{policyBundle.casePolicySearch_and} " />
+      <sf:calendar value="#{casePolicySearchBean.filter.endExecutionDate}"
+        styleClass="calendarBox" buttonStyleClass="calendarButton"
+        style="width:14%"/>
+    </t:div>
+
+    <f:facet name="footer">
+      <h:commandButton id="default_button" value="#{objectBundle.search}"
+        action="#{casePolicySearchBean.search}" styleClass="searchButton" />
+    </f:facet>
+  </h:panelGrid>
+
+  <t:div styleClass="resultBar" rendered="#{casePolicySearchBean.rows != null}">
+    <t:dataScroller for="data"
+      firstRowIndexVar="firstRow"
+      lastRowIndexVar="lastRow"
+      rowsCountVar="rowCount"
+      rendered="#{casePolicySearchBean.rowCount > 0}">
+      <h:outputFormat value="#{objectBundle.resultRange}"
+        style="margin-top:10px;display:block">
+        <f:param value="#{firstRow}" />
+        <f:param value="#{lastRow}" />
+        <f:param value="#{rowCount}" />
+      </h:outputFormat>
+    </t:dataScroller>
+    <h:outputText value="#{objectBundle.no_results_found}"
+      rendered="#{casePolicySearchBean.rowCount == 0}" />
+  </t:div>
+
+  <t:dataTable rows="#{casePolicySearchBean.pageSize}" id="data"
+    first="#{casePolicySearchBean.firstRowIndex}"
+    value="#{casePolicySearchBean.rows}" var="row"
+    rendered="#{casePolicySearchBean.rowCount > 0}"
+    styleClass="resultList"
+    rowClasses="row1,row2" headerClass="header" footerClass="footer">
+
+    <t:column style="width:50%;vertical-align:top">
+      <f:facet name="header">
+        <h:outputText value="#{policyBundle.casePolicySearch_case}" />
+      </f:facet>
+      <h:panelGroup>
+        <t:div styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_caseId}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.casePolicy.caseId}"
+            rendered="#{row.getCase() == null}"/>
+          <h:outputText value="#{row.getCase().caseId}"
+            rendered="#{row.getCase() != null}"/>
+          <h:commandButton value="#{objectBundle.show}"           
+            image="#{userSessionBean.icons.show}"
+            alt="#{objectBundle.show}" title="#{objectBundle.show}"
+            styleClass="showButton" immediate="true"
+            action="#{casePolicySearchBean.showCase}"
+            rendered="#{row.getCase() != null}"/>
+        </t:div>
+        <t:div rendered="#{row.getCase() != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_case}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.getCase().title}"/>
+        </t:div>
+        <t:div rendered="#{row.getCase() != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_caseType}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.getCase().caseTypeId}"/>
+        </t:div>
+        <t:div rendered="#{row.getCase() != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_class}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{casePolicySearchBean.caseClassId}"/>
+        </t:div>
+      </h:panelGroup>
+    </t:column>
+
+    <t:column style="width:50%;vertical-align:top" >
+      <f:facet name="header">
+        <h:outputText value="#{policyBundle.casePolicySearch_policyApplication}" />
+      </f:facet>
+      <h:panelGroup>
+        <t:div styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_policyId}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.policy.policyId}"/>
+          <h:commandButton value="#{objectBundle.show}"           
+            image="#{userSessionBean.icons.show}"
+            alt="#{objectBundle.show}" title="#{objectBundle.show}"
+            styleClass="showButton" immediate="true"
+            action="#{casePolicySearchBean.showPolicy}" />
+        </t:div>
+        <t:div styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_policy}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.policy.title}"/>
+        </t:div>
+        <t:div styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_policyType}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.policy.policyTypeId}"/>
+        </t:div>
+        <t:div styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_automatic}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.policy.automaticExecution}"/>
+        </t:div>
+        <t:div rendered="#{row.casePolicy.reason != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_reason}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.casePolicy.reason}" />
+        </t:div>
+        <t:div rendered="#{row.casePolicy.creationDateTime != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_creation}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.casePolicy.creationDateTime}">
+            <f:converter converterId="DateTimeConverter" />
+            <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+            <f:attribute name="internalFormat" value="yyyyMMddHHmmss" />
+          </h:outputText>
+          <h:outputText value=" (#{row.casePolicy.creationUserId})" />
+        </t:div>
+        <t:div rendered="#{row.casePolicy.approvalDateTime != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_approval}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.casePolicy.approvalDateTime}">
+            <f:converter converterId="DateTimeConverter" />
+            <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+            <f:attribute name="internalFormat" value="yyyyMMddHHmmss" />
+          </h:outputText>
+          <h:outputText value=" (#{row.casePolicy.approvalUserId})" />
+        </t:div>
+        <t:div rendered="#{row.casePolicy.activationDate != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_activation}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.casePolicy.activationDate}">
+            <f:converter converterId="DateTimeConverter" />
+            <f:attribute name="userFormat" value="dd/MM/yyyy" />
+            <f:attribute name="internalFormat" value="yyyyMMdd" />
+          </h:outputText>
+        </t:div>
+        <t:div rendered="#{row.casePolicy.executionDateTime != null}" styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_execution}: "
+            style="font-weight:bold"/>
+          <h:outputText value="#{row.casePolicy.executionDateTime}">
+            <f:converter converterId="DateTimeConverter" />
+            <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+            <f:attribute name="internalFormat" value="yyyyMMddHHmmss" />
+          </h:outputText>
+          <h:outputText value=" (#{row.casePolicy.executionUserId})" />
+        </t:div>
+        <t:div styleClass="item">
+          <h:outputText value="#{row.casePolicy.executionResult}" 
+            style="word-break: break-all; font-family: monospace" />
+        </t:div>
+        <t:div styleClass="item">
+          <h:outputText value="#{policyBundle.casePolicySearch_state}: "
+            style="font-weight:bold"/>
+          <t:selectOneMenu value="#{casePolicySearchBean.rowState}"
+            styleClass="selectBox"
+            style="#{casePolicySearchBean.rowStateChanged?'background-color:yellow':null}"
+            onchange="this.style.background='#ffff00'">
+            <f:selectItems value="#{casePolicySearchBean.stateSelectItems}" />
+            <f:converter converterId="EnumConverter" />
+            <f:attribute name="enum" value="org.matrix.policy.PolicyState" />
+          </t:selectOneMenu>
+        </t:div>
+      </h:panelGroup>
+    </t:column>
+
+    <f:facet name="footer">
+      <t:dataScroller for="data"
+        fastStep="100"
+        paginator="true"
+        paginatorMaxPages="9"
+        immediate="true"
+        styleClass="scrollBar"
+        paginatorColumnClass="page"
+        paginatorActiveColumnClass="activePage"
+        nextStyleClass="nextButton"
+        previousStyleClass="previousButton"
+        firstStyleClass="firstButton"
+        lastStyleClass="lastButton"
+        fastfStyleClass="fastForwardButton"
+        fastrStyleClass="fastRewindButton"
+        renderFacetsIfSinglePage="false">
+        <f:facet name="first">
+          <t:div title="#{objectBundle.first}"></t:div>
+        </f:facet>
+        <f:facet name="last">
+          <t:div title="#{objectBundle.last}"></t:div>
+        </f:facet>
+        <f:facet name="previous">
+          <t:div title="#{objectBundle.previous}"></t:div>
+        </f:facet>
+        <f:facet name="next">
+          <t:div title="#{objectBundle.next}"></t:div>
+        </f:facet>
+        <f:facet name="fastrewind">
+          <t:div title="#{objectBundle.fastRewind}"></t:div>
+        </f:facet>
+        <f:facet name="fastforward">
+          <t:div title="#{objectBundle.fastForward}"></t:div>
+        </f:facet>
+      </t:dataScroller>
+    </f:facet>
+  </t:dataTable>
+
+  <t:div styleClass="actionsBar">
+     <h:commandButton value="#{objectBundle.apply}"
+       action="#{casePolicySearchBean.changeState}"
+       styleClass="createButton" />
+     <h:commandButton value="#{objectBundle.cancel}"
+       action="#{casePolicySearchBean.cancelChanges}"
+       styleClass="createButton" />
+  </t:div>
+
+    </ui:define>
+  </ui:composition>
+</html>

@@ -1,0 +1,900 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="news"
+  namespace="http://news.matrix.org/"
+  title="Gestor de notícies"
+  wsdlLocation="../services/news?wsdl"
+  service="NewsManagerService"
+  port="NewsManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Jordi López">
+
+  <documentation language="ca">
+    <div>
+      <h1>Característiques generals</h1>
+      El mòdul <i>news</i> és l'encarregat de:
+      <ul>
+        <li>Gestionar la creació, edició, consulta i esborrat de notícies.</li>
+        <li>Gestionar les diferents publicacions d'una notícia.</li>
+        <li>Gestionar els documents associats a una notícia.</li>
+      </ul>
+    </div>
+    <div>
+      <h1>Notícia</h1>
+      Les notícies es representen en el mòdul <i>news</i> mitjançant objectes <a href="#type-New">New</a>.
+      Una notícia consisteix en una unitat d'informació vigent durant un període de
+      temps determinat creada amb la finalitat de ser llegida per diferents clients.
+      La informació que conté s'estructura en tres parts:
+      <ul>
+        <li>Titular: Text descriptiu sobre la informació continguda a la notícia.</li>
+        <li>Resum: Resum del contingut de la notícia.</li>
+        <li>Text: Contingut de la notícia.</li>
+      </ul>
+    </div>
+    <div>
+      <h1>Publicació de notícies</h1>
+      La publicació d'una notícia es representa en el mòdul <i>news</i> mitjançant objectes <a href="#type-NewSection">NewSection</a>.
+      Una notícia es pot publicar a un o més punts anomenats seccions. Dintre de cada
+      secció, tota notícia té una determinada prioritat, que determina la seva
+      posició respecte a la resta de notícies de la secció. Com més alt sigui aquest valor,
+      més rellevant serà la seva posició a la secció.
+    </div>
+    <div>
+      <h1>Documents associats a notícies</h1>
+      Un document associat a una notícia es representa en el mòdul <i>news</i> mitjançant objectes <a href="#type-NewDocument">NewDocument</a>.
+      Una notícia pot tenir un o més documents associats, que serveixen per a completar
+      la informació aportada per la notícia. Un document s'associa a una notícia per a
+      complir una funció determinada, dependent de la implementació.
+    </div>
+    <div>
+      <h1>Casos d'ús</h1>
+      <ul>
+        <li>Creació d'una nova notícia:
+          <pre class="java">
+            New n = new New();
+            n.setHeadline("Titular de la notícia");
+            n.setSummary("Resum de la notícia");
+            n.setText("Text de la notícia");
+            n.setStartDate("20120101");
+            n.setStartTime("083000");
+            n.setEndDate("20120401");
+            n.setEndTime("220000");
+            n.setUserId("user");
+            n.setDraft(false);
+            n.setSource("AJ");
+            NewStoreOptions newStoreOptions = new NewStoreOptions();
+            newStoreOptions.setCleanSummary(true);
+            newStoreOptions.setCleanText(true);
+            n = port.storeNew(n, newStoreOptions);
+          </pre>
+        </li>
+        <li>Publicació d'una notícia a una secció:
+          <pre class="java">
+            NewSection ns = new NewSection();
+            ns.setNewId("13");
+            ns.setSectionId("1467");
+            ns.setPriority(10);
+            port.storeNewSection(ns);
+          </pre>
+        </li>
+        <li>Associació d'un document a una notícia:
+          <pre class="java">
+            NewDocument nd = new NewDocument();
+            nd.setNewId("13");
+            nd.setDocumentId("6550");
+            nd.setNewDocTypeId("NewDocumentExtendedInfo");
+            port.storeNewDocument(nd);
+          </pre>
+        </li>
+        <li>Cerca de notícies:
+          <pre class="java">
+            NewsFilter filter = new NewsFilter();
+            filter.setStartDateTime("20120101000000");
+            filter.setEndDateTime("20120401000000");
+            filter.setContent("Contingut a cercar");
+            filter.getSectionId().clear();
+            filter.getSectionId().add("1467");
+            filter.getSectionId().add("2");
+            filter.getSectionId().add("150");
+            filter.setExcludeDrafts(false);
+            filter.setExcludeNotPublished(false);
+            filter.setMinPubDateTime("20120201000000");
+            list = port.findNews(filter);
+          </pre>
+        </li>
+      </ul>
+    </div>
+  </documentation>
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="doc"/>
+    <import module="security"/>
+  </imports>
+
+  <types>
+
+    <entity name="New">
+      <documentation language="ca">
+        <i>New</i> representa una notícia.
+      </documentation>
+      <identifier name="newId" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Identificador de la notícia.
+        </documentation>
+      </identifier>
+      <property name="headline" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Titular de la notícia.
+        </documentation>
+      </property>
+      <property name="summary" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Resum de la notícia.
+        </documentation>
+      </property>
+      <property name="text" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Text complet de la notícia.
+        </documentation>
+      </property>
+      <property name="registerDate" type="mx:date" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data de registre de la notícia al sistema, en format yyyyMMdd.
+        </documentation>
+      </property>
+      <property name="registerTime" type="mx:time" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Hora de registre de la notícia al sistema, en format HHmmss.
+        </documentation>
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data d'inici de visibilitat de la notícia al sistema, en format yyyyMMdd.
+        </documentation>
+      </property>
+      <property name="startTime" type="mx:time" minOccurs="0">
+        <documentation language="ca">
+          Hora d'inici de visibilitat de la notícia al sistema, en format HHmmss.
+        </documentation>
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data de fi de visibilitat de la notícia al sistema, en format yyyyMMdd.
+        </documentation>
+      </property>
+      <property name="endTime" type="mx:time" minOccurs="0">
+        <documentation language="ca">
+          Hora de fi de visibilitat de la notícia al sistema, en format HHmmss.
+        </documentation>
+      </property>
+      <property name="userId" type="xs:string" minOccurs="0" readOnly="true" references="security:User">
+        <documentation language="ca">
+          Usuari creador o editor de la notícia.
+        </documentation>
+      </property>
+      <property name="source" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Font de la notícia.
+        </documentation>
+      </property>
+      <property name="draft" type="xs:boolean">
+        <documentation language="ca">
+          Indica si la notícia és un esborrany o és definitiva.
+        </documentation>
+      </property>
+      <property name="totalReadingCount" type="xs:int" readOnly="true">
+        <documentation language="ca">
+          Nombre total de lectures de la notícia.
+        </documentation>
+      </property>
+      <property name="keywords" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Llista separada per comes de les paraules clau de la notícia, per als cercadors.
+        </documentation>
+      </property>
+    </entity>
+
+    <entity name="NewSection">
+      <documentation language="ca">
+        Publicació d'una notícia a una secció.
+      </documentation>
+      <identifier name="newSectionId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador de la publicació.
+        </documentation>
+      </identifier>
+      <property name="newId" type="xs:string" minOccurs="0" references="news:New">
+        <documentation language="ca">
+          Identificador de la notícia.
+        </documentation>
+      </property>
+      <property name="sectionId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador de la secció on es publica la notícia.
+        </documentation>
+      </property>
+      <property name="priority" type="xs:int" minOccurs="0">
+        <documentation language="ca">
+          Prioritat de visualització de la notícia dins de la secció. 
+          Com més gran sigui el valor, més rellevant serà la notícia.
+        </documentation>
+      </property>
+      <property name="readingCount" type="xs:int" readOnly="true">
+        <documentation language="ca">
+          Nombre de lectures de la notícia a la secció.
+        </documentation>
+      </property>
+      <property name="sticky" type="xs:boolean">
+        <documentation language="ca">
+          Indica si la notícia té prioritat màxima a la secció.
+        </documentation>
+      </property>
+    </entity>
+
+    <entity name="NewDocument">
+      <documentation language="ca">
+        Associació d'un document a una notícia.
+      </documentation>
+      <identifier name="newDocumentId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador de l'associació.
+        </documentation>
+      </identifier>
+      <property name="newId" type="xs:string" minOccurs="0" references="news:New">
+        <documentation language="ca">
+          Identificador de la notícia.
+        </documentation>
+      </property>
+      <property name="documentId" type="xs:string" minOccurs="0" references="doc:Document">
+        <documentation language="ca">
+          Identificador del document associat a la notícia.
+        </documentation>
+      </property>
+<!--
+      <property name="docRole" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Tipus d'associació entre el document i la notícia.
+        </documentation>
+      </property>
+-->
+      <property name="title" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Títol del document.
+        </documentation>
+      </property>
+      <property name="mimeType" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Tipus MIME del document.
+        </documentation>
+      </property>
+      <property name="contentId" type="xs:string" minOccurs="0" readOnly="true" references="doc:Content">
+        <documentation language="ca">
+          Identificador del contingut emmagatzemat del document al Gestor Documental.
+        </documentation>
+      </property>
+      <property name="newDocTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+        <documentation language="ca">
+          Tipus d'associació entre el document i la notícia.
+        </documentation>
+      </property>
+    </entity>
+
+    <struct name="NewStoreOptions">
+      <documentation language="ca">
+        Opcions d'emmagatzemament d'una notícia.
+      </documentation>
+      <property name="cleanSummary" type="xs:boolean">
+        <documentation language="ca">
+          Indica si s'ha de netejar el codi HTML del resum de la notícia,
+          traient els tags menys comuns.
+        </documentation>
+      </property>
+      <property name="cleanText" type="xs:boolean">
+        <documentation language="ca">
+          Indica si s'ha de netejar el codi HTML del text de la notícia,
+          traient els tags menys comuns.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="NewsManagerMetaData" extends="mx:ManagerMetaData">
+      <documentation language="ca">
+        Conté les propietats que descriuen les característiques de la implementació d'aquest servei.
+      </documentation>
+    </struct>
+
+    <struct name="SectionFilter">
+      <documentation language="ca">
+        Filtre per cercar notícies agrupades en seccions a través de les operacions <a href="#oper-countNewsBySection">countNewsBySection</a> i <a href="#oper-findNewsBySection">findNewsBySection</a>.
+      </documentation>
+      <property name="content" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Text que ha de contenir el titular o el resum de la notícia, sense
+          distingir entre majúscules i minúscules.
+        </documentation>
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+        <documentation language="ca">
+          Data i hora a partir de la qual la notícia ha de ser visible, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+        <documentation language="ca">
+          Data i hora abans de la qual la notícia ha de ser visible, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="sectionId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de seccions on cercar notícies.
+        </documentation>
+      </property>
+      <property name="maxResults" type="xs:int">
+        <documentation language="ca">
+          Nombre màxim de notícies a retornar dins del total de resultats de la operació <a href="#oper-findNewsBySection">findNewsBySection</a>, per a cada secció.
+        </documentation>
+      </property>
+      <property name="minPubDateTime" type="mx:dateTime" minOccurs="0">
+        <documentation language="ca">
+          Data mínima de publicació de la notícia, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="firstResult" type="xs:int">
+        <documentation language="ca">
+          Índex de la primera notícia a retornar dins del total de resultats de la operació <a href="#oper-findNewsBySection">findNewsBySection</a>, per a cada secció.
+        </documentation>
+      </property>
+      <property name="excludeDrafts" type="xs:boolean" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Per cadascuna de les seccions especificades al paràmetre <i>sectionId</i>, indica, en el mateix ordre, si hem de retornar els esborranys o no.
+        </documentation>
+      </property>
+      <property name="userId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador de l'usuari publicador de la notícia.
+        </documentation>
+      </property>      
+    </struct>
+
+    <struct name="SectionView">
+      <documentation language="ca">
+        Informació sobre una secció de notícies, amb un conjunt de notícies publicades a la mateixa.
+      </documentation>
+      <property name="sectionId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador de la secció de notícies.
+        </documentation>
+      </property>
+      <property name="desc" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Descripció de la secció de notícies.
+        </documentation>
+      </property>
+      <property name="newView" type="news:NewView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de notícies trobades a la secció, en forma d'objectes <a href="#type-NewView">NewView</a>.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="NewView">
+      <documentation language="ca">
+        Conté informació sobre una notícia dins d'una secció.
+      </documentation>
+      <property name="newId" type="xs:string" minOccurs="0" references="new:New">
+        <documentation language="ca">
+          Identificador de la notícia.
+        </documentation>
+      </property>
+      <property name="headline" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Titular de la notícia.
+        </documentation>
+      </property>
+      <property name="summary" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Resum de la notícia.
+        </documentation>
+      </property>
+      <property name="registerDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data de registre de la notícia, en format yyyyMMdd.
+        </documentation>
+      </property>
+      <property name="registerTime" type="mx:time" minOccurs="0">
+        <documentation language="ca">
+          Hora de registre de la notícia, en format HHmmss.
+        </documentation>
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data d'inici de visibilitat de la notícia al sistema, en format yyyyMMdd.
+        </documentation>
+      </property>
+      <property name="startTime" type="mx:time" minOccurs="0">
+        <documentation language="ca">
+          Hora d'inici de visibilitat de la notícia al sistema, en format HHmmss.
+        </documentation>
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data de fi de visibilitat de la notícia al sistema, en format yyyyMMdd.
+        </documentation>
+      </property>
+      <property name="endTime" type="mx:time" minOccurs="0">
+        <documentation language="ca">
+          Hora de fi de visibilitat de la notícia al sistema, en format HHmmss.
+        </documentation>
+      </property>
+      <property name="priority" type="xs:int">
+        <documentation language="ca">
+          Prioritat de la notícia dins de la secció a la que pertany l'objecte <i>NewView</i>.
+        </documentation>
+      </property>
+      <property name="readingCount" type="xs:int">
+        <documentation language="ca">
+          Nombre de lectures de la notícia a la secció a la que pertany l'objecte <i>NewView</i>.
+        </documentation>
+      </property>
+      <property name="sticky" type="xs:boolean">
+        <documentation language="ca">
+          Indica si la notícia té prioritat màxima dins de la secció a la que pertany l'objecte <i>NewView</i>.
+        </documentation>
+      </property>
+      <property name="newDocument" type="news:NewDocument" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de documents associats a la notícia.
+        </documentation>
+      </property>
+      <property name="draft" type="xs:boolean">
+        <documentation language="ca">
+          Indica si la notícia és un esborrany.
+        </documentation>
+      </property>
+      <property name="keywords" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Llista separada per comes de les paraules clau de la notícia, per als cercadors.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="NewsFilter">
+      <documentation language="ca">
+        Filtre per cercar notícies a través de les operacions <a href="#oper-countNews">countNews</a>, <a href="#oper-findNews">findNews</a> i <a href="#oper-findNewViews">findNewViews</a>.
+      </documentation>
+      <property name="content" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Text que han de contenir les notícies al titular o al resum, sense distingir entre
+          majúscules i minúscules.
+        </documentation>
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+        <documentation language="ca">
+          Data i hora a partir de la qual la notícia ha de ser visible, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+        <documentation language="ca">
+          Data i hora abans de la qual la notícia ha de ser visible, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="sectionId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de seccions on cercar notícies.
+        </documentation>
+      </property>
+      <property name="excludeDrafts" type="xs:boolean">
+        <documentation language="ca">
+          Indica si s'han d'excloure les notícies esborrany dels resultats.
+        </documentation>
+      </property>
+      <property name="excludeNotPublished" type="xs:boolean">
+        <documentation language="ca">
+          Indica si s'han d'excloure les notícies no publicades dels resultats.
+        </documentation>
+      </property>
+      <property name="maxResults" type="xs:int">
+        <documentation language="ca">
+          Nombre màxim de notícies a retornar dins del total de resultats de les
+          operacions <a href="#oper-findNews">findNews</a> i <a href="#oper-findNewViews">findNewViews</a>.
+        </documentation>
+      </property>
+      <property name="firstResult" type="xs:int">
+        <documentation language="ca">
+          Índex de la primera notícia a retornar dins del total de resultats de les
+          operacions <a href="#oper-findNews">findNews</a> i <a href="#oper-findNewViews">findNewViews</a>.
+        </documentation>
+      </property>
+      <property name="minPubDateTime" type="mx:dateTime" minOccurs="0">
+        <documentation language="ca">
+          Data mínima de publicació de la notícia, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="userId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador de l'usuari publicador de la notícia.
+        </documentation>
+      </property>      
+    </struct>
+
+    <struct name="Source">
+      <documentation language="ca">
+        Font d'una notícia.
+      </documentation>
+      <property name="id" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Identificador de la font.
+        </documentation>
+      </property>
+      <property name="name" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Nom de la font.
+        </documentation>
+      </property>
+    </struct>
+  </types>
+
+  <operations>
+
+    <operation name="storeNew">
+      <documentation language="ca">
+        Crea o modifica una notícia.
+      </documentation>
+      <parameter name="new" type="news:New">
+        <documentation language="ca">
+          Objecte <a href="#type-New">New</a> que es vol desar. Si el camp <i>newId</i> té valor
+          nul es crearà una nova notícia. En canvi, si té un valor definit, es modificarà
+          la notícia indicada.
+        </documentation>
+      </parameter>
+      <parameter name="storeOptions" type="news:NewStoreOptions">
+        <documentation language="ca">
+          Opcions d'emmagatzemament de la notícia.
+        </documentation>
+      </parameter>
+      <response name="storedNew" type="news:New">
+        <documentation language="ca">
+          Objecte <a href="#type-New">New</a> que ha estat desat.
+        </documentation>
+      </response>
+      <error name="VALUE_IS_MANDATORY" message="Valor de camp obligatori">
+        <documentation language="ca">
+          El titular de la notícia no té valor o és buit.
+        </documentation>
+      </error>
+      <error name="VALUE_TOO_LARGE" message="Valor de camp massa gran">
+        <documentation language="ca">
+          Valor massa llarg al titular o al resum de la notícia.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="getManagerMetaData">
+      <documentation language="ca">
+        Recupera les característiques de la implementació del servei.
+      </documentation>
+      <response name="managerMetaData" type="news:NewsManagerMetaData">
+        <documentation language="ca">
+          Objecte <a href="#type-NewsManagerMetaData">NewsManagerMetaData</a> que conté les caracterítiques de la implementació del servei.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="loadNew">
+      <documentation language="ca">
+        Recupera una notícia a partir del seu identificador.
+      </documentation>
+      <parameter name="newId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la notícia a recuperar.
+        </documentation>
+      </parameter>
+      <response name="new" type="news:New">
+        <documentation language="ca">
+          L'objecte <a href="#type-New">New</a> que correspon a l'identificador <i>newId</i>.
+        </documentation>
+      </response>
+      <error name="NEW_NOT_FOUND" message="Notícia no trobada">
+        <documentation language="ca">
+          La notícia no existeix.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="incrementNewCounter">
+      <documentation language="ca">
+        Incrementa el comptador total de visites d'una notícia, i el comptador parcial per a una secció determinada.
+      </documentation>
+      <parameter name="newId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la notícia.
+        </documentation>
+      </parameter>
+      <parameter name="sectionId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la secció. Si no s'indica, només s'incrementarà el comptador global de la notícia.
+        </documentation>
+      </parameter>
+      <response name="counter" type="xs:int">
+        <documentation language="ca">
+          Nou valor del comptador total de visites de la notícia.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="getTotalNewCounter">
+      <documentation language="ca">
+        Recupera el valor del comptador total de visites a una notícia.
+      </documentation>
+      <parameter name="newId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la notícia.
+        </documentation>
+      </parameter>
+      <response name="counter" type="xs:int">
+        <documentation language="ca">
+          El valor del comptador total de visites a la notícia que correspon a l'identificador <i>newId</i>.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="removeNew">
+      <documentation language="ca">
+        Elimina una notícia.
+      </documentation>
+      <parameter name="newId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la notícia a eliminar.
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Indica si la notícia ha estat esborrada.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="countNewsBySection">
+      <documentation language="ca">
+        Recupera el nombre de notícies que satisfan unes determinades condicions expressades per mitjà d'un filtre <a href="#type-SectionFilter">SectionFilter</a>.
+      </documentation>
+      <parameter name="filter" type="news:SectionFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="newCount" type="xs:int">
+        <documentation language="ca">
+          Nombre de notícies que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findNewsBySection">
+      <documentation language="ca">
+        Cerca objectes <a href="#type-SectionView">SectionView</a> que satisfan unes determinades condicions expressades per mitjà d'un filtre <a href="#type-SectionFilter">SectionFilter</a>.
+      </documentation>
+      <parameter name="filter" type="news:SectionFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="sectionView" type="news:SectionView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista d'objectes <a href="#type-SectionView">SectionView</a> que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="countNews">
+      <documentation language="ca">
+        Recupera el nombre de notícies que satisfan unes determinades condicions expressades per mitjà d'un filtre <a href="#type-NewsFilter">NewsFilter</a>.
+      </documentation>
+      <parameter name="filter" type="news:NewsFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="newCount" type="xs:int">
+        <documentation language="ca">
+          Nombre de notícies que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findNews">
+      <documentation language="ca">
+        Cerca notícies que satisfacin unes determinades condicions expressades mitjançant un filtre <a href="#type-NewsFilter">NewsFilter</a>.
+      </documentation>
+      <parameter name="filter" type="news:NewsFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="new" type="news:New" minOccurs="0" maxOccurs="unbounded"
+        nillable="true">
+        <documentation language="ca">
+          Llista de notícies que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findNewViews">
+      <documentation language="ca">
+        Cerca notícies que satisfacin unes determinades condicions expressades per mitjà d'un filtre <a href="#type-NewsFilter">NewsFilter</a>.
+      </documentation>
+      <parameter name="filter" type="news:NewsFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="newView" type="news:NewView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista d'objectes <a href="#type-NewView">NewView</a> que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="loadNewSection">
+      <documentation language="ca">
+        Recupera una publicació d'una notícia a una secció.
+      </documentation>
+      <parameter name="newSectionId" type="xs:string">
+        <documentation language="ca">
+          Identificador de l'objecte <a href="#type-NewSection">NewSection</a> a recuperar.
+        </documentation>
+      </parameter>
+      <response name="newSection" type="news:NewSection">
+        <documentation language="ca">
+          L'objecte <a href="#type-NewSection">NewSection</a> que correspon a l'identificador <i>newSectionId</i>.
+        </documentation>
+      </response>
+      <error name="SECTION_NOT_FOUND" message="Secció no trobada">
+        <documentation language="ca">
+          No existeix la publicació de la notícia a la secció indicada.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="storeNewSection">
+      <documentation language="ca">
+        Crea o modifica una publicació d'una notícia a una secció.
+      </documentation>
+      <parameter name="newSection" type="news:NewSection">
+        <documentation language="ca">
+          Objecte <a href="#type-NewSection">NewSection</a> que es vol desar. Si el camp <i>newSectionId</i> té valor
+          nul es crearà un nou objecte, amb la màxima prioritat. En canvi, si té un valor definit, es modificarà
+          l'objecte indicat.
+        </documentation>
+      </parameter>
+      <response name="storedNewSection" type="news:NewSection">
+        <documentation language="ca">
+          Objecte <a href="#type-NewSection">NewSection</a> que ha estat desat.
+        </documentation>
+      </response>
+      <error name="VALUE_TOO_LARGE" message="Valor de camp massa gran">
+        <documentation language="ca">
+          Valor massa llarg en el camp de prioritat.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="removeNewSection">
+      <documentation language="ca">
+        Elimina la publicació d'una notícia a una secció.
+      </documentation>
+      <parameter name="newSectionId" type="xs:string">
+        <documentation language="ca">
+          Identificador de l'objecte <a href="#type-NewSection">NewSection</a> a eliminar.
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Indica si l'objecte <a href="#type-NewSection">NewSection</a> ha estat esborrat.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findNewSections">
+      <documentation language="ca">
+        Retorna la llista de seccions en les quals està publicada la notícia indicada mitjançant el parámetre <i>newId</i>.
+      </documentation>
+      <parameter name="newId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la notícia a la qual han de pertànyer els objectes <a href="#type-NewSection">NewSection</a> cercats.
+        </documentation>
+      </parameter>
+      <response name="newSection" type="news:NewSection" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista d'objectes <a href="#type-NewSection">NewSection</a> que satisfan les condicions de la cerca.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="storeNewDocument">
+      <documentation language="ca">
+        Crea o modifica una associació entre un document i una notícia.
+      </documentation>
+      <parameter name="newDocument" type="news:NewDocument">
+        <documentation language="ca">
+          Objecte <a href="#type-NewDocument">NewDocument</a> que es vol desar. Si el camp <i>newDocumentId</i> té valor
+          nul es crearà un nou objecte. En canvi, si té un valor definit, es modificarà
+          l'objecte indicat.
+        </documentation>
+      </parameter>
+      <response name="storedNewDocument" type="news:NewDocument">
+        <documentation language="ca">
+          Objecte <a href="#type-NewDocument">NewDocument</a> que ha estat desat.
+        </documentation>
+      </response>
+      <error name="VALUE_IS_MANDATORY" message="Valor de camp obligatori">
+        <documentation language="ca">
+          El tipus de l'associació no té valor o és buit.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="removeNewDocument">
+      <documentation language="ca">
+        Elimina una associació entre un document i una notícia.
+      </documentation>
+      <parameter name="newDocumentId" type="xs:string">
+        <documentation language="ca">
+          Identificador de l'objecte <a href="#type-NewDocument">NewDocument</a> a eliminar.
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Indica si l'objecte <a href="#type-NewDocument">NewDocument</a> ha estat esborrat.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findNewDocuments">
+      <documentation language="ca">
+        Retorna els documents associats a la notícia indicada pel paràmetre <i>newId</i>.
+      </documentation>
+      <parameter name="newId" type="xs:string">
+        <documentation language="ca">
+          Identificador de la notícia a la qual han de pertànyer els objectes <a href="#type-NewDocument">NewDocument</a> cercats.
+        </documentation>
+      </parameter>
+      <parameter name="docType" type="xs:string">
+        <documentation language="ca">
+          Tipus d'objecte <a href="#type-NewDocument">NewDocument</a> a retornar. Si no
+          s'especifica, es retornaran tots els documents associats a la notícia.
+        </documentation>
+      </parameter>
+      <response name="newDocument" type="news:NewDocument" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista d'objectes <a href="#type-NewDocument">NewDocument</a> que satisfan les condicions de la cerca.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findSources">
+      <documentation language="ca">
+        Llista les possibles fonts d'una notícia del sistema.
+      </documentation>
+      <response name="source" type="news:Source" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista d'objectes <a href="#type-Source">Source</a> retornats.
+        </documentation>
+      </response>
+    </operation>
+
+  </operations>
+
+</module>

@@ -1,0 +1,304 @@
+/* cases */
+.before,
+.before td
+{
+  color: #6D6D6D;  
+}
+
+.after,
+.after td
+{
+  color: #0000FF;
+}
+
+.between,
+.between td
+{
+  color: #000000;  
+}
+
+/* cases->persons */
+.personCaseHeader
+{
+  width:100%;
+  font-weight:bold;
+  display:block;
+  background:#E8E8E8;
+  padding:1px 0px 1px 1px;
+}
+
+.contactsPopup
+{
+  width:340px;
+  height:140px;
+  overflow:auto;
+  background:#F0F0C0;
+  border:1px solid black;
+  padding:6px
+}
+
+.contactsPopup .item
+{
+  text-decoration: none;
+  display:block;
+  color:gray;
+  border-bottom:1px solid #D0D0A0;
+}
+
+.contactsPopup .item:hover
+{
+  background:#D0D0A0;
+  color:black;
+}
+
+.contactsPopup .popupHeader
+{
+  font-weight: bold;
+  display:block;
+  margin-bottom: 4px;
+}
+
+/* cases->interventions */
+.resultList .mainProperties
+{
+ font-weight: bold;
+}
+
+.resultList .propertyRow
+{
+  margin-left: 4px;
+  margin-top: 4px;
+}
+
+.resultList .propertyRow .propName
+{
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.resultList .propertyRow .propValue
+{
+  display: inline-block;
+}
+
+.blockHeader
+{
+  width:100%;
+  font-weight:bold;
+  display:block;
+  background:#E8E8E8;
+  padding:1px 0px 1px 1px;
+}
+
+/* ACL */
+
+.newAccessControl
+{
+  font-style: italic;
+}
+
+.existingAccessControl
+{
+  font-style: normal;
+}
+
+.removedAccessControl
+{
+  text-decoration: line-through;
+  font-style: normal;
+}
+
+.editedAccessControl
+{
+  font-style: italic;
+}
+
+/* CaseCase */
+/*
+.futureCaseCase
+{
+  color: #0000FF;
+}
+
+.oldCaseCase
+{
+  color: #AAAAAA;
+}
+
+.existingCaseCase
+{
+  color: #000000;
+}
+*/
+.buttonGroupSelection .buttonDisabled
+{
+  color: gray;
+  background: url("/themes/default/images/button_back.gif") repeat scroll center center #E0E0E0;
+  border-color: #E0E0E0;
+  border-style: solid;
+  border-width: 1px;
+  font-family: arial;
+  font-size: 10px;
+  margin: 0 0 0 4px;
+}
+
+.buttonGroupSelection .buttonEnabled
+{
+  color: black;
+  background: url("/themes/default/images/button_back.gif") repeat scroll center center #E0E0E0;
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px;
+  font-family: arial;
+  font-size: 10px;
+  margin: 0 0 0 4px;
+}
+
+.buttonGroupSelection .buttonEnabled:hover
+{
+  background: url("/themes/default/images/button_back_hover.gif") repeat scroll center center #E0E0E0;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  color: black;
+  font-family: arial;
+  font-size: 10px;
+  margin: 0 0 0 4px;
+}
+
+.barGroupSelection
+{
+  width:100%;
+  font-weight:bold;
+  display:block;
+  background:#E8E8E8;
+  padding:1px 0px 1px 1px;
+}
+
+.editingPanel .caseCasesHelp
+{
+  font-size: 11px;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+/* CaseTree */
+
+.caseTree
+{
+
+}
+
+.caseTree .node
+{
+  font-size: 10px;
+  font-family: Verdana, Arial;
+}
+
+.caseTree .node script
+{
+  display: none !important;
+}
+
+.caseTree .icon
+{
+  margin-right: 4px;
+}
+
+.caseTree .caseLink
+{
+  text-decoration: none;
+  vertical-align: super;
+}
+
+.caseTree .foundCaseLink
+{
+  text-decoration: none;
+  vertical-align: super;
+  background-color: yellow;
+}
+
+.caseTree .propertiesPopUp
+{
+  background-color: #D8D8D8;
+}
+
+.caseTree .propertyList > div,
+.caseTree .propertiesPopUp > div
+{
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.caseTree .propertiesPopUp > div
+{
+  vertical-align: middle;
+}
+
+.caseTree .propertiesPopUp > div:last-child
+{
+  padding-right: 8px;
+}
+
+.caseTree .propertyList > div
+{
+  vertical-align: super;  
+}
+
+.caseTree .propertyText::before 
+{
+  content: "[";
+}
+
+.caseTree .propertyText::after
+{
+  content: "]";
+}
+
+.caseTree .propertyList .propertyIcon
+{
+  vertical-align: bottom;
+}
+
+.caseTree .propertyIcon img
+{
+  max-height: 16px;
+}
+
+/* CaseDetail */
+.caseDetail .shortcutURL
+{
+  border:solid black 1px;
+  background-color:#FFFF80;
+  margin:5px 0px 5px 0px;
+  font-family:Courier;
+  font-size:11px;
+  vertical-align: middle;
+}
+
+.caseDetail .shortcutURL img
+{
+  vertical-align: middle;
+}
+
+.caseDetail .shortcutURL .label
+{
+  vertical-align: middle;
+  padding: 4px;
+}
+
+.caseDetail .shortcutURL .url
+{
+  vertical-align: middle;
+  padding: 4px;
+  color: blue;
+}
+
+/* Main tab */
+
+.objectForm .autoTitleDiv
+{
+  text-align: right;
+  margin-right: 12px;
+}

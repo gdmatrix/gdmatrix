@@ -1,0 +1,56 @@
+BODY
+{
+  background-color: #E0E0E0;
+  color: black;
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.general_main
+{
+  background-color:white;
+  width:100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.general_body
+{
+  border-style:none;
+}
+
+.warnMessage
+{
+  color: red;
+}
+
+.errorMessage
+{
+  color: #A80000;
+}
+
+.fatalMessage
+{
+  color:Yellow;
+  background: red;
+}
+
+ul > .errorMessage,
+ul > .warnMessage,
+ul > .infoMessage,
+ul > .fatalMessage
+{
+  margin-left: -40px;
+}
+
+A.bottomLink
+{
+  color:white;
+  text-decoration:none;
+}
+
+A.bottomLink:hover
+{
+  text-decoration:underline;
+}
+

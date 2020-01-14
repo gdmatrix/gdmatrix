@@ -1,0 +1,124 @@
+/*
+ * GDMatrix
+ *  
+ * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
+ *  
+ * This program is licensed and may be used, modified and redistributed under 
+ * the terms of the European Public License (EUPL), either version 1.1 or (at 
+ * your option) any later version as soon as they are approved by the European 
+ * Commission.
+ *  
+ * Alternatively, you may redistribute and/or modify this program under the 
+ * terms of the GNU Lesser General Public License as published by the Free 
+ * Software Foundation; either  version 3 of the License, or (at your option) 
+ * any later version. 
+ *   
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ *    
+ * See the licenses for the specific language governing permissions, limitations 
+ * and more details.
+ *    
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
+ * with this program; if not, you may find them at: 
+ *    
+ * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+ * http://www.gnu.org/licenses/ 
+ * and 
+ * https://www.gnu.org/licenses/lgpl.txt
+ */
+package org.santfeliu.workflow.web;
+
+import java.io.Serializable;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.santfeliu.util.Properties;
+import org.santfeliu.workflow.form.Form;
+
+
+/**
+ *
+ * @author unknown
+ */
+public class SelectMenuFormBean extends FormBean implements Serializable
+{
+  private String varName;
+  private String message;
+  private List options;
+  private String selectedCode;
+
+  public SelectMenuFormBean()
+  {
+  }
+
+  public void setMessage(String message)
+  {
+    this.message = message;
+  }
+
+  public String getMessage()
+  {
+    return message;
+  }
+
+  public void setOptions(List options)
+  {
+    this.options = options;
+  }
+
+  public List getOptions()
+  {
+    return options;
+  }
+
+  public String show(Form form)
+  {
+    Properties parameters = form.getParameters();
+  
+    InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
+    instanceBean.setForwardEnabled(false);
+
+    Object value;
+    value = parameters.get("var");
+    if (value != null) varName = String.valueOf(value);
+    value = parameters.get("message");
+    if (value != null) message = String.valueOf(value);
+
+    options = new ArrayList();
+    int i = 0;
+    Object code = parameters.get("code" + i);
+    while (code != null)
+    {
+      String scode = code.toString();
+      String label = String.valueOf(parameters.get("label" + i));
+      Map option = new HashMap();
+      option.put("code", scode);
+      option.put("label", label);
+      options.add(option);
+      i++;
+      code = parameters.get("code" + i);
+    }
+    return "select_menu_form";
+  }
+  
+  public Map submit()
+  {
+    HashMap variables = new HashMap();
+    variables.put(varName, selectedCode);
+    return variables;
+  }
+  
+  public String selectOption()
+  {
+    Map option = (Map)getRequestMap().get("option");
+    selectedCode = String.valueOf(option.get("code"));
+
+    InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
+    return instanceBean.forward();
+  }
+}

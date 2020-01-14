@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="survey"
+  namespace="http://survey.matrix.org/"
+  title="Gestor d'enquestes"
+  wsdlLocation="../services/survey?wsdl"
+  service="SurveyManagerService"
+  port="SurveyManagerPort"
+  version="1.0"
+  status="REVISION"
+  authors="Jordi López">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />
+  </imports>
+
+  <types>
+
+    <entity name="Survey">
+      <identifier name="surveyId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="text" type="xs:string" minOccurs="0">
+      </property>
+      <property name="open" type="xs:boolean">
+      </property>
+      <property name="answerList" type="survey:AnswerList" minOccurs="0">
+      </property>
+      <property name="voteCount" type="xs:int">
+      </property>
+    </entity>
+
+    <entity name="Answer">
+      <identifier name="answerId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="text" type="xs:string" minOccurs="0">
+      </property>
+      <property name="voteCount" type="xs:int">
+      </property>
+    </entity>
+
+    <struct name="SurveyMetaData">
+      <property name="surveyTextMaxSize" type="xs:int">
+      </property>
+      <property name="answerTextMaxSize" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="AnswerList">
+      <property name="answerList" type="survey:Answer" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="SurveyTable">
+      <property name="surveyViewList" type="survey:SurveyView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="SurveyView">
+      <property name="surveyId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="text" type="xs:string" minOccurs="0">
+      </property>
+      <property name="open" type="xs:boolean">
+      </property>
+      <property name="startDay" type="xs:string" minOccurs="0">
+      </property>
+      <property name="voteCount" type="xs:int">
+      </property>
+    </struct>
+  </types>
+
+  <operations>
+
+    <operation name="getSurveyMetaData">
+      <response name="surveyMetaData" type="survey:SurveyMetaData">
+      </response>
+    </operation>
+
+    <operation name="storeSurvey">
+      <parameter name="text" type="xs:string">
+      </parameter>
+      <parameter name="answers" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="openSurvey">
+      <parameter name="surveyId" type="xs:string">
+      </parameter>
+    </operation>
+
+    <operation name="closeSurvey">
+      <parameter name="surveyId" type="xs:string">
+      </parameter>
+    </operation>
+
+    <operation name="voteSurvey">
+      <parameter name="surveyId" type="xs:string">
+      </parameter>
+      <parameter name="answerId" type="xs:string">
+      </parameter>
+    </operation>
+
+    <operation name="loadSurvey">
+      <parameter name="document" type="xs:string">
+      </parameter>
+      <response name="survey" type="survey:Survey">
+      </response>
+    </operation>
+
+    <operation name="findSurveys">
+      <response name="surveyTable" type="survey:SurveyTable">
+      </response>
+    </operation>
+  </operations>
+</module>

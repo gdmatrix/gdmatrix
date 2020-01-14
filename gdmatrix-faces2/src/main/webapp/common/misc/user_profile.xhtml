@@ -1,0 +1,77 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/templates/#{userSessionBean.template}/template.xhtml">
+    <ui:param name="css" value="/common/misc/css/map_viewer.css" />
+    <ui:define name="body">
+          
+  <f:loadBundle basename="org.santfeliu.misc.userprofile.web.resources.UserProfileBundle" var="miscBundle"/>
+  <f:loadBundle basename="org.santfeliu.web.resources.WebBundle" var="webBundle"/>
+
+  <t:saveState value="#{userProfileBean}" />
+
+  <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
+              errorClass="errorMessage" warnClass="warnMessage"
+              infoClass="infoMessage" fatalClass="fatalMessage"
+              showSummary="true" />
+  
+  <t:div styleClass="userProfilePanel">
+
+    <t:div styleClass="configPanel">
+      <t:div styleClass="title">
+        <sf:outputText value="#{miscBundle.settings}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}" />
+      </t:div>
+      <t:div styleClass="inputRow">
+        <t:div styleClass="leftColumn">
+          <sf:outputText value="#{miscBundle.defaultLanguage}:"
+            translator="#{userSessionBean.translator}"
+            translationGroup="#{userSessionBean.translationGroup}" />
+        </t:div>
+        <t:div styleClass="rightColumn">
+          <t:selectOneMenu value="#{userProfileBean.defaultLanguage}" styleClass="selectBox">
+            <f:selectItems value="#{userProfileBean.defaultLanguageList}" />
+          </t:selectOneMenu>
+        </t:div>
+      </t:div>
+      <t:div styleClass="inputRow">
+        <t:div styleClass="leftColumn">
+          <sf:outputText value="#{miscBundle.defaultTheme}:"
+            translator="#{userSessionBean.translator}"
+            translationGroup="#{userSessionBean.translationGroup}" />
+        </t:div>
+        <t:div styleClass="rightColumn">
+          <t:selectOneMenu value="#{userProfileBean.defaultTheme}" styleClass="selectBox">
+            <f:selectItems value="#{userProfileBean.defaultThemeList}" />
+          </t:selectOneMenu>
+        </t:div>
+      </t:div>
+      <t:div styleClass="inputRow">
+        <t:div styleClass="leftColumn">
+          <sf:outputText value="#{miscBundle.recentPagesSize}:"
+            translator="#{userSessionBean.translator}"
+            translationGroup="#{userSessionBean.translationGroup}" />
+        </t:div>
+        <t:div styleClass="rightColumn">
+          <h:inputText value="#{userProfileBean.recentPagesSize}" size="2"/>
+        </t:div>
+      </t:div>
+    </t:div>
+
+    <t:div styleClass="actionsPanel">
+      <sf:commandButton value="#{webBundle.buttonSave}"
+        action="#{userProfileBean.store}"
+        translator="#{userSessionBean.translator}"
+        translationGroup="#{userSessionBean.translationGroup}" />
+    </t:div>
+
+  </t:div>
+
+    </ui:define>
+  </ui:composition>
+</html>

@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+
+  <description>cms</description>
+  <package>org.santfeliu.cms.service</package>
+
+  <named-query name="removeWorkspaceProperties">
+    <query>
+      DELETE FROM Property p
+      WHERE p.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="removeProperty">
+    <query>
+      DELETE FROM Property p
+      WHERE p.workspaceId = :workspaceId
+        AND p.nodeId = :nodeId
+        AND p.name = :name
+        AND p.index = :index
+    </query>
+  </named-query>
+
+  <named-query name="removeWorkspaceNodes">
+    <query>
+      DELETE FROM Node n
+      WHERE n.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="markNodeAndDescendantsAsRemoved">
+    <query>
+      UPDATE Node n
+      SET n.index = -1, n.changeDateTime = :changeDateTime, n.changeUserId = :changeUserId
+      WHERE (LOCATE(CONCAT('/', CONCAT(:nodeId, '/')), n.path) > 0)
+        AND n.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="removeNodeAndDescendants">
+    <query>
+      DELETE FROM Node n
+      WHERE (LOCATE(CONCAT('/', CONCAT(:nodeId, '/')), n.path) > 0)
+        AND n.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="removeNodeAndDescendantsProperties">
+    <query>
+      DELETE FROM Property p
+      WHERE EXISTS
+      (
+        SELECT n
+        FROM Node n
+        WHERE (LOCATE(CONCAT('/', CONCAT(:nodeId, '/')), n.path) > 0)
+          AND n.workspaceId = p.workspaceId
+          AND n.nodeId = p.nodeId
+      )
+      AND p.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="findMarkedAsRemovedNodes">
+    <query>
+      SELECT n
+      FROM Node n
+      WHERE n.workspaceId = :workspaceId
+        AND n.index = -1        
+    </query>
+  </named-query>
+
+  <named-query name="markNodesAsRemoved">
+    <query>
+      UPDATE Node n
+      SET n.index = -1, n.changeDateTime = :changeDateTime, n.changeUserId = :changeUserId
+      WHERE (LOCATE(CONCAT(',', CONCAT(n.nodeId, ',')), CONCAT(',', CONCAT(:nodeId, ','))) > 0)
+        AND n.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="countWorkspaces">
+    <query>
+      SELECT COUNT(w)
+      FROM Workspace w
+      WHERE (UPPER(w.description) LIKE :description OR :description IS NULL)
+        AND (UPPER(w.name) LIKE :name OR :name IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(w.workspaceId, ',')), :workspaceId) > 0) OR :workspaceId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findWorkspaces">
+    <query>
+      SELECT w
+      FROM Workspace w
+      WHERE (UPPER(w.description) LIKE :description OR :description IS NULL)
+        AND (UPPER(w.name) LIKE :name OR :name IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(w.workspaceId, ',')), :workspaceId) > 0) OR :workspaceId IS NULL)
+      ORDER BY w.workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="shiftNodes">
+    <query>
+      UPDATE Node n
+      SET n.index = n.index + :shift, n.changeDateTime = :changeDateTime, n.changeUserId = :changeUserId
+      WHERE n.parentNodeId = :parentNodeId
+        AND n.index &gt;= :index
+        AND n.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="auditSync">
+    <query>
+      UPDATE Node n
+      SET n.syncDateTime = :syncDateTime, n.syncUserId = :syncUserId
+      WHERE (LOCATE(CONCAT(',', CONCAT(n.nodeId, ',')), CONCAT(',', CONCAT(:nodeId, ','))) > 0)
+        AND n.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <named-query name="exploreNode">
+    <query>
+      SELECT n
+      FROM Node n
+      WHERE n.index &gt;= 0
+        AND n.workspaceId = :workspaceId
+        AND n.parentNodeId = :parentNodeId
+      ORDER BY n.workspaceId, n.nodeId
+    </query>
+  </named-query>
+
+  <named-query name="exploreRoots">
+    <query>
+      SELECT n
+      FROM Node n
+      WHERE n.index &gt;= 0
+        AND n.workspaceId = :workspaceId
+        AND n.parentNodeId IS NULL
+      ORDER BY n.workspaceId, n.nodeId
+    </query>
+  </named-query>
+
+  <named-query name="findCreatedNodes">
+    <query>
+      SELECT n, np
+      FROM Node n LEFT OUTER JOIN n.properties np
+      WHERE n.workspaceId = :fromWorkspaceId
+        AND n.index &gt;= 0
+        AND NOT EXISTS
+        (
+          SELECT n2
+          FROM Node n2
+          WHERE n2.workspaceId = :toWorkspaceId
+            AND n2.nodeId = n.nodeId
+            AND n2.index &gt;= 0
+        )        
+        AND (n.path LIKE :baseNodeId OR :baseNodeId IS NULL)
+      ORDER BY n.workspaceId, n.nodeId, np.name, np.index
+    </query>
+  </named-query>
+
+  <named-query name="findUpdatedNodes">
+    <query>
+      SELECT n1, np
+      FROM Node n1 LEFT OUTER JOIN n1.properties np, Node n2
+      WHERE n1.workspaceId = :fromWorkspaceId
+        AND n2.workspaceId = :toWorkspaceId
+        AND n1.nodeId = n2.nodeId
+        AND n1.index &gt;= 0
+        AND n2.index &gt;= 0
+        AND NOT (n1.changeDateTime = n2.changeDateTime)
+        AND (n1.path LIKE :baseNodeId OR :baseNodeId IS NULL)
+      ORDER BY n1.workspaceId, n1.nodeId, np.name, np.index
+    </query>
+  </named-query>
+
+  <named-query name="findRemovedNodes">
+    <query>
+      SELECT n
+      FROM Node n
+      WHERE n.workspaceId = :toWorkspaceId
+        AND n.index &gt;= 0
+        AND NOT EXISTS
+        (
+          SELECT n2
+          FROM Node n2
+          WHERE n2.workspaceId = :fromWorkspaceId
+            AND n2.nodeId = n.nodeId
+            AND n2.index &gt;= 0
+        )
+        AND (n.path LIKE :baseNodeId OR :baseNodeId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findModifiedNodes">
+    <query>
+      SELECT n
+      FROM Node n
+      WHERE n.workspaceId = :workspaceId
+        AND (n.changeDateTime &gt;= :dateTime OR n.syncDateTime &gt;= :dateTime)
+    </query>
+  </named-query>
+
+  <named-query name="countNode">
+    <query>
+      SELECT COUNT(n)
+      FROM Node n
+      WHERE n.workspaceId = :workspaceId
+        AND n.nodeId = :nodeId
+    </query>
+  </named-query>
+
+  <named-query name="findNodePath">
+    <query>
+      SELECT n.path
+      FROM Node n
+      WHERE n.workspaceId = :workspaceId
+        AND n.nodeId = :nodeId
+        AND n.index &gt;= 0
+    </query>
+  </named-query>
+
+  <named-query name="updateNodeAndDescendantsPath">
+    <query>
+      UPDATE Node n
+      SET n.path = CONCAT(:newPath, SUBSTRING(n.path, LENGTH(:oldPath) + 1, LENGTH(n.path) - LENGTH(:oldPath)))
+      WHERE n.path LIKE :oldPathPattern
+        AND n.workspaceId = :workspaceId
+    </query>
+  </named-query>
+
+  <entity class="org.santfeliu.cms.service.DBWorkspace" name="Workspace">
+    <table name="CMS_WORKSPACE"  />
+    <attributes>
+      <id name="workspaceId">
+        <column name="WORKSPACEID" />
+        <generated-value strategy="TABLE" generator="cms.workspace"/>
+        <table-generator name="cms.workspace" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>            
+      </id>
+      <basic name="name">
+        <column name="NAME" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="refWorkspaceId">
+        <column name="REFWORKSPACEID" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.cms.service.DBNode" name="Node">
+    <table name="CMS_NODE"  />
+    <id-class class="org.santfeliu.cms.service.DBNodePK"/>
+    <attributes>
+      <id name="workspaceId">
+        <column name="WORKSPACEID" />
+      </id>
+      <id name="nodeId">
+        <column name="NODEID" />
+        <generated-value strategy="TABLE" generator="cms.node"/>
+        <table-generator name="cms.node" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>
+      </id>
+      <basic name="parentNodeId">
+        <column name="PARENTNODEID" />
+      </basic>
+      <basic name="index">
+        <column name="IDX" />
+      </basic>
+      <basic name="name">
+        <column name="NAME" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" />
+      </basic>
+      <basic name="syncDateTime">
+        <column name="SYNCDT" />
+      </basic>
+      <basic name="syncUserId">
+        <column name="SYNCUSERID" />
+      </basic>
+      <basic name="path">
+        <column name="PATH" />
+      </basic>
+      <one-to-many name="properties" mapped-by="node" />
+      <transient name="property" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.cms.service.DBProperty" name="Property">
+    <table name="CMS_PROPERTY"  />
+    <attributes>
+      <id name="workspaceId">
+        <column name="WORKSPACEID" />
+      </id>
+      <id name="nodeId">
+        <column name="NODEID" />
+      </id>
+      <id name="name">
+        <column name="NAME" />
+      </id>
+      <id name="index">
+        <column name="IDX" />
+      </id>
+      <basic name="value">
+        <column name="VALUE" />
+      </basic>
+      <many-to-one name="node">
+        <join-column name="WORKSPACEID" referenced-column-name="WORKSPACEID"
+            insertable="false" updatable="false" />
+        <join-column name="NODEID" referenced-column-name="NODEID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+</entity-mappings>

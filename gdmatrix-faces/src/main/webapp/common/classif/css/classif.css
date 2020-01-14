@@ -1,0 +1,48 @@
+.objectForm .resultList TD
+{
+  border-width:0px;
+  border-top-style:dotted;
+  border-top-width:1px;
+  border-top-color:#C8C8B8;
+  border-right-style:dotted;
+  border-right-width:1px;
+  border-right-color:#C8C8B8;
+}
+
+.objectForm .resultList TR.closed:hover
+{
+  background: url('/common/classif/images/closed.gif') #E8E8E8; height:16px
+}
+
+.future {color:blue}
+.past {color: #808080}
+.current {color: black}
+.open { background: white; }
+.closed { background: url('/common/classif/images/closed.gif') #E8E8E8; height:16px }
+
+.treeActions IMG
+{
+  border:0;
+  margin-left:2px;
+  margin-right:2px;
+  vertical-align:middle;
+}
+
+.selectedClass
+{
+  font-weight:bold;
+  color:black;
+}
+
+.unselectedClass
+{
+  font-weight:normal;
+  color:black;
+}
+
+.cutClass
+{
+  font-weight:bold;
+  font-style:italic;
+  color: #C0C0C0;
+}

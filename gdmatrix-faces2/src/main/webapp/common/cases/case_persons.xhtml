@@ -1,0 +1,536 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/obj/object.xhtml">
+    <ui:param name="css" value="/common/cases/css/cases.css" />
+    <ui:define name="tab">
+
+      <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle" 
+                    var="caseBundle" />
+
+      <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                    var="objectBundle" />
+
+      <sf:saveScroll resetIfError="true" value="#{casePersonsBean.objectPageScroll}" />    
+
+      <t:div styleClass="resultBar" >
+        <t:dataScroller for="data"
+                        firstRowIndexVar="firstRow"
+                        lastRowIndexVar="lastRow"
+                        rowsCountVar="rowCount">
+          <h:outputFormat value="#{objectBundle.resultRange}" rendered="#{rowCount > casePersonsBean.pageSize}">
+            <f:param value="#{firstRow}" />
+            <f:param value="#{lastRow}" />
+            <f:param value="#{rowCount}" />
+          </h:outputFormat>
+        </t:dataScroller>
+      </t:div>
+
+      <t:div rendered="#{casePersonsBean.renderGroupButtonMode}"
+             styleClass="buttonGroupSelection">
+        <t:dataList value="#{casePersonsBean.groups}" var="group"
+                    rows="#{casePersonsBean.groupsPageSize}"
+                    rendered="#{casePersonsBean.renderGroupSelection}">
+          <h:commandButton value="#{group.description}"
+             styleClass="#{casePersonsBean.renderGroup ? 'buttonEnabled' : 'buttonDisabled'}"
+             action="#{casePersonsBean.showGroup}" />
+        </t:dataList>
+      </t:div>  
+
+      <t:dataList id="data" value="#{casePersonsBean.groups}" var="group" rows="#{casePersonsBean.groupsPageSize}">  
+
+        <t:buffer into="#{table}">      
+
+        <t:div rendered="#{casePersonsBean.renderGroupBarMode}"
+            styleClass="barGroupSelection">
+          <h:commandLink action="#{casePersonsBean.showGroup}" style="color:black">
+             <h:graphicImage value="/images/expand.gif" rendered="#{not casePersonsBean.renderGroup}" alt=""/>
+             <h:graphicImage value="/images/collapse.gif" rendered="#{casePersonsBean.renderGroup}" alt=""/>
+             <h:outputText value="#{group.description}" style="margin-left:2px"/>
+          </h:commandLink>
+        </t:div>    
+
+        <t:dataTable id="dataTable" 
+          first="#{casePersonsBean.firstRowIndex}"
+          value="#{casePersonsBean.rows}" var="row"
+          rowIndexVar="index" rowClasses="row1,row2" headerClass="header"
+          footerClass="footer"
+          rowStyleClass="#{casePersonsBean.rowStyleClass} row#{(index % 2) + 1} #{casePersonsBean.selectedRow ? 'selectedRow' : null}"
+          styleClass="resultList" style="width:100%"
+          bodyStyle="#{empty casePersonsBean.rows ? 'display:none' : ''}"
+          rows="#{casePersonsBean.pageSize}" 
+          rendered="#{casePersonsBean.renderGroup}">
+
+          <f:facet name="header">
+            <t:div styleClass="theader">
+              <h:outputText value="#{group.description != '' ? (casePersonsBean.renderGroupSelection ? ' ' : group.description) : userSessionBean.selectedMenuItem.label}"
+                            styleClass="textBox" style="width:85%"/>
+              <t:dataScroller for="dataTable"
+                              rowsCountVar="rowCount" >
+                <h:outputFormat styleClass="textBox" value="#{objectBundle.shortResultRange}">
+                  <f:param value="#{rowCount}" />
+                </h:outputFormat>
+              </t:dataScroller>
+            </t:div>
+          </f:facet>      
+
+          <t:column style="width:10%">
+            <f:facet name="header">
+              <h:outputText value="#{caseBundle.casePersons_id}:" />
+            </f:facet>
+            <h:outputText value="#{row.personView.personId}" />
+          </t:column>
+
+          <t:column style="width:45%">
+            <f:facet name="header">
+              <h:outputText value="#{caseBundle.casePersons_person}:" />
+            </f:facet>
+            <h:panelGrid columns="1" styleClass="#{casePersonsBean.rowStyleClass}">
+              <h:outputFormat style="font-size:11px; font-weight:normal;"
+                              value="#{caseBundle.casePersons_closedDateInterval}"
+                              rendered="#{casePersonsBean.viewStartDate != null
+                                          and casePersonsBean.viewEndDate != null}">
+                <f:param value="#{casePersonsBean.viewStartDate}" />
+                <f:param value="#{casePersonsBean.viewEndDate}" />
+              </h:outputFormat>
+
+              <h:outputFormat style="font-size:11px; font-weight:normal;"
+                              value="#{caseBundle.casePersons_openToDateInterval}"
+                              rendered="#{casePersonsBean.viewStartDate == null
+                                          and casePersonsBean.viewEndDate != null}">
+                <f:param value="#{casePersonsBean.viewEndDate}" />
+              </h:outputFormat>
+
+              <h:outputFormat style="font-size:11px; font-weight:normal;"
+                              value="#{caseBundle.casePersons_openFromDateInterval}"
+                              rendered="#{casePersonsBean.viewStartDate != null
+                                          and casePersonsBean.viewEndDate == null}">
+                <f:param value="#{casePersonsBean.viewStartDate}" />
+              </h:outputFormat>        
+
+              <h:outputText value="#{row.personView.fullName}"/>
+              <h:outputText style="font-size:11px; font-weight:normal;" 
+                            rendered="#{row.comments != null and casePersonsBean.renderComments}" 
+                            value="#{row.comments}" />
+            </h:panelGrid>
+          </t:column>
+
+          <t:column style="width:15%">
+            <f:facet name="header">
+              <h:outputText value="#{caseBundle.casePersons_type}:" />
+            </f:facet>
+            <h:outputText value="#{casePersonsBean.rowTypeDescription}"/>
+          </t:column>
+
+          <t:column style="width:30%" styleClass="actionsColumn">
+            <h:panelGroup>
+              <h:commandButton action="#{casePersonsBean.showPerson}"
+                               rendered="#{row.casePersonId != null}"
+                               styleClass="showButton" value="#{objectBundle.show}"
+                               image="#{userSessionBean.icons.show}"
+                               alt="#{objectBundle.show}" title="#{objectBundle.show}"/>
+              <h:commandButton action="#{casePersonsBean.editPerson}"
+                               rendered="#{row.casePersonId != null}"
+                               disabled="#{!casePersonsBean.rowEditable}"
+                               styleClass="editButton" value="#{objectBundle.edit}"
+                               image="#{userSessionBean.icons.detail}"
+                               alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
+              <h:commandButton value="#{objectBundle.delete}"
+                               image="#{userSessionBean.icons.delete}"
+                               alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                               action="#{casePersonsBean.removePerson}"
+                               rendered="#{row.casePersonId != null}"
+                               disabled="#{!caseBean.editable or casePersonsBean.editingPerson != null or !casePersonsBean.rowRemovable}"
+                               styleClass="removeButton"
+                               onclick="return confirm('#{objectBundle.confirm_remove}');"/>
+            </h:panelGroup>
+          </t:column>
+
+          <f:facet name="footer">
+            <t:dataScroller
+              for="dataTable"
+              fastStep="100"
+              paginator="true"
+              paginatorMaxPages="9"
+              immediate="true"
+              styleClass="scrollBar"
+              paginatorColumnClass="page"
+              paginatorActiveColumnClass="activePage"
+              nextStyleClass="nextButton"
+              previousStyleClass="previousButton"
+              firstStyleClass="firstButton"
+              lastStyleClass="lastButton"
+              fastfStyleClass="fastForwardButton"
+              fastrStyleClass="fastRewindButton"
+              renderFacetsIfSinglePage="false">
+              <f:facet name="first">
+                <t:div title="#{objectBundle.first}"></t:div>
+              </f:facet>
+              <f:facet name="last">
+                <t:div title="#{objectBundle.last}"></t:div>
+              </f:facet>
+              <f:facet name="previous">
+                <t:div title="#{objectBundle.previous}"></t:div>
+              </f:facet>
+              <f:facet name="next">
+                <t:div title="#{objectBundle.next}"></t:div>
+              </f:facet>
+              <f:facet name="fastrewind">
+                <t:div title="#{objectBundle.fastRewind}"></t:div>
+              </f:facet>
+              <f:facet name="fastforward">
+                <t:div title="#{objectBundle.fastForward}"></t:div>
+              </f:facet>
+            </t:dataScroller>
+          </f:facet>
+        </t:dataTable>
+
+      </t:buffer>
+
+      <h:outputText value="#{table}" escape="false"/>
+
+      </t:dataList>
+
+      <t:dataScroller for="data"
+                      fastStep="5"
+                      paginator="true"
+                      paginatorMaxPages="5"
+                      immediate="true"
+                      rendered="#{!casePersonsBean.singleGroup and ((groupIndex + 1) mod casePersonsBean.groupsPageSize == 0 or (groupIndex + 1 == groupCount))}"
+                      styleClass="scrollBar"
+                      paginatorColumnClass="page"
+                      paginatorActiveColumnClass="activePage"
+                      nextStyleClass="nextButton"
+                      previousStyleClass="previousButton"
+                      firstStyleClass="firstButton"
+                      lastStyleClass="lastButton"
+                      fastfStyleClass="fastForwardButton"
+                      fastrStyleClass="fastRewindButton"
+                      renderFacetsIfSinglePage="false">
+            <f:facet name="first">
+              <t:div title="#{objectBundle.first}"></t:div>
+            </f:facet>
+            <f:facet name="last">
+              <t:div title="#{objectBundle.last}"></t:div>
+            </f:facet>
+            <f:facet name="previous">
+              <t:div title="#{objectBundle.previous}"></t:div>
+            </f:facet>
+            <f:facet name="next">
+              <t:div title="#{objectBundle.next}"></t:div>
+            </f:facet>
+            <f:facet name="fastrewind">
+              <t:div title="#{objectBundle.fastRewind}"></t:div>
+            </f:facet>
+            <f:facet name="fastforward">
+              <t:div title="#{objectBundle.fastForward}"></t:div>
+            </f:facet>
+      </t:dataScroller>
+
+      <t:div style="width:100%;text-align:right">
+        <h:commandButton value="#{objectBundle.add}"
+                         image="#{userSessionBean.icons.add}"
+                         alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                         action="#{casePersonsBean.createPerson}"
+                         rendered="#{row.casePersonId == null}"
+                         disabled="#{!caseBean.editable}"
+                         styleClass="addButton"  />
+      </t:div>
+
+      <t:div rendered="#{casePersonsBean.editingPerson != null}"
+                styleClass="editingPanel">
+
+        <t:div>
+          <h:outputText value="#{caseBundle.casePersons_personData}:"
+            styleClass="personCaseHeader" />
+        </t:div>
+
+        <t:div rendered="#{casePersonsBean.rootTypeId != 'CasePerson'}">
+          <h:outputText value="#{caseBundle.casePersons_type}:"
+                        style="width:15%" styleClass="textBox"/>
+          <t:selectOneMenu value="#{casePersonsBean.editingPerson.casePersonTypeId}"
+                           styleClass="selectBox"
+                           disabled="#{!caseBean.editable}">
+            <f:selectItems value="#{casePersonsBean.allTypeItems}" />
+          </t:selectOneMenu>
+        </t:div>
+
+        <t:div rendered="#{casePersonsBean.renderDateFields}">
+          <h:outputText value="#{caseBundle.caseCases_startDate}: "
+            style="width:15%" styleClass="textBox"/>
+          <sf:calendar value="#{casePersonsBean.editingPerson.startDate}"
+                       styleClass="calendarBox"
+                       externalFormat="dd/MM/yyyy"
+                       internalFormat="yyyyMMdd"
+                       buttonStyleClass="calendarButton"
+                       style="width:14%"
+                       disabled="#{!caseBean.editable}"/>
+          <h:outputText value="#{caseBundle.caseCases_endDate}: "
+            styleClass="textBox" style="margin-left:16px" />
+          <sf:calendar value="#{casePersonsBean.editingPerson.endDate}"
+                       styleClass="calendarBox"
+                       externalFormat="dd/MM/yyyy"
+                       internalFormat="yyyyMMdd"
+                       buttonStyleClass="calendarButton"
+                       style="width:14%"
+                       disabled="#{!caseBean.editable}"/>
+        </t:div>
+
+        <t:div>
+          <h:outputText value="#{caseBundle.casePersons_person}: " 
+                        style="width:15%" styleClass="textBox"/>
+          <h:panelGroup>
+            <sf:commandMenu value="#{casePersonsBean.editingPerson.personId}"
+                            styleClass="selectBox" style="width:70%"
+                            action="#{casePersonsBean.selectPerson}"
+                            disabled="#{!caseBean.editable}">
+              <f:selectItems value="#{casePersonsBean.personSelectItems}" />
+            </sf:commandMenu>
+            <h:commandButton action="#{casePersonsBean.searchPerson}" 
+                             styleClass="searchButton" value="#{objectBundle.search}"
+                             image="#{userSessionBean.icons.search}"
+                             alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                             disabled="#{!caseBean.editable}"/>
+          </h:panelGroup>
+        </t:div>
+
+        <t:div rendered="#{casePersonsBean.personSelected}">
+          <h:outputText value="#{caseBundle.casePersons_address}: "
+                        style="width:15%" styleClass="textBox"/>
+          <h:panelGroup>
+            <t:selectOneMenu value="#{casePersonsBean.editingPerson.addressId}"
+                             styleClass="selectBox" style="width:70%"
+                             disabled="#{!caseBean.editable}">
+              <f:selectItems value="#{casePersonsBean.addressSelectItems}" />
+            </t:selectOneMenu>
+            <h:commandButton action="#{casePersonsBean.searchAddress}"
+                             styleClass="searchButton" value="#{objectBundle.search}"
+                             image="#{userSessionBean.icons.search}"
+                             alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                             disabled="#{!caseBean.editable}"/>
+          </h:panelGroup>
+        </t:div>
+
+        <t:dataList value="#{casePersonsBean.editingPerson.contactId}"      
+          var="contactId" rowIndexVar="rowIndex"
+          rendered="#{casePersonsBean.personSelected}">
+          <t:div>
+            <h:outputText value="#{caseBundle.casePersons_contact} #{rowIndex + 1}: "
+                          style="width:15%" styleClass="textBox"/>
+            <h:outputText value="#{casePersonsBean.personContactIdDescription}"
+                          styleClass="outputBox" style="width:70%" />
+            <h:commandButton action="#{casePersonsBean.removePersonContact}"
+                             styleClass="removeButton" value="#{objectBundle.remove}"
+                             image="#{userSessionBean.icons.remove}"
+                             alt="#{objectBundle.remove}" title="#{objectBundle.remove}" />
+            <h:commandButton action="#{casePersonsBean.moveDownPersonContact}"
+                             styleClass="moveDownButton" value="#{objectBundle.moveDown}"
+                             image="#{userSessionBean.icons.down}"
+                             alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}"
+                             rendered="#{casePersonsBean.numPersonContacts &gt; 1}" />
+          </t:div>
+        </t:dataList>
+
+        <t:div rendered="#{casePersonsBean.numPersonContacts &lt; casePersonsBean.maxPersonContacts and
+                              casePersonsBean.personSelected}">
+          <t:popup closePopupOnExitingElement="false"
+                   closePopupOnExitingPopup="true"
+                   displayAtDistanceX="-5"
+                   displayAtDistanceY="-5"
+                   styleClass="contactsPopup">
+            <h:outputText value="#{caseBundle.casePersons_contact} #{casePersonsBean.numPersonContacts + 1}: "
+                     style="width:15%;text-decoration:underline" styleClass="textBox"/>
+            <f:facet name="popup">
+              <h:panelGroup>
+                <h:outputText value="#{caseBundle.casePersons_personContacts}:"
+                   styleClass="popupHeader" />
+                <t:dataList value="#{casePersonsBean.personContacts}"
+                  var="contact">
+                  <h:commandLink action="#{casePersonsBean.addPersonContact}"
+                    styleClass="item">
+                    <h:outputText value="#{casePersonsBean.contactDescription}"
+                                  style="display:block" />
+                  </h:commandLink>
+                </t:dataList>
+              </h:panelGroup>
+            </f:facet>
+          </t:popup>
+          <t:selectOneMenu value="#{casePersonsBean.newPersonContact.contactTypeId}"
+            styleClass="selectBox" style="width:30%" disabled="#{!caseBean.editable}">
+            <f:selectItems value="#{casePersonsBean.contactTypeSelectItems}" />
+          </t:selectOneMenu>
+          <h:inputText value="#{casePersonsBean.newPersonContact.value}"
+             styleClass="inputBox" style="width:40%" 
+             maxlength="#{casePersonsBean.contactMaxLength}" 
+             readonly="#{!caseBean.editable}"/>
+          <h:commandButton action="#{casePersonsBean.addNewPersonContact}"
+                           styleClass="addButton" value="#{objectBundle.add}"
+                           image="#{userSessionBean.icons.add}"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!caseBean.editable}"/>
+        </t:div>
+
+        <t:div rendered="#{casePersonsBean.personSelected}">
+          <h:outputText value="#{caseBundle.casePersons_representantData}: "
+            styleClass="personCaseHeader" />
+        </t:div>
+
+        <t:div rendered="#{casePersonsBean.personSelected}">
+          <h:outputText value="#{caseBundle.casePersons_representantPerson}: "
+                        style="width:15%" styleClass="textBox"/>
+          <h:panelGroup>
+            <sf:commandMenu value="#{casePersonsBean.editingPerson.representantPersonId}"
+                            styleClass="selectBox" style="width:70%"
+                            action="#{casePersonsBean.selectRepresentant}"
+                            disabled="#{!caseBean.editable}">
+              <f:selectItems value="#{casePersonsBean.representantPersonSelectItems}" />
+            </sf:commandMenu>
+            <h:commandButton action="#{casePersonsBean.searchRepresentantPerson}"
+                             styleClass="searchButton" value="#{objectBundle.search}"
+                             image="#{userSessionBean.icons.search}"
+                             alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                             disabled="#{!caseBean.editable}"/>
+          </h:panelGroup>
+        </t:div>
+
+        <t:div rendered="#{casePersonsBean.representantSelected}">
+          <h:outputText value="#{caseBundle.casePersons_address}: "
+                        style="width:15%" styleClass="textBox"/>
+          <h:panelGroup>
+            <t:selectOneMenu value="#{casePersonsBean.editingPerson.representantAddressId}"
+                             styleClass="selectBox" style="width:70%">
+              <f:selectItems value="#{casePersonsBean.representantAddressSelectItems}" />
+            </t:selectOneMenu>
+            <h:commandButton action="#{casePersonsBean.searchRepresentantAddress}"
+                             styleClass="searchButton" value="#{objectBundle.search}"
+                             image="#{userSessionBean.icons.search}"
+                             alt="#{objectBundle.search}" title="#{objectBundle.search}" />
+          </h:panelGroup>
+        </t:div>
+
+        <t:dataList value="#{casePersonsBean.editingPerson.representantContactId}"
+          var="contactId" rowIndexVar="rowIndex"
+          rendered="#{casePersonsBean.representantSelected}">
+          <t:div>
+            <h:outputText value="#{caseBundle.casePersons_contact} #{rowIndex + 1}: "
+                          style="width:15%" styleClass="textBox"/>
+            <h:outputText value="#{casePersonsBean.representantContactIdDescription}"
+                          styleClass="outputBox" style="width:70%" />
+            <h:commandButton action="#{casePersonsBean.removeRepresentantContact}"
+                             styleClass="removeButton" value="#{objectBundle.remove}"
+                             image="#{userSessionBean.icons.remove}"
+                             alt="#{objectBundle.remove}" title="#{objectBundle.remove}" />
+            <h:commandButton action="#{casePersonsBean.moveDownRepresentantContact}"
+                             styleClass="moveDownButton" value="#{objectBundle.moveDown}"
+                             image="#{userSessionBean.icons.down}"
+                             alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}"
+                             rendered="#{casePersonsBean.numRepresentantContacts &gt; 1}" />
+          </t:div>
+        </t:dataList>
+
+        <t:div rendered="#{casePersonsBean.numRepresentantContacts &lt; casePersonsBean.maxRepresentantContacts and
+                  casePersonsBean.representantSelected}">
+          <t:popup closePopupOnExitingElement="false"
+                   closePopupOnExitingPopup="true"
+                   displayAtDistanceX="-5"
+                   displayAtDistanceY="-5"
+                   styleClass="contactsPopup">
+            <h:outputText value="#{caseBundle.casePersons_contact} #{casePersonsBean.numRepresentantContacts + 1}: "
+                     style="width:15%;text-decoration:underline" styleClass="textBox"/>
+            <f:facet name="popup">
+              <h:panelGroup>
+                <h:outputText value="#{caseBundle.casePersons_representantContacts}:"
+                   styleClass="popupHeader" />
+                <t:dataList value="#{casePersonsBean.representantContacts}"
+                  var="contact">
+                  <h:commandLink action="#{casePersonsBean.addRepresentantContact}"
+                    styleClass="item">
+                    <h:outputText value="#{casePersonsBean.contactDescription}" />
+                  </h:commandLink>
+                </t:dataList>
+              </h:panelGroup>
+            </f:facet>
+          </t:popup>
+          <t:selectOneMenu value="#{casePersonsBean.newRepresentantContact.contactTypeId}"
+            styleClass="selectBox" style="width:30%">
+            <f:selectItems value="#{casePersonsBean.contactTypeSelectItems}" />
+          </t:selectOneMenu>
+          <h:inputText value="#{casePersonsBean.newRepresentantContact.value}"
+             styleClass="inputBox" style="width:40%" 
+             maxlength="#{casePersonsBean.contactMaxLength}" />
+          <h:commandButton action="#{casePersonsBean.addNewRepresentantContact}"
+                           styleClass="addButton" value="#{objectBundle.add}"
+                           image="#{userSessionBean.icons.add}"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </t:div>
+
+        <t:div>
+          <h:outputText value="#{caseBundle.casePersons_otherData}: "
+            styleClass="personCaseHeader" />
+        </t:div>
+
+        <t:div>
+          <h:outputText value="#{caseBundle.casePersons_comments}: " 
+                        style="width:15%;vertical-align:top" styleClass="textBox" />
+          <h:inputTextarea value="#{casePersonsBean.editingPerson.comments}"
+                           styleClass="inputBox" style="width:70%"
+                           onkeypress="checkMaxLength(this, #{casePersonsBean.propertySize.comments})"
+                           readonly="#{!caseBean.editable}"/>
+        </t:div>
+
+        <t:div>
+          <h:outputText value="#{caseBundle.casePersons_importAddresses} "  
+                        style="width:20%" styleClass="textBox"/>
+          <h:selectBooleanCheckbox value="#{casePersonsBean.importAddresses}"
+                                   style="vertical-align: middle"
+                                   disabled="#{!caseBean.editable}"/>
+        </t:div>
+
+        <t:div rendered="#{casePersonsBean.creationDateTime != null}">
+          <h:outputText value="#{caseBundle.case_creationDateTime}:"
+                        styleClass="textBox" style="width:15%" />
+          <h:outputText value="#{casePersonsBean.creationDateTime}"
+                        styleClass="outputBox" style="width:22%">
+            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+          </h:outputText>
+          <h:outputText value="#{caseBundle.case_createdBy}:"
+                        styleClass="textBox" style="width:5%"
+                        rendered="#{casePersonsBean.editingPerson.creationUserId != null}" />
+          <h:outputText value="#{casePersonsBean.editingPerson.creationUserId}"
+                        styleClass="outputBox" style="width:22%"
+                        rendered="#{casePersonsBean.editingPerson.creationUserId != null}" />
+        </t:div>
+
+        <t:div rendered="#{casePersonsBean.changeDateTime != null}">
+          <h:outputText value="#{caseBundle.case_changeDateTime}:"
+                        styleClass="textBox" style="width:15%" />
+          <h:outputText value="#{casePersonsBean.changeDateTime}"
+                        styleClass="outputBox" style="width:22%">
+            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+          </h:outputText>
+          <h:outputText value="#{caseBundle.case_changedBy}:"
+                        styleClass="textBox" style="width:5%"
+                        rendered="#{casePersonsBean.editingPerson.changeUserId != null}" />
+          <h:outputText value="#{casePersonsBean.editingPerson.changeUserId}"
+                        rendered="#{casePersonsBean.editingPerson.changeUserId != null}"
+                        styleClass="outputBox" style="width:22%" />
+        </t:div>
+
+        <t:div styleClass="actionsRow">
+          <h:commandButton action="#{casePersonsBean.storePerson}" 
+                           styleClass="addButton" value="#{objectBundle.store}"
+                           disabled="#{!caseBean.editable}"
+                           onclick="showOverlay()"/>
+          <h:commandButton action="#{casePersonsBean.cancelPerson}" 
+                           styleClass="cancelButton" value="#{objectBundle.cancel}" 
+                           immediate="true"/>
+        </t:div>
+      </t:div>
+      
+    </ui:define>
+  </ui:composition>
+</html>

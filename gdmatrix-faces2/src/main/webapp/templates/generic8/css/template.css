@@ -1,0 +1,103 @@
+body
+{
+  background:white;
+  margin:0;
+  padding:0;
+  background:#E0E0E0;
+  font-family: Arial;
+  font-size:14px;
+}
+
+div.centralSheet
+{
+  width:800px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top:10px;
+}
+
+.languagePanel
+{
+  float:left;
+  vertical-align:middle;
+}
+
+.loginPanel
+{
+  float:right;
+}
+
+div.headerPanel
+{
+  background:orange;
+  clear:both;
+}
+
+table.centralPanel
+{
+  background: white;
+  width:100%;
+}
+
+td.cpcol1
+{
+  width:25%;
+  vertical-align: top;
+}
+
+td.cpcol2
+{
+  width:75%;
+  vertical-align: top;
+}
+
+div.footerPanel
+{
+  clear:both;
+  height:30px;
+  background-color:orange;
+  margin-bottom:30px;
+}
+
+.loginButton
+{
+  text-decoration:none;
+  background:#C0C0C0;
+  padding-left:2px;
+  padding-right:2px;
+  margin-left:2px;
+  margin-right:2px;
+}
+
+.username, .password
+{
+  color:black;
+  vertical-align:middle;
+  margin-right:4px;
+}
+
+.displayName
+{
+  color:gray;
+  vertical-align:middle;
+  margin-right:4px;
+}
+
+.loginBox
+{
+  vertical-align:middle;
+  font-family: Arial;
+  font-size:14px;
+}
+
+.languageSelector
+{
+  vertical-align:middle;
+  font-family: Arial;
+  font-size:14px;
+}
+
+a.selected
+{
+  font-weight: bold;
+}

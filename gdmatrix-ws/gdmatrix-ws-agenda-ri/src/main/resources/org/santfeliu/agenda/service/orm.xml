@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <description>Agenda</description>
+    <package>org.santfeliu.agenda.service</package>
+
+    <named-query name="auditEventChange">
+      <query>
+         UPDATE DBEvent e
+         SET e.stddmod = :stddmod,
+          e.stdhmod = :stdhmod,
+          e.changeUserId = :changeUserId
+         WHERE (e.eventId = :eventId)
+      </query>
+    </named-query>
+
+    <named-query name="findProperties">
+      <query>
+         SELECT p
+         FROM DBEventProperty p
+         WHERE (p.eventId = :eventId)
+      </query>
+    </named-query>
+
+    <named-query name="deleteProperties">
+      <query>
+         DELETE
+         FROM DBEventProperty p
+         WHERE (p.eventId = :eventId)
+      </query>
+    </named-query>
+
+    <named-query name="deleteAttendants">
+      <query>
+         DELETE
+         FROM DBAttendant a
+         WHERE (a.eventId = :eventId)
+      </query>
+    </named-query>
+
+    <named-query name="deleteEventPlaces">
+      <query>
+         DELETE
+         FROM DBEventPlace ep
+         WHERE (ep.eventId = :eventId)
+      </query>
+    </named-query>
+
+    <named-query name="deleteEventThemes">
+      <query>
+         DELETE
+         FROM DBEventTheme et
+         WHERE (et.eventId = :eventId)
+      </query>
+    </named-query>
+
+    <named-query name="deleteEventDocuments">
+      <query>
+         DELETE
+         FROM DBEventDocument ed
+         WHERE (ed.eventId = :eventId)
+      </query>
+    </named-query>
+
+
+    <named-query name="findEventDocuments">
+      <query>
+         SELECT ed
+         FROM DBEventDocument ed JOIN FETCH ed.dbEvent
+         WHERE (ed.eventId = :eventId or :eventId is null)
+           AND (ed.docId = :docId or :docId is null)
+      </query>
+    </named-query>
+
+    <named-query name="findEventPlaces">
+      <query>
+         SELECT ep
+         FROM DBEventPlace ep
+         WHERE (ep.eventId = :eventId or :eventId is null)
+           AND ((ep.domcod = :domcod and ep.salacod = :salacod) or :salacod is null)
+           AND ((ep.paiscod = :paiscod and ep.provcod = :provcod and ep.municod = :municod and ep.carcod = :carcod and ep.domcod = :domcod) or :domcod is null)
+         ORDER BY ep.numordre
+      </query>
+    </named-query>
+
+    <named-query name="getEventPlaceNumordre">
+      <query>
+         SELECT max(ep.numordre) + 1
+         FROM DBEventPlace ep
+         WHERE ep.eventId = :eventId
+      </query>
+    </named-query>
+
+    <named-query name="findAttendants">
+      <query>
+         SELECT a
+         FROM DBAttendant a JOIN a.dbEvent e
+         WHERE (a.eventId = :eventId or :eventId is null)
+           AND (a.personId = :personId or :personId is null)           
+           AND (a.incognit is null OR a.incognit = 'N' OR :isAdmin = 'S' OR
+            (a.incognit = 'S' AND
+              (trim(e.creationUserId) = :userId OR
+               trim(e.changeUserId) = :userId OR
+               (exists (select a2.personId from DBAttendant a2 where a2.eventId = a.eventId and a2.personId = :userPersonId)) OR
+               (LOCATE(CONCAT(',', CONCAT(a.personId, ',')), :trustors) &gt; 0) )))
+      </query>
+    </named-query>
+
+    <named-query name="findAttendantsOccupancy">
+      <query>
+        SELECT a2
+        FROM DBAttendant a2 JOIN a2.dbEvent e2,
+             DBAttendant a1 JOIN a1.dbEvent e1
+        WHERE a1.personId = a2.personId
+          AND concat(e1.datainici,e1.horainici) &lt; concat(e2.datafinal,e2.horafinal)
+          AND concat(e1.datafinal,e1.horafinal) &gt; concat(e2.datainici,e2.horainici)
+          AND e1.eventId = :eventId
+          AND e2.eventId != :eventId
+      </query>
+      <hint name="eclipselink.join-fetch" value="a2.dbEvent" />
+    </named-query>
+
+    <named-query name="findPersonsFromEvents">
+      <query>
+         SELECT a
+         FROM DBAttendant a
+         WHERE (LOCATE(CONCAT(',', CONCAT(a.eventId, ',')), :eventId) &gt; 0)
+      </query>
+    </named-query>
+
+    <named-query name="findPlacesFromEvents">
+      <query>
+         SELECT ep
+         FROM DBEventPlace ep JOIN FETCH ep.dbEvent
+         WHERE (LOCATE(CONCAT(',', CONCAT(ep.eventId, ',')), :eventId) &gt; 0)
+      </query>
+    </named-query>
+
+    <named-query name="countThemes">
+      <query>
+         SELECT count(t)
+         FROM DBTheme t
+         WHERE (t.themeId = :themeId or :themeId is null)
+           AND (lower(t.description) like :description or :description is null)
+      </query>
+    </named-query>
+
+    <named-query name="findThemes">
+      <query>
+         SELECT t
+         FROM DBTheme t
+         WHERE (t.themeId = :themeId or :themeId is null)
+           AND (lower(t.description) like :description or :description is null)
+         ORDER BY t.themeId
+      </query>
+    </named-query>
+
+    <named-query name="findEventThemes">
+      <query>
+         SELECT et, t
+         FROM DBEventTheme et, DBTheme t
+         WHERE t.themeId = et.themeId
+           AND (et.eventId = :eventId or :eventId is null)
+           AND (et.themeId = :themeId or :themeId is null)
+      </query>
+    </named-query>
+
+    <named-query name="checkEventRoomAvailability">
+      <query>
+        SELECT DISTINCT e.eventId,e.datainici,e.horainici,e.datafinal,e.horafinal
+        FROM DBEvent e, DBEventPlace ep
+        WHERE e.eventId = ep.eventId
+          AND e.eventId != :eventId
+          AND CONCAT(e.datainici, e.horainici) &lt; CONCAT(:datafinal, :horafinal)
+          AND CONCAT(e.datafinal, e.horafinal) &gt; CONCAT(:datainici, :horainici)
+          AND EXISTS
+            (SELECT ep2 FROM DBEventPlace ep2 WHERE ep2.eventId = :eventId
+              AND ep2.domcod = ep.domcod AND ep2.salacod = ep.salacod)
+      </query>
+    </named-query>
+
+    <named-query name="checkEventPlaceRoomAvailability">
+      <query>
+        SELECT DISTINCT e2.eventId,e2.datainici,e2.horainici,e2.datafinal,e2.horafinal
+        FROM DBEvent e, DBEvent e2, DBEventPlace ep2
+        WHERE e2.eventId = ep2.eventId
+          AND e.eventId = :eventId AND e2.eventId != :eventId
+          AND ep2.domcod = :domcod AND ep2.salacod = :salacod
+          AND CONCAT(e.datainici, e.horainici) &lt; CONCAT(e2.datafinal, e2.horafinal)
+          AND CONCAT(e.datafinal, e.horafinal) &gt; CONCAT(e2.datainici, e2.horainici)
+      </query>
+    </named-query>
+
+    <!-- Legacy code. Delete in future -->
+    <named-query name="incrementGenericCounter">
+      <query>
+        UPDATE DBCounter c SET
+          c.counter = c.counter + 1,
+          c.stdumod = :userId,
+          c.stddmod = :day,
+          c.stdhmod = :hour
+        WHERE c.claupref = :claupref AND c.claucod = :claucod
+          AND c.clauorigen = :clauorigen
+      </query>
+    </named-query>
+
+    <named-query name="readGenericCounter">
+      <query>
+        SELECT c.counter FROM DBCounter c
+        WHERE c.claupref = :claupref AND c.claucod = :claucod
+          AND c.clauorigen = :clauorigen
+      </query>
+    </named-query>
+    <!-- end legacy code -->
+
+    <entity class="org.santfeliu.agenda.service.DBEvent"
+      name="DBEvent">
+      <table name="AGD_ESDEVENIMENT" />
+      <attributes>
+        <id name="eventId">
+          <column name="ESDEVCOD" />
+<!--
+          <generated-value strategy="TABLE" generator="AGD_ESDEVENIMENT"/>
+          <table-generator name="AGD_ESDEVENIMENT" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            initial-value="0" allocation-size="1"/>
+-->
+        </id>
+        <basic name="eventTypeId">
+          <column name="EVENTTYPEID" />
+        </basic>
+        <basic name="tipesdevcod">
+          <column name="TIPESDEVCOD" />
+        </basic>
+        <basic name="summary">
+          <column name="ESDEVNOM" />
+        </basic>
+        <basic name="description">
+          <column name="OBSERV" />
+        </basic>
+        <basic name="text" fetch="LAZY">
+          <column name="TEXT" />
+          <lob/>
+        </basic>
+        <basic name="comments">
+          <column name="OBSERVOCUL" />
+        </basic>
+        <basic name="datainici">
+          <column name="DATAINICI" />
+        </basic>
+        <basic name="horainici">
+          <column name="HORAINICI" />
+        </basic>
+        <basic name="datafinal">
+          <column name="DATAFINAL" />
+        </basic>
+        <basic name="horafinal">
+          <column name="HORAFINAL" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" />
+        </basic>
+        <basic name="creationUserId">
+          <column name="STDUGR" />
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" />
+        </basic>
+        <basic name="changeUserId">
+          <column name="STDUMOD" />
+        </basic>
+        <basic name="visibleassist">
+          <column name="VISIBLEASSIST" />
+        </basic>
+        <transient name="accessControl" />
+        <transient name="property" />
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.agenda.service.DBEventDocument"
+      name="DBEventDocument">
+      <table name="AGD_DOCUMENT" />
+      <attributes>
+        <id name="eventDocId">
+          <column name="EVENTDOCID" />
+          <generated-value strategy="TABLE" generator="AGD_DOCUMENT"/>
+          <table-generator name="AGD_DOCUMENT" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            initial-value="0" allocation-size="1"/>
+        </id>
+        <basic name="eventId">
+          <column name="EVENTID" />
+        </basic>
+        <basic name="docId">
+          <column name="DOCID" />
+        </basic>
+        <basic name="creationDateTime">
+            <column name="CREATIONDT" />
+        </basic>
+        <basic name="creationUserId">
+            <column name="CREATIONUSERID" />
+        </basic>
+        <basic name="changeDateTime">
+            <column name="CHANGEDT" />
+        </basic>
+        <basic name="changeUserId">
+            <column name="CHANGEUSERID" />
+        </basic>
+        <basic name="eventDocTypeId">
+            <column name="EVENTDOCTYPEID" />
+        </basic>
+        <basic name="comments">
+          <column name="COMMENTS" />
+        </basic>
+        <many-to-one name="dbEvent">
+          <join-column name="EVENTID" referenced-column-name="ESDEVCOD"
+              insertable="false" updatable="false" />
+        </many-to-one>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.agenda.service.DBEventPlace"
+      name="DBEventPlace">
+      <table name="AGD_ESDEVLLOC" />
+      <id-class class="org.santfeliu.agenda.service.DBEventPlacePK" />
+      <attributes>
+        <basic name="tipesdevcod">
+          <column name="TIPESDEVCOD" />
+        </basic>
+        <id name="eventId">
+          <column name="ESDEVCOD" />
+        </id>
+        <id name="numordre">
+          <column name="NUMORDRE" />
+        </id>
+        <basic name="paiscod">
+          <column name="PAISCOD" />
+        </basic>
+        <basic name="provcod">
+          <column name="PROVCOD" />
+        </basic>
+        <basic name="municod">
+          <column name="MUNICOD" />
+        </basic>
+        <basic name="carcod">
+          <column name="CARCOD" />
+        </basic>
+        <basic name="domcod">
+          <column name="DOMCOD" />
+        </basic>
+        <basic name="salacod">
+          <column name="SALACOD" />
+        </basic>
+        <basic name="comments">
+          <column name="OBSERV" />
+        </basic>
+        <basic name="numero">
+          <column name="NUMERO" />
+        </basic>
+        <many-to-one name="dbEvent">
+          <join-column name="ESDEVCOD" referenced-column-name="ESDEVCOD"
+              insertable="false" updatable="false" />
+        </many-to-one>    
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.agenda.service.DBAttendant"
+      name="DBAttendant">
+      <id-class class="org.santfeliu.agenda.service.DBAttendantPK" />
+      <table name="AGD_ASSISTIR" />
+      <attributes>
+        <id name="eventId">
+          <column name="ESDEVCOD" />
+        </id>
+        <id name="personId">
+          <column name="PERSCOD" />
+        </id>
+        <basic name="attendantTypeId">
+          <column name="ATTENDANTTYPEID" />
+        </basic>
+        <basic name="comments">
+          <column name="OBSERV" />
+        </basic>
+        <basic name="rol">
+          <column name="ROL" />
+        </basic>
+        <basic name="incognit">
+          <column name="INCOGNIT" />
+        </basic>
+        <basic name="attended">
+          <column name="PRESENTAT" />
+        </basic>
+        <many-to-one name="dbEvent">
+          <join-column name="ESDEVCOD" referenced-column-name="ESDEVCOD"
+              insertable="false" updatable="false" />
+        </many-to-one>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.agenda.service.DBTheme"
+      name="DBTheme">
+      <table name="AGD_TEMATICA" />
+      <attributes>
+        <id name="themeId">
+          <column name="TEMACOD" />
+          <generated-value strategy="TABLE" generator="AGD_TEMATICA"/>
+          <table-generator name="AGD_TEMATICA" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            initial-value="0" allocation-size="1"/>
+        </id>
+        <basic name="description">
+          <column name="TEMADESC" />
+        </basic>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.agenda.service.DBEventTheme"
+      name="DBEventTheme">
+      <table name="AGD_ESDEVTEMA" />
+      <id-class class="org.santfeliu.agenda.service.DBEventThemePK" />
+      <attributes>
+        <id name="eventId">
+          <column name="ESDEVCOD" />
+        </id>
+        <id name="themeId">
+          <column name="TEMACOD" />
+        </id>
+        <basic name="tipesdevcod">
+          <column name="TIPESDEVCOD" />
+        </basic>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.agenda.service.DBEventProperty"
+      name="DBEventProperty">
+      <table name="AGD_ATRIBESDEVENIMENT" />
+      <id-class class="org.santfeliu.agenda.service.DBEventPropertyPK" />
+      <attributes>
+        <id name="eventId">
+          <column name="ESDEVCOD" />
+        </id>
+        <id name="name">
+          <column name="ATRIBNOM" />
+        </id>
+        <basic name="value">
+          <column name="VALOR" />
+        </basic>
+        <basic name="tipesdevcod">
+          <column name="TIPESDEVCOD" />
+        </basic>
+      </attributes>
+    </entity>
+
+    <!-- Legacy code. Delete in future -->
+    <entity class="org.santfeliu.kernel.service.DBCounter" name="DBCounter">
+      <table name="NCL_CLAU" />
+      <attributes>
+        <id name="claupref">
+          <column name="CLAUPREF" />
+        </id>
+        <id name="claucod">
+          <column name="CLAUCOD" />
+        </id>
+        <id name="clauorigen">
+          <column name="CLAUORIGEN" />
+        </id>
+        <basic name="claudesc">
+          <column name="CLAUDESC" />
+        </basic>
+        <basic name="counter">
+          <column name="CLAUVNUM" />
+        </basic>
+        <basic name="stdugr" />
+        <basic name="stddmod" />
+        <basic name="stdhgr" />
+        <basic name="stdhmod" />
+        <basic name="stdumod" />
+        <basic name="stddgr" />
+      </attributes>
+    </entity>
+    <!-- End legacy code. Delete in future -->
+
+</entity-mappings>

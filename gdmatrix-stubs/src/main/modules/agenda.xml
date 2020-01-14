@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="agenda"
+  namespace="http://agenda.matrix.org/"
+  title="Agenda d'esdeveniments"
+  wsdlLocation="../services/agenda?wsdl"
+  service="AgendaManagerService"
+  port="AgendaManagerPort"
+  version="2.0"
+  status="FINAL"
+  authors="Abel Blanque">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="dic"/>
+    <import module="doc"/>
+    <import module="kernel"/>
+    <import module="security"/>
+  </imports>
+
+  <types>
+    <entity name="Event">
+      <identifier name="eventId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="eventTypeId" type="xs:string" minOccurs="1" 
+        references="dic:Type">
+      </property>
+      <property name="summary" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="1">
+      </property>
+      <property name="detail" type="xs:string" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0"
+        readOnly="true">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0"
+        references="security:User" readOnly="true">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0"
+        readOnly="true">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0"
+        references="security:User" readOnly="true">
+      </property>
+      <property name="onlyAttendants" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="accessControl" type="security:AccessControl" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </entity>
+
+    <struct name="EventView">
+      <identifier name="eventId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="eventTypeId" type="xs:string" minOccurs="1"
+        references="dic:Type">
+      </property>
+      <property name="eventTypeName" type="xs:string" minOccurs="1">
+      </property>
+      <property name="summary" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="1">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0"
+        references="security:User" readOnly="true">
+      </property>
+      <property name="places" type="agenda:EventPlaceView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="attendants" type="agenda:AttendantView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="editable" type="xs:boolean">
+      </property>
+      <property name="public" type="xs:boolean">
+      </property>
+      <property name="onlyAttendants" type="xs:boolean">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="EventFilter">
+      <property name="eventId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="agenda:Event">
+      </property>
+      <property name="content" type="xs:string" minOccurs="0">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="roomId" type="xs:string" minOccurs="0"
+        references="kernel:Room">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="eventTypeId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="dic:Type">
+      </property>
+      <property name="themeId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="dic:Type">
+      </property>
+      <property name="startChangeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endChangeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="orderBy" type="agenda:OrderByProperty" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="securityMode" type="agenda:SecurityMode" minOccurs="1">
+      </property>
+      <property name="includeMetadata" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="reducedInfo" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+      <property name="dateComparator" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="EventDocument">
+      <identifier name="eventDocId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="eventDocTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="eventId" type="xs:string" minOccurs="0" references="agenda:Event">
+      </property>
+      <property name="docId" type="xs:string" minOccurs="0" references="doc:Document">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="EventDocumentView">
+      <identifier name="eventDocId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="event" type="agenda:Event" minOccurs="1" >
+      </property>
+      <property name="document" type="doc:Document" minOccurs="1">
+      </property>
+      <property name="eventDocTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+    </struct>
+
+    <struct name="EventDocumentFilter">
+      <property name="eventId" type="xs:string" minOccurs="0" references="agenda:Event">
+      </property>
+      <property name="docId" type="xs:string" minOccurs="0" references="doc:Document">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="EventPlace">
+      <identifier name="eventPlaceId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="eventId" type="xs:string" minOccurs="1" references="agenda:Event">
+      </property>
+      <property name="roomId" type="xs:string" minOccurs="0" references="kernel:Room">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0" references="kernel:Address">
+      </property>
+      <property name="eventPlaceTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0" >
+      </property>
+    </struct>
+
+    <struct name="EventPlaceFilter">
+      <property name="eventId" type="xs:string" minOccurs="0" references="agenda:Event">
+      </property>
+      <property name="roomId" type="xs:string" minOccurs="0" references="kernel:Room">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0" references="kernel:Address">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="EventPlaceView">
+      <identifier name="eventPlaceId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="event" type="agenda:Event" minOccurs="0">
+      </property>
+      <property name="roomView" type="kernel:RoomView" minOccurs="0">
+      </property>
+      <property name="addressView" type="kernel:AddressView" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0" >
+      </property>
+    </struct>
+
+    <entity name="Attendant">
+      <identifier name="attendantId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="eventId" type="xs:string" references="agenda:Event" minOccurs="1">
+      </property>
+      <property name="personId" type="xs:string" references="kernel:Person" minOccurs="1">
+      </property>
+      <property name="attendantTypeId" type="xs:string" minOccurs="1" references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="hidden" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="attended" type="xs:string" minOccurs="0">
+      </property>      
+    </entity>
+
+    <struct name="AttendantFilter">
+      <property name="eventId" type="xs:string" minOccurs="0" references="agenda:Event">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0" references="kernel:Person">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="AttendantView">
+      <property name="attendantId" type="xs:string" minOccurs="0" references="agenda:Event">
+      </property>
+      <property name="eventId" type="xs:string" references="agenda:Event" minOccurs="1">
+      </property>
+      <property name="personId" type="xs:string" references="kernel:Person" minOccurs="1">
+      </property>
+      <property name="attendantTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="event" type="agenda:Event" minOccurs="0">
+      </property>
+      <property name="personView" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="hidden" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="attended" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <entity name="Theme">
+      <identifier name="themeId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="description" type="xs:string" minOccurs="0" >
+      </property>
+    </entity>
+
+    <struct name="ThemeFilter">
+      <property name="themeId" type="xs:string" minOccurs="0"
+        references="agenda:Theme">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0" references="xs:string">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="EventTheme">
+      <identifier name="eventThemeId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="eventId" type="xs:string" minOccurs="1"
+        references="agenda:Event">
+      </property>
+      <property name="themeId" type="xs:string" minOccurs="1"
+        references="agenda:Theme">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0" >
+      </property>
+    </struct>
+
+    <struct name="EventThemeFilter">
+      <property name="eventId" type="xs:string" minOccurs="0" references="agenda:Event">
+      </property>
+      <property name="themeId" type="xs:string" minOccurs="0" references="agenda:Theme">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+    
+    <struct name="EventThemeView">
+      <identifier name="eventThemeId" type="xs:string" minOccurs="1">
+      </identifier>
+      <property name="eventId" type="xs:string" minOccurs="1"
+        references="agenda:Event">
+      </property>
+      <property name="themeId" type="xs:string" minOccurs="1"
+        references="agenda:Theme">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0" >
+      </property>
+    </struct>  
+
+    <struct name="OrderByProperty">
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom de la propietat.
+        </documentation>
+      </property>
+      <property name="descending" type="xs:boolean">
+        <documentation language="ca">
+          Boolean que determina si l'ordre serà descendent (true) o ascendent (false).
+        </documentation>
+      </property>
+    </struct>
+
+    <enumeration name="SecurityMode">
+      <value name="FILTERED"/>
+      <value name="HIDDEN"/>
+    </enumeration>
+
+  </types>
+
+
+  <operations>
+    <operation name="storeEvent">
+      <parameter name="event" type="agenda:Event">
+      </parameter>
+      <response name="storedEvent" type="agenda:Event">
+      </response>
+    </operation>
+
+    <operation name="loadEvent">
+      <parameter name="eventId" type="xs:string">
+      </parameter>
+      <response name="return" type="agenda:Event">
+      </response>
+    </operation>
+
+    <operation name="removeEvent">
+      <parameter name="eventId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countEvents">
+      <parameter name="filter" type="agenda:EventFilter">
+      </parameter>
+      <response name="eventCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findEvents">
+      <parameter name="filter" type="agenda:EventFilter">
+      </parameter>
+      <response name="event" type="agenda:Event" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="findEventViews">
+      <parameter name="filter" type="agenda:EventFilter">
+      </parameter>
+      <response name="eventView" type="agenda:EventView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="storeEventDocument">
+      <parameter name="eventDocument" type="agenda:EventDocument">
+      </parameter>
+      <response name="storedEventDocument" type="agenda:EventDocument">
+      </response>
+    </operation>
+
+    <operation name="loadEventDocument">
+      <parameter name="eventDocumentId" type="xs:string">
+      </parameter>
+      <response name="return" type="agenda:EventDocument">
+      </response>
+    </operation>
+
+    <operation name="removeEventDocument">
+      <parameter name="eventDocument" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findEventDocuments">
+      <parameter name="filter" type="agenda:EventDocumentFilter">
+      </parameter>
+      <response name="eventDocument" type="agenda:EventDocument" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="findEventDocumentViews">
+      <parameter name="filter" type="agenda:EventDocumentFilter">
+      </parameter>
+      <response name="eventDocumentView" type="agenda:EventDocumentView" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="storeEventPlace">
+      <parameter name="eventPlace" type="agenda:EventPlace">
+      </parameter>
+      <response name="storedEventPlace" type="agenda:EventPlace">
+      </response>
+    </operation>
+
+    <operation name="loadEventPlace">
+      <parameter name="eventPlaceId" type="xs:string">
+      </parameter>
+      <response name="return" type="agenda:EventPlace">
+      </response>
+    </operation>
+
+    <operation name="removeEventPlace">
+      <parameter name="eventPlace" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>        
+
+    <operation name="findEventPlaces">
+      <parameter name="filter" type="agenda:EventPlaceFilter">
+      </parameter>
+      <response name="EventPlace" type="agenda:EventPlace" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="findEventPlaceViews">
+      <parameter name="filter" type="agenda:EventPlaceFilter">
+      </parameter>
+      <response name="EventPlaceView" type="agenda:EventPlaceView" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="storeAttendant">
+      <parameter name="attendant" type="agenda:Attendant">
+      </parameter>
+      <response name="storedAttendant" type="agenda:Attendant">
+      </response>
+    </operation>
+
+    <operation name="loadAttendant">
+      <parameter name="attendantId" type="xs:string">
+      </parameter>
+      <response name="return" type="agenda:Attendant">
+      </response>
+    </operation>
+
+    <operation name="removeAttendant">
+      <parameter name="attendantId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findAttendants">
+      <parameter name="filter" type="agenda:AttendantFilter">
+      </parameter>
+      <response name="attendant" type="agenda:Attendant" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="findAttendantViews">
+      <parameter name="filter" type="agenda:AttendantFilter">
+      </parameter>
+      <response name="attendantView" type="agenda:AttendantView" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="findAttendantsOccupancy">
+      <parameter name="eventId" type="xs:string">
+      </parameter>
+      <response name="attendant" type="agenda:Attendant" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="storeTheme">
+      <parameter name="theme" type="agenda:Theme">
+      </parameter>
+      <response name="storedTheme" type="agenda:Theme">
+      </response>
+    </operation>
+
+    <operation name="loadTheme">
+      <parameter name="themeId" type="xs:string">
+      </parameter>
+      <response name="return" type="agenda:Theme">
+      </response>
+    </operation>
+
+    <operation name="removeTheme">
+      <parameter name="themeId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countThemes">
+      <parameter name="filter" type="agenda:ThemeFilter">
+      </parameter>
+      <response name="themeCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findThemes">
+      <parameter name="filter" type="agenda:ThemeFilter">
+      </parameter>
+      <response name="theme" type="agenda:Theme" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="storeEventTheme">
+      <parameter name="eventTheme" type="agenda:EventTheme">
+      </parameter>
+      <response name="storedEventTheme" type="agenda:EventTheme">
+      </response>
+    </operation>
+
+    <operation name="loadEventTheme">
+      <parameter name="eventThemeId" type="xs:string">
+      </parameter>
+      <response name="return" type="agenda:EventTheme">
+      </response>
+    </operation>
+
+    <operation name="removeEventTheme">
+      <parameter name="eventThemeId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findEventThemes">
+      <parameter name="filter" type="agenda:EventThemeFilter">
+      </parameter>
+      <response name="theme" type="agenda:EventTheme" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="findEventThemeViews">
+      <parameter name="filter" type="agenda:EventThemeFilter">
+      </parameter>
+      <response name="eventThemeView" type="agenda:EventThemeView" minOccurs="0"
+        maxOccurs="unbounded">
+      </response>
+    </operation>
+
+  </operations>
+</module>

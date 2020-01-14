@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+
+  <lifecycle>
+    <phase-listener>org.santfeliu.cms.CMSListener</phase-listener>
+  </lifecycle>
+  
+  <lifecycle>
+    <phase-listener>org.santfeliu.faces.DebugPhaseListener</phase-listener>
+  </lifecycle>    
+  
+ <application>
+  <locale-config>
+   <default-locale>ca</default-locale>
+   <supported-locale>ca</supported-locale>
+   <supported-locale>es</supported-locale>
+   <supported-locale>en</supported-locale>
+   <supported-locale>fr</supported-locale>
+   <supported-locale>de</supported-locale>
+   <supported-locale>it</supported-locale>
+   <supported-locale>pt</supported-locale>
+   <supported-locale>ru</supported-locale>
+   <supported-locale>ar</supported-locale>
+   <supported-locale>zh</supported-locale>
+   <supported-locale>ro</supported-locale>
+   <supported-locale>bg</supported-locale>
+  </locale-config>
+  <message-bundle>org.santfeliu.web.resources.MessageBundle</message-bundle>
+ </application>  
+  
+ <managed-bean>
+  <managed-bean-name>applicationBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.web.ApplicationBean</managed-bean-class>
+  <managed-bean-scope>application</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>userSessionBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.web.UserSessionBean</managed-bean-class>
+  <managed-bean-scope>session</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>objectController</managed-bean-name>
+  <managed-bean-class>org.santfeliu.web.object.ObjectController</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+   <managed-bean-name>controllerBean</managed-bean-name>
+   <managed-bean-class>org.santfeliu.web.obj.ControllerBean</managed-bean-class>
+   <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>objectActionsBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.web.obj.ObjectActionsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>  
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    <navigation-case>
+      <from-outcome>main</from-outcome>
+      <to-view-id>/main.xhtml</to-view-id>
+    </navigation-case>
+
+
+    <navigation-case>
+     <from-outcome>blank</from-outcome>
+     <to-view-id>/common/util/blank.xhtml</to-view-id>
+    </navigation-case>
+    <navigation-case>
+     <from-outcome>error</from-outcome>
+     <to-view-id>/common/util/error.xhtml</to-view-id>
+    </navigation-case>
+    <navigation-case>
+     <from-outcome>object_actions</from-outcome>
+     <to-view-id>/common/obj/object_actions.xhtml</to-view-id>
+    </navigation-case>
+    
+  </navigation-rule>  
+  
+  <component>
+    <component-type>HtmlDataScroller</component-type>
+    <component-class>org.santfeliu.faces.HtmlDataScroller</component-class>
+  </component>  
+  
+  <component>
+    <component-type>HtmlOuputText</component-type>
+    <component-class>org.santfeliu.faces.component.HtmlOutputText</component-class>
+  </component> 
+  
+  <component>
+    <component-type>HtmlOverlay</component-type>
+    <component-class>org.santfeliu.faces.component.HtmlOverlay</component-class>
+  </component> 
+  
+  <component>
+    <component-type>HtmlSecureCommandLink</component-type>
+    <component-class>org.santfeliu.faces.component.HtmlSecureCommandLink</component-class>
+  </component>    
+  
+  <component>
+    <component-type>HtmlHeading</component-type>
+    <component-class>org.santfeliu.faces.heading.HtmlHeading</component-class>
+  </component>          
+  
+  <component>
+    <component-type>UIBeanSaver</component-type>
+    <component-class>org.santfeliu.faces.beansaver.UIBeanSaver</component-class>
+  </component> 
+  
+  <component>
+    <component-type>HtmlLanguageSelector</component-type>
+    <component-class>org.santfeliu.faces.langselector.HtmlLanguageSelector</component-class>
+  </component>            
+  
+  <component>
+    <component-type>HtmlNavigationMenu</component-type>
+    <component-class>org.santfeliu.faces.menu.view.HtmlNavigationMenu</component-class>
+  </component>  
+  
+  <component>
+    <component-type>HtmlCommandMenu</component-type>
+    <component-class>org.santfeliu.faces.component.HtmlCommandMenu</component-class>
+  </component>     
+        
+  <converter>
+    <converter-id>DateTimeConverter</converter-id>
+    <converter-class>org.santfeliu.faces.convert.DateTimeConverter</converter-class>
+  </converter>
+  <converter>
+    <converter-id>EnumConverter</converter-id>
+    <converter-class>org.santfeliu.faces.convert.EnumConverter</converter-class>
+  </converter>
+  <converter>
+    <converter-id>FileSizeConverter</converter-id>
+    <converter-class>org.santfeliu.faces.convert.FileSizeConverter</converter-class>
+  </converter>
+  <converter>
+    <converter-id>IntervalConverter</converter-id>
+    <converter-class>org.santfeliu.faces.convert.IntervalConverter</converter-class>
+  </converter>
+  <converter>
+    <converter-id>TimeConverter</converter-id>
+    <converter-class>org.santfeliu.faces.convert.TimeConverter</converter-class>
+  </converter>
+  <converter>
+    <converter-id>TypeIdConverter</converter-id>
+    <converter-class>org.santfeliu.faces.convert.TypeIdConverter</converter-class>
+  </converter> 
+  
+  <render-kit>
+    <renderer>
+     <component-family>javax.faces.Panel</component-family>
+     <renderer-type>org.apache.myfaces.DataScroller</renderer-type>
+     <renderer-class>org.santfeliu.faces.render.myfaces.datascroller.HtmlDataScrollerRenderer</renderer-class>
+    </renderer>  
+    <renderer>
+     <component-family>javax.faces.Data</component-family>
+     <renderer-type>org.apache.myfaces.Table</renderer-type>
+     <renderer-class>org.santfeliu.faces.render.HtmlTableRenderer</renderer-class>
+    </renderer> 
+    <renderer>
+     <component-family>javax.faces.Input</component-family>
+     <renderer-type>org.apache.myfaces.Calendar</renderer-type>
+     <renderer-class>org.santfeliu.faces.render.myfaces.calendar.HtmlCalendarRenderer</renderer-class>
+    </renderer> 
+    <renderer>
+      <component-family>javax.faces.SelectOne</component-family>
+      <renderer-type>org.apache.myfaces.Menu</renderer-type>
+      <renderer-class>org.santfeliu.faces.render.myfaces.menu.HtmlMenuRenderer</renderer-class>
+    </renderer>      
+  </render-kit>
+                        
+</faces-config>

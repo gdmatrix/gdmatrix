@@ -1,0 +1,2151 @@
+/*
+    Document   : map_viewer
+    Created on : 09/01/2013, 14:41:05
+    Author     : realor, lopezrj
+*/
+
+/* general */
+#mapCatalogue .button,
+#mapViewer .button,
+#mapEditor .button,
+#sldEditor .button
+{
+  width:auto;
+  overflow:visible;
+  font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	padding: 4px 6px;
+  background: url(../images/bg_button.png);
+  vertical-align: middle;
+  margin:1px;
+}
+
+.acItem
+{
+  text-decoration: none;
+  display: block;
+}
+
+.acItem:focus
+{
+  background: orange;
+  color:black;
+}
+
+#sldEditor .button[disabled]
+{
+  color: gray;
+}
+
+#sldEditor .button[disabled]:hover
+{
+  background: url(../images/bg_button.png);
+}
+
+#sldEditor .sldName
+{
+  font-family: "Courier New";
+  font-weight:normal;
+}
+
+input::-moz-focus-inner /*Remove button padding in FF*/
+{
+  border: 0;
+  padding: 0;
+}
+
+#mapEditor input,
+#mapEditor textarea
+{
+  font-family: Arial;
+  font-size: 12px;
+}
+
+.infoMessage,
+.warnMessage,
+.errorMessage,
+.fatalMessage
+{
+  display:block;
+  margin-bottom: 10px;
+}
+
+#mapCatalogue .button:hover,
+#mapViewer .button:hover,
+#mapEditor .button:hover,
+#sldEditor .button:hover
+{
+  background:#D0DDB0;
+  border: 1px solid #7d7b77;
+}
+
+#mapViewer .smallButton,
+#mapEditor .smallButton,
+#sldEditor .smallButton
+{
+	padding: 1px 1px;
+  background: url(../images/bg_button.png);
+	border: 1px solid #a8a49b;
+  vertical-align: middle;
+  margin-right: 1px;
+  width:auto;
+  overflow:visible;
+}
+
+#mapViewer .smallButton:hover,
+#mapEditor .smallButton:hover,
+#sldEditor .smallButton:hover
+{
+  background:#D0DDB0;
+  border: 1px solid #7d7b77;
+}
+/* map_catalogue */
+
+#mapCatalogue
+{
+  text-align: center;
+  padding-bottom:10px;
+}
+
+#mapCatalogue .headerPanel
+{
+  margin-top:6px;
+  width:980px;
+  margin-left: auto;
+  margin-right: auto;
+  position:relative;
+  height: 40px;
+  vertical-align: middle;
+}
+
+#mapCatalogue .headerPanel > .categoriesPanel
+{
+  position:absolute;
+  text-align: left;
+  display:inline-block;
+  left:0;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  vertical-align: middle;
+  margin:0;
+}
+
+#mapCatalogue .headerPanel > .searchPanel
+{
+  position:absolute;
+  text-align: right;
+  display:inline-block;
+  right:0;
+  margin-top:auto;
+  margin-bottom:auto;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+#mapCatalogue .categoriesLink
+{
+  vertical-align: middle;
+  text-decoration: none;
+  border:none;
+  margin:0;
+  display: inline-block;
+  height:24px;
+  color: #404040;
+}
+
+#mapCatalogue .categoriesLink img
+{
+  vertical-align: middle;
+  border:none;
+}
+
+#mapCatalogue .categoryLabel
+{
+  vertical-align: middle;
+  line-height: 24px;
+  color: #404040;
+  margin-right: 4px;
+  margin-left: 6px;
+}
+
+#mapCatalogue .categoryTitle
+{
+  vertical-align: middle;
+  line-height: 24px;
+  color: #404040;
+  margin-right: 4px;
+  margin-left: 6px;
+  font-size: 18px;
+}
+
+#mapCatalogue .propertySelector
+{
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+#mapCatalogue .propertySelector > select
+{
+}
+
+#mapCatalogue .searchInput
+{
+  border: 1px solid #A0A0A0;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+#mapCatalogue .mapResultBar
+{
+  width:980px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+  vertical-align: middle;
+  line-height: 24px;
+  color: #404040;
+}
+
+#mapCatalogue .thumbnail
+{
+  width:310px;
+  height:310px;
+  border-style:solid;
+  border-color:#404040;
+  border-width:1px;
+  box-shadow: 4px 4px 4px #CCCCCC;
+  border-collapse: separate;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#CCCCCC')";
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#CCCCCC');
+  text-align:center;
+  overflow: hidden;
+  margin:8px;
+  background:white;
+  padding:4px;
+  display:inline-block;
+  vertical-align: top;
+  *display:inline;
+  zoom:1;
+}
+
+#mapCatalogue .thumbnail:hover
+{
+  border-color:red;
+  border-width:1px;
+  box-shadow: 10px 10px 10px #CCCCCC;
+  border-collapse: separate;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#CCCCCC')";
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#CCCCCC');
+}
+
+#mapCatalogue .category
+{
+  width:310px;
+  height:310px;
+  border:none;
+  text-align:center;
+  overflow: visible;
+  margin:16px;
+  background:white;
+  padding:4px;
+  display:inline-block;
+  vertical-align: top;
+  *display:inline;
+  zoom:1;
+  position:relative;
+}
+
+#mapCatalogue .category > .thumbnail
+{
+  width:310px;
+  height:310px;
+  border-style:solid;
+  border-color:#404040;
+  border-width:1px;
+  box-shadow: 4px 4px 4px #DDDDDD;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#DDDDDD')";
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#DDDDDD');
+  text-align:center;
+  overflow: hidden;
+  margin:8px;
+  background:white;
+  padding:4px;
+  display:inline-block;
+  vertical-align: top;
+  *display:inline;
+  zoom:1;
+  position:absolute;
+}
+
+#mapCatalogue .thumbnail .mapTitle
+{
+  font-weight: bold;
+  margin-top:4px;
+  margin-bottom:4px;
+}
+
+#mapCatalogue .thumbnail .header
+{
+  margin:3px;
+  position:relative;
+}
+
+#mapCatalogue .thumbnail .header .moreDescription,
+#mapCatalogue .thumbnail .header .lessDescription
+{
+  display: block;
+  margin:0;
+  position:absolute;
+  width:16px;
+  height:16px;
+  top:0;
+  right:0;
+  cursor:pointer;
+}
+
+#mapCatalogue .thumbnail .header .moreDescription
+{
+  background-image:url(../images/info.png);
+}
+
+#mapCatalogue .thumbnail .header .lessDescription
+{
+  background-image:url(../images/close.png);
+}
+
+#mapCatalogue .thumbnail .mapDescription
+{
+  display: block;
+  font-weight: normal;
+  margin:4px;
+  text-align: justify;
+  overflow:auto;
+  border:none;
+  box-sizing: border-box;
+}
+
+#mapCatalogue .thumbnail .mapDescription.full
+{
+  height:260px;
+  border:1px solid #B0B0B0;
+  padding: 2px;
+  box-shadow: inset 3px 3px 3px 0px rgba(0,0,0,0.1);
+}
+
+#mapCatalogue .thumbnail .thumbnailImage
+{
+  border:1px solid #A0A0A0;
+}
+
+#mapCatalogue .scrollBar
+{
+  margin-top:10px;
+}
+
+/* subHeader */
+
+#subHeader
+{
+  position:relative;
+  height: 24px;
+  background:#F0F0F0;
+}
+
+#subHeader #screenTitle
+{
+  position:absolute;
+  top:0;
+  left:0;
+  width:auto;
+  padding-left:4px;
+  display:inline-block;
+  line-height:24px;
+  font-weight: bold;
+}
+
+#subHeader #buttonsBar
+{
+  position:absolute;
+  top:0;
+  right:0;
+  width:auto;
+  display:inline-block;
+  line-height:24px;
+}
+
+#subHeader #buttonsBar .barButton
+{
+  font-family: Arial;
+  font-size: 12px;
+  color: #800000;
+  border:none;
+  border-left: 1px solid gray;
+  border-collapse: collapse;
+  margin:0;
+  padding-right: 4px;
+  padding-left: 4px;
+  height: 24px;
+  display: inline-block;
+  background:#F0E0E0;
+  width:auto;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+#subHeader #buttonsBar .barButton:hover
+{
+  background: #E0C0C0;
+}
+
+#subHeader #buttonsBar .barViewButton
+{
+  font-family: Arial;
+  font-size: 12px;
+  color: black;
+  border:none;
+  border-left: 1px solid gray;
+  border-collapse: collapse;
+  margin:0;
+  padding-right: 4px;
+  padding-left: 4px;
+  height: 24px;
+  display: inline-block;
+  background:#E0E0E0;
+  width:auto;
+  overflow:visible;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+#subHeader #buttonsBar .barViewButton:hover
+{
+  background: #C0C0C0;
+}
+/* map_viewer */
+
+#mapViewer
+{
+  position: relative;
+  height:600px;
+  display:block;
+}
+
+#mapViewer #subHeader .buttonsBar input
+{
+  padding:1px;
+  margin:2px;
+  background: #F0F0F0;
+  border:none;
+}
+
+#mapViewer #subHeader .mapTitle
+{
+  font-weight: bold;
+  float:left;
+}
+
+#mapViewer #screenBody
+{
+  position: absolute;
+  bottom: 0px;
+  top: 24px; /* subHeader height */
+  left: 0;
+  right: 0px;
+}
+
+#mapViewer #leftPanel
+{
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  border: 1px solid black;
+  border-right: none;
+  background:white;
+  display:none;
+  overflow: auto;
+}
+
+#mapViewer #leftPanel #formSelectors
+{
+  margin:4px;
+}
+
+#mapViewer #leftPanel #formSelectors ul
+{
+  list-style-type:none;
+  margin-left:10px;
+  padding-left:0;
+}
+
+#mapViewer #leftPanel #formSelector li
+{
+  margin-top:4px;
+  margin-bottom:4px;
+  padding-left:10px;
+  background:url(../images/dot.png) 0 50% no-repeat;
+}
+
+#mapViewer #leftPanel #formSelector li a
+{
+  text-decoration: none;
+  color:black;
+}
+
+#mapViewer #leftPanel #formSelector li a:hover
+{
+  color:#606060;
+}
+
+#mapViewer #leftPanel #formSelector li.selected
+{
+  background:url(../images/arrow.png) 0 50% no-repeat;
+}
+
+#mapViewer #leftPanel #formSelector li.selected a:hover
+{
+  color:black;
+}
+
+#mapViewer #leftPanel #formSelector li.selected a
+{
+  font-weight:bold;
+}
+
+#mapViewer #leftPanel #activeForm
+{
+  margin:4px;
+  margin-top: 10px;
+}
+
+#mapViewer #leftPanel #activeForm label
+{
+  vertical-align: middle;
+}
+
+#mapViewer #leftPanel #activeForm input
+{
+  vertical-align: middle;
+}
+
+#mapViewer #leftPanel #activeForm #searchButton
+{
+  margin-top:10px;
+}
+
+#mapViewer #leftPanel #searchResults
+{
+  margin-top: 10px;
+}
+
+#mapViewer #leftPanel #searchResults img
+{
+  margin:10px;
+}
+
+#mapViewer #leftPanel #searchResults ul
+{
+  margin-left:0;
+  padding:0;
+}
+
+#mapViewer #leftPanel #searchResults li
+{
+  font-family: Arial;
+  font-size: 12px;
+}
+
+#mapViewer #leftPanel #searchResults li a
+{
+  text-decoration: none;
+  color:#404040;
+  line-height: 20px;
+  display: block;
+  padding-left:20px;
+  background-repeat:no-repeat;
+  background-position: 4px 4px;
+  border-top: 1px solid #E0E0E0;
+}
+
+#mapViewer #leftPanel #searchResults li a:hover
+{
+  color:black;
+  background: #E8E8E8;
+  background-repeat:no-repeat;
+  background-position: 4px 4px;
+  border-top: 1px solid #E0E0E0;
+}
+
+#mapViewer #leftPanel #searchResults p.counter
+{
+  margin-left:4px;
+}
+
+#mapViewer .linkBox a.mapLink
+{
+  text-decoration: none;
+  display:block;
+  padding:4px;
+  color: #404040;
+  margin-bottom: 4px;
+}
+
+#mapViewer .linkBox a.mapLink:hover
+{
+  color: black;
+}
+
+#mapViewer .linkBox a.mapLink img
+{
+  vertical-align: middle;
+  margin-right:4px;
+}
+
+#mapViewer .linkBox a.mapLink span
+{
+  vertical-align: middle;
+}
+
+#mapViewer .linkBox textarea.mapLink
+{
+  border: 1px solid gray;
+  width: 95%;
+  height:80px;
+  font-family: "Courier New", Monospaced;
+  font-size:12px;
+  color:#404040;
+  overflow:auto;
+}
+
+#mapViewer .linkBox
+{
+  padding-bottom: 10px;
+}
+
+#mapViewer #rightPanel
+{
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  right: 0;
+  border: 1px solid black;
+  background:white;
+  display:none;
+}
+
+#mapViewer #rightPanel #info
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  top:0;
+  bottom: 50%;
+  overflow:hidden;
+}
+
+#mapViewer #rightPanel #info #infoContent
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  top:0;
+  bottom: 0;
+  padding: 4px;
+  overflow:auto;
+}
+
+#mapViewer #rightPanel #info #infoContent .attrTable td
+{
+  font-family: Arial;
+  font-size: 12px;
+  margin: 1px;
+}
+
+#mapViewer #rightPanel #info #infoContent .attrTable td input
+{
+  font-family: Arial;
+  font-size: 12px;
+  padding: 1px;
+  border: 1px solid #B0B0B0;
+  box-shadow: inset 2px 2px 2px -1px rgba(0,0,0,0.1);  
+}
+
+#mapViewer #rightPanel #info .foto
+{
+  background: #F0F0F0;
+}
+
+#mapViewer #rightPanel #legend
+{
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-top: 1px solid black;
+}
+
+#mapViewer #rightPanel #legend #legendContent
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 4px;
+  overflow:auto;
+}
+
+#mapViewer #rightPanel .mapDescription
+{
+  display:block;
+  text-align: justify;
+}
+
+#mapViewer #infoDividerUpButton
+{
+  position: absolute;
+  bottom: 0;
+  right:24px;
+  z-index: 9999;
+}
+
+#mapViewer #infoDividerUpButton:hover,
+#mapViewer #infoDividerDownButton:hover
+{
+  cursor: pointer;
+}
+
+#mapViewer #infoDividerDownButton
+{
+  position: absolute;
+  top: 0;
+  right:24px;
+  z-index: 9999;
+}
+
+#mapViewer #map
+{
+  position: absolute;
+  bottom: 0px;
+  top: 0;
+  left: 0px; /* leftPanel width */
+  right: 0px; /* rightPanel width */
+  border: 1px solid black;
+}
+
+#mapViewer .leftPanelButton
+{
+  position: absolute;
+  top: 54px;
+  left:0px;
+  z-index: 2000;
+  display:inline-block;
+}
+
+#mapViewer leftPanelButton:hover
+{
+  cursor:pointer;
+}
+
+#mapViewer #toggleLeftPanelText
+{
+  color:white;
+  font-family: Arial;
+  font-size: 12px;
+  background: black;
+  vertical-align: middle;
+  display: inline-block;
+  height: 18px;
+  line-height: 18px;
+  padding-left: 1px;
+  text-transform: uppercase;
+}
+
+#mapViewer #toggleLeftPanelButton
+{
+  vertical-align: middle;
+}
+
+#mapViewer .rightPanelButton
+{
+  position: absolute;
+  top: 54px;
+  right:0px;
+  z-index: 2000;
+  display:inline-block;
+}
+
+#mapViewer .rightPanelButton:hover
+{
+  cursor:pointer;
+}
+
+#mapViewer #toggleRightPanelText
+{
+  color:white;
+  font-family: Arial;
+  font-size: 12px;
+  background: black;
+  vertical-align: middle;
+  display: inline-block;
+  height: 18px;
+  line-height: 18px;
+  padding-right: 1px;
+  text-transform: uppercase;
+}
+
+#mapViewer #toggleRightPanelButton
+{
+  vertical-align: middle;
+}
+
+#mapViewer #wrapper
+{
+  position: absolute;
+  height: 20px;
+  line-height: 20px;
+  bottom: 0px;
+  left: 0px;
+  filter:alpha(opacity=85);
+  opacity:0.85;
+  background-color:white;
+  display:inline-block;
+  padding-left: 4px;
+  padding-right: 4px;
+  z-index: 9999;
+  overflow:hidden;
+}
+
+#mapViewer #wrapper #location
+{
+  display:inline-block;
+  float:left;
+}
+
+#mapViewer #wrapper #srs
+{
+  display:inline-block;
+  margin-left: 10px;
+  float:left;
+}
+
+#mapViewer #wrapper #scale
+{
+  display:inline-block;
+  margin-left: 10px;
+  float:left;
+}
+
+#mapViewer #legend .baseLayers
+{
+  border-bottom: 1px dotted gray;
+  margin-bottom: 4px;
+}
+
+#mapViewer #legend ul
+{
+  list-style:none;
+  padding:0;
+  padding-left: 0px;
+  margin:0;
+}
+
+#mapViewer #legend li
+{
+  list-style:none;
+  padding:0;
+  padding-left: 16px;
+  margin:0;
+}
+
+#mapViewer #legend .baseLayers > li
+{
+  padding-left: 0px;
+}
+
+#mapViewer #legend li.item
+{
+  margin-top: 2px;
+}
+
+#mapViewer #legend li.group
+{
+  padding-left: 0px;
+}
+
+#mapViewer #legend div div
+{
+  background:#E0E0B0;
+  padding:0px;
+  margin:1px;
+  border:1px solid #D0D0C0;
+}
+
+#mapViewer #legend span.expand
+{
+  display:inline-block;
+  width:9px;
+  height:9px;
+  background-image: url(../images/expand.png);
+  vertical-align: middle;
+  margin-left: 2px;
+  margin-right: 3px;
+}
+
+#mapViewer #legend span.collapse
+{
+  display:inline-block;
+  width:9px;
+  height:9px;
+  background-image: url(../images/collapse.png);
+  vertical-align: middle;
+  margin-left: 2px;
+  margin-right: 3px;
+}
+
+#mapViewer #legend div input
+{
+  vertical-align:middle;
+  display:inline-block;
+}
+
+#mapViewer #legend div input.none
+{
+}
+
+#mapViewer #legend div input.some
+{
+  outline: 2px solid #F0F0F0;
+}
+
+#mapViewer #legend div input.all
+{
+}
+
+#mapViewer #legend li.group > div > label
+{
+  font-weight: bold;
+  margin-left:2px;
+  vertical-align:middle;
+}
+
+#mapViewer #legend li.group > div > label:hover
+{
+  cursor:pointer;
+}
+
+#mapViewer #legend .layerIcon
+{
+  display:block;
+  margin-left:20px;
+  vertical-align:middle;
+}
+
+#mapViewer #legend .inlineLayerIcon
+{
+  margin-right: 4px;
+  vertical-align:middle;
+}
+
+#mapViewer #legend li input
+{
+  vertical-align:middle;
+}
+
+#mapViewer #legend li label
+{
+  vertical-align:middle;
+}
+
+#mapViewer #legend label.editing
+{
+  font-weight: bold;
+  color: #A00000;
+  vertical-align: middle;
+}
+
+#mapViewer #legend label.editable
+{
+  font-weight: bold;
+  cursor:pointer;
+  color:#00C000;
+  vertical-align: middle;
+}
+
+#mapViewer #legend label.noeditable
+{
+  vertical-align: middle;
+}
+
+#mapViewer #legend span.editButton
+{
+  display:inline-block;
+  width: 16px;
+  height:16px;
+  background-image:url(../images/edit.png);
+  vertical-align:middle;
+  margin-left:4px;
+}
+
+#mapViewer #legend span.editButton:hover
+{
+  cursor:pointer;
+}
+
+#mapViewer .toolbar
+{
+  position: absolute;
+  height: 30px;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
+/* Toolbar styles */
+#mapViewer #toolbar
+{
+  position: relative;
+  padding-bottom: 0.5em;
+  display: block;
+}
+
+#mapViewer #toolbar ul
+{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#mapViewer #toolbar ul li
+{
+  float: left;
+  padding-right: 1em;
+  padding-bottom: 0.5em;
+}
+
+#mapViewer #toolbar ul li a
+{
+  font-weight: bold;
+  font-size: smaller;
+  vertical-align: middle;
+  color: black;
+  text-decoration: none;
+}
+
+#mapViewer #toolbar ul li a:hover
+{
+  text-decoration: underline;
+}
+
+#mapViewer #toolbar ul li *
+{
+  vertical-align: middle;
+}
+
+div.olMapViewport
+{
+  position: absolute !important;
+}
+
+#mapViewer table.linkDocuments
+{
+  width:100%;
+  border: none;
+  border-collapse: collapse;
+}
+
+#mapViewer table.linkDocuments td
+{
+  padding:2px;
+}
+
+#mapViewer table.linkDocuments td.title
+{
+  text-align: left;
+}
+
+#mapViewer table.linkDocuments td.actions
+{
+  text-align: right;
+}
+
+#mapViewer table.linkDocuments td.actions a
+{
+  margin-left:2px;
+  margin-right:2px;
+}
+
+#mapViewer table.linkDocuments tr.row0
+{
+  background: #F8F8F8;
+  border: none;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+#mapViewer table.linkDocuments a
+{
+  color:black;
+  text-decoration: none;
+}
+
+#mapViewer table.linkDocuments a:hover
+{
+  color:blue;
+}
+
+#mapViewer a.addDocument
+{
+  margin:2px;
+}
+
+#mapViewer table.linkDocuments tr.row1
+{
+  background: #E8E8E8;
+  border: none;
+  border-bottom: 1px solid #D0D0D0;
+}
+
+#mapViewer table.linkDocuments tr:hover
+{
+  background: #F8F8E8;
+}
+
+#mapViewer #infowait
+{
+  padding:10px;
+  text-align: center;
+}
+
+#mapViewer select.selectBox
+{
+  font-family:Arial;
+  font-size: 12px;
+  background:url('../images/input_back.png') white repeat-x;
+  border: 1px solid gray;
+  color: black;
+}
+
+#mapViewer #info select.selectBox
+{
+  -webkit-appearance: none;
+}
+
+#mapViewer div.outputBox,
+#mapViewer input.inputBox
+{
+  font-family:Arial;
+  font-size: 12px;
+  background:url('../images/input_back.png') white repeat-x;
+  border: 1px solid gray;
+  color: black;
+}
+
+#mapViewer textarea.inputBox
+{
+  font-family:Arial;
+  font-size: 12px;
+  background:url('../images/input_back.png') white repeat-x;
+  border: 1px solid gray;
+  color: black;
+}
+
+#mapViewer .exportBlock
+{
+  margin-top:10px;
+  margin-bottom: 10px;
+}
+
+#mapViewer .exportFormats
+{
+  margin-top: 4px;
+  padding-left: 4px;
+}
+
+#mapViewer .exportFormats a
+{
+  text-decoration: none;
+  background: #D8D8D8;
+  color:black;
+  padding:0 2px 0 2px;
+  border:1px solid #C0C0C0;
+  text-transform: uppercase;
+}
+
+#mapViewer .exportFormats a:hover
+{
+  background: black;
+  color:white;
+}
+
+#mapViewer .hidden 
+{position:absolute;
+left:-10000px;
+top:auto;
+width:1px;
+height:1px;
+overflow:hidden;}
+
+/* map_editor */
+#mapEditor
+{
+  display:block;
+}
+
+#mapEditor input[type=text],
+#mapEditor textarea
+{
+  background-color: #F0F0F0;
+  border: 1px solid #C0C0C0;
+  margin: 2px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.1);
+  transition: border-color ease-in-out .3s, 
+    box-shadow ease-in-out .3s, background-color ease-in-out .3s;
+  outline:none;
+  box-sizing:border-box;
+}
+
+#mapEditor input[type=text]:focus,
+#mapEditor textarea:focus
+{
+  border-color:#B0B0B0;
+  box-shadow: inset 0 2px 2px rgba(0,0,0,0.1);
+  background-color:white;
+}
+
+#mapEditor input[type=text][readonly]:focus,
+#mapEditor textarea[readonly]:focus
+{
+  background-color: #F0F0F0;
+}
+
+#mapEditor input[readonly],
+#mapEditor textarea[readonly]
+{
+  color:#A0A0A0;
+}
+
+#mapEditor .descriptionHelp
+{
+  display:inline-block;
+  width:16px;
+  height:16px;
+  background-image:url(../images/help.png);
+  background-repeat: no-repeat;
+  vertical-align: top;
+  margin: 2px;
+}
+
+#mapEditor select
+{
+  font-size:12px;
+  background: #F0F0F0;
+  border: 1px solid #C0C0C0;
+  margin:2px;
+  outline:none;
+  transition: border-color ease-in-out .3s, 
+    box-shadow ease-in-out .3s, background-color ease-in-out .3s;
+  vertical-align:middle;
+}
+
+#mapEditor select:focus
+{
+  border-color:#B0B0B0;
+  box-shadow: inset 0 2px 2px rgba(0,0,0,0.1);
+  background-color:white;  
+}
+
+#mapEditor .calendarInput
+{
+  background-color: #F0F0F0;
+  border: 1px solid #C0C0C0;
+  margin: 2px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.1);
+  transition: border-color ease-in-out .3s, 
+    box-shadow ease-in-out .3s, background-color ease-in-out .3s;
+  outline:none;
+  box-sizing:border-box;
+}
+
+#mapEditor .calendarInput:focus
+{
+  border-color:#B0B0B0;
+  box-shadow: inset 0 2px 2px rgba(0,0,0,0.1);
+  background-color:white;
+}  
+
+#mapEditor .calendarButton
+{
+  vertical-align: middle;
+}
+
+#mapEditor #screenBody
+{
+  border-top: 1px solid black;
+  padding-top: 10px;
+}
+
+#mapEditor .capabilities
+{
+  margin-top: 4px;
+  border: 1px solid gray;
+}
+
+#mapEditor .capabilitiesField
+{
+  padding-top:3px;
+  padding-bottom:3px;
+}
+
+#mapEditor .capabilitiesField .fieldName
+{
+  display:inline-block;
+  font-weight: bold;
+  width:100px;
+}
+
+#mapEditor .capabilitiesField .fieldValue
+{
+}
+
+#mapEditor .supportedSRS
+{
+  display:block;
+  height:50px;
+  overflow:auto;
+  border:1px solid gray;
+}
+
+#mapEditor .mapNameLabel
+{
+  display:inline-block;
+  width:120px;
+  vertical-align: middle;
+  margin:2px;
+}
+
+#mapEditor .mapName
+{
+  width:300px;
+  font-family: "Courier New", Monospace;
+}
+
+#mapEditor .mapTitleLabel
+{
+  width:120px;
+  display:inline-block;
+  vertical-align: middle;
+  margin:2px;
+}
+
+#mapEditor .mapTitle
+{
+  width:460px;
+  margin-bottom: 3px;
+  vertical-align: middle;
+}
+
+#mapEditor .mapDescriptionLabel
+{
+  width:120px;
+  display:inline-block;
+  vertical-align: top;
+  margin:2px;
+}
+
+#mapEditor .mapDescription
+{
+  width:600px;
+  font-family: Courier New;
+}
+
+#mapEditor .mapMetadata label
+{
+  display:inline-block;
+  width:104px;
+  margin:2px;
+  margin-left:0px;
+  margin-right:0px;
+}
+
+#mapEditor .mapMetadata .mapCategorySelect
+{
+  display:inline-block;
+  vertical-align: middle;
+}
+
+#mapEditor .mapMetadata .creationDate
+{
+  width:84px;
+  vertical-align: middle;
+}
+
+#mapEditor .mapSRSLabel
+{
+  vertical-align: middle;
+  margin-left:8px;
+}
+
+#mapEditor .mapSRS
+{
+  width:97px;
+  font-family: "Courier New", Monospaced;
+  font-size:12px;
+  vertical-align: middle;
+}
+
+#mapEditor .mapBoundsLabel
+{
+  display:inline-block;
+  width: 120px;
+  vertical-align: middle;
+  margin:2px;
+}
+
+#mapEditor .thumnbnailBoundsLabel
+{
+  display:inline-block;
+  width: 120px;
+  vertical-align: middle;
+  margin:2px;
+}
+
+#mapEditor .mapBounds
+{
+  display:inline-block;
+  width:600px;
+  font-family: "Courier New", Monospace;
+  font-size:12px;
+  vertical-align: middle;
+}
+
+#mapEditor .tabbedPane
+{
+  padding:4px;
+  width:100%;
+  margin-top:4px;
+}
+
+#mapEditor .tabbedPane .myFaces_panelTabbedPane_activeHeaderCell
+{
+  border: 1px solid gray;
+  border-bottom: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+#mapEditor .tabbedPane .myFaces_panelTabbedPane_inactiveHeaderCell input
+{
+  border:1px transparent solid;
+  outline: none;
+  background: transparent;
+}
+
+#mapEditor .tabbedPane .myFaces_panelTabbedPane_activeHeaderCell input
+{
+  outline: none;  
+  background: transparent;
+  border:1px transparent solid;
+}
+
+#mapEditor .tabbedPane .myFaces_panelTabbedPane_inactiveHeaderCell input:focus,
+#mapEditor .tabbedPane .myFaces_panelTabbedPane_activeHeaderCell input:focus
+{
+  border:1px dotted #C0C0C0;
+}
+
+#mapEditor .tabbedPane .myFaces_panelTabbedPane_inactiveHeaderCell
+{
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  background-color: #E0E0E0;
+}
+
+#mapEditor table.mapTable
+{
+  border:2px solid #C0C0C0;
+  width:100%;
+  border-collapse: collapse;
+  margin-bottom: 4px;
+}
+
+#mapEditor table.mapTable tr
+{
+  background: #F0F0F0;
+  height:24px;
+}
+
+#mapEditor table.mapTable td
+{
+  border: 1px solid #C0C0C0;
+}
+
+#mapEditor table.mapTable td
+{
+  color:#404040; 
+}
+
+#mapEditor table.mapTable tr:hover
+{
+  background-color: #E0E0FF;
+}
+
+#mapEditor table.mapTable tr.selected
+{
+  background-color:white;
+}
+
+#mapEditor table.mapTable tr.selected td
+{
+  box-shadow: inset 0 2px 2px rgba(0,0,0,0.1);  
+}
+
+#mapEditor table.mapTable thead
+{
+  border: 1px solid green;
+}
+
+#mapEditor table.mapTable thead tr,
+#mapEditor table.mapTable thead tr:hover
+{
+  background:#F0F0FF;
+}
+
+#mapEditor .code,
+#sldEditor .code
+{
+  font-size: 12px;
+  font-family: "Courier New", Monospaced;
+  vertical-align: middle;
+}
+
+#mapEditor .layerName
+{
+  width:400px;
+  font-weight: normal;
+  font-family: "Courier New", Monospaced;
+}
+
+#mapEditor .layerLabel
+{
+  width:400px;
+  font-weight: normal;
+}
+
+#mapEditor .layerFlags span
+{
+  vertical-align: middle;
+}
+
+#mapEditor .layerFlags input
+{
+  vertical-align: middle;
+}
+
+#mapEditor .layerGroup
+{
+  vertical-align:middle;
+}
+
+#mapEditor .layerLegendGraphic
+{
+  width:100px;
+  font-weight: normal;
+  font-family: "Courier New", Monospaced;
+}
+
+#mapEditor .layerFilter
+{
+  vertical-align:middle;
+  font-family: "Courier New", Monospaced;
+  width:400px;
+}
+
+#mapEditor .layerSLD
+{
+  vertical-align:middle;
+  font-family: "Courier New", Monospaced;
+  width:200px;
+}
+
+#mapEditor .layerStyle
+{
+  vertical-align:middle;
+  font-family: "Courier New", Monospaced;
+  width:200px;
+}
+
+#mapEditor .layerFormat
+{
+  vertical-align:middle;
+}
+
+#mapEditor .layerOpacity
+{
+  vertical-align:middle;
+  width: 60px;
+}
+
+#mapEditor .layerRoles
+{
+  width:400px;
+  font-family: "Courier New", Monospaced;
+}
+
+#mapEditor div.mapServices
+{
+  margin-top:10px;
+  margin-bottom:10px;
+  width:610px;
+}
+
+#mapEditor .mapServices table .nameColumn
+{
+  width:10%;
+  text-align: left;
+}
+
+#mapEditor .mapServices table .descriptionColumn
+{
+  width:30%;
+  text-align: left;
+}
+
+#mapEditor .mapServices table .urlColumn
+{
+  width:45%;
+  text-align: left;
+}
+
+#mapEditor .mapServices table .actionsColumn
+{
+  width:15%;
+  text-align: right;
+}
+
+#mapEditor .mapServices input.serviceName
+{
+  border: none;
+  width:100%;
+  box-shadow: none;
+  background: transparent;
+}
+
+#mapEditor .mapServices input.serviceDescription
+{
+  border: none;
+  width:99%;
+  background: transparent;
+  box-shadow: none;
+}
+
+#mapEditor .mapServices input.serviceUrl
+{
+  border: none;
+  width:99%;
+  background: transparent;
+  box-shadow: none;
+}
+
+#mapEditor div.mapGroups
+{
+  margin-top:10px;
+  margin-bottom:10px;
+  width:610px;
+}
+
+#mapEditor .mapGroups table .nameColumn
+{
+  width:20%;
+  text-align: left;
+}
+
+#mapEditor .mapGroups table .labelColumn
+{
+  width:65%;
+  text-align: left;
+}
+
+#mapEditor .mapGroups table .actionsColumn
+{
+  width:15%;
+  text-align: right;
+}
+
+#mapEditor .mapGroups table .groupName
+{
+  font-family: "Courier New", Monospaced;
+  font-size: 12px;
+}
+
+#mapEditor .mapGroups table .groupLabel
+{
+}
+
+#mapEditor .mapGroups table input.groupName
+{
+  border:none;
+  width:99%;
+  background: transparent;
+  box-shadow: none;
+}
+
+#mapEditor .mapGroups table input.groupLabel
+{
+  width:99%;
+  border:none;
+  background: transparent;
+  box-shadow: none;
+}
+
+#mapEditor div.mapLayers
+{
+  margin-top:10px;
+  margin-bottom:10px;
+  width:610px;
+}
+
+#mapEditor .mapLayers table .idColumn
+{
+  width:5%;
+  text-align:center;
+}
+
+#mapEditor .mapLayers table .labelColumn
+{
+  width:24%;
+}
+
+#mapEditor .mapLayers table .flagsColumn
+{
+  width:16%;
+  text-align:center;
+}
+
+#mapEditor .mapLayers table .groupColumn
+{
+  width:20%;
+}
+
+#mapEditor .mapLayers table .styleColumn
+{
+  width:20%;
+}
+
+#mapEditor .mapLayers table .actionsColumn
+{
+  width:15%;
+  text-align: right;
+}
+
+#mapEditor .mapLayers span.layerLabel
+{
+  font-weight:bold;
+}
+
+#mapEditor .mapLayers .outputText
+{
+  display:inline-block;
+  width:120px;
+  vertical-align: middle;
+}
+
+#mapEditor .mapServices .servicePanel
+{
+  border: 1px solid gray;
+  background: #F0F0F0;
+}
+
+#mapEditor .mapLayers .layerPanel
+{
+  border:2px solid #C0C0C0;
+  background: white;
+  padding: 6px;
+}
+
+#mapEditor .mapLayers .baseLayer
+{
+  text-decoration: underline;
+}
+
+#mapEditor .mapLayers .layerPanel .rolesGroup
+{
+  padding-top:8px;
+  padding-bottom:4px;
+}
+
+#mapEditor .mapInfoLayers table .layerColumn
+{
+  width:40%;
+  text-align: left;
+}
+
+#mapEditor .mapInfoLayers table .formColumn
+{
+  width:40%;
+  text-align: left;
+}
+
+#mapEditor .mapInfoLayers table .highlightColumn
+{
+  width:6%;
+  text-align: center;
+}
+
+#mapEditor .mapInfoLayers table .actionsColumn
+{
+  width:14%;
+  text-align: right;
+}
+
+#mapEditor .infoLayerName
+{
+  font-family: "Courier New", Monospaced;
+  font-size:12px;
+}
+
+#mapEditor .infoLayerForm
+{
+  font-family: "Courier New", Monospaced;
+  font-size:12px;
+}
+
+#mapEditor .mapInfoLayers input.infoLayerName
+{
+  border:none;
+  width:99%;
+  background:transparent;
+  box-shadow: none;
+}
+
+#mapEditor .mapInfoLayers input.infoLayerForm
+{
+  border:none;
+  font-family: "Courier New", Monospaced;
+  font-size:12px;
+  width:99%;
+  background:transparent;
+  box-shadow: none;
+}
+
+#mapEditor .mapProperties table .nameColumn
+{
+  width:25%;
+  text-align: left;
+}
+
+#mapEditor .mapProperties table .valueColumn
+{
+  width:55%;
+  text-align: left;
+}
+
+#mapEditor .mapProperties table .actionsColumn
+{
+  width:20%;
+  text-align: right;
+}
+
+#mapEditor .propertyName
+{
+  font-family: "Courier New", Monospaced;
+  font-size:12px;
+  width:99%;
+}
+
+#mapEditor .propertyValue
+{
+  font-family: "Courier New", Monospaced;
+  font-size:12;
+  width:99%;
+}
+
+#mapEditor .mapProperties input.propertyName
+{
+  border:none;
+  font-size:12px;
+  background: transparent;
+  box-shadow: none;
+}
+
+#mapEditor .mapProperties input.propertyValue
+{
+  border:none;
+  font-size:12px;
+  background: transparent;
+  box-shadow: none;
+}
+
+#mapEditor .section
+{
+  font-weight: bold;
+  display:block;
+}
+
+#mapEditor .roles .rolesHeader
+{
+  display:block;
+}
+
+#mapEditor .roles ul
+{
+  margin-left: 0;
+  padding-left:0;
+}
+
+#mapEditor .roles li
+{
+  list-style: none;
+  display:block;
+  margin-left: 0;
+  padding-left:0;
+}
+
+#mapEditor .roles ul
+{
+  margin-bottom: 0px;
+}
+
+#mapEditor .roles .readRoles
+{
+  width:50%;
+  float:left;
+}
+
+#mapEditor .roles .writeRoles
+{
+  width:50%;
+  float:right;
+}
+
+#mapEditor .roles .role
+{
+  display:inline-block;
+  width:200px;
+  background:#F0F0F0;
+  border: 1px solid #C0C0C0;
+  padding:1px;
+  font-family: "Courier New", Monospaced;
+  vertical-align: middle;
+  margin:2px;
+  box-sizing: border-box;
+}
+
+#mapEditor .roles .newRole
+{
+  display:inline-block;
+  width:200px;
+  background:#F0F0F0;
+  border: 1px solid #C0C0C0;
+  padding:1px;
+  font-family: "Courier New", Monospaced;
+  vertical-align: middle;
+  margin-right:2px;
+  margin-bottom:1px;
+}
+
+
+/* SLD Editor */
+
+#sldEditor
+{
+  display:block;
+}
+
+#sldEditor #screenBody
+{
+  border-top: 1px solid black;
+  padding-top: 10px;
+}
+
+#sldEditor .tabs
+{
+  margin-bottom: 10px;
+}
+
+#sldEditor .toolbar
+{
+  margin-top: 20px;
+}
+
+#sldEditor .inputBox
+{
+  background:#E0E0E0;
+  border: none;
+}
+
+#sldEditor .codeBox
+{
+  background:#E0E0E0;
+  border: none;
+  font-family: "Courier New", Monospaced;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+#sldEditor .selectBox
+{
+  background:#E0E0E0;
+  border: none;
+}
+
+#sldEditor .smallButton
+{
+  margin:2px;
+  vertical-align: middle;
+}
+
+#sldEditor .icon
+{
+  vertical-align: middle;
+  margin-left:4px;
+}
+
+#sldEditor .header
+{
+  font-weight: bold;
+  margin-right:4px;
+  vertical-align: middle;
+}
+
+#sldEditor .layerCount
+{
+  font-weight: bold;
+  color: #006000;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+#sldEditor .ecButton
+{
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+#sldEditor .symbolizer
+{
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+#sldEditor li
+{
+  border: 1px solid gray;
+  background:white;
+  margin-bottom: 8px;
+  box-shadow: 2px 2px 2px #AAAAAA;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#AAAAAA')";
+	filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#AAAAAA');
+}
+
+#sldEditor ul li.expanded
+{
+  border: 1px solid black;
+  background: #F0FFF0;
+}
+
+#sldEditor ul li.collapses
+{
+  border: 1px solid black;
+  background: white;
+}
+
+#sldEditor ul li,
+#sldEditor ul
+{
+  list-style-type: none;
+  padding: 8px;
+  margin:0;
+}
+
+#sldEditor ul li
+{
+  margin-bottom:8px;
+}
+
+#sldEditor ul li div
+{
+  margin-bottom: 1px;
+}
+
+#sldEditor li.hidden
+{
+  display:none;
+}
+
+#sldEditor .box
+{
+  width:16px;
+  height:16px;
+  border-style: solid;
+  display:inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+  border-collapse: collapse;
+}
+
+.cqlAssistant
+{
+  font-family: Arial;
+  font-size:12px;
+}
+
+.cqlAssistant .cqlHeader
+{
+  font-weight: bold;
+}
+
+.cqlAssistant ul.cqlBlock
+{
+}
+
+.cqlAssistant a
+{
+  font-family: "Courier New";
+  text-decoration: none;
+}
+
+.cqlAssistant a.mandatory
+{
+  font-weight: bold;
+  color: #0000A0;
+}
+
+.cqlAssistant a.optional
+{
+  color: blue;
+}
+
+.cqlAssistant a:hover
+{
+  background: #F0F040;
+}
+
+.ui-datepicker
+{
+  width: 200px !important;
+}
+
+.ui-datepicker table
+{
+  font-family: Arial;
+  font-size: 11px !important;
+}
+
+.ui-datepicker .ui-datepicker-header 
+{
+  padding: 6px 0 !important;
+}
+
+.ui-datepicker .ui-datepicker-title select
+{
+  font-size: 11px !important;  
+}

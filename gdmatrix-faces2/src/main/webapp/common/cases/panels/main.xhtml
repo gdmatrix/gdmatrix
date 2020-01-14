@@ -1,0 +1,58 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+
+  <t:div styleClass="mainPanel" style="width:100%">
+    <t:div styleClass="propertyRow">
+      <h:outputText value="#{caseBundle.case_type}: "
+                    styleClass="name" style="width:15%"/>
+      <sf:outputText value="#{panel.caseType}"
+        styleClass="value"
+        translator="#{userSessionBean.translator}"
+        translationGroup="case:#{panel.getCase().caseId}"/>
+    </t:div>
+
+    <t:div styleClass="propertyRow">
+      <h:outputText value="#{caseBundle.case_title}: "
+                    styleClass="name" style="width:15%"/>
+      <sf:outputText value="#{panel.getCase().title}"
+        styleClass="value"
+        translator="#{userSessionBean.translator}"
+        translationGroup="case:#{panel.getCase().caseId}"/>
+    </t:div>
+
+    <t:div styleClass="propertyRow">
+      <h:outputText value="#{caseBundle.case_startDate}: "
+                    styleClass="name" style="width:15%"/>
+      <h:outputText value="#{panel.startDate}"
+        styleClass="value" />
+      <h:outputText value="#{panel.startTime}"
+        styleClass="value" style="margin-left:5px"
+        rendered="#{panel.startTime != null}"/>
+    </t:div>
+
+    <t:div styleClass="propertyRow">
+      <h:outputText value="#{caseBundle.case_endDate}: "
+                    styleClass="name" style="width:15%"/>
+      <h:outputText value="#{panel.endDate}"
+        styleClass="value" />
+      <h:outputText value="#{panel.endTime}"
+        styleClass="value" style="margin-left:5px"
+        rendered="#{panel.endTime != null}"/>
+    </t:div>
+
+    <t:div styleClass="propertyRow">
+      <h:outputText value="#{caseBundle.case_description}: "
+                    styleClass="name" style="width:15%"/>
+      <sf:outputText value="#{panel.getCase().description}"
+        styleClass="value"
+        translator="#{userSessionBean.translator}"
+        translationGroup="case: #{panel.getCase().caseId}"/>
+    </t:div>
+  </t:div>
+
+</html>

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <!-- sendmail -->
+
+  <managed-bean>
+    <managed-bean-name>sendMailBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.sendmail.web.SendMailBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- widget -->
+
+  <managed-bean>
+    <managed-bean-name>widgetBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.widget.web.WidgetBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- web map -->
+
+  <managed-bean>
+    <managed-bean-name>webMapBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.webmap.web.WebMapBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- web search -->
+
+  <managed-bean>
+    <managed-bean-name>webSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.websearch.web.WebSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- gallery -->
+
+  <managed-bean>
+    <managed-bean-name>galleryBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.gallery.web.GalleryBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- user profile -->
+
+  <managed-bean>
+    <managed-bean-name>userProfileBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.userprofile.web.UserProfileBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- matrix info -->
+
+  <managed-bean>
+    <managed-bean-name>matrixInfoBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.matrixinfo.web.MatrixInfoBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+ <!-- presence -->
+
+  <managed-bean>
+    <managed-bean-name>presenceBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.presence.web.PresenceBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- map viewer -->
+
+  <managed-bean>
+    <managed-bean-name>mapBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.mapviewer.web.MapBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>mapViewerBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.mapviewer.web.MapViewerBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>mapEditorBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.mapviewer.web.MapEditorBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>mapCatalogueBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.mapviewer.web.MapCatalogueBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>sldEditorBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.mapviewer.web.SLDEditorBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- query -->
+
+  <managed-bean>
+    <managed-bean-name>queryBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.query.web.QueryBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>querySearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.query.web.QuerySearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>queryInstanceBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.query.web.QueryInstanceBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>queryEditorBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.query.web.QueryEditorBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <!-- sqlweb -->
+
+  <managed-bean>
+    <managed-bean-name>sqlWebBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.sqlweb.web.SqlWebBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  
+  <!-- matrix client -->
+  <managed-bean>
+    <managed-bean-name>matrixClientBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.client.web.MatrixClientBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>  
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+
+  <!-- sendmail -->
+
+    <navigation-case>
+      <from-outcome>send_mail</from-outcome>
+      <to-view-id>/common/misc/send_mail.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- widget -->
+
+    <navigation-case>
+      <from-outcome>widget_container</from-outcome>
+      <to-view-id>/common/misc/widget_container.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>widget_setup</from-outcome>
+      <to-view-id>/common/misc/widget_setup.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- web map -->
+
+    <navigation-case>
+      <from-outcome>web_map</from-outcome>
+      <to-view-id>/common/misc/web_map.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- web search -->
+
+    <navigation-case>
+      <from-outcome>web_search</from-outcome>
+      <to-view-id>/common/misc/web_search.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- gallery -->
+
+    <navigation-case>
+      <from-outcome>gallery_image</from-outcome>
+      <to-view-id>/common/misc/gallery_image.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>gallery_thumbnails</from-outcome>
+      <to-view-id>/common/misc/gallery_thumbnails.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- user profile -->
+
+    <navigation-case>
+      <from-outcome>user_profile</from-outcome>
+      <to-view-id>/common/misc/user_profile.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- matrix info -->
+
+    <navigation-case>
+      <from-outcome>matrix_info</from-outcome>
+      <to-view-id>/common/misc/matrix_info.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- presence -->
+
+    <navigation-case>
+      <from-outcome>presence</from-outcome>
+      <to-view-id>/common/misc/presence.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>presence_id</from-outcome>
+      <to-view-id>/common/misc/presence_id.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>presence_entry</from-outcome>
+      <to-view-id>/common/misc/presence_entry.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>presence_entry</from-outcome>
+      <to-view-id>/common/misc/presence_entry.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>presence_worker</from-outcome>
+      <to-view-id>/common/misc/presence_worker.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- map viewer -->
+
+    <navigation-case>
+      <from-outcome>map_viewer</from-outcome>
+      <to-view-id>/common/misc/map_viewer.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>map_editor</from-outcome>
+      <to-view-id>/common/misc/map_editor.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>map_catalogue</from-outcome>
+      <to-view-id>/common/misc/map_catalogue.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>sld_editor</from-outcome>
+      <to-view-id>/common/misc/sld_editor.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>map_error</from-outcome>
+      <to-view-id>/common/misc/map_error.jsp</to-view-id>
+    </navigation-case>
+
+  <!-- query -->
+
+    <navigation-case>
+      <from-outcome>query_search</from-outcome>
+      <to-view-id>/common/misc/query_search.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>query_instance</from-outcome>
+      <to-view-id>/common/misc/query_instance.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>query_editor</from-outcome>
+      <to-view-id>/common/misc/query_editor.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>sqlweb</from-outcome>
+      <to-view-id>/common/misc/sqlweb.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>sqlweb_fs</from-outcome>
+      <to-view-id>/common/misc/sqlweb_fs.jsp</to-view-id>
+    </navigation-case>
+
+  </navigation-rule>
+
+</faces-config>

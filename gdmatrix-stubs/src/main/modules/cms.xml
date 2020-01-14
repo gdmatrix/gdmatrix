@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cms"
+  namespace="http://cms.matrix.org/"
+  title="Gestor de continguts web"
+  wsdlLocation="../services/cms?wsdl"
+  service="CMSManagerService"
+  port="CMSManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Jordi López, Ricard Real">
+
+  <documentation language="ca">
+    <div>
+      <h1>Característiques generals</h1>
+      El mòdul <i>cms</i> s'encarrega de gestionar informació estructurada en forma d'arbre,
+      per al seu ús posterior per part d'aplicacions client.
+      Com a exemple de possibles usos que poden tenir aquestes estructures tenim:
+      <ul>
+        <li>Arbre de pàgines web d'una organització.</li>
+        <li>Arbre de tipus d'un diccionari de tipologies.</li>
+        <li>Quadre de classificació d'una organització.</li>        
+      </ul>
+    </div>
+    <div>
+      <h1>Node</h1>
+        L'element bàsic d'informació amb el que treballa el mòdul és el node. Un node és un objecte
+        que conté una sèrie de propietats multivaluades utilitzades per a emmagatzemar informació.
+        Tot node pot tenir zero o més nodes fills, però només pot tenir com a màxim un node pare, amb
+        la qual cosa s'obté una estructura en forma d'arbre. Si un node no té pare, aleshores és un
+        node arrel. Si un node no té fills, rep el nom de node fulla.
+    </div>
+    <div>
+      <h1>Propietat</h1>
+      Una propietat és una unitat d'informació emmagatzemada a un node. Té un nom i un o més
+      valors ordenats.
+    </div>
+    <div>
+      <h1>Workspace (espai de treball)</h1>
+      Un workspace, o espai de treball, és un conjunt d'arbres. Un workspace pot ser referència 
+      d'un altre workspace, amb la qual cosa es podrien sincronitzar nodes entre ells. Quan es
+      sincronitza un node entre dos workspaces, tots dos queden amb una còpia idèntica del mateix.
+    </div>
+    <div>
+      <h1>Casos d'ús</h1>
+      <ul>
+        <li>Creació d'un workspace:
+          <pre class="java">
+            Workspace w = new Workspace();
+            w.setName("Nom del workspace");
+            w.setDescription("Descripció del workspace");
+            w.serRefWorkspaceId(null); //Workspace principal
+            w = port.storeWorkspace(w);
+          </pre>
+        </li>
+        <li>Creació d'un nou node a un workspace, amb dues propietats:
+          <pre class="java">
+            Node n = new Node();
+            n.setWorkspaceId(workspaceId);
+            n.setParentNodeId(parentNodeId);
+            n.setIndex(index);
+            n.setName("Nom");
+            Property p1 = new Property(); //Propietat p1 amb els valors v1,v2,v3
+            p1.setName("p1");
+            p1.getValue().add("v1");
+            p1.getValue().add("v2");
+            p1.getValue().add("v3");
+            n.getProperty().add(p1);
+            Property p2 = new Property(); //Propietat p2 amb el valor v4
+            p2.setName("p2");
+            p2.getValue().add("v4");
+            n.getProperty().add(p2);
+            n = port.storeNode(n);
+          </pre>
+        </li>
+        <li>Cerca de nodes al workspace '1' amb nom que comenci amb 'n' i que tinguin a
+            la propietat 'p1' el valor 'v2' o bé el valor 'v3':
+          <pre class="java">
+            NodeFilter nodeFilter = new NodeFilter();
+            nodeFilter.setMaxResults(100);
+            nodeFilter.getWorkspaceId().add("1");
+            nodeFilter.setName("n%");
+            Property p = new Property();
+            p.setName("p1");
+            p.getValue().add(v2);
+            p.getValue().add(v3);
+            nodeFilter.getProperty().add(p);
+            nodeFilter.setPropertyCaseSensitive(false);
+            List nodeList = port.findNodes(nodeFilter);
+          </pre>
+        </li>
+        <li>Sincronització de tot l'arbre que penja del node 1445 des del
+            workspace 3 cap al workspace 1:
+          <pre class="java">
+            //Primer de tot obtenim els canvis a sincronitzar
+            List nodeChangeList = port.findNodeChanges("3", "1", "1445");
+            //I ara podem fer la sincronització
+            port.syncNodes("3", "1", nodeChangeList);
+          </pre>
+        </li>
+      </ul>
+    </div>
+  </documentation>
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="security" />
+  </imports>
+
+  <types>
+    <entity name="Node">
+      <documentation language="ca">
+        <i>Node</i> representa un node d'un arbre en un determinat workspace.
+      </documentation>
+      <identifier name="nodeId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador del node, únic per a cada workspace.
+        </documentation>
+      </identifier>
+      <property name="workspaceId" type="xs:string" minOccurs="0"
+        references="cms:Workspace">
+        <documentation language="ca">
+          Identificador del <i>Workspace</i> al qual pertany el node.
+        </documentation>
+      </property>
+      <property name="parentNodeId" type="xs:string" minOccurs="0" references="cms:Node">
+        <documentation language="ca">
+          Identificador del <i>Node</i> pare del node al seu workspace.
+        </documentation>
+      </property>
+      <property name="index" type="xs:int">
+        <documentation language="ca">
+          Número d'ordre del node entre els seus germans, és a dir, entre els nodes
+          que tenen el mateix <i>parentNodeId</i> al seu workspace.
+        </documentation>
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom descriptiu del node.
+        </documentation>
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data de la creació o darrera modificació del node, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" readOnly="true" references="security:User">
+        <documentation language="ca">
+          Usuari responsable de la creació o darrera modificació del node.
+        </documentation>
+      </property>
+      <property name="syncDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data de la darrera sincronització del node, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="syncUserId" type="xs:string" minOccurs="0"
+        references="security:User" readOnly="true">
+        <documentation language="ca">
+          Usuari responsable de la darrera sincronització del node.
+        </documentation>
+      </property>
+      <property name="property" type="cms:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de propietats del node.
+        </documentation>
+      </property>
+    </entity>
+
+    <entity name="Workspace">
+      <documentation language="ca">
+        <i>Workspace</i> representa un workspace, o espai de treball, del mòdul.
+      </documentation>
+      <identifier name="workspaceId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador únic del workspace.
+        </documentation>
+      </identifier>
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom descriptiu del workspace.
+        </documentation>
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Descripció del workspace.
+        </documentation>
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data de la creació del workspace, en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0"
+        references="security:User" readOnly="true">
+        <documentation language="ca">
+          Usuari responsable de la creació del workspace.
+        </documentation>
+      </property>
+      <property name="refWorkspaceId" type="xs:string" minOccurs="0" references="cms:Workspace">
+        <documentation language="ca">
+          Identificador del <i>Workspace</i> de referència.
+        </documentation>
+      </property>
+    </entity>
+
+    <struct name="NodeChange">
+      <documentation language="ca">
+        <i>NodeChange</i> representa una diferència existent a un node entre dos
+        workspaces que el contenen, detectada mitjançant l'operació
+        <a href="#oper-findNodeChanges">findNodeChanges</a> i resoluble mitjançant
+        l'operació <a href="#oper-syncNodes">syncNodes</a>.
+      </documentation>
+      <property name="node" type="cms:Node" minOccurs="0">
+        <documentation language="ca">
+          Node que ha canviat entre els workspaces, representat amb un
+          objecte <i>Node</i>. Aquest node serà el del workspace origen,
+          tret del cas de que sigui un node esborrat. En aquest cas serà el node del
+          workspace destí, ja que al workspace origen ja no existeix.
+        </documentation>
+      </property>
+      <property name="type" type="cms:NodeChangeType" minOccurs="0">
+        <documentation language="ca">
+          Tipus de diferència al node entre els workspaces. El node pot haver estat
+          creat, esborrat, modificat o mogut.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="Property">
+      <documentation language="ca">
+        <i>Property</i> representa una propietat d'un node.
+      </documentation>
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom de la propietat.
+        </documentation>
+      </property>
+      <property name="value" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista en ordre dels valors de la propietat.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="NodeFilter">
+      <documentation language="ca">
+        Filtre per cercar nodes a través de les operacions
+        <a href="#oper-countNodes">countNodes</a> i <a href="#oper-findNodes">findNodes</a>.
+      </documentation>
+      <property name="workspaceId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="cms:Workspace">
+        <documentation language="ca">
+          Llista d'identificadors de <i>Workspace</i> on cercar nodes.
+        </documentation>
+      </property>
+      <property name="nodeId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="cms:Node">
+        <documentation language="ca">
+          Llista d'identificadors de <i>Node</i> a cercar.
+        </documentation>
+      </property>
+      <property name="parentNodeId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="cms:Node">
+        <documentation language="ca">
+          Llista d'identificadors de <i>Node</i> pare a cercar.
+        </documentation>
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom descriptiu de node a cercar.
+        </documentation>
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="security:User">
+        <documentation language="ca">
+          Llista d'usuaris responsables de creacions o modificacions de nodes a cercar.
+        </documentation>
+      </property>
+      <property name="property" type="cms:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de propietats a cercar als nodes. Totes i cadascuna de les propietats
+          han de ser presents als nodes retornats, però dels valors indicats a les
+          mateixes només cal que en sigui un.
+        </documentation>
+      </property>
+      <property name="propertyCaseSensitive" type="xs:boolean">
+        <documentation language="ca">
+          Indica si la cerca de noms i valors de propietats ha de ser sensible
+          a majúscules o minúscules.
+        </documentation>
+      </property>
+      <property name="changeDateTime1" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Indica la data i hora inicials en format yyyyMMddHHmmss, per fer la
+          cerca de nodes per data de creació o modificació.
+        </documentation>
+      </property>
+      <property name="changeDateTime2" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Indica la data i hora finals en format yyyyMMddHHmmss, per fer la
+          cerca de nodes per data de creació o modificació.
+        </documentation>
+      </property>
+      <property name="firstResult" type="xs:int">
+        <documentation language="ca">
+          Índex del primer node a retornar dins del total de resultats de la operació <a href="#oper-findNodes">findNodes</a>.
+        </documentation>
+      </property>
+      <property name="maxResults" type="xs:int">
+        <documentation language="ca">
+          Nombre màxim de nodes a retornar dins del total de resultats de la operació <a href="#oper-findNodes">findNodes</a>.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="WorkspaceFilter">
+      <documentation language="ca">
+        Filtre per cercar workspaces a través de les operacions
+        <a href="#oper-countWorkspaces">countWorkspaces</a> i <a href="#oper-findWorkspaces">findWorkspaces</a>.
+      </documentation>
+      <property name="workspaceId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista d'identificadors de <i>Workspace</i> a cercar.
+        </documentation>
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom de workspace a cercar.
+        </documentation>
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Descripció de workspace a cercar.
+        </documentation>
+      </property>
+      <property name="firstResult" type="xs:int">
+        <documentation language="ca">
+          Índex del primer workspace a retornar dins del total de resultats de la operació <a href="#oper-findWorkspaces">findWorkspaces</a>.
+        </documentation>
+      </property>
+      <property name="maxResults" type="xs:int">
+        <documentation language="ca">
+          Nombre màxim de workspaces a retornar dins del total de resultats de la operació <a href="#oper-findWorkspaces">findWorkspaces</a>.
+        </documentation>
+      </property>
+    </struct>
+
+    <enumeration name="NodeChangeType">
+      <documentation language="ca">
+        Tipus de canvi que es pot produir a un node entre dos workspaces (origen i destí).
+      </documentation>
+      <value name="CREATED">
+        <documentation language="ca">
+          Indica que el node existeix al workspace origen, però no al workspace destí.
+        </documentation>        
+      </value>
+      <value name="REMOVED">
+        <documentation language="ca">
+          Indica que el node existeix al workspace destí, però no al workspace origen.
+        </documentation>                
+      </value>
+      <value name="UPDATED">
+        <documentation language="ca">
+          Indica que el node existeix a tots dos workspaces, però ha canviat de propietats al workspace origen.
+        </documentation>                
+      </value>
+      <value name="MOVED">
+        <documentation language="ca">
+          Indica que el node existeix a tots dos workspaces, però ha canviat de lloc al workspace origen.
+        </documentation>                
+      </value>
+      <value name="NAME_CHANGED">
+        <documentation language="ca">
+          Indica que el node existeix a tots dos workspaces, però ha canviat de nom al workspace origen.
+        </documentation>                
+      </value>
+      <value name="FALSE_UPDATE">
+        <documentation language="ca">
+          Indica que el node existeix i és igual a tots dos workspaces, però s'ha detectat un canvi desfet.
+        </documentation>                
+      </value>
+    </enumeration>
+  </types>
+
+  <operations>
+
+    <operation name="removeNode">
+      <documentation language="ca">
+        Esborra un node del sistema.
+      </documentation>
+      <parameter name="workspaceId" type="xs:string" references="cms:Workspace">
+        <documentation language="ca">
+          Identificador del workspace al que pertany el node.
+        </documentation>
+      </parameter>
+      <parameter name="nodeId" type="xs:string" references="cms:Node">
+        <documentation language="ca">
+          Identificador del node a esborrar.
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Indica si s'ha esborrat el node especificat.
+        </documentation>
+      </response>
+      <error name="WORKSPACEID_IS_MANDATORY" message="El camp workspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>workspaceId</i>.
+        </documentation>
+      </error>
+      <error name="NODEID_IS_MANDATORY" message="El camp nodeId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>nodeId</i>.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="syncNodes">
+      <documentation language="ca">
+        Elimina les diferències existents en un conjunt de nodes entre dos workspaces,
+        traspassant els canvis des d'un (origen) fins a l'altre (destí).
+      </documentation>
+      <parameter name="fromWorkspaceId" type="xs:string" references="cms:Workspace">
+        <documentation language="ca">
+          Identificador del workspace origen.
+        </documentation>
+      </parameter>
+      <parameter name="toWorkspaceId" type="xs:string" references="cms:Workspace">
+        <documentation language="ca">
+          Identificador del workspace destí.
+        </documentation>
+      </parameter>
+      <parameter name="nodeChange" type="cms:NodeChange" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista d'objectes <a href="#type-NodeChange">NodeChange</a> representant els nodes que es volen sincronitzar,
+          tal i com és retornada per la operació <a href="#oper-findNodeChanges">findNodeChanges</a>.
+        </documentation>
+      </parameter>
+      <response name="syncCount" type="xs:int">
+        <documentation language="ca">
+          Nombre de nodes sincronitzats.
+        </documentation>
+      </response>
+      <error name="FROMWORKSPACEID_IS_MANDATORY" message="El camp fromWorkspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>fromWorkspaceId</i>.
+        </documentation>
+      </error>
+      <error name="TOWORKSPACEID_IS_MANDATORY" message="El camp toWorkspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>toWorkspaceId</i>.
+        </documentation>
+      </error>
+      <error name="NODE_CREATION_ERROR" message="Error creant nou node">
+        <documentation language="ca">
+          S'ha produit un error durant l'inserció d'un nou node.
+        </documentation>
+      </error>
+      <error name="NODE_NOT_FOUND" message="Node no trobat">
+        <documentation language="ca">
+          El node a actualitzar no s'ha trobat.
+        </documentation>
+      </error>
+      <error name="PATH_NOT_FOUND" message="Path de node no trobat">
+        <documentation language="ca">
+          No s'ha pogut obtenir el path d'un node.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="findNodes">
+      <documentation language="ca">
+        Cerca nodes que satisfan unes determinades condicions
+        expressades mitjançant un filtre <a href="#type-NodeFilter">NodeFilter</a>.
+      </documentation>
+      <parameter name="filter" type="cms:NodeFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="node" type="cms:Node" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de nodes que satisfan les condicions de la cerca.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="loadWorkspace">
+      <documentation language="ca">
+        Recupera un workspace a partir del seu identificador.
+      </documentation>
+      <parameter name="workspaceId" type="xs:string">
+        <documentation language="ca">
+          Identificador del workspace a recuperar.
+        </documentation>
+      </parameter>
+      <response name="workspace" type="cms:Workspace">
+        <documentation language="ca">
+          El workspace que correspon a l'identificador <i>workspaceId</i>.
+        </documentation>
+      </response>
+      <error name="WORKSPACEID_IS_MANDATORY" message="El camp workspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>workspaceId</i>.
+        </documentation>
+      </error>
+      <error name="WORKSPACE_NOT_FOUND" message="Workspace no trobat">
+        <documentation language="ca">
+          El workspace demanat no s'ha trobat.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="storeWorkspace">
+      <documentation language="ca">
+        Crea o modifica un workspace.
+      </documentation>
+      <parameter name="workspace" type="cms:Workspace">
+        <documentation language="ca">
+          Workspace que es vol desar. Si el camp <i>workspaceId</i> té valor
+          nul es crearà un nou workspace. En canvi, si té un valor definit, es modificarà
+          el workspace indicat.
+        </documentation>
+      </parameter>
+      <response name="storedWorkspace" type="cms:Workspace">
+        <documentation language="ca">
+          El workspace emmagatzemat.
+        </documentation>
+      </response>
+      <error name="WORKSPACE_NOT_FOUND" message="Workspace no trobat">
+        <documentation language="ca">
+          El workspace a actualitzar no s'ha trobat.
+        </documentation>
+      </error>
+      <error name="REF_WORKSPACE_NOT_FOUND" message="Workspace de referència no trobat">
+        <documentation language="ca">
+          Workspace de referència no trobat.
+        </documentation>
+      </error>
+      <error name="WORKSPACE_CYCLE_DETECTED" message="Cicle entre workspaces detectat">
+        <documentation language="ca">
+          En cas d'emmagatzemar el workspace indicat, es produiria un cicle entre workspaces.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="copyWorkspace">
+      <documentation language="ca">
+        Copia un workspace creant un workspace nou o bé sobreescrivint un d'existent.
+      </documentation>
+      <parameter name="fromWorkspaceId" type="xs:string">
+        <documentation language="ca">
+          Identificador del workspace a copiar.
+        </documentation>
+      </parameter>
+      <parameter name="toWorkspaceId" type="xs:string">
+        <documentation language="ca">
+          Identificador del workspace a sobreescriure. En cas d'indicar valor <i>null</i>
+          es crearà un workspace nou.
+        </documentation>
+      </parameter>
+      <response name="workspace" type="cms:Workspace">
+        <documentation language="ca">
+          Workspace resultat de la còpia.
+        </documentation>
+      </response>
+      <error name="FROMWORKSPACEID_IS_MANDATORY" message="El camp fromWorkspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>fromWorkspaceId</i>.
+        </documentation>
+      </error>
+      <error name="WORKSPACE_NOT_FOUND" message="Workspace no trobat">
+        <documentation language="ca">
+          No existeix el workspace identificat mitjançant <i>fromWorkspaceId</i> o
+          <i>toWorkspaceId</i>.
+        </documentation>
+      </error>
+      <error name="WORKSPACE_CYCLE_DETECTED" message="Cicle entre workspaces detectat">
+        <documentation language="ca">
+          En cas de fer la còpia, es produiria un cicle entre workspaces.
+        </documentation>
+      </error>
+      <error name="REF_WORKSPACE_NOT_FOUND" message="Workspace de referència no trobat">
+        <documentation language="ca">
+          Workspace de referència no trobat.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="removeWorkspace">
+      <documentation language="ca">
+        Esborra un workspace, juntament amb tots els nodes i propietats que conté.
+      </documentation>
+      <parameter name="workspaceId" type="xs:string">
+        <documentation language="ca">
+          Identificador del workspace a esborrar.
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Indica si s'ha esborrat el workspace especificat.
+        </documentation>
+      </response>
+      <error name="WORKSPACEID_IS_MANDATORY" message="El camp workspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>workspaceId</i>.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="countWorkspaces">
+      <documentation language="ca">
+        Recupera el nombre de workspaces que satisfan unes determinades condicions
+        expressades mitjançant un filtre <a href="#type-WorkspaceFilter">WorkspaceFilter</a>.
+      </documentation>
+      <parameter name="filter" type="cms:WorkspaceFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="workspaceCount" type="xs:int">
+        <documentation language="ca">
+          Nombre de workspaces que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findWorkspaces">
+      <documentation language="ca">
+        Cerca workspaces que satisfacin unes determinades condicions expressades
+        mitjançant un filtre <a href="#type-WorkspaceFilter">WorkspaceFilter</a>.
+      </documentation>
+      <parameter name="filter" type="cms:WorkspaceFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="workspace" type="cms:Workspace" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de workspaces que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="loadNode">
+      <documentation language="ca">
+        Recupera un node a partir del seu identificador.
+      </documentation>
+      <parameter name="workspaceId" type="xs:string">
+        <documentation language="ca">
+          Identificador del workspace al qual pertany el node.
+        </documentation>
+      </parameter>
+      <parameter name="nodeId" type="xs:string">
+        <documentation language="ca">
+          Identificador del node a carregar.
+        </documentation>
+      </parameter>
+      <response name="node" type="cms:Node">
+        <documentation language="ca">
+          El node demanat.
+        </documentation>
+      </response>
+      <error name="WORKSPACEID_IS_MANDATORY" message="El camp workspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>workspaceId</i>.
+        </documentation>
+      </error>
+      <error name="NODEID_IS_MANDATORY" message="El camp nodeId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>nodeId</i>.
+        </documentation>
+      </error>
+      <error name="NODE_NOT_FOUND" message="Node no trobat">
+        <documentation language="ca">
+          El node demanat no s'ha trobat.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="storeNode">
+      <documentation language="ca">
+        Crea o modifica un node.
+      </documentation>
+      <parameter name="node" type="cms:Node">
+        <documentation language="ca">
+          Node que es vol desar. Si el camp <i>nodeId</i> té valor
+          nul es crearà un nou node. En canvi, si té un valor definit, es modificarà
+          el node indicat.
+        </documentation>
+      </parameter>
+      <response name="storedNode" type="cms:Node">
+        <documentation language="ca">
+          El node emmagatzemat.
+        </documentation>
+      </response>
+      <error name="WORKSPACEID_IS_MANDATORY" message="El camp workspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>workspaceId</i>.
+        </documentation>
+      </error>
+      <error name="INVALID_NODE_INDEX" message="Índex de node no vàlid">
+        <documentation language="ca">
+          Índex de node no vàlid.
+        </documentation>
+      </error>
+      <error name="NODE_CREATION_ERROR" message="Error creant nou node">
+        <documentation language="ca">
+          S'ha produit un error durant l'inserció d'un nou node.
+        </documentation>
+      </error>
+      <error name="NODE_NOT_FOUND" message="Node no trobat">
+        <documentation language="ca">
+          El node a actualitzar no s'ha trobat.
+        </documentation>
+      </error>
+      <error name="NODE_CYCLE_DETECTED" message="Cicle entre nodes detectat">
+        <documentation language="ca">
+          En cas de fer l'actualitació del node, es produiria un cicle entre nodes.
+        </documentation>
+      </error>
+      <error name="PATH_NOT_FOUND" message="Path de node no trobat">
+        <documentation language="ca">
+          No s'ha pogut obtenir el path d'un node.
+        </documentation>
+      </error>
+      <error name="PARENT_NODE_NOT_FOUND" message="Node pare no trobat">
+        <documentation language="ca">
+          No s'ha pogut obtenir el node pare d'un node.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="countNodes">
+      <documentation language="ca">
+        Recupera el nombre de nodes que satisfan unes determinades condicions
+        expressades mitjançant un filtre <a href="#type-NodeFilter">NodeFilter</a>.
+      </documentation>
+      <parameter name="filter" type="cms:NodeFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="nodeCount" type="xs:int">
+        <documentation language="ca">
+          Nombre de nodes que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findModifiedNodes">
+      <documentation language="ca">
+        Retorna la llista de nodes d'un workspace que han estat canviats o sincronitzats
+        des d'un instant determinat de temps.
+      </documentation>
+      <parameter name="workspaceId" type="xs:string">
+        <documentation language="ca">
+          Identificador del workspace on cercar nodes modificats.
+        </documentation>
+      </parameter>
+      <parameter name="dateTime" type="mx:dateTime">
+        <documentation language="ca">
+          Data i hora, en format yyyyMMddHHmmss, a partir de la qual els nodes
+          retornats van ser canviats o sincronitzats.
+        </documentation>
+      </parameter>
+      <response name="node" type="cms:Node" minOccurs="0" maxOccurs="unbounded"
+        nillable="true">
+        <documentation language="ca">
+          Llista de nodes trobats.
+        </documentation>
+      </response>
+      <error name="WORKSPACEID_IS_MANDATORY" message="El camp workspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>workspaceId</i>.
+        </documentation>
+      </error>
+      <error name="DATETIME_IS_MANDATORY" message="El camp dateTime és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>dateTime</i>.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="findNodeChanges">
+      <documentation language="ca">
+        Retorna la llista de diferències existents entre dos workspaces, cercant
+        des d'un determinat node arrel cap avall.
+      </documentation>
+      <parameter name="fromWorkspaceId" type="xs:string">
+        <documentation language="ca">
+          Identificador del workspace origen.
+        </documentation>
+      </parameter>
+      <parameter name="toWorkspaceId" type="xs:string">
+        <documentation language="ca">
+          Identificador del workspace destí.
+        </documentation>
+      </parameter>
+      <parameter name="baseNodeId" type="xs:string">
+        <documentation language="ca">
+          Identificador d'un node que tots els nodes retornats han de tenir com
+          a antecessor.
+        </documentation>
+      </parameter>
+      <response name="nodeChange" type="cms:NodeChange" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista d'objectes <a href="#type-NodeChange">NodeChange</a> representant els canvis trobats.
+        </documentation>
+      </response>
+      <error name="FROMWORKSPACEID_IS_MANDATORY" message="El camp fromWorkspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>fromWorkspaceId</i>.
+        </documentation>
+      </error>
+      <error name="TOWORKSPACEID_IS_MANDATORY" message="El camp toWorkspaceId és obligatori">
+        <documentation language="ca">
+          No s'ha especificat el camp <i>toWorkspaceId</i>.
+        </documentation>
+      </error>
+    </operation>
+  </operations>
+</module>

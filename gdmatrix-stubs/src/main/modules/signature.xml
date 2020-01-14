@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="signature"
+  namespace="http://signature.matrix.org/"
+  title="Gestor de signatures electróniques"
+  wsdlLocation="../services/signature?wsdl"
+  service="SignatureManagerService"
+  port="SignatureManagerPort"
+  version="1.0"
+  status="REVISION"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />
+  </imports>
+
+  <types>
+
+    <struct name="PropertyList">
+      <property name="property" type="signature:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="Property">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="SignedDocument">
+      <property name="type" type="xs:string" minOccurs="0">
+      </property>
+      <property name="data" type="xs:base64Binary" minOccurs="0">
+      </property>
+      <property name="properties" type="signature:PropertyList" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="DataHash">
+      <property name="name" type="xs:string" minOccurs="1">
+      </property>
+      <property name="hash" type="xs:base64Binary" minOccurs="1">
+      </property>
+      <property name="algorithm" type="xs:string" minOccurs="1">
+      </property>
+    </struct>
+  </types>
+
+  <operations>
+
+    <operation name="createDocument">
+      <parameter name="type" type="xs:string">
+      </parameter>
+      <parameter name="properties" type="signature:PropertyList">
+      </parameter>
+      <response name="sigId" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="putDocument">
+      <parameter name="document" type="signature:SignedDocument">
+      </parameter>
+      <response name="sigId" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="getDocumentData">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <response name="data" type="xs:base64Binary">
+      </response>
+    </operation>
+
+    <operation name="addData">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="dataType" type="xs:string">
+      </parameter>
+      <parameter name="data" type="xs:base64Binary">
+      </parameter>
+      <parameter name="properties" type="signature:PropertyList">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="addSignature">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="certData" type="xs:base64Binary">
+      </parameter>
+      <response name="dataToSign" type="xs:base64Binary">
+      </response>
+    </operation>
+
+    <operation name="endSignature">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="signatureData" type="xs:base64Binary">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="abortSignature">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="digestData">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <response name="dataHash" type="signature:DataHash" minOccurs="0" maxOccurs="unbounded">
+      </response>
+    </operation>
+
+    <operation name="addExternalSignature">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="signature" type="xs:base64Binary">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="addSystemSignature">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="alias" type="xs:string">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="abortDocument">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="getDocument">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <response name="signedDocument" type="signature:SignedDocument">
+      </response>
+    </operation>
+
+    <operation name="setDocumentProperties">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="properties" type="signature:PropertyList">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="endDocument">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="properties" type="signature:PropertyList">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+  </operations>
+</module>

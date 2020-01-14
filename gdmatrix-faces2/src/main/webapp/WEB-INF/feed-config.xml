@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <managed-bean>
+    <managed-bean-name>folderBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FolderBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>folderSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FolderSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>folderMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FolderMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>folderFeedsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FolderFeedsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>folderFoldersBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FolderFoldersBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>feedFoldersBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FeedFoldersBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>feedEntriesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FeedEntriesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>feedBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FeedBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>feedSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FeedSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>feedMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.feed.web.FeedMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    
+    <navigation-case>
+      <from-outcome>folder_search</from-outcome>
+      <to-view-id>/common/feed/folder_search.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>folder_main</from-outcome>
+      <to-view-id>/common/feed/folder_main.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>folder_feeds</from-outcome>
+      <to-view-id>/common/feed/folder_feeds.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>folder_folders</from-outcome>
+      <to-view-id>/common/feed/folder_folders.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>feed_folders</from-outcome>
+      <to-view-id>/common/feed/feed_folders.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>feed_entries</from-outcome>
+      <to-view-id>/common/feed/feed_entries.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>feed_search</from-outcome>
+      <to-view-id>/common/feed/feed_search.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>feed_main</from-outcome>
+      <to-view-id>/common/feed/feed_main.xhtml</to-view-id>
+    </navigation-case>
+    
+  </navigation-rule>
+
+</faces-config>

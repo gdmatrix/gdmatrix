@@ -1,0 +1,192 @@
+package org.santfeliu.web.obj;
+
+import java.util.Map;
+import org.matrix.dic.PropertyDefinition;
+import org.santfeliu.dic.Type;
+
+import org.santfeliu.faces.beansaver.Savable;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.web.WebBean;
+import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.web.obj.util.DateTimeRowStyleClassGenerator;
+import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.RowStyleClassGenerator;
+
+public abstract class PageBean extends WebBean implements Savable
+{
+  public static final String ACTIONS_SCRIPT_NAME = 
+    "_actionsScriptName";
+  
+  protected static final int PAGE_SIZE = 10;
+  @CMSProperty
+  public static final String PAGE_SIZE_PROPERTY = "pageSize";
+  @CMSProperty
+  public static final String PAGE_TITLE_PROPERTY = "oc.pageTitle";
+  
+  protected ParametersManager parametersManager;
+  
+  public String getTitle()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    return getTitle(userSessionBean.getMenuModel().getSelectedMenuItem());
+  }
+
+  public String getTitle(MenuItemCursor cursor)
+  {
+    String title = cursor.getProperty(PAGE_TITLE_PROPERTY);
+    if (title == null)
+    {
+      title = cursor.getLabel();
+    }
+    return title;
+  }
+
+  public abstract String show();
+  
+  public String store()
+  {
+    //preStore();
+    String outcome = show();
+    //postStore();
+    return outcome;
+  }
+  
+//  public void preStore()
+//  {
+//    ObjectBean objectBean = getObjectBean();
+//    if (objectBean != null)
+//      objectBean.preStore();
+//  };
+//  
+//  public void postStore()
+//  {
+//    ObjectBean objectBean = getObjectBean();
+//    if (objectBean != null)
+//      objectBean.postStore();
+//  };
+  
+  protected void executeTypeAction(String actionName) throws Exception
+  {
+    executeTypeAction(actionName, getSelectedType());
+  }
+  
+  protected void executeTypeAction(String actionName, Type selectedType)
+    throws Exception
+  {
+//    try 
+//    {
+      if (selectedType != null)
+      {
+        if (isActionsScriptEnabled(selectedType))
+        {
+          String action = UserSessionBean.ACTION_SCRIPT_PREFIX + ":" + 
+            getActionsScriptName(selectedType) + "." + actionName;
+          UserSessionBean.getCurrentInstance().executeScriptAction(action);
+        }
+      }
+//    }
+//    catch (Exception ex) 
+//    {
+//      error(ex);
+//      throw ex;
+//    }
+//    finally
+//    {
+//    }
+  }
+  
+
+  public boolean isModified()
+  {
+    return true;
+  }
+
+  public boolean isNew()
+  {
+    return ControllerBean.NEW_OBJECT_ID.equals(getObjectId());
+  }
+  
+  public String getObjectId()
+  {
+    ObjectBean objectBean = getObjectBean();
+    return objectBean == null ?
+      ControllerBean.NEW_OBJECT_ID : objectBean.getObjectId();
+  }
+  
+  public void setObjectId(String objectId)
+  {
+    getObjectBean().setObjectId(objectId);
+  }
+  
+  public ObjectBean getObjectBean()
+  {
+    return ControllerBean.getCurrentInstance().getObjectBean();
+  }
+  
+  public ControllerBean getControllerBean()
+  {
+    return ControllerBean.getCurrentInstance();
+  }
+
+  public int getPageSize()
+  {
+    String pageSize = getSelectedMenuItem().getProperty(PAGE_SIZE_PROPERTY);
+    if (pageSize != null)
+      return Integer.valueOf(pageSize).intValue();
+    else
+      return PAGE_SIZE;
+  }
+
+  /* Dictionary Property definition Maps */
+  public Map getPropertySize()
+  {
+    return new PropertySizeMap(getSelectedType());
+  }
+
+  public Map getPropertyRequired()
+  {
+    return new PropertyRequiredMap(getSelectedType());
+  }
+
+  protected Type getSelectedType()
+  {
+    return null;
+  }
+  
+  protected String getActionsScriptName(Type type)
+  {
+    String scriptName = null;
+    if (type != null)
+    {
+      PropertyDefinition pd = type.getPropertyDefinition(ACTIONS_SCRIPT_NAME);
+      if (pd != null && pd.getValue() != null)
+      {
+        String value = pd.getValue().get(0);
+        if (value != null)
+          scriptName = value;
+      }
+    }
+    
+    return scriptName;
+  }
+  
+  protected boolean isActionsScriptEnabled(Type type)
+  {
+    return getActionsScriptName(type) != null;
+  }
+  
+  public RowStyleClassGenerator getRowStyleClassGenerator()
+  {
+    return new DateTimeRowStyleClassGenerator(
+      "startDate,startTime", "endDate,endTime", "before,after,between");
+  }
+  
+  public String getRowStyleClass()
+  {
+    RowStyleClassGenerator styleClassGenerator = 
+      getRowStyleClassGenerator();
+    return styleClassGenerator.getStyleClass(getValue("#{row}"));    
+  }    
+  
+}

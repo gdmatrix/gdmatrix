@@ -1,0 +1,855 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="doc"
+  namespace="http://doc.matrix.org/"
+  title="Gestor de documents"
+  wsdlLocation="../services/doc?wsdl"
+  service="DocumentManagerService"
+  port="DocumentManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Abel Blanque, Ricard Real">
+
+  <documentation language="ca">
+    <div>
+      El mòdul <i>doc</i> és l'encarregat de gestionar els documents, i és part fonamental del sistema de gestió documental.
+    </div>
+    <div>
+      <h1>Característiques generals</h1>
+      <ul>
+        <li>Sistema de metadades extensible i dinàmic.</li>
+        <li>Possibilitat de relacionar documents entre si, per indicar que un és component, traducció o redacció d’un altre.</li>
+        <li>Possibilitat d’emmagatzemar les dades d’un document de manera interna (dins la base de dades) o externa (en un sistema de fitxers o servidor web).</li>
+        <li>Possibilitat de classificar els documents mitjançant sèries documentals o quadres de classificació</li>
+        <li>Integració amb diccionari de tipologíes. Permet definit metadades del document definides a nivell de tipus de document.</li>
+        <li>Sistema de bloqueig per evitar modificacions concurrents.</li>
+        <li>Cerca pel contingut dels documents.</li>
+        <li>Control d'accés a dos nivells: A nivell de document i a nivell de tipología.</li>
+        <li>Permet fer control de versions de documents.</li>
+        <li>Detecció automàtica del format dels continguts.</li>
+      </ul>
+    </div>
+    <h1>Model conceptual</h1>
+    <div class="figure">
+      
+      <img src="resources/doc1.png" alt="model conceptual" />
+      <div>Figura 1: Model conceptual</div>
+    </div>    
+  </documentation>
+  <imports>
+    <import prefix="mx" 
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="dic"/>
+    <import module="security"/>
+    <import module="classif"/>
+  </imports>
+  
+  <types>
+    <entity name="Content">
+      <documentation language="ca">
+        <div><i>Content</i> és la representació del contingut d'un document.</div>
+        <div>Un contingut és una seqüència de bits que representa una certa informació expressada en un idioma i un format determinat (text, MSWord, HTML, pdf, etc.).</div>
+
+        <div>Els continguts són immutables. Això vol dir que un cop creat, un contingut es pot destruir però no es pot modificar. O dit d’una altra manera, la informació associada a un determinat contentId serà sempre la mateixa.
+        Un contingut pot formar part de diferents documents, o de diferents versions del mateix document.</div>
+
+        <div>
+          El mòdul doc permet emmagatzemar i recuperar continguts. Un contingut es pot emmagatzemar de dues maneres:
+          <ul>
+            <li>Internament: Les dades del contingut es guarden dins la base de dades. En aquest cas, el <i>Content</i> tindrà les seves dades com un xsd:base64Binary (byte[] o javax.activation.DataHandler si es treballa amb Java)</li>
+            <li>Externament: Les dades del contingut es guarden en algun magatzem extern (sistema de fitxers o servidor web). El <i>Content</i> tindrà informada la URL que referencia el seu contingut.</li>
+          </ul>
+        </div>
+      </documentation>
+      <identifier name="contentId" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Codi que identifica el contingut d'un document.
+          Típicament tindrà el format d'un UUID (norma ISO/IEC 11578:1996).
+        </documentation>
+      </identifier>
+      <property name="contentType" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Tipus MIME o Media type del contingut.
+        </documentation>
+      </property>
+      <property name="formatId" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Identificador del format.
+          Dos continguts amb un mateix <i>contentType</i> poden tenir formats
+          diferents. Per exemple, per estar generats amb diferents versions d'una aplicació.
+          El <i>formatId</i> permet identificar ambdos formats.
+          Típicament aquest valor serà proveït per eines externes d'identificació automàtica de formats (p.ex. DROID, basat en PRONOM)
+        </documentation>
+      </property>
+      <property name="formatDescription" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Descripció textual del format.
+        </documentation>
+      </property>
+      <property name="language" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Idioma del contingut.
+        </documentation>
+      </property>
+      <property name="creationDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          <strike>Data de creació</strike> (Obsoleta).
+        </documentation>
+      </property>
+      <property name="captureDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data i hora d'entrada del contingut al gestor documental.
+        </documentation>
+      </property>
+      <property name="captureUserId" type="xs:string" minOccurs="0" references="security:User" readOnly="true">
+        <documentation language="ca">
+          Usuari que enregistra el contingut al gestor documental.
+        </documentation>
+      </property>
+      <property name="size" type="xs:long" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Tamany en bytes del contingut.
+        </documentation>
+      </property>
+      <property name="data" type="xs:base64Binary" minOccurs="0" expectedContentTypes="*/*">
+        <documentation language="ca">
+          La seqüència de bits que conformen el contingut d'un document.
+          Si <i>data</i> té valor, es considera que és un contingut intern.
+        </documentation>
+      </property>
+      <property name="url" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          La seqüència de bits que conformen el contingut d'un document.
+          Si <i>url</i> té valor, llavors es considera que el contingut és extern.
+        </documentation>
+      </property>
+    </entity>
+
+    <entity name="Document">
+      <documentation language="ca">
+        Un <i>Document</i> és un objecte digital format per:
+        <ul>
+          <li>Un conjunt de propietats (<a href="dic.html#type-Property">Property</a>) que descriuen les característiques del document.</li>
+          <li>Un (o cap) objecte contingut (<a href="#type-Content">Content</a>).</li>
+          <li>Una llista de 0 a N documents relacionats (<a href="#type-RelatedDocument">RelatedDocument</a>).</li>
+          <li>Una llista de control d'Accès, que determina la seguretat del document(<a href="security.html#type-AccessControl">AccessControl</a>).</li>
+        </ul>
+      </documentation>
+
+      <identifier name="docId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Codi identificador del document.
+        </documentation>
+      </identifier>
+      <property name="version" type="xs:int">
+        <documentation language="ca">
+          Indicador de la versió del document.
+        </documentation>
+      </property>
+      <property name="title" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Títol del document.
+        </documentation>
+      </property>
+      <property name="docTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+        <documentation language="ca">
+          Codi de la tipología del document. El codi pertany a un tipus del diccionari (veure mòdul <a href="dic.html">dic</a>)
+        </documentation>
+      </property>
+      <property name="state" type="doc:State" minOccurs="0">
+        <documentation language="ca">
+          Estat del document.
+        </documentation>
+      </property>
+      <property name="language" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Idioma en que està escrit el document.
+        </documentation>
+      </property>
+      <property name="authorId" type="xs:string" minOccurs="0" references="kernel:Person"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          <strike>Autor/s del documents</strike> (Obsoleta. Es recomana l'ús de <a href="kernel.html#type-PersonDocument">PersonDocument</a>)
+        </documentation>
+      </property>
+      <property name="captureDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data i hora de captura, és a dir, la data i hora d'entrada del document al gestor documental.
+        </documentation>
+      </property>
+      <property name="captureUserId" type="xs:string" minOccurs="0" references="security:User" readOnly="true">
+        <documentation language="ca">
+          Usuari de captura, és a dir, l'usuari que entra el document al gestor documental.
+        </documentation>
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data i hora de la darrera modificació del document.
+          Si no s'ha fet cap modificació al document, serà igual a <i>captureDateTime</i>
+        </documentation>
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User" readOnly="true">
+        <documentation language="ca">
+         Usuari que ha fet la darrera modificació del document.
+         Si no s'ha fet cap modificació al document, serà igual a <i>captureUserId</i>
+        </documentation>
+      </property>
+      <property name="creationDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data en que es va crear el document. És diferent a la data de captura, que normalment és posterior a la creació.
+        </documentation>
+      </property>
+      <property name="classId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="classif:Class">
+        <documentation language="ca">
+          Codi de la sèrie/s documental/s a la/les que pertany el document.
+        </documentation>
+      </property>
+      <property name="caseId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="cases:Case">
+        <documentation language="ca">
+          <strike>Codis d'expedients relacionats </strike>(Obsoleta. Es recomana l'ús de <a href="case.html#type-CaseDocument">CaseDocument</a>)
+        </documentation>
+      </property>
+      <property name="summary" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Breu resum del contingut del document en format HTML on es poden resaltar les paraules clau d’una cerca per contingut realitzada amb el mètode <a href="#oper-findDocuments">findDocuments</a>.
+        </documentation>
+      </property>
+      <property name="content" type="doc:Content" minOccurs="0">
+        <documentation language="ca">
+          Contingut del document.
+        </documentation>
+      </property>
+      <property name="lockUserId" type="xs:string" minOccurs="0" references="security:User" readOnly="true">
+        <documentation language="ca">
+          Identificador de l'usuari que té el bloqueig d’escriptura sobre aquest component. Veure operació <a href="#oper-lockDocument">lockDocument</a> i <a href="#oper-unlockDocument">unlockDocument</a>.
+        </documentation>
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de metadades del document.
+        </documentation>
+      </property>
+      <property name="relatedDocument" type="doc:RelatedDocument"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de documents relacionats amb el document.
+        </documentation>
+      </property>
+      <property name="accessControl" type="security:AccessControl" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de control d'accès (ACL).
+        </documentation>
+      </property>
+      <attribute name="incremental" type="xs:boolean" required="true">
+        <documentation language="ca">
+          Booleà que indica si l'objecte <i>Document</i> conté totes les propietats del document.
+        </documentation>
+      </attribute>
+    </entity>
+
+    <struct name="RelatedDocument">
+      <document language="ca">
+        <div>
+          Cada relació entre 2 documents es representa amb un objecte <i>RelatedDocument</i>, que defineix:
+          Amb quin document es relaciona, el tipus de relació, i amb quin nom s'identifica la relació.
+        </div>
+        <div>
+          Un document no pot tenir 2 o més objectes RelatedDocument amb el mateix tipus i el mateix nom de relació
+          que facin referència a documents amb docId diferent.
+        </div>
+        [Diagrama]
+      </document>
+      <property name="relationType" type="doc:RelationType" minOccurs="0">
+        <documentation language="ca">
+          Tipus de relació entre el document i el document relacionat.
+        </documentation>        
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom de la relació.
+        </documentation>
+      </property>
+      <property name="docId" type="xs:string" minOccurs="0" references="doc:Document">
+        <documentation language="ca">
+          Identificador del document relacionat.
+        </documentation>
+      </property>
+      <property name="version" type="xs:int">
+        <documentation language="ca">
+          Versió del document relacionat.
+        </documentation>
+      </property>
+      <property name="captureDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data de captura de la relació entre document origen i relacionat.
+        </documentation>
+      </property>
+      <property name="captureUserId" type="xs:string" minOccurs="0" references="security:User" readOnly="true">
+        <documentation language="ca">
+          Usuari de captura de la relació entre document origen i relacionat.
+        </documentation>
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        Data de la darrera modificació de la relació entre document origen i relacionat.
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User" readOnly="true">
+        Usuari que ha fet la darrera modificació entre document origen i relacionat.
+      </property>
+    </struct>
+
+    <struct name="DocumentMetaData">
+      <documentation language="ca">
+        <strike>Conté les propietats que descriuen les característiques de la implementació d'aquest servei</strike>.
+        Obsolet. A substituir per <a href="#type-DocumentManagerMetaData">DocumentManagerMetaData</a>.
+      </documentation>
+      <property name="documentTitleMaxSize" type="xs:int">
+        <documentation language="ca">
+          <strike>Tamany màxim del títol del document.</strike>
+        </documentation>
+      </property>
+      <property name="documentRelationNameMaxSize" type="xs:int">
+        <documentation language="ca">
+          <strike>Tamany màxim del nom d'un <i>RelatedDocument</i>.</strike>
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="DocumentManagerMetaData" extends="mx:ManagerMetaData">
+      <documentation language="ca">
+        Conté les propietats que descriuen les característiques de la implementació d'aquest servei.
+      </documentation>
+      <property name="supportVersions" type="xs:boolean">
+        <documentation language="ca">
+          Indica si suporta versionat de documents.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="DocumentFilter">
+      <documentation language="ca">
+        Un <i>DocumentFilter</i> conté les propietats per les quals es filtraran resultats de fer una crida al mètode <a href="#oper-findDocuments">findDocuments</a> o <a href="#oper-countDocuments">countDocuments</a>.
+      </documentation>
+      <property name="docId" type="xs:string" minOccurs="0" 
+        maxOccurs="unbounded" nillable="true" references="doc:Document">
+        <documentation language="ca">
+          Llista de Codis identificadors dels documents.
+        </documentation>
+      </property>
+      <property name="docTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+        <documentation language="ca">
+          Tipus de document.
+        </documentation>
+      </property>
+      <property name="version" type="xs:int">
+        <documentation language="ca">
+          Versió del document.
+          Si version = 0 es retornarà només la darrera versió de cada document.
+          Si version = -1 es retornaràn totes les versions de cada document.
+        </documentation>
+      </property>
+      <property name="language" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Idioma del document.
+        </documentation>
+      </property>
+      <property name="title" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Títol del document.
+        </documentation>
+      </property>
+      <property name="dateComparator" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Selector de camp de data.
+        </documentation>        
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data inicial de l’interval de cerca. <i>startDate &lt;= changeDateTime</i>
+        </documentation>
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+        <documentation language="ca">
+          Data final de l’interval de cerca. <i>endDate &gt;= changeDateTime</i>
+        </documentation>
+      </property>
+      <property name="contentSearchExpression" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Expressió de cerca pel contingut. El format d’aquesta expressió serà depenent de la implementació.
+        </documentation>
+      </property>
+      <property name="metadataSearchExpression" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Expressió de cerca per propietats. El format d'aquesta expressió serà depenent de la implementació.
+        </documentation>
+      </property>
+      <property name="summary" type="xs:boolean">
+        <documentation language="ca">
+          Booleà que indica si els <i>Document</i> retornats tindran la propietat <i>summary</i> informada.
+        </documentation>
+      </property>
+      <property name="contentId" type="xs:string" minOccurs="0" references="doc:Content">
+        <documentation language="ca">
+          Codi identificador del contingut.
+        </documentation>
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de propietats d'usuari per les quals s'han de filtrar els resultats.
+        </documentation>
+      </property>
+      <property name="outputProperty" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de noms de propietat que han de tenir el documents resultat de la cerca.
+        </documentation>
+      </property>
+      <property name="orderByProperty" type="doc:OrderByProperty"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de <i>OrderByProperty</i> per les quals s'ordenaran els resultats.
+        </documentation>
+      </property>
+      <property name="firstResult" type="xs:int">
+        <documentation language="ca">
+          Indica la posició del primer objecte <i>Document</i> que volem que retorni la operació <a href="#oper-findDocuments">findDocuments</a> dins de la llista de tots els documents que satisfan el filtre.
+        </documentation>
+      </property>
+      <property name="maxResults" type="xs:int">
+        <documentation language="ca">
+          Nombre d’objectes <i>Document</i> que retornarà, com a màxim, l’operació <a href="#oper-findDocuments">findDocuments</a>.
+        </documentation>
+      </property>
+      <property name="includeContentMetadata" type="xs:boolean">
+        <documentation language="ca">
+          Booleà que indica si els documents retornats tindran les metadades del seu <i>Content</i> informades o no.
+        </documentation>
+      </property>
+      <property name="states" type="doc:State" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista dels diferents estats pels quals filtrar.
+        </documentation>
+      </property>
+      <property name="rolesDisabled" type="xs:boolean">
+        <documentation language="ca">
+          Booleà que permet deshabilitar la comprovació de seguretats al fer una crida a <a href="#oper-countDocuments">countDocuments</a>.
+          L'ús d'aquesta propietat és útil quan es necessari conèixer el nombre de documents total que compleixen les propietats de filtre, però l'usuari només té accés a un subconjunt d'aquests documents.
+          <div>Només vàlida per <a href="#oper-countDocuments">countDocuments</a></div>
+        </documentation>
+      </property>
+      <property name="classId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="classif:Class">
+        <documentation language="ca">
+          Llista d'identificadors de sèrie documental.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="OrderByProperty">
+      <documentation language="ca">
+        Estructura que descriu una propietat per la qual s'ordenarà la llista de <i>Document</i> resultat de la operació <a href="#oper-findDocuments">findDocuments</a>.
+      </documentation>
+      <property name="name" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom de la propietat.
+        </documentation>
+      </property>
+      <property name="descending" type="xs:boolean">
+        <documentation language="ca">
+          Boolean que determina si l'ordre serà descendent (true) o ascendent (false).
+        </documentation>
+      </property>
+    </struct>
+
+    <enumeration name="ContentInfo">
+      <documentation language="ca">
+        Classe enumeració que es fa servir dins del contexte d'una operació <a href="#oper-loadDocument">loadDocument</a>, que indica
+        quin conjunt d'informació es retornarà dins de l'objecte <a href="#type-Content">Content</a>.
+      </documentation>
+      <value name="ID">
+        <documentation language="ca">
+          Retornarà només l'identificador del contingut.
+        </documentation>
+      </value>
+      <value name="METADATA">
+        <documentation language="ca">
+          Retornarà les metadades sense el camp <i>data</i>.
+        </documentation>        
+      </value>
+      <value name="ALL">
+        <documentation language="ca">
+          Retornarà metadades i també el camp <i>data</i>.
+        </documentation>        
+      </value>
+    </enumeration>
+
+    <enumeration name="State">
+      <documentation language="ca">
+        Descripció dels diferents estats pels que pot passar un document en el seu cicle de vida.
+      </documentation>
+      <value name="DRAFT">
+        <documentation language="ca">
+          Borrador
+        </documentation>
+      </value>
+      <value name="COMPLETE">
+        <documentation language="ca">
+          Complet o actiu
+        </documentation>
+      </value>
+      <value name="RECORD">
+        <documentation language="ca">
+          Archivat
+        </documentation>
+      </value>
+      <value name="DELETED">
+        <documentation language="ca">
+          Esborrat lògic
+        </documentation>
+      </value>
+    </enumeration>
+
+    <enumeration name="RelationType">
+      <documentation language="ca">
+        Tipus de relació d'un <a href="#type-RelatedDocument">RelatedDocument</a> amb el document que el relaciona.
+        Hi han 4 possibles tipus de relació. COMPONENT, TRANSLATION, REDACTION, RELATED. Les relacions amb el prefix REV_ son les relacions inverses.
+        Per tota relació entre dos documents REL(d1,d2), existeix una relació inversa en sentit contrari REV_REL(d2,d1).
+      </documentation>
+      <value name="COMPONENT">
+        <documentation language="ca">
+          El document relacionat és component del document que el relaciona.
+        </documentation>
+      </value>
+      <value name="TRANSLATION">
+        <documentation language="ca">
+          El document relacionat és una traducció del document que el relaciona.
+        </documentation>
+      </value>
+      <value name="TRANSFORMATION">
+        <documentation language="ca">
+          El document relacionat és una transformació del document que el relaciona.
+        </documentation>
+      </value>
+      <value name="REDACTION">
+        <documentation language="ca">
+          El document relacionat és redacció del document que el relaciona.
+        </documentation>
+      </value>
+      <value name="RELATED">
+        <documentation language="ca">
+          Altre tipus de relació.
+        </documentation>
+      </value>
+      <value name="REV_COMPONENT">
+        <documentation language="ca">
+          El document relacionat té com a component el document que el relaciona.
+        </documentation>
+      </value>
+      <value name="REV_TRANSLATION">
+        <documentation language="ca">
+          El document relacionat té com a traducció el document que el relaciona.
+        </documentation>
+      </value>
+      <value name="REV_TRANSFORMATION">
+        <documentation language="ca">
+          El document relacionat té com a transformació el document que el relaciona.
+        </documentation>
+      </value>
+      <value name="REV_REDACTION">
+        <documentation language="ca">
+          El document relacionat té com a redacció el document que el relaciona.
+        </documentation>
+      </value>
+      <value name="REV_RELATED">
+        <documentation language="ca">
+          Relació inversa de RELATED.
+        </documentation>
+      </value>
+    </enumeration>
+
+  </types>
+
+  <operations>
+    <operation name="loadContent">
+      <documentation language="ca">
+        Recupera íntegrament un contingut a partir del seu identificador.
+      </documentation>
+      <parameter name="contentId" type="xs:string">
+        <documentation language="ca">
+          Identificador del contingut.
+        </documentation>
+      </parameter>
+      <response name="content" type="doc:Content">
+      </response>
+      <error name="INVALID_CONTENTID" message="contentId no vàlid">
+        <documentation language="ca">
+          L'identificador especificat no és vàlid.
+        </documentation>
+      </error>
+      <error name="CONTENT_NOT_FOUND" message="Contingut no trobat">
+        <documentation language="ca">
+          No es troba cap contingut amb aquest identificador.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="loadDocument">
+      <documentation language="ca">
+        Recupera un document a partir del seu identificador.
+        El document retornat serà íntegre amb totes les seves propietats, documents relacionats i controls d'accés, a excepció del contingut, que dependrà
+        del que s'especifiqui al parámetre <i>contentInfo</i>. Per tant, l'atribut <i>incremental</i> de l'objecte <a href="#type-Document">Document</a> retornat, serà false.
+      </documentation>
+      <parameter name="docId" type="xs:string">
+        <documentation language="ca">
+          Codi identificador del document.
+        </documentation>
+      </parameter>
+      <parameter name="version" type="xs:int">
+        <documentation language="ca">
+          Versió concreta del document. Si version = 0, retorna la darrera versió del document.
+        </documentation>
+      </parameter>
+      <parameter name="contentInfo" type="doc:ContentInfo">
+        <documentation language="ca">
+          Permet específicar la quantitat d'informació que retornara el <a href="#type-Content">Content</a>. Veure <a href="#type-ContentInfo">ContentInfo</a>.
+        </documentation>
+      </parameter>
+      <response name="document" type="doc:Document">
+      </response>
+      <error name="DOCUMENT_NOT_FOUND" message="Document no trobat">
+        <documentation language="ca">
+          No es troba cap document amb aquest identificador.
+        </documentation>
+      </error>
+      <error name="ACTION_DENIED" message="Acció denegada">
+        <documentation language="ca">
+          L'usuari no té permís de lectura del document.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="removeDocument">
+      <documentation language="ca">
+        Elimina un document a partir del seu identificador.
+      </documentation>
+      <parameter name="docId" type="xs:string">
+        <documentation language="ca">
+          Codi identificador del document.
+        </documentation>
+      </parameter>
+      <parameter name="version" type="xs:int">
+        <documentation language="ca">
+          Versió del document a esborrar o un dels següents valors:<br/>
+          <ul>
+            <li>-2 (DELETE_ALL_VERSIONS): Esborrat lògic de totes les versions.</li>
+            <li>-3 (DELETE_OLD_VERSIONS): Esborrat de totes les versions antigues de manera lògica.</li>                                                                                                
+            <li>-4 (PERSISTENT_DELETE): Esborrat físic de totes les versions.</li>               
+          </ul>
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Retorna cert si el document s'elimina amb èxit, i false altrament.
+        </documentation>
+      </response>
+      <error name="ACTION_DENIED" message="Acció denegada">
+        <documentation language="ca">
+          L'usuari no té permís d'esborrat del document
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="removeContent">
+      <documentation language="ca">
+        Elimina un contingut a partir del seu identificador.
+      </documentation>
+      <parameter name="contentId" type="xs:string">
+        <documentation language="ca">
+          Identificador de contingut.
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Retorna <i>cert</i> si el contingut s'elimina amb èxit, i <i>false</i> altrament.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="getDocumentMetaData">
+      <documentation language="ca">
+        <strike>Recupera les característiques de la implementació del servei.</strike>
+        Obsolet. A substituir per <a href="#oper-getManagerMetaData">getManagerMetaData</a>.
+      </documentation>
+      <response name="return" type="doc:DocumentMetaData">
+      </response>
+    </operation>
+
+    <operation name="getManagerMetaData">
+      <documentation language="ca">
+        Recupera les característiques de la implementació del servei.
+      </documentation>
+      <response name="documentMetaData" type="doc:DocumentManagerMetaData">
+        <documentation language="ca">
+          Retorna un objecte <i>documentMetaData</i> que conté les caracterítiques de la implementació del servei.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="storeDocument">
+      <documentation language="ca">
+        Crea o modifica un document.
+        Si el <i>docId</i> del document a desar és nul, és farà una creació. Si
+        pel contrari el <i>docId</i> té valor no nul es farà una modificació.
+      </documentation>
+      <parameter name="document" type="doc:Document">
+        <documentation language="ca">
+          Objecte <a href="#type-Document">Document</a> que es vol desar.
+        </documentation>
+      </parameter>
+      <response name="storedDocument" type="doc:Document">
+        <documentation language="ca">
+          Objecte <a href="#type-Document">Document</a> desat.
+        </documentation>
+      </response>
+      <error name="ACTION_DENIED" message="Acció denegada">
+        <documentation language="ca">
+          L'usuari no té permís de modificació o de creació del document.
+        </documentation>
+      </error>
+      <error name="NOT_INSTANTIABLE" message="El document és d'un tipus no instanciable">
+        <documentation language="ca">
+          La definició del tipus de document al diccionari, no permet crear instàncies de document d'aquest tipus.
+        </documentation>
+      </error>
+      <error name="NOT_LOCK_OWNER" message="No és el propietari del bloqueig">
+        <documentation language="ca">
+          El document que s'intenta modificar està bloquejat d'escriptura per un altre usuari.
+        </documentation>
+      </error>
+      <error name="DOCUMENT_NOT_FOUND" message="Document no trobat">
+        <documentation language="ca">
+          No es troba el document que s'intenta modificar.
+        </documentation>
+      </error>
+      <error name="RECORDED_DOCUMENT_NOT_UPDATABLE" message="Document enregistrat no actualitzable">
+        <documentation language="ca">
+          El document que s'intenta modificar està en estat arxivat (<i>RECORDED</i>), i per tant no és modificable.
+        </documentation>
+      </error>
+      <error name="VERSION_NOT_RECORDABLE" message="Versió no enregistrable">
+        <documentation language="ca">
+          No es pot arxivar la versió del document. Només es pot arxivar la darrera versió d'un document.
+        </documentation>
+      </error>
+      <error name="CONTENT_NOT_FOUND" message="Contingut no trobat">
+        <documentation language="ca">
+          No es troba el contingut del document que s'intenta crear o modificar. Només si el contingut s'indica de manera indirecta.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="lockDocument">
+      <documentation language="ca">
+        Bloqueja un document per evitar la modificació del document.
+        Un document bloquejat només pot ser modificat per l'usuari que el bloqueja o per un
+        usuari administrador del gestor documental.
+      </documentation>
+      <parameter name="docId" type="xs:string">
+        <documentation language="ca">
+          Codi identificador del document.
+        </documentation>
+      </parameter>
+      <parameter name="version" type="xs:int">
+        <documentation language="ca">
+          Versió del document.
+        </documentation>
+      </parameter>
+    </operation>
+
+    <operation name="unlockDocument">
+      <documentation language="ca">
+        Desbloqueja la modificació del document a partir del seu identificador.
+      </documentation>
+      <parameter name="docId" type="xs:string">
+        <documentation language="ca">
+          Codi identificador del document.
+        </documentation>
+      </parameter>
+      <parameter name="version" type="xs:int">
+        <documentation language="ca">
+          Versió del document.
+        </documentation>
+      </parameter>
+    </operation>
+
+    <operation name="findDocuments">
+      <documentation language="ca">
+        Retorna un conjunt de documents que satisfan les condicions de <i>filter</i>.
+        Els documents retornats no són íntegres, ja que no contenen els objectes <i>RelatedDocument</i>,
+        ni els <i>AccessControl</i>. Les dades retornades dins l'objecte <i>Content</i>, dependran
+        de la propietat <i>includeContentMetadata</i> de <i>DocumentFilter</i>.
+      </documentation>
+      <parameter name="filter" type="doc:DocumentFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="document" type="doc:Document"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de documents que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="countDocuments">
+      <documentation language="ca">
+        Cerca el nombre de documents que satisfan les condicions del filtre.
+      </documentation>
+      <parameter name="filter" type="doc:DocumentFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="documentCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="storeContent">
+      <documentation language="ca">
+        Desa un contingut al gestor documental.
+      </documentation>
+      <parameter name="content" type="doc:Content">
+        <documentation language="ca">
+          Objecte <a href="#type-Content">Content</a> que es vol desar.
+        </documentation>
+      </parameter>
+      <response name="storedContent" type="doc:Content">
+      </response>
+    </operation>
+
+    <operation name="markupContent">
+      <documentation language="ca">
+        Retorna una representació del contingut identificat per <i>contentId</i> en format HTML, on es resaltaran les paraules clau de l’expressió de cerca <i>searchExpression</i>.
+      </documentation>
+      <parameter name="contentId" type="xs:string">
+        <documentation language="ca">
+          Identificador del contingut.
+        </documentation>
+      </parameter>
+      <parameter name="searchExpression" type="xs:string">
+        <documentation language="ca">
+          Expressió de cerca.
+        </documentation>
+      </parameter>
+      <response name="return" type="xs:base64Binary" expectedContentTypes="*/*">
+      </response>
+    </operation>
+  </operations>
+</module>

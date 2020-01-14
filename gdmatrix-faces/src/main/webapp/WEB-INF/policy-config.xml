@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <managed-bean>
+    <managed-bean-name>policyConfigBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.PolicyConfigBean</managed-bean-class>
+    <managed-bean-scope>application</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>policyBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.PolicyBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>policyMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.PolicyMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>policySearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.PolicySearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>disposalHoldBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.DisposalHoldBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>disposalHoldMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.DisposalHoldMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>disposalHoldSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.DisposalHoldSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>classPoliciesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.ClassPoliciesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>casePoliciesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.CasePoliciesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentPoliciesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.DocumentPoliciesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentPolicySearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.DocumentPolicySearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>casePolicySearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.CasePolicySearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+
+    <navigation-case>
+      <from-outcome>policy_main</from-outcome>
+      <to-view-id>/common/policy/policy_main.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>policy_search</from-outcome>
+      <to-view-id>/common/policy/policy_search.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>disposal_hold_main</from-outcome>
+      <to-view-id>/common/policy/disposal_hold_main.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>disposal_hold_search</from-outcome>
+      <to-view-id>/common/policy/disposal_hold_search.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>class_policies</from-outcome>
+      <to-view-id>/common/policy/class_policies.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>case_policies</from-outcome>
+      <to-view-id>/common/policy/case_policies.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>document_policies</from-outcome>
+      <to-view-id>/common/policy/document_policies.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>document_policy_search</from-outcome>
+      <to-view-id>/common/policy/document_policy_search.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>case_policy_search</from-outcome>
+      <to-view-id>/common/policy/case_policy_search.jsp</to-view-id>
+    </navigation-case>
+
+  </navigation-rule>
+</faces-config>

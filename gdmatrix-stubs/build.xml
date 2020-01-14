@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="help" name="gdmatrix-ws">
+
+  <target name="setup">
+    <property environment="env"/>
+    <property name="domain" value="www.santfeliu.cat"/>
+    <property name="ks.alias" value="matrix"/>
+    <property name="ks.password" value="matrix"/>
+    <property name="ks.path" value="${basedir}/conf/certificates/matrix.p12"/>
+    <property name="ks.type" value="PKCS12"/>
+
+    <tstamp>
+      <format property="YEAR" pattern="yyyy" locale="en" />
+    </tstamp>
+
+    <path id="matrix.classpath">
+      <pathelement location="${java.home}/../lib/tools.jar"/>
+      <path refid="lib-compile.classpath" />    
+    </path>   
+
+    <path id="modgen.classpath">
+      <pathelement location="${basedir}/../gdmatrix-modgen/target/classes"/>
+    </path>   
+
+    <taskdef name="wsdlgen" classname="org.matrix.util.modgen.ant.WSDLModuleGeneratorTask"
+      loaderRef="modgen">
+      <classpath refid="modgen.classpath"/>
+    </taskdef>
+
+    <taskdef name="htmlgen" classname="org.matrix.util.modgen.ant.HTMLModuleGeneratorTask"
+      loaderRef="modgen">
+      <classpath refid="modgen.classpath"/>
+    </taskdef>
+    
+    <typedef resource="org/tigris/subversion/svnant/svnantlib.xml"
+      classpath="${org.tigris.subversion:svnant:jar};${org.tigris.subversion:svnClientAdapter:jar};
+      ${org.tmatesoft.svnkit:svnkit-javahl:jar};${org.tmatesoft.svnkit:svnkit:jar}"/>
+  
+  </target>
+
+  <target name="module_depends">
+    <echo message="==================== ${modulename} ====================" />
+    <dependset>
+      <srcfilelist dir="${basedir}/src/main/modules" files="${modulename}.xml" />
+      <targetfileset dir="${basedir}/target/generated-sources/wsdoc" includes="${modulename}.html" />
+      <targetfileset dir="${basedir}/target/generated-sources/wsdl" includes="${modulename}.wsdl,${modulename}.xsd" />
+      <!--<targetfileset dir="${basedir}/src/main/webapp/WEB-INF/classes/org/matrix/${modulename}" includes="*.class" />-->
+      <targetfileset dir="${basedir}/target/generated-sources/classes/org/matrix/${modulename}" includes="*.java" />
+    </dependset>
+    <available property="${modulename}_html_done"
+               file="${basedir}/target/generated-sources/wsdoc/${modulename}.html" />
+    <available property="${modulename}_wsdl_done"
+               file="${basedir}/target/generated-sources/wsdl/${modulename}.wsdl" />
+    <available property="${modulename}_java_done"
+               file="${basedir}/target/generated-sources/classes/org/matrix/${modulename}/package-info.class" />
+  </target>
+
+  <target name="copy_module_resources">
+   
+    <copy todir="${basedir}/target/generated-sources/wsdl">
+      <fileset dir="${basedir}/src/main/modules/schemas"
+        excludes="**/.svn/**">
+      </fileset>
+    </copy>
+   
+    <copy todir="${basedir}/src/main/webapp/wsdoc">
+      <fileset dir="${basedir}/src/main/modules/schemas"
+        excludes="**/.svn/**">
+      </fileset>
+    </copy>
+  
+  </target>
+
+  <target name="gen_module_html" depends="copy_module_resources"
+    unless="${modulename}_html_done">
+    <htmlgen moduleFile="${modulename}.xml"
+             sourceDir="${basedir}/src/main/modules"
+             destDir="${basedir}/target/generated-sources/wsdoc"
+             cssUri="resources/style.css">
+      <header>
+        <div>
+          <img src="resources/matrix.png" alt="" />
+        </div>
+        <br/>
+      </header>
+      <footer>
+        <br/><hr/>
+        <div>Ajuntament de Sant Feliu de Llobregat (C) ${YEAR}</div>
+      </footer>
+    </htmlgen>
+  </target>
+
+  <target name="gen_module_wsdl" unless="${modulename}_wsdl_done">
+    <wsdlgen moduleFile="${modulename}.xml"
+             sourceDir="${basedir}/src/main/modules"
+             destDir="${basedir}/target/generated-sources/wsdl" />
+  </target>
+
+  <target name="gen_module"
+          depends="module_depends, gen_module_html, gen_module_wsdl">
+  </target>
+
+  <target name="gen_security">
+    <antcall target="gen_module">
+      <param name="modulename" value="security" />
+    </antcall>
+  </target>
+
+  <target name="gen_dic">
+    <antcall target="gen_module">
+      <param name="modulename" value="dic" />
+    </antcall>
+  </target>
+
+  <target name="gen_kernel"
+          depends="gen_dic, gen_doc">
+    <antcall target="gen_module">
+      <param name="modulename" value="kernel" />
+    </antcall>
+  </target>
+
+  <target name="gen_doc"
+          depends="gen_dic">
+    <antcall target="gen_module">
+      <param name="modulename" value="doc" />
+    </antcall>
+  </target>
+
+  <target name="gen_agenda"
+          depends="gen_dic, gen_doc, gen_kernel">
+    <antcall target="gen_module">
+      <param name="modulename" value="agenda" />
+    </antcall>
+  </target>
+
+  <target name="gen_cases"
+          depends="gen_dic, gen_kernel, gen_doc, gen_agenda">
+    <antcall target="gen_module">
+      <param name="modulename" value="cases" />
+    </antcall>
+  </target>
+
+  <target name="gen_classif">
+    <antcall target="gen_module">
+      <param name="modulename" value="classif" />
+    </antcall>
+  </target>
+
+  <target name="gen_cms">
+    <antcall target="gen_module">
+      <param name="modulename" value="cms" />
+    </antcall>
+  </target>
+
+  <target name="gen_feed">
+    <antcall target="gen_module">
+      <param name="modulename" value="feed" />
+    </antcall>
+  </target>
+
+  <target name="gen_edu"
+          depends="gen_kernel">
+    <antcall target="gen_module">
+      <param name="modulename" value="edu" />
+    </antcall>
+  </target>
+
+  <target name="gen_elections">
+    <antcall target="gen_module">
+      <param name="modulename" value="elections" />
+    </antcall>
+  </target>
+
+  <target name="gen_forum">
+    <antcall target="gen_module">
+      <param name="modulename" value="forum" />
+    </antcall>
+  </target>
+
+  <target name="gen_news"
+          depends="gen_doc">
+    <antcall target="gen_module">
+      <param name="modulename" value="news" />
+    </antcall>
+  </target>
+
+  <target name="gen_policy"
+          depends="gen_dic, gen_doc, gen_cases, gen_classif">
+    <antcall target="gen_module">
+      <param name="modulename" value="policy" />
+    </antcall>
+  </target>
+
+  <target name="gen_presence"
+          depends="gen_kernel">
+    <antcall target="gen_module">
+      <param name="modulename" value="presence" />
+    </antcall>
+  </target>
+
+  <target name="gen_report"
+          depends="gen_doc">
+    <antcall target="gen_module">
+      <param name="modulename" value="report" />
+    </antcall>
+  </target>
+
+  <target name="gen_search"
+          depends="gen_doc, gen_agenda, gen_news">
+    <antcall target="gen_module">
+      <param name="modulename" value="search" />
+    </antcall>
+  </target>
+
+  <target name="gen_sign"
+          depends="gen_doc">
+    <antcall target="gen_module">
+      <param name="modulename" value="sign" />
+    </antcall>
+  </target>
+
+  <target name="gen_signature"
+          depends="gen_doc">
+    <antcall target="gen_module">
+      <param name="modulename" value="signature" />
+    </antcall>
+  </target>
+
+  <target name="gen_sql">
+    <antcall target="gen_module">
+      <param name="modulename" value="sql" />
+    </antcall>
+  </target>
+
+  <target name="gen_survey">
+    <antcall target="gen_module">
+      <param name="modulename" value="survey" />
+    </antcall>
+  </target>
+
+  <target name="gen_translation">
+    <antcall target="gen_module">
+      <param name="modulename" value="translation" />
+    </antcall>
+  </target>
+
+  <target name="gen_workflow">
+    <antcall target="gen_module">
+      <param name="modulename" value="workflow" />
+    </antcall>
+  </target>
+
+  <target name="clear_modules">
+    <delete includeEmptyDirs="true" verbose="true"
+            dir="${basedir}/src/main/webapp/wsdoc" />
+
+    <delete includeEmptyDirs="true" verbose="true"
+            dir="${basedir}/src/main/webapp/WEB-INF/wsdl" />
+  </target>
+
+  <target name="gen_all_modules"
+          depends="setup, gen_security, gen_dic, gen_classif, gen_kernel, 
+          gen_doc, gen_cases, gen_cms, gen_feed, gen_agenda, gen_edu, gen_elections,
+          gen_forum, gen_news, gen_policy, gen_presence, gen_report,
+          gen_search, gen_sign, gen_signature, gen_sql, gen_survey,
+          gen_translation, gen_workflow" />
+
+  <target name="clean">
+    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
+      <fileset dir="${basedir}/build" />
+    </delete>
+    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
+      <fileset dir="${basedir}/src/main/webapp/WEB-INF/classes" />
+    </delete>
+    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
+      <fileset dir="${basedir}/src/main/webapp/WEB-INF/wsdl" />
+    </delete>
+    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
+      <fileset dir="${basedir}/src/main/webapp/WEB-INF/lib" />
+    </delete>
+    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
+      <fileset dir="${basedir}/src/main/webapp/wsdoc" />
+    </delete>
+    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
+      <fileset dir="${basedir}/src/main/webapp/javawebstart/lib" />
+    </delete>
+    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
+      <fileset dir="${basedir}/dist" />
+    </delete>
+    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
+      <fileset dir="${basedir}/gensrc" />
+    </delete>
+  </target>
+
+  <target name="build">
+    <antcall target="clean" />
+    <antcall target="gen_all_modules" />
+  </target>
+
+  <target name="help">
+    <echo message="build: Builds artifacts and compile sources"></echo>
+    <echo message="build-ALL-modules: Builds artifacts for all modules"></echo>
+    <echo message="build-[mod]-module: Builds artifacts for [mod] module"></echo>
+    <echo message="compile: Compile sources"></echo>
+    <echo message="clean: clean classes"></echo>
+  </target>
+
+</project>

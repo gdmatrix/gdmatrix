@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+ <managed-bean>
+  <managed-bean-name>nodeEditBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.cms.web.NodeEditBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>workspaceEditBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.cms.web.WorkspaceEditBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>cmsToolbarBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.cms.web.CMSToolbarBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+
+  <navigation-case>
+   <from-outcome>node_edit</from-outcome>
+   <to-view-id>/common/cms/node_edit.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>workspace_edit</from-outcome>
+   <to-view-id>/common/cms/workspace_edit.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>root_select</from-outcome>
+   <to-view-id>/common/cms/root_select.jsp</to-view-id>
+  </navigation-case>
+
+ </navigation-rule>
+
+</faces-config>
+
+

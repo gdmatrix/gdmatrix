@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <h:panelGrid columns="2" columnClasses="ilcol1,ilcol2" width="100%"
+               styleClass="interiorLayout" summary="" title="">
+
+    <t:div styleClass="leftMenu">
+      <ui:include src="/common/agenda/filter/#{eventSearchBean.filterName}.xhtml"/>
+    </t:div>
+
+    <t:div styleClass="eventView">
+      <ui:include src="/common/agenda/view/#{eventSearchBean.viewName}.xhtml"/>
+    </t:div>
+    
+  </h:panelGrid>
+</html>

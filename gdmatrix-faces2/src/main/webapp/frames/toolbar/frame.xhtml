@@ -1,0 +1,28 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/topframe/topframe.xhtml">
+    <ui:define name="frame">  
+
+          <h:panelGrid id="generalLayout" 
+                       columns="1"
+                       styleClass="general_main" 
+                       rowClasses="general_body"
+                       headerClass="general_header"
+                       cellspacing="0"
+                       cellpadding="0"
+                       style="margin-top:1px"
+                       summary="">
+            <t:div>
+              <ui:insert name="template">template</ui:insert>
+            </t:div>
+          </h:panelGrid>
+
+    </ui:define>
+  </ui:composition>
+</html>
+

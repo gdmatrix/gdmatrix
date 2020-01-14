@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="translation"
+  namespace="http://translation.matrix.org/"
+  title="Gestor de traduccions"
+  wsdlLocation="../services/translation?wsdl"
+  service="TranslationManagerService"
+  port="TranslationManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Ricard Real, Jordi López">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />
+  </imports>
+
+  <types>
+    <entity name="Translation">
+      <identifier name="transId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="language" type="xs:string" minOccurs="0">
+      </property>
+      <property name="text" type="xs:string" minOccurs="0">
+      </property>
+      <property name="translation" type="xs:string" minOccurs="0">
+      </property>
+      <property name="state" type="translation:TranslationState" minOccurs="0">
+      </property>
+      <property name="group" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="modifyDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="readDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="modifyUserId" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <struct name="TranslationMetaData">
+      <property name="translationMaxSize" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="TranslationFilter">
+      <property name="language" type="xs:string" minOccurs="0">
+      </property>
+      <property name="state" type="translation:TranslationState" minOccurs="0">
+      </property>
+      <property name="text" type="xs:string" minOccurs="0">
+      </property>
+      <property name="translation" type="xs:string" minOccurs="0">
+      </property>
+      <property name="group" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <enumeration name="TranslationState">
+      <value name="DRAFT"/>
+      <value name="COMPLETED"/>
+    </enumeration>
+  </types>
+
+  <operations>
+
+    <operation name="getTranslationMetaData">
+      <response name="translationMetaData" type="translation:TranslationMetaData">
+      </response>
+    </operation>
+
+    <operation name="translateGroup">
+      <parameter name="language" type="xs:string">
+      </parameter>
+      <parameter name="text" type="xs:string">
+      </parameter>
+      <parameter name="group" type="xs:string">
+      </parameter>
+      <response name="translation" type="translation:Translation" minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadTranslation">
+      <parameter name="transId" type="xs:string">
+      </parameter>
+      <response name="translation" type="translation:Translation">
+      </response>
+    </operation>
+
+    <operation name="storeTranslation">
+      <parameter name="translation" type="translation:Translation">
+      </parameter>
+      <response name="storedTranslation" type="translation:Translation">
+      </response>
+    </operation>
+
+    <operation name="removeTranslation">
+      <parameter name="transId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findTranslations">
+      <parameter name="filter" type="translation:TranslationFilter">
+      </parameter>
+      <response name="translation" type="translation:Translation" minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countTranslations">
+      <parameter name="filter" type="translation:TranslationFilter">
+      </parameter>
+      <response name="translationCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="listModifiedTranslations">
+      <parameter name="language" type="xs:string">
+      </parameter>
+      <parameter name="dateTime1" type="xs:string">
+      </parameter>
+      <parameter name="dateTime2" type="xs:string">
+      </parameter>
+      <response name="translation" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="setActiveTranslations">
+      <parameter name="translation" type="translation:Translation"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <response name="numUpdated" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="translate">
+      <parameter name="language" type="xs:string">
+      </parameter>
+      <parameter name="text" type="xs:string">
+      </parameter>
+      <parameter name="group" type="xs:string">
+      </parameter>
+      <response name="translation" type="translation:Translation">
+      </response>
+    </operation>
+  </operations>
+</module>

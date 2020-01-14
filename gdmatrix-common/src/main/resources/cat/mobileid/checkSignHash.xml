@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns2:checkSignHash xmlns:ns2="http://idbcn.bcn.cat">
+      <ticket>${ticket}</ticket>
+    </ns2:checkSignHash>
+  </S:Body>
+</S:Envelope>

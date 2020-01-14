@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/workflow/instance.xhtml">
+
+    <ui:define name="form">
+
+      <t:saveState value="#{inputTextFormBean}" />
+
+      <h:panelGrid columns="1" width="100%">
+        <sf:outputText value="#{inputTextFormBean.message}" 
+          translator="#{instanceBean.translationEnabled ? 
+            applicationBean.translator : null}" 
+          translationGroup="wf:#{instanceBean.workflowName}"
+          styleClass="workflowMessage" />
+
+        <h:inputTextarea id="text" value="#{inputTextFormBean.text}" 
+          style="width:99%" rows="8" required="true" 
+          validator="#{inputTextFormBean.validateText}" 
+          onkeypress="checkMaxLength(this, 2000);" />
+      </h:panelGrid>
+
+      <h:message for="text" warnClass="warnMessage" 
+        errorClass="errorMessage" fatalClass="fatalMessage" showDetail="true"/>        
+
+    </ui:define>
+  </ui:composition>
+</html>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<query name="persones_ss">
+  <base>persones</base>
+  <title>Cerca persones per diferents criteris</title>
+  <description>Cerca persones per diferents criteris</description>
+  <label>Dona'm les persones que tinguin ${EDAT} anys i hagin treballat en la data ${DATA}</label>
+  <sql><![CDATA[SELECT ${OUTPUT} FROM GENESYS5.NCL_PERSONA M 
+WHERE DATAENT = '${DATA}' AND M.EDAT > ${EDAT} AND ${EXPRESSION}]]></sql>
+
+  <connection>
+    <driver>oracle.jdbc.driver.OracleDriver</driver>
+    <url>jdbc:oracle:thin:@oracle:1521:ajfeliu</url>
+    <username>ajuntament</username>
+    <password>*****</password>
+  </connection>
+
+  <!-- parameter definition list -->
+  <parameter name="DATA">
+    <description>Data</description>
+    <format>DATE</format>
+    <size>8</size>
+  </parameter>
+
+  <parameter name="EDAT">
+    <description>Edat</description>
+    <format>NUMBER</format>
+    <size>2</size>
+  </parameter>
+
+  <parameter name="NOM">
+    <description>Nom</description>
+    <sql><![CDATA[SELECT NOM, NOM FROM PERSON_NAMES]]></sql>
+    <size>10</size>
+  </parameter>
+
+  <!-- predicates -->
+
+  <predicate name="nom_de_pila">
+    <label>
+      que es diguin ${NOM}
+    </label>
+    <sql><![CDATA[UPPER(M.persnom) like UPPER('${NOM}')]]></sql>
+  </predicate>
+
+  <predicate name="informatics">
+    <label>
+      que siguin informàtics
+    </label>
+    <sql><![CDATA[M.professio = 'INFORMATIC']]></sql>
+  </predicate>
+
+  <!-- outputs -->
+
+  <output name="nom">
+    <label>Nom</label>
+    <sql><![CDATA[M.PERSNOM || ' ' || M.PERSCOG1 || ' ' || M.PERSCOG2]]></sql>
+  </output>
+
+  <output name="edat">
+    <label>Edat</label>
+    <sql><![CDATA[SYSDATE - TO_DATE(M.PERSNDATA)]]></sql>
+  </output>
+
+  <output name="domicili">
+    <label>Domicili</label>
+    <sql><![CDATA[(SELECT pd.DOMCOD FROM NCL_DOMICILI, NCL_PERSDOM pd WHERE M.PERSCOD = pd.PERSCOD)]]></sql>
+  </output>
+
+  <!-- instances -->
+
+  <instance name="inst1">
+    <description>Consulta de persones afectades</description>
+    <parameter name="DATA">20160201</parameter>
+    <parameter name="EDAT">23</parameter>
+    <expression>
+      <and>
+        <nor>
+          <predicate name="nom_de_pila">
+            <parameter name="NOM">RICARD</parameter>
+          </predicate>
+        </nor>
+      </and>
+    </expression>
+    <output name="nom"/>
+    <output name="edat"/>
+    <output name="domicili"/>
+  </instance>
+
+  <instance name="inst2">
+    <description>Consulta de persones 2</description>
+    <parameter name="DATA">20160201</parameter>
+    <parameter name="EDAT">25</parameter>
+    <expression>
+      <and>
+        <nor>
+          <predicate name="nom_de_pila">
+            <parameter name="NOM">JOAN</parameter>
+          </predicate>
+          <predicate name="nom_de_pila">
+            <parameter name="NOM">MARIA</parameter>
+          </predicate>
+        </nor>
+      </and>
+    </expression>
+    <output name="nom"/>
+    <output name="edat"/>
+    <output name="domicili"/>
+  </instance>
+
+</query>

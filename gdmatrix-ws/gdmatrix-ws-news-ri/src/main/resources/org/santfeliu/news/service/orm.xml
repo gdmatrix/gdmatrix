@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <description>News</description>
+    <package>org.santfeliu.news.service</package>
+
+    <named-query name="listNewSections">
+      <query>
+        SELECT ns
+        FROM NewSection ns
+        WHERE ns.newId = :newId
+        ORDER BY ns.sectionId
+      </query>
+    </named-query>
+
+    <named-query name="listNewDocuments">
+      <query>
+        SELECT nd
+        FROM NewDocument nd
+        WHERE 
+          (nd.newId = :newId) AND 
+          ((nd.newDocTypeId = :docType) OR (:docType is null))
+        ORDER BY nd.newDocTypeId,nd.documentId
+      </query>
+    </named-query>
+
+    <named-query name="listNewsDocuments">
+      <query>
+        SELECT nd.newId,nd.documentId,nd.newDocTypeId
+        FROM NewDocument nd
+        WHERE
+          (locate(concat(' ', concat(nd.newId, ' ')), :newId) > 0) AND       
+          ((nd.newDocTypeId = :docType) OR (:docType IS NULL))
+        ORDER BY nd.documentId
+      </query>
+    </named-query>
+
+    <named-query name="listSources">
+      <query>
+        SELECT s
+        FROM Source s
+        ORDER BY s.name
+      </query>
+    </named-query>
+
+    <named-query name="removeNewSections">
+      <query>
+        DELETE FROM NewSection ns
+        WHERE ns.newId = :newId
+      </query>
+    </named-query>
+
+    <named-query name="removeNewDocuments">
+      <query>
+        DELETE FROM NewDocument nd
+        WHERE nd.newId = :newId      
+      </query>
+    </named-query>
+
+    <named-query name="listNews">
+      <query>
+        SELECT DISTINCT n.newId,n.headline,n.summary,n.registerDate,
+          n.registerTime,n.startDate,n.startTime,n.endDate,
+          n.endTime,n.strDraft,n.source,n.userId,n.keywords
+        FROM New n LEFT JOIN n.newSections ns 
+        WHERE
+          (
+            (:content IS NULL) OR
+            (lower(n.summary) LIKE :content) OR 
+            (lower(n.headline) LIKE :content) OR
+            (lower(n.keywords) LIKE :content)
+          )
+          AND 
+          (
+            (
+              (:minDate IS NULL) 
+              AND 
+              (:maxDate IS NULL)
+            ) 
+            OR
+            (
+              (:minDate IS NULL) 
+              AND 
+              (:maxDate &gt;= concat(n.startDate, n.startTime))
+            )
+            OR
+            (
+              (:maxDate IS NULL) 
+              AND 
+              (:minDate &lt;= concat(n.endDate, n.endTime))
+            )
+            OR            
+            (
+              (:minDate &lt;= concat(n.endDate, n.endTime))
+              AND 
+              (:maxDate &gt;= concat(n.startDate, n.startTime))
+            )
+          )
+          AND 
+          (
+            (
+              (:excludeNotPublished = 'N')
+              AND
+              (
+                (
+                  (:sections IS NOT NULL)
+                  AND
+                  (
+                    (locate(concat(' ', concat(ns.sectionId, ' ')), :sections) > 0)
+                    OR
+                    (ns.sectionId IS NULL)
+                  )
+                )
+                OR
+                (:sections IS NULL)
+              )
+            )
+            OR
+            (
+              (:excludeNotPublished = 'Y')
+              AND
+              (
+                (
+                  (:sections IS NOT NULL)
+                  AND
+                  (locate(concat(' ', concat(ns.sectionId, ' ')), :sections) > 0)
+                )
+                OR
+                (
+                  (:sections IS NULL)
+                  AND
+                  (ns.sectionId IS NOT NULL)
+                )
+              )            
+            )
+          )
+          AND 
+          (
+            (:excludeDrafts = 'N') OR (n.strDraft = 'N')
+          )
+          AND
+          (
+            (:minPubDate IS NULL) OR 
+            (concat(n.startDate,n.startTime) &gt;= :minPubDate)
+          )
+          AND
+          (
+            (:userId IS NULL) OR (trim(n.userId) = :userId)
+          )
+        ORDER BY n.startDate desc,n.startTime desc,n.newId
+      </query>
+    </named-query>
+
+    <named-query name="countNews">
+      <query>
+        SELECT COUNT (DISTINCT n.newId)
+        FROM New n LEFT JOIN n.newSections ns 
+        WHERE
+          (
+            (:content IS NULL) OR
+            (lower(n.summary) LIKE :content) OR 
+            (lower(n.headline) LIKE :content) OR
+            (lower(n.keywords) LIKE :content)
+          )
+          AND 
+          (
+            (
+              (:minDate IS NULL) 
+              AND 
+              (:maxDate IS NULL)
+            ) 
+            OR
+            (
+              (:minDate IS NULL) 
+              AND 
+              (:maxDate &gt;= concat(n.startDate, n.startTime))
+            )
+            OR
+            (
+              (:maxDate IS NULL) 
+              AND 
+              (:minDate &lt;= concat(n.endDate, n.endTime))
+            )
+            OR            
+            (
+              (:minDate &lt;= concat(n.endDate, n.endTime))
+              AND 
+              (:maxDate &gt;= concat(n.startDate, n.startTime))
+            )
+          )
+          AND 
+          (
+            (
+              (:excludeNotPublished = 'N')
+              AND
+              (
+                (
+                  (:sections IS NOT NULL)
+                  AND
+                  (
+                    (locate(concat(' ', concat(ns.sectionId, ' ')), :sections) > 0)
+                    OR
+                    (ns.sectionId IS NULL)
+                  )
+                )
+                OR
+                (:sections IS NULL)
+              )
+            )
+            OR
+            (
+              (:excludeNotPublished = 'Y')
+              AND
+              (
+                (
+                  (:sections IS NOT NULL)
+                  AND
+                  (locate(concat(' ', concat(ns.sectionId, ' ')), :sections) > 0)
+                )
+                OR
+                (
+                  (:sections IS NULL)
+                  AND
+                  (ns.sectionId IS NOT NULL)
+                )
+              )            
+            )
+          )
+          AND 
+          (
+            (:excludeDrafts = 'N') OR (n.strDraft = 'N')
+          )
+          AND
+          (
+            (:minPubDate IS NULL) OR 
+            (concat(n.startDate,n.startTime) &gt;= :minPubDate)
+          )           
+          AND
+          (
+            (:userId IS NULL) OR (trim(n.userId) = :userId)
+          )          
+      </query>
+    </named-query>
+
+    <named-query name="countNewsInSection">
+      <query>
+        SELECT COUNT(n.newId)
+        FROM New n LEFT JOIN n.newSections ns 
+        WHERE 
+          (
+            (:content IS NULL) OR 
+            (lower(n.headline) LIKE :content) OR 
+            (lower(n.summary) LIKE :content) OR
+            (lower(n.keywords) LIKE :content)
+          ) 
+          AND 
+          (
+            (
+              (:minDate IS NULL) 
+              AND 
+              (:maxDate IS NULL)
+            ) 
+            OR
+            (
+              (:minDate IS NULL) 
+              AND 
+              (:maxDate &gt;= concat(n.startDate, n.startTime))
+            )
+            OR
+            (
+              (:maxDate IS NULL) 
+              AND 
+              (:minDate &lt;= concat(n.endDate, n.endTime))
+            )
+            OR            
+            (
+              (:minDate &lt;= concat(n.endDate, n.endTime))
+              AND 
+              (:maxDate &gt;= concat(n.startDate, n.startTime))
+            )
+          )
+          AND
+          (
+            (:sectionId IS NULL) OR
+            (ns.sectionId = :sectionId)
+          ) 
+          AND
+          (
+            (:minPubDate IS NULL) OR 
+            (concat(n.startDate,n.startTime) &gt;= :minPubDate)
+          ) 
+          AND 
+          (
+            (:excludeDrafts = 'N') OR (n.strDraft = 'N')
+          )
+          AND
+          (
+            (:userId IS NULL) OR (trim(n.userId) = :userId)
+          )          
+      </query>
+    </named-query>
+
+    <named-query name="findNewsInSection">
+      <query>
+        SELECT 
+          n.newId,n.headline,n.summary,n.registerDate,
+          n.registerTime,n.startDate,n.startTime,n.endDate,
+          n.endTime,n.strDraft,ns.sectionId,ns.priority,
+          ns.readingCount,n.keywords,ns.strSticky
+        FROM New n LEFT JOIN n.newSections ns 
+        WHERE 
+          (
+            (:content IS NULL) OR 
+            (lower(n.headline) LIKE :content) OR 
+            (lower(n.summary) LIKE :content) OR
+            (lower(n.keywords) LIKE :content)
+          ) 
+          AND 
+          (
+            (
+              (:minDate IS NULL) 
+              AND 
+              (:maxDate IS NULL)
+            ) 
+            OR
+            (
+              (:minDate IS NULL) 
+              AND 
+              (:maxDate &gt;= concat(n.startDate, n.startTime))
+            )
+            OR
+            (
+              (:maxDate IS NULL) 
+              AND 
+              (:minDate &lt;= concat(n.endDate, n.endTime))
+            )
+            OR            
+            (
+              (:minDate &lt;= concat(n.endDate, n.endTime))
+              AND 
+              (:maxDate &gt;= concat(n.startDate, n.startTime))
+            )
+          )
+          AND
+          (
+            (:sectionId IS NULL) OR
+            (ns.sectionId = :sectionId)
+          ) 
+          AND
+          (
+            (:minPubDate IS NULL) OR 
+            (concat(n.startDate,n.startTime) &gt;= :minPubDate)
+          ) 
+          AND 
+          (
+            (:excludeDrafts = 'N') OR (n.strDraft = 'N')
+          )
+          AND
+          (
+            (:userId IS NULL) OR (trim(n.userId) = :userId)
+          )          
+        ORDER BY 
+          ns.strSticky,ns.priority DESC,n.startDate DESC,
+          n.startTime DESC,n.newId
+      </query>
+    </named-query>
+    
+    <named-query name="getMaxPriorityInSection">
+      <query>
+        SELECT MAX (ns.priority)
+        FROM NewSection ns
+        WHERE (ns.sectionId = :sectionId)
+      </query>
+    </named-query>
+
+    <entity class="org.santfeliu.news.service.DBNew" name="New">
+      <table name="INF_NEW" />
+      <attributes>
+        <id name="newId">
+          <column name="NEWID" />
+          <generated-value strategy="TABLE" generator="INF_NEW"/>
+          <table-generator name="INF_NEW" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1" />                     
+        </id>
+        <basic name="headline">
+          <column name="HEADLINE" />
+        </basic>
+        <basic name="summary">
+          <column name="SUMMARY" />
+        </basic>
+        <basic name="baText">
+          <column name="TEXT" />
+          <lob/>
+        </basic>
+        <basic name="registerDate">
+          <column name="REGISTERDAY" />
+        </basic>
+        <basic name="registerTime">
+          <column name="REGISTERHOUR" />
+        </basic>
+        <basic name="startDate">
+          <column name="STARTDAY" />
+        </basic>
+        <basic name="startTime">
+          <column name="STARTHOUR" />
+        </basic>
+        <basic name="endDate">
+          <column name="ENDDAY" />
+        </basic>
+        <basic name="endTime">
+          <column name="ENDHOUR" />
+        </basic>
+        <basic name="userId">
+          <column name="USERID" />
+        </basic>
+        <basic name="source">
+          <column name="SOURCEID" />
+        </basic>
+        <basic name="strDraft">
+          <column name="DRAFT" />
+        </basic>
+        <basic name="totalReadingCount">
+          <column name="TOTALREADCOUNT" />
+        </basic>
+        <basic name="keywords">
+          <column name="KEYWORDS" />
+        </basic>
+        <one-to-many name="newSections" mapped-by="nsNew" />
+        <one-to-many name="newDocuments" mapped-by="ndNew" />
+      </attributes>      
+    </entity>
+
+    <entity class="org.santfeliu.news.service.DBNewSection" name="NewSection">
+      <table name="INF_NEWSECTION" />
+      <id-class class="org.santfeliu.news.service.DBNewSectionPK" />      
+      <attributes>
+        <id name="newId">
+          <column name="NEWID" />
+        </id>
+        <id name="sectionId">
+          <column name="SECTIONID" />
+        </id>
+        <basic name="priority">
+          <column name="PRIORITY" />
+        </basic>
+        <basic name="readingCount">
+          <column name="READCOUNT" />
+        </basic>
+        <basic name="strSticky">
+          <column name="STICKY" />
+        </basic>
+        <many-to-one name="nsNew">
+          <join-column name="NEWID" referenced-column-name="NEWID"
+              insertable="false" updatable="false" />
+        </many-to-one>        
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.news.service.DBNewDocument" name="NewDocument">
+      <table name="INF_NEWDOC" />
+      <id-class class="org.santfeliu.news.service.DBNewDocumentPK" />      
+      <attributes>
+        <id name="newId">
+          <column name="NEWID" />
+        </id>
+        <id name="documentId">
+          <column name="DOCID" />
+        </id>
+<!--
+        <basic name="docRole">
+          <column name="DOCROLE" />
+        </basic>
+-->
+        <basic name="newDocTypeId">
+            <column name="NEWDOCTYPEID" />
+        </basic>        
+        <many-to-one name="ndNew">
+          <join-column name="NEWID" referenced-column-name="NEWID"
+              insertable="false" updatable="false" />
+        </many-to-one>        
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.news.service.DBSource" name="Source">
+      <table name="INF_SOURCE" />
+      <attributes>
+        <id name="id">
+          <column name="SOURCEID" />
+        </id>
+        <id name="name">
+          <column name="NAME" />
+        </id>
+      </attributes>
+    </entity>
+    
+</entity-mappings>

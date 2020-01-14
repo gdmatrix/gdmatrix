@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/templates/#{userSessionBean.template}/template.xhtml">
+    <ui:param name="css" value="/common/presence/css/presence.css" />
+    <ui:define name="body">
+
+  <t:commandLink id="enter_link" forceId="true" 
+                 action="worker_id" value="enter" style="display:none" />
+
+  <f:verbatim>
+    <script type="text/javascript">
+      function enterLogin()
+      {
+        var button = document.getElementById("enter_link");
+        console.info(button);
+        button.click();
+      }
+      setTimeout(enterLogin, 100);
+    </script>
+  </f:verbatim>
+    
+    </ui:define>
+  </ui:composition>
+</html>
+

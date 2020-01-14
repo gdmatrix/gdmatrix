@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/workflow/instance.xhtml">
+
+    <ui:define name="form">
+
+      <t:saveState value="#{selectMenuFormBean}" />
+
+      <sf:outputText value="#{selectMenuFormBean.message}" 
+        translator="#{instanceBean.translationEnabled ? 
+          applicationBean.translator : null}" 
+        translationGroup="wf:#{instanceBean.workflowName}"
+        styleClass="workflowMessage" />
+
+      <t:dataTable value="#{selectMenuFormBean.options}" 
+        var="option" width="100%">
+        <t:column>
+          <h:commandLink action="#{selectMenuFormBean.selectOption}" 
+            styleClass="selectMenuLink">
+            <h:graphicImage alt="" url="/common/workflow/images/redbutton.gif" 
+              style="vertical-align:middle; border-style:none; margin-right:6px"/>
+            <sf:outputText value="#{option.label}"
+              translator="#{instanceBean.translationEnabled ?
+                applicationBean.translator : null}"
+              translationGroup="wf:#{instanceBean.workflowName}" />
+          </h:commandLink>
+        </t:column>
+      </t:dataTable>
+
+    </ui:define>
+  </ui:composition>
+</html>

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns2:signHash xmlns:ns2="http://idbcn.bcn.cat">
+      <policy>${policy}</policy>
+      <docType>${docType}</docType>
+      <docNum>${docNum}</docNum>
+      <subject>${subject}</subject>
+      <source>${source}</source>
+      <hash>${hash}</hash>
+      <urlFile>${urlFile}</urlFile>
+      <idImage>${imageId}</idImage>
+    </ns2:signHash>
+  </S:Body>
+</S:Envelope>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="workflow"
+  namespace="http://workflow.matrix.org/"
+  title="Gestor de fluxos de treball"
+  wsdlLocation="../services/workflow?wsdl"
+  service="WorkflowManagerService"
+  port="WorkflowManagerPort"
+  version="2.0"
+  status="REVISION"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />
+  </imports>
+
+  <types>
+    <struct name="Variable">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+      <property name="type" type="xs:string" required="false">
+      </property>
+    </struct>
+
+    <struct name="VariableFilter">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+      <property name="extendedVisibility" type="xs:boolean" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="InstanceFilter">
+      <property name="variable" type="workflow:VariableFilter"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="InstanceView">
+      <property name="instanceId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="version" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="state" type="xs:string" minOccurs="0">
+      </property>
+      <property name="activeNodes" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="simulation" type="xs:boolean">
+      </property>
+      <property name="destroyButtonEnabled" type="xs:boolean">
+      </property>
+    </struct>
+  </types>
+
+  <operations>
+    <operation name="getVariables">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <response name="variable" type="workflow:Variable" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="doStep">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <response name="step" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="destroyInstance">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <response name="destroyed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="assignAgent">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <parameter name="agentName" type="xs:string">
+      </parameter>
+      <response name="agent" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="processInstance">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <parameter name="variable" type="workflow:Variable" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <parameter name="returnVariables" type="xs:boolean">
+      </parameter>
+      <response name="outVariable" type="workflow:Variable" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="undoStep">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <response name="step" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="setVariables">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <parameter name="variable" type="workflow:Variable" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <response name="variableCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findInstances">
+      <parameter name="filter" type="workflow:InstanceFilter">
+      </parameter>
+      <response name="instanceView" type="workflow:InstanceView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="createInstance">
+      <parameter name="workflowName" type="xs:string">
+      </parameter>
+      <parameter name="variable" type="workflow:Variable" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <response name="instanceId" type="xs:string">
+      </response>
+    </operation>
+  </operations>
+</module>

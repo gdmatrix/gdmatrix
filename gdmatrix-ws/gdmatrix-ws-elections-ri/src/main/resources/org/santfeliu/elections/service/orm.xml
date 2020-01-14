@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <description>Elections</description>
+    <package>org.santfeliu.elections.service</package>
+    
+    <named-query name="listCouncillors">
+      <query>
+        SELECT c
+        FROM Councillor c
+        WHERE c.provinceId = :provinceId AND c.townId = :townId 
+        AND c.callDate = :dateFilter AND trim(c.callTypeId) = :callTypeId
+        ORDER BY c.partyId, c.position
+      </query>
+    </named-query> 
+    
+    <named-query name="listPoliticalParties">
+      <query>
+        SELECT p
+        FROM PoliticalParty p, PoliticalPartyCall pc 
+        WHERE p.partyId = pc.partyId AND pc.provinceId = :provinceId
+        AND pc.townId = :townId AND pc.date = :dateFilter
+        AND trim(pc.typeId) = :callTypeId
+        ORDER BY pc.position        
+      </query>
+    </named-query>     
+    
+    <named-query name="listBoards">
+      <query>
+        SELECT b
+        FROM Board b
+        WHERE b.provinceId = :provinceId AND b.townId = :townId
+        AND b.date = :dateFilter AND trim(b.typeId) = :callTypeId
+        ORDER BY b.districtId, b.sectionId, b.boardId
+      </query>
+    </named-query>     
+
+    <named-query name="listElectionsResults">
+      <query>
+        SELECT distinct r
+        FROM ElectionsResult r
+        WHERE r.provinceId = :provinceId AND r.townId = :townId
+        AND r.date = :dateFilter AND trim(r.typeId) = :callTypeId
+        ORDER BY r.districtId, r.sectionId, r.boardId, r.votes desc
+      </query>
+    </named-query>     
+    
+    <named-query name="listCalls">
+      <query>
+        SELECT c, ct 
+        FROM Call c, CallType ct
+        WHERE c.provinceId = :provinceId AND c.townId = :townId
+          AND c.callId = ct.typeId AND trim(ct.typeId) &lt;&gt; '4'
+        ORDER BY c.dateString desc, ct.description desc 
+      </query>
+    </named-query>      
+    
+    <named-query name="listDistricts">
+      <query>
+        SELECT d
+        FROM District d
+        WHERE d.provinceId = :provinceId AND d.townId = :townId 
+         AND d.initDate &lt;= :dateFilter
+         AND (d.endDate > :dateFilter or d.endDate is null) 
+        ORDER BY d.districtId
+      </query>
+    </named-query>      
+
+    <entity class="org.santfeliu.elections.service.DBCouncillor" 
+      name="Councillor">
+      <table name="ELE_REGIDOR" />
+      <attributes>
+        <id name="provinceId">
+          <column name="PROVCOD" />
+        </id>
+        <id name="townId">
+            <column name="MUNICOD" />
+        </id>
+        <id name="callTypeId">
+            <column name="TCONVCOD" />
+        </id>
+        <id name="callDate">
+            <column name="CONVDATA" />
+        </id>
+        <id name="partyId">
+            <column name="PARTICOD" />
+        </id>
+        <id name="position">
+            <column name="REGNORD" />
+        </id>
+        <basic name="name">
+            <column name="REGNOM" />
+        </basic>
+        <basic name="imageURL">
+            <column name="REGFILE" />
+        </basic>
+      </attributes>
+    </entity>
+    
+    <entity class="org.santfeliu.elections.service.DBPoliticalParty" 
+      name="PoliticalParty">
+      <table name="ELE_PARTI" />
+      <attributes>
+        <id name="partyId">
+          <column name="PARTICOD" />
+        </id>
+        <basic name="abbreviation">
+            <column name="PARTISIGL" />
+        </basic>
+        <basic name="description">
+            <column name="PARTIDESC" />
+        </basic>
+        <basic name="image">
+            <column name="PARTIFILE" />
+        </basic>
+        <basic name="color">
+            <column name="PARTICOLOR" />
+        </basic>
+      </attributes>
+    </entity>    
+    
+    <entity class="org.santfeliu.elections.service.DBCall" name="Call">
+      <table name="ELE_CONVOCATORIA" />
+      <attributes>
+        <id name="provinceId">
+          <column name="PROVCOD" />
+        </id>
+        <id name="townId">
+            <column name="MUNICOD" />
+        </id>
+        <id name="callId">
+            <column name="TCONVCOD" />
+        </id>
+        <id name="dateString">
+            <column name="CONVDATA" />
+        </id>
+        <basic name="councillorsCount">
+            <column name="REGNUM" />
+        </basic>
+        <basic name="boardsCount">
+            <column name="NUMMESES" />
+        </basic>
+      </attributes>
+    </entity>    
+    
+    <entity class="org.santfeliu.elections.service.DBCallType" name="CallType">
+      <table name="ELE_TCONV" />
+      <attributes>
+        <id name="typeId">
+          <column name="TCONVCOD" />
+        </id>
+        <basic name="description">
+            <column name="TCONVDESC" />
+        </basic>
+      </attributes>
+    </entity>     
+
+    <entity class="org.santfeliu.elections.service.DBPoliticalPartyCall" 
+      name="PoliticalPartyCall">
+      <table name="ELE_PARTCONV" />
+      <attributes>
+        <id name="provinceId">
+          <column name="PROVCOD" />
+        </id>
+        <id name="townId">
+            <column name="MUNICOD" />
+        </id>
+        <id name="typeId">
+            <column name="TCONVCOD" />
+        </id>
+        <id name="date">
+            <column name="CONVDATA" />
+        </id>
+        <id name="partyId">
+          <column name="PARTICOD" />
+        </id>
+        <basic name="councillors">
+            <column name="REGNUM" />
+        </basic>
+        <basic name="position">
+            <column name="ORDRE" />
+        </basic>
+      </attributes>
+    </entity>  
+    
+    <entity class="org.santfeliu.elections.service.DBBoard" 
+      name="Board">
+      <table name="ELE_MESA" />
+      <attributes>
+        <id name="provinceId">
+          <column name="PROVCOD" />
+        </id>
+        <id name="townId">
+            <column name="MUNICOD" />
+        </id>
+        <id name="typeId">
+            <column name="TCONVCOD" />
+        </id>
+        <id name="date">
+            <column name="CONVDATA" />
+        </id>
+        <id name="districtId">
+          <column name="DISTCOD" />
+        </id>
+        <id name="sectionId">
+            <column name="SECCOD" />
+        </id>
+        <id name="boardId">
+            <column name="MESACOD" />
+        </id>
+        <basic name="electors">
+            <column name="NUMELECTORS" />
+        </basic>        
+        <basic name="totalVotes">
+            <column name="NUMVOTS" />
+        </basic>        
+        <basic name="blankVotes">
+            <column name="NUMBLANCS" />
+        </basic>        
+        <basic name="nullVotes">
+            <column name="NUMNULS" />
+        </basic>   
+        <basic name="description">
+            <column name="MESADESC" />
+        </basic>   
+      </attributes>
+    </entity> 
+    
+    <entity class="org.santfeliu.elections.service.DBElectionsResult" 
+      name="ElectionsResult">
+      <table name="ELE_RESUL" />
+      <attributes>
+        <id name="provinceId">
+          <column name="PROVCOD" />
+        </id>
+        <id name="townId">
+            <column name="MUNICOD" />
+        </id>
+        <id name="typeId">
+            <column name="TCONVCOD" />
+        </id>
+        <id name="date">
+            <column name="CONVDATA" />
+        </id>
+        <id name="partyId">
+            <column name="PARTICOD" />
+        </id>
+        <id name="districtId">
+          <column name="DISTCOD" />
+        </id>
+        <id name="sectionId">
+            <column name="SECCOD" />
+        </id>
+        <id name="boardId">
+            <column name="MESACOD" />
+        </id>
+        <basic name="electors">
+            <column name="REGNUM" />
+        </basic>        
+        <basic name="votes">
+            <column name="RESULTAT" />
+        </basic>        
+        
+      </attributes>
+    </entity>  
+    
+    <entity class="org.santfeliu.elections.service.DBDistrict" 
+      name="District">
+      <table name="ELE_DISTRICTE" />
+      <attributes>
+        <id name="provinceId">
+          <column name="PROVCOD" />
+        </id>
+        <id name="townId">
+            <column name="MUNICOD" />
+        </id>
+        <id name="districtId">
+          <column name="DISTCOD" />
+        </id>
+        <id name="initDate">
+            <column name="DATAINICI" />
+        </id>
+        <basic name="endDate">
+            <column name="DATAFI" />
+        </basic>        
+        <basic name="description">
+            <column name="DISTDESC" />
+        </basic>        
+      </attributes>
+    </entity>     
+    
+</entity-mappings>

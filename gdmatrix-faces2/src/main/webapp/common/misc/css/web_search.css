@@ -1,0 +1,43 @@
+a.link,
+a.resultLink
+{
+  font-size:12px;
+  font-weight:bold;
+  color:black;
+  text-decoration: none;
+}
+
+a.link:hover,
+a.resultLink:hover
+{
+  color:#806000;
+}
+
+.linkDiv
+{
+  margin-bottom: 10px;
+}
+
+.webSearchPanel
+{
+  margin-bottom: 10px;
+}
+
+.itemPath
+{
+  color:gray;
+  font-size:11px;
+}
+
+.resultDiv
+{
+  margin-bottom: 6px;
+}
+
+.linksMessage
+{
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+

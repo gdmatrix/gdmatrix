@@ -1,0 +1,48 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/workflow/instance.xhtml">
+
+    <ui:define name="form">
+
+      <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle"
+        var="workflowBundle" />
+
+      <t:saveState value="#{showDocumentFormBean}" />
+
+      <sf:outputText value="#{showDocumentFormBean.message}" 
+        translator="#{instanceBean.translationEnabled ? 
+          applicationBean.translator : null}" 
+        translationGroup="wf:#{instanceBean.workflowName}"
+        styleClass="workflowMessage" />
+
+      <sf:printableGroup name="printDocument">
+        <sf:browser binding="#{showDocumentFormBean.browser}"
+          port="#{applicationBean.defaultPort}"
+          iframe="#{showDocumentFormBean.IFrame}"
+          translator="#{instanceBean.translationEnabled ? 
+            applicationBean.translator : null}" 
+          translationGroup="wf:#{instanceBean.workflowName}"
+          width="100%" height="400px"/>
+      </sf:printableGroup>
+
+      <h:panelGrid columns="1" width="100%" summary=""
+        columnClasses="workflowPrintFooter" 
+        style="margin-top:8px;margin-bottom:8px;"
+        rendered="#{showDocumentFormBean.showPrintButton and
+          not showDocumentFormBean.IFrame}">
+        <h:outputLink value="javascript:printGroup('printDocument');"
+          styleClass="docPrintButton">
+          <h:graphicImage url="/common/workflow/images/print.gif" alt="" 
+            style="vertical-align:middle;margin-right:6px;" /> 
+          <h:outputText value="#{workflowBundle.printDocument}" />
+        </h:outputLink>
+      </h:panelGrid>
+
+    </ui:define>
+  </ui:composition>
+</html>

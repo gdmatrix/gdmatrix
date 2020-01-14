@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/workflow/instance.xhtml">
+
+    <ui:define name="form">
+
+      <t:saveState value="#{customFormBean}" />
+
+      <sf:customForm url="#{customFormBean.url}"
+        values="#{instanceBean.variables}"
+        newValues="#{customFormBean.newValues}"
+        translator="#{instanceBean.translationEnabled and 
+          customFormBean.translationEnabled ? applicationBean.translator : null}"
+        translationGroup="wf:#{customFormBean.translationGroup}" />
+
+    </ui:define>
+  </ui:composition>
+</html>

@@ -1,0 +1,302 @@
+package org.santfeliu.doc;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.management.NotCompliantMBeanException;
+import javax.management.StandardMBean;
+import org.apache.commons.collections.LRUMap;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.doc.Document;
+import org.matrix.doc.DocumentConstants;
+import org.matrix.doc.RelatedDocument;
+import org.matrix.doc.RelationType;
+import org.matrix.security.AccessControl;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
+import org.santfeliu.doc.client.DocumentManagerClient;
+import org.santfeliu.jmx.CacheMBean;
+import org.santfeliu.jmx.JMXUtils;
+import org.santfeliu.security.User;
+import org.santfeliu.security.UserCache;
+
+/**
+ *
+ * @author blanquepa
+ */
+public class DocumentCache
+{
+  private static final int MAX_CACHE_SIZE = 1000;
+  private Map map;
+  static DocumentCache cache = new DocumentCache(MAX_CACHE_SIZE);
+
+  public DocumentCache(int cacheSize)
+  {
+    map = Collections.synchronizedMap(new LRUMap(cacheSize));
+    JMXUtils.registerMBean("DocumentCache", getCacheMBean());
+  }
+
+  public static void reset()
+  {
+    cache.clear();
+  }
+
+  public static void reset(String docId, String language)
+  {
+    cache.removeEntry(getKey(docId, language));
+  }
+
+  public static void reset(String key)
+  {
+    cache.removeEntry(key);
+  }
+
+  public static String getDocument(String docId,
+    String language, String userId, String password, long cacheTime)
+    throws Exception
+  {
+    String contentId = cache.getContentId(docId, language,
+      userId, password, cacheTime);
+
+    if (contentId == null)
+    {
+      DocumentManagerClient client = new DocumentManagerClient(userId, password);
+      Document document = client.loadDocument(docId);
+      if (document != null)
+      {
+        cache.putContentId(docId, document);
+
+        if (language != null &&
+           !language.equals(document.getLanguage()))
+        {
+          //Search translation of requested language
+          Iterator it = document.getRelatedDocument().iterator();
+          boolean translationFound = false;
+          while (it.hasNext() && !translationFound)
+          {
+            RelatedDocument relDoc = (RelatedDocument)it.next();
+            if (RelationType.TRANSLATION.equals(relDoc.getRelationType()) &&
+              language.equals(relDoc.getName()))
+            {
+              String relDocId = relDoc.getDocId();
+              int version = relDoc.getVersion();
+              document = client.loadDocument(relDocId, version);
+              if (document != null)
+              {
+                contentId = document.getContent().getContentId();
+                cache.putRelDocument(docId, language, relDocId);
+                cache.putContentId(relDocId, document);
+              }
+              translationFound = (contentId != null);
+            }
+          }
+
+          if (!translationFound)
+          {
+            contentId = document.getContent().getContentId();
+            cache.putRelDocument(docId, language, document.getDocId());
+          }
+        }
+        else
+        {
+          contentId = document.getContent().getContentId();
+          cache.putRelDocument(docId, language, docId);
+        }
+      }
+    }
+
+    return contentId;
+  }
+
+  //Private cache methods
+  private void putContentId(String docId, Document document)
+  {
+    Entry entry = new Entry();
+    entry.id = document.getContent().getContentId();
+    entry.docTypeId = document.getDocTypeId();
+    entry.acl = document.getAccessControl();
+    cache.putEntry(docId, entry);
+  }
+
+  private void putRelDocument(String docId,
+    String language, String relDocId)
+  {
+    Entry entry = new Entry();
+    entry.id = relDocId;
+    cache.putEntry(getKey(docId, language), entry);
+  }
+
+  private String getContentId(String docId,
+    String language, String userId, String password, long cacheTime)
+    throws Exception
+  {
+    String contentId = null;
+    
+    String key = getKey(docId, language);
+    //Related (translation)
+    Entry entry = cache.getEntry(key, userId, password, cacheTime);
+    if (entry != null)
+    {
+      docId = entry.id;
+      //Content
+      entry = cache.getEntry(docId, userId, password, cacheTime);
+      if (entry != null)
+        contentId = entry.id;
+    }
+
+    return contentId;
+  }
+
+  //Private map methods
+  private Entry getEntry(String key, String userId,
+    String password, long cacheTime) throws Exception
+  {
+    Entry entry = (Entry)map.get(key);
+    if (entry != null)
+    {
+      if (!entry.isValid(cacheTime))
+      {
+        reset(key);
+        entry = null;
+      }
+      else
+      {
+        User user = UserCache.getUser(userId, password);
+        if (!isKey(key) && !canUserReadDocument(entry.docTypeId, entry.acl, user))
+        {
+          entry = null;
+          throw new Exception("ACTION_DENIED");
+        }
+      }
+    }
+    return entry;
+  }
+
+  private void putEntry(String key, Entry entry)
+  {
+    map.put(key, entry);
+  }
+  
+  private void removeEntry(String key)
+  {
+    if (key == null)
+      map.clear();
+    else
+      map.remove(key);
+  }
+
+  private void clear()
+  {
+    map.clear();
+  }
+
+  //Private auxiliar methods
+  private boolean canUserReadDocument(String docTypeId, List<AccessControl> acl,
+    User user)
+  {
+    Set<String> userRoles = user.getRoles();
+    Type type = TypeCache.getInstance().getType(docTypeId);
+
+    return userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
+      || checkTypeACL(userRoles, type, DictionaryConstants.READ_ACTION)
+      || checkDocumentACL(userRoles, acl, DictionaryConstants.READ_ACTION);
+  }
+
+  private boolean checkTypeACL(Set<String> userRoles, Type type, String action)
+  {
+    if (type == null || type.getTypeId() == null)
+      return false;
+    else
+      return (type.canPerformAction(action, userRoles));
+  }
+
+  private boolean checkDocumentACL(Set<String> userRoles, 
+    List<AccessControl> acl,  String action)
+  {
+    for (AccessControl ac : acl)
+    {
+      if (ac.getAction().equals(action) && userRoles.contains(ac.getRoleId()))
+        return true;
+    }
+    return false;
+  }
+
+  private static String getKey(String docId, String language)
+  {
+    return docId + ";" + language;
+  }
+
+  private static boolean isKey(String id)
+  {
+    return id != null && id.contains(";");
+  }
+
+  class Entry
+  {
+    String id; //contentId or docId
+    String docTypeId;
+    List<AccessControl> acl;
+    long requestTime;
+
+    public Entry()
+    {
+      this.requestTime = System.currentTimeMillis();
+    }
+
+    boolean isValid(long cacheTime)
+    {
+      return (System.currentTimeMillis() - requestTime) < cacheTime;
+    }
+  }
+
+  private DocumentCacheMBean getCacheMBean()
+  {
+    try
+    {
+      return new DocumentCacheMBean();
+    }
+    catch (NotCompliantMBeanException ex)
+    {
+      return null;
+    }
+  }
+
+  public class DocumentCacheMBean extends StandardMBean implements CacheMBean
+  {
+    public DocumentCacheMBean() throws NotCompliantMBeanException
+    {
+      super(CacheMBean.class);
+    }
+
+    public String getName()
+    {
+      return "DocumentCache";
+    }
+
+    public long getMaxSize()
+    {
+      return MAX_CACHE_SIZE;
+    }
+
+    public long getSize()
+    {
+      return map.size();
+    }
+
+    public String getDetails()
+    {
+      return "documentMapSize=" + getSize() + "/" + getMaxSize();
+    }
+
+    public void clear()
+    {
+      DocumentCache.reset();
+    }
+
+    public void update()
+    {
+    }
+  }
+}

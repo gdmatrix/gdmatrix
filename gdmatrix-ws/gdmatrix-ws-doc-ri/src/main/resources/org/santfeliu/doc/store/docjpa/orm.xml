@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <description>Document</description>
+    <package>org.santfeliu.doc.store.docjpa</package>
+
+    <named-query name="findRelatedDocuments">
+      <query>
+        SELECT c,d.version
+          FROM DBRelatedDocument c, DBDocument d
+        WHERE c.docId = :docId
+          AND c.relDocId = d.docId AND d.lastVersion = 'T'
+      </query>
+    </named-query>
+    
+    <named-query name="findReverseRelatedDocuments">
+      <query>
+        SELECT c,d.version
+          FROM DBRelatedDocument c, DBDocument d 
+        WHERE c.relDocId = :docId
+          AND c.docId = d.docId AND d.lastVersion = 'T'
+      </query>
+    </named-query>    
+
+    <named-query name="selectLastVersionDocument">
+      <query>
+        SELECT d 
+        FROM DBDocument d
+        WHERE d.lastVersion = 'T'
+        AND d.docId = :docId      
+      </query>
+    </named-query>
+    
+    <named-query name="removeDocumentProperties">
+      <query>
+        DELETE FROM 
+          DBProperty p
+        WHERE 
+          p.docId = :docId AND p.version = :version
+      </query>
+    </named-query>   
+
+    <named-query name="removeDocumentProperty">
+      <query>
+        DELETE FROM
+          DBProperty p
+        WHERE
+          p.docId = :docId AND p.version = :version AND
+          p.name = :propName
+      </query>
+    </named-query>
+
+    <named-query name="removeRelatedDocuments">
+      <query>
+        DELETE FROM 
+          DBRelatedDocument rd
+        WHERE 
+          (rd.docId = :docId)
+          OR
+          (rd.relDocId = :docId)
+      </query>
+    </named-query>   
+    
+    <named-query name="removeDocument">
+      <query>
+        DELETE FROM 
+          DBDocument d
+        WHERE 
+          d.docId = :docId AND d.version = :version
+      </query>
+    </named-query>
+
+    <named-query name="loadDocumentProperties">
+      <query>
+        SELECT p
+          FROM DBProperty p
+        WHERE 
+          p.docId = :docId AND 
+          (p.version = :version OR :version = 0)
+        ORDER BY p.version, p.name, p.index
+      </query>
+    </named-query>
+
+    <named-query name="isContentInUse">
+      <query>
+        SELECT d.docId
+          FROM DBDocument d
+        WHERE 
+          d.contentId = :contentId
+      </query>
+    </named-query>
+    
+    <named-query name="countNotDeletedVersions">
+      <query>
+        SELECT count(d)
+          FROM DBDocument d
+        WHERE 
+          d.docId = :docId AND d.version &lt;&gt; :version AND d.state &lt;&gt; 'DELETED'
+      </query>
+    </named-query>
+
+    <named-query name="findDocAccessControl">
+      <query>
+        SELECT ac FROM DocAccessControl ac
+        WHERE ac.docId = :docId and ac.version = :version
+        ORDER BY ac.roleId, ac.action
+      </query>
+    </named-query>
+
+    <named-query name="removeDocAccessControl">
+      <query>
+        DELETE FROM DocAccessControl ac
+        WHERE ac.docId = :docId and ac.version = :version
+      </query>
+    </named-query>
+
+    <named-query name="selectDocumentMaxVersion">
+      <query>
+        SELECT max(d.version)
+        FROM DBDocument d
+        WHERE d.docId = :docId
+      </query>
+    </named-query>
+    
+    <named-query name="unsetLastVersionColumn">
+      <query>
+        UPDATE DBDocument d
+        SET d.lastVersion = 'F'
+        WHERE d.docId = :docId AND d.version &lt;&gt; :version
+      </query>
+    </named-query>
+
+    <named-query name="setLastVersionColumn">
+      <query>
+        UPDATE DBDocument d
+        SET d.lastVersion = 'T'
+        WHERE d.docId = :docId AND d.version = :version
+      </query>
+    </named-query>
+
+    <entity class="org.santfeliu.doc.store.docjpa.DBDocument"
+      name="DBDocument">
+      <table name="DOM_DOCUMENT" />
+      <id-class class="org.santfeliu.doc.store.docjpa.DBDocumentPK"/>            
+      <attributes>
+        <id name="docId">
+          <column name="DOCID" />
+          <generated-value strategy="TABLE" generator="doc.document"/>
+          <table-generator name="doc.document" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1"/> 
+        </id>
+        <id name="version">
+          <column name="VERSION" />
+        </id>
+        <basic name="title">
+          <column name="TITLE" />
+        </basic>
+        <basic name="docTypeId">
+          <column name="DOCTYPEID" />
+        </basic>
+        <basic name="state">
+          <column name="STATE" />
+        </basic>
+        <basic name="language">
+          <column name="LANGUAGE" />
+        </basic>
+        <basic name="captureDateTime">
+          <column name="CAPTUREDATE" />
+        </basic>
+        <basic name="captureUserId">
+          <column name="CAPTUREUSER" />
+        </basic>
+        <basic name="changeDateTime">
+          <column name="MODIFYDATE" />
+        </basic>
+        <basic name="changeUserId">
+          <column name="MODIFYUSER" />
+        </basic>
+        <basic name="lockUserId">
+          <column name="LOCKUSER" />
+        </basic>
+        <basic name="contentId">
+          <column name="CONTENTID" />
+        </basic>
+        <basic name="creationDate">
+          <column name="CREATIONDATE" />
+        </basic>
+        <basic name="lastVersion">
+          <column name="LASTVERSION" />
+        </basic>
+<!--
+        <many-to-one name="dbType">
+          <join-column name="DOCTYPEID" referenced-column-name="TYPEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+-->
+        <one-to-many name="properties" mapped-by="document" />
+      </attributes>
+    </entity>
+    
+    <entity class="org.santfeliu.doc.store.docjpa.DBRelatedDocument" 
+      name="DBRelatedDocument">
+      <table name="DOM_DOCDOC" />
+      <id-class class="org.santfeliu.doc.store.docjpa.DBRelatedDocumentPK"/>                  
+      <attributes>
+        <id name="docId">
+          <column name="DOCID" />
+        </id>
+        <id name="name">
+          <column name="RELNAME" />
+        </id>
+        <id name="relationType">
+          <column name="RELTYPE" />
+        </id>
+        <id name="relDocId">
+          <column name="RELDOCID" />
+        </id>
+        <basic name="captureDateTime">
+          <column name="CAPTUREDATE" />
+        </basic>
+        <basic name="captureUserId">
+          <column name="CAPTUREUSER" />
+        </basic>
+        <basic name="changeDateTime">
+          <column name="MODIFYDATE" />
+        </basic>
+        <basic name="changeUserId">
+          <column name="MODIFYUSER" />
+        </basic>
+      </attributes>
+    </entity>
+    
+    <entity class="org.santfeliu.doc.store.docjpa.DBProperty" 
+      name="DBProperty">
+      <table name="DOM_METADATA" />
+      <attributes>
+        <id name="docId">
+          <column name="DOCID" />
+        </id>
+        <id name="version">
+          <column name="VERSION" />
+        </id>
+        <id name="name">
+          <column name="PROPNAME" />
+        </id>
+        <id name="index">
+          <column name="INDX" />
+        </id>
+        <basic name="value">
+          <column name="VALUE" />
+        </basic>
+        <many-to-one name="document">
+          <join-column name="DOCID" referenced-column-name="DOCID"
+              insertable="false" updatable="false" />
+          <join-column name="VERSION" referenced-column-name="VERSION"
+              insertable="false" updatable="false" />
+        </many-to-one>          
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.doc.store.docjpa.DBAccessControl"
+      name="DocAccessControl">
+      <table name="DOM_ACL" />
+      <id-class class="org.santfeliu.doc.store.docjpa.DBAccessControlPK" />
+      <attributes>
+        <id name="docId">
+          <column name="DOCID" />
+        </id>
+        <id name="version">
+          <column name="VERSION" />
+        </id>
+        <id name="roleId">
+          <column name="ROLEID" />
+        </id>
+        <id name="action">
+          <column name="ACTION" />
+        </id>
+      </attributes>
+    </entity>
+
+</entity-mappings>

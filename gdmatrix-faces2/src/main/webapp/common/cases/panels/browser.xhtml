@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <t:div styleClass="browserPanel">
+    <sf:browser url="#{panel.url}"
+      port="#{applicationBean.defaultPort}"
+      translator="#{userSessionBean.translator}"
+      translationGroup="#{userSessionBean.translationGroup}_#{caseDetailBean.caseId}"
+      rendered="#{panel.url != null}"/>
+  </t:div>
+
+</html>

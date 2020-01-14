@@ -1,0 +1,224 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/obj/object.xhtml">
+    <ui:param name="css" value="/common/doc/css/doc.css" />
+    <ui:define name="tab">
+
+
+      <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                    var="documentBundle" />
+
+      <t:buffer into="#{table}">
+        <t:dataTable id="data" value="#{documentPersonsBean.rows}" var="row"
+                     rowClasses="row1,row2" headerClass="header" footerClass="footer"
+                     styleClass="resultList" style="width:100%"
+                     bodyStyle="#{empty documentPersonsBean.rows ? 'display:none' : ''}"
+                     rows="#{documentPersonsBean.pageSize}">
+          <t:column style="width:10%">
+            <f:facet name="header">
+              <h:outputText value="#{documentBundle.documentPersons_code}:" />
+            </f:facet>
+            <h:outputText value="#{row.personView.personId}" />
+          </t:column>
+          <t:column style="width:45%">
+            <f:facet name="header">
+              <h:outputText value="#{documentBundle.documentPersons_personName}:" />
+            </f:facet>
+            <h:outputText value="#{row.personView.fullName}" />
+          </t:column>
+
+          <t:column style="width:15%">
+            <f:facet name="header">
+              <h:outputText value="#{documentBundle.documentPersons_typeId}:" />
+            </f:facet>
+            <h:outputText value="#{row.personDocTypeId}"/>
+          </t:column>
+
+          <t:column style="width:30%;text-align:right;">
+            <h:panelGroup>
+              <h:commandButton value="#{objectBundle.show}"
+                               action="#{documentPersonsBean.showPerson}"
+                               rendered="#{row.personDocId != null}"
+                               styleClass="showButton"
+                               image="#{userSessionBean.icons.show}"
+                               alt="#{objectBundle.show}" title="#{objectBundle.show}"       />
+              <h:commandButton
+                action="#{documentPersonsBean.editDocumentPerson}"
+                rendered="#{row.personDocId != null}"
+                styleClass="editButton" value="#{objectBundle.edit}"
+                image="#{userSessionBean.icons.detail}"
+                alt="#{objectBundle.edit}" title="#{objectBundle.edit}"      />
+              <h:commandButton value="#{objectBundle.remove}"
+                               action="#{documentPersonsBean.removeDocumentPerson}"
+                               rendered="#{row.personDocId != null}"
+                               styleClass="removeButton"
+                               onclick="return confirm('#{objectBundle.confirm_remove}');"
+                               disabled="#{!document2Bean.editable}"
+                               image="#{userSessionBean.icons.delete}"
+                               alt="#{objectBundle.delete}" title="#{objectBundle.delete}"   />
+            </h:panelGroup>
+          </t:column>
+
+          <f:facet name="footer">
+            <t:dataScroller
+              fastStep="100"
+              paginator="true"
+              paginatorMaxPages="9"
+              immediate="true"
+              rendered="#{documentPersonsBean.rows != null}"
+              styleClass="scrollBar"
+              paginatorColumnClass="page"
+              paginatorActiveColumnClass="activePage"
+              nextStyleClass="nextButton"
+              previousStyleClass="previousButton"
+              firstStyleClass="firstButton"
+              lastStyleClass="lastButton"
+              fastfStyleClass="fastForwardButton"
+              fastrStyleClass="fastRewindButton"
+              renderFacetsIfSinglePage="false">
+              <f:facet name="first">
+                <t:div title="#{objectBundle.first}"></t:div>
+              </f:facet>
+              <f:facet name="last">
+                <t:div title="#{objectBundle.last}"></t:div>
+              </f:facet>
+              <f:facet name="previous">
+                <t:div title="#{objectBundle.previous}"></t:div>
+              </f:facet>
+              <f:facet name="next">
+                <t:div title="#{objectBundle.next}"></t:div>
+              </f:facet>
+              <f:facet name="fastrewind">
+                <t:div title="#{objectBundle.fastRewind}"></t:div>
+              </f:facet>
+              <f:facet name="fastforward">
+                <t:div title="#{objectBundle.fastForward}"></t:div>
+              </f:facet>
+            </t:dataScroller>
+          </f:facet>
+        </t:dataTable>
+
+      </t:buffer>
+
+      <t:div styleClass="resultBar" rendered="#{documentPersonsBean.rowCount > 0}">
+        <t:dataScroller for="data"
+                        rowsCountVar="rowCount">
+          <h:outputFormat value="#{objectBundle.shortResultRange}">
+            <f:param value="#{rowCount}" />
+          </h:outputFormat>
+        </t:dataScroller>
+      </t:div>
+
+      <h:outputText value="#{table}" escape="false"/>
+
+      <t:div style="width:100%;text-align:right">
+        <h:commandButton value="#{objectBundle.add}"
+                         action="#{documentPersonsBean.createDocumentPerson}"
+                         rendered="#{row.personDocId == null}"
+                         styleClass="addButton"
+                         disabled="#{!document2Bean.editable}"
+                         image="#{userSessionBean.icons.add}"
+                         alt="#{objectBundle.add}" title="#{objectBundle.add}"  />
+      </t:div>
+
+      <t:div styleClass="editingPanel" rendered="#{documentPersonsBean.editingPersonDocument != null}">
+        <t:div>
+          <h:outputText value="#{documentBundle.documentPersons_person}: "
+                        styleClass="textBox" style="width:15%" />
+          <t:selectOneMenu value="#{documentPersonsBean.editingPersonDocument.personId}"
+                           style="width:350px" styleClass="selectBox"
+                           disabled="#{not document2Bean.editable}">
+            <f:selectItems value="#{documentPersonsBean.documentPersonSelectItems}" />
+          </t:selectOneMenu>
+          <h:commandButton action="#{documentPersonsBean.searchPerson}"
+                           styleClass="searchButton" value="#{objectBundle.search}"
+                           image="#{userSessionBean.icons.search}"
+                           alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                           disabled="#{not document2Bean.editable}"/>
+        </t:div>
+
+        <t:div>
+          <h:outputText value="#{documentBundle.documentPersons_typeId}: "
+                        style="width:15%" styleClass="textBox" />
+          <t:selectOneMenu value="#{documentPersonsBean.editingPersonDocument.personDocTypeId}"
+                           styleClass="selectBox"
+                           disabled="#{not document2Bean.editable}">
+            <f:selectItems
+              value="#{documentPersonsBean.allTypeItems}" />
+          </t:selectOneMenu>
+          <h:commandButton action="#{documentPersonsBean.showType}"
+            value="#{objectBundle.show}"
+            image="#{userSessionBean.icons.show}"
+            alt="#{objectBundle.show}" title="#{objectBundle.show}"
+            styleClass="showButton"
+            rendered="#{documentPersonsBean.renderShowTypeButton}" />
+        </t:div>
+
+        <t:div>
+          <h:outputText value="#{documentBundle.documentPersons_comments}: "
+                        style="width:15%" styleClass="textBox" />
+          <h:inputTextarea value="#{documentPersonsBean.editingPersonDocument.comments}"
+                           styleClass="inputBox" style="width:60%"
+                           onkeypress="checkMaxLength(this, #{documentPersonsBean.propertySize.comments})"
+                           readonly="#{not document2Bean.editable}"/>
+
+        </t:div>
+
+        <t:div rendered="#{documentPersonsBean.creationDateTime != null}">
+          <h:outputText value="#{documentBundle.documentPersons_creationDateTime}:"
+                        styleClass="textBox" style="width:15%" />
+          <h:outputText value="#{documentPersonsBean.creationDateTime}"
+                        styleClass="outputBox" style="width:22%">
+            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+          </h:outputText>
+          <h:outputText value="#{documentBundle.documentPersons_createdBy}:"
+                        styleClass="textBox" style="width:5%"
+                        rendered="#{documentPersonsBean.editingPersonDocument.creationUserId != null}"/>
+          <h:outputText value="#{documentPersonsBean.editingPersonDocument.creationUserId}"
+                        styleClass="outputBox" style="width:22%" />
+        </t:div>
+
+        <t:div rendered="#{documentPersonsBean.changeDateTime != null}">
+          <h:outputText value="#{documentBundle.documentPersons_changeDateTime}:"
+                        styleClass="textBox" style="width:15%" />
+          <h:outputText value="#{documentPersonsBean.changeDateTime}"
+                        styleClass="outputBox" style="width:22%">
+            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+          </h:outputText>
+          <h:outputText value="#{documentBundle.documentPersons_changedBy}:"
+                        styleClass="textBox" style="width:5%"
+                        rendered="#{documentPersonsBean.editingPersonDocument.changeUserId != null}"/>
+          <h:outputText value="#{documentPersonsBean.editingPersonDocument.changeUserId}"
+                        styleClass="outputBox" style="width:22%" />
+        </t:div>
+
+        <t:div styleClass="actionsRow">
+          <h:commandButton value="#{objectBundle.store}"
+                           action="#{documentPersonsBean.storeDocumentPerson}"
+                           styleClass="storeButton"
+                           disabled="#{not document2Bean.editable}"
+                           onclick="showOverlay()"/>
+          <h:commandButton value="#{objectBundle.cancel}"
+                           action="#{documentPersonsBean.cancelDocumentPerson}"
+                           styleClass="cancelButton" />
+        </t:div>
+
+      </t:div>
+
+      <t:div>
+        <h:selectBooleanCheckbox value="#{document2Bean.createNewVersion}"
+                                 style="vertical-align:middle;"
+                                 disabled="#{not document2Bean.editable}"/>
+        <h:outputText value="#{documentBundle.document_createNewVersion}"
+                      styleClass="textBox" style="vertical-align:middle;"/>
+      </t:div>
+
+
+    </ui:define>
+  </ui:composition>
+</html>

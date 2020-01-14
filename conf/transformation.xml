@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation version="1.0">
+  <transformer id="p7m" class="org.santfeliu.doc.transform.impl.P7MTransformer">
+    <property name="pdfConverter">"C:/Archivos de programa/OpenOffice.org 3/program/swriter.exe" -invisible "macro:///Standard.Module1.ConvertWordToPDF(${file}, ${signatureInfo})"</property>
+    <property name="tsUrl" value="http://psis.catcert.net/psis/catcert/tsp" />
+    <property name="textTemplateUrl" value="http://www.santfeliu.cat/documents/578918" />
+    <property name="htmlTemplateUrl" value="http://www.santfeliu.cat/documents/565514" />
+  </transformer>
+  <transformer id="xml" class="org.santfeliu.doc.transform.impl.XMLTransformer">
+    <property name="wkCommand">"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe" "file:///${htmlFilePath}" "${pdfFilePath}"</property>
+    <property name="fopCommand">C:/fop/fop.bat ${foFilePath} -pdf ${pdfFilePath}</property>
+  </transformer>
+</transformation>

@@ -1,0 +1,895 @@
+.main
+{
+  width:100%;
+  background-color: White;
+  border-collapse:collapse;
+  font-family:Tahoma,Arial;
+  font-size:12px;
+}
+
+.pantone
+{
+  text-align:left;
+  font-weight:normal;
+  height:50px;
+  border-style:dashed;
+  border-color:#C4C4C0;
+  border-top:0px;
+  border-left:0px;
+  border-right:0px;
+  border-bottom:1px; 
+}
+
+.main .pcolumn1
+{
+  width:78%;
+}
+
+.main .pcolumn2
+{
+  width:22%;
+  background-color:#F4F4F0;
+}
+
+.main .prow1
+{
+  vertical-align:middle;  
+  padding-left:4px;
+  vertical-align:top;
+}
+
+.main .contRow
+{
+  vertical-align:top;
+}
+
+.main .menuCol
+{
+  width:20%;
+  text-align:left;
+}
+
+.main .contCol
+{
+  width:80%;
+  text-align:left;
+}
+
+.navPathRow
+{
+  background-color:#DE1818; 
+}
+
+.navPath
+{
+  color:white;
+  vertical-align:middle;
+  padding:2px;
+}
+
+.navPath A
+{
+  color:white;
+  font-size: 14px;
+  text-decoration:none;
+}
+
+.navPath A:hover
+{
+  color: #C0C0C0;
+  font-size: 14px;
+  text-decoration:none;
+}
+
+.rightMenu
+{
+  margin-top:10px;
+}
+
+.vmenu
+{
+  margin-top:26px;
+  width:100%;
+}
+
+.vmenu_selected A
+{
+  display: block;
+  width:160px;
+  text-align:left;
+  background-color: #A0A0A0;
+  text-decoration: none;
+  font-weight:normal;
+  color:white;
+  border-style:solid;
+  border-color:red;
+  border-top-width: 0px;
+  border-bottom-width: 1px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  border-spacing: 0px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left:4px;  
+}
+
+.vmenu_unselected A
+{
+  display: block;
+  color:gray;
+  width:160px;
+  text-align:left;
+  text-decoration: none;
+  border-style:solid;
+  border-color:red;
+  border-top-width: 0px;
+  border-bottom-width: 1px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  padding-left:4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.vmenu_unselected A:hover
+{
+  color:Black;
+  display: block;
+  width:160px;
+  text-decoration: none;
+  color:Black;
+  background-color:#D8D8D8;
+}
+
+/**************** COMMON STYLES ******************/
+
+input
+{
+  font-size:14px;
+}
+
+select
+{
+  font-size:14px;
+}
+
+.button
+{
+  font-size:14px;
+  background-color:white;
+  border-style:solid;  
+  border-width:1px;
+  border-color:gray;
+}
+
+.buttonLink
+{
+  color: Green; 
+  text-decoration: none;
+}
+
+.selectLink 
+{
+  color: Green; 
+  text-decoration: none;
+}
+
+.selectLink:hover
+{
+  color: Green; 
+  text-decoration:underline;
+}
+
+.infoMessage
+{
+  color: green; 
+  font-weight: bold;  
+}
+
+.warnMessage
+{
+  color: #FF9900;  
+  font-weight: bold;    
+}
+
+.errorMessage
+{
+  color: red;
+  font-weight: bold;
+}
+
+.fatalMessage
+{
+  color: red;  
+  font-weight: bold;  
+}
+
+.filterPanel
+{
+  border-width: 1px;
+  border-style: solid ;
+  border-color: black;
+  background-color: #EEEEEE;
+  text-align: left;
+  width: 100%;
+}
+.filterPanel .header
+{
+  text-align: center;
+}
+.filterPanel .column1
+{
+  width: 80%;
+}
+.filterSubPanel
+{
+  width:100%;
+}
+.filterSubPanel .column1
+{
+  width: 30%;
+}
+.filterSubPanel .column2
+{
+  width: 70%;
+}
+
+
+.resultList
+{
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;
+}
+.resultList TD
+{
+  padding: 2pt;
+}
+.resultList .row1
+{
+  color:black;
+  background-color: #EEEEEE;
+}
+.resultList .row2
+{
+  color:green;
+  background-color: white;
+}
+
+.resultList .mainCell
+{
+  font-weight: bold;
+}
+.resultList .selectLink
+{
+  text-align: right;
+}
+
+
+.newsResultList
+{
+  color: black;
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.newsResultList .header
+{
+  text-align: right;
+}
+.newsResultList .column1
+{
+  vertical-align: top;
+}
+.newsResultList .column2
+{
+  vertical-align: top;
+}
+.newsResultList .row1
+{
+  background-color: #EEEEEE;
+}
+.newsResultList .row2
+{
+  background-color: white;
+}
+.newsResultList .mainCell
+{
+  font-weight: bold;
+}
+.newsResultList .selectLink
+{
+  text-align: right;
+}
+
+
+.agendaResultList
+{
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;
+  
+}
+.agendaResultList TD
+{
+  padding: 2pt;
+}
+.agendaResultList .row1
+{
+  background-color: #EEEEEE;
+}
+.agendaResultList .row2
+{
+  background-color: white;
+}
+.agendaResultList .mainCell
+{
+  font-weight: bold;
+}
+.agendaResultList .selectLink
+{
+  text-align: right;
+}
+.agendaResultList .column1
+{
+  width:30%;
+}
+.agendaResultList .column2
+{
+  width:65%;
+}
+.agendaResultList .column3
+{
+  width:5%;
+}
+
+.forumResultList
+{
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;
+  
+}
+.forumResultList TD
+{
+  padding: 2pt;
+}
+.forumResultList .row1
+{
+  background-color: #EEEEEE;
+}
+.forumResultList .row2
+{
+  background-color: white;
+}
+.forumResultList .mainCell
+{
+  font-weight: bold;
+}
+.forumResultList .selectLink
+{
+  text-align: right;
+}
+.forumResultList .column1
+{
+  width:30%;
+}
+.forumResultList .column2
+{
+  width:65%;
+}
+.forumResultList .column3
+{
+  width:5%;
+}
+.dataScroller
+{
+  text-align: center;
+  font-weight: normal;
+}
+.dataScroller A
+{
+  text-decoration: none;
+  color: Green;
+}
+
+.dataScrollerPaginatorActiveColumn
+{
+  font-weight: bold;
+  font-size: larger;
+}
+
+.form
+{
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;
+}
+.form .column1
+{
+  background-color: #EEEEEE;    
+  vertical-align: top;
+  padding: 4pt;
+}
+.form .mainCell
+{
+  font-weight: bold;
+}
+.form .footer
+{
+  text-align: center;
+}
+
+.inputCalendar
+{
+  width: 35%;
+}
+
+.forumName
+{
+  color: Black;
+  font-size: 15px;
+}
+
+.questionTitle
+{
+  color: Green;
+  font-size: 15px;
+}
+
+.forumsList 
+{
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;  
+}
+.forumsList .column1
+{
+  vertical-align: top;
+  width:75%;
+}
+
+.forumsList .column2
+{
+  vertical-align: top;
+  text-align: center;
+  width:25%;
+}
+
+.forumsList .row1
+{
+  background-color: #FFF8E0;
+}
+
+.forumsList .row2
+{
+  background-color: #FFFFFF;
+}
+
+.questionsList
+{ 
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.questionsList .column1 
+{
+  width:80%;
+  vertical-align:top;
+}
+
+.questionsList .column2 
+{
+  text-align: center;
+  width:10%;    
+}
+.questionsList .column3 
+{
+  text-align: center;
+  width:10%;    
+}
+
+.questionsList .row1
+{
+  background-color: #EEEEEE;
+}
+
+.questionsList .row2
+{
+  background-color: white;
+}
+
+.questionsAndAnswersList
+{
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.questionsAndAnswersList .column1 
+{
+  width:100%;
+  vertical-align:top;
+}
+
+.questionsAndAnswersList .row1
+{
+  background-color: #D8D8D8;
+}
+
+.questionsAndAnswersList .row2
+{
+  background-color: #EEEEEE;
+}
+
+.questionsAndAnswersList .rowQuestion
+{
+  width:100%;
+}
+
+.questionsAndAnswersList .rowAnswer
+{
+  width:100%;
+  font-style: italic;
+}
+
+.answersList
+{  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.answersList .column1 
+{
+  vertical-align: top;
+  width:25%; 
+}
+
+.answersList .column2 
+{
+  vertical-align: top;
+  width:75%;    
+}
+
+.answersList .row1
+{
+  background-color: #EEEEEE;
+}
+.answersList .row2
+{
+  background-color: white;
+}
+
+
+.questionPage .mainCell
+{
+  font-weight: bold;
+}
+
+.newQuestionPage 
+{
+    
+}
+
+.newQuestionPage .column1
+{
+  vertical-align: top;     
+}
+
+.newQuestionPage .column2
+{
+  width:500px;        
+}
+
+/* grxViewer */
+
+.grxWindow .toolbar A
+{
+  display:inline-block;
+  margin:4px;
+  padding:1px;
+  border-style:solid;
+  border-width:1px;
+  border-color:#D0D0D0;
+}
+
+.grxWindow .toolbar A:hover
+{
+  background-color:yellow;
+}
+
+.grxWindow .toolbar A img
+{
+  border-style:none;
+  vertical-align:middle;
+}
+
+.grxWindow .header .headerRow
+{
+  text-align:center;
+  font-weight:normal;
+}
+
+.grxWindow .col1
+{
+  width:16px;
+  text-align:center;
+}
+
+.grxWindow .col2
+{
+  text-align:center;
+}
+
+.grxWindow .col3
+{
+  width:16px;
+  text-align:center;  
+}
+
+.grxWindow .renderCanvas
+{
+  border-style:solid;
+  border-width:1px;
+  border-color:black;
+}
+
+.grxWindow .renderCanvas .title
+{
+  margin-left:4px;
+}
+
+.grxWindow .renderCanvas .crow TD
+{
+  border-style:solid;
+  border-width:0px 0px 1px 0px;
+  border-color:#C0C0C0;
+}
+
+.grxWindow .renderCanvas .ccol1
+{
+  vertical-align:middle;
+  text-align:left;
+  width:65%;
+}
+
+.grxWindow .renderCanvas .ccol2
+{
+  vertical-align:middle;
+  text-align:right;
+  width:35%;
+}
+
+.renderCanvas .zoomButtons A
+{
+  background-color:#E0E0E0;
+}
+
+.renderCanvas .zoomButtons A:hover
+{
+  background-color:yellow;
+}
+
+.renderCanvas .zoomButtons img
+{
+  vertical-align:middle;
+  border-style:solid;
+  border-width:1px;
+  border-color:gray;
+  margin:1px;
+}
+
+.addressList
+{
+  margin-top:50px;
+  width:400px;
+  margin-left:auto;
+  margin-right:auto;
+  border-style:solid;
+  border-width:1px;
+  border-color:#C0C0C0;
+  margin-bottom:50px;  
+}
+
+.addressList .header
+{
+  background-color:#F02020;
+  color:white;
+  font-weight:normal;
+  text-align:left;
+}
+
+.addressList .arow1
+{
+  background-color:white;
+}
+
+.addressList .arow1 A
+{
+  color:black;
+  text-decoration:none;
+}
+
+.addressList .arow1 A:hover
+{
+  color:red;
+}
+
+.addressList .arow2
+{
+  background-color:#FFF0E0;
+}
+
+.addressList .arow2 A
+{
+  color:black;
+  text-decoration:none; 
+}
+
+.addressList .arow2 A:hover
+{
+  color:red;
+}
+
+.layerSelection
+{
+  width:600px;
+  border-style:solid;
+  border-width:1px;
+  border-color:gray;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top:50px;
+  margin-bottom:50px;
+}
+
+.layerSelection .header
+{
+  text-align:left;
+  background-color:#FFA0A0;
+  font-weight:bold;
+  height:30px;
+}
+
+.layerSelection .footer
+{
+  text-align:center;
+  background-color:#FFA0A0;
+  height:30px;  
+}
+
+.catHeader
+{
+  color:gray;
+  text-align:left;
+  font-weight:bold;
+}
+
+.layerSelection .col1
+{
+  vertical-align:top;
+  width:40%;
+}
+
+.layerSelection .col2
+{
+  vertical-align:top;
+  width:60%;
+}
+
+.categoryList
+{
+  margin-top:10px;
+}
+
+.categoryList .arow A
+{
+  width:100%;
+  display:block;
+  text-decoration:none;
+  padding:2px;
+}
+
+.categoryList .arow A.unselected
+{
+  color:black;
+  background-color:white;
+}
+
+.categoryList .arow A.unselected:hover
+{
+  color:black;
+  background-color:#F0D0D0;
+}
+
+.categoryList .arow A.selected
+{
+  color:white;
+  background-color:red;
+}
+
+.layerList
+{
+  background-color:#F0F0E0;
+}
+
+.addressLocator .alcol1
+{
+  width:25%;
+}
+
+.addressLocator .alcol2
+{
+  width:75%;
+}
+
+.addressLocator .searchResult
+{
+  font-weight: bold;
+  color:red;
+}
+
+.legendFooter
+{
+  text-align:center;
+}
+
+.inputBox
+{
+  color:black;
+  background:url("../images/back_box.gif");
+  border-style:solid;
+  border-width:1px;
+  border-color:red;
+  vertical-align:middle;
+}
+
+.outputBox
+{
+  vertical-align:middle;
+}
+
+.grxButton
+{
+  background-color:#FFA0A0;
+  vertical-align:middle;
+  margin-left:4px;
+  margin-right:4px;
+}
+
+A.loginButton
+{
+  border-style:solid;
+  border-width:1px;
+  border-color:black;
+  display:inline-block;
+  background-color:#E0E0E0;
+  padding:4px;
+  text-decoration:none;
+  color:black;
+}
+
+A.loginButton:hover
+{
+  background-color:#F0F0F0;
+}

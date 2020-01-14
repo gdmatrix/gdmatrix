@@ -1,0 +1,52 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+    <sf:browser url="#{reportBean.headerURL}"
+      port="#{applicationBean.defaultPort}"
+      rendered="#{reportBean.headerURL != null}"
+      translator="#{userSessionBean.translator}"
+      translationGroup="#{userSessionBean.translationGroup}" />
+
+    <t:div rendered="#{reportBean.formRendered}" styleClass="filterPanel">
+      <sf:customForm url="#{reportBean.formURL}"
+        values="#{reportBean.parameters}"
+        newValues="#{reportBean.parameters}"
+        translator="#{userSessionBean.translator}"
+        translationGroup="#{userSessionBean.translationGroup}" />
+      <t:div styleClass="footer" rendered="#{reportBean.executeButtonRendered}">
+        <h:commandButton id="default_button" value="#{reportBean.executeButtonLabel == null ?
+          webBundle.buttonExecute : reportBean.executeButtonLabel}"
+          action="#{reportBean.executeReport}" styleClass="executeButton" />
+      </t:div>
+    </t:div>
+
+    <t:div rendered="#{reportBean.reportRendered and reportBean.printButtonRendered}">
+      <h:outputLink value="#{reportBean.printURL}" target="blank" styleClass="printButton">
+        <h:graphicImage url="/common/report/images/print.gif" alt="" />
+        <sf:outputText value="#{reportBean.printButtonLabel}"
+          rendered="#{reportBean.printButtonLabel != null}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}" />
+      </h:outputLink>
+    </t:div>
+
+    <t:div styleClass="body">
+      <sf:browser url="#{reportBean.reportURL}"
+        port="#{applicationBean.defaultPort}"
+        iframe="#{reportBean.showInIFrame}" width="100%" height="500px"
+        translator="#{not reportBean.showInIFrame ? userSessionBean.translator : null}"
+        translationGroup="#{userSessionBean.translationGroup}" 
+        allowedHtmlTags="#{reportBean.allowedHtmlTags}"
+        readTimeout="#{reportBean.readTimeout}"/>
+    </t:div>
+
+    <sf:browser url="#{reportBean.footerURL}"
+      port="#{applicationBean.defaultPort}"
+      rendered="#{reportBean.footerURL != null}"
+      translator="#{userSessionBean.translator}"
+      translationGroup="#{userSessionBean.translationGroup}" />
+</html>

@@ -1,0 +1,1171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="kernel"
+  namespace="http://kernel.matrix.org/"
+  title="Gestor de persones i territori"
+  wsdlLocation="../services/kernel?wsdl"
+  service="KernelManagerService"
+  port="KernelManagerPort"
+  version="1.2"
+  status="FINAL"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="dic"/>
+    <import module="doc"/>
+    <import module="security"/>
+  </imports>
+
+  <types>
+    <entity name="Person">
+      <identifier name="personId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="personTypeId" type="xs:string" minOccurs="1"
+        references="dic:Type">
+      </property>
+      <property name="name" type="xs:string" minOccurs="1">
+      </property>
+      <property name="firstParticle" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstSurname" type="xs:string" minOccurs="0">
+      </property>
+      <property name="secondParticle" type="xs:string" minOccurs="0">
+      </property>
+      <property name="secondSurname" type="xs:string" minOccurs="0">
+      </property>
+      <property name="sex" type="kernel:Sex" minOccurs="1">
+      </property>
+      <property name="nif" type="xs:string" minOccurs="0">
+      </property>
+      <property name="passport" type="xs:string" minOccurs="0">
+      </property>
+      <property name="birthDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="nationalityId" type="xs:string" minOccurs="0"
+        references="kernel:Country">
+      </property>
+      <property name="birthCityId" type="xs:string" minOccurs="0"
+        references="kernel:City">
+      </property>
+      <property name="fatherName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="motherName" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Contact">
+      <identifier name="contactId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="contactTypeId" type="xs:string" minOccurs="1"
+        references="dic:Type">
+      </property>
+      <property name="value" type="xs:string" minOccurs="1">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Address">
+      <identifier name="addressId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="streetId" type="xs:string" minOccurs="1"
+        references="kernel:Street">
+      </property>
+      <property name="addressTypeId" type="xs:string" minOccurs="1"
+        references="dic:Type">
+      </property>
+      <property name="number1" type="xs:string" minOccurs="0">
+      </property>
+      <property name="number2" type="xs:string" minOccurs="0">
+      </property>
+      <property name="bis1" type="xs:string" minOccurs="0">
+      </property>
+      <property name="bis2" type="xs:string" minOccurs="0">
+      </property>
+      <property name="km" type="xs:double" minOccurs="0">
+      </property>
+      <property name="block" type="xs:string" minOccurs="0">
+      </property>
+      <property name="entranceHall" type="xs:string" minOccurs="0">
+      </property>
+      <property name="stair" type="xs:string" minOccurs="0">
+      </property>
+      <property name="floor" type="xs:string" minOccurs="0">
+      </property>
+      <property name="door" type="xs:string" minOccurs="0">
+      </property>
+      <property name="postalCode" type="xs:string" minOccurs="0">
+      </property>
+      <property name="postOfficeBox" type="xs:string" minOccurs="0">
+      </property>
+      <property name="gisReference" type="xs:string" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="PersonAddress">
+      <identifier name="personAddressId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="personAddressTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+    </entity>
+
+    <entity name="PersonDocument">
+      <identifier name="personDocId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="docId" type="xs:string" minOccurs="0"
+        references="doc:Document">
+      </property>
+      <property name="version" type="xs:int">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="personDocTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>
+    </entity>
+
+    <entity name="AddressDocument">
+      <identifier name="addressDocId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="docId" type="xs:string" minOccurs="0"
+        references="doc:Document">
+      </property>
+      <property name="addressDocTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>
+    </entity>
+
+    <entity name="PersonPerson">
+      <identifier name="personPersonId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="relPersonId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="personPersonTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="PersonRepresentant">
+      <identifier name="personRepresentantId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="representantId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="representationTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Room">
+      <identifier name="roomId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="capacity" type="xs:int">
+      </property>
+      <property name="roomTypeId" type="xs:string" references="dic:Type">
+      </property>
+      <property name="area" type="xs:int">
+      </property>
+      <property name="phone" type="xs:string" minOccurs="0">
+      </property>
+      <property name="fax" type="xs:string" minOccurs="0">
+      </property>
+      <property name="email" type="xs:string" minOccurs="0">
+      </property>
+      <property name="schedule" type="xs:string" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="spaceId" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Country">
+      <identifier name="countryId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="ISOCode" type="xs:string" minOccurs="0">
+      </property>
+      <property name="language" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Province">
+      <identifier name="provinceId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="countryId" type="xs:string" minOccurs="0"
+        references="kernel:Country">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="City">
+      <identifier name="cityId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="provinceId" type="xs:string" minOccurs="0"
+        references="kernel:Province">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Street">
+      <identifier name="streetId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="cityId" type="xs:string" minOccurs="0"
+        references="kernel:City">
+      </property>
+      <property name="streetTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="particle" type="xs:string" minOccurs="0">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="KernelListItem">
+      <identifier name="itemId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <struct name="KernelMetaData">
+    </struct>
+
+    <struct name="PersonFilter">
+      <property name="personId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="kernel:Person">
+      </property>
+      <property name="fullName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstSurname" type="xs:string" minOccurs="0">
+      </property>
+      <property name="secondSurname" type="xs:string" minOccurs="0">
+      </property>
+      <property name="nif" type="xs:string" minOccurs="0">
+      </property>
+      <property name="passport" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PersonView">
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="fullName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="nif" type="xs:string" minOccurs="0">
+      </property>
+      <property name="passport" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="ContactFilter">
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="contactTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="ContactView">
+      <property name="contactId" type="xs:string" minOccurs="0"
+        references="kernel:Contact">
+      </property>
+      <property name="contactTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="contactTypeLabel" type="xs:string" minOccurs="0">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="person" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="address" type="kernel:AddressView" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="AddressView">
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="city" type="xs:string" minOccurs="0">
+      </property>
+      <property name="province" type="xs:string" minOccurs="0">
+      </property>
+      <property name="country" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="AddressFilter">
+      <property name="addressIdList" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="countryName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="cityName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="streetName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="number" type="xs:string" minOccurs="0">
+      </property>
+      <property name="km" type="xs:double" minOccurs="0">
+      </property>
+      <property name="block" type="xs:string" minOccurs="0">
+      </property>
+      <property name="entranceHall" type="xs:string" minOccurs="0">
+      </property>
+      <property name="stair" type="xs:string" minOccurs="0">
+      </property>
+      <property name="floor" type="xs:string" minOccurs="0">
+      </property>
+      <property name="door" type="xs:string" minOccurs="0">
+      </property>
+      <property name="postalCode" type="xs:string" minOccurs="0">
+      </property>
+      <property name="postOfficeBox" type="xs:string" minOccurs="0">
+      </property>
+      <property name="gisReference" type="xs:string" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="addressTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>      
+      <property name="streetTypeId" type="xs:string" minOccurs="0">
+      </property>      
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PersonAddressFilter">
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PersonAddressView">
+      <property name="personAddressId" type="xs:string" minOccurs="0"
+        references="kernel:PersonAddress">
+      </property>
+      <property name="person" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="address" type="kernel:AddressView" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="PersonRepresentantFilter">
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="representantId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PersonRepresentantView">
+      <property name="personRepresentantId" type="xs:string" minOccurs="0"
+        references="kernel:PersonRepresentant">
+      </property>
+      <property name="person" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="representant" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="representationTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+    </struct>
+
+    <struct name="PersonPersonFilter">
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="relPersonId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PersonPersonView">
+      <property name="personPersonId" type="xs:string" minOccurs="0"
+        references="kernel:PersonPerson">
+      </property>
+      <property name="personView" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="relPersonView" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="personPersonTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+    </struct>
+
+    <struct name="PersonDocumentFilter">
+      <property name="docId" type="xs:string" minOccurs="0"
+        refernces="doc:Document">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="version" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PersonDocumentView">
+      <property name="personDocId" type="xs:string" minOccurs="0"
+        references="kernel:PersonDocument">
+      </property>
+      <property name="document" type="doc:Document" minOccurs="0">
+      </property>
+      <property name="personDocTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="personView" type="kernel:PersonView" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="AddressDocumentFilter">
+      <property name="docId" type="xs:string" minOccurs="0"
+        refernces="doc:Document">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="version" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="AddressDocumentView">
+      <property name="addressDocId" type="xs:string" minOccurs="0"
+        references="kernel:AddressDocument">
+      </property>
+      <property name="document" type="doc:Document" minOccurs="0">
+      </property>
+      <property name="addressDocTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="addressView" type="kernel:AddressView" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="RoomFilter">
+      <property name="roomIdList" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="roomName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="roomTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="capacity" type="xs:int">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="spaceId" type="xs:string" minOccurs="0">
+      </property>      
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="RoomView">
+      <property name="roomId" type="xs:string" minOccurs="0"
+        references="kernel:Room">
+      </property>
+      <property name="roomTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="addressView" type="kernel:AddressView" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="CountryFilter">
+      <property name="countryName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="ProvinceFilter">
+      <property name="countryId" type="xs:string" minOccurs="0"
+        references="kernel:Country">
+      </property>
+      <property name="provinceName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="CityFilter">
+      <property name="countryId" type="xs:string" minOccurs="0"
+        references="kernel:Country">
+      </property>
+      <property name="provinceId" type="xs:string" minOccurs="0"
+        references="kernel:Province">
+      </property>
+      <property name="cityName" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="StreetFilter">
+      <property name="countryId" type="xs:string" minOccurs="0"
+        references="kernel:Country">
+      </property>
+      <property name="provinceId" type="xs:string" minOccurs="0"
+        references="kernel:Province">
+      </property>
+      <property name="cityId" type="xs:string" minOccurs="0"
+        references="kernel:City">
+      </property>
+      <property name="streetTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="streetName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+
+    <enumeration name="Sex">
+      <value name="NONE"/>
+      <value name="MALE"/>
+      <value name="FEMALE"/>
+    </enumeration>
+
+    <enumeration name="KernelList">
+      <value name="PERSON_PARTICLE"/>
+      <value name="ADDRESS_PARTICLE"/>
+      <value name="STREET_TYPE"/>
+    </enumeration>
+  </types>
+
+  <operations>
+
+    <operation name="getKernelMetaData">
+      <response name="kernelMetaData" type="kernel:KernelMetaData">
+      </response>
+    </operation>
+
+    <operation name="loadPerson">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <response name="person" type="kernel:Person">
+      </response>
+    </operation>
+
+    <operation name="storePerson">
+      <parameter name="person" type="kernel:Person">
+      </parameter>
+      <response name="storedPerson" type="kernel:Person">
+      </response>
+    </operation>
+
+    <operation name="removePerson">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countPersons">
+      <parameter name="filter" type="kernel:PersonFilter">
+      </parameter>
+      <response name="personCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findPersons">
+      <parameter name="filter" type="kernel:PersonFilter">
+      </parameter>
+      <response name="person" type="kernel:Person" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findPersonViews">
+      <parameter name="filter" type="kernel:PersonFilter">
+      </parameter>
+      <response name="personView" type="kernel:PersonView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadContact">
+      <parameter name="contactId" type="xs:string">
+      </parameter>
+      <response name="contact" type="kernel:Contact">
+      </response>
+    </operation>
+
+    <operation name="storeContact">
+      <parameter name="contact" type="kernel:Contact">
+      </parameter>
+      <response name="storedContact" type="kernel:Contact">
+      </response>
+    </operation>
+
+    <operation name="removeContact">
+      <parameter name="contactId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countContacts">
+      <parameter name="filter" type="kernel:ContactFilter">
+      </parameter>
+      <response name="contactCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findContactViews">
+      <parameter name="filter" type="kernel:ContactFilter">
+      </parameter>
+      <response name="contactView" type="kernel:ContactView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadAddress">
+      <parameter name="addressId" type="xs:string">
+      </parameter>
+      <response name="address" type="kernel:Address">
+      </response>
+    </operation>
+
+    <operation name="storeAddress">
+      <parameter name="address" type="kernel:Address">
+      </parameter>
+      <response name="storedAddress" type="kernel:Address">
+      </response>
+    </operation>
+
+    <operation name="removeAddress">
+      <parameter name="addressId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countAddresses">
+      <parameter name="filter" type="kernel:AddressFilter">
+      </parameter>
+      <response name="addressCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findAddresses">
+      <parameter name="filter" type="kernel:AddressFilter">
+      </parameter>
+      <response name="address" type="kernel:Address" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findAddressViews">
+      <parameter name="filter" type="kernel:AddressFilter">
+      </parameter>
+      <response name="addressView" type="kernel:AddressView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadPersonAddress">
+      <parameter name="personAddressId" type="xs:string">
+      </parameter>
+      <response name="personAddress" type="kernel:PersonAddress">
+      </response>
+    </operation>
+
+    <operation name="storePersonAddress">
+      <parameter name="personAddress" type="kernel:PersonAddress">
+      </parameter>
+      <response name="storedPersonAddress" type="kernel:PersonAddress">
+      </response>
+    </operation>
+
+    <operation name="removePersonAddress">
+      <parameter name="personAddressId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countPersonAddresses">
+      <parameter name="filter" type="kernel:PersonAddressFilter">
+      </parameter>
+      <response name="personAddressCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findPersonAddressViews">
+      <parameter name="filter" type="kernel:PersonAddressFilter">
+      </parameter>
+      <response name="personAddressView" type="kernel:PersonAddressView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadPersonRepresentant">
+      <parameter name="personRepresentantId" type="xs:string">
+      </parameter>
+      <response name="personRepresentant" type="kernel:PersonRepresentant">
+      </response>
+    </operation>
+
+    <operation name="storePersonRepresentant">
+      <parameter name="personRepresentant" type="kernel:PersonRepresentant">
+      </parameter>
+      <response name="storedPersonRepresentant" type="kernel:PersonRepresentant">
+      </response>
+    </operation>
+
+    <operation name="removePersonRepresentant">
+      <parameter name="personRepresentantId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findPersonRepresentantViews">
+      <parameter name="filter" type="kernel:PersonRepresentantFilter">
+      </parameter>
+      <response name="personRepresentantView" type="kernel:PersonRepresentantView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadPersonPerson">
+      <parameter name="personPersonId" type="xs:string">
+      </parameter>
+      <response name="personPerson" type="kernel:PersonPerson">
+      </response>
+    </operation>
+
+    <operation name="storePersonPerson">
+      <parameter name="personPerson" type="kernel:PersonPerson">
+      </parameter>
+      <response name="storedPersonPerson" type="kernel:PersonPerson">
+      </response>
+    </operation>
+
+    <operation name="removePersonPerson">
+      <parameter name="personPersonId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findPersonPersonViews">
+      <parameter name="filter" type="kernel:PersonPersonFilter">
+      </parameter>
+      <response name="personPersonView" type="kernel:PersonPersonView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>    
+
+    <operation name="loadPersonDocument">
+      <parameter name="personDocId" type="xs:string">
+      </parameter>
+      <response name="personDocument" type="kernel:PersonDocument">
+      </response>
+    </operation>
+
+    <operation name="storePersonDocument">
+      <parameter name="personDocument" type="kernel:PersonDocument">
+      </parameter>
+      <response name="storedPersonDocument" type="kernel:PersonDocument">
+      </response>
+    </operation>
+
+    <operation name="removePersonDocument">
+      <parameter name="personDocId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findPersonDocumentViews">
+      <parameter name="filter" type="kernel:PersonDocumentFilter">
+      </parameter>
+      <response name="personDocumentView" type="kernel:PersonDocumentView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadAddressDocument">
+      <parameter name="addressDocId" type="xs:string">
+      </parameter>
+      <response name="addressDocument" type="kernel:AddressDocument">
+      </response>
+    </operation>
+
+    <operation name="storeAddressDocument">
+      <parameter name="addressDocument" type="kernel:AddressDocument">
+      </parameter>
+      <response name="storedAddressDocument" type="kernel:AddressDocument">
+      </response>
+    </operation>
+
+    <operation name="removeAddressDocument">
+      <parameter name="addressDocId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findAddressDocumentViews">
+      <parameter name="filter" type="kernel:AddressDocumentFilter">
+      </parameter>
+      <response name="addressDocumentView" type="kernel:AddressDocumentView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadRoom">
+      <parameter name="roomId" type="xs:string">
+      </parameter>
+      <response name="room" type="kernel:Room">
+      </response>
+    </operation>
+
+    <operation name="storeRoom">
+      <parameter name="room" type="kernel:Room">
+      </parameter>
+      <response name="storedRoom" type="kernel:Room">
+      </response>
+    </operation>
+
+    <operation name="removeRoom">
+      <parameter name="roomId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countRooms">
+      <parameter name="filter" type="kernel:RoomFilter">
+      </parameter>
+      <response name="roomCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findRooms">
+      <parameter name="filter" type="kernel:RoomFilter">
+      </parameter>
+      <response name="room" type="kernel:Room" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findRoomViews">
+      <parameter name="filter" type="kernel:RoomFilter">
+      </parameter>
+      <response name="roomView" type="kernel:RoomView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadCountry">
+      <parameter name="countryId" type="xs:string">
+      </parameter>
+      <response name="country" type="kernel:Country">
+      </response>
+    </operation>
+
+    <operation name="storeCountry">
+      <parameter name="country" type="kernel:Country">
+      </parameter>
+      <response name="storedCountry" type="kernel:Country">
+      </response>
+    </operation>
+
+    <operation name="removeCountry">
+      <parameter name="countryId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCountries">
+      <parameter name="filter" type="kernel:CountryFilter">
+      </parameter>
+      <response name="countryCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCountries">
+      <parameter name="filter" type="kernel:CountryFilter">
+      </parameter>
+      <response name="country" type="kernel:Country" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadProvince">
+      <parameter name="provinceId" type="xs:string">
+      </parameter>
+      <response name="province" type="kernel:Province">
+      </response>
+    </operation>
+
+    <operation name="storeProvince">
+      <parameter name="province" type="kernel:Province">
+      </parameter>
+      <response name="storedProvince" type="kernel:Province">
+      </response>
+    </operation>
+
+    <operation name="removeProvince">
+      <parameter name="provinceId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countProvinces">
+      <parameter name="filter" type="kernel:ProvinceFilter">
+      </parameter>
+      <response name="provinceCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findProvinces">
+      <parameter name="filter" type="kernel:ProvinceFilter">
+      </parameter>
+      <response name="province" type="kernel:Province" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadCity">
+      <parameter name="cityId" type="xs:string">
+      </parameter>
+      <response name="city" type="kernel:City">
+      </response>
+    </operation>
+
+    <operation name="storeCity">
+      <parameter name="city" type="kernel:City">
+      </parameter>
+      <response name="storedCity" type="kernel:City">
+      </response>
+    </operation>
+
+    <operation name="removeCity">
+      <parameter name="cityId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCities">
+      <parameter name="filter" type="kernel:CityFilter">
+      </parameter>
+      <response name="cityCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCities">
+      <parameter name="filter" type="kernel:CityFilter">
+      </parameter>
+      <response name="city" type="kernel:City" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadStreet">
+      <parameter name="streetId" type="xs:string">
+      </parameter>
+      <response name="street" type="kernel:Street">
+      </response>
+    </operation>
+
+    <operation name="storeStreet">
+      <parameter name="street" type="kernel:Street">
+      </parameter>
+      <response name="storedStreet" type="kernel:Street">
+      </response>
+    </operation>
+
+    <operation name="removeStreet">
+      <parameter name="streetId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countStreets">
+      <parameter name="filter" type="kernel:StreetFilter">
+      </parameter>
+      <response name="streetCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findStreets">
+      <parameter name="filter" type="kernel:StreetFilter">
+      </parameter>
+      <response name="street" type="kernel:Street" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+    
+    <operation name="loadKernelListItem">
+      <parameter name="list" type="kernel:KernelList">
+      </parameter>
+      <parameter name="itemId" type="xs:string">
+      </parameter>
+      <response name="listItem" type="kernel:KernelListItem">
+      </response>
+    </operation>
+
+    <operation name="storeKernelListItem">
+      <parameter name="list" type="kernel:KernelList">
+      </parameter>
+      <parameter name="item" type="kernel:KernelListItem">
+      </parameter>
+      <response name="storedListItem" type="kernel:KernelListItem">
+      </response>
+    </operation>
+
+    <operation name="removeKernelListItem">
+      <parameter name="list" type="kernel:KernelList">
+      </parameter>
+      <parameter name="itemId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="listKernelListItems">
+      <parameter name="list" type="kernel:KernelList">
+      </parameter>
+      <response name="listItem" type="kernel:KernelListItem" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+  </operations>
+</module>

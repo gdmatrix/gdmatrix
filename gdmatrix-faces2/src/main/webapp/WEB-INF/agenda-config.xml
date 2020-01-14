@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+ <managed-bean>
+  <managed-bean-name>agendaBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.AgendaBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+  <managed-bean>
+  <managed-bean-name>agendaConfigBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.AgendaConfigBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>eventBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>eventSearchBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventSearchBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>eventMainBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventMainBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>eventDetailBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventDetailBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>attendantsBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.AttendantsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+  <managed-bean>
+  <managed-bean-name>eventPlacesBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventPlacesBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>eventCasesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.agenda.web.EventCasesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+  <managed-bean-name>eventDocumentsBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventDocumentsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>eventThemesBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventThemesBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>themeBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.ThemeBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>themeSearchBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.ThemeSearchBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>themeMainBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.ThemeMainBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+
+ <managed-bean>
+  <managed-bean-name>tableEventViewBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.view.TableEventViewBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>listEventViewBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.view.ListEventViewBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>linkedEventViewBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.view.LinkedEventViewBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>scheduleEventViewBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.view.ScheduleEventViewBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>groupedEventViewBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.view.GroupedEventViewBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>eventCopyBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventCopyBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>eventRecurrencesBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.EventRecurrencesBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+  <managed-bean>
+      <managed-bean-name>currentDate</managed-bean-name>
+      <managed-bean-class>java.util.Date</managed-bean-class>
+      <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  
+ <managed-bean>
+  <managed-bean-name>meetingFinderBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.agenda.web.MeetingFinderBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>  
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>agenda</from-outcome>
+   <to-view-id>/common/agenda/agenda.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>goEvent</from-outcome>
+   <to-view-id>/common/agenda/esdeveniment.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>event_main</from-outcome>
+   <to-view-id>/common/agenda/event_main.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+  <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>attendants</from-outcome>
+   <to-view-id>/common/agenda/attendants.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>event_places</from-outcome>
+   <to-view-id>/common/agenda/event_places.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>event_cases</from-outcome>
+   <to-view-id>/common/agenda/event_cases.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>event_themes</from-outcome>
+   <to-view-id>/common/agenda/event_themes.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+  <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>event_documents</from-outcome>
+   <to-view-id>/common/agenda/event_documents.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+  <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>theme_search</from-outcome>
+   <to-view-id>/common/agenda/theme_search.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+  <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>theme_main</from-outcome>
+   <to-view-id>/common/agenda/theme_main.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+
+  <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>event_search</from-outcome>
+   <to-view-id>/common/agenda/event_search.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>event_detail</from-outcome>
+   <to-view-id>/common/agenda/event_detail.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+  <navigation-rule>
+   <from-view-id>*</from-view-id>
+   <navigation-case>
+    <from-outcome>event_copy</from-outcome>
+    <to-view-id>/common/agenda/event_copy.xhtml</to-view-id>
+   </navigation-case>
+ </navigation-rule>
+
+  <navigation-rule>
+   <from-view-id>*</from-view-id>
+   <navigation-case>
+    <from-outcome>event_recurrences</from-outcome>
+    <to-view-id>/common/agenda/event_recurrences.xhtml</to-view-id>
+   </navigation-case>
+ </navigation-rule>
+ 
+  <navigation-rule>
+   <from-view-id>*</from-view-id>
+   <navigation-case>
+    <from-outcome>meeting_finder</from-outcome>
+    <to-view-id>/common/agenda/meeting_finder.xhtml</to-view-id>
+   </navigation-case>
+ </navigation-rule> 
+
+</faces-config>
+
+
+
+
+
+

@@ -1,0 +1,92 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/frames/#{userSessionBean.frame}/frame.xhtml">
+    <ui:define name="template">
+
+  <h:panelGroup styleClass="centralSheet">
+    <t:div styleClass="headerPanel">
+      <h:outputLink value="#{userSessionBean.selectedMenuItem.properties.homeUrl}"
+         rendered="#{userSessionBean.selectedMenuItem.properties.homeUrl != null and
+                     userSessionBean.selectedMenuItem.properties.headerDocId != null}">
+        <h:graphicImage url="/documents/#{userSessionBean.selectedMenuItem.properties.headerDocId}"          
+          styleClass="logo" alt="" />
+      </h:outputLink>
+      <h:graphicImage url="/documents/#{userSessionBean.selectedMenuItem.properties.headerDocId}"
+        rendered="#{userSessionBean.selectedMenuItem.properties.homeUrl == null and
+                    userSessionBean.selectedMenuItem.properties.headerDocId != null}"
+        styleClass="logo" alt="" />
+
+      <h:panelGroup styleClass="loginPanel" rendered="#{userSessionBean.anonymousUser}">
+        <h:outputText value="#{webBundle.outputUsername}:"
+          styleClass="username" />
+        <h:inputText binding="#{loginBean.usernameInputText}"
+                     tabindex="1" size="10" immediate="true"
+                     onkeypress="login(event)"
+                     styleClass="loginBox" />
+        <h:outputText value="#{webBundle.outputPassword}:"
+                      styleClass="password" />
+        <h:inputSecret binding="#{loginBean.passwordInputSecret}"
+                       tabindex="2" size="10" immediate="true"
+                       onkeypress="login(event)"
+                       styleClass="loginBox" />
+        <sf:secureCommandLink id="loginbutton"
+          action="#{loginBean.login}" function="login" immediate="true"
+          port="#{applicationBean.serverSecurePort}" scheme="https"
+          styleClass="loginButton">
+          <h:outputText value="#{webBundle.buttonSignin}" />
+        </sf:secureCommandLink>
+      </h:panelGroup>
+
+      <h:panelGroup rendered="#{!userSessionBean.anonymousUser}"
+                   styleClass="loginPanel">
+        <h:outputText value="#{webBundle.outputUsername}:"
+                      styleClass="username" />
+        <h:outputText value="#{userSessionBean.displayName}"
+                      styleClass="displayName"/>
+        <h:commandLink action="#{loginBean.logout}" 
+          styleClass="loginButton" immediate="true">
+          <h:outputText value="#{webBundle.buttonSignout}" />
+        </h:commandLink>
+      </h:panelGroup>
+    </t:div>
+
+    <t:panelGrid styleClass="centralPanel" columns="2" columnClasses="cpcol1,cpcol2"
+                 rendered="#{not userSessionBean.autoLoginUser and not userSessionBean.anonymousUser}">
+      <sf:treeMenu id="leftMenu" var="item" styleClass="menuPanel"
+        baseMid="#{userSessionBean.selectedMenuItem.path[1]}"
+        expandDepth="2" expandSelected="false">
+        <f:facet name="data">
+          <h:outputLink value="#{item.actionURL}"
+            onclick="#{item.onclick}" target="#{item.target}"
+            styleClass="#{item.selectionContained ? 'selected' : ''}"
+            rendered="#{item.rendered}">
+            <sf:outputText value="#{item.label}"
+              translator="#{userSessionBean.translator}"
+              translationGroup="#{userSessionBean.translationGroup}" />
+          </h:outputLink>
+        </f:facet>
+      </sf:treeMenu>
+
+      <h:panelGroup styleClass="contentPanel">
+          <ui:insert name="body">Body</ui:insert>
+      </h:panelGroup>
+    </t:panelGrid>
+
+    <t:div styleClass="footerPanel"
+      rendered="#{not userSessionBean.autoLoginUser and not userSessionBean.anonymousUser}">
+      <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties.footerDocId}"
+        rendered="#{userSessionBean.selectedMenuItem.properties.footerDocId != null}"
+        translator="#{userSessionBean.translator}"
+        translationGroup="#{userSessionBean.translationGroup}" />
+    </t:div>
+  </h:panelGroup>
+
+    </ui:define>
+  </ui:composition>
+</html>
+

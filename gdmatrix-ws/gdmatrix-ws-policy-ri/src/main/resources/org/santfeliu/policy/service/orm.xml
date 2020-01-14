@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+  <description>Policy</description>
+  <package>org.santfeliu.policy.service</package>
+
+  <named-query name="countPolicies">
+    <query>
+      SELECT count(pol) FROM Policy pol
+      WHERE (UPPER(pol.title) LIKE :title OR :title IS NULL) AND
+      (UPPER(pol.description) LIKE :description OR :description IS NULL) AND
+      (pol.policyTypeId = :policyTypeId OR :policyTypeId IS NULL) AND
+      (pol.activationDateExpression LIKE :activationDateExpression OR
+        :activationDateExpression IS NULL) AND
+      (pol.activationCondition LIKE :activationCondition OR
+        :activationCondition IS NULL) AND
+      (UPPER(pol.mandate) LIKE :mandate OR :mandate IS NULL) AND
+      (pol.evaluationCode = :evaluationCode OR :evaluationCode IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findPolicies">
+    <query>
+      SELECT pol FROM Policy pol
+      WHERE (UPPER(pol.title) LIKE :title OR :title IS NULL) AND
+      (UPPER(pol.description) LIKE :description OR :description IS NULL) AND
+      (pol.policyTypeId = :policyTypeId OR :policyTypeId IS NULL) AND
+      (pol.activationDateExpression LIKE :activationDateExpression OR
+        :activationDateExpression IS NULL) AND
+      (pol.activationCondition LIKE :activationCondition OR
+        :activationCondition IS NULL) AND
+      (UPPER(pol.mandate) LIKE :mandate OR :mandate IS NULL) AND
+      (pol.evaluationCode = :evaluationCode OR :evaluationCode IS NULL)
+      ORDER BY pol.policyId
+    </query>
+  </named-query>
+
+  <named-query name="countDisposalHolds">
+    <query>
+      SELECT count(h) FROM DisposalHold h
+      WHERE (UPPER(h.title) LIKE :title OR :title IS NULL) AND
+      (UPPER(h.reason) LIKE :reason OR :reason IS NULL) AND
+      (h.startDate &lt;= :endDate OR :endDate IS NULL) AND
+      (h.endDate IS NULL OR h.endDate &gt;= :startDate OR :startDate IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findDisposalHolds">
+    <query>
+      SELECT h FROM DisposalHold h
+      WHERE (UPPER(h.title) LIKE :title OR :title IS NULL) AND
+      (UPPER(h.reason) LIKE :reason OR :reason IS NULL) AND
+      (h.startDate &lt;= :endDate OR :endDate IS NULL) AND
+      (h.endDate IS NULL OR h.endDate &gt;= :startDate OR :startDate IS NULL)
+      ORDER BY h.dispHoldId, h.startDate
+    </query>
+  </named-query>
+
+  <named-query name="countClassPolicies">
+    <query>
+      SELECT count(cp) FROM ClassPolicy cp
+      WHERE
+      (cp.classId = :classId OR :classId IS NULL) AND
+      (cp.policyId = :policyId OR :policyId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findClassPolicyViews">
+    <query>
+      SELECT cp, pol FROM ClassPolicy cp, Policy pol
+      WHERE cp.policyId = pol.policyId AND
+      (cp.classId = :classId OR :classId IS NULL) AND
+      (cp.policyId = :policyId OR :policyId IS NULL)
+      ORDER BY cp.classId, pol.policyId
+    </query>
+  </named-query>
+
+  <named-query name="countCasePolicies">
+    <query>
+      SELECT count(cp) FROM CasePolicy cp
+      WHERE
+      (cp.caseId = :caseId OR :caseId IS NULL) AND
+      (cp.policyId = :policyId OR :policyId IS NULL) AND
+      (cp.activationDate &lt;= :activationDate OR :activationDate IS NULL) AND
+
+      (cp.creationDateTime &gt;= :startCreationDateTime OR :startCreationDateTime IS NULL) AND
+      (cp.creationDateTime &lt;= :endCreationDateTime OR :endCreationDateTime IS NULL) AND
+
+      (cp.approvalDateTime &gt;= :startApprovalDateTime OR :startApprovalDateTime IS NULL) AND
+      (cp.approvalDateTime &lt;= :endApprovalDateTime OR :endApprovalDateTime IS NULL) AND
+
+      (cp.activationDate &gt;= :startActivationDate OR :startActivationDate IS NULL) AND
+      (cp.activationDate &lt;= :endActivationDate OR :endActivationDate IS NULL) AND
+
+      (cp.executionDateTime &gt;= :startExecutionDateTime OR :startExecutionDateTime IS NULL) AND
+      (cp.executionDateTime &lt;= :endExecutionDateTime OR :endExecutionDateTime IS NULL) AND
+
+      (cp.dispHoldId = :dispHoldId OR :dispHoldId IS NULL) AND
+      (cp.stateValue = :stateValue OR :stateValue IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findCasePolicyViews">
+    <query>
+      SELECT cp, pol FROM CasePolicy cp, Policy pol
+      WHERE cp.policyId = pol.policyId AND
+      (cp.caseId = :caseId OR :caseId IS NULL) AND
+      (cp.policyId = :policyId OR :policyId IS NULL) AND
+      (cp.activationDate &lt;= :activationDate OR :activationDate IS NULL) AND
+
+      (cp.creationDateTime &gt;= :startCreationDateTime OR :startCreationDateTime IS NULL) AND
+      (cp.creationDateTime &lt;= :endCreationDateTime OR :endCreationDateTime IS NULL) AND
+
+      (cp.approvalDateTime &gt;= :startApprovalDateTime OR :startApprovalDateTime IS NULL) AND
+      (cp.approvalDateTime &lt;= :endApprovalDateTime OR :endApprovalDateTime IS NULL) AND
+
+      (cp.activationDate &gt;= :startActivationDate OR :startActivationDate IS NULL) AND
+      (cp.activationDate &lt;= :endActivationDate OR :endActivationDate IS NULL) AND
+
+      (cp.executionDateTime &gt;= :startExecutionDateTime OR :startExecutionDateTime IS NULL) AND
+      (cp.executionDateTime &lt;= :endExecutionDateTime OR :endExecutionDateTime IS NULL) AND
+
+      (cp.dispHoldId = :dispHoldId OR :dispHoldId IS NULL) AND
+      (cp.stateValue = :stateValue OR :stateValue IS NULL)
+      ORDER BY cp.caseId, cp.activationDate
+    </query>
+  </named-query>
+
+  <named-query name="countDocumentPolicies">
+    <query>
+      SELECT count(dp) FROM DocumentPolicy dp
+      WHERE
+      (dp.docId = :docId OR :docId IS NULL) AND
+      (dp.policyId = :policyId OR :policyId IS NULL) AND
+      (dp.activationDate &lt;= :activationDate OR :activationDate IS NULL) AND
+
+      (dp.creationDateTime &gt;= :startCreationDateTime OR :startCreationDateTime IS NULL) AND
+      (dp.creationDateTime &lt;= :endCreationDateTime OR :endCreationDateTime IS NULL) AND
+
+      (dp.approvalDateTime &gt;= :startApprovalDateTime OR :startApprovalDateTime IS NULL) AND
+      (dp.approvalDateTime &lt;= :endApprovalDateTime OR :endApprovalDateTime IS NULL) AND
+
+      (dp.activationDate &gt;= :startActivationDate OR :startActivationDate IS NULL) AND
+      (dp.activationDate &lt;= :endActivationDate OR :endActivationDate IS NULL) AND
+
+      (dp.executionDateTime &gt;= :startExecutionDateTime OR :startExecutionDateTime IS NULL) AND
+      (dp.executionDateTime &lt;= :endExecutionDateTime OR :endExecutionDateTime IS NULL) AND
+
+      (dp.dispHoldId = :dispHoldId OR :dispHoldId IS NULL) AND
+      (dp.stateValue = :stateValue OR :stateValue IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findDocumentPolicyViews">
+    <query>
+      SELECT dp, pol FROM DocumentPolicy dp, Policy pol
+      WHERE dp.policyId = pol.policyId AND
+      (dp.docId = :docId OR :docId IS NULL) AND
+      (dp.policyId = :policyId OR :policyId IS NULL) AND
+      (dp.activationDate &lt;= :activationDate OR :activationDate IS NULL) AND
+
+      (dp.creationDateTime &gt;= :startCreationDateTime OR :startCreationDateTime IS NULL) AND
+      (dp.creationDateTime &lt;= :endCreationDateTime OR :endCreationDateTime IS NULL) AND
+
+      (dp.approvalDateTime &gt;= :startApprovalDateTime OR :startApprovalDateTime IS NULL) AND
+      (dp.approvalDateTime &lt;= :endApprovalDateTime OR :endApprovalDateTime IS NULL) AND
+
+      (dp.activationDate &gt;= :startActivationDate OR :startActivationDate IS NULL) AND
+      (dp.activationDate &lt;= :endActivationDate OR :endActivationDate IS NULL) AND
+
+      (dp.executionDateTime &gt;= :startExecutionDateTime OR :startExecutionDateTime IS NULL) AND
+      (dp.executionDateTime &lt;= :endExecutionDateTime OR :endExecutionDateTime IS NULL) AND
+
+      (dp.dispHoldId = :dispHoldId OR :dispHoldId IS NULL) AND
+      (dp.stateValue = :stateValue OR :stateValue IS NULL)
+      ORDER BY dp.docId, dp.activationDate
+    </query>
+  </named-query>
+
+  <named-query name="findPolicyProperties">
+    <query>
+      SELECT pp FROM PolicyProperty pp
+      WHERE pp.policyId = :policyId
+      ORDER BY pp.name, pp.index
+    </query>
+  </named-query>
+
+  <entity class="org.santfeliu.policy.service.DBPolicy" name="Policy">
+    <table name="POL_POLICY" />
+    <attributes>
+      <id name="policyId">
+        <column name="POLICYID" />
+        <generated-value strategy="TABLE" generator="POL_POLICY" />
+        <table-generator name="POL_POLICY" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="title">
+        <column name="TITLE" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" />
+      </basic>
+      <basic name="policyTypeId">
+        <column name="POLICYTYPEID" />
+      </basic>
+      <basic name="activationDateExpression">
+        <column name="ACTDATEEXPR" />
+      </basic>
+      <basic name="activationCondition">
+        <column name="ACTCONDITION" />
+      </basic>
+      <basic name="automaticExecutionValue">
+        <column name="AUTOEXEC" />
+      </basic>
+      <basic name="mandate">
+        <column name="MANDATE" />
+      </basic>
+      <basic name="evaluationCode">
+        <column name="EVALCODE" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" />
+      </basic>
+      <transient name="automaticExecution" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.policy.service.DBDisposalHold" name="DisposalHold">
+    <table name="POL_DISPHOLD" />
+    <attributes>
+      <id name="dispHoldId">
+        <column name="DISPHOLDID" />
+        <generated-value strategy="TABLE" generator="POL_DISPHOLD" />
+        <table-generator name="POL_DISPHOLD" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="title">
+        <column name="TITLE" />
+      </basic>
+      <basic name="startDate">
+        <column name="START" />
+      </basic>
+      <basic name="endDate">
+        <column name="ENDDATE" />
+      </basic>
+      <basic name="reason">
+        <column name="REASON" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.policy.service.DBClassPolicy" name="ClassPolicy">
+    <table name="POL_CLASSPOLICY" />
+    <attributes>
+      <id name="classPolicyId">
+        <column name="CLASSPOLICYID" />
+        <generated-value strategy="TABLE" generator="POL_CLASSPOLICY" />
+        <table-generator name="POL_CLASSPOLICY" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="classId">
+        <column name="CLASSID" />
+      </basic>
+      <basic name="policyId">
+        <column name="POLICYID" />
+      </basic>
+      <basic name="dispHoldId">
+        <column name="DISPHOLDID" />
+      </basic>
+      <basic name="reason">
+        <column name="REASON" />
+      </basic>
+      <basic name="startDate">
+        <column name="STARTDATE" />
+      </basic>
+      <basic name="endDate">
+        <column name="ENDDATE" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.policy.service.DBCasePolicy" name="CasePolicy">
+    <table name="POL_CASEPOLICY" />
+    <attributes>
+      <id name="casePolicyId">
+        <column name="CASEPOLICYID" />
+        <generated-value strategy="TABLE" generator="POL_CASEPOLICY" />
+        <table-generator name="POL_CASEPOLICY" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="caseId">
+        <column name="CASEID" />
+      </basic>
+      <basic name="policyId">
+        <column name="POLICYID" />
+      </basic>
+      <basic name="activationDate">
+        <column name="ACTDATE" />
+      </basic>
+      <basic name="stateValue">
+        <column name="STATE" />
+      </basic>
+      <basic name="dispHoldId">
+        <column name="DISPHOLDID" />
+      </basic>
+      <basic name="reason">
+        <column name="REASON" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="approvalDateTime">
+        <column name="APPROVALDT" />
+      </basic>
+      <basic name="approvalUserId">
+        <column name="APPROVALUSERID" />
+      </basic>
+      <basic name="executionDateTime">
+        <column name="EXECUTIONDT" />
+      </basic>
+      <basic name="executionUserId">
+        <column name="EXECUTIONUSERID" />
+      </basic>
+      <basic name="executionResult">
+        <column name="EXECUTIONRESULT" />
+      </basic>
+      <transient name="state" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.policy.service.DBDocumentPolicy" name="DocumentPolicy">
+    <table name="POL_DOCPOLICY" />
+    <attributes>
+      <id name="docPolicyId">
+        <column name="DOCPOLICYID" />
+        <generated-value strategy="TABLE" generator="POL_DOCPOLICY" />
+        <table-generator name="POL_DOCPOLICY" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="docId">
+        <column name="DOCID" />
+      </basic>
+      <basic name="policyId">
+        <column name="POLICYID" />
+      </basic>
+      <basic name="activationDate">
+        <column name="ACTDATE" />
+      </basic>
+      <basic name="stateValue">
+        <column name="STATE" />
+      </basic>
+      <basic name="dispHoldId">
+        <column name="DISPHOLDID" />
+      </basic>
+      <basic name="reason">
+        <column name="REASON" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="approvalDateTime">
+        <column name="APPROVALDT" />
+      </basic>
+      <basic name="approvalUserId">
+        <column name="APPROVALUSERID" />
+      </basic>
+      <basic name="executionDateTime">
+        <column name="EXECUTIONDT" />
+      </basic>
+      <basic name="executionUserId">
+        <column name="EXECUTIONUSERID" />
+      </basic>
+      <basic name="executionResult">
+        <column name="EXECUTIONRESULT" />
+      </basic>
+      <transient name="state" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.policy.service.DBPolicyProperty" name="PolicyProperty">
+    <table name="POL_POLICYPROP" />
+    <attributes>
+      <id name="policyId">
+        <column name="POLICYID" />
+      </id>
+      <id name="name">
+        <column name="PROPNAME" />
+      </id>
+      <id name="index">
+        <column name="INDX" />
+      </id>
+      <basic name="value">
+        <column name="PROPVALUE" />
+      </basic>
+    </attributes>
+  </entity>
+
+</entity-mappings>

@@ -1,0 +1,49 @@
+.userProfilePanel
+{
+  width:100%;
+}
+
+.userProfilePanel .configPanel
+{
+  width:100%;
+}
+
+.userProfilePanel .actionsPanel
+{
+  width:100%;
+  margin-bottom: 8px;
+}
+
+.userProfilePanel .title
+{
+  width:100%;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.userProfilePanel .inputRow
+{
+  width:100%;
+  margin-bottom: 8px;
+}
+
+.userProfilePanel .leftColumn
+{
+  width:30%;
+  float:left;
+}
+
+.userProfilePanel .rightColumn
+{
+  width:70%;
+}
+
+.userProfilePanel .infoMessage
+{
+  color: green;
+}
+
+.userProfilePanel .errorMessage
+{
+  color: red;
+}

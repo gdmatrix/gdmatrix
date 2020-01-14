@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <managed-bean>
+    <managed-bean-name>classBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.classif.web.ClassBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>classSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.classif.web.ClassSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>classTreeBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.classif.web.ClassTreeBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>classMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.classif.web.ClassMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>classHistoryBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.classif.web.ClassHistoryBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+
+    <navigation-case>
+      <from-outcome>class_search</from-outcome>
+      <to-view-id>/common/classif/class_search.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>class_tree</from-outcome>
+      <to-view-id>/common/classif/class_tree.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>class_main</from-outcome>
+      <to-view-id>/common/classif/class_main.jsp</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>class_history</from-outcome>
+      <to-view-id>/common/classif/class_history.jsp</to-view-id>
+    </navigation-case>
+
+  </navigation-rule>
+</faces-config>

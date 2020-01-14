@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/workflow/instance.xhtml">
+
+    <ui:define name="form">
+
+      <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
+
+      <t:div styleClass="paragraph">
+        <h:outputText value="#{workflowBundle.nothingToDo}" />
+      </t:div>
+
+      <t:div rendered="#{instanceBean.instanceUserState != null}" styleClass="paragraph">
+        <h:outputText value="#{workflowBundle.currentState}: #{instanceBean.instanceUserState}" />
+      </t:div>
+
+    </ui:define>
+  </ui:composition>
+</html>

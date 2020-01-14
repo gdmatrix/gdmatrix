@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/workflow/instance.xhtml">
+
+    <ui:define name="form">
+  
+      <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />  
+
+      <t:saveState value="#{scanDocumentFormBean}" />
+
+      <sf:outputText value="#{scanDocumentFormBean.message}"
+        translator="#{instanceBean.translationEnabled ? 
+          applicationBean.translator : null}" 
+        translationGroup="wf:#{instanceBean.workflowName}"
+        styleClass="workflowMessage" />
+
+      <t:div styleClass="buttonBar">
+        <h:commandButton value="#{workflowBundle.scan}"
+           alt="#{workflowBundle.scan}" title="#{workflowBundle.scan}"
+           styleClass="workflowButton"
+           onclick="javascript:scanDocument();return false"
+           rendered="#{userSessionBean.matrixClientEnabled}" />   
+
+        <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.ScanDocumentCommand"
+          action="#{scanDocumentFormBean.documentScanned}"
+          model="#{scanDocumentFormBean.model}"
+          function="scanDocument"
+          rendered="#{userSessionBean.matrixClientEnabled}"
+          helpUrl="#{matrixClientBean.helpUrl}"/>
+      </t:div>
+  
+    </ui:define>
+  </ui:composition>
+</html>

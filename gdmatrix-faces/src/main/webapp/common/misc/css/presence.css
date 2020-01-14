@@ -1,0 +1,615 @@
+/* presence.jsp */
+
+.presencePanel .col1
+{
+  width:55%;
+  vertical-align: top;
+}
+
+.presencePanel .col2
+{
+  width:45%;
+  vertical-align: top;
+  text-align: right;
+}
+
+.presencePanel .clock
+{
+  display:block;
+  width:100%;
+  background:#E0FFE0;
+  font-size:40px;
+  line-height:50px;
+  text-align: center;
+  text-decoration:none;
+  color:black;
+  border:none;
+}
+
+.presencePanel input.clock
+{
+  color:red;
+}
+
+.presencePanel .header
+{
+  border-bottom: dashed 1px gray;
+  font-weight: bold;
+}
+
+.presencePanel .header .date
+{
+  font-size:16px;
+  line-height: 28px;
+  display:block;
+  float:left;
+  vertical-align: middle;
+}
+
+.presencePanel .header .date .arrow
+{
+  vertical-align: middle;
+}
+
+.presencePanel .header .date .today
+{
+  color: black;
+  vertical-align: middle;
+}
+
+.presencePanel .header .date .other
+{
+  color: #A08080;
+  vertical-align: middle;
+}
+
+.presencePanel .header .date img
+{
+  vertical-align: middle;
+}
+
+.presencePanel .header .date .todayButton
+{
+  vertical-align: middle;
+  border:1px solid gray;
+  background:white;
+  color:black;
+  font-size:14px;
+  margin-left:20px;
+  cursor:pointer;
+  background:#FFFF80;
+  padding: 0px 2px 0px 2px;
+  width:auto;
+  overflow:visible;
+  vertical-align: middle;
+}
+
+.presencePanel .header .date .notTodayButton
+{
+  vertical-align: middle;
+  border:1px solid gray;
+  background:white;
+  color:#606060;
+  font-size:14px;
+  margin-left:20px;
+  cursor:pointer;
+  background:#F0F0F0;
+  padding: 0px 2px 0px 2px;
+  width:auto;
+  overflow:visible;
+  vertical-align: middle;
+}
+
+.presencePanel .header .date .notTodayButton:hover
+{
+  color:black;
+}
+
+.presencePanel .workerInfoLink
+{
+  text-decoration: none;
+  cursor:pointer;
+}
+
+.presenceEntryPanel .header,
+.workerPanel .header
+{
+  font-weight: bold;
+}
+
+.presencePanel .header .displayName,
+.presenceEntryPanel .header .displayName,
+.workerPanel .header .displayName
+{
+  font-size:16px;
+  line-height: 28px;
+  float:right;
+  color:gray;  
+}
+
+.presenceEntryPanel .header .entryInfo
+{
+  float:left;
+  font-size:16px;
+  line-height: 28px;
+}
+
+.presencePanel .hourLabel
+{
+  text-align:left;
+  display:block;
+}
+
+.presencePanel .reasonLabel
+{
+  text-align:left;
+  display:block;
+}
+
+.presencePanel .reasonText
+{
+  text-align:left;
+  color:red;
+  display:block;
+  width:100%;
+  border-collapse:collapse;
+  border:none;
+  background:#F0E0E0;
+}
+
+.presencePanel .entryList
+{
+  width:100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  display:block;
+}
+
+.presencePanel .entryList .interval
+{
+  margin:2px;
+  margin-left:80px;
+  display:inline-block;
+  line-height: 16px;
+  color:#008000;
+}
+
+.presencePanel .entryList .workInterval
+{
+  color:#008000;
+  font-size:14px;
+  margin:4px;
+  margin-left:80px;
+  vertical-align: middle;
+}
+
+.presencePanel .entryList .noworkInterval
+{
+  color:#A0A0A0;
+  font-size:14px;
+  margin:4px;
+  margin-left:80px;
+  vertical-align: middle;
+}
+
+.presencePanel .entryList .workInterval img,
+.presencePanel .entryList .noworkInterval img
+{
+  vertical-align: middle;
+}
+
+.presencePanel .entryList .entry
+{
+  color:black;
+}
+
+.presencePanel .entryList .manipulated
+{
+  color:red;
+  font-size: 16px;
+}
+
+.presencePanel .entryList a
+{
+  text-decoration:none;
+}
+
+.presencePanel .entryList .entry
+{
+  font-size: 16px;
+}
+
+.presencePanel .entryList img.entryIcon
+{
+  vertical-align: middle;
+}
+
+.presencePanel .entryList img.bonusIcon
+{
+  margin-left:3px;
+}
+
+.presencePanel .entryList .entryTime
+{
+  margin-left:4px;
+}
+
+.presencePanel .entryList .entryType
+{
+  margin-left:4px;
+}
+
+.presencePanel .entryList .manipulatedReason
+{
+  color:red;
+  font-size:13px;
+  margin-left:80px;
+}
+
+.presencePanel .entryList .entryReason
+{
+  color:#202020;
+  font-size:13px;
+  margin-left:80px;
+}
+
+.presencePanel .editTime
+{
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.presencePanel .markButton,
+.presencePanel .specialButton
+{
+  display:block;
+  margin-top: 4px;
+  background:#E0E0F0;
+  height:32px;  
+}
+
+.presencePanel .markButton input,
+.presencePanel .specialButton input
+{
+  display:block;
+  width:89%;
+  text-align:center;
+  text-decoration:none;
+  background:#E0E0F0;
+  border:none;
+  padding-top:2px;
+  padding-bottom:2px;
+  color:black;
+  font-size: 18px;
+  cursor: pointer;
+  height:32px;
+  float:left;
+  text-transform: uppercase;
+}
+
+.presencePanel .buttonKey
+{
+  display: block;
+  width:10%;
+  line-height:32px;
+  padding:0;
+  margin:0;
+  font-weight: bold;
+  text-align: center;
+  font-size:14px;
+  float:left;
+  background-image:url(../images/key.png);
+  background-repeat:no-repeat;
+  background-position:center;
+}
+
+.presencePanel .specialButton,
+.presencePanel .specialButton input
+{
+  background:#FF8040;
+}
+
+.presencePanel .markButton input:hover
+{
+  background:#C0C0F0;
+}
+
+.presencePanel .specialButton input:hover
+{
+  background:#FFA060;
+}
+
+.presencePanel .option
+{
+  background: #E0E0E0;
+  border:none;
+  width:28px;
+}
+
+.presencePanel .selectOption
+{
+  display:none;
+}
+
+.presencePanel table.timeSummary
+{
+  font-family: Arial;
+  font-size: 14px;
+  margin-top: 10px;
+  border-collapse: collapse;
+  padding:0px;
+}
+
+.presencePanel .timeSummary td,
+.presencePanel .timeSummary th
+{
+  padding: 4px;
+  color: black;
+  border: 1px solid #C0C0C0;
+  width:80px;
+  text-align: center;
+}
+
+.presencePanel .timeSummary tr:hover
+{
+  background: #FFFFA0;
+}
+
+.presencePanel .timeSummary td.first
+{
+  text-align: left;
+}
+
+.presencePanel .timeSummary .time_header
+{
+  font-size:11px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* presence_id */
+
+.presenceIdPanel .header
+{
+  border-bottom: dashed 1px gray;
+  font-size:16px;
+}
+
+.presenceIdPanel .col1
+{
+  width:50%;
+  vertical-align: top;
+  text-align: left;
+}
+
+.presenceIdPanel .col2
+{
+  width:50%;
+  text-align: center;
+}
+
+.presenceIdPanel .key
+{
+  background:#A0A0A0;
+  color:black;
+  display:block;
+  font-size:50px;
+  height:50px;
+  line-height:50px;
+  padding:10px;
+  width:50px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.presenceIdPanel .key:hover
+{
+  cursor:pointer;
+}
+
+.presenceIdPanel .key img
+{
+  padding-top:10px;
+  border:none;
+}
+
+.presenceIdPanel .idCode
+{
+  background:#F0F0F0;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.presenceIdPanel .waitIcon
+{
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.presenceIdPanel .messages
+{
+  display:block;
+  text-align: center;
+}
+
+.presenceEntryPanel
+{
+  padding:3px;
+}
+
+.presenceEntryPanel .header
+{
+  text-align:center;
+  font-family: Arial;
+  font-size:18px;
+  font-family: Arial;
+  color: black;
+  padding-bottom:6px;
+  border-bottom: 1px dashed gray;
+  display:inline-block;
+  width:100%;
+}
+
+.presenceEntryPanel .properties
+{
+  font-size:16px;
+  font-family: Arial;
+  margin-top:20px;
+  margin-bottom:20px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.presenceEntryPanel .properties tr td
+{
+  padding:6px;
+  vertical-align: middle;
+}
+
+.presenceEntryPanel .properties .col1
+{
+  width:22%;
+  color: black;
+  font-weight: bold;
+  text-align: right;
+}
+
+.presenceEntryPanel .properties .col2
+{
+  width:78%;
+  color:black;
+  text-align: left;  
+}
+
+.presenceEntryPanel .properties .type
+{
+  border:none;
+  background: #E0E0E0;
+  color:black;
+}
+
+.presenceEntryPanel .properties .reason
+{
+  width:95%;
+  border:none;
+  background: #E0E0E0;
+  color:black;
+}
+
+.presenceEntryPanel .properties .warning,
+.workerPanel .properties .warning
+{
+  color:red;
+}
+
+.presenceEntryPanel .buttonsPanel
+{
+  text-align: center;
+}
+
+.presenceEntryPanel .buttonsPanel .button
+{
+  text-align: center;
+  font-size:18px;
+  font-family: Arial;
+  background:#FF8040;
+  border:none;
+  margin:10px;
+  padding:6px;
+  text-transform: uppercase;
+}
+
+.presenceEntryPanel .buttonsPanel .button:hover
+{
+  background:#FFA060;
+  cursor: pointer;
+}
+
+.workerPanel
+{
+  padding:3px;
+}
+
+.workerPanel .header
+{
+  text-align:center;
+  font-family: Arial;
+  font-size:18px;
+  font-family: Arial;
+  color: black;
+  padding-bottom:6px;
+  border-bottom: 1px dashed gray;
+  display:inline-block;
+  width:100%;
+}
+
+.workerPanel .header .workerInfo
+{
+  float:left;
+  font-size:16px;
+  line-height: 28px;
+}
+
+.workerPanel .properties
+{
+  font-size:16px;
+  font-family: Arial;
+  margin-top:20px;
+  margin-bottom:20px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.workerPanel .properties tr td
+{
+  padding:6px;
+  vertical-align: middle;
+}
+
+.workerPanel .properties .col1
+{
+  width:35%;
+  color: black;
+  font-weight: bold;
+  text-align: right;
+}
+
+.workerPanel .properties .col2
+{
+  width:65%;
+  color:black;
+  text-align: left;
+}
+
+.workerPanel .properties .type
+{
+  border:none;
+  background: #E0E0E0;
+  color:black;
+}
+
+.workerPanel .buttonsPanel
+{
+  text-align: center;
+}
+
+.workerPanel .buttonsPanel .button
+{
+  text-align: center;
+  font-size:18px;
+  font-family: Arial;
+  background:#FF8040;
+  border:none;
+  margin:10px;
+  padding:6px;
+  text-transform: uppercase;
+}
+
+.workerPanel .buttonsPanel .button:hover
+{
+  background:#FFA060;
+  cursor: pointer;
+}

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <description>Survey</description>
+    <package>org.santfeliu.survey.service</package>
+
+    <named-query name="findSurveys">
+      <query>
+        SELECT s.surveyId,s.text,s.strOpen,s.startDay,sum(sa.voteCount)
+        FROM Survey s, Answer sa
+        WHERE s.surveyId = sa.surveyId 
+        GROUP BY s.surveyId,s.text,s.strOpen,s.startDay 
+        ORDER BY s.startDay,s.surveyId
+      </query>
+    </named-query> 
+
+    <named-query name="findSurvey">
+      <query>
+        SELECT s.surveyId,s.text,s.strOpen,s.startDay,sum(sa.voteCount)
+        FROM Survey s, Answer sa
+        WHERE s.surveyId = sa.surveyId AND s.surveyId = :surveyId 
+        GROUP BY s.surveyId,s.text,s.strOpen,s.startDay 
+        ORDER BY s.startDay,s.surveyId
+      </query>
+    </named-query> 
+    
+    <named-query name="findAnswers">
+      <query>
+        SELECT a 
+        FROM Answer a
+        WHERE a.surveyId = :surveyId
+        ORDER BY a.answerId
+      </query>
+    </named-query>
+    
+    <named-query name="voteSurvey">
+      <query>
+        UPDATE Answer
+        SET voteCount = voteCount + 1 
+        WHERE surveyId = :surveyId AND answerId = :answerId 
+      </query>
+    </named-query> 
+    
+    <named-query name="switchSurvey">
+      <query>
+        UPDATE Survey 
+        SET strOpen = :open
+        WHERE surveyId = :surveyId
+      </query>
+    </named-query>
+        
+    <entity class="org.santfeliu.survey.service.DBSurvey" name="Survey">
+      <table name="SUR_SURVEY" />
+      <attributes>
+        <id name="surveyId">
+          <column name="SURVID" />
+          <generated-value strategy="TABLE" generator="survey.survey"/>
+          <table-generator name="survey.survey" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            initial-value="0" allocation-size="1"/>
+        </id>
+        <basic name="text">
+            <column name="TEXT" />
+        </basic>
+        <basic name="strOpen">
+            <column name="OPEN" />
+        </basic>
+        <basic name="startDay">
+            <column name="STARTDATE" />
+        </basic>
+        <basic name="endDay">
+            <column name="ENDDATE" />
+        </basic>
+      </attributes>
+    </entity>
+    
+    <entity class="org.santfeliu.survey.service.DBAnswer" name="Answer">
+      <table name="SUR_ANSWER" />
+      <attributes>
+        <id name="surveyId">
+          <column name="SURVID" />
+        </id>
+        <id name="answerId">
+            <column name="ANSWERID" />
+        </id>
+        <basic name="text">
+            <column name="TEXT" />
+        </basic>
+        <basic name="voteCount">
+            <column name="VOTES" />
+        </basic>
+      </attributes>
+    </entity>
+    
+</entity-mappings>

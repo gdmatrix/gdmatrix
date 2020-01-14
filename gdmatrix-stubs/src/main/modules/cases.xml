@@ -1,0 +1,935 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="cases"
+  namespace="http://cases.matrix.org/"
+  title="Gestor d'expedients"
+  wsdlLocation="../services/cases?wsdl"
+  service="CaseManagerService"
+  port="CaseManagerPort"
+  version="2.0"
+  status="FINAL"
+  authors="Abel Blanque, Ricard Real">
+  
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="dic"/>
+    <import module="doc"/>
+    <import module="kernel"/>
+    <import module="security"/>
+    <import module="classif"/>
+    <import module="agenda"/>    
+  </imports>
+
+  <types>
+    <entity name="Case">
+      <identifier name="caseId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="caseTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startTime" type="mx:time" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endTime" type="mx:time" minOccurs="0">
+      </property>
+      <property name="state" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="source" type="xs:string" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="accessControl" type="security:AccessControl" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="classId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="classif:Class">
+      </property>
+    </entity>
+
+    <entity name="CasePerson">
+      <identifier name="casePersonId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="casePersonTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="contactId" type="xs:string" 
+        minOccurs="0" maxOccurs="unbounded" nillable="true"
+        references="kernel:Contact">
+      </property>
+      <property name="representantPersonId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="representantAddressId" type="xs:string" minOccurs="0"
+        references="kernel:Address">
+      </property>
+      <property name="representantContactId" type="xs:string" 
+        minOccurs="0" maxOccurs="unbounded" nillable="true" 
+        references="kernel:Contact">
+      </property>
+    </entity>
+
+    <entity name="CaseAddress">
+      <identifier name="caseAddressId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0" references="kernel:Address">
+      </property>
+      <property name="radius" type="xs:int">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="caseAddressTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+    </entity>
+
+    <entity name="Intervention">
+      <identifier name="intId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="intTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startTime" type="mx:time" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endTime" type="mx:time" minOccurs="0">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0" references="kernel:Person">
+      </property>
+      <property name="userId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </entity>
+
+    <entity name="CaseDocument">
+      <identifier name="caseDocId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="caseDocTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="docId" type="xs:string" minOccurs="0" references="doc:Document">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="volume" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="CaseEvent">
+      <identifier name="caseEventId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="eventId" type="xs:string" minOccurs="0" references="agenda:Event">
+      </property>
+      <property name="caseEventTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>      
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </entity>
+
+    <entity name="Problem">
+      <identifier name="probId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="probTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0" references="kernel:Person">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0" references="dic:EnumType">
+      </property>
+      <property name="priority" type="xs:int" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Demand">
+      <identifier name="demandId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="demandTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="CaseCase">
+      <identifier name="caseCaseId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="relCaseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="caseCaseTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>      
+    </entity>
+    
+    <entity name="InterventionProblem">
+      <identifier name="intProbId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="intId" type="xs:string" minOccurs="0" references="cases:Intervention">
+      </property>
+      <property name="probId" type="xs:string" minOccurs="0" references="cases:Problem">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <struct name="CaseMetaData">
+    </struct>
+
+    <struct name="CaseFilter">
+      <property name="caseId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="cases:Case">
+      </property>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="fromDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="toDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="dateComparator" type="xs:string" minOccurs="0">
+      </property>
+      <property name="caseTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="classId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="classif:Class">
+      </property>
+      <property name="state" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="searchExpression" type="xs:string" minOccurs="0">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0" references="kernel:Person">
+      </property>
+      <property name="personFlag" type="xs:string" minOccurs="0">
+      </property> 
+    </struct>
+
+    <struct name="CasePersonFilter">
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0" references="kernel:Person">
+      </property>
+      <property name="casePersonTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>      
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="CasePersonView">
+      <property name="casePersonId" type="xs:string" minOccurs="0" references="cases:CasePerson">
+      </property>
+      <property name="casePersonTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="caseObject" type="cases:Case" minOccurs="0">
+      </property>
+      <property name="personView" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="representantPersonView" type="kernel:PersonView" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="CaseAddressFilter">
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="addressId" type="xs:string" minOccurs="0" references="kernel:Address">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="CaseAddressView">
+      <property name="caseAddressId" type="xs:string" minOccurs="0" references="cases:CaseAddress">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="caseObject" type="cases:Case" minOccurs="0">
+      </property>
+      <property name="addressView" type="kernel:AddressView" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="caseAddressTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>      
+    </struct>
+
+    <struct name="InterventionFilter">
+      <property name="intId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="cases:Case">
+      </property>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>      
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>      
+      <property name="fromDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="toDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="dateComparator" type="xs:string" minOccurs="0">
+      </property>
+      <property name="intTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="excludeMetadata" type="xs:boolean">
+      </property>      
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>      
+      <property name="personId" type="xs:string" minOccurs="0" references="kernel:Person">
+      </property>
+    </struct>
+
+    <struct name="InterventionView">
+      <property name="intId" type="xs:string" minOccurs="0" references="cases:Intervention">
+      </property>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="intTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="personView" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="userId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startTime" type="mx:time" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endTime" type="mx:time" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="CaseDocumentFilter">
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="docId" type="xs:string" minOccurs="0" references="doc:Document">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+      <property name="outputProperty" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="volume" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="CaseDocumentView">
+      <property name="caseDocId" type="xs:string" minOccurs="0" references="cases:CaseDocument">
+      </property>
+      <property name="caseObject" type="cases:Case" minOccurs="0">
+      </property>
+      <property name="document" type="doc:Document" minOccurs="0">
+      </property>
+      <property name="caseDocTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="CaseEventFilter">
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="eventId" type="xs:string" minOccurs="0" references="agenda:Event">
+      </property>
+      <property name="caseEventTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>    
+      <property name="excludeMetadata" type="xs:boolean">
+      </property>              
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="CaseEventView">
+      <property name="caseEventId" type="xs:string" minOccurs="0" references="cases:CaseEvent">
+      </property>
+      <property name="caseObject" type="cases:Case" minOccurs="0">
+      </property>
+      <property name="event" type="agenda:Event" minOccurs="0">
+      </property>
+      <property name="caseEventTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>      
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="ProblemFilter">
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="ProblemView">
+      <property name="probId" type="xs:string" minOccurs="0" references="cases:Problem">
+      </property>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="probTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="personView" type="kernel:PersonView" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="DemandFilter">
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="CaseCaseFilter">
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="relCaseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="caseCaseTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="excludeMetadata" type="xs:boolean">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+    
+    <struct name="CaseCaseView">
+      <property name="caseCaseId" type="xs:string" minOccurs="0" references="cases:CaseCase">
+      </property>
+      <property name="mainCase" type="cases:Case" minOccurs="0">
+      </property>
+      <property name="relCase" type="cases:Case" minOccurs="0">
+      </property>
+      <property name="caseCaseTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>      
+    </struct>
+
+    <struct name="InterventionProblemFilter">
+      <property name="intId" type="xs:string" minOccurs="0" references="cases:Intervention">
+      </property>
+      <property name="probId" type="xs:string" minOccurs="0" references="cases:Problem">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+    
+    <struct name="InterventionProblemView">
+      <property name="intProbId" type="xs:string" minOccurs="0" references="cases:InterventionProblem">
+      </property>
+      <property name="intervention" type="cases:Intervention" minOccurs="0">
+      </property>
+      <property name="problem" type="cases:Problem" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+  </types>
+
+  <operations>
+    <operation name="getCaseMetaData">
+      <response name="caseMetaData" type="cases:CaseMetaData">
+      </response>
+    </operation>
+
+    <operation name="loadCase">
+      <parameter name="caseId" type="xs:string">
+      </parameter>
+      <response name="case" type="cases:Case">
+      </response>
+    </operation>
+
+    <operation name="storeCase">
+      <parameter name="case" type="cases:Case">
+      </parameter>
+      <response name="storedCase" type="cases:Case">
+      </response>
+    </operation>
+
+    <operation name="removeCase">
+      <parameter name="caseId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCases">
+      <parameter name="filter" type="cases:CaseFilter">
+      </parameter>
+      <response name="caseCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCases">
+      <parameter name="filter" type="cases:CaseFilter">
+      </parameter>
+      <response name="case" type="cases:Case" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadCasePerson">
+      <parameter name="casePersonId" type="xs:string">
+      </parameter>
+      <response name="casePerson" type="cases:CasePerson">
+      </response>
+    </operation>
+
+    <operation name="storeCasePerson">
+      <parameter name="casePerson" type="cases:CasePerson">
+      </parameter>
+      <response name="storedCasePerson" type="cases:CasePerson">
+      </response>
+    </operation>
+
+    <operation name="removeCasePerson">
+      <parameter name="casePersonId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCasePersons">
+      <parameter name="filter" type="cases:CasePersonFilter">
+      </parameter>
+      <response name="casePersonCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCasePersonViews">
+      <parameter name="filter" type="cases:CasePersonFilter">
+      </parameter>
+      <response name="casePersonView" type="cases:CasePersonView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadCaseAddress">
+      <parameter name="caseAddressId" type="xs:string">
+      </parameter>
+      <response name="caseAddress" type="cases:CaseAddress">
+      </response>
+    </operation>
+
+    <operation name="storeCaseAddress">
+      <parameter name="caseAddress" type="cases:CaseAddress">
+      </parameter>
+      <response name="storedCaseAddress" type="cases:CaseAddress">
+      </response>
+    </operation>
+
+    <operation name="removeCaseAddress">
+      <parameter name="caseAddressId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCaseAddresses">
+      <parameter name="filter" type="cases:CaseAddressFilter">
+      </parameter>
+      <response name="caseAddressCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCaseAddressViews">
+      <parameter name="filter" type="cases:CaseAddressFilter">
+      </parameter>
+      <response name="caseAddressView" type="cases:CaseAddressView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadIntervention">
+      <parameter name="intId" type="xs:string">
+      </parameter>
+      <response name="intervention" type="cases:Intervention">
+      </response>
+    </operation>
+
+    <operation name="storeIntervention">
+      <parameter name="intervention" type="cases:Intervention">
+      </parameter>
+      <response name="storedIntervention" type="cases:Intervention">
+      </response>
+    </operation>
+
+    <operation name="removeIntervention">
+      <parameter name="intId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countInterventions">
+      <parameter name="filter" type="cases:InterventionFilter">
+      </parameter>
+      <response name="interventionCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findInterventionViews">
+      <parameter name="filter" type="cases:InterventionFilter">
+      </parameter>
+      <response name="interventionView" type="cases:InterventionView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadCaseDocument">
+      <parameter name="caseDocumentId" type="xs:string">
+      </parameter>
+      <response name="caseDocument" type="cases:CaseDocument">
+      </response>
+    </operation>
+
+    <operation name="storeCaseDocument">
+      <parameter name="caseDocument" type="cases:CaseDocument">
+      </parameter>
+      <response name="storedCaseDocument" type="cases:CaseDocument">
+      </response>
+    </operation>
+
+    <operation name="removeCaseDocument">
+      <parameter name="caseDocumentId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCaseDocuments">
+      <parameter name="filter" type="cases:CaseDocumentFilter">
+      </parameter>
+      <response name="caseDocumentCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCaseDocumentViews">
+      <parameter name="filter" type="cases:CaseDocumentFilter">
+      </parameter>
+      <response name="caseDocumentView" type="cases:CaseDocumentView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findCaseVolumes">
+      <parameter name="caseId" type="xs:string">
+      </parameter>
+      <response name="volumes" type="xs:string"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadCaseEvent">
+      <parameter name="caseEventId" type="xs:string">
+      </parameter>
+      <response name="caseEvent" type="cases:CaseEvent">
+      </response>
+    </operation>
+
+    <operation name="storeCaseEvent">
+      <parameter name="caseEvent" type="cases:CaseEvent">
+      </parameter>
+      <response name="storedCaseEvent" type="cases:CaseEvent">
+      </response>
+    </operation>
+
+    <operation name="removeCaseEvent">
+      <parameter name="caseEventId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCaseEvents">
+      <parameter name="filter" type="cases:CaseEventFilter">
+      </parameter>
+      <response name="caseEventCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCaseEventViews">
+      <parameter name="filter" type="cases:CaseEventFilter">
+      </parameter>
+      <response name="caseEventView" type="cases:CaseEventView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadProblem">
+      <parameter name="probId" type="xs:string">
+      </parameter>
+      <response name="problem" type="cases:Problem">
+      </response>
+    </operation>
+
+    <operation name="storeProblem">
+      <parameter name="problem" type="cases:Problem">
+      </parameter>
+      <response name="storedProblem" type="cases:Problem">
+      </response>
+    </operation>
+
+    <operation name="removeProblem">
+      <parameter name="probId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countProblems">
+      <parameter name="filter" type="cases:ProblemFilter">
+      </parameter>
+      <response name="problemCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findProblemViews">
+      <parameter name="filter" type="cases:ProblemFilter">
+      </parameter>
+      <response name="problemView" type="cases:ProblemView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadDemand">
+      <parameter name="demandId" type="xs:string">
+      </parameter>
+      <response name="demand" type="cases:Demand">
+      </response>
+    </operation>
+
+    <operation name="storeDemand">
+      <parameter name="demand" type="cases:Demand">
+      </parameter>
+      <response name="storedDemand" type="cases:Demand">
+      </response>
+    </operation>
+
+    <operation name="removeDemand">
+      <parameter name="demandId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countDemands">
+      <parameter name="filter" type="cases:DemandFilter">
+      </parameter>
+      <response name="demandCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findDemands">
+      <parameter name="filter" type="cases:DemandFilter">
+      </parameter>
+      <response name="demand" type="cases:Demand" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadCaseCase">
+      <parameter name="caseCaseId" type="xs:string">
+      </parameter>
+      <response name="caseCase" type="cases:CaseCase">
+      </response>
+    </operation>
+
+    <operation name="storeCaseCase">
+      <parameter name="caseCase" type="cases:CaseCase">
+      </parameter>
+      <response name="storedCaseCase" type="cases:CaseCase">
+      </response>
+    </operation>
+
+    <operation name="removeCaseCase">
+      <parameter name="caseCaseId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCaseCases">
+      <parameter name="filter" type="cases:CaseCaseFilter">
+      </parameter>
+      <response name="caseCaseCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCaseCaseViews">
+      <parameter name="filter" type="cases:CaseCaseFilter">
+      </parameter>
+      <response name="caseCaseView" type="cases:CaseCaseView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+    
+    <operation name="loadInterventionProblem">
+      <parameter name="intProbId" type="xs:string">
+      </parameter>
+      <response name="interventionProblem" type="cases:InterventionProblem">
+      </response>
+    </operation>
+
+    <operation name="storeInterventionProblem">
+      <parameter name="interventionProblem" type="cases:InterventionProblem">
+      </parameter>
+      <response name="storedInterventionProblem" type="cases:InterventionProblem">
+      </response>
+    </operation>
+
+    <operation name="removeInterventionProblem">
+      <parameter name="intProbId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countInterventionProblems">
+      <parameter name="filter" type="cases:InterventionProblemFilter">
+      </parameter>
+      <response name="interventionProblemCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findInterventionProblemViews">
+      <parameter name="filter" type="cases:InterventionProblemFilter">
+      </parameter>
+      <response name="interventionProblemView" type="cases:InterventionProblemView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+    
+  </operations>
+</module>

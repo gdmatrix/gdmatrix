@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="search"
+  namespace="http://search.matrix.org/"
+  title="Cercador global"
+  wsdlLocation="../services/search?wsdl"
+  service="SearchManagerService"
+  port="SearchManagerPort"
+  version="1.0"
+  status="REVISION"
+  authors="Jordi López">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />
+  </imports>
+
+  <types>
+    <struct name="GlobalSearchFilter">
+      <property name="text" type="xs:string" minOccurs="0">
+      </property>
+      <property name="agendaFilter" type="search:AgendaFilter"
+                minOccurs="0">
+      </property>
+      <property name="docFilter" type="search:DocFilter"
+                minOccurs="0">
+      </property>
+      <property name="newsFilter" type="search:NewsFilter"
+                minOccurs="0">
+      </property>
+      <property name="webFilter" type="search:WebFilter"
+                minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="AgendaFilter">
+      <property name="searchDays" type="xs:int" minOccurs="0">
+      </property>
+      <property name="maxRows" type="xs:int" minOccurs="0">
+      </property>
+      <property name="themeList" type="xs:string" minOccurs="0"
+                maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="NewsFilter">
+      <property name="searchDays" type="xs:int" minOccurs="0">
+      </property>
+      <property name="maxRows" type="xs:int" minOccurs="0">
+      </property>
+      <property name="sectionList" type="xs:string" minOccurs="0"
+                maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="DocFilter">
+      <property name="searchDays" type="xs:int" minOccurs="0">
+      </property>
+      <property name="maxRows" type="xs:int" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="WebFilter">
+      <property name="searchDays" type="xs:int" minOccurs="0">
+      </property>
+      <property name="maxRows" type="xs:int" minOccurs="0">
+      </property>
+      <property name="workspaceId" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="GlobalSearchResults">
+      <property name="itemList" type="search:Item"
+                minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="Item">
+      <property name="type" type="search:ItemType">
+      </property>   
+      <property name="id" type="xs:string">
+      </property>
+      <property name="date" type="xs:string" minOccurs="0">
+      </property>
+      <property name="info1" type="xs:string" minOccurs="0">
+      </property>
+      <property name="info2" type="xs:string" minOccurs="0">
+      </property>
+      <property name="score" type="xs:int">
+      </property>
+    </struct>
+
+    <enumeration name="ItemType">
+      <value name="AGENDA"/>
+      <value name="NEWS"/>
+      <value name="DOC"/>
+      <value name="WEB"/>
+    </enumeration>
+
+  </types>
+
+  <operations>
+    <operation name="search">
+      <parameter name="filter" type="search:GlobalSearchFilter">
+      </parameter>
+      <response name="result" type="search:GlobalSearchResults">
+      </response>
+    </operation>
+  </operations>
+
+</module>

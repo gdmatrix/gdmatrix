@@ -1,0 +1,48 @@
+.webmap ul
+{
+  list-style-type: none;
+  list-style-position: outside;
+  vertical-align: middle;
+  display: block;
+  margin-left:20px;
+  padding: 1px;
+  padding-left:0px;
+}
+
+.webmap ul img
+{
+  vertical-align: middle;
+  border:0;
+}
+
+.webmap li
+{
+  list-style-type: none;
+  list-style-position: outside;
+  vertical-align: middle;
+  display: block;
+  margin:0px;
+  padding: 1px;
+  padding-left:0px;
+}
+
+.webmap li a
+{
+  margin-top:1px;
+  vertical-align: middle;
+  margin:0;
+}
+
+.webmap .toggler
+{
+  margin:0 3px 0 0px;
+  vertical-align:middle;
+  border:0;
+}
+
+.webmap .itemImage
+{
+  vertical-align:middle;
+  border:none;
+}
+

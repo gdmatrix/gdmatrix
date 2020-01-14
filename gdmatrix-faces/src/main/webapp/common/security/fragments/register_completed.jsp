@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:sf="http://www.santfeliu.org/jsf">
+
+  <f:loadBundle basename="org.santfeliu.security.web.resources.SecurityBundle" var="securityBundle"/>
+  
+  <h:panelGrid columns="1" styleClass="form" 
+     headerClass="header">
+    <f:facet name="header" >
+      <h:outputText value="#{securityBundle.headerRegistre}" />
+    </f:facet>
+    <sf:browser binding="#{registerBean.browserOk}"
+      port="#{applicationBean.defaultPort}"
+      translator="#{userSessionBean.translator}"
+      translationGroup="#{userSessionBean.translationGroup}" />
+  </h:panelGrid>
+</jsp:root>

@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="policy"
+  namespace="http://policy.matrix.org/"
+  title="Gestor de polítiques documentals"
+  wsdlLocation="../services/policy?wsdl"
+  service="PolicyManagerService"
+  port="PolicyManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Ricard Real, Abel Blanque">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="dic"/>
+    <import module="cases"/>
+    <import module="doc"/>
+    <import module="classif"/>
+    <import module="security"/>
+  </imports>
+
+  <types>
+    <entity name="Policy">
+      <identifier name="policyId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="policyTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="activationDateExpression" type="xs:string" minOccurs="0">
+      </property>
+      <property name="activationCondition" type="xs:string" minOccurs="0">
+      </property>
+      <property name="automaticExecution" type="xs:boolean">
+      </property>
+      <property name="mandate" type="xs:string" minOccurs="0">
+      </property>
+      <property name="evaluationCode" type="xs:string" minOccurs="0">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+    </entity>
+
+    <entity name="ClassPolicy">
+      <identifier name="classPolicyId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="classId" type="xs:string" minOccurs="0" references="classif:Class">
+      </property>
+      <property name="policyId" type="xs:string" minOccurs="0" references="policy:Policy">
+      </property>
+      <property name="dispHoldId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+    </entity>
+
+    <entity name="CasePolicy">
+      <identifier name="casePolicyId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="policyId" type="xs:string" minOccurs="0" references="policy:Policy">
+      </property>
+      <property name="activationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="state" type="policy:PolicyState" minOccurs="0">
+      </property>
+      <property name="dispHoldId" type="xs:string" minOccurs="0" references="policy:DisposalHold">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="approvalDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="approvalUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="executionDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="executionUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="executionResult" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="DocumentPolicy">
+      <identifier name="docPolicyId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="docId" type="xs:string" minOccurs="0" references="doc:Document">
+      </property>
+      <property name="policyId" type="xs:string" minOccurs="0" references="policy:Policy">
+      </property>
+      <property name="activationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="state" type="policy:PolicyState" minOccurs="0">
+      </property>
+      <property name="dispHoldId" type="xs:string" minOccurs="0" references="policy:DisposalHold">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="approvalDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="approvalUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="executionDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="executionUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="executionResult" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="DisposalHold">
+      <identifier name="dispHoldId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <struct name="Property">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="PolicyFilter">
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="policyTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="activationDateExpression" type="xs:string" minOccurs="0">
+      </property>
+      <property name="activationCondition" type="xs:string" minOccurs="0">
+      </property>
+      <property name="mandate" type="xs:string" minOccurs="0">
+      </property>
+      <property name="evaluationCode" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="ClassPolicyFilter">
+      <property name="classId" type="xs:string" minOccurs="0" references="classif:Class">
+      </property>
+      <property name="policyId" type="xs:string" minOccurs="0" references="policy:Policy">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="ClassPolicyView">
+      <property name="classPolicy" type="policy:ClassPolicy" minOccurs="0">
+      </property>
+      <property name="class" type="classif:Class" minOccurs="0">
+      </property>
+      <property name="policy" type="policy:Policy" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="CasePolicyFilter">
+      <property name="caseId" type="xs:string" minOccurs="0" references="cases:Case">
+      </property>
+      <property name="policyId" type="xs:string" minOccurs="0" references="policy:Policy">
+      </property>
+      <property name="activationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startCreationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endCreationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startApprovalDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endApprovalDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startActivationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endActivationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startExecutionDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endExecutionDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="dispHoldId" type="xs:string" minOccurs="0" references="policy:DisposalHold">
+      </property>
+      <property name="state" type="policy:PolicyState" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="CasePolicyView">
+      <property name="casePolicy" type="policy:CasePolicy" minOccurs="0">
+      </property>
+      <property name="case" type="cases:Case" minOccurs="0">
+      </property>
+      <property name="policy" type="policy:Policy" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="DocumentPolicyFilter">
+      <property name="docId" type="xs:string" minOccurs="0" references="doc:Document">
+      </property>
+      <property name="policyId" type="xs:string" minOccurs="0" references="policy:Policy">
+      </property>
+      <property name="activationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startCreationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endCreationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startApprovalDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endApprovalDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startActivationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endActivationDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="startExecutionDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endExecutionDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="dispHoldId" type="xs:string" minOccurs="0" references="policy:DisposalHold">
+      </property>
+      <property name="state" type="policy:PolicyState" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="DocumentPolicyView">
+      <property name="docPolicy" type="policy:DocumentPolicy" minOccurs="0">
+      </property>
+      <property name="document" type="doc:Document" minOccurs="0">
+      </property>
+      <property name="policy" type="policy:Policy" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="DisposalHoldFilter">
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <enumeration name="PolicyState">
+      <value name="PENDENT"/>
+      <value name="APPROVED"/>
+      <value name="EXECUTING"/>
+      <value name="EXECUTED"/>
+      <value name="FAILED"/>
+      <value name="CANCELLED"/>
+      <value name="CONFLICT"/>
+    </enumeration>
+  </types>
+
+  <operations>
+    <operation name="loadPolicy">
+      <parameter name="policyId" type="xs:string">
+      </parameter>
+      <response name="policy" type="policy:Policy">
+      </response>
+    </operation>
+
+    <operation name="storePolicy">
+      <parameter name="policy" type="policy:Policy">
+      </parameter>
+      <response name="storedPolicy" type="policy:Policy">
+      </response>
+    </operation>
+
+    <operation name="removePolicy">
+      <parameter name="policyId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countPolicies">
+      <parameter name="filter" type="policy:PolicyFilter">
+      </parameter>
+      <response name="policyCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findPolicies">
+      <parameter name="filter" type="policy:PolicyFilter">
+      </parameter>
+      <response name="policy" type="policy:Policy" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadClassPolicy">
+      <parameter name="classPolicyId" type="xs:string">
+      </parameter>
+      <response name="classPolicy" type="policy:ClassPolicy">
+      </response>
+    </operation>
+
+    <operation name="storeClassPolicy">
+      <parameter name="classPolicy" type="policy:ClassPolicy">
+      </parameter>
+      <response name="storedClassPolicy" type="policy:ClassPolicy">
+      </response>
+    </operation>
+
+    <operation name="removeClassPolicy">
+      <parameter name="classPolicyId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countClassPolicies">
+      <parameter name="filter" type="policy:ClassPolicyFilter">
+      </parameter>
+      <response name="classPolicyCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findClassPolicies">
+      <parameter name="filter" type="policy:ClassPolicyFilter">
+      </parameter>
+      <response name="classPolicy" type="policy:ClassPolicy" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findClassPolicyViews">
+      <parameter name="filter" type="policy:ClassPolicyFilter">
+      </parameter>
+      <response name="classPolicyView" type="policy:ClassPolicyView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadCasePolicy">
+      <parameter name="casePolicyId" type="xs:string">
+      </parameter>
+      <response name="casePolicy" type="policy:CasePolicy">
+      </response>
+    </operation>
+
+    <operation name="storeCasePolicy">
+      <parameter name="casePolicy" type="policy:CasePolicy">
+      </parameter>
+      <response name="storedCasePolicy" type="policy:CasePolicy">
+      </response>
+    </operation>
+
+    <operation name="removeCasePolicy">
+      <parameter name="casePolicyId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countCasePolicies">
+      <parameter name="filter" type="policy:CasePolicyFilter">
+      </parameter>
+      <response name="casePolicyCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findCasePolicies">
+      <parameter name="filter" type="policy:CasePolicyFilter">
+      </parameter>
+      <response name="casePolicy" type="policy:CasePolicy" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findCasePolicyViews">
+      <parameter name="filter" type="policy:CasePolicyFilter">
+      </parameter>
+      <response name="casePolicyView" type="policy:CasePolicyView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadDocumentPolicy">
+      <parameter name="docPolicyId" type="xs:string">
+      </parameter>
+      <response name="docPolicy" type="policy:DocumentPolicy">
+      </response>
+    </operation>
+
+    <operation name="storeDocumentPolicy">
+      <parameter name="docPolicy" type="policy:DocumentPolicy">
+      </parameter>
+      <response name="storedDocPolicy" type="policy:DocumentPolicy">
+      </response>
+    </operation>
+
+    <operation name="removeDocumentPolicy">
+      <parameter name="docPolicyId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countDocumentPolicies">
+      <parameter name="filter" type="policy:DocumentPolicyFilter">
+      </parameter>
+      <response name="docPolicyCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findDocumentPolicies">
+      <parameter name="filter" type="policy:DocumentPolicyFilter">
+      </parameter>
+      <response name="docPolicy" type="policy:DocumentPolicy"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findDocumentPolicyViews">
+      <parameter name="filter" type="policy:DocumentPolicyFilter">
+      </parameter>
+      <response name="docPolicyView" type="policy:DocumentPolicyView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadDisposalHold">
+      <parameter name="dispHoldId" type="xs:string">
+      </parameter>
+      <response name="dispHold" type="policy:DisposalHold">
+      </response>
+    </operation>
+
+    <operation name="storeDisposalHold">
+      <parameter name="dispHold" type="policy:DisposalHold">
+      </parameter>
+      <response name="storedDispHold" type="policy:DisposalHold">
+      </response>
+    </operation>
+
+    <operation name="removeDisposalHold">
+      <parameter name="dispHoldId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countDisposalHolds">
+      <parameter name="filter" type="policy:DisposalHoldFilter">
+      </parameter>
+      <response name="dispHoldCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findDisposalHolds">
+      <parameter name="filter" type="policy:DisposalHoldFilter">
+      </parameter>
+      <response name="dispHold" type="policy:DisposalHold"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="analizeDocument">
+      <parameter name="docId" type="xs:string">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="analizeCase">
+      <parameter name="caseId" type="xs:string">
+      </parameter>
+      <response name="return" type="xs:string">
+      </response>
+    </operation>
+  </operations>
+</module>

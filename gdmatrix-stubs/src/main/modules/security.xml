@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="security"
+  namespace="http://security.matrix.org/"
+  title="Gestor de seguretat"
+  wsdlLocation="../services/security?wsdl"
+  service="SecurityManagerService"
+  port="SecurityManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />
+    <import module="kernel" virtual="true" />
+    <import module="dic" virtual="true" />
+  </imports>
+
+  <types>
+    <entity name="User">
+      <identifier name="userId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="password" type="xs:string" minOccurs="0">
+      </property>
+      <property name="displayName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="givenName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="surname" type="xs:string" minOccurs="0">
+      </property>
+      <property name="NIF" type="xs:string" minOccurs="0">
+      </property>
+      <property name="CIF" type="xs:string" minOccurs="0">
+      </property>
+      <property name="organizationName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="email" type="xs:string" minOccurs="0">
+      </property>
+      <property name="locked" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Role">
+      <identifier name="roleId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="roleTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+    </entity>
+
+    <entity name="UserInRole">
+      <identifier name="userInRoleId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="userId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="roleId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="RoleInRole">
+      <identifier name="roleInRoleId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="containerRoleId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="includedRoleId" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <struct name="SecurityMetaData">
+      <property name="userIdMaxSize" type="xs:int">
+      </property>
+      <property name="userDisplayNameMaxSize" type="xs:int">
+      </property>
+      <property name="roleIdMaxSize" type="xs:int">
+      </property>
+      <property name="roleNameMaxSize" type="xs:int">
+      </property>
+      <property name="roleDescriptionMaxSize" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="UserFilter">
+      <property name="userId" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="displayName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="RoleFilter">
+      <property name="roleId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="roleTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="UserInRoleFilter">
+      <property name="userId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="roleId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="minDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="maxDate" type="mx:date" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="UserInRoleView">
+      <property name="userInRoleId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="user" type="security:User" minOccurs="0">
+      </property>
+      <property name="role" type="security:Role" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="RoleInRoleFilter">
+      <property name="containerRoleId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="includedRoleId" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="RoleInRoleView">
+      <property name="roleInRoleId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="containerRole" type="security:Role" minOccurs="0">
+      </property>
+      <property name="includedRole" type="security:Role" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="AccessControl">
+      <property name="action" type="xs:string" minOccurs="0">
+      </property>
+      <property name="roleId" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+  </types>
+
+  <operations>
+
+    <operation name="login">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <parameter name="password" type="xs:string">
+      </parameter>
+      <response name="user" type="security:User">
+      </response>
+    </operation>
+
+    <operation name="getSecurityMetaData">
+      <response name="securityMetaData" type="security:SecurityMetaData">
+      </response>
+    </operation>
+
+    <operation name="loginCertificate">
+      <parameter name="certData" type="xs:base64Binary">
+      </parameter>
+      <response name="user" type="security:User">
+      </response>
+    </operation>
+
+    <operation name="changePassword">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <parameter name="oldPassword" type="xs:string">
+      </parameter>
+      <parameter name="newPassword" type="xs:string">
+      </parameter>
+      <response name="result" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="findUsers">
+      <parameter name="filter" type="security:UserFilter">
+      </parameter>
+      <response name="user" type="security:User" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countUsers">
+      <parameter name="filter" type="security:UserFilter">
+      </parameter>
+      <response name="userCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="loadUser">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <response name="user" type="security:User">
+      </response>
+    </operation>
+
+    <operation name="storeUser">
+      <parameter name="user" type="security:User">
+      </parameter>
+      <response name="storedUser" type="security:User">
+      </response>
+    </operation>
+
+    <operation name="removeUser">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findRoles">
+      <parameter name="filter" type="security:RoleFilter">
+      </parameter>
+      <response name="role" type="security:Role" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countRoles">
+      <parameter name="filter" type="security:RoleFilter">
+      </parameter>
+      <response name="roleCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="loadRole">
+      <parameter name="roleId" type="xs:string">
+      </parameter>
+      <response name="role" type="security:Role">
+      </response>
+    </operation>
+
+    <operation name="storeRole">
+      <parameter name="role" type="security:Role">
+      </parameter>
+      <response name="storedRole" type="security:Role">
+      </response>
+    </operation>
+
+    <operation name="removeRole">
+      <parameter name="roleId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findUserInRoles">
+      <parameter name="filter" type="security:UserInRoleFilter">
+      </parameter>
+      <response name="userInRole" type="security:UserInRole"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findUserInRoleViews">
+      <parameter name="filter" type="security:UserInRoleFilter">
+      </parameter>
+      <response name="userInRoleView" type="security:UserInRoleView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadUserInRole">
+      <parameter name="userInRoleId" type="xs:string">
+      </parameter>
+      <response name="userInRole" type="security:UserInRole">
+      </response>
+    </operation>
+
+    <operation name="storeUserInRole">
+      <parameter name="userInRole" type="security:UserInRole">
+      </parameter>
+      <response name="storedUserInRole" type="security:UserInRole">
+      </response>
+    </operation>
+
+    <operation name="removeUserInRole">
+      <parameter name="userInRoleId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findRoleInRoles">
+      <parameter name="filter" type="security:RoleInRoleFilter">
+      </parameter>
+      <response name="roleInRole" type="security:RoleInRole" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findRoleInRoleViews">
+      <parameter name="filter" type="security:RoleInRoleFilter">
+      </parameter>
+      <response name="roleInRoleView" type="security:RoleInRoleView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadRoleInRole">
+      <parameter name="roleInRoleId" type="xs:string">
+      </parameter>
+      <response name="roleInRole" type="security:RoleInRole">
+      </response>
+    </operation>
+
+    <operation name="storeRoleInRole">
+      <parameter name="roleInRole" type="security:RoleInRole">
+      </parameter>
+      <response name="storedRoleInRole" type="security:RoleInRole">
+      </response>
+    </operation>
+
+    <operation name="removeRoleInRole">
+      <parameter name="roleInRoleId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+  </operations>
+</module>

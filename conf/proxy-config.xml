@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy-config>
+  <host name="10.30.30.81">
+    <rule type="WhenUser" userId="anonymous" stop="true" />
+    <rule type="WhenUser" userId="realor" stop="true">
+      <action type="SetRequestProperty" name="test" value="8897" />
+      <action type="SetBasicAuthorization" userId="admin" password="****" />
+    </rule>
+    <rule type="WhenRole" roleId="EMPLEAT">
+      <action type="SetBasicAuthorization" />
+    </rule>
+  </host>
+  <host name="localhost">
+    <rule type="WhenUser" userId="realor">
+      <action type="SetBasicAuthorization" userId="admin" password="****" />
+    </rule>
+  </host>
+</proxy-config>

@@ -1,0 +1,1085 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="presence"
+  namespace="http://presence.matrix.org/"
+  title="Control de presència"
+  wsdlLocation="../services/presence?wsdl"
+  service="PresenceManagerService"
+  port="PresenceManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="kernel"/>
+  </imports>
+
+  <types>
+    <entity name="PresenceEntry">
+      <identifier name="entryId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="personId" type="xs:string">
+      </property>
+      <property name="startDateTime" type="mx:dateTime">
+      </property>
+      <property name="endDateTime" type="mx:dateTime">
+      </property>
+      <property name="entryTypeId" type="xs:string"
+        references="presence:PresenceEntryType">
+      </property>
+      <property name="duration" type="xs:int">
+      </property>
+      <property name="manipulated" type="xs:boolean">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="ipAddress" type="xs:string" minOccurs="0">
+      </property>
+      <property name="workedTime" type="xs:int">
+      </property>
+      <property name="compensationTime" type="xs:int">
+      </property>
+      <property name="absenceId" type="xs:string" minOccurs="0"
+        references="presence:Absence">
+      </property>
+      <property name="previousEntryTypeId" type="xs:string"
+        references="presence:PresenceEntryType">
+      </property>
+    </entity>
+
+    <entity name="PresenceEntryType">
+      <identifier name="entryTypeId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="maxWorkedTime" type="xs:int">
+      </property>
+      <property name="realWork" type="xs:boolean">
+      </property>
+      <property name="consolidable" type="xs:boolean">
+      </property>
+      <property name="absence" type="xs:boolean">
+      </property>
+      <property name="enabled" type="xs:boolean">
+      </property>
+      <property name="filter" type="xs:string" minoccurs="0">
+      </property>
+      <property name="position" type="xs:int">
+      </property>
+      <property name="color" type="xs:string">
+      </property>
+      <property name="code" type="xs:string">
+      </property>
+    </entity>
+
+    <entity name="Absence">
+      <identifier name="absenceId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="personId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="absenceTypeId" type="xs:string" minOccurs="0"
+        references="presence:AbsenceType">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0">
+      </property>
+      <property name="status" type="xs:string" minOccurs="0">
+      </property>
+      <property name="statusDetail" type="xs:string" minOccurs="0">
+      </property>
+      <property name="requestedDays" type="xs:double">
+      </property>
+      <property name="consolidatedDays" type="xs:double">
+      </property>
+      <property name="requestedTime" type="xs:int">
+      </property>
+      <property name="consolidatedTime" type="xs:int">
+      </property>
+      <property name="instanceId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="absenceDocId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="justificantDocId" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="AbsenceType">
+      <identifier name="absenceTypeId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="authorizable" type="xs:boolean">
+      </property>
+      <property name="justificable" type="xs:boolean">
+      </property>
+      <property name="enabled" type="xs:boolean">
+      </property>
+      <property name="counterVisible" type="xs:boolean">
+      </property>
+      <property name="holiday" type="xs:boolean">
+      </property>
+      <property name="counting" type="presence:AbsenceCounting">
+      </property>
+      <property name="carry" type="xs:boolean">
+      </property>
+      <property name="defaultTime" type="xs:double">
+      </property>
+      <property name="position" type="xs:int">
+      </property>
+      <property name="entryTypeId" type="xs:string" references="presence:PresenceEntryType">
+      </property>
+    </entity>
+
+    <entity name="Worker">
+      <identifier name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </identifier>
+      <property name="fullName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="validatorPersonId" type="xs:string" 
+        references="presence:Worker" minOccurs="0">
+      </property>
+      <property name="team" type="xs:string" minOccurs="0">
+      </property>
+      <property name="compensationTime" type="xs:int">
+      </property>
+    </entity>
+
+    <entity name="AbsenceCounter">
+      <identifier name="absenceCounterId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="personId" type="xs:string" minOccurs="0" 
+        references="presence:Worker">
+      </property>
+      <property name="year" type="xs:string">
+      </property>
+      <property name="absenceTypeId" type="xs:string" 
+        references="presence:absenceType">
+      </property>
+      <property name="remainingTime" type="xs:double">
+      </property>
+      <property name="totalTime" type="xs:double">
+      </property>
+    </entity>
+
+    <entity name="WeekType">
+      <identifier name="weekTypeId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="mondayTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="tuesdayTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="wednesdayTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="thursdayTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="fridayTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="saturdayTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="sundayTypeId" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="DayType">
+      <identifier name="dayTypeId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="inTime1" type="mx:time" minOccurs="0">
+      </property>
+      <property name="outTime1" type="mx:time" minOccurs="0">
+      </property>
+      <property name="flexibility1" type="xs:int">
+      </property>
+      <property name="inTime2" type="mx:time" minOccurs="0">
+      </property>
+      <property name="outTime2" type="mx:time" minOccurs="0">
+      </property>
+      <property name="flexibility2" type="xs:int">
+      </property>
+      <property name="code" type="xs:string" minOccurs="0">
+      </property>
+      <property name="color" type="xs:string" minOccurs="0">
+      </property>
+      <property name="holidaysEnabled" type="xs:boolean">
+      </property>
+      <property name="reductionsEnabled" type="xs:boolean">
+      </property>
+    </entity>
+
+    <entity name="Holiday">
+      <identifier name="holidayId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="optional" type="xs:boolean">
+      </property>
+      <property name="color" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="WorkReduction">
+      <identifier name="reductionId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="description" type="mx:time" minOccurs="0">
+      </property>
+      <property name="factor" type="xs:double" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="PresenceParameter">
+      <identifier name="parameterId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+    </entity>
+
+    <!-- structs -->
+
+    <struct name="ScheduleEntry">
+      <property name="personId" type="xs:string" references="presence:Worker">
+      </property>
+      <property name="startDateTime" type="mx:dateTime">
+      </property>
+      <property name="endDateTime" type="mx:dateTime">
+      </property>
+      <property name="dayTypeId" type="xs:string" minOccurs="0"
+        references="presence:DayType">
+      </property>
+      <property name="duration" type="xs:int">
+      </property>
+      <property name="initialDayDuration" type="xs:int">       
+      </property>
+      <property name="dayDuration" type="xs:int">       
+      </property>
+      <property name="flexibility" type="xs:int">
+      </property>
+      <property name="reductionId" type="xs:string" minOccurs="0" maxOccurs="unbounded"
+        references="presence:WorkReduction">       
+      </property>
+    </struct>
+
+    <struct name="ScheduleFault">
+      <property name="personId" type="xs:string" references="presence:Worker">
+      </property>
+      <property name="dateTime" type="mx:dateTime">
+      </property>
+      <property name="faultDuration" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PresenceEntryFilter">
+      <property name="personId" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+      </property>
+      <property name="startDateTime" type="mx:dateTime">
+      </property>
+      <property name="endDateTime" type="mx:dateTime">
+      </property>
+      <property name="entryTypeId" type="xs:string"
+        references="presence:PresenceEntryType" minOccurs="0">
+      </property>
+      <property name="manipulated" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="reason" type="xs:string" minOccurs="0">
+      </property>
+      <property name="splitByDay" type="xs:boolean">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="AbsenceFilter">
+      <property name="absenceId" type="xs:string">
+      </property>
+      <property name="personId" type="xs:string" maxOccurs="unbounded">
+      </property>
+      <property name="startDateTime" type="mx:dateTime">
+      </property>
+      <property name="endDateTime" type="mx:dateTime">
+      </property>
+      <property name="status" type="xs:string">
+      </property>
+      <property name="absenceTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="splitByDay" type="xs:boolean">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="AbsenceTypeFilter">
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PresenceEntryTypeFilter">
+      <property name="entryTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="enabled" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="team" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="WeekTypeFilter">
+      <property name="weekTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="DayTypeFilter">
+      <property name="dayTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="HolidayFilter">
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="AbsenceView">
+      <property name="worker" type="presence:Worker">
+      </property>
+      <property name="absence" type="presence:Absence">
+      </property>
+      <property name="absenceType" type="presence:AbsenceType">
+      </property>
+      <property name="status" type="xs:string">
+      </property>
+    </struct>
+
+    <struct name="WorkReductionFilter">
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="WorkerFilter">
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="presence:Worker">
+      </property>
+      <property name="fullName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="team" type="xs:string" minOccurs="0">
+      </property>
+      <property name="validatorPersonId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="AbsenceCounterFilter">
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="presence:Worker">
+      </property>
+      <property name="year" type="xs:string" minOccurs="0">
+      </property>
+      <property name="date" type="mx:date" minOccurs="0">
+      </property>
+      <property name="absenceTypeId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="counterVisible" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="AbsenceCounterView">
+      <property name="absenceCounter" type="presence:AbsenceCounter">
+      </property>
+      <property name="absenceType" type="presence:AbsenceType">
+      </property>
+    </struct>
+
+    <struct name="WorkerStatistics">
+      <property name="personId" type="xs:string">
+      </property>
+      <property name="startDateTime" type="mx:dateTime">
+      </property>
+      <property name="endDateTime" type="mx:dateTime">
+      </property>
+      <property name="scheduleEntry" type="presence:ScheduleEntry" minOccurs="0" maxOccurs="unbounded">
+      </property>
+      <property name="presenceEntry" type="presence:PresenceEntry" minOccurs="0" maxOccurs="unbounded">
+      </property>
+      <property name="scheduleFault" type="presence:ScheduleFault" minOccurs="0" maxOccurs="unbounded">
+      </property>
+      <property name="daysToWork" type="xs:int">
+      </property>
+      <property name="timeToWork" type="xs:int">
+      </property>
+      <property name="instantTimeToWork" type="xs:int">
+      </property>
+      <property name="workedDays" type="xs:int">
+      </property>
+      <property name="notWorkedDays" type="xs:int">
+      </property>
+      <property name="workedTime" type="xs:int">
+      </property>
+      <property name="realWorkedTime" type="xs:int">
+      </property>
+      <property name="absenceTime" type="xs:int">
+      </property>
+      <property name="scheduleFaultTime" type="xs:int">
+      </property>
+      <property name="scheduleFaults" type="xs:int">
+      </property>
+      <property name="compensationTime" type="xs:int">
+      </property>
+      <property name="entryCount" type="xs:int">
+      </property>
+      <property name="manipulatedEntryCount" type="xs:int">
+      </property>
+      <property name="compensatedEntryCount" type="xs:int">
+      </property>
+      <property name="suspiciousEntryCount" type="xs:int">
+      </property>
+      <property name="workedTimeDifference" type="xs:int">
+      </property>
+      <property name="absenceDegree" type="xs:float">
+      </property>
+      <property name="veracityDegree" type="xs:float">
+      </property>
+      <property name="punctualityDegree" type="xs:float">
+      </property>
+      <property name="complianceDegree" type="xs:float">
+      </property>
+      <property name="presenceDegree" type="xs:float">
+      </property>
+    </struct>
+
+    <struct name="WorkerSchedule">
+      <property name="personId" type="xs:string" references="kernel:Person">
+      </property>
+      <property name="startDate" type="mx:date">
+      </property>
+      <property name="endDate" type="mx:date">
+      </property>
+      <property name="dayTypeId" type="xs:string" 
+        minOccurs="0" maxOccurs="unbounded" 
+        references="presence:DayType">
+      </property>
+    </struct>
+
+    <enumeration name="AbsenceCounting">
+      <value name="DAYS"/>
+      <value name="FRACTIONABLE_DAYS"/>
+      <value name="HOURS"/>
+    </enumeration>
+
+  </types>
+
+  <operations>
+
+    <!-- PresenceEntry -->
+
+    <operation name="countPresenceEntries">
+      <parameter name="filter" type="presence:PresenceEntryFilter">
+      </parameter>
+      <response name="presenceEntryCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findPresenceEntries">
+      <parameter name="filter" type="presence:PresenceEntryFilter">
+      </parameter>
+      <response name="presenceEntry" type="presence:PresenceEntry" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadPresenceEntry">
+      <parameter name="entryId" type="xs:string">
+      </parameter>
+      <response name="presenceEntry" type="presence:PresenceEntry">
+      </response>
+    </operation>
+
+    <operation name="storePresenceEntry">
+      <parameter name="presenceEntry" type="presence:PresenceEntry">
+      </parameter>
+      <response name="storedPresenceEntry" type="presence:PresenceEntry">
+      </response>
+    </operation>
+
+    <operation name="removePresenceEntry">
+      <parameter name="entryId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- Absence -->
+
+    <operation name="countAbsences">
+      <parameter name="filter" type="presence:AbsenceFilter">
+      </parameter>
+      <response name="absenceCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findAbsences">
+      <parameter name="filter" type="presence:AbsenceFilter">
+      </parameter>
+      <response name="absence" type="presence:Absence" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findAbsenceViews">
+      <parameter name="filter" type="presence:AbsenceFilter">
+      </parameter>
+      <response name="absenceView" type="presence:AbsenceView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadAbsence">
+      <parameter name="absenceId" type="xs:string">
+      </parameter>
+      <response name="absence" type="presence:Absence">
+      </response>
+    </operation>
+
+    <operation name="storeAbsence">
+      <parameter name="absence" type="presence:Absence">
+      </parameter>
+      <response name="storedAbsence" type="presence:Absence">
+      </response>
+    </operation>
+
+    <operation name="removeAbsence">
+      <parameter name="absenceId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- AbsenceType -->
+
+    <operation name="countAbsenceTypes">
+      <parameter name="filter" type="presence:AbsenceTypeFilter">
+      </parameter>
+      <response name="absenceTypeCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findAbsenceTypes">
+      <parameter name="filter" type="presence:AbsenceTypeFilter">
+      </parameter>
+      <response name="absenceType" type="presence:AbsenceType" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadAbsenceType">
+      <parameter name="absenceTypeId" type="xs:string">
+      </parameter>
+      <response name="absenceType" type="presence:AbsenceType">
+      </response>
+    </operation>
+
+    <operation name="storeAbsenceType">
+      <parameter name="absenceType" type="presence:AbsenceType">
+      </parameter>
+      <response name="storedAbsenceType" type="presence:AbsenceType">
+      </response>
+    </operation>
+
+    <operation name="removeAbsenceType">
+      <parameter name="absenceTypeId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- PresenceEntryType -->
+
+    <operation name="countPresenceEntryTypes">
+      <parameter name="filter" type="presence:PresenceEntryTypeFilter">
+      </parameter>
+      <response name="presenceEntryTypeCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findPresenceEntryTypes">
+      <parameter name="filter" type="presence:PresenceEntryTypeFilter">
+      </parameter>
+      <response name="presenceEntryType" type="presence:PresenceEntryType" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadPresenceEntryType">
+      <parameter name="entryTypeId" type="xs:string">
+      </parameter>
+      <response name="presenceEntryType" type="presence:PresenceEntryType">
+      </response>
+    </operation>
+
+    <operation name="storePresenceEntryType">
+      <parameter name="presenceEntryType" type="presence:PresenceEntryType">
+      </parameter>
+      <response name="storedPresenceEntryType" type="presence:PresenceEntryType">
+      </response>
+    </operation>
+
+    <operation name="removePresenceEntryType">
+      <parameter name="entryTypeId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- WeekType -->
+
+    <operation name="countWeekTypes">
+      <parameter name="filter" type="presence:WeekTypeFilter">
+      </parameter>
+      <response name="weekTypeCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findWeekTypes">
+      <parameter name="filter" type="presence:WeekTypeFilter">
+      </parameter>
+      <response name="weekType" type="presence:WeekType" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadWeekType">
+      <parameter name="weekTypeId" type="xs:string">
+      </parameter>
+      <response name="weekType" type="presence:WeekType">
+      </response>
+    </operation>
+
+    <operation name="storeWeekType">
+      <parameter name="weekType" type="presence:WeekType">
+      </parameter>
+      <response name="storedWeekType" type="presence:WeekType">
+      </response>
+    </operation>
+
+    <operation name="removeWeekType">
+      <parameter name="weekTypeId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- DayType -->
+
+    <operation name="countDayTypes">
+      <parameter name="filter" type="presence:DayTypeFilter">
+      </parameter>
+      <response name="weekTypeCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findDayTypes">
+      <parameter name="filter" type="presence:DayTypeFilter">
+      </parameter>
+      <response name="dayType" type="presence:DayType" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadDayType">
+      <parameter name="dayTypeId" type="xs:string">
+      </parameter>
+      <response name="dayType" type="presence:DayType">
+      </response>
+    </operation>
+
+    <operation name="storeDayType">
+      <parameter name="dayType" type="presence:DayType">
+      </parameter>
+      <response name="storedDayType" type="presence:DayType">
+      </response>
+    </operation>
+
+    <operation name="removeDayType">
+      <parameter name="dayTypeId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- Holiday -->
+
+    <operation name="countHolidays">
+      <parameter name="filter" type="presence:HolidayFilter">
+      </parameter>
+      <response name="hodilayCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findHolidays">
+      <parameter name="filter" type="presence:HolidayFilter">
+      </parameter>
+      <response name="holiday" type="presence:Holiday" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadHoliday">
+      <parameter name="holidayId" type="xs:string">
+      </parameter>
+      <response name="holiday" type="presence:Holiday">
+      </response>
+    </operation>
+
+    <operation name="storeHoliday">
+      <parameter name="holiday" type="presence:Holiday">
+      </parameter>
+      <response name="storedHoliday" type="presence:Holiday">
+      </response>
+    </operation>
+
+    <operation name="removeHoliday">
+      <parameter name="holidayId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- WorkReduction -->
+
+    <operation name="countWorkReductions">
+      <parameter name="filter" type="presence:WorkReductionFilter">
+      </parameter>
+      <response name="workReductionCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findWorkReductions">
+      <parameter name="filter" type="presence:WorkReductionFilter">
+      </parameter>
+      <response name="workReduction" type="presence:WorkReduction" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadWorkReduction">
+      <parameter name="reductionId" type="xs:string">
+      </parameter>
+      <response name="workReduction" type="presence:WorkReduction">
+      </response>
+    </operation>
+
+    <operation name="storeWorkReduction">
+      <parameter name="workReduction" type="presence:WorkReduction">
+      </parameter>
+      <response name="storedWorkReduction" type="presence:WorkReduction">
+      </response>
+    </operation>
+
+    <operation name="removeWorkReduction">
+      <parameter name="reductionId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- Worker -->
+
+    <operation name="countWorkers">
+      <parameter name="filter" type="presence:WorkerFilter">
+      </parameter>
+      <response name="workerCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findWorkers">
+      <parameter name="filter" type="presence:WorkerFilter">
+      </parameter>
+      <response name="worker" type="presence:Worker" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadWorker">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <response name="worker" type="presence:Worker">
+      </response>
+    </operation>
+
+    <operation name="storeWorker">
+      <parameter name="worker" type="presence:Worker">
+      </parameter>
+      <response name="storedWorker" type="presence:Worker">
+      </response>
+    </operation>
+
+    <operation name="removeWorker">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <!-- AbsenceCounter -->
+
+    <operation name="countAbsenceCounters">
+      <parameter name="filter" type="presence:AbsenceCounterFilter">
+      </parameter>
+      <response name="absenceCounterCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findAbsenceCounters">
+      <parameter name="filter" type="presence:AbsenceCounterFilter">
+      </parameter>
+      <response name="absenceCounter" type="presence:AbsenceCounter" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findAbsenceCounterViews">
+      <parameter name="filter" type="presence:AbsenceCounterFilter">
+      </parameter>
+      <response name="absenceCounterView" type="presence:AbsenceCounterView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadAbsenceCounter">
+      <parameter name="absenceCounterId" type="xs:string">
+      </parameter>
+      <response name="absenceCounter" type="presence:AbsenceCounter">
+      </response>
+    </operation>
+
+    <operation name="storeAbsenceCounter">
+      <parameter name="absenceCounter" type="presence:AbsenceCounter">
+      </parameter>
+      <response name="storedAbsenceCounter" type="presence:AbsenceCounter">
+      </response>
+    </operation>
+
+    <operation name="removeAbsenceCounter">
+      <parameter name="absenceCounterId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="createAbsenceCounters">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <parameter name="year" type="xs:string">
+      </parameter>
+      <parameter name="createZeroCounters" type="xs:boolean">
+      </parameter>
+      <response name="createdCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="copyAbsenceCounters">
+      <parameter name="fromPersonId" type="xs:string">
+      </parameter>
+      <parameter name="toPersonIds" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+      </parameter>
+      <parameter name="year" type="xs:string">
+      </parameter>
+      <response name="copiedCount" type="xs:int">
+      </response>
+    </operation>
+
+    <!-- Schedule -->
+
+    <operation name="setWorkerWeekType">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <parameter name="startDate" type="mx:date">
+      </parameter>
+      <parameter name="endDate" type="mx:date" minOccurs="0">
+      </parameter>
+      <parameter name="weekTypeId" type="xs:string" minOccurs="0"
+        references="presence:WeekType">
+      </parameter>
+      <response name="result" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="setWorkerDayType">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <parameter name="date" type="mx:date">
+      </parameter>
+      <parameter name="dayTypeId" type="xs:string" minOccurs="0"
+        references="presence:DayType">
+      </parameter>
+      <response name="result" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="getSchedule">
+      <parameter name="personId" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+      </parameter>
+      <parameter name="startDate" type="mx:date">
+      </parameter>
+      <parameter name="endDate" type="mx:date">
+      </parameter>
+      <response name="workerSchedule" type="presence:WorkerSchedule" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="getScheduleEntries">
+      <parameter name="personId" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+      </parameter>
+      <parameter name="startDate" type="mx:date">
+      </parameter>
+      <parameter name="endDate" type="mx:date">
+      </parameter>
+      <parameter name="splitByDay" type="xs:boolean">
+      </parameter>
+      <parameter name="cropByPeriod" type="xs:boolean">
+      </parameter>
+      <response name="scheduleEntry" type="presence:ScheduleEntry" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="getWorkerStatistics">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <parameter name="startDateTime" type="mx:dateTime">
+      </parameter>
+      <parameter name="endDateTime" type="mx:dateTime">
+      </parameter>
+      <response name="workerStatistics" type="presence:WorkerStatistics">
+      </response>
+    </operation>
+
+    <!-- Worker group -->
+    
+    <operation name="getWorkerGroup">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <response name="relatedPersonId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="setWorkerGroup">
+      <parameter name="personId" type="xs:string">
+      </parameter>
+      <parameter name="relatedPersonId" type="xs:string" minOccurs="0" 
+        maxOccurs="unbounded">
+      </parameter>
+      <response name="groupSize" type="xs:int">
+      </response>
+    </operation>
+
+    <!-- PresenceParameter -->
+    
+    <operation name="findParameters">
+      <response name="parameter" type="presence:PresenceParameter" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadParameter">
+      <parameter name="parameterId" type="xs:string">
+      </parameter>
+      <response name="storedParameter" type="presence:PresenceParameter">
+      </response>
+    </operation>
+
+    <operation name="storeParameter">
+      <parameter name="parameter" type="presence:PresenceParameter">
+      </parameter>
+      <response name="storedParameter" type="presence:PresenceParameter">
+      </response>
+    </operation>
+
+    <operation name="removeParameter">
+      <parameter name="parameterId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+  </operations>
+</module>

@@ -1,0 +1,154 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <ui:composition template="/templates/#{userSessionBean.template}/template.xhtml">
+    <ui:param name="css" value="/common/cases/css/cases.css" />
+    <ui:define name="body">
+
+      <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" var="objectBundle"/>  
+      <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle" var="caseBundle"/>
+
+      <sf:saveScroll />  
+
+      <t:div styleClass="caseDetail" >
+
+        <t:div id="shortcutURL" styleClass="shortcutURL"
+           style="display:none">
+          <h:outputText value="#{caseBundle.caseDetail_shortcutURL}:"
+            styleClass="label"/>
+          <h:outputText value="#{caseDetailBean.shortcutURL}"
+            styleClass="url"/>
+        </t:div>
+
+        <!-- action buttons -->
+        <t:div style="width:100%;text-align:right">
+          <h:graphicImage value="#{userSessionBean.icons.link}"
+            onclick="javascript:toggleVisibility('mainform:shortcutURL')"
+            styleClass="closeButton"
+            title="#{caseBundle.caseDetail_shortcutURL}: #{caseDetailBean.shortcutURL}"
+            alt="#{caseBundle.caseDetail_shortcutURL}: #{caseDetailBean.shortcutURL}"
+            rendered="#{caseDetailBean.renderShortcutURL}"/>
+          <t:commandButton value="#{objectBundle.edit}"
+            action="#{caseDetailBean.editCase}"
+            image="#{userSessionBean.icons.edit}"
+            rendered="#{caseSearchBean.editorUser and caseDetailBean.editable and userSessionBean.menuModel.browserType == 'desktop'}"
+            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+            styleClass="editButton"/>
+          <t:commandButton onclick="javascript:printGroup('printCase');"
+            styleClass="editButton"
+            image="#{userSessionBean.icons.print}"
+            rendered="#{userSessionBean.selectedMenuItem.properties.printEnabled=='true' and userSessionBean.menuModel.browserType == 'desktop'}"
+            alt="#{objectBundle.print_new_window}" title="#{objectBundle.print_new_window}"/>      
+          <t:commandButton action="#{controllerBean.close}"
+            value="#{objectBundle.close}" immediate="true"
+            styleClass="closeButton"
+            image="#{userSessionBean.icons.close}"
+            alt="#{objectBundle.close}" title="#{objectBundle.close}"
+            rendered="#{caseDetailBean.renderCloseButton and userSessionBean.menuModel.browserType == 'desktop'}"/>
+        </t:div>
+
+
+        <!-- List view -->
+        <sf:printableGroup name="printCase">
+        <h:panelGroup rendered="#{!caseDetailBean.tabbedView}">
+          <t:dataList id="panels" value="#{caseDetailBean.panels}" var="panel">
+            <sf:div styleClass="#{panel.styleClass}" style="overflow:hidden"
+                   rendered="#{caseDetailBean.renderPanelContent}"
+                   ariaHidden="#{panel.ariaHidden}">
+              <t:div styleClass="header" rendered="#{panel.headingLevel == null and panel.renderContent}">  
+                <sf:outputText value="#{panel.title}" escape="false"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}"/>
+              </t:div>          
+              <sf:heading level="#{panel.headingLevel}" styleClass="header" rendered="#{panel.headingLevel != null and panel.renderContent}">
+                <sf:outputText value="#{panel.title}" escape="false"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}"/>
+              </sf:heading>
+              <t:div rendered="#{panel.headerBrowserUrl!=null}"
+                styleClass="headerDocument">
+                <sf:browser url="#{panel.headerBrowserUrl}"
+                  port="#{applicationBean.defaultPort}"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}" />
+              </t:div>
+
+              <t:div styleClass="content">
+                <t:panelGroup rendered="#{panel.type == 'main' }">
+                  <ui:include src="/common/cases/panels/main.xhtml" />
+                </t:panelGroup>   
+                <t:panelGroup rendered="#{panel.type == 'browser'}">
+                  <ui:include src="/common/cases/panels/browser.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'documents' and panel.getProperty('resultsLayout') == 'list'}">
+                  <ui:include src="/common/cases/panels/documents_list.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'documents' and panel.getProperty('resultsLayout') != 'list'}">
+                  <ui:include src="/common/cases/panels/documents_table.xhtml" />
+                </t:panelGroup>               
+                <t:panelGroup rendered="#{panel.type == 'cases' and panel.getProperty('resultsLayout') == 'list'}">
+                  <ui:include src="/common/cases/panels/cases_list.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'cases' and panel.getProperty('resultsLayout') != 'list'}">
+                  <ui:include src="/common/cases/panels/cases_table.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'gallery'}">
+                  <ui:include src="/common/cases/panels/gallery.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'dynamicform'}">
+                  <ui:include src="/common/cases/panels/dynamicform.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'workflows'}">
+                  <ui:include src="/common/cases/panels/workflows.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'persons'}">
+                  <ui:include src="/common/cases/panels/persons.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'addresses'}">
+                  <ui:include src="/common/cases/panels/addresses.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'contacts'}">
+                  <ui:include src="/common/cases/panels/contacts.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'property_values'}">
+                  <ui:include src="/common/cases/panels/property_values.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'addresses_agenda'}">
+                  <ui:include src="/common/cases/panels/addresses_agenda.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'persons_agenda'}">
+                  <ui:include src="/common/cases/panels/persons_agenda.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'agenda'}">
+                  <ui:include src="/common/cases/panels/agenda.xhtml" />
+                </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'report'}">
+                  <ui:include src="/common/cases/panels/report.xhtml" />
+                </t:panelGroup>          
+              </t:div>
+
+              <t:div rendered="#{panel.footerBrowserUrl!=null}"
+                styleClass="headerDocument">
+                <sf:browser url="#{panel.footerBrowserUrl}"
+                  port="#{applicationBean.defaultPort}"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}" />
+              </t:div>
+
+              <t:div styleClass="footer">
+              </t:div>
+            </sf:div>
+          </t:dataList>
+        </h:panelGroup>
+        </sf:printableGroup>
+      </t:div>      
+      
+    </ui:define>
+  </ui:composition>
+</html>
+

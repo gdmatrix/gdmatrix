@@ -1,0 +1,1112 @@
+/**** portal 2011 ****/
+
+.topBar
+{
+  width:100%;
+  display:inline-block;
+  padding:0;
+  margin:0;
+  background:black;
+  padding-top:3px;
+  padding-bottom:3px;
+  font-family: Arial;
+  font-size:12px;
+  text-align:center;
+  position:relative;
+}
+
+.topBar .infoBar
+{
+  position:absolute;
+  text-align:left;
+  vertical-align:middle;
+  padding:0;
+  top:3px;
+  left:2px;
+  line-height: 20px;
+  background:black;
+  z-index: 1000;
+}
+
+.topBar .loginBar
+{
+  position:absolute;
+  text-align:right;
+  vertical-align:middle;
+  padding:0;
+  top:3px;
+  right:2px;
+  color:#D0D0D0;  
+  line-height: 20px;
+  background:black;
+  z-index: 1000;
+}
+
+.topBar .clock
+{
+  margin-left:10px;
+  margin-right:4px;
+  vertical-align:middle;
+  color:#D0D0D0;
+}
+
+.topBar select.langSelector
+{
+  font-family:Arial;
+  vertical-align:middle;
+  font-size:12px;
+  background:#C0C0C0;
+  border:none;
+  padding:0px;
+}
+
+.topBar input.langSelector
+{
+  background:#606060;
+  border:none;
+  color:white;
+  font-size:11px;
+  font-weight: bold;
+  width:auto;
+  overflow:hidden;
+}
+
+.topBar .loginText
+{
+  vertical-align:middle;
+  margin-left:4px;
+  margin-right:4px;
+}
+
+.topBar .loginCert
+{
+  vertical-align:middle;
+  margin-left:4px;
+  margin-right:4px;
+  text-decoration: none;
+  color:white;
+}
+
+.topBar .loginCert:hover
+{
+  color:red;
+}
+
+.topBar .loginBox
+{
+  vertical-align: middle;
+  background: #C0C0C0;
+  border:none;
+  font-size:12px;
+  font-family: Arial;
+}
+
+.topBar a.logButton
+{  
+}
+
+.topBar a.logButton img
+{
+  vertical-align:middle;
+  border:none;
+  margin-left:4px;
+  background:white;
+}
+
+.topBar a.logButton img:hover
+{
+  background:red;
+}
+
+.topBar .displayNameText
+{
+  vertical-align:middle;
+  color:white;
+  margin-left:4px;
+  font-weight: bold;
+}
+
+.topBar .loginError
+{
+  float:right;
+  color:white;
+  font-weight:bold;
+  margin-right:10px;
+}
+
+.headerBar .search_panel
+{
+  position:relative;  
+}
+
+.headerBar .searchBox
+{
+  margin:0;
+  position:absolute;
+  top:26px;
+  left:710px;
+  width:170px;
+  height:30px;
+  background:transparent url("/templates/portal2011/images/search.png") left center no-repeat;
+  vertical-align:middle;
+  padding-left:5px;
+  padding-right:5px;
+}
+
+.headerBar .searchBox img
+{
+  width:0;
+  height:100%;
+  vertical-align:middle;
+}
+
+.headerBar .searchBox .searchWords
+{
+  width:60%;
+  display:inline-block;
+  border:none;
+  background:transparent;
+  color:white;
+  padding:0;
+  font-size:12px;
+  vertical-align:middle;
+}
+
+.headerBar .searchBox .searchButton
+{
+  width:40%;
+  display:inline-block;
+  text-align:right;
+  vertical-align:middle;
+  background:transparent;
+}
+
+.headerBar .searchBox .searchButton input
+{
+  width:auto;
+  overflow:visible;
+  color:white;
+  border:none;
+  background:transparent;
+  font-size:11px;
+  padding:0px;
+  margin:0px;
+  vertical-align:middle;
+}
+
+.headerBar
+{
+  background: #E32119 url("/templates/portal2011/images/back_header.png") repeat 0px 0px;
+  margin-bottom:10px;
+}
+
+/*.headerBar .back_img*/
+.headerBar .central_panel
+{
+  background: #E32119 url("/templates/portal2011/images/logo.png") no-repeat 24px 0%;
+  margin:auto;
+  height:100px;
+}
+
+.headerBar .back_left
+{
+  background: url("/templates/portal2011/images/back_header_left.png") no-repeat left bottom;
+  height:100px;
+}
+
+.headerBar .back_right
+{
+  background: url("/templates/portal2011/images/back_header_right.png") no-repeat right bottom;
+  height:100px;
+}
+
+.page_body
+{
+  text-align:center;
+}
+
+.central_panel
+{
+  width:980px;
+}
+
+.page_body .central_panel
+{
+  display:inline-block;
+}
+
+.footerBar
+{
+  margin:0px;
+  background:#E32119 url("/templates/portal2011/images/back_footer.png") top repeat-x;
+  text-align:center;
+  height:40px;
+  margin-top:10px;
+}
+
+.footerBar .central_panel
+{
+  display:inline-block;
+  height:40px;
+  padding:0px;
+  margin:0px;
+  position:relative;
+}
+
+.bottomBar
+{
+  background: black;
+  height:10px;
+}
+
+.social_networks
+{
+  background:#E32119;
+  display:block;
+  margin-right:6px;
+  float:right;
+}
+
+.social_networks a img
+{
+  border:none;
+  padding-left:6px;
+  padding-right:6px;
+}
+
+.social_networks .sn_left
+{
+  background: transparent url("/templates/portal2011/images/back_footer_left.png") no-repeat left top;
+}
+
+.social_networks .sn_right
+{
+  padding-top:8px;
+  padding-left:16px;
+  padding-right:16px;
+  background: transparent url("/templates/portal2011/images/back_footer_right.png") no-repeat right top;
+}
+
+.contacts
+{
+  position:absolute;
+  display:inline-block;  
+  font-size:12px;
+  text-align:left;
+  left:10px;
+  bottom:2px;
+}
+
+.contacts ul
+{
+  margin:0;
+  padding:0;
+}
+
+.contacts ul li
+{
+  list-style-type:none;
+  position:relative;
+  float:left;
+  color:white;
+  padding-left:10px;
+  padding-right:10px;
+  border-left:white 1px solid;
+}
+
+.contacts ul li:first-child
+{
+  border:none;
+}
+
+/**** menu principal ****/
+
+.menu
+{
+  margin-left:150px;
+  padding-top:70px;
+}
+
+.menu ul,
+.menu ul li,
+.menu ul ul
+{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu ul
+{
+  position: relative;
+  z-index: 597;
+  float: left;
+}
+
+.menu ul li
+{
+  float: left;
+  line-height: 1.3em;
+  vertical-align: middle;
+  zoom: 1;
+}
+
+.menu ul li.hover,
+.menu ul li:hover
+{
+  position: relative;
+  z-index: 599;
+  cursor: default;
+}
+
+.menu ul ul
+{
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 598;
+}
+
+.menu ul ul li
+{
+  float: left;
+}
+
+.menu ul ul ul
+{
+  top: 34px; /* desplaçamente vertical entre menus */
+  left: 35%; /* solapamente entre menus */
+}
+
+.menu ul li:hover > ul
+{
+  visibility: visible;
+}
+
+
+/**** aspecte menu principal ****/
+/* primer nivell: menu horitzontal */
+.menu ul
+{
+  font: 14px/normal Arial, Helvetica, sans-serif;
+  border: none;
+}
+
+.menu ul li a
+{
+  color:white;
+  text-decoration: none;
+  display:block;
+  padding-left:10px;
+  padding-right:10px;
+  padding-top:0;
+  padding-bottom:0;
+  border-left: solid 1px white;
+}
+
+.menu ul li:first-child a
+{
+  border:none;
+}
+
+.menu ul li
+{
+  padding: 0 0px;
+  background-color: transparent;
+}
+
+/* segon nivell: vertical */
+.menu ul ul
+{
+  background:#E32119;
+  width:200px;
+}
+
+.menu ul ul.popup1
+{
+  width:200px;
+  background:transparent url("/templates/portal2011/images/popup1.png") left bottom no-repeat;
+  padding-bottom:20px;
+}
+
+.menu ul ul.popup1 div
+{
+  height:20px;
+  background:#E32119 url("/templates/portal2011/images/popupt1.png") left top no-repeat;
+}
+
+.menu ul ul.popup2
+{
+  width:400px;
+  background:transparent url("/templates/portal2011/images/popup2.png") left bottom no-repeat;
+  padding-bottom:20px;
+}
+
+.menu ul ul.popup2 div
+{
+  height:20px;
+  background:#E32119 url("/templates/portal2011/images/popupt2.png") left top no-repeat;
+}
+
+.menu ul ul.popup3
+{
+  width:600px;
+  background:transparent url("/templates/portal2011/images/popup3.png") left bottom no-repeat;
+  padding-bottom:20px;
+}
+
+.menu ul ul.popup3 div
+{
+  height:20px;
+  background:#E32119 url("/templates/portal2011/images/popupt3.png") left top no-repeat;
+}
+
+
+.menu ul ul li
+{
+  font-size: 13px;
+  line-height:24px;
+  width:200px;
+}
+
+.menu ul ul li a
+{
+  text-decoration: none;
+  display:block;
+  padding-left:22px;
+  padding-right:5px;
+  padding-top:1px;
+  padding-bottom:1px;
+  border: none;
+}
+
+.menu ul ul li:hover
+{
+  background:transparent url("/templates/portal2011/images/white_pointer.png") 9px 9px no-repeat;
+  color:#F0B0B0;
+}
+
+.menu ul ul li a:hover
+{
+  color:#F0B0B0;
+}
+
+/* tercer nivell: vertical */
+.menu ul ul ul
+{
+}
+
+.menu ul ul ul.popup1
+{
+  background:transparent url("/templates/portal2011/images/popupv1.png") left bottom no-repeat;
+  width:200px;
+  padding-bottom:10px;
+}
+
+.menu ul ul ul.popup1 div
+{
+  background:transparent url("/templates/portal2011/images/popupvt1.png") left top no-repeat;
+  height:10px;
+  margin-top:-10px;
+}
+
+.menu ul ul ul.popup2
+{
+  background:transparent url("/templates/portal2011/images/popupv2.png") left bottom no-repeat;
+  width:400px;
+  padding-bottom:10px;
+}
+
+.menu ul ul ul.popup2 div
+{
+
+  background:transparent url("/templates/portal2011/images/popupvt2.png") left top no-repeat;
+  height:11px;
+  margin-top:-11px;
+}
+
+.menu ul ul ul li a
+{
+  padding-right:10px;
+}
+
+.menu ul ul ul li a:hover
+{
+  background:transparent url("/templates/portal2011/images/white_pointer.png") 9px 9px no-repeat;
+  color:#D0D0D0;
+}
+
+/* left menu */
+.leftMenu
+{
+  width:30%;
+  float:left;
+  margin:0px;
+  text-align:left;
+  display:block;
+}
+
+.leftMenu > div
+{
+  padding-right:20px;
+}
+
+.leftMenu ul
+{
+  list-style: none;
+  text-align:left;
+  display:block;
+  margin-left:0px;
+  padding-left:16px;
+  background:transparent;
+}
+
+.leftMenu li
+{
+  vertical-align:middle;
+  text-align:left;
+  display:block;
+  border-top:1px dashed gray;
+  padding-top:3px;
+  padding-bottom:3px;
+  padding-left:0px;
+  list-style-type: none;
+  list-style-position: outside;
+}
+
+.leftMenu div > ul > li:first-child
+{
+  border:none;
+}
+
+.leftMenu li a
+{
+  color:black;
+  text-decoration:none;
+  display:block;
+  width:100%;
+  padding-left:14px;
+}
+
+.leftMenu li a.selected
+{
+  color:#800000;
+  background:transparent url("/templates/portal2011/images/red_pointer.png") no-repeat 0px 50%;
+}
+
+.leftMenu li a:hover
+{
+  color:#800000;
+  background:transparent url("/templates/portal2011/images/black_pointer.png") no-repeat 0px 50%;
+}
+
+.section_title
+{
+  font-size:16px;
+  font-weight:bold;
+  color:#E32119;
+  border-bottom:1px solid gray;
+  display:block;
+  margin-left:10px;
+  margin-right:20px;
+}
+
+/* topMenu */
+
+.topMenu
+{
+  line-height: 20px;
+}
+
+.topMenu ul
+{
+  text-align:center;
+  margin:0;
+  margin-left:-20%;
+}
+
+.topMenu ul li
+{
+  list-style-type:none;
+  display:inline;
+}
+
+.topMenu ul li a
+{
+  text-decoration:none;
+  color:white;
+  font-size:11px;
+  padding-left:8px;
+  padding-right:8px;
+  border-left:solid 1px gray;
+}
+
+.topMenu ul li:first-child a
+{
+  border:none;
+}
+
+.topMenu ul li a:hover
+{
+  color:#D0D0D0;
+}
+
+
+/* footerMenu */
+.footerMenu
+{
+  padding:0;
+  display:block;
+  float:none;
+}
+
+.footerMenu ul
+{
+  padding:0;
+  margin:0;
+  padding-left:12px;
+}
+
+.footerMenu ul li
+{
+  list-style-type:none;
+  position:relative;
+  float:left;
+}
+
+.footerMenu ul li a
+{
+  text-decoration:none;
+  color:black;
+  font-size:12px;
+  display:block;
+  padding-left:8px;
+  padding-right:8px;
+  border-left:solid 1px black;
+}
+
+.footerMenu ul li a:hover
+{
+  color:#606060;
+}
+
+.footerMenu ul li:first-child a
+{
+  border-left:none;
+}
+
+#widget_body
+{
+  width:70%;
+  float:left;
+}
+
+/* navPath */
+.navPath
+{
+  text-align:right;
+  float:right;
+  padding-right:10px;
+  width:68%;
+}
+
+.navPath a
+{
+  font-size:13px;
+  color:gray;
+  text-decoration:none;
+  padding-left:6px;
+  padding-right:6px;
+  border-left:solid 1px gray;
+}
+
+.navPath a:first-child
+{
+  border:none;
+}
+
+.navPath a:hover
+{
+  color:black;
+}
+
+/* widgets */
+
+.widget_container
+{
+  display:inline-block;
+  width:100%;
+}
+
+.widget
+{
+  display:block;
+  text-align:left;
+}
+
+.widget_padding
+{
+  padding:6px;
+}
+
+.widget_background
+{
+  background:white;
+}
+
+.widget_header
+{
+  color:#123456;
+  text-align:left;
+  background:url("/common/misc/images/top_side.png") repeat-x top transparent;
+}
+
+.widget_header_2
+{
+  background:url("/common/misc/images/top_left_corner.png") no-repeat top left transparent;
+}
+
+.widget_header_3
+{
+  background:url("/common/misc/images/top_right_corner.png") no-repeat top right transparent;
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.widget_header .empty
+{
+  height:16px;
+}
+
+.widget_header_panel
+{
+  padding-top:10px;
+  padding-bottom:6px;
+  border-bottom:1px red dashed;
+  background:url("/templates/portal2011/images/decoration.png") no-repeat;
+  background-position: 100% 10px;
+  width:100%;
+}
+
+.widget_draggable .widget_header_panel
+{
+  background:url("/templates/portal2011/images/drag.png") no-repeat;
+  background-position: 100% 10px;
+}
+
+.widget_header_panel_nt
+{
+  height:24px;
+}
+
+.widget_draggable .widget_header_panel_nt
+{
+  background:url("/templates/portal2011/images/drag.png") no-repeat;
+  background-position: 100% 8px;
+}
+
+.title
+{
+  font-size:18px;
+  font-weight:bold;
+  color:#E00000;
+}
+
+.subtitle
+{
+  font-size:18px;
+  font-weight:bold;
+  color:black;
+  margin-left:6px;
+}
+
+.widget_content
+{
+  background-color:transparent;
+  font:normal 12px/1em Arial, Helvetica, sans-serif;
+  overflow:hidden;
+  margin-left:0px;
+  margin-right:0px;
+}
+
+.widget_content_2
+{
+  background:url("/common/misc/images/left_side.png") repeat-y left transparent;
+}
+
+.widget_content_3
+{
+  background:url("/common/misc/images/right_side.png") repeat-y right transparent;
+  padding-left:10px;
+  padding-right:10px;
+  padding-top:6px;
+  padding-bottom:6px;
+}
+
+.widget_footer
+{
+  font-size:8px;
+  background:url("/common/misc/images/bottom_side.png") repeat-x bottom transparent;
+}
+
+.widget_footer_2
+{
+  background:url("/common/misc/images/bottom_left_corner.png") no-repeat left bottom transparent;
+}
+
+.widget_footer_3
+{
+  background:url("/common/misc/images/bottom_right_corner.png") no-repeat right bottom transparent;
+}
+
+.widget_footer_panel
+{
+  padding-left:16px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  height:32px;
+}
+
+.widget_footer_panel_center
+{
+  padding-top: 0px;
+  padding-bottom: 0px;
+  text-align:center;
+  height:32px;
+}
+
+.widget_footer_panel_nt
+{
+  padding-left:16px;
+  height:16px;
+}
+
+.widget_footer_panel A.showMoreLink
+{
+  background:transparent url("/templates/portal2011/images/right_19_button.png") right center no-repeat;
+  text-decoration: none;
+  display:inline-block;
+  float:left;
+}
+
+.widget_footer_panel_center A.showMoreLink
+{
+  background:transparent url("/templates/portal2011/images/right_19_button.png") right center no-repeat;
+  text-decoration: none;
+  display:inline-block;
+}
+
+.widget_footer_panel A.showMoreLink span,
+.widget_footer_panel_center A.showMoreLink span
+{
+  font-size:11px;
+  text-transform: uppercase;
+  display:block;  
+  color:white;
+  padding-left:20px;
+  padding-right:4px;
+  padding-top:4px;
+  padding-bottom:4px;
+  background:transparent url("/templates/portal2011/images/left_19_more_button.png") left center no-repeat;
+  vertical-align: middle;
+}
+
+.widget_footer_panel A.rssLink
+{
+  margin-left: 4px;
+  margin-top:3px;
+  float:left;
+}
+
+.widget_footer_panel_center A.rssLink
+{
+  margin-left: 4px;
+  margin-top:3px;
+}
+
+.widget_footer_panel .rssLink img,
+.widget_footer_panel_center .rssLink img
+{
+  border:none;
+}
+
+.widget_footer_panel .widget_close
+{
+  float:right;
+  margin-top: 16px;
+}
+
+.widget_footer_panel_nt .widget_close
+{
+  float:right;
+}
+
+.widget_close img
+{
+  border:none;
+}
+
+.widget_footer .empty
+{
+  height:16px;
+}
+
+.widget_content .empty > *,
+.widget_footer .empty > *
+{
+  display: none;
+}
+
+.widget_draggable
+{
+  cursor:move;
+}
+
+/* Ghost */
+.widget_ghost
+{
+  background:#FFF;
+  opacity: 0.5;
+  filter:alpha(opacity=50);
+  position:relative;
+  border: 3px dashed #F00;
+  margin:0px;
+  padding:0px;
+}
+
+/* customBar widget setup buttons */
+
+.customBar
+{
+  height:38px;
+  margin-top:6px;
+  margin-bottom:6px;
+  padding-left:4px;
+  padding-right:4px;
+}
+
+.customBar .widgetInfo
+{
+  display:block;
+  float:left;
+  padding-left:0.4%;
+  padding-right:0.4%;
+  width:66.2%;
+  height:100%;
+}
+
+.customBar .widgetInfo > div
+{
+  height:100%;
+  text-align: left;
+  font-size:12px;
+  vertical-align:middle;
+  background: transparent url("/common/misc/images/right_button.png") right center no-repeat;
+}
+
+.customBar .widgetInfo > div > div
+{
+  display:block;
+  height:100%;
+  background: transparent url("/common/misc/images/left_info_button.png") left center no-repeat;
+}
+
+.customBar .widgetInfo > div > div > img
+{
+  width:0;
+  height:100%;
+  vertical-align:middle;
+}
+
+.customBar .widgetInfo .info
+{
+  color:white;
+  display:inline-block;
+  width:80%;
+  padding-left:68px;
+  vertical-align: middle;
+}
+
+.customBar .setupButtons
+{
+  padding:0;
+  margin:0;
+  display:block;
+  width:33%;
+  height:100%;
+  float:right;
+  background: transparent;
+  vertical-align:middle;
+}
+
+.customBar .setupButtons > span
+{
+  padding:0;
+  margin:0;
+  width:33%; /* button width */
+  height:100%;
+  float:left;
+  text-align:center;
+  display: block;
+}
+
+.customBar .setupButtons > span:first-child
+{
+  width:34%; /* button width */
+}
+
+.customBar .setupButtons > span > span
+{
+  padding-left:2px; /* button padding */
+  padding-right:3px;
+  height:100%;
+  display: block;
+}
+
+.customBar .setupButtons > span > span:first-child
+{
+  padding-left:8px;
+}
+
+.customBar .setupButtons > span > span > span
+{
+  background: transparent url("/common/misc/images/right_button.png") right center no-repeat;
+  height:100%;
+  display: block;
+}
+
+.customBar .setupButtons > span > span > span > span
+{
+  vertical-align:middle;
+  background: transparent url("/common/misc/images/left_button.png") left center no-repeat;
+  height:100%;
+  text-align:center;
+  display: block;
+}
+
+.customBar .setupButtons span span span span img
+{
+  height:100%;
+  width:0;
+  vertical-align:middle;
+}
+
+.customBar .setupButtons > span > span > span > span input
+{
+  vertical-align:middle;
+  padding:0;
+  margin:0;
+  font-size:11px;
+  font-weight:bold;
+  border:none;
+  color:white;
+  background:transparent;
+  width:100%;
+}
+
+.customBar .setupButtons > span > span > span > span input:hover
+{
+  color:black;
+  cursor:hand;
+}

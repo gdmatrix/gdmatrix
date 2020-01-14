@@ -1,0 +1,1994 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+  <description>Kernel</description>
+  <package>com.audifilm.matrix.kernel.service</package>
+
+  <named-query name="countPersons">
+    <query>
+        SELECT count(p)
+        FROM DBPerson p
+        WHERE
+        (:idList IS NULL OR locate(concat(' ', concat(p.personId, ' ')), :idList)  > 0) AND
+        (:name IS NULL OR lower(p.name) LIKE :name) AND
+        (:firstSurname IS NULL OR lower(p.firstSurname) LIKE :firstSurname) AND
+        (:secondSurname IS NULL OR lower(p.secondSurname) LIKE :secondSurname) AND
+        (:fullName IS NULL OR lower(concat(concat(concat(concat(p.name," "),p.firstSurname)," "),p.secondSurname)) LIKE :fullName) AND
+        (:nif IS NULL OR lower(concat(p.nifnum,p.nifdc)) LIKE :nif) AND
+        (:passport IS NULL OR trim(lower(p.passport)) LIKE :passport) AND
+        (p.baixasw IS NULL OR p.baixasw&lt;&gt;'1')
+    </query>
+  </named-query>
+
+  <named-query name="findPersons">
+    <query>
+        SELECT p
+        FROM DBPerson p
+        WHERE
+        (:idList IS NULL OR locate(concat(' ', concat(p.personId, ' ')), :idList) > 0) AND
+        (:name IS NULL OR lower(p.name) LIKE :name) AND
+        (:firstSurname IS NULL OR lower(p.firstSurname) LIKE :firstSurname) AND
+        (:secondSurname IS NULL OR lower(p.secondSurname) LIKE :secondSurname) AND
+        (:fullName IS NULL OR lower(concat(concat(concat(concat(p.name," "),p.firstSurname)," "),p.secondSurname)) LIKE :fullName) AND
+        (:nif IS NULL OR lower(concat(p.nifnum,p.nifdc)) LIKE :nif) AND
+        (:passport IS NULL OR trim(lower(p.passport)) LIKE :passport) AND
+        (p.baixasw IS NULL OR p.baixasw&lt;&gt;'1')
+        ORDER BY p.firstSurname, p.secondSurname, p.name
+    </query>
+  </named-query>
+
+  <named-query name="countAddresses">
+    <query>
+        SELECT count(a)
+        FROM DBAddress a JOIN a.street s JOIN s.city ci 
+          JOIN ci.province p JOIN p.country co
+        WHERE
+        (:idList IS NULL OR locate(concat(' ', concat(a.addressId, ' ')), :idList) > 0) AND
+        (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName) AND
+        (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName) AND
+        (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName) AND
+        (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number) AND
+        (:floor IS NULL OR lower(trim(a.floor)) = :floor) AND
+        (:door IS NULL OR lower(trim(a.door)) = :door) AND
+        (:gisReference IS NULL OR a.gisReference LIKE :gisReference) AND
+        (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments) AND
+        (a.baixasw is NULL OR a.baixasw &lt;&gt; '1' ) AND
+        (:addressTypeId IS NULL OR a.addressTypeId = :addressTypeId) AND
+        (:streetTypeId IS NULL OR lower(trim(a.street.streetTypeId)) = :streetTypeId)
+    </query>
+  </named-query>
+
+  <named-query name="findAddresses">
+    <query>
+        SELECT a
+        FROM DBAddress a JOIN a.street s JOIN s.city ci 
+          JOIN ci.province pr JOIN pr.country co
+        WHERE
+        (:idList IS NULL OR locate(concat(' ', concat(a.addressId, ' ')), :idList) > 0) AND
+        (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName) AND
+        (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName) AND
+        (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName) AND
+        (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number) AND
+        (:floor IS NULL OR lower(trim(a.floor)) = :floor) AND
+        (:door IS NULL OR lower(trim(a.door)) = :door) AND
+        (:gisReference IS NULL OR a.gisReference LIKE :gisReference) AND
+        (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments) AND
+        (a.baixasw is NULL OR a.baixasw &lt;&gt; '1' ) AND
+        (:addressTypeId IS NULL OR a.addressTypeId = :addressTypeId) AND
+        (:streetTypeId IS NULL OR lower(trim(a.street.streetTypeId)) = :streetTypeId)       
+        ORDER BY ci.name, s.name, a.number1, a.floor, a.door
+    </query>
+    <!--
+    <hint name="eclipselink.join-fetch" value="a.street" />
+    <hint name="eclipselink.left-join-fetch" value="a.street.streetType" />
+    <hint name="eclipselink.join-fetch" value="a.street.city" />
+    <hint name="eclipselink.join-fetch" value="a.street.city.province" />
+    <hint name="eclipselink.join-fetch" value="a.street.city.province.country" />
+    -->
+  </named-query>
+
+  <named-query name="findPersonAddresses">
+    <query>
+        SELECT pa
+        FROM DBPersonAddress pa
+        WHERE 
+          (pa.personId = :personId OR :personId IS NULL)
+          AND
+          (pa.addressId = :addressId OR :addressId IS NULL)
+        ORDER BY pa.person.personId, pa.personAddressNumber
+    </query>
+<!--
+    <hint name="eclipselink.join-fetch" value="pa.person" />
+    <hint name="eclipselink.join-fetch" value="pa.address" />
+    <hint name="eclipselink.join-fetch" value="pa.address.street" />
+    <hint name="eclipselink.left-join-fetch" value="pa.address.street.streetType" />
+    <hint name="eclipselink.join-fetch" value="pa.address.street.city" />
+    <hint name="eclipselink.join-fetch" value="pa.address.street.city.province" />
+    <hint name="eclipselink.join-fetch" value="pa.address.street.city.province.country" />
+-->
+  </named-query>
+
+  <named-query name="countPersonAddresses">
+    <query>
+        SELECT count(pa)
+        FROM DBPersonAddress pa
+        WHERE
+          (pa.personId = :personId OR :personId IS NULL)
+          AND
+          (pa.addressId = :addressId OR :addressId IS NULL)
+    </query>
+  </named-query>
+
+
+  <named-query name="findAddressPersons">
+    <query>
+        SELECT p, pa
+        FROM DBPersonAddress pa JOIN pa.person p
+        WHERE pa.addressId = :id
+        ORDER BY p.personId, pa.personAddressNumber
+    </query>
+  </named-query>
+
+  <named-query name="findTelecos">
+    <query>
+        SELECT t, i.label
+        FROM DBTeleco t, DBKernelListItem i
+        WHERE
+          (i.listId = 'TCON') AND
+          (t.contactTypeId = substring(i.itemId, 0, 4)) AND
+          (:personId IS NULL OR t.personId = :personId) AND
+          (:contactTypeId IS NULL OR t.contactTypeId = :contactTypeId) AND
+          (:value IS NULL OR t.value like :value)
+        ORDER BY t.contactNumber
+    </query>
+  </named-query>
+
+  <named-query name="countTelecos">
+    <query>
+        SELECT count(t)
+        FROM DBTeleco t, DBKernelListItem i
+        WHERE
+          (i.listId = 'TCON') AND
+          (t.contactTypeId = substring(i.itemId, 0, 4)) AND
+          (:personId IS NULL OR t.personId = :personId) AND
+          (:contactTypeId IS NULL OR t.contactTypeId = :contactTypeId) AND
+          (:value IS NULL OR t.value like :value)
+        ORDER BY t.contactNumber
+    </query>
+  </named-query>
+
+  <named-query name="findKernelListItems">
+    <query>
+        SELECT i
+        FROM DBKernelListItem i
+        WHERE i.listId = :listId
+        ORDER BY i.label
+    </query>
+  </named-query>
+
+  <named-query name="findCountries">
+    <query>
+        SELECT c 
+        FROM DBCountry c
+        WHERE (:name IS NULL OR lower(c.name) LIKE :name)
+        ORDER BY c.name
+    </query>
+  </named-query>
+
+  <named-query name="countCountries">
+    <query>
+        SELECT count(c)
+        FROM DBCountry c
+        WHERE (:name IS NULL OR lower(c.name) LIKE :name)
+        ORDER BY c.name
+    </query>
+  </named-query>
+
+  <named-query name="findProvinces">
+    <query>
+        SELECT p 
+        FROM DBProvince p
+        WHERE (:countryId IS NULL OR p.countryId = :countryId) AND
+          (:name IS NULL OR lower(p.name) LIKE :name)
+        ORDER BY p.name
+    </query>
+  </named-query>
+
+  <named-query name="countProvinces">
+    <query>
+        SELECT count(p)
+        FROM DBProvince p
+        WHERE (:countryId IS NULL OR p.countryId = :countryId) AND
+          (:name IS NULL OR lower(p.name) LIKE :name)
+        ORDER BY p.name
+    </query>
+  </named-query>
+
+  <named-query name="findCities">
+    <query>
+        SELECT c from DBCity c
+        WHERE (:countryId IS NULL OR c.countryId = :countryId) AND
+          (:provinceId IS NULL OR c.provinceId = :provinceId) AND
+          (:name IS NULL OR lower(c.name) LIKE :name)
+        ORDER BY c.name
+    </query>
+  </named-query>
+
+  <named-query name="countCities">
+    <query>
+        SELECT count(c)
+        FROM DBCity c
+        WHERE (:countryId IS NULL OR c.countryId = :countryId) AND
+          (:provinceId IS NULL OR c.provinceId = :provinceId) AND
+          (:name IS NULL OR lower(c.name) LIKE :name)
+        ORDER BY c.name
+    </query>
+  </named-query>
+
+  <named-query name="findStreets">
+    <query>
+        SELECT s from DBStreet s JOIN FETCH s.streetType
+        WHERE (:countryId IS NULL OR s.countryId = :countryId) AND
+          (:provinceId IS NULL OR s.provinceId = :provinceId) AND
+          (:cityId IS NULL OR s.cityId = :cityId) AND
+          (:name IS NULL OR lower(s.name) LIKE :name)
+        ORDER BY s.name
+    </query>
+  </named-query>
+
+  <named-query name="countStreets">
+    <query>
+        SELECT count(s)
+        FROM DBStreet s
+        WHERE (:countryId IS NULL OR s.countryId = :countryId) AND
+          (:provinceId IS NULL OR s.provinceId = :provinceId) AND
+          (:cityId IS NULL OR s.cityId = :cityId) AND
+          (:name IS NULL OR lower(s.name) LIKE :name)
+        ORDER BY s.name
+    </query>
+  </named-query>
+  
+  <named-query name="findStreetTypes">
+    <query>
+      SELECT st from DBStreetType st 
+      ORDER BY st.description
+    </query>
+  </named-query>  
+
+  <named-query name="findPersonRepresentants">
+    <query>
+        SELECT pr, p
+        FROM DBPersonRepresentant pr JOIN pr.representant p
+        WHERE pr.personId = :id
+    </query>
+  </named-query>
+
+  <named-query name="countPersonRepresentants">
+    <query>
+        SELECT count(pr)
+        FROM DBPersonRepresentant pr JOIN pr.representant p
+        WHERE pr.personId = :id
+    </query>
+  </named-query>
+
+  <named-query name="findPersonDocumentViews">
+    <query>
+      SELECT
+        p, pd
+      FROM
+        DBPerson p, DBPersonDocument pd
+      WHERE
+        trim(p.personId) = trim(LEADING '0' FROM pd.personId)
+        AND NOT (pd.docId is NULL)
+        AND (:personId is NULL OR p.personId = :personId)
+        AND (:docId is NULL OR pd.docId = :docId)
+        AND (pd.eliminat = '0' or pd.eliminat is NULL)
+      ORDER BY p.personId, pd.docnompc
+     </query>
+  </named-query>
+
+
+  <named-query name="incrementGenericCounter">
+    <query>
+        UPDATE Counter c SET 
+          c.counter = c.counter + 1, 
+          c.stdumod = :userId,
+          c.stddmod = :day,
+          c.stdhmod = :hour
+        WHERE c.claupref = :claupref AND c.claucod = :claucod 
+          AND c.clauorigen = :clauorigen
+    </query>
+  </named-query>
+
+  <named-query name="readGenericCounter">
+    <query>
+        SELECT c.counter
+        FROM Counter c
+        WHERE c.claupref = :claupref AND c.claucod = :claucod 
+          AND c.clauorigen = :clauorigen
+    </query>
+  </named-query>
+
+<!-- replaced by the native query above to fix the bad counter management -->
+<!--
+  <named-query name="incrementPersonAddressCounter">
+    <query>
+        UPDATE DBPerson p SET p.persvnum = p.persvnum + 1
+        WHERE p.personId = :personId
+    </query>
+  </named-query>
+-->
+  <named-native-query name="incrementPersonAddressCounter">
+    <query>
+        UPDATE NCL_PERSONA
+        SET PERSVNUM = 
+        (SELECT NVL(MAX(PD.PERSND), 0) + 1 FROM NCL_PERSDOM PD 
+         WHERE PD.PERSCOD = ?personId)
+        WHERE PERSCOD = ?personId
+    </query>
+  </named-native-query>
+
+  <named-query name="readPersonAddressCounter">
+    <query>
+        SELECT p.persvnum FROM DBPerson p
+        WHERE p.personId = :personId
+    </query>
+  </named-query>
+
+  <named-query name="readPersonContactCounter">
+    <query>
+        SELECT max(t.contactNumber) FROM DBTeleco t
+        WHERE t.personId = :personId
+    </query>
+  </named-query>
+
+  <named-query name="incrementProvinceCounter">
+    <query>
+        UPDATE DBCountry c SET c.paisvnum = c.paisvnum + 1
+        WHERE c.countryId = :countryId
+    </query>
+  </named-query>
+
+  <named-query name="readProvinceCounter">
+    <query>
+        SELECT c.paisvnum FROM DBCountry c
+        WHERE c.countryId = :countryId
+    </query>
+  </named-query>
+
+  <named-query name="incrementCityCounter">
+    <query>
+        UPDATE DBProvince p SET p.provvnum = p.provvnum + 1
+        WHERE p.countryId = :countryId AND p.provinceId = :provinceId
+    </query>
+  </named-query>
+
+  <named-query name="readCityCounter">
+    <query>
+        SELECT p.provvnum FROM DBProvince p
+        WHERE p.countryId = :countryId AND p.provinceId = :provinceId
+    </query>
+  </named-query>
+
+  <named-query name="incrementStreetCounter">
+    <query>
+        UPDATE DBCity c SET c.munivnum = c.munivnum + 1
+        WHERE c.countryId = :countryId AND c.provinceId = :provinceId AND
+          c.cityId = :cityId
+    </query>
+  </named-query>
+
+  <named-query name="readStreetCounter" >
+    <query>
+        SELECT c.munivnum FROM DBCity c
+        WHERE c.countryId = :countryId AND c.provinceId = :provinceId AND
+          c.cityId = :cityId
+    </query>
+  </named-query>
+
+  <named-query name="findFotoPersonaExpedient" >
+    <query>
+        SELECT
+          p.personId,
+          e.persnom,
+          e.perscog1,
+          e.perscog2,
+          e.persnif,
+          p.personType,
+          e.persnd,
+          pa.addressId,
+          e.domicili
+        FROM
+          Case e, DBPerson p, DBPersonAddress pa
+        WHERE
+          e.caseId = :caseId
+          AND (e.persId = :personId OR :personId IS NULL)
+          AND e.persId = p.personId
+          AND e.persId = pa.personId
+          AND e.persnd = pa.personAddressNumber
+          AND (pa.addressId=:addressId OR :addressId IS NULL)
+    </query>
+  </named-query >
+
+  <named-query name="findFotoRepresentantExpedient" >
+    <query >
+        SELECT
+          p.personId,
+          e.repnom,
+          e.repcog1,
+          e.repcog2,
+          e.repnif,
+          p.personType,
+          e.reprnd,
+          pa.addressId,
+          e.repdomi
+        FROM
+          Case e, DBPerson p, DBPersonAddress pa
+        WHERE
+          e.caseId = :caseId
+          AND (e.persId = :personId OR :personId IS NULL)
+          AND (e.reprId = :representantId OR :representantId IS NULL)
+          AND e.reprId = p.personId
+          AND e.reprId = pa.personId
+          AND e.reprnd = pa.personAddressNumber
+          AND (pa.addressId=:addressId OR :addressId IS NULL)
+    </query>
+  </named-query >
+
+  <named-query name="findFotoPersonaInteressat" >
+    <query >
+        SELECT
+          p.personId,
+          i.personName,
+          i.personSurname1,
+          i.personSurname2,
+          i.personNif,
+          p.personType,
+          i.personAddressNumber,
+          pa.addressId,
+          i.addressDescription
+        FROM
+          Interessat i, DBPerson p, DBPersonAddress pa
+        WHERE
+          i.caseId = :caseId
+          AND (i.personId = :personId OR :personId IS NULL)
+          AND i.personId = p.personId
+          AND i.personId = pa.personId
+          AND i.personAddressNumber = pa.personAddressNumber
+          AND (pa.addressId=:addressId OR :addressId IS NULL)
+    </query>
+  </named-query >
+
+  <named-query name="findFotoRepresentantInteressat" >
+    <query>
+        SELECT
+          p.personId,
+          i.representantName,
+          i.representantSurname1,
+          i.representantSurname2,
+          i.representantNif,
+          p.personType,
+          i.representantAddressNumber,
+          pa.addressId,
+          i.representantAddressDescription
+        FROM
+          Interessat i, DBPerson p, DBPersonAddress pa
+        WHERE
+          i.caseId = :caseId
+          AND (i.personId = :personId OR :personId IS NULL)
+          AND (i.representantId = :representantId OR :representantId IS NULL)
+          AND i.representantId = p.personId
+          AND i.representantId = pa.personId
+          AND i.representantAddressNumber = pa.personAddressNumber
+          AND (pa.addressId=:addressId OR :addressId IS NULL)
+    </query>
+  </named-query >
+
+
+
+  <named-query name="findFotoAdrecaPersonaExpedient" >
+    <query>
+        SELECT
+          e.domicili, pa, a
+        FROM
+          Case e, DBPerson p, DBPersonAddress pa, DBAddress a
+        WHERE
+          e.caseId = :caseId
+          AND (e.persId = :personId OR :personId IS NULL)
+          AND e.persId = p.personId
+          AND e.persId = pa.personId
+          AND e.persnd = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND (pa.addressId=:addressId OR :addressId IS NULL)
+          AND (pa.personAddressNumber=:addressNumber OR :addressNumber IS NULL)
+    </query>
+  </named-query >
+
+  <named-query name="findFotoAdrecaRepresentantExpedient" >
+    <query >
+        SELECT
+          e.domicili, pa, a
+        FROM
+          Case e, DBPerson p, DBPersonAddress pa, DBAddress a
+        WHERE
+          e.caseId = :caseId
+          AND (e.persId = :personId OR :personId IS NULL)
+          AND (e.reprId = :representantId OR :representantId IS NULL)
+          AND e.reprId = p.personId
+          AND e.reprId = pa.personId
+          AND e.reprnd = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND (pa.addressId=:addressId OR :addressId IS NULL)
+          AND (pa.personAddressNumber=:addressNumber OR :addressNumber IS NULL)
+    </query>
+  </named-query >
+
+  <named-query name="findFotoAdrecaPersonaInteressat" >
+    <query >
+        SELECT
+          i.addressDescription, pa, a
+        FROM
+          Interessat i, DBPerson p, DBPersonAddress pa, DBAddress a
+        WHERE
+          i.caseId = :caseId
+          AND (i.personId = :personId OR :personId IS NULL)
+          AND i.personId = p.personId
+          AND i.personId = pa.personId
+          AND i.personAddressNumber = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND (pa.addressId=:addressId OR :addressId IS NULL)
+          AND (pa.personAddressNumber=:addressNumber OR :addressNumber IS NULL)
+    </query>
+  </named-query >
+
+  <named-query name="findFotoAdrecaRepresentantInteressat" >
+    <query>
+        SELECT
+          i.addressDescription, pa, a
+        FROM
+          Interessat i, DBPerson p, DBPersonAddress pa, DBAddress a
+        WHERE
+          i.caseId = :caseId
+          AND (i.personId = :personId OR :personId IS NULL)
+          AND (i.representantId = :representantId OR :representantId IS NULL)
+          AND i.representantId = p.personId
+          AND i.representantId = pa.personId
+          AND i.representantAddressNumber = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND (pa.addressId=:addressId OR :addressId IS NULL)
+          AND (pa.personAddressNumber=:addressNumber OR :addressNumber IS NULL)
+    </query>
+  </named-query >
+
+  <named-query name="findAdrecesPersonaExpedient" >
+    <query>
+        SELECT
+          pa, p,  a,
+          e.domicili,
+          ci, pr, co
+        FROM
+          Case e, DBPersonAddress pa, DBPerson p,
+          DBAddress a JOIN a.street s JOIN s.city ci JOIN ci.province pr JOIN pr.country co
+        WHERE
+          (:idList IS NULL OR locate(
+              concat(e.persId, concat(';', concat(e.persnd,concat(:versionType, concat(e.caseId,concat(';', concat(e.persId , '$')))))))
+              , :idList) > 0 )
+          AND e.persId = pa.personId
+          AND e.persnd = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND pa.personId = p.personId
+          AND (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName)
+          AND (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName)
+          AND (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName)
+          AND (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number)
+          AND (:floor IS NULL OR lower(trim(a.floor)) = :floor)
+          AND (:door IS NULL OR lower(trim(a.door)) = :door)
+          AND (:gisReference IS NULL OR a.gisReference LIKE :gisReference)
+          AND (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments)
+    </query>
+  </named-query>
+
+  <named-query name="findAdrecesInteressatExpedient" >
+    <query>
+        SELECT
+          pa, p,  a,
+          i.addressDescription,
+          ci, pr, co
+        FROM
+          Interessat i, DBPersonAddress pa, DBPerson p,
+          DBAddress a JOIN a.street s JOIN s.city ci JOIN ci.province pr JOIN pr.country co
+        WHERE
+          (:idList IS NULL OR locate(
+              concat(i.personId, concat(';', concat(i.personAddressNumber,concat(:versionType,concat(i.caseId,concat(';', concat(i.personId , '$')))))))
+              , :idList) > 0 )
+          AND i.personId = pa.personId
+          AND i.personAddressNumber = pa.personAddressNumber
+          AND pa.personId = p.personId
+          AND pa.addressId = a.addressId
+          AND (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName)
+          AND (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName)
+          AND (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName)
+          AND (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number)
+          AND (:floor IS NULL OR lower(trim(a.floor)) = :floor)
+          AND (:door IS NULL OR lower(trim(a.door)) = :door)
+          AND (:gisReference IS NULL OR a.gisReference LIKE :gisReference)
+          AND (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments)
+    </query>
+  </named-query>
+
+  <named-query name="findAdrecesRepresentantExpedient" >
+    <query>
+        SELECT
+          pa, p,  a,
+          e.repdomi,
+          ci, pr, co
+        FROM
+          Case e, DBPersonAddress pa, DBPerson p,
+          DBAddress a JOIN a.street s JOIN s.city ci JOIN ci.province pr JOIN pr.country co
+        WHERE
+          (:idList IS NULL OR locate(
+              concat(e.reprId, concat(';', concat(e.reprnd,concat(:versionType, concat(e.caseId,concat(';', concat(e.persId , concat(";", concat(e.reprId,'$')))   ))))))
+              , :idList) > 0 )
+          AND e.reprId = pa.personId
+          AND e.reprnd = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND pa.personId = p.personId
+          AND (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName)
+          AND (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName)
+          AND (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName)
+          AND (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number)
+          AND (:floor IS NULL OR lower(trim(a.floor)) = :floor)
+          AND (:door IS NULL OR lower(trim(a.door)) = :door)
+          AND (:gisReference IS NULL OR a.gisReference LIKE :gisReference)
+          AND (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments)
+    </query>
+  </named-query>
+
+  <named-query name="findAdrecesRepresentantInteressatExpedient" >
+    <query>
+        SELECT
+          pa, p,  a,
+          i.addressDescription,
+          ci, pr, co
+        FROM
+          Interessat i, DBPersonAddress pa, DBPerson p,
+          DBAddress a JOIN a.street s JOIN s.city ci JOIN ci.province pr JOIN pr.country co
+        WHERE
+          (:idList IS NULL OR locate(
+              concat(i.representantId, concat(';', concat(i.representantAddressNumber,concat(:versionType,concat(i.caseId,concat(';', concat(i.personId ,concat(';', concat( i.representantId,'$')))))))))
+              , :idList) > 0 )
+          AND i.representantId = pa.personId
+          AND i.representantAddressNumber = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND pa.personId = p.personId
+          AND (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName)
+          AND (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName)
+          AND (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName)
+          AND (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number)
+          AND (:floor IS NULL OR lower(trim(a.floor)) = :floor)
+          AND (:door IS NULL OR lower(trim(a.door)) = :door)
+          AND (:gisReference IS NULL OR a.gisReference LIKE :gisReference)
+          AND (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments)
+    </query>
+  </named-query>
+
+<!-- COMPTADORS -->
+  <named-query name="countAdrecesPersonaExpedient" >
+    <query>
+        SELECT
+          count(e)
+        FROM
+          Case e, DBPersonAddress pa,
+          DBAddress a JOIN a.street s JOIN s.city ci JOIN ci.province pr JOIN pr.country co
+        WHERE
+          (:idList IS NULL OR locate(
+              concat(e.persId, concat(';', concat(e.persnd,concat(:versionType, concat(e.caseId,concat(';', concat(e.persId , '$')))))))
+              , :idList) > 0 )
+          AND e.persId = pa.personId
+          AND e.persnd = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName)
+          AND (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName)
+          AND (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName)
+          AND (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number)
+          AND (:floor IS NULL OR lower(trim(a.floor)) = :floor)
+          AND (:door IS NULL OR lower(trim(a.door)) = :door)
+          AND (:gisReference IS NULL OR a.gisReference LIKE :gisReference)
+          AND (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments)
+    </query>
+  </named-query>
+
+  <named-query name="countAdrecesInteressatExpedient" >
+    <query>
+        SELECT
+         count(i)
+        FROM
+          Interessat i, DBPersonAddress pa,
+          DBAddress a JOIN a.street s JOIN s.city ci JOIN ci.province pr JOIN pr.country co
+        WHERE
+          (:idList IS NULL OR locate(
+              concat(i.personId, concat(';', concat(i.personAddressNumber,concat(:versionType,concat(i.caseId,concat(';', concat(i.personId , '$')))))))
+              , :idList) > 0 )
+          AND i.personId = pa.personId
+          AND i.personAddressNumber = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName)
+          AND (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName)
+          AND (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName)
+          AND (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number)
+          AND (:floor IS NULL OR lower(trim(a.floor)) = :floor)
+          AND (:door IS NULL OR lower(trim(a.door)) = :door)
+          AND (:gisReference IS NULL OR a.gisReference LIKE :gisReference)
+          AND (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments)
+    </query>
+  </named-query>
+
+  <named-query name="countAdrecesRepresentantExpedient" >
+    <query>
+        SELECT
+          count(e)
+        FROM
+          Case e, DBPersonAddress pa,
+          DBAddress a JOIN a.street s JOIN s.city ci JOIN ci.province pr JOIN pr.country co
+        WHERE
+          (:idList IS NULL OR locate(
+              concat(e.reprId, concat(';', concat(e.reprnd,concat(:versionType, concat(e.caseId,concat(';', concat(e.persId , concat(";", concat(e.reprId,'$')))   ))))))
+              , :idList) > 0 )
+          AND e.reprId = pa.personId
+          AND e.reprnd = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName)
+          AND (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName)
+          AND (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName)
+          AND (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number)
+          AND (:floor IS NULL OR lower(trim(a.floor)) = :floor)
+          AND (:door IS NULL OR lower(trim(a.door)) = :door)
+          AND (:gisReference IS NULL OR a.gisReference LIKE :gisReference)
+          AND (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments)
+    </query>
+  </named-query>
+
+  <named-query name="countAdrecesRepresentantInteressatExpedient" >
+    <query>
+        SELECT
+          count(i)
+        FROM
+          Interessat i, DBPersonAddress pa, 
+          DBAddress a JOIN a.street s JOIN s.city ci JOIN ci.province pr JOIN pr.country co
+        WHERE
+          (:idList IS NULL OR locate(
+              concat(i.representantId, concat(';', concat(i.representantAddressNumber,concat(:versionType,concat(i.caseId,concat(';', concat(i.personId ,concat(';', concat( i.representantId,'$')))))))))
+              , :idList) > 0 )
+          AND i.representantId = pa.personId
+          AND i.representantAddressNumber = pa.personAddressNumber
+          AND pa.addressId = a.addressId
+          AND (:countryName IS NULL OR concat(' ', concat(lower(co.name), ' ')) LIKE :countryName)
+          AND (:cityName IS NULL OR concat(' ', concat(lower(ci.name), ' ')) LIKE :cityName)
+          AND (:streetName IS NULL OR concat(' ', concat(lower(s.name), ' ')) LIKE :streetName)
+          AND (:number IS NULL OR lower(a.number1) = :number OR lower(a.number2) = :number)
+          AND (:floor IS NULL OR lower(trim(a.floor)) = :floor)
+          AND (:door IS NULL OR lower(trim(a.door)) = :door)
+          AND (:gisReference IS NULL OR a.gisReference LIKE :gisReference)
+          AND (:comments IS NULL OR concat(' ', concat(lower(a.comments), ' ')) LIKE :comments)
+    </query>
+  </named-query>
+
+  <named-query name="findPersonHistoric" >
+    <query>
+      Select ph
+      From PersonHistoric ph
+      Where
+          ph.personId = :personId
+      Order By ph.personId, ph.datainicial desc, ph.horainicial desc, ph.datafinal desc, ph.horafinal desc
+    </query>
+  </named-query>
+
+    <named-query name="findPersonPersons">
+      <query>
+        SELECT pp, mp, rp
+        FROM DBPersonPerson pp, DBPerson mp, DBPerson rp
+        WHERE pp.personId = mp.personId AND pp.relPersonId = rp.personId
+        AND (pp.personId = :personId OR :personId is null)
+        AND (pp.relPersonId = :relPersonId OR :relPersonId is null)
+        ORDER BY pp.personId
+      </query>
+    </named-query>
+
+    <named-query name="countPersonPersons">
+      <query>
+        SELECT count(pp)
+        FROM DBPersonPerson pp
+        WHERE (pp.personId = :personId OR :personId is null)
+        AND (pp.relPersonId = :relPersonId OR :relPersonId is null)
+      </query>
+    </named-query>
+
+    <named-query name="getLastRoomId">
+      <query>
+        SELECT max(r.roomId)
+        FROM DBRoom r
+        WHERE r.addressId = :addressId OR :addressId is null
+        ORDER BY r.name
+      </query>
+    </named-query>
+
+    <named-query name="findRooms">
+      <query>
+        SELECT r FROM DBRoom r JOIN r.address a JOIN a.street s JOIN s.city ci
+          JOIN ci.province pr JOIN pr.country co WHERE 
+        (locate(concat(" ", concat(concat(r.addressId,";"),concat(r.roomId, " "))), :idList) > 0 OR :idList is null)
+        AND (r.addressId = :addressId OR :addressId is null)
+        AND (lower(r.name) like :roomName OR :roomName is null)
+        AND (r.roomTypeId = :roomTypeId OR :roomTypeId is null)
+        AND (r.capacity &gt;= :capacity OR :capacity = 0)
+        AND (lower(r.comments) like :comments OR :comments is null)
+        AND (r.spaceId = :spaceId OR :spaceId is null)        
+        ORDER BY r.name
+      </query>
+<!--
+      <hint name="eclipselink.join-fetch" value="r.address" />
+      <hint name="eclipselink.join-fetch" value="r.address.street" />
+      <hint name="eclipselink.left-join-fetch" value="r.address.street.streetType" />
+      <hint name="eclipselink.join-fetch" value="r.address.street.city" />
+      <hint name="eclipselink.join-fetch" value="r.address.street.city.province" />
+      <hint name="eclipselink.join-fetch" value="r.address.street.city.province.country" />
+-->
+      </named-query>
+
+    <named-query name="countRooms">
+      <query>
+        SELECT count(r)
+        FROM DBRoom r
+        WHERE (locate(concat(" ", concat(concat(r.addressId,";"),concat(r.roomId, " "))), :idList) > 0 OR :idList is null)
+        AND (r.addressId = :addressId OR :addressId is null)
+        AND (lower(r.name) like :roomName OR :roomName is null)
+        AND (r.roomTypeId = :roomTypeId OR :roomTypeId is null)
+        AND (r.capacity &gt;= :capacity OR :capacity = 0)
+        AND (lower(r.comments) like :comments OR :comments is null)
+        AND (r.spaceId = :spaceId OR :spaceId is null)
+      </query>
+    </named-query>
+
+    <!-- ****** Entities ****** -->
+  <entity class="DBCounter" name="Counter">
+    <table name="NCL_CLAU" />
+    <id-class class="DBCounterPK" />
+    <attributes>
+      <id name="claupref">
+        <column name="CLAUPREF" />
+      </id>
+      <id name="claucod">
+        <column name="CLAUCOD" />
+      </id>
+      <id name="clauorigen">
+        <column name="CLAUORIGEN" />
+      </id>
+      <basic name="claudesc">
+        <column name="CLAUDESC" />
+      </basic>
+      <basic name="counter">
+        <column name="CLAUVNUM" />
+      </basic>
+      <basic name="stdugr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+    </attributes>
+  </entity>
+
+  <entity class="DBPerson" name="DBPerson">
+    <table name="NCL_PERSONA" />
+    <attributes>
+      <id name="personId">
+        <column name="PERSCOD" />
+      </id>
+      <basic name="name">
+        <column name="PERSNOM"/>
+      </basic>
+      <basic name="firstSurname">
+        <column name="PERSCOG1"/>
+      </basic>
+      <basic name="secondSurname">
+        <column name="PERSCOG2"/>
+      </basic>
+      <basic name="firstParticle">
+        <column name="PERSPAR1"/>
+      </basic>
+      <basic name="secondParticle">
+        <column name="PERSPAR2"/>
+      </basic>
+      <basic name="nifnum">
+        <column name="NIFNUM"/>
+      </basic>
+      <basic name="nifdc">
+        <column name="NIFDC"/>
+      </basic>
+      <basic name="sex">
+        <column name="PERSSEXE"/>
+      </basic>
+      <basic name="passport">
+        <column name="PERSPASSPORT"/>
+      </basic>
+      <basic name="birthDate">
+        <column name="PERSNDATA"/>
+      </basic>
+      <basic name="nationalityId">
+        <column name="PERSNACIONA"/>
+      </basic>
+      <basic name="birthCountryId">
+        <column name="PAISCOD"/>
+      </basic>
+      <basic name="birthProvinceId">
+        <column name="PROVCOD"/>
+      </basic>
+      <basic name="birthCityId">
+        <column name="MUNICOD"/>
+      </basic>
+      <basic name="fatherName">
+        <column name="PERSPARE"/>
+      </basic>
+      <basic name="motherName">
+        <column name="PERSMARE"/>
+      </basic>
+      <basic name="personType">
+        <column name="NIFSW"/>
+      </basic>
+      <basic name="stdapladd" />
+      <basic name="stdaplmod" />
+      <basic name="stdugr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="persvnum" />
+      <basic name="contvnum" />
+      <basic name="baixasw" />
+      <basic name="valdata" />
+      <basic name="persdcannif" />
+      <basic name="persdconnif" />
+      <basic name="nifnump" />
+      <basic name="niforig" />
+      <basic name="perscodold" />
+      <basic name="idiocod" />
+<!--            
+            <one-to-one name="juristicPerson">
+                  <join-column name="PERSCOD" referenced-column-name="PERSCOD"
+                    insertable="false" updatable="false" />
+            </one-to-one>          
+-->            
+    </attributes>
+  </entity>
+
+
+
+  <entity name="PersonHistoric" class="DBPersonHistoric" >
+    <table name="NCL_PERSONA_HIST" />
+    <id-class class="DBPersonHistoricPK" />
+    <attributes>
+      <id name="personId" >
+        <column name="PERSCOD" />
+      </id>
+      <id name="datainicial" >
+        <column name="DATAINICIAL" />
+      </id>
+      <id name="datafinal" >
+        <column name="DATAFINAL" />
+      </id>
+      <id name="horainicial" >
+        <column name="HORAINICIAL" />
+      </id>
+      <id name="horafinal" >
+        <column name="HORAFINAL" />
+      </id>
+      <basic name="paiscod" >
+        <column name="PAISCOD" updatable="false" />
+      </basic>
+      <basic name="provcod" >
+        <column name="PROVCOD" updatable="false" />
+      </basic>
+      <basic name="municod" >
+        <column name="MUNICOD" updatable="false" />
+      </basic>
+      <basic name="persnom" >
+        <column name="PERSNOM" updatable="false" />
+      </basic>
+      <basic name="perscog1" >
+        <column name="PERSCOG1" updatable="false" />
+      </basic>
+      <basic name="perscog2" >
+        <column name="PERSCOG2" updatable="false" />
+      </basic>
+      <basic name="perspar1" >
+        <column name="PERSPAR1" updatable="false" />
+      </basic>
+      <basic name="perspar2" >
+        <column name="PERSPAR2" updatable="false" />
+      </basic>
+      <basic name="nifnum" >
+        <column name="NIFNUM" updatable="false" />
+      </basic>
+      <basic name="nifdc" >
+        <column name="NIFDC" updatable="false" />
+      </basic>
+      <basic name="nifsw" >
+        <column name="NIFSW" updatable="false" />
+      </basic>
+      <basic name="persdconnif" >
+        <column name="PERSDCONNIF" updatable="false" />
+      </basic>
+      <basic name="persdcannif" >
+        <column name="PERSDCANNIF" updatable="false" />
+      </basic>
+      <basic name="persnd" >
+        <column name="PERSND" updatable="false" />
+      </basic>
+      <basic name="persnaciona" >
+        <column name="PERSNACIONA" updatable="false" />
+      </basic>
+      <basic name="perspassport" >
+        <column name="PERSPASSPORT" updatable="false" />
+      </basic>
+      <basic name="persndata" >
+        <column name="PERSNDATA" updatable="false" />
+      </basic>
+      <basic name="perspare" >
+        <column name="PERSPARE" updatable="false" />
+      </basic>
+      <basic name="persmare" >
+        <column name="PERSMARE" updatable="false" />
+      </basic>
+      <basic name="perssexe" >
+        <column name="PERSSEXE" updatable="false" />
+      </basic>
+      <basic name="perssw" >
+        <column name="PERSSW" updatable="false" />
+      </basic>
+      <basic name="idiocod" >
+        <column name="IDIOCOD" updatable="false" />
+      </basic>
+      <basic name="persvnum" >
+        <column name="PERSVNUM" updatable="false" />
+      </basic>
+      <basic name="stdapladd" >
+        <column name="STDAPLADD" updatable="false" />
+      </basic>
+      <basic name="stdaplmod" >
+        <column name="STDAPLMOD" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+      <basic name="baixasw" >
+        <column name="BAIXASW" updatable="false" />
+      </basic>
+      <basic name="contvnum" >
+        <column name="CONTVNUM" updatable="false" />
+      </basic>
+      <basic name="nifnump" >
+        <column name="NIFNUMP" updatable="false" />
+      </basic>
+      <basic name="niforig" >
+        <column name="NIFORIG" updatable="false" />
+      </basic>
+      <basic name="perscodold" >
+        <column name="PERSCODOLD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+
+
+
+
+  <entity name="DBPersonAddress"
+      class="DBPersonAddress">
+    <table name="NCL_PERSDOM" />
+    <id-class class="DBPersonAddressPK" />
+    <attributes>
+      <id name="personId">
+        <column name="PERSCOD"/>
+      </id>
+      <id name="personAddressNumber" >
+        <column name="PERSND"/>
+      </id>
+      <basic name="addressId">
+        <column name="DOMCOD"/>
+      </basic>
+      <basic name="stdapladd" />
+      <basic name="stdaplmod" />
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+      <basic name="baixasw" />
+
+      <many-to-one name="person">
+        <join-column name="PERSCOD"
+            referenced-column-name="PERSCOD" 
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <many-to-one name="address">
+        <join-column name="DOMCOD"
+            referenced-column-name="DOMCOD"
+            insertable="false" updatable="false" />
+      </many-to-one>
+
+    </attributes>
+  </entity>
+
+  <entity class="DBTeleco" name="DBTeleco">
+    <table name="NCL_TELECO" />
+    <id-class class="DBTelecoPK"/>
+    <attributes>
+      <id name="personId">
+        <column name="PERSCOD"/>
+      </id>
+      <id name="contactNumber">
+        <column name="NUMORDRE"/>
+      </id>
+      <basic name="contactTypeId">
+        <column name="TIPCONTACTE"/>
+      </basic>
+      <basic name="value">
+        <column name="CONTACTE"/>
+      </basic>
+      <basic name="comments">
+        <column name="OBSERVACIONS"/>
+      </basic>
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+    </attributes>
+  </entity>
+
+  <entity class="DBStreetType" name="DBStreetType">
+    <table name="NCL_SIGLASCARRER" />
+    <attributes>
+      <id name="streetTypeId">
+        <column name="CARSIG"/>
+      </id>
+      <basic name="description">
+        <column name="CARSIGDESC"/>
+      </basic>
+      <basic name="abbreviation">
+        <column name="CARSIGABR" />
+      </basic>
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+      <basic name="baixasw" />
+    </attributes>
+  </entity>
+    
+  <entity class="DBCountry" name="DBCountry">
+    <table name="NCL_PAIS"  />
+    <attributes>
+      <id name="countryId">
+        <column name="PAISCOD"/>
+      </id>
+      <basic name="name">
+        <column name="PAISDESC"/>
+      </basic>
+      <basic name="paisvnum">
+        <column name="PAISVNUM"/>
+      </basic>
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+      <basic name="baixasw" />
+    </attributes>
+  </entity>
+
+  <entity class="DBProvince" name="DBProvince">
+    <table name="NCL_PROVINCIA" />
+    <id-class class="DBProvincePK"/>
+    <attributes>
+      <id name="countryId">
+        <column name="PAISCOD"/>
+      </id>
+      <id name="provinceId">
+        <column name="PROVCOD"/>
+      </id>
+      <basic name="name">
+        <column name="PROVDESC"/>
+      </basic>
+      <basic name="provvnum" />
+      <basic name="autocod" />
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+      <basic name="baixasw" />
+
+      <many-to-one name="country" >
+        <join-column name="PAISCOD" referenced-column-name="PAISCOD"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+  <entity class="DBCity" name="DBCity">
+    <table name="NCL_MUNICIPI" />
+    <id-class class="DBCityPK"/>
+    <attributes>
+      <id name="countryId">
+        <column name="PAISCOD"/>
+      </id>
+      <id name="provinceId">
+        <column name="PROVCOD"/>
+      </id>
+      <id name="cityId">
+        <column name="MUNICOD"/>
+      </id>
+      <basic name="name">
+        <column name="MUNIDESC"/>
+      </basic>
+      <basic name="description">
+        <column name="MUNIDESC2"/>
+      </basic>
+      <basic name="munidc" />
+      <basic name="munivnum" />
+      <basic name="illavnum" />
+      <basic name="tramvnum" />
+      <basic name="comcod" />
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+      <basic name="baixasw" />
+      <basic name="municps" />
+
+      <many-to-one name="province" >
+        <join-column name="PAISCOD" referenced-column-name="PAISCOD"
+            insertable="false" updatable="false" />
+        <join-column name="PROVCOD" referenced-column-name="PROVCOD"
+             insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+  <entity class="DBStreet" name="DBStreet">
+    <table name="NCL_CARRER"  />
+    <id-class class="DBStreetPK"/>
+    <attributes>
+      <id name="countryId">
+        <column name="PAISCOD"/>
+      </id>
+      <id name="provinceId">
+        <column name="PROVCOD"/>
+      </id>
+      <id name="cityId">
+        <column name="MUNICOD"/>
+      </id>
+      <id name="streetId">
+        <column name="CARCOD"/>
+      </id>
+      <basic name="streetTypeId">
+        <column name="CARSIG"/>
+      </basic>
+      <basic name="particle">
+        <column name="CARPAR"/>
+      </basic>
+      <basic name="name">
+        <column name="CARDESC"/>
+      </basic>
+      <basic name="description">
+        <column name="CARDESC2"/>
+      </basic>
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+      <basic name="baixasw" />
+
+      <many-to-one name="city" >
+        <join-column name="PAISCOD" referenced-column-name="PAISCOD"
+            insertable="false" updatable="false" />
+        <join-column name="PROVCOD" referenced-column-name="PROVCOD"
+             insertable="false" updatable="false" />
+        <join-column name="MUNICOD" referenced-column-name="MUNICOD"
+            insertable="false" updatable="false" /> 
+      </many-to-one>
+
+      <many-to-one name="streetType">
+        <join-column name="CARSIG" referenced-column-name="CARSIG"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+  <entity class="DBAddress" name="DBAddress">
+    <table name="NCL_DOMICILI"  />
+    <attributes>
+      <id name="addressId">
+        <column name="DOMCOD"/>
+      </id>
+      <basic name="countryId">
+        <column name="PAISCOD" />
+      </basic>
+      <basic name="provinceId">
+        <column name="PROVCOD"/>
+      </basic>
+      <basic name="cityId">
+        <column name="MUNICOD"/>
+      </basic>
+      <basic name="streetId">
+        <column name="CARCOD"/>
+      </basic>
+      <basic name="wayId">
+        <column name="PSEUDOCOD"/>
+      </basic>
+      <basic name="addressTypeId">
+        <column name="DOMTIP"/>
+      </basic>
+      <basic name="gisReference">
+        <column name="GISCOD"/>
+      </basic>
+      <basic name="postalCode">
+        <column name="DOMCP"/>
+      </basic>
+      <basic name="postOfficeBox">
+        <column name="APCORREUS"/>
+      </basic>
+      <basic name="entranceHall">
+        <column name="DOMPTAL"/>
+      </basic>
+      <basic name="door">
+        <column name="DOMPTA"/>
+      </basic>
+      <basic name="comments">
+        <column name="DOMOBS"/>
+      </basic>
+      <basic name="stair">
+        <column name="DOMESC"/>
+      </basic>
+      <basic name="number1">
+        <column name="DOMNUM"/>
+      </basic>
+      <basic name="bis1">
+        <column name="DOMBIS"/>
+      </basic>
+      <basic name="number2">
+        <column name="DOMNUM2"/>
+      </basic>
+      <basic name="bis2">
+        <column name="DOMBIS2"/>
+      </basic>
+      <basic name="km">
+        <column name="DOMKM"/>
+      </basic>
+      <basic name="hm">
+        <column name="DOMHM"/>
+      </basic>
+      <basic name="block">
+        <column name="DOMBLOC"/>
+      </basic>
+      <basic name="floor">
+        <column name="DOMPIS"/>
+      </basic>
+      <basic name="domtloc" />
+      <basic name="stdapladd" />
+      <basic name="stdaplmod" />
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+      <basic name="baixasw" />
+
+      <many-to-one name="street" >
+        <join-column name="PAISCOD" referenced-column-name="PAISCOD"
+              insertable="false" updatable="false" />
+        <join-column name="PROVCOD" referenced-column-name="PROVCOD"
+              insertable="false" updatable="false" />
+        <join-column name="MUNICOD" referenced-column-name="MUNICOD"
+              insertable="false" updatable="false" /> 
+        <join-column name="CARCOD" referenced-column-name="CARCOD"
+              insertable="false" updatable="false" />             
+      </many-to-one>
+    </attributes>
+  </entity>
+
+  <entity class="DBPersonRepresentant"
+      name="DBPersonRepresentant">
+    <table name="NCL_REPRESENTANT" />
+    <id-class class="DBPersonRepresentantPK" />
+    <attributes>
+      <id name="personId">
+        <column name="PERSCOD"/>
+      </id>
+      <id name="representantId">
+        <column name="REPRCOD"/>
+      </id>
+      <basic name="representationTypeId">
+        <column name="REPRTIP"/>
+      </basic>
+      <basic name="comments">
+        <column name="REPRNOTARI"/>
+      </basic>
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="valdata" />
+      <many-to-one name="person">
+        <join-column name="PERSCOD"
+            referenced-column-name="PERSCOD" 
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <many-to-one name="representant">
+        <join-column name="REPRCOD"
+            referenced-column-name="PERSCOD" 
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+  <entity class="DBKernelListItem"
+      name="DBKernelListItem">
+    <table name="NCL_TAULA" />
+    <id-class class="DBKernelListItemPK" />
+    <attributes>
+      <id name="listId">
+        <column name="TCCODI0" />
+      </id>
+      <id name="itemId">
+        <column name="TCCODI1" />
+      </id>
+      <basic name="auxItemId">
+        <column name="TCCODI2" />
+      </basic>
+      <basic name="label">
+        <column name="TCDESC"/>
+      </basic>
+      <basic name="description">
+        <column name="TCDESC2"/>
+      </basic>
+      <basic name="tcqual" />
+      <basic name="tcvnum" />
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+    </attributes>
+  </entity>
+
+
+  <entity class="DBFotoPersona" name="FotoPersona" >
+    <attributes>
+      <id name="personId" />
+      <basic name="name" />
+      <basic name="firstSurname" />
+      <basic name="secondSurname" />
+      <basic name="nif" />
+      <basic name="personAddressNumber" />
+      <basic name="domicili" />
+      <basic name="personType" />
+    </attributes>
+  </entity>
+
+
+
+  <entity name="Interessat" class="com.audifilm.matrix.cases.service.DBInteressat" >
+    <table name="SDE_INTERESSAT"  />
+    <id-class class="com.audifilm.matrix.cases.service.DBInteressatPK" />
+    <attributes>
+      <id name="caseId" >
+        <column name="SDENUM"  nullable="false" updatable="false" />
+      </id>
+      <id name="personId" >
+        <column name="PERSCOD" nullable="false" updatable="false" />
+      </id>
+      <id name="personAddressNumber" >
+        <column name="PERSND" updatable="false" />
+      </id>
+      <basic name="representantId" >
+        <column name="REPRCOD" nullable="true" updatable="false"/>
+      </basic>
+      <basic name="representantAddressNumber" >
+        <column name="REPRND" updatable="false" />
+      </basic>
+      <basic name="personName" >
+        <column name="PERSNOM" updatable="false" />
+      </basic>
+      <basic name="personSurname1" >
+        <column name="PERSCOG1" updatable="false" />
+      </basic>
+      <basic name="personSurname2" >
+        <column name="PERSCOG2" updatable="false" />
+      </basic>
+      <basic name="addressDescription" >
+        <column name="DOMICILI" updatable="false" />
+      </basic>
+      <basic name="representantName" >
+        <column name="REPNOM" updatable="false" />
+      </basic>
+      <basic name="representantSurname1" >
+        <column name="REPCOG1" updatable="false" />
+      </basic>
+      <basic name="representantSurname2" >
+        <column name="REPCOG2" updatable="false" />
+      </basic>
+      <basic name="representantAddressDescription" >
+        <column name="REPDOMI" updatable="false" />
+      </basic>
+      <basic name="personNif" >
+        <column name="PERSNIF" updatable="false" />
+      </basic>
+      <basic name="representantNif" >
+        <column name="REPNIF" updatable="false" />
+      </basic>
+      <basic name="notisw"  >
+        <column name="NOTISW" updatable="false"/>
+      </basic>
+      <basic name="motiu"  >
+        <column name="MOTIU" updatable="false"/>
+      </basic>
+      <basic name="trecId"  >
+        <column name="TRECCOD" updatable="false"/>
+      </basic>
+      <basic name="licitador"  >
+        <column name="LICITADOR" updatable="false"/>
+      </basic>
+      <basic name="datos"  >
+        <column name="DATOS" updatable="false"/>
+      </basic>
+      <basic name="fcontacn"  >
+        <column name="FCONTACN" updatable="false"/>
+      </basic>
+      <basic name="numconordre"  >
+        <column name="NUMCONORDRE" updatable="false"/>
+      </basic>
+      <basic name="valnotint"  >
+        <column name="VALNOTINT" updatable="false" />
+      </basic>
+      <basic name="plataforma"  >
+        <column name="PLATAFORMA" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+
+      <transient name="fotoPersonaId" />
+      <transient name="fotoRepresentantId" />
+      <transient name="fotoAdrecaPersonaId" />
+<!--      <transient name="fotoAdrecaRepresentantId" />-->
+
+    </attributes>
+  </entity>
+    
+<entity class="com.audifilm.matrix.cases.service.DBCase" name="Case">
+    <table name="SDE_EXPEDIENT" />
+    <attributes>
+      <id name="caseId">
+        <column name="SDENUM" />
+      </id>
+      <basic name="caseTypeId">
+        <column name="TEXPCOD" />
+      </basic>
+      <basic name="caseTypeNum">
+        <column name="SDENUMTEXP" />
+      </basic>
+      <basic name="sdetext">
+        <column name="SDETEXT" />
+      </basic>
+      <basic name="assumpte">
+        <column name="DESCASSUMPTE" />
+      </basic>
+      <basic name="subassumpte">
+        <column name="DESCSUBASSUMPTE" />
+      </basic>
+      <basic name="registryDate" >
+        <column name="sdedreg" />
+      </basic>
+      <basic name="registryTime" >
+        <column name="sdehreg" />
+      </basic>
+
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+
+      <basic name="extrcod" >
+        <column name="EXTRCOD" />
+      </basic>
+      <basic name="arxsigtop" >
+        <column name="ARXSIGTOP" />
+      </basic>
+      <basic name="identval" >
+        <column name="IDENTVAL" />
+      </basic>
+      <basic name="idiomacod" >
+        <column name="IDIOMACOD" />
+      </basic>
+      <basic name="eventexpr" >
+        <column name="EVENTEXPR" />
+      </basic>
+      <basic name="persId" >
+        <column name="PERSCOD" />
+      </basic>
+      <basic name="persnd" >
+        <column name="PERSND" />
+      </basic>
+      <basic name="reprId" >
+        <column name="REPRCOD" />
+      </basic>
+      <basic name="reprnd" >
+        <column name="REPRND" />
+      </basic>
+      <basic name="addressId" >
+        <column name="SDEDOMCOD" />
+      </basic>
+      <basic name="sderel" >
+        <column name="SDEREL" />
+      </basic>
+      <basic name="resracodec" >
+        <column name="RESRACODEC" />
+      </basic>
+      <basic name="resrorg" >
+        <column name="RESRORG" />
+      </basic>
+      <basic name="resrdata" >
+        <column name="RESRDATA" />
+      </basic>
+      <basic name="treccod" >
+        <column name="TRECCOD" />
+      </basic>
+      <basic name="persnom" >
+        <column name="PERSNOM" />
+      </basic>
+      <basic name="perscog1" >
+        <column name="PERSCOG1" />
+      </basic>
+      <basic name="perscog2" >
+        <column name="PERSCOG2" />
+      </basic>
+      <basic name="domicili" >
+        <column name="DOMICILI" />
+      </basic>
+      <basic name="repnom" >
+        <column name="REPNOM" />
+      </basic>
+      <basic name="repcog1" >
+        <column name="REPCOG1" />
+      </basic>
+      <basic name="repcog2" >
+        <column name="REPCOG2" />
+      </basic>
+      <basic name="repdomi" >
+        <column name="REPDOMI" />
+      </basic>
+      <basic name="persnif" >
+        <column name="PERSNIF" />
+      </basic>
+      <basic name="repnif" >
+        <column name="REPNIF" />
+      </basic>
+      <basic name="assumcod" >
+        <column name="ASSUMCOD" />
+      </basic>
+      <basic name="subassumcod" >
+        <column name="SUBASSUMCOD" />
+      </basic>
+      <basic name="sdenumcont" >
+        <column name="SDENUMCONT" />
+      </basic>
+      <basic name="fcontacn" >
+        <column name="FCONTACN" />
+      </basic>
+      <basic name="numconordre" >
+        <column name="NUMCONORDRE" />
+      </basic>
+      <basic name="tipocod" >
+        <column name="TIPOCOD" />
+      </basic>
+      <basic name="licitacion" >
+        <column name="LICITACION" />
+      </basic>
+      <basic name="transcod" >
+        <column name="TRANSCOD" />
+      </basic>
+      <basic name="transcodarea" >
+        <column name="TRANSCODAREA" />
+      </basic>
+      <basic name="assumcodorg" >
+        <column name="ASSUMCODORG" />
+      </basic>
+      <basic name="subassumcodorg" >
+        <column name="SUBASSUMCODORG" />
+      </basic>
+      <basic name="seccod" >
+        <column name="SECCOD" />
+      </basic>
+      <basic name="subseccod" >
+        <column name="SUBSECCOD" />
+      </basic>
+      <basic name="sercod" >
+        <column name="SERCOD" />
+      </basic>
+      <basic name="subsercod" >
+        <column name="SUBSERCOD" />
+      </basic>
+      <basic name="plataforma" >
+        <column name="PLATAFORMA" />
+      </basic>
+      <transient name="caseStates" />
+<!--     <transient name="properties" /> -->
+      <transient name="fotoPersonaId" />
+      <transient name="fotoRepresentantId" />
+      <transient name="fotoAdrecaPersonaId" />
+      <transient name="fotoAdrecaRepresentantId" />
+    </attributes>
+  </entity>
+
+  <entity class="com.audifilm.matrix.kernel.service.DBPersonDocument"
+    name="DBPersonDocument">
+    <table name="APL_DOCSAPL"  />
+    <id-class class="DBPersonDocumentPK" />
+    <attributes>
+      <id name="aplcod" >
+        <column name="APLCOD" />
+      </id>
+      <id name="docorigen" >
+        <column name="DOCORIGEN" />
+      </id>
+      <id name="doccod" >
+        <column name="DOCCOD" />
+      </id>
+      <id name="modelcod" >
+        <column name="MODELCOD" />
+      </id>
+      <id name="docnompc" >
+        <column name="DOCNOMPC" />
+      </id>
+      <id name="personId" >
+        <column name="IDENTIFICADOR" />
+      </id>
+      <basic name="docId" >
+        <column name="ID_NREG"/>
+      </basic>
+      <basic name="caseId" >
+        <column name="SDENUM"  />
+      </basic>
+      <basic name="doctip" >
+        <column name="DOCTIP"  />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR"  />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD"  />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR"  />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD"  />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR"  />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD"  />
+      </basic>
+      <basic name="estatsig" >
+        <column name="ESTATSIG"  />
+      </basic>
+      <basic name="motiurebu" >
+        <column name="MOTIUREBU"  />
+      </basic>
+      <basic name="descriptor" >
+        <column name="DESCRIPTOR"  />
+      </basic>
+      <basic name="guid" >
+        <column name="GUID"  />
+      </basic>
+      <basic name="eliminat" >
+        <column name="ELIMINAT"  />
+      </basic>
+      <basic name="texpcod" >
+        <column name="TEXPCOD"  />
+      </basic>
+      <basic name="observacions" >
+        <column name="OBSERVACIONS"  />
+      </basic>
+      <basic name="docprotect" >
+        <column name="DOCPROTECT"  />
+      </basic>
+      <basic name="acciogen" >
+        <column name="ACCIOGEN"  />
+      </basic>
+      <basic name="estatgen" >
+        <column name="ESTATGEN"  />
+      </basic>
+      <basic name="estatenv" >
+        <column name="ESTATENV"  />
+      </basic>
+      <basic name="orgcod" >
+        <column name="ORGCOD"  />
+      </basic>
+      <basic name="doctitol" >
+        <column name="DOCTITOL"  />
+      </basic>
+      <basic name="datasessio" >
+        <column name="DATASESSIO"  />
+      </basic>
+      <basic name="fechanoti" >
+        <column name="FECHANOTI"  />
+      </basic>
+      <basic name="docnum" >
+        <column name="DOCNUM"  />
+      </basic>
+      <basic name="estatcod" >
+        <column name="ESTATCOD"  />
+      </basic>
+      <basic name="perscod" >
+        <column name="PERSCOD"  />
+      </basic>
+      <basic name="persnd" >
+        <column name="PERSND"  />
+      </basic>
+      <basic name="estatnot" >
+        <column name="ESTATNOT"  />
+      </basic>
+      <basic name="docnomprop" >
+        <column name="DOCNOMPROP"  />
+      </basic>
+      <basic name="propcod" >
+        <column name="PROPCOD"  />
+      </basic>
+      <basic name="carrecdesc" >
+        <column name="CARRECDESC"  />
+      </basic>
+      <basic name="transcod" >
+        <column name="TRANSCOD"  />
+      </basic>
+      <basic name="treccod" >
+        <column name="TRECCOD"  />
+      </basic>
+
+    </attributes>
+  </entity>
+
+  <entity class="com.audifilm.matrix.kernel.service.DBPersonPerson"
+    name="DBPersonPerson">
+    <table name="NCL_PERSONPERSON" />
+    <attributes>
+      <id name="personPersonId">
+        <column name="PERSONPERSONID" />
+        <generated-value strategy="TABLE" generator="NCL_PERSONPERSON"/>
+        <table-generator name="NCL_PERSONPERSON" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>
+      </id>
+      <basic name="personId">
+        <column name="PERSONID" />
+      </basic>
+      <basic name="relPersonId">
+          <column name="RELPERSONID" />
+      </basic>
+      <basic name="personPersonTypeId">
+          <column name="PERSONPERSONTYPEID" />
+      </basic>
+      <basic name="comments">
+          <column name="COMMENTS" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="com.audifilm.matrix.kernel.service.DBRoom" name="DBRoom">
+    <table name="NCL_SALA" />
+    <id-class class="com.audifilm.matrix.kernel.service.DBRoomPK" />
+    <attributes>
+      <id name="roomId">
+        <column name="SALACOD" />
+      </id>
+      <id name="addressId">
+        <column name="DOMCOD" />
+      </id>
+      <basic name="name">
+          <column name="SALADESC" />
+      </basic>
+      <basic name="capacity">
+          <column name="CAPACITAT" />
+      </basic>
+      <basic name="roomTypeId">
+          <column name="ROOMTYPEID" />
+      </basic>
+      <basic name="area">
+          <column name="SUPERFICIE" />
+      </basic>
+      <basic name="phone">
+          <column name="TELEFON" />
+      </basic>
+      <basic name="fax">
+          <column name="FAX" />
+      </basic>
+      <basic name="email">
+          <column name="EMAIL" />
+      </basic>
+      <basic name="schedule">
+          <column name="HORARI" />
+      </basic>
+      <basic name="comments">
+          <column name="OBSERV" />
+      </basic>
+      <basic name="spaceId">
+          <column name="SPACEID" />
+      </basic>      
+      <many-to-one name="address">
+        <join-column name="DOMCOD" referenced-column-name="DOMCOD"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+</entity-mappings>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <managed-bean>
+    <managed-bean-name>newBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.news.web.NewBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>newSearchBySectionBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.news.web.NewSearchBySectionBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>newSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.news.web.NewSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>newMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.news.web.NewMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>newSectionsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.news.web.NewSectionsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>newDocumentsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.news.web.NewDocumentsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>newDetailsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.news.web.NewDetailsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    
+    <navigation-case>
+      <from-outcome>new_search_by_section</from-outcome>
+      <to-view-id>/common/news/new_search_by_section.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>new_search</from-outcome>
+      <to-view-id>/common/news/new_search.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>new_main</from-outcome>
+      <to-view-id>/common/news/new_main.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>new_sections</from-outcome>
+      <to-view-id>/common/news/new_sections.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>new_documents</from-outcome>
+      <to-view-id>/common/news/new_documents.xhtml</to-view-id>
+    </navigation-case>
+    
+    <navigation-case>
+      <from-outcome>new_details</from-outcome>
+      <to-view-id>/common/news/new_details.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>new_inaccessible</from-outcome>
+      <to-view-id>/common/news/new_inaccessible.xhtml</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+</faces-config>

@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="feed"
+  namespace="http://feed.matrix.org/"
+  title="Gestor de feeds"
+  wsdlLocation="../services/feed?wsdl"
+  service="FeedManagerService"
+  port="FeedManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Jordi Lopez">
+
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />    
+  </imports>
+
+  <types>
+    
+    <entity name="Folder">
+      <identifier name="folderId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="iconDocId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="alias" type="xs:string" minOccurs="0">
+      </property>
+      <property name="parentFolderId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="defaultEntryCount" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+    
+    <entity name="Feed">
+      <identifier name="feedId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="url" type="xs:string" minOccurs="0">
+      </property>
+      <property name="internalUrl" type="xs:string" minOccurs="0">
+      </property>
+      <property name="type" type="xs:string" minOccurs="0">
+      </property>
+      <property name="refreshInterval" type="xs:string" minOccurs="0">
+      </property>
+      <property name="refreshDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="entryLifeSpan" type="xs:string" minOccurs="0">
+      </property>
+      <property name="iconUrl" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+    
+    <entity name="FeedFolder">
+      <identifier name="feedFolderId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="feedId" type="xs:string" minOccurs="0"
+        references="feed:Feed">
+      </property>
+      <property name="folderId" type="xs:string" minOccurs="0"
+        references="feed:Folder">
+      </property>
+    </entity>    
+
+    <entity name="Entry">
+      <identifier name="entryId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="feedId" type="xs:string" minOccurs="0"
+        references="feed:Feed">
+      </property>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="url" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="pubDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="hash" type="xs:string" minOccurs="0">
+      </property>
+      <property name="visible" type="xs:boolean">
+      </property>
+    </entity>
+
+    <struct name="FeedFolderView">
+      <identifier name="feedFolderId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="feedId" type="xs:string" minOccurs="0"
+        references="feed:Feed">
+      </property>
+      <property name="folderId" type="xs:string" minOccurs="0"
+        references="feed:Folder">
+      </property>
+      <property name="folderName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="feedName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="feedUrl" type="xs:string" minOccurs="0">
+      </property>
+      <property name="feedType" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="FolderFilter">
+      <property name="folderId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="feed:Folder">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="alias" type="xs:string" minOccurs="0">
+      </property>
+      <property name="parentFolderId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="FeedFilter">
+      <property name="feedId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="feed:Feed">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="url" type="xs:string" minOccurs="0">
+      </property>
+      <property name="type" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="FeedFolderFilter">
+      <property name="feedId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="feed:Feed">
+      </property>
+      <property name="folderId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="feed:Folder">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="EntryFilter">
+      <property name="entryId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="feed:Entry">
+      </property>
+      <property name="feedId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="feed:Feed">
+      </property>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="url" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startPubDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endPubDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="excludeInvisible" type="xs:boolean">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+  </types>
+
+  <operations>
+
+    <operation name="findFolders">
+      <parameter name="filter" type="feed:FolderFilter">
+      </parameter>
+      <response name="folder" type="feed:Folder" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countFolders">
+      <parameter name="filter" type="feed:FolderFilter">
+      </parameter>
+      <response name="folderCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="loadFolder">
+      <parameter name="folderId" type="xs:string">
+      </parameter>
+      <response name="folder" type="feed:Folder">
+      </response>
+    </operation>
+
+    <operation name="storeFolder">
+      <parameter name="folder" type="feed:Folder">
+      </parameter>
+      <response name="storedFolder" type="feed:Folder">
+      </response>
+    </operation>
+
+    <operation name="removeFolder">
+      <parameter name="folderId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findFeeds">
+      <parameter name="filter" type="feed:FeedFilter">
+      </parameter>
+      <response name="feed" type="feed:Feed" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countFeeds">
+      <parameter name="filter" type="feed:FeedFilter">
+      </parameter>
+      <response name="feedCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="loadFeed">
+      <parameter name="feedId" type="xs:string">
+      </parameter>
+      <response name="feed" type="feed:Feed">
+      </response>
+    </operation>
+
+    <operation name="storeFeed">
+      <parameter name="feed" type="feed:Feed">
+      </parameter>
+      <response name="storedFeed" type="feed:Feed">
+      </response>
+    </operation>
+
+    <operation name="removeFeed">
+      <parameter name="feedId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countFeedFolders">
+      <parameter name="filter" type="feed:FeedFolderFilter">
+      </parameter>
+      <response name="feedFolderCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findFeedFolders">
+      <parameter name="filter" type="feed:FeedFolderFilter">
+      </parameter>
+      <response name="feedFolder" type="feed:FeedFolder"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadFeedFolder">
+      <parameter name="feedFolderId" type="xs:string">
+      </parameter>
+      <response name="feedFolder" type="feed:FeedFolder">
+      </response>
+    </operation>
+
+    <operation name="storeFeedFolder">
+      <parameter name="feedFolder" type="feed:FeedFolder">
+      </parameter>
+      <response name="storedFeedFolder" type="feed:FeedFolder">
+      </response>
+    </operation>
+
+    <operation name="removeFeedFolder">
+      <parameter name="feedFolderId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findEntries">
+      <parameter name="filter" type="feed:EntryFilter">
+      </parameter>
+      <response name="entry" type="feed:Entry" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countEntries">
+      <parameter name="filter" type="feed:EntryFilter">
+      </parameter>
+      <response name="entryCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="loadEntry">
+      <parameter name="entryId" type="xs:string">
+      </parameter>
+      <response name="entry" type="feed:Entry">
+      </response>
+    </operation>
+
+    <operation name="storeEntry">
+      <parameter name="entry" type="feed:Entry">
+      </parameter>
+      <response name="storedEntry" type="feed:Entry">
+      </response>
+    </operation>
+
+    <operation name="removeEntry">
+      <parameter name="entryId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+    
+    <operation name="findFeedFolderViews">
+      <parameter name="filter" type="feed:FeedFolderFilter">
+      </parameter>
+      <response name="feedFolderView" type="feed:FeedFolderView"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+  </operations>
+
+</module>

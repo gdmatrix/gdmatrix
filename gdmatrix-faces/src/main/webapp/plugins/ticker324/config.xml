@@ -1,0 +1,9 @@
+<config>
+	<layout speed="1" steps="1" refresh="1" mask="93" />
+	<content url="http://www.tv3.cat/324/ticker/stc/324_ticker.xml" />
+	<links url="http://www.3cat24.cat/noticia/%%noticia_idint%%/" />
+	<font fontFamily="Arial" color="#000000" fontSize="13" fontWeight="bold" /> 
+	<background url="http://www.tv3.cat/324/ticker/swf/fondo.swf"/>
+	<separator url="http://www.tv3.cat/324/ticker/swf/vect324.swf"/>
+	<finalize text="www.324tv.com" link="http://www.324tv.com" />
+</config>

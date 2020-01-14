@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+  <description>Classification</description>
+  <package>org.santfeliu.classif.service</package>
+
+  <named-query name="findClassPeriodAtDateTime">
+    <query>
+      SELECT cp FROM ClassPeriod cp
+      WHERE cp.classId = :classId
+      AND cp.startDateTime &lt;= :dateTime
+      AND cp.endDateTime &gt; :dateTime
+    </query>
+  </named-query>
+
+  <named-query name="findSubClassPeriods">
+    <query>
+      SELECT cp FROM ClassPeriod cp
+      WHERE cp.superClassId = :superClassId
+    </query>
+  </named-query>
+
+  <named-query name="removeClassPeriods">
+    <query>
+      DELETE FROM ClassPeriod cp
+      WHERE cp.classId = :classId
+    </query>
+  </named-query>
+
+  <named-query name="countClasses">
+    <query>
+      SELECT count(c) FROM Class c, ClassPeriod cp
+      WHERE c.classId = cp.classId
+      AND (cp.classId = :classId OR :classId IS NULL)
+      AND (UPPER(cp.title) LIKE :title OR :title IS NULL)
+      AND (cp.superClassId = :superClassId OR :superClassId IS NULL)
+      AND (UPPER(cp.description) LIKE :description OR :description IS NULL)
+      AND (cp.startDateTime &lt;= :endDateTime OR :endDateTime IS NULL)
+      AND (cp.endDateTime IS NULL OR cp.endDateTime &gt; :startDateTime
+        OR :startDateTime IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findClasses">
+    <query>
+      SELECT c, cp FROM Class c, ClassPeriod cp
+      WHERE c.classId = cp.classId
+      AND (cp.classId = :classId OR :classId IS NULL)
+      AND (UPPER(cp.title) LIKE :title OR :title IS NULL)
+      AND (cp.superClassId = :superClassId OR :superClassId IS NULL)
+      AND (UPPER(cp.description) LIKE :description OR :description IS NULL)
+      AND (cp.startDateTime &lt;= :endDateTime OR :endDateTime IS NULL)
+      AND (cp.endDateTime IS NULL OR cp.endDateTime &gt; :startDateTime
+        OR :startDateTime IS NULL)
+      ORDER BY c.classId, cp.startDateTime
+    </query>
+  </named-query>
+
+  <named-query name="listModifiedClasses">
+    <query>
+      SELECT c.classId FROM Class c
+      WHERE
+        c.changeDateTime &gt;= :dateTime1 AND
+        c.changeDateTime &lt; :dateTime2
+    </query>
+  </named-query>
+
+  <named-query name="cropPreviousClassPeriod">
+    <query>
+      UPDATE ClassPeriod cp SET cp.endDateTime = :dateTime
+      WHERE
+        cp.classId = :classId AND
+        cp.startDateTime &lt; :dateTime AND
+        cp.endDateTime &gt; :dateTime
+    </query>
+  </named-query>
+
+  <named-query name="cropNextClassPeriod">
+    <query>
+      UPDATE ClassPeriod cp SET cp.startDateTime = :dateTime
+      WHERE
+        cp.classId = :classId AND
+        cp.startDateTime &lt; :dateTime AND
+        cp.endDateTime &gt; :dateTime
+    </query>
+  </named-query>
+
+  <named-query name="removeEnvelopedClassPeriods">
+    <query>
+      DELETE FROM ClassPeriod cp
+      WHERE
+        cp.classId = :classId AND
+        cp.startDateTime &gt;= :startDateTime AND
+        cp.endDateTime &lt;= :endDateTime
+    </query>
+  </named-query>
+
+  <named-query name="findEnvelopingClassPeriod">
+    <query>
+      SELECT cp FROM ClassPeriod cp
+      WHERE
+        cp.classId = :classId AND
+        cp.startDateTime &lt; :startDateTime AND
+        cp.endDateTime &gt; :endDateTime
+    </query>
+  </named-query>
+
+  <named-query name="findOverlappedClassPeriods">
+    <query>
+      SELECT cp FROM ClassPeriod cp
+      WHERE
+        cp.classId = :classId AND
+        cp.startDateTime &lt; :endDateTime AND
+        cp.endDateTime &gt; :startDateTime
+    </query>
+  </named-query>
+
+  <named-query name="findOverlappedSubClassPeriods">
+    <query>
+      SELECT cp FROM ClassPeriod cp
+      WHERE
+        cp.superClassId = :superClassId AND
+        cp.startDateTime &lt; :endDateTime AND
+        cp.endDateTime &gt; :startDateTime
+    </query>
+  </named-query>
+
+  <named-query name="findClassPeriodPropertyValues">
+    <query>
+      SELECT pv FROM ClassPeriodPropertyValue pv
+      WHERE
+        pv.periodId = :periodId
+      ORDER BY pv.name ASC, pv.index ASC
+    </query>
+  </named-query>
+
+  <named-query name="incrementCounter">
+    <query>
+      UPDATE Counter c SET c.value = c.value + 1
+      WHERE
+        c.name = :name
+    </query>
+  </named-query>
+
+  <entity class="org.santfeliu.classif.service.DBClass" name="Class">
+    <table name="CLS_CLASS" />
+    <attributes>
+      <id name="classId">
+        <column name="CLASSID" />
+      </id>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.classif.service.DBClassPeriod" name="ClassPeriod">
+    <table name="CLS_CLASSHISTORY" />
+    <id-class class="org.santfeliu.classif.service.DBClassPeriodPK" />
+    <attributes>
+      <id name="classId">
+        <column name="CLASSID" />
+      </id>
+      <id name="startDateTime">
+        <column name="STARTDT" />
+      </id>
+      <basic name="endDateTime">
+        <column name="ENDDT" />
+      </basic>
+      <basic name="classTypeId">
+        <column name="CLASSTYPEID" />
+      </basic>
+      <basic name="title">
+        <column name="TITLE" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" />
+      </basic>
+      <basic name="location">
+        <column name="LOCATION" />
+      </basic>
+      <basic name="offlineDownloadValue">
+        <column name="OFFLINEDOWNLOAD" />
+      </basic>
+      <basic name="superClassId">
+        <column name="SUPERCLASSID" />
+      </basic>
+      <basic name="accessControlUserId">
+        <column name="ACUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" />
+      </basic>
+      <basic name="changeReason">
+        <column name="CHANGEREASON" />
+      </basic>
+      <basic name="periodId">
+        <column name="PERIODID" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.classif.service.DBClassPeriodPropertyValue"
+    name="ClassPeriodPropertyValue">
+    <table name="CLS_CLASSHISTORYPROP" />
+    <id-class class="org.santfeliu.classif.service.DBClassPeriodPropertyValuePK" />
+    <attributes>
+      <id name="periodId">
+        <column name="PERIODID" />
+      </id>
+      <id name="name">
+        <column name="PROPNAME" />
+      </id>
+      <id name="index">
+        <column name="PROPINDEX" />
+      </id>
+      <basic name="value">
+        <column name="PROPVALUE" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.classif.service.DBCounter" name="Counter">
+    <table name="TABLESEQ" />
+    <attributes>
+      <id name="name">
+        <column name="COUNTER" />
+      </id>
+      <basic name="value">
+        <column name="VALUE" />
+      </basic>
+    </attributes>
+  </entity>
+
+</entity-mappings>
+

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+  <description>Dictionary</description>
+  <package>org.santfeliu.dic.service</package>
+
+  <named-query name="findPropertyDefinition">
+    <query>
+      SELECT pd FROM PropertyDefinition pd 
+      WHERE pd.typeId = :typeId
+      ORDER BY pd.name
+    </query>
+  </named-query>
+
+  <named-query name="findAccessControl">
+    <query>
+      SELECT ac FROM AccessControl ac
+      WHERE ac.typeId = :typeId
+      ORDER BY ac.roleId, ac.action
+    </query>
+  </named-query>
+
+  <named-query name="removePropertyDefinition">
+    <query>
+      DELETE FROM PropertyDefinition pd
+      WHERE pd.typeId = :typeId
+    </query>
+  </named-query>
+
+  <named-query name="removeAccessControl">
+    <query>
+      DELETE FROM AccessControl ac
+      WHERE ac.typeId = :typeId
+    </query>
+  </named-query>
+
+  <named-query name="isDerivedType">
+    <query>
+      SELECT count(t) FROM Type t
+      WHERE t.superTypeId = :typeId AND
+      (t.removed IS NULL OR UPPER(t.removed) = 'F')
+    </query>
+  </named-query>
+
+  <named-query name="countTypes">
+    <query>
+      SELECT count(t) FROM Type t
+      WHERE
+      (t.typeId LIKE :typeId ESCAPE '\' OR :typeId IS NULL) AND
+      (t.superTypeId = :superTypeId OR :superTypeId IS NULL OR
+       (:superTypeId = '-' AND t.superTypeId IS NULL)) AND
+      (UPPER(t.description) LIKE :description OR :description IS NULL) AND
+      (t.changeDateTime >= :minChangeDateTime OR :minChangeDateTime IS NULL) AND
+      (t.changeDateTime &lt;= :maxChangeDateTime OR :maxChangeDateTime IS NULL) AND
+      (t.removed IS NULL OR UPPER(t.removed) = 'F') AND
+      (:typePath IS NULL OR t.typePath LIKE :typePath) AND
+      (:action IS NULL OR
+        EXISTS (SELECT acl.typeId from AccessControl acl WHERE
+        acl.typeId = t.typeId AND acl.action = :action
+        AND LOCATE(CONCAT(',', CONCAT(acl.roleId, ',')), :userRoles) > 0))
+    </query>
+  </named-query>
+
+  <named-query name="findTypes">
+    <query>
+      SELECT t FROM Type t
+      WHERE
+      (t.typeId LIKE :typeId ESCAPE '\' OR :typeId IS NULL) AND
+      (t.superTypeId = :superTypeId OR :superTypeId IS NULL OR
+       (:superTypeId = '-' AND t.superTypeId IS NULL)) AND
+      (UPPER(t.description) LIKE :description OR :description IS NULL) AND
+      (t.changeDateTime >= :minChangeDateTime OR :minChangeDateTime IS NULL) AND
+      (t.changeDateTime &lt; :maxChangeDateTime OR :maxChangeDateTime IS NULL) AND
+      (t.removed IS NULL OR UPPER(t.removed) = 'F') AND
+      (:typePath IS NULL OR t.typePath LIKE :typePath) AND
+      (:action IS NULL OR
+        EXISTS (SELECT acl.typeId from AccessControl acl WHERE
+        acl.typeId = t.typeId AND acl.action = :action
+        AND LOCATE(CONCAT(',', CONCAT(acl.roleId, ',')), :userRoles) > 0))
+      ORDER BY t.description
+    </query>
+  </named-query>
+
+  <named-query name="listModifiedTypes">
+    <query>
+      SELECT t.typeId FROM Type t
+      WHERE
+        t.changeDateTime &gt;= :dateTime1 AND t.changeDateTime &lt; :dateTime2
+    </query>
+  </named-query>
+
+  <named-query name="changeTypePaths">
+    <query>
+      UPDATE Type t 
+        SET t.typePath =
+        concat(:newTypePath, substring(t.typePath,
+          length(:oldTypePath) + 1,
+          length(t.typePath) - length(:oldTypePath)))
+      WHERE t.typePath LIKE :oldTypePathPattern ESCAPE '\'
+    </query>
+  </named-query>
+
+  <named-query name="isDerivedEnumType">
+    <query>
+      SELECT count(et)
+      FROM EnumType et
+      WHERE et.superEnumTypeId = :enumTypeId
+    </query>
+  </named-query>
+
+  <named-query name="countEnumTypes">
+    <query>
+      SELECT COUNT(et)
+      FROM EnumType et
+      WHERE (UPPER(et.name) LIKE :name OR :name IS NULL)
+        AND (et.superEnumTypeId = :superEnumTypeId OR :superEnumTypeId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(et.enumTypeId, ',')), :enumTypeId) > 0) OR :enumTypeId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findEnumTypes">
+    <query>
+      SELECT et
+      FROM EnumType et
+      WHERE (UPPER(et.name) LIKE :name OR :name IS NULL)
+        AND (et.superEnumTypeId = :superEnumTypeId OR :superEnumTypeId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(et.enumTypeId, ',')), :enumTypeId) > 0) OR :enumTypeId IS NULL)
+      ORDER BY et.enumTypeId
+    </query>
+  </named-query>
+
+  <named-query name="countEnumTypeItems">
+    <query>
+      SELECT COUNT(i)
+      FROM EnumTypeItem i
+      WHERE (i.enumTypeId = :enumTypeId OR :enumTypeId IS NULL)
+        AND (UPPER(i.label) LIKE :label OR :label IS NULL)
+        AND (UPPER(i.description) LIKE :description OR :description IS NULL)
+        AND (i.value = :value OR :value IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findEnumTypeItems">
+    <query>
+      SELECT i
+      FROM EnumTypeItem i
+      WHERE (i.enumTypeId = :enumTypeId OR :enumTypeId IS NULL)
+        AND (UPPER(i.label) LIKE :label OR :label IS NULL)
+        AND (UPPER(i.description) LIKE :description OR :description IS NULL)
+        AND (i.value = :value OR :value IS NULL)
+      ORDER BY i.enumTypeId,i.index
+    </query>
+  </named-query>
+
+  <named-query name="removeEnumTypeItems">
+    <query>
+      DELETE FROM EnumTypeItem i
+      WHERE i.enumTypeId = :enumTypeId
+    </query>
+  </named-query>
+
+  <named-query name="getMaxIndexInEnumType">
+    <query>
+      SELECT MAX(i.index)
+      FROM EnumTypeItem i
+      WHERE i.enumTypeId = :enumTypeId
+    </query>
+  </named-query>
+
+  <named-query name="shiftIndexesInEnumType">
+    <query>
+      UPDATE EnumTypeItem i
+      SET i.index = i.index + :increment
+      WHERE i.enumTypeId = :enumTypeId
+        AND (i.index &gt;= :minIndex OR :minIndex IS NULL)
+        AND (i.index &lt;= :maxIndex OR :maxIndex IS NULL)
+    </query>
+  </named-query>
+
+  <entity class="org.santfeliu.dic.service.DBType" name="Type">
+    <table name="DIC_TYPE" />
+    <attributes>
+      <id name="typeId">
+        <column name="TYPEID" />
+      </id>
+      <basic name="superTypeId">
+        <column name="SUPERTYPEID" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" />
+      </basic>
+      <basic name="instantiableValue">
+        <column name="INSTANTIABLE" />
+      </basic>
+      <basic name="restrictedValue">
+        <column name="RESTRICTED" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="MODIFYDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="MODIFYUSERID" />
+      </basic>
+      <basic name="removed">
+        <column name="REMOVED" />
+      </basic>
+      <basic name="typePath">
+        <column name="TYPEPATH" />
+      </basic>
+      <basic name="detail">
+        <column name="DETAIL" />
+      </basic>
+      <transient name="instantiable" />
+      <transient name="restricted" />
+      <transient name="propertyDefinition" />
+      <transient name="accessControl" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.dic.service.DBPropertyDefinition"
+    name="PropertyDefinition">
+    <table name="DIC_PROPDEF" />
+    <id-class class="org.santfeliu.dic.service.DBPropertyDefinitionPK" />
+    <attributes>
+      <id name="typeId">
+        <column name="TYPEID" />
+      </id>
+      <id name="name">
+        <column name="PROPNAME" />
+      </id>
+      <basic name="description">
+        <column name="DESCRIPTION" />
+      </basic>
+      <basic name="typeValue">
+        <column name="PROPTYPE" />
+      </basic>
+      <basic name="enumTypeId">
+        <column name="ENUMTYPEID" />
+      </basic>
+      <basic name="size">
+        <column name="PROPSIZE" />
+      </basic>
+      <basic name="minOccurs">
+        <column name="MINOCCURS" />
+      </basic>
+      <basic name="maxOccurs">
+        <column name="MAXOCCURS" />
+      </basic>
+      <basic name="defaultValue">
+        <column name="DEFAULTVALUE" />
+      </basic>
+      <basic name="hiddenValue">
+        <column name="HIDDEN" />
+      </basic>
+      <basic name="readOnlyValue">
+        <column name="READONLY" />
+      </basic>
+      <transient name="type" />
+      <transient name="hidden" />
+      <transient name="readOnly" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.dic.service.DBAccessControl"
+    name="AccessControl">
+    <table name="DIC_ACL" />
+    <id-class class="org.santfeliu.dic.service.DBAccessControlPK" />
+    <attributes>
+      <id name="typeId">
+        <column name="TYPEID" />
+      </id>
+      <id name="roleId">
+        <column name="ROLEID" />
+      </id>
+      <id name="action">
+        <column name="ACTION" />
+      </id>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.dic.service.DBEnumType" name="EnumType">
+    <table name="DIC_ENUMTYPE" />
+    <attributes>
+      <id name="enumTypeId">
+        <column name="TYPEID" />
+      </id>
+      <basic name="superEnumTypeId">
+        <column name="SUPERTYPEID" />
+      </basic>
+      <basic name="name">
+        <column name="ENUMNAME" />
+      </basic>
+      <basic name="strItemType">
+        <column name="ITEMTYPE" />
+      </basic>
+      <basic name="strSorted">
+        <column name="SORTED" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" />
+      </basic>
+      <one-to-many name="enumTypeItems" mapped-by="enumType" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.dic.service.DBEnumTypeItem" name="EnumTypeItem">
+    <table name="DIC_ENUMTYPEITEM" />    
+    <attributes>
+      <id name="enumTypeItemId">
+        <column name="ENUMTYPEITEMID" />
+        <generated-value strategy="TABLE" generator="dic.enumTypeItem"/>
+        <table-generator name="dic.enumTypeItem" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="enumTypeId">
+        <column name="TYPEID" />
+      </basic>
+      <basic name="index">
+        <column name="IDX" />
+      </basic>
+      <basic name="label">
+        <column name="LABEL" />
+      </basic>
+      <basic name="value">
+        <column name="VALUE" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" />
+      </basic>
+      <many-to-one name="enumType">
+        <join-column name="TYPEID" referenced-column-name="TYPEID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+</entity-mappings>

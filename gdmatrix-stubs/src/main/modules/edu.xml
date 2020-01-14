@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="edu"
+  namespace="http://edu.matrix.org/"
+  title="Gestor de cursos"
+  wsdlLocation="../services/edu?wsdl"
+  service="EducationManagerService"
+  port="EducationManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Cecilia Comas, Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="kernel"/>
+  </imports>
+
+  <types>
+    <entity name="School">
+      <identifier name="schoolId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="code" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Course">
+      <identifier name="courseId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="code" type="xs:string" minOccurs="0">
+      </property>
+      <property name="schoolId" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Inscription">
+      <identifier name="inscriptionId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="code" type="xs:string" minOccurs="0">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="courseId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="endDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="properties" type="edu:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </entity>
+
+    <struct name="EducationMetaData">
+      <property name="courseCodeMaxSize" type="xs:int">
+      </property>
+      <property name="courseNameMaxSize" type="xs:int">
+      </property>
+      <property name="inscriptionCodeMaxSize" type="xs:int">
+      </property>
+      <property name="inscriptionPropertyValueMaxSize" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="SchoolFilter">
+      <property name="code" type="xs:string" minOccurs="0">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="CourseFilter">
+      <property name="schoolName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="courseName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="CourseView">
+      <property name="courseId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="schoolName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="courseName" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="Property">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="InscriptionFilter">
+      <property name="code" type="xs:string" minOccurs="0">
+      </property>
+      <property name="personName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="personId" type="xs:string" minOccurs="0"
+        references="kernel:Person">
+      </property>
+      <property name="courseId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="InscriptionView">
+      <property name="inscriptionId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="code" type="xs:string" minOccurs="0">
+      </property>
+      <property name="personView" type="kernel:PersonView" minOccurs="0">
+      </property>
+      <property name="schoolName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="courseName" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+  </types>
+
+  <operations>
+
+    <operation name="getEducationMetaData">
+      <response name="return" type="edu:EducationMetaData">
+      </response>
+    </operation>
+
+    <operation name="loadSchool">
+      <parameter name="schoolId" type="xs:string">
+      </parameter>
+      <response name="school" type="edu:School">
+      </response>
+    </operation>
+
+    <operation name="storeSchool">
+      <parameter name="school" type="edu:School">
+      </parameter>
+      <response name="storedSchool" type="edu:School">
+      </response>
+    </operation>
+
+    <operation name="removeSchool">
+      <parameter name="schoolId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findSchools">
+      <parameter name="filter" type="edu:SchoolFilter">
+      </parameter>
+      <response name="school" type="edu:School" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countSchools">
+      <parameter name="filter" type="edu:SchoolFilter">
+      </parameter>
+      <response name="schoolCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="loadCourse">
+      <parameter name="courseId" type="xs:string">
+      </parameter>
+      <response name="course" type="edu:Course">
+      </response>
+    </operation>
+
+    <operation name="storeCourse">
+      <parameter name="course" type="edu:Course">
+      </parameter>
+      <response name="storedCourse" type="edu:Course">
+      </response>
+    </operation>
+
+    <operation name="removeCourse">
+      <parameter name="courseId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findCourseViews">
+      <parameter name="filter" type="edu:CourseFilter">
+      </parameter>
+      <response name="course" type="edu:CourseView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countCourses">
+      <parameter name="filter" type="edu:CourseFilter">
+      </parameter>
+      <response name="courseCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="loadInscription">
+      <parameter name="inscriptionId" type="xs:string">
+      </parameter>
+      <response name="inscription" type="edu:Inscription">
+      </response>
+    </operation>
+
+    <operation name="storeInscription">
+      <parameter name="inscription" type="edu:Inscription">
+      </parameter>
+      <response name="storedInscription" type="edu:Inscription">
+      </response>
+    </operation>
+
+    <operation name="removeInscription">
+      <parameter name="inscriptionId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findInscriptionViews">
+      <parameter name="filter" type="edu:InscriptionFilter">
+      </parameter>
+      <response name="inscription" type="edu:InscriptionView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countInscriptions">
+      <parameter name="filter" type="edu:InscriptionFilter">
+      </parameter>
+      <response name="inscriptionCount" type="xs:int">
+      </response>
+    </operation>
+  </operations>
+</module>

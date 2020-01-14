@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="classif"
+  namespace="http://classif.matrix.org/"
+  title="Gestor del quadre de classificació documental"
+  wsdlLocation="../services/classif?wsdl"
+  service="ClassificationManagerService"
+  port="ClassificationManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="dic"/>
+    <import module="security"/>
+  </imports>
+
+  <types>
+    <entity name="Class">
+      <identifier name="classId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="classTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="location" type="xs:string" minOccurs="0">
+      </property>
+      <property name="offlineDownload" type="xs:boolean">
+      </property>
+      <property name="superClassId" type="xs:string" minOccurs="0" references="classif:Class">
+      </property>
+      <property name="accessControlUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="changeReason" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <struct name="ClassFilter">
+      <property name="classId" type="xs:string" minOccurs="0" references="classif:Class">
+      </property>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="superClassId" type="xs:string" minOccurs="0" references="classif:Class">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+  </types>
+
+  <operations>
+    <operation name="loadClass">
+      <parameter name="classId" type="xs:string">
+      </parameter>
+      <parameter name="dateTime" type="mx:dateTime" nillable="true">
+      </parameter>
+      <response name="class" type="classif:Class">
+      </response>
+    </operation>
+
+    <operation name="storeClass">
+      <parameter name="class" type="classif:Class">
+      </parameter>
+      <response name="storedClass" type="classif:Class">
+      </response>
+    </operation>
+
+    <operation name="removeClass">
+      <parameter name="classId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findClasses">
+      <parameter name="filter" type="classif:ClassFilter">
+      </parameter>
+      <response name="class" type="classif:Class" minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countClasses">
+      <parameter name="filter" type="classif:ClassFilter">
+      </parameter>
+      <response name="classCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="listModifiedClasses">
+      <parameter name="dateTime1" type="xs:string">
+      </parameter>
+      <parameter name="dateTime2" type="xs:string">
+      </parameter>
+      <response name="classId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+  </operations>
+</module>

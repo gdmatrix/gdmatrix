@@ -1,0 +1,206 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/templates/#{userSessionBean.template}/template.xhtml">
+    <ui:param name="css" value="/common/misc/css/map_viewer.css" />
+    <ui:define name="body">
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
+                var="objectBundle"/>
+  <f:loadBundle basename="org.santfeliu.misc.mapviewer.web.resources.MapViewerBundle"
+                var="mapViewerBundle"/>
+  <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                var="documentBundle"/>
+
+  <t:saveState value="#{mapBean.map}" />
+
+  <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
+    showSummary="true"
+    infoClass="infoMessage"
+    warnClass="warnMessage"
+    errorClass="errorMessage"
+    fatalClass="fatalMessage" />
+
+  <t:panelGroup id="mapCatalogue" forceId="true">
+
+    <t:div id="headerPanel" styleClass="headerPanel" forceId="true">
+      <t:div styleClass="categoriesPanel">
+        <t:commandLink id="categories_link"
+          title="#{mapViewerBundle.mapCategories}" styleClass="categoriesLink"
+          action="#{mapCatalogueBean.showCategories}"
+          rendered="#{mapCatalogueBean.categoriesEnabled}"
+          style="vertical-align:middle">
+          <h:graphicImage alt="" url="/common/misc/images/categories.png" />
+        </t:commandLink>
+
+        <h:outputText value="#{mapViewerBundle.mapCategories}:"
+          styleClass="categoryLabel"
+          rendered="#{not mapCatalogueBean.showMaps}" />
+
+        <sf:outputText value="#{mapCatalogueBean.category.title}" styleClass="categoryTitle"
+          rendered="#{mapCatalogueBean.category != null}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="mapCatalogue"/>
+      </t:div>
+
+      <t:div id="searchPanel" styleClass="searchPanel" forceId="true">
+        <h:panelGroup styleClass="propertySelector" rendered="#{mapCatalogueBean.propertyNameRendered}">
+          <t:selectOneMenu value="#{mapCatalogueBean.propertyName}">
+            <f:selectItem itemValue="title" itemLabel="#{documentBundle.document_title}" />
+            <f:selectItems value="#{mapCatalogueBean.propertyNameSelectItems}" />
+          </t:selectOneMenu>
+        </h:panelGroup>
+        <h:inputText value="#{mapCatalogueBean.searchText}"
+          styleClass="searchInput" title="#{mapViewerBundle.searchText}" />
+        <t:commandButton id="default_button"
+          value="#{objectBundle.search}" styleClass="button"
+          action="#{mapCatalogueBean.search}"
+          style="vertical-align:middle"  />
+      </t:div>
+    </t:div>
+
+    <t:div styleClass="mapResultBar"
+      rendered="#{mapCatalogueBean.showMaps
+      and mapCatalogueBean.rows != null}">
+      <h:outputText value="#{mapCatalogueBean.rowCount} #{mapViewerBundle.maps}:"
+        rendered="#{mapCatalogueBean.rowCount gt 1}" />
+      <h:outputText value="1 #{mapViewerBundle.map}:"
+        rendered="#{mapCatalogueBean.rowCount == 1}" />
+      <h:outputText value="#{objectBundle.no_results_found}"
+        rendered="#{mapCatalogueBean.rowCount == 0}" />
+    </t:div>
+
+    <t:dataList id="categories" value="#{mapCatalogueBean.mapCategories}"
+                 var="row" width="100%"
+                 rendered="#{not mapCatalogueBean.showMaps and
+                             not empty mapCatalogueBean.mapCategories}"
+                 styleClass="resultList"
+                 headerClass="header" footerClass="footer">
+      <t:div styleClass="category">
+        <t:div styleClass="thumbnail" style="top:10px; left:10px;">
+        </t:div>
+        <t:div styleClass="thumbnail" style="top:5px; left:5px;">
+        </t:div>
+        <t:div styleClass="thumbnail" style="top:0px; left:0px;">
+          <t:div styleClass="header">
+            <sf:outputText value="#{row.title}" styleClass="mapTitle"
+              translator="#{userSessionBean.translator}"
+              translationGroup="mapCatalogue" />
+          </t:div>
+          <h:commandLink action="#{mapCatalogueBean.showCategoryMaps}">
+            <h:graphicImage url="/documents/#{row.thumbnailContentId}"
+                            styleClass="thumbnailImage" alt="#{row.description}"
+                            width="#{mapBean.thumbnailWidth}px"
+                            height="#{mapBean.thumbnailHeight}px" />
+          </h:commandLink>
+          <sf:outputText value="#{row.description}"
+            styleClass="mapDescription"
+            translator="#{userSessionBean.translator}"
+            translationGroup="mapCatalogue"/>
+        </t:div>
+      </t:div>
+    </t:dataList>
+
+    <t:div rendered="#{mapCatalogueBean.showMaps}">
+
+      <t:dataList id="data" value="#{mapCatalogueBean.rows}"
+                   var="row" width="100%"
+                   first="#{mapCatalogueBean.firstRowIndex}"
+                   rows="#{mapCatalogueBean.pageSize}"
+                   rendered="#{mapCatalogueBean.rowCount > 0}"
+                   styleClass="resultList"
+                   headerClass="header" footerClass="footer">
+
+        <t:div styleClass="thumbnail">
+          <t:div styleClass="header">
+            <sf:outputText value="#{row.title}" styleClass="mapTitle"
+              translator="#{userSessionBean.translator}"
+              translationGroup="mapCatalogue" />
+            <t:div styleClass="moreDescription"
+              onclick="onClickHelp(this);"
+              title="#{mapViewerBundle.moreLessDescription}">
+            </t:div>
+          </t:div>
+          <h:commandLink action="#{mapCatalogueBean.showMap}" title="#{row.title}">
+            <h:graphicImage url="#{mapCatalogueBean.thumbnailUrl}"
+                            alt="#{row.title}"
+                            styleClass="thumbnailImage"
+                            width="#{mapBean.thumbnailWidth}px"
+                            height="#{mapBean.thumbnailHeight}px" />
+          </h:commandLink>
+          <sf:outputText value="#{row.description}"
+            styleClass="mapDescription"
+            escape="#{not mapCatalogueBean.formattedDescription}"
+            translator="#{userSessionBean.translator}"
+            translationGroup="mapCatalogue"/>
+        </t:div>
+      </t:dataList>
+
+      <t:dataScroller for="data"
+                      fastStep="100"
+                      paginator="true"
+                      paginatorMaxPages="9"
+                      immediate="true"
+                      styleClass="scrollBar"
+                      paginatorColumnClass="page"
+                      paginatorActiveColumnClass="activePage"
+                      nextStyleClass="nextButton"
+                      previousStyleClass="previousButton"
+                      firstStyleClass="firstButton"
+                      lastStyleClass="lastButton"
+                      fastfStyleClass="fastForwardButton"
+                      fastrStyleClass="fastRewindButton"
+                      renderFacetsIfSinglePage="false">
+        <f:facet name="first">
+          <t:div title="#{objectBundle.first}"></t:div>
+        </f:facet>
+        <f:facet name="last">
+          <t:div title="#{objectBundle.last}"></t:div>
+        </f:facet>
+        <f:facet name="previous">
+          <t:div title="#{objectBundle.previous}"></t:div>
+        </f:facet>
+        <f:facet name="next">
+          <t:div title="#{objectBundle.next}"></t:div>
+        </f:facet>
+        <f:facet name="fastrewind">
+          <t:div title="#{objectBundle.fastRewind}"></t:div>
+        </f:facet>
+        <f:facet name="fastforward">
+          <t:div title="#{objectBundle.fastForward}"></t:div>
+        </f:facet>
+      </t:dataScroller>
+    </t:div>
+
+  </t:panelGroup>
+  <f:verbatim>
+    <script type="text/javascript">
+      function onClickHelp(elem)
+      {
+        var parent = elem.parentNode.parentNode;  
+        var link = parent.getElementsByTagName("a")[0];
+        var desc = parent.getElementsByClassName("mapDescription")[0];
+        if (link.style.display === "none")
+        {
+          elem.className = "moreDescription";
+          link.style.display = "block";
+          desc.className = "mapDescription";
+        }
+        else
+        {
+          elem.className = "lessDescription";
+          link.style.display = "none";
+          desc.className = "mapDescription full";
+        }
+      }
+    </script>
+  </f:verbatim>
+
+    </ui:define>
+  </ui:composition>
+</html>
+

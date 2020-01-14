@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<StyledLayerDescriptor
+ xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+ xmlns="http://www.opengis.net/sld"
+ xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0">
+  <NamedLayer>
+    <Name>sf:FO_AUDI_CANALITZACIONS</Name>
+    <UserStyle>
+      <Name>canalitzacio</Name>
+      <Title>Default Line</Title>
+      <Abstract>A sample style that draws a line</Abstract>
+      <IsDefault>0</IsDefault>
+      <FeatureTypeStyle>
+        <Rule>
+          <Title>Canalització</Title>
+          <Abstract>Linia blava de gruix 3</Abstract>
+          <LineSymbolizer>
+            <Stroke>
+              <CssParameter name="stroke">#0000FF</CssParameter>
+              <CssParameter name="stroke-width">3</CssParameter>
+            </Stroke>
+          </LineSymbolizer>
+        </Rule>
+        <Rule>
+          <Abstract>text</Abstract>
+          <MaxScaleDenominator>5000</MaxScaleDenominator>
+          <TextSymbolizer>
+            <Label>
+              REG-<ogc:PropertyName>CODI_CANALIT</ogc:PropertyName>-FO
+            </Label>
+            <Font>
+              <CssParameter name="font-family">Arial</CssParameter>
+              <CssParameter name="font-size">12</CssParameter>
+              <CssParameter name="font-style">normal</CssParameter>
+              <CssParameter name="font-weight">normal</CssParameter>
+            </Font>
+            <LabelPlacement>
+              <LinePlacement>
+                <PerpendicularOffset>7</PerpendicularOffset>
+              </LinePlacement>
+            </LabelPlacement>
+            <Fill>
+              <CssParameter name="fill">#0000FF</CssParameter>
+            </Fill>
+          </TextSymbolizer>
+        </Rule>
+      </FeatureTypeStyle>
+    </UserStyle>
+  </NamedLayer>
+
+  <NamedLayer>
+    <Name>sf:FO_AUDI_REGISTRES_FO</Name>
+    <UserStyle>
+      <Name>arqueta</Name>
+      <Title>Default Line</Title>
+      <Abstract>A sample style that draws a line</Abstract>
+      <IsDefault>0</IsDefault>
+      <FeatureTypeStyle>
+        <Rule>
+          <Title>Registre FO</Title>
+          <Abstract></Abstract>
+          <PointSymbolizer>
+            <Graphic>
+              <ExternalGraphic>
+                <OnlineResource xlink:type="simple"
+                  xlink:href="http://erato.esantfeliu.org:8080/geoserver/styles/arqueta2.png" />
+                  <Format>image/png</Format>
+              </ExternalGraphic>
+              <Rotation>
+                <ogc:PropertyName>ORIENTACIO</ogc:PropertyName>
+              </Rotation>
+            </Graphic>
+          </PointSymbolizer>
+        </Rule>
+        <Rule>
+          <Abstract>text</Abstract>
+          <MaxScaleDenominator>5000</MaxScaleDenominator>
+          <TextSymbolizer>
+           <Label>
+             <ogc:PropertyName>CODI_REG</ogc:PropertyName>
+           </Label>
+           <Font>
+             <CssParameter name="font-family">Arial</CssParameter>
+             <CssParameter name="font-size">12</CssParameter>
+             <CssParameter name="font-style">normal</CssParameter>
+             <CssParameter name="font-weight">bold</CssParameter>
+           </Font>
+           <LabelPlacement>
+             <PointPlacement>
+               <AnchorPoint>
+                 <AnchorPointX>0.5</AnchorPointX>
+                 <AnchorPointY>0.0</AnchorPointY>
+               </AnchorPoint>
+               <Displacement>
+                 <DisplacementX>10</DisplacementX>
+                 <DisplacementY>10</DisplacementY>
+               </Displacement>
+             </PointPlacement>
+           </LabelPlacement>
+           <Fill>
+             <CssParameter name="fill">#000000</CssParameter>
+           </Fill>
+           <Halo>
+             <Radius>1</Radius>
+             <Fill>
+               <CssParameter name="fill">#FFFFFF</CssParameter>
+             </Fill>
+           </Halo>
+          </TextSymbolizer>
+        </Rule>
+      </FeatureTypeStyle>
+    </UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>

@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:t="http://myfaces.apache.org/tomahawk"
+          xmlns:sf="http://www.santfeliu.org/jsf">
+
+  <f:loadBundle basename="org.santfeliu.presence.web.resources.PresenceBundle"
+    var="presenceBundle" />  
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+    var="objectBundle" />
+  
+  <t:messages 
+    id="message_list" forceId="true" 
+    styleClass="messages"
+    globalOnly="false"
+    layout="list"
+    infoClass="info"
+    warnClass="warn"
+    errorClass="error"
+    fatalClass="fatal" />  
+
+  <t:div styleClass="worker_header">    
+    <t:div styleClass="worker_info">
+      <t:outputText value="#{presenceBundle.presenceControl}" styleClass="title" />
+      <t:outputText value="#{presenceMainBean.worker.fullName}"
+        styleClass="fullname#{presenceMainBean.showingLoggedWorker ? '' : ' other'}" />
+      <t:outputText value="#{presenceMainBean.worker.team}" styleClass="team_label" />
+      <t:commandButton image="/common/presence/images/cancel.png" 
+        rendered="#{not presenceMainBean.showingLoggedWorker}" style="margin-left:4px"
+        action="#{presenceMainBean.showLoggedWorker}" styleClass="button" 
+        title="#{presenceBundle.showYourEntries}" />      
+      <t:outputText value="#{presenceBundle.connectedAs}: #{userSessionBean.userId}" styleClass="connected_as" 
+         rendered="#{not userSessionBean.anonymousUser}" />
+      <t:panelGroup styleClass="toolbar" style="margin-left:10px">
+        <h:outputLink value="/login.faces?xmid=#{userSessionBean.menuModel.selectedMid}" styleClass="button img_left"
+          rendered="#{userSessionBean.anonymousUser}" title="#{presenceBundle.loginTitle}">
+          <t:outputText value="#{presenceBundle.login}" styleClass="login" />
+        </h:outputLink>
+        <t:commandLink id="exit_presence" forceId="true" accesskey="."
+           action="#{userSessionBean.logout}" styleClass="button img_left last">
+          <t:outputText value="#{presenceBundle.exit}" styleClass="exit" />
+        </t:commandLink>
+      </t:panelGroup>
+    </t:div>
+
+    <t:div>
+      <t:panelGroup styleClass="toolbar">
+        <t:commandLink action="#{presenceMainBean.showWorkerWeekView}" styleClass="button img_left first#{presenceMainBean.view == 'worker_week' ? ' selected' : ''}"
+                       immediate="true">
+          <t:outputText value="#{presenceBundle.weekView}" styleClass="week_view" />
+        </t:commandLink>
+        <t:commandLink action="#{presenceMainBean.showWorkerCalendarView}" styleClass="button img_left#{presenceMainBean.view == 'worker_calendar' ? ' selected' : ''}"
+                       immediate="true">
+          <t:outputText value="#{presenceBundle.calendarView}" styleClass="calendar_view" />
+        </t:commandLink>
+        <t:commandLink action="#{presenceMainBean.showAbsencesView}" styleClass="button img_left#{presenceMainBean.view == 'absences' ? ' selected' : ''}"
+                       immediate="true">
+          <t:outputText value="#{presenceBundle.absences}" styleClass="absence_view" />
+        </t:commandLink>
+        <t:commandLink action="#{presenceMainBean.showEntriesView}" styleClass="button img_left#{presenceMainBean.view == 'entries' ? ' selected' : ''}"
+                       immediate="true">
+          <t:outputText value="#{presenceBundle.presenceEntries}" styleClass="entry_view" />
+        </t:commandLink>
+        <t:commandLink action="#{presenceMainBean.showStatsView}" styleClass="button img_left#{presenceMainBean.view == 'presence_stats' ? ' selected' : ''}"
+                       immediate="true">
+          <t:outputText value="#{presenceBundle.statsView}" styleClass="stats_view" />          
+        </t:commandLink>
+        <t:commandLink action="#{presenceMainBean.showGroupalView}" styleClass="button img_left#{presenceMainBean.view == 'groupal_view' ? ' selected' : ''}"
+                       immediate="true">
+          <t:outputText value="#{presenceBundle.groupalView}" styleClass="groupal_view" />          
+        </t:commandLink>
+        <t:commandLink action="#{presenceMainBean.showCountersView}" styleClass="button img_left#{presenceMainBean.view == 'absence_counters' ? ' selected' : ''}" 
+                       immediate="true" rendered="#{presenceMainBean.presenceAdministrator}">
+          <t:outputText value="#{presenceBundle.absenceCounters}" styleClass="counters_view" />
+        </t:commandLink>
+        <t:commandLink action="#{presenceMainBean.showAdminView}" styleClass="button img_left#{presenceMainBean.view == 'presence_admin' ? ' selected' : ''}"
+                       immediate="true" rendered="#{presenceMainBean.presenceAdministrator}">
+          <t:outputText value="#{presenceBundle.administration}" styleClass="administration_view" />
+        </t:commandLink>
+      </t:panelGroup>
+    </t:div>
+  </t:div>
+  
+</jsp:root>

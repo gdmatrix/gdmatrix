@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+ <managed-bean>
+  <managed-bean-name>documentConfigBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.doc.web.DocumentConfigBean</managed-bean-class>
+  <managed-bean-scope>application</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>documentBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.doc.web.ShowDocumentBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>showDocumentBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.doc.web.ShowDocumentBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>documentTreeBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.doc.web.DocumentTreeBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ 
+  <managed-bean>
+    <managed-bean-name>documentSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean> 
+
+  <managed-bean>
+    <managed-bean-name>document2Bean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentContentBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentContentBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentRelatedBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentRelatedBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentCasesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentCasesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentPersonsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentPersonsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentVersionsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentVersionsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>documentACLBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentACLBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>  
+
+  <navigation-case>
+   <from-outcome>document</from-outcome>
+   <to-view-id>/common/doc/document.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>documentTree</from-outcome>
+   <to-view-id>/common/doc/document_tree.jsp</to-view-id>
+  </navigation-case>
+  
+  <navigation-case>
+   <from-outcome>document_search</from-outcome>
+   <to-view-id>/common/doc/document_search.jsp</to-view-id>
+  </navigation-case>  
+
+  <navigation-case>
+   <from-outcome>document_main</from-outcome>
+   <to-view-id>/common/doc/document_main.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>document_content</from-outcome>
+   <to-view-id>/common/doc/document_content.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>document_related</from-outcome>
+   <to-view-id>/common/doc/document_related.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>document_cases</from-outcome>
+   <to-view-id>/common/doc/document_cases.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>document_persons</from-outcome>
+   <to-view-id>/common/doc/document_persons.jsp</to-view-id>
+  </navigation-case>
+  
+  <!-- TODO: Remove. Defined for compatibility with previous versions -->
+  <navigation-case>
+   <from-outcome>document_authors</from-outcome>
+   <to-view-id>/common/doc/document_persons.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>document_versions</from-outcome>
+   <to-view-id>/common/doc/document_versions.jsp</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>document_acl</from-outcome>
+   <to-view-id>/common/doc/document_acl.jsp</to-view-id>
+  </navigation-case>
+
+ </navigation-rule>
+
+</faces-config>

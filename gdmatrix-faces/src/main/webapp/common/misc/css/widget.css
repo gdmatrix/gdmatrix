@@ -1,0 +1,114 @@
+.leftColumn
+{
+  float:left;
+  width:30%  ;
+}
+
+.rightColumn
+{
+  float:left;
+  width:70%;
+}
+
+.widgetTable
+{
+  border-collapse:collapse;
+  width: 100%;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.widgetTable th
+{
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.widgetRow
+{
+}
+
+.widgetRow:hover
+{
+  background-color: #eeeeee;
+}
+
+.widgetRow td
+{
+  padding: 15px;
+  border-bottom: 2px gray dotted;
+}
+
+.iconColumn
+{
+  text-align: center;
+  width: 10%;
+}
+
+.iconColumn img
+{
+  width: 50px;
+  height: 50px;
+}
+
+.titleColumn
+{
+  text-align: left;
+  vertical-align: middle;
+  width: 65%;
+}
+
+.titleColumn .title
+{
+  font-weight: bold;
+  font-size: 14px;
+  color: black;
+  text-transform: uppercase;
+}
+
+.titleColumn .title a
+{
+  text-decoration: none;
+  color: black;
+}
+
+.titleColumn .title img
+{
+  vertical-align: bottom;
+  margin-left: 5px;
+}
+
+.titleColumn .info
+{
+  font-size: 10px;
+}
+
+.visibleColumn
+{
+  text-align: center;
+  width: 5%;
+  text-transform: uppercase;
+}
+
+.visibleColumn input
+{
+  -moz-appearance: none;
+  width: 17px;
+  height: 17px;
+}
+
+.colColumn
+{
+  width: 10%;
+  text-align: center;
+}
+
+.colColumn input
+{
+  width: 14px;
+  font-size: 10px;
+  text-align: center;
+  color: gray;
+  border: gray solid 1px;
+}
+

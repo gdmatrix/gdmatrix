@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <description>Cases</description>
+    <package>org.santfeliu.cases.service</package>
+
+    <named-query name="loadCaseProperties">
+      <query>
+         SELECT cp FROM
+           CaseProperty cp
+         WHERE
+           cp.id = :id
+      </query>
+    </named-query>
+
+    <named-query name="loadTypeCaseId">
+      <query>
+         SELECT cp FROM
+           CaseProperty cp, Case c
+         WHERE c.caseId = cp.id and c.caseTypeId = :typeId
+          AND cp.name = 'typeCaseId' and cp.value=:value
+      </query>
+    </named-query>
+
+    <named-query name="removeCaseProperties">
+      <query>
+         DELETE FROM
+           CaseProperty cp
+         WHERE
+           cp.id = :id 
+      </query>
+    </named-query>
+
+    <named-query name="removeCaseProperty">
+      <query>
+         DELETE FROM
+           CaseProperty cp
+         WHERE
+           cp.id = :id AND cp.name = :name
+      </query>
+    </named-query>
+
+    <named-query name="loadInterventionProperties">
+      <query>
+         SELECT ip FROM
+           InterventionProperty ip
+         WHERE
+           ip.id = :id
+         ORDER BY ip.name,ip.index
+      </query>
+    </named-query>
+
+    <named-query name="removeInterventionProperties">
+      <query>
+         DELETE FROM
+           InterventionProperty ip
+         WHERE
+           ip.id = :id
+      </query>
+    </named-query>
+
+    <named-query name="findCasePersons">
+      <query>
+        SELECT cp
+        FROM CasePerson cp JOIN FETCH cp.caseObject LEFT JOIN cp.casePersonType t
+        WHERE (cp.caseId = :caseId or :caseId is null)
+          and (cp.personId = :personId or :personId is null)
+          and (t.typePath like :casePersonTypeId or :casePersonTypeId is null)
+        ORDER BY cp.startDate DESC, cp.casePersonId
+      </query>
+    </named-query>
+
+    <named-query name="countCasePersons">
+      <query>
+        SELECT count(cp)
+        FROM CasePerson cp LEFT JOIN cp.casePersonType t
+        WHERE (cp.caseId = :caseId or :caseId is null)
+          and (cp.personId = :personId or :personId is null)
+          and (t.typePath like :casePersonTypeId or :casePersonTypeId is null)
+      </query>
+    </named-query>
+
+    <named-query name="removeCasePersons">
+      <query>
+        DELETE FROM CasePerson cp
+        WHERE cp.caseId = :caseId
+      </query>
+    </named-query>
+
+    <named-query name="findCaseAddresses">
+      <query>
+        SELECT ca
+        FROM CaseAddress ca
+        WHERE (ca.caseId = :caseId or :caseId is null)
+          and (ca.addressId = :addressId or :addressId is null)
+        ORDER BY ca.addressId
+      </query>
+    </named-query>
+
+    <named-query name="countCaseAddresses">
+      <query>
+        SELECT count(ca)
+        FROM CaseAddress ca
+        WHERE (ca.caseId = :caseId or :caseId is null)
+          and (ca.addressId = :addressId or :addressId is null)
+      </query>
+    </named-query>
+
+    <named-query name="removeCaseAddresses">
+      <query>
+        DELETE FROM CaseAddress ca
+        WHERE ca.caseId = :caseId
+      </query>
+    </named-query>
+
+    <named-query name="findInterventions">
+      <query>
+        SELECT i
+        FROM Intervention i
+        WHERE (i.caseId = :caseId or :caseId is null)
+        ORDER BY i.startDate, i.startTime, i.intId
+      </query>
+    </named-query>
+
+     <named-query name="countInterventions">
+      <query>
+        SELECT count(i)
+        FROM Intervention i
+        WHERE (i.caseId = :caseId or :caseId is null)
+      </query>
+    </named-query>
+    
+    <named-query name="findProblems">
+      <query>
+        SELECT problem
+        FROM Problem problem
+        WHERE (problem.caseId = :caseId or :caseId is null)
+        ORDER BY problem.probId
+      </query>
+    </named-query>
+
+    <named-query name="countProblems">
+      <query>
+        SELECT count(problem)
+        FROM Problem problem
+        WHERE (problem.caseId = :caseId or :caseId is null)
+      </query>
+    </named-query>
+
+    <named-query name="removeProblems">
+      <query>
+        DELETE FROM Problem p
+        WHERE p.caseId = :caseId
+      </query>
+    </named-query>
+
+    <named-query name="findDemands">
+      <query>
+        SELECT demand
+        FROM Demand demand
+        WHERE (demand.caseId = :caseId or :caseId is null)
+        ORDER BY demand.demandId
+      </query>
+    </named-query>
+
+    <named-query name="countDemands">
+      <query>
+        SELECT count(demand)
+        FROM Demand demand
+        WHERE (demand.caseId = :caseId or :caseId is null)
+      </query>
+    </named-query>
+
+    <named-query name="removeDemands">
+      <query>
+        DELETE FROM Demand d
+        WHERE d.caseId = :caseId
+      </query>
+    </named-query>
+
+    <named-query name="findCaseDocuments">
+      <query>
+        SELECT cd, c
+        FROM CaseDocument cd JOIN cd.caseObject c
+        WHERE (cd.caseId = :caseId OR :caseId is null)
+        AND (cd.docId = :docId OR :docId is null)
+        AND ((cd.volume like :volume)
+          OR (:volume = 'UNDEFINED_VOLUME' AND cd.volume IS NULL)
+          OR (:volume is null))
+        ORDER BY cd.docId
+      </query>
+    </named-query>
+
+    <named-query name="countCaseDocuments">
+      <query>
+        SELECT count(cd)
+        FROM CaseDocument cd
+        WHERE (cd.caseId = :caseId OR :caseId is null)
+        AND (cd.docId = :docId OR :docId is null)
+        AND ((cd.volume like :volume)
+          OR (:volume = 'UNDEFINED_VOLUME' AND cd.volume IS NULL)
+          OR (:volume is null))
+      </query>
+    </named-query>
+
+    <named-query name="findCaseEvents">
+      <query>
+        SELECT ce
+        FROM CaseEvent ce LEFT JOIN ce.caseEventType t
+        WHERE (ce.caseId = :caseId OR :caseId is null)
+          AND (ce.eventId = :eventId OR :eventId is null)
+          AND (t.typePath like :caseEventTypeId or :caseEventTypeId is null)        
+        ORDER BY ce.eventId, ce.caseId
+      </query>
+    </named-query>
+
+    <named-query name="countCaseEvents">
+      <query>
+        SELECT count(ce)
+        FROM CaseEvent ce LEFT JOIN ce.caseEventType t
+        WHERE (ce.caseId = :caseId OR :caseId is null)
+          AND (ce.eventId = :eventId OR :eventId is null)
+          AND (t.typePath like :caseEventTypeId or :caseEventTypeId is null)        
+      </query>
+    </named-query>
+
+    <named-query name="findCaseVolumes">
+      <query>
+        SELECT DISTINCT cd.volume
+        FROM CaseDocument cd
+        WHERE cd.caseId = :caseId
+        ORDER BY cd.volume
+      </query>
+    </named-query>
+
+    <named-query name="removeCaseDocuments">
+      <query>
+        DELETE FROM CaseDocument cd
+        WHERE cd.caseId = :caseId
+      </query>
+    </named-query>
+
+    <named-query name="removeCaseEvents">
+      <query>
+        DELETE FROM CaseEvent ce
+        WHERE ce.caseId = :caseId
+      </query>
+    </named-query>    
+
+    <named-query name="findCaseAccessControl">
+      <query>
+        SELECT ac FROM CaseAccessControl ac
+        WHERE ac.caseId = :caseId
+        ORDER BY ac.roleId, ac.action
+      </query>
+    </named-query>
+
+    <named-query name="removeCaseAccessControl">
+      <query>
+        DELETE FROM CaseAccessControl ac
+        WHERE ac.caseId = :caseId
+      </query>
+    </named-query>
+
+    <named-query name="findCaseCases">
+      <query>
+        SELECT cc, c
+        FROM CaseCase cc LEFT JOIN cc.caseCaseType t, Case c
+        WHERE cc.caseId = c.caseId 
+        AND (cc.caseId = :caseId OR :caseId is null)
+        AND (cc.relCaseId = :relCaseId OR :relCaseId is null)
+        AND (t.typePath like :caseCaseTypeId or :caseCaseTypeId is null)        
+        ORDER BY cc.caseId
+      </query>
+    </named-query>
+
+    <named-query name="countCaseCases">
+      <query>
+        SELECT count(cc)
+        FROM CaseCase cc LEFT JOIN cc.caseCaseType t
+        WHERE (cc.caseId = :caseId OR :caseId is null)
+        AND (cc.relCaseId = :relCaseId OR :relCaseId is null)
+        AND (t.typePath like :caseCaseTypeId or :caseCaseTypeId is null)                
+      </query>
+    </named-query>
+
+    <named-query name="removeCaseCases">
+      <query>
+        DELETE FROM CaseCase cc
+        WHERE cc.caseId = :caseId
+           OR cc.relCaseId = CONCAT('sf:', :caseId)
+      </query>
+    </named-query>
+
+    <named-query name="closeCaseCases">
+      <query>
+        UPDATE CaseCase cc
+        SET cc.endDate = :endDate
+        WHERE cc.caseId = :caseId
+           OR cc.relCaseId = CONCAT('sf:', :caseId)
+      </query>
+    </named-query>
+    
+    <named-query name="loadCaseCaseProperties">
+      <query>
+         SELECT ccp FROM
+           CaseCaseProperty ccp
+         WHERE
+           ccp.id = :id
+      </query>
+    </named-query>
+    
+    <named-query name="removeCaseCaseProperties">
+      <query>
+         DELETE FROM
+           CaseCaseProperty ccp
+         WHERE
+           ccp.id = :id 
+      </query>
+    </named-query>
+    
+    <named-query name="loadCaseEventProperties">
+      <query>
+         SELECT cep FROM
+           CaseEventProperty cep
+         WHERE
+           cep.id = :id
+      </query>
+    </named-query>
+    
+    <named-query name="removeCaseEventProperties">
+      <query>
+         DELETE FROM
+           CaseEventProperty cep
+         WHERE
+           cep.id = :id
+      </query>
+    </named-query>
+    
+    <named-query name="findInterventionProblems">
+      <query>
+        SELECT intProb
+        FROM InterventionProblem intProb
+        WHERE (intProb.intId = :intId or :intId is null)
+          and (intProb.probId = :probId or :probId is null)
+        ORDER BY intProb.probId
+      </query>
+    </named-query>
+
+    <named-query name="countInterventionProblems">
+      <query>
+        SELECT count(intProb)
+        FROM InterventionProblem intProb
+        WHERE (intProb.intId = :intId or :intId is null)
+          and (intProb.probId = :probId or :probId is null)        
+      </query>
+    </named-query>
+
+    <named-query name="removeInterventionProblems">
+      <query>
+        DELETE FROM InterventionProblem intProb
+        WHERE intProb.intId = :intId
+      </query>
+    </named-query>    
+
+    <named-query name="incrementSequence">
+      <query>
+        UPDATE Sequence s SET
+          s.value = s.value + 1
+        WHERE s.counter = :counter
+      </query>
+    </named-query>
+
+    <named-query name="readSequence">
+      <query>
+        SELECT s FROM Sequence s
+        WHERE s.counter = :counter
+      </query>
+    </named-query>
+
+
+    <entity class="org.santfeliu.cases.service.DBCase" 
+      name="Case">
+      <table name="CAS_CASE" />
+      <attributes>
+        <id name="caseId">
+          <column name="CASEID" />
+          <generated-value strategy="TABLE" generator="cases.case"/>
+          <table-generator name="cases.case" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1"/> 
+        </id>
+        <basic name="startDate">
+            <column name="INITDATE" />
+        </basic>
+        <basic name="startTime">
+            <column name="INITHOUR" />
+        </basic>
+        <basic name="endDate">
+            <column name="ENDDATE" />
+        </basic>
+        <basic name="endTime">
+            <column name="ENDHOUR" />
+        </basic>
+        <basic name="caseTypeId">
+            <column name="TYPE" />
+        </basic>
+        <basic name="state">
+            <column name="STATE" />
+        </basic>
+        <basic name="description">
+            <column name="DESCRIPTION" />
+        </basic>
+        <basic name="source">
+            <column name="SOURCE" />
+        </basic>
+        <basic name="title">
+            <column name="TITLE" />
+        </basic>
+        <basic name="comments">
+            <column name="COMMENTS" />
+        </basic>
+        <basic name="creationDateTime">
+            <column name="creationDT" />
+        </basic>
+        <basic name="creationUserId">
+            <column name="creationUserId" />
+        </basic>
+        <basic name="changeDateTime">
+            <column name="changeDT" />
+        </basic>
+        <basic name="changeUserId">
+            <column name="changeUserId" />
+        </basic>
+        <many-to-one name="caseType">
+          <join-column name="TYPE" referenced-column-name="TYPEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+        <transient name="property" />
+        <transient name="accessControl" />
+        <transient name="classId" />
+      </attributes>
+    </entity>
+    
+    <entity class="org.santfeliu.cases.service.DBCaseProperty" 
+      name="CaseProperty">
+      <table name="CAS_CASEPROP" />
+      <id-class class="org.santfeliu.cases.service.DBCasePropertyPK"/>            
+      <attributes>
+        <id name="id">
+          <column name="CASEID" />
+        </id>        
+        <id name="name">
+          <column name="PROPNAME" />
+        </id>
+        <id name="index">
+          <column name="INDX" />
+        </id>
+        <basic name="value">
+          <column name="PROPVALUE" />
+        </basic>
+      </attributes>
+    </entity>     
+    
+    <entity class="org.santfeliu.cases.service.DBCaseAddress" 
+      name="CaseAddress">
+      <table name="CAS_ADDRESS" />
+      <id-class class="org.santfeliu.cases.service.DBCaseAddressPK"/>            
+      <attributes>
+        <id name="caseId">
+          <column name="CASEID" />
+        </id>
+        <id name="addressId">
+            <column name="ADDRESSID" />
+        </id>
+        <basic name="radius">
+            <column name="RADIUS" />
+        </basic>
+        <basic name="comments">
+          <column name="COMMENTS" />
+        </basic>
+        <basic name="startDate">
+            <column name="STARTDATE" />
+        </basic>
+        <basic name="endDate">
+            <column name="ENDDATE" />
+        </basic>
+        <basic name="caseAddressTypeId">
+            <column name="CASEADDRESSTYPEID" />
+        </basic>        
+        <many-to-one name="caseObject">
+          <join-column name="CASEID" referenced-column-name="CASEID"
+              insertable="false" updatable="false" />
+        </many-to-one>   
+        <transient name="address" />
+        <transient name="addressDesc" />
+      </attributes>
+    </entity>    
+    
+    <entity class="org.santfeliu.cases.service.DBCasePerson" 
+      name="CasePerson">
+      <table name="CAS_PERSON" />
+      <attributes>
+        <id name="casePersonId">
+          <column name="CASEPERSONID" />
+          <generated-value strategy="TABLE" generator="cases.casePerson"/>
+          <table-generator name="cases.casePerson" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            initial-value="0" allocation-size="1"/>
+        </id>
+        <basic name="caseId">
+          <column name="CASEID" />
+        </basic>
+        <basic name="personId">
+          <column name="PERSCOD" />
+        </basic>
+        <basic name="startDate">
+            <column name="STARTDATE" />
+        </basic>
+        <basic name="endDate">
+            <column name="ENDDATE" />
+        </basic>
+        <basic name="comments">
+          <column name="COMMENTS" />
+        </basic>
+        <basic name="creationDateTime">
+            <column name="CREATIONDT" />
+        </basic>
+        <basic name="creationUserId">
+            <column name="CREATIONUSERID" />
+        </basic>
+        <basic name="changeDateTime">
+            <column name="CHANGEDT" />
+        </basic>
+        <basic name="changeUserId">
+            <column name="CHANGEUSERID" />
+        </basic>
+        <basic name="casePersonTypeId">
+            <column name="CASEPERSONTYPEID" />
+        </basic>
+        <basic name="addressId">
+            <column name="ADDRESSID" />
+        </basic>
+        <basic name="contactId1">
+            <column name="CONTACTID" />
+        </basic>
+        <basic name="contactId2">
+            <column name="CONTACTID2" />
+        </basic>
+        <basic name="contactId3">
+            <column name="CONTACTID3" />
+        </basic>
+        <basic name="representantPersonId">
+            <column name="REPPERSONID" />
+        </basic>
+        <basic name="representantAddressId">
+            <column name="REPADDRESSID" />
+        </basic>
+        <basic name="representantContactId1">
+            <column name="REPCONTACTID" />
+        </basic>
+        <basic name="representantContactId2">
+            <column name="REPCONTACTID2" />
+        </basic>
+        <basic name="representantContactId3">
+            <column name="REPCONTACTID3" />
+        </basic>
+        <many-to-one name="caseObject">
+          <join-column name="CASEID" referenced-column-name="CASEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+        <many-to-one name="casePersonType">
+          <join-column name="CASEPERSONTYPEID" referenced-column-name="TYPEID"
+              insertable="false" updatable="false" />
+        </many-to-one>        
+        <transient name="person" />
+        <transient name="personDesc" />
+        <transient name="contactId" />
+      </attributes>
+    </entity>   
+    
+    <entity class="org.santfeliu.cases.service.DBIntervention" 
+      name="Intervention">
+      <table name="CAS_INTERVENTION" />
+      <attributes>
+        <id name="intId">
+          <column name="INTERVENTIONID" />
+          <generated-value strategy="TABLE" generator="cases.intervention"/>
+          <table-generator name="cases.intervention" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1"/> 
+        </id>
+        <basic name="caseId">
+            <column name="CASEID" />
+        </basic>
+        <basic name="intTypeId">
+            <column name="TYPE" />
+        </basic>
+        <basic name="startDate">
+            <column name="INITDATE" />
+        </basic>
+        <basic name="startTime">
+            <column name="INITHOUR" />
+        </basic>
+        <basic name="endDate">
+            <column name="ENDDATE" />
+        </basic>
+        <basic name="endTime">
+            <column name="ENDHOUR" />
+        </basic>
+        <basic name="personId">
+            <column name="PERSCOD" />
+        </basic>
+        <basic name="userId">
+            <column name="USRNAME" />
+        </basic>
+        <basic name="comments">
+          <column name="COMMENTS" />
+        </basic>
+        <many-to-one name="caseObject">
+          <join-column name="CASEID" referenced-column-name="CASEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+        <many-to-one name="intType">
+          <join-column name="TYPE" referenced-column-name="TYPEID"
+              insertable="false" updatable="false" />
+        </many-to-one>        
+        <transient name="property" />
+      </attributes>
+    </entity>     
+    
+    <entity class="org.santfeliu.cases.service.DBInterventionProperty" 
+      name="InterventionProperty">
+      <table name="CAS_INTERVENTIONPROP" />
+      <id-class class="org.santfeliu.cases.service.DBInterventionPropertyPK"/>  
+      <attributes>
+        <id name="id">
+          <column name="INTERVENTIONID" />
+        </id>        
+        <id name="name">
+          <column name="PROPNAME" />
+        </id>
+        <id name="index">
+          <column name="INDX" />
+        </id>        
+        <basic name="value">
+          <column name="PROPVALUE" />
+        </basic>
+      </attributes>
+    </entity>     
+
+    <entity class="org.santfeliu.cases.service.DBProblem" 
+      name="Problem">
+      <table name="CAS_PROBLEM" />
+      <attributes>
+        <id name="probId">
+          <column name="PROBLEMID" />
+          <generated-value strategy="TABLE" generator="cases.caseProblem"/>
+          <table-generator name="cases.caseProblem" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1"/> 
+        </id>
+        <basic name="caseId">
+            <column name="CASEID" />
+        </basic>
+        <basic name="probTypeId">
+            <column name="PROBLEMTYPE" />
+        </basic>
+        <basic name="personId">
+            <column name="PERSONID" />
+        </basic>
+        <basic name="comments">
+            <column name="COMMENTS" />
+        </basic>
+        <basic name="startDate">
+            <column name="STARTDATE" />
+        </basic>
+        <basic name="endDate">
+            <column name="ENDDATE" />
+        </basic>
+        <basic name="reason">
+            <column name="REASON" />
+        </basic>
+        <basic name="priority">
+            <column name="PRIORITY" />
+        </basic>
+        <many-to-one name="caseObject">
+          <join-column name="CASEID" referenced-column-name="CASEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+      </attributes>
+    </entity>    
+    
+    <entity class="org.santfeliu.cases.service.DBDemand" 
+      name="Demand">
+      <table name="CAS_DEMAND" />
+      <attributes>
+        <id name="demandId">
+          <column name="DEMANDID" />
+          <generated-value strategy="TABLE" generator="cases.caseDemand"/>
+          <table-generator name="cases.caseDemand" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE" 
+            initial-value="0" allocation-size="1"/> 
+        </id>
+        <basic name="caseId">
+            <column name="CASEID" />
+        </basic>
+        <basic name="demandTypeId">
+            <column name="DEMANDTYPE" />
+        </basic>
+        <basic name="comments">
+            <column name="COMMENTS" />
+        </basic>
+        <many-to-one name="caseObject">
+          <join-column name="CASEID" referenced-column-name="CASEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+      </attributes>
+    </entity>      
+    
+    <entity class="org.santfeliu.cases.service.DBCaseDocument"
+      name="CaseDocument">
+      <table name="CAS_DOCUMENT" />
+      <id-class class="org.santfeliu.cases.service.DBCaseDocumentPK"/>
+      <attributes>
+        <id name="caseId">
+          <column name="CASEID" />
+        </id>
+        <id name="docId">
+            <column name="DOCID" />
+        </id>
+        <basic name="creationDateTime">
+            <column name="CREATIONDT" />
+        </basic>
+        <basic name="creationUserId">
+            <column name="CREATIONUSERID" />
+        </basic>
+        <basic name="changeDateTime">
+            <column name="CHANGEDT" />
+        </basic>
+        <basic name="changeUserId">
+            <column name="CHANGEUSERID" />
+        </basic>
+        <basic name="caseDocTypeId">
+            <column name="CASEDOCTYPEID" />
+        </basic>
+        <basic name="comments">
+            <column name="COMMENTS" />
+        </basic>
+        <basic name="volume">
+            <column name="VOLUME" />
+        </basic>
+        <many-to-one name="caseObject">
+          <join-column name="CASEID" referenced-column-name="CASEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.cases.service.DBCaseEvent" name="CaseEvent">
+      <table name="CAS_EVENT" />      
+      <attributes>
+        <id name="caseEventId">
+          <column name="CASEEVENTID" />
+          <generated-value strategy="TABLE" generator="cases.caseEvent"/>
+          <table-generator name="cases.caseEvent" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            initial-value="0" allocation-size="1"/>
+        </id>
+        <basic name="caseId">
+          <column name="CASEID" />
+        </basic>
+        <basic name="eventId">
+            <column name="ESDEVCOD" />
+        </basic>
+        <basic name="caseEventTypeId">
+            <column name="CASEEVENTTYPEID" />
+        </basic>                
+        <basic name="comments">
+          <column name="COMMENTS" />
+        </basic>                        
+        <many-to-one name="caseObject">
+          <join-column name="CASEID" referenced-column-name="CASEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+        <many-to-one name="caseEventType">
+          <join-column name="CASEEVENTTYPEID" referenced-column-name="TYPEID"
+              insertable="false" updatable="false" />
+        </many-to-one>        
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.cases.service.DBCaseEventProperty" 
+      name="CaseEventProperty">
+      <table name="CAS_EVENTPROP" />
+      <id-class class="org.santfeliu.cases.service.DBCaseEventPropertyPK"/>  
+      <attributes>
+        <id name="id">
+          <column name="CASEEVENTID" />
+        </id>        
+        <id name="name">
+          <column name="PROPNAME" />
+        </id>
+        <id name="index">
+          <column name="INDX" />
+        </id>
+        <basic name="value">
+          <column name="PROPVALUE" />
+        </basic>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.cases.service.DBAccessControl"
+      name="CaseAccessControl">
+      <table name="CAS_ACL" />
+      <id-class class="org.santfeliu.cases.service.DBAccessControlPK" />
+      <attributes>
+        <id name="caseId">
+          <column name="CASEID" />
+        </id>
+        <id name="roleId">
+          <column name="ROLEID" />
+        </id>
+        <id name="action">
+          <column name="ACTION" />
+        </id>
+      </attributes>
+    </entity>
+
+    <entity class="org.santfeliu.cases.service.DBCaseCase"
+      name="CaseCase">
+      <table name="CAS_CASECASE" />
+      <attributes>
+        <id name="caseCaseId">
+          <column name="CASECASEID" />
+          <generated-value strategy="TABLE" generator="cases.caseCase"/>
+          <table-generator name="cases.caseCase" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            initial-value="0" allocation-size="1"/>
+        </id>
+        <basic name="caseId">
+          <column name="CASEID" />
+        </basic>
+        <basic name="relCaseId">
+            <column name="RELCASEID" />
+        </basic>
+        <basic name="caseCaseTypeId">
+            <column name="CASECASETYPEID" />
+        </basic>
+        <basic name="comments">
+            <column name="COMMENTS" />
+        </basic>
+        <basic name="startDate">
+            <column name="STARTDATE" />
+        </basic>
+        <basic name="endDate">
+            <column name="ENDDATE" />
+        </basic>
+        <many-to-one name="mainCase">
+          <join-column name="CASEID" referenced-column-name="CASEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+        <many-to-one name="caseCaseType">
+          <join-column name="CASECASETYPEID" referenced-column-name="TYPEID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+      </attributes>
+    </entity>
+    
+    <entity class="org.santfeliu.cases.service.DBCaseCaseProperty" 
+      name="CaseCaseProperty">
+      <table name="CAS_CASECASEPROP" />
+      <id-class class="org.santfeliu.cases.service.DBCaseCasePropertyPK"/>  
+      <attributes>
+        <id name="id">
+          <column name="CASECASEID" />
+        </id>
+        <id name="name">
+          <column name="PROPNAME" />
+        </id>
+        <id name="index">
+          <column name="INDX" />
+        </id>
+        <basic name="value">
+          <column name="PROPVALUE" />
+        </basic>
+      </attributes>
+    </entity>         
+
+    <entity class="org.santfeliu.cases.service.DBInterventionProblem"
+      name="InterventionProblem">
+      <table name="CAS_INTPROB" />
+      <attributes>
+        <id name="intProbId">
+          <column name="INTPROBID" />
+          <generated-value strategy="TABLE" generator="cases.intProb"/>
+          <table-generator name="cases.intProb" table="TABLESEQ"
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            initial-value="0" allocation-size="1"/>
+        </id>
+        <basic name="intId">
+          <column name="INTERVENTIONID" />
+        </basic>
+        <basic name="probId">
+            <column name="PROBLEMID" />
+        </basic>
+        <basic name="comments">
+            <column name="COMMENTS" />
+        </basic>
+        <many-to-one name="intervention">
+          <join-column name="INTERVENTIONID" referenced-column-name="INTERVENTIONID"
+              insertable="false" updatable="false" />
+        </many-to-one>
+        <many-to-one name="problem">
+          <join-column name="PROBLEMID" referenced-column-name="PROBLEMID"
+              insertable="false" updatable="false" />
+        </many-to-one>        
+      </attributes>
+    </entity>    
+
+    <entity class="org.santfeliu.util.sequence.Sequence"
+      name="Sequence">
+      <table name="TABLESEQ" />
+      <attributes>
+        <id name="counter">
+          <column name="COUNTER" />
+        </id>
+        <basic name="value">
+          <column name="VALUE" />
+        </basic>
+      </attributes>
+    </entity>
+    
+</entity-mappings>

@@ -1,0 +1,64 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/topframe/topframe.xhtml">
+    <ui:define name="frame">  
+
+      <nav id="frame_nav_skipTop" aria-label="#{webBundle.skipToContent}"> 
+      <t:div id="templateSkipTop" forceId="true" styleClass="item skipDiv">
+        <h:outputLink value="#sf_main_content" rendered="#{userSessionBean.selectedMenuItem.properties.skipToContentIconURL != null}">
+          <t:graphicImage url="#{userSessionBean.selectedMenuItem.properties.skipToContentIconURL}"
+                          alt="#{webBundle.skipToContent}" />          
+        </h:outputLink>
+      </t:div>
+      </nav>            
+
+      <t:div styleClass="centralPage">
+        <t:div styleClass="headerPanel">
+          <header id="frame_header" aria-label="#{webBundle.mainHeader}">      
+          <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties.headerDocId}"
+                      rendered="#{userSessionBean.selectedMenuItem.properties.headerDocId != null}"
+                      translator="#{userSessionBean.translator}"
+                      translationGroup="#{userSessionBean.translationGroup}" />
+          </header>      
+        </t:div>
+
+        <t:div>
+          <ui:insert name="template">template</ui:insert>          
+        </t:div>
+
+        <t:div styleClass="footerPanel">
+          <footer id="frame_footer" aria-label="#{webBundle.mainFooter}">      
+          <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties.footerDocId}"
+                      rendered="#{userSessionBean.selectedMenuItem.properties.footerDocId != null}"
+                      translator="#{userSessionBean.translator}"
+                      translationGroup="#{userSessionBean.translationGroup}" />
+          </footer>      
+        </t:div>
+      </t:div>
+
+      <nav id="frame_nav_skipBottom" aria-label="#{webBundle.skipToTop}">  
+      <t:div id="templateSkipBottom" forceId="true" styleClass="skipDiv hide">
+        <h:outputLink value="#"
+                      onclick="skipToTop(); return false;"
+                      rendered="#{userSessionBean.selectedMenuItem.properties.skipToTopIconURL != null}">
+          <t:graphicImage url="#{userSessionBean.selectedMenuItem.properties.skipToTopIconURL}"
+                          alt="#{webBundle.skipToTop}" />          
+        </h:outputLink>
+      </t:div>
+      </nav>            
+
+      <f:verbatim>
+        <script type="text/javascript">
+          window.addEventListener('scroll', checkSkipBottomLink);
+          window.addEventListener('load', checkSkipBottomLink);
+        </script>
+      </f:verbatim>
+
+    </ui:define>
+  </ui:composition>
+</html>

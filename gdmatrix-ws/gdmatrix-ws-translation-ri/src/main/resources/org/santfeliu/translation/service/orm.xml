@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+  <description>Translation</description>
+  <package>org.santfeliu.translation.service</package>
+
+  <named-query name="findTranslation">
+    <query>
+      SELECT t FROM Translation t
+      WHERE t.language = :language
+      AND t.encodedText = :encodedText
+      AND t.strState &lt;&gt; 'R'
+    </query>
+  </named-query>
+
+  <named-query name="readEntireGroup">
+    <query>
+      SELECT t
+      FROM Translation t, TranslationGroup tg
+      WHERE (t.language = :language OR :language IS NULL)
+      AND t.transId = tg.transId
+      AND tg.group = :group
+      AND t.strState &lt;&gt; 'R'
+      ORDER BY t.readDateTime DESC
+    </query>
+  </named-query>
+
+  <named-query name="listModifiedTranslations">
+    <query>
+      SELECT t.transId
+      FROM Translation t
+      WHERE (t.language = :language OR :language IS NULL) 
+      AND t.creationDateTime &lt;&gt; t.modifyDateTime
+      AND t.modifyDateTime &gt; :dateTime1
+      AND (t.modifyDateTime &lt;= :dateTime2 OR :dateTime2 IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="setActiveTranslations">
+    <query>
+      UPDATE Translation t
+      SET t.readDateTime = :readDateTime
+      WHERE (t.transId = :transId) AND
+      t.readDateTime &lt; :readDateTime
+    </query>
+  </named-query>
+
+  <entity class="org.santfeliu.translation.service.DBTranslation" 
+    name="Translation">
+    <table name="TRN_TRANSLATION" />
+    <attributes>
+      <id name="transId">
+        <column name="TRANSID" />
+      </id>
+      <basic name="language">
+        <column name="LANGUAGE" />
+      </basic>
+      <basic name="encodedText">
+        <column name="TEXT" />
+      </basic>
+      <basic name="encodedTranslation">
+        <column name="TRANSLATION" />
+      </basic>
+      <basic name="strState">
+        <column name="STATE" />
+      </basic>
+      <basic name="group">
+        <column name="GRP" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="modifyDateTime">
+        <column name="MODIFYDT" />
+      </basic>
+      <basic name="readDateTime">
+        <column name="READDT" />
+      </basic>
+      <basic name="modifyUserId">
+        <column name="MODIFYUSERID" />
+      </basic>
+      <transient name="text" />
+      <transient name="translation" />
+      <transient name="state" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.translation.service.DBTranslationGroup" 
+    name="TranslationGroup">
+    <table name="TRN_TRANSLATIONGROUP" />
+    <id-class class="DBTranslationGroupPK" />
+    <attributes>
+      <id name="transId">
+        <column name="TRANSID" />
+      </id>
+      <id name="group">
+        <column name="GRP" />
+      </id>
+    </attributes>
+  </entity>
+
+</entity-mappings>

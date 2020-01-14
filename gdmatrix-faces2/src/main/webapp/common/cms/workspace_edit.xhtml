@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/topframe/topframe.xhtml">
+    <ui:param name="css" value="/common/cms/css/cms.css" />
+    <ui:define name="page">
+      
+      <f:loadBundle basename="org.santfeliu.cms.web.resources.CMSBundle"
+                    var="cmsBundle" />
+
+      <t:saveState value="#{nodeEditBean}" />
+      <t:saveState value="#{cmsToolbarBean}" />
+
+      <t:div style="margin-top: 8px; margin-left: 8px;">
+        <h:panelGrid columns="2">
+            <h:outputLabel value="#{cmsBundle.workspaceId}:" />
+            <h:outputText value="#{workspaceEditBean.workspace.workspaceId}" />
+            <h:outputLabel value="#{cmsBundle.name}:" />
+            <h:inputText value="#{workspaceEditBean.workspace.name}" style="width:300px;"/>
+            <h:outputLabel value="#{cmsBundle.description}:" />
+            <h:inputText value="#{workspaceEditBean.workspace.description}" style="width:600px;"/>
+            <h:outputLabel value="#{cmsBundle.referenceWorkspace}:" />
+            <t:selectOneMenu value="#{workspaceEditBean.workspace.refWorkspaceId}">
+              <f:selectItems value="#{workspaceEditBean.refWorkspaceItems}" />
+            </t:selectOneMenu>
+        </h:panelGrid>
+      </t:div>
+      <t:div style="margin-top: 8px; margin-left: 8px;">
+        <h:panelGroup>
+          <h:commandButton value="#{cmsBundle.save}" action="#{workspaceEditBean.save}" />
+          <h:commandButton value="#{cmsBundle.cancel}" action="#{workspaceEditBean.cancel}" />
+        </h:panelGroup>
+      </t:div>      
+      
+    </ui:define>
+  </ui:composition>
+</html>

@@ -1,0 +1,779 @@
+/* agenda */
+.test
+{
+  background-color: yellow;
+  color: green;
+  font-weight: bolder;
+}
+
+.calendarCurrentDay
+{
+  background-color: silver;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.calendarCurrentDay a
+{
+  text-decoration: none;
+  color: black;
+}
+
+.calendarDayCell
+{
+  background-color: #dddddd;
+  text-align: center;
+}
+
+.calendarDayCell a
+{
+  text-decoration: none;
+  color: black;
+}
+
+.calendarDayCell a:hover
+{
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.weekRow
+{
+  font-weight: bold;
+}
+
+.monthYearRow
+{
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.monthYearRow a
+{
+  text-decoration: none;
+  color: black;
+}
+
+.sch_column1
+{
+  width: 20%;
+}
+
+.sch_column2
+{
+  width: 80%;
+}
+
+/******* view/linked.jsp *********/
+.selectedRoomView
+{
+  margin: 10px 0px 10px 0px;
+}
+
+.selectedRoomView .roomViewName
+{
+  font-weight: bold;
+}
+
+.selectedRoomView .roomViewProperty
+{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.resultList a
+{
+  text-decoration: none;
+  color: black;
+}
+
+.resultList a:hover
+{
+  text-decoration: underline;
+  color: gray;
+}
+
+/************* view/schedule ***************/
+
+.eventView .scheduleView .actionBar
+{
+  color: black;
+  width:100%;
+  text-align:left;
+  margin:5px 0px 5px 0px;
+  height: 20px;
+}
+
+.eventView .scheduleView .actionBar A
+{
+  text-decoration: none;
+  color: black;
+}
+
+.eventView .scheduleView .actionBar a:hover
+{
+  color: gray;
+}
+
+.eventView .scheduleView .actionBar a:active
+{
+;
+}
+
+.eventView .scheduleView .actionBar .showEventMode
+{
+  float:right;
+}
+
+.eventView .scheduleView .actionBar .selected
+{
+  font-weight: bold;
+}
+
+.scheduleMode
+{
+  display: block;
+  width:22%;
+  float:left;
+  text-align: left;
+}
+
+.dateScroller
+{
+  display: block;
+  width:52%;
+  float:left;
+  text-align: center;
+}
+
+.actionsPanel
+{
+  display: block;
+  width:26%;
+  float:left;
+  text-align: right;
+}
+
+div.schedule-compact-default
+{
+  border-collapse: separate;
+}
+
+div.schedule-compact-default td.day
+{
+  background: white;
+}
+
+div.schedule-compact-default td.inactive-day
+{
+  background: white;
+}
+
+div.schedule-compact-default td.day .header,
+div.schedule-compact-default td.inactive-day .header
+{
+  text-align:center;
+  background:#E0E0E0;
+}
+
+div.schedule-compact-default td.day .content
+{
+  background:transparent;
+  cursor:pointer;
+}
+
+div.schedule-compact-default td.inactive-day .content
+{
+  background:transparent;
+  cursor:pointer;
+}
+
+div.schedule-compact-default td.day .content td,
+div.schedule-compact-default td.inactive-day .content td
+{
+  background: #EEEEFF;
+  border-top: 2px solid #FFFFFF;
+  border-bottom: 1px solid #C0C0FF;
+}
+
+div.schedule-compact-default td.day .content td.selected,
+div.schedule-compact-default td.inactive-day .content td.selected
+{
+  background: #F0F080;
+  color:black;
+  border:2px solid red;
+  font-size:10px;
+  font-family: Arial;
+}
+
+div.schedule-compact-default a
+{
+  text-align:left;
+  font-size:10px;
+  font-family:arial;
+  color:#404040;
+  text-decoration: none;
+  display:block;
+  height:100%;
+}
+
+div.schedule-compact-default a:hover
+{
+  color:black;
+}
+
+div.schedule-compact-default .header a
+{
+  font-size:12px;
+  font-family:arial;
+  padding:2px;
+  text-align: center;
+}
+
+div.schedule-compact-default td.today div.header
+{
+  background-color: yellow;
+}
+
+div.schedule-compact-default table.month th.header
+{
+  text-align:center;
+  font-family: Arial;
+  font-size:12px;
+}
+
+div.schedule-detailed-default
+{
+  border-collapse: separate;
+}
+
+div.schedule-detailed-default TD.gutter
+{
+  vertical-align: middle;
+}
+
+div.schedule-detailed-default .entry span.title,
+div.schedule-detailed-default .entry-selected span.title
+{
+  font-size:11px;
+  font-family: Arial;
+  font-weight: normal;
+  text-align: center;
+  color:#404040;  
+}
+
+div.schedule-detailed-default td.column
+{
+  cursor:pointer;
+}
+
+div.schedule-detailed-default .entry
+{
+  background:#EEEEFF;
+}
+
+div.schedule-detailed-default div.entry-selected div.text a
+{
+  text-decoration:none;
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+div.schedule-detailed-default span.description
+{
+  font-size:11px;
+  font-family: Arial;
+  font-weight: normal;
+  color:gray;
+  padding-top: 4px;
+  display: block;
+}
+
+div.schedule-detailed-default .header a.today
+{
+  background: yellow;
+}
+
+div.schedule-detailed-default div.entry div.text,
+div.schedule-detailed-default div.entry-selected div.text
+{
+  text-align: center;
+  background: #F0F080;
+  color:black;
+  font:11px/12px Arial;
+  border:none;
+}
+
+div.schedule-detailed-default div.entry-selected div.text a:hover span.title
+{
+  color:black;
+}
+
+.scheduleModeButton
+{
+  margin:2px;
+  padding:2px;
+  vertical-align: middle;
+}
+
+.scheduleModeButton:hover
+{
+  margin:2px;
+  padding:2px;
+  vertical-align: middle;
+  background:orange;
+}
+
+.scheduleModeButtonSelected
+{
+  margin:2px;
+  padding:2px;
+  background:yellow;
+  vertical-align: middle;
+  border:1px solid #EEEE00;
+}
+
+.dateHeader
+{
+  font-family: arial;
+  font-size: 12px;
+  color: black;
+  margin: 0 0 0 4px;
+  vertical-align: middle;
+  padding:2px;
+  background: #F0F0F0;
+}
+
+/************* event_detail.jsp ************/
+.eventDetail .blockHeader
+{
+    border-bottom: 2px solid #DDDDDD;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0.8em 0;
+    padding: 0.5em 0.3em;
+}
+
+.eventDetail .eventProperty
+{
+  padding: 5px;
+}
+
+.eventDetail .eventImage
+{
+  float: right;
+  border: 1px solid #DDDDDD;
+  padding: 1px;
+}
+
+.eventDetail .eventProperty .name
+{
+  display: inline-block;
+  margin-left: 2px;
+  margin-right: 2px;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+.eventDetail .eventProperty A
+{
+  text-decoration: none;
+  color: gray;
+}
+
+.eventDetail .eventProperty A:hover
+{
+  text-decoration: underline;
+  color: gray;
+}
+
+.eventDetail .shareLayer
+{
+  text-align: right;
+  line-height: 18px;
+}
+
+.eventDetail .shareLink
+{
+  padding-left: 4px;
+}
+
+.eventDetail .placeList .place1,
+.eventDetail .placeList .place2
+{
+  margin-bottom: 5px;
+}
+
+.eventDetail .closeButton,
+.eventDetail .editButton
+{
+  font-family:arial;
+  font-size:11px;
+  color:black;
+  border-style:solid;
+  border-color: gray;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back.gif') center center;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+  vertical-align: middle;
+}
+
+.eventDetail .closeButton:hover,
+.eventDetail .editButton:hover
+{
+  font-family: arial;
+  font-size: 11px;
+  color: black;
+  border-style: solid;
+  border-color: #604040;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back_hover.gif') center center;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+}
+
+.eventFilter .filterPanel
+{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.eventFilter .filterPanel .propsColumn .filterRow
+{
+  padding: 2px;
+}
+
+.eventFilter .filterPanel .footer 
+{
+  padding-right: 5px;
+}
+
+.calendarBox
+{
+  border-collapse: separate;
+}
+
+.calendarColumn
+{
+  width: 25%;
+  float: left;
+}
+
+.propsColumn
+{
+  float:left;
+}
+
+.eventDetail .textBox
+{
+  display: inline-block;
+  margin-left: 2px;
+  margin-right: 2px;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+.eventDetail .inputBox
+{
+  background-color: transparent;
+  border-color: transparent;
+  color: gray;
+  margin-left: -2px;
+}
+
+.eventDetail .selectBox
+{
+  line-height: 22px;
+}
+
+/************* event_search.jsp ************/
+.roomDetail .roomProperty
+{
+  padding: 5px;
+}
+
+.roomDetail .roomImage
+{
+  float: right;
+  border: 1px solid #DDDDDD;
+  padding: 1px;
+}
+
+.roomDetail .roomName
+{
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: 0.5em 0.3em;
+}
+
+.roomDetail .roomProperty .name
+{
+  display: inline-block;
+  margin-left: 2px;
+  margin-right: 2px;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+.unavailableAttendant
+{
+  background-image: url("/common/agenda/images/blink.gif");
+}
+
+.confirmPickup
+{
+  background:#F8F840;
+  border:orange 1px solid;
+  padding:10px;
+}
+
+.confirmPickup div.header
+{
+  text-align: left;
+  font-size: 12px;
+  font-family: Arial;
+  font-weight: bold;
+}
+
+.confirmPickup div.body
+{
+  text-align: left;
+  font-size: 12px;
+  font-family: Arial;
+  padding-top:4px;
+}
+
+.confirmPickup div.footer
+{
+  text-align: right;
+}
+
+.confirmPickup .footer input
+{
+  background:#F0F0F0;
+  padding: 0 2px 0 2px;
+  margin:4px;
+  font-family: Arial;
+  font-size: 12px;
+}
+
+.eventList .dayHeader
+{
+  margin-top:10px;
+  margin-bottom:6px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.eventList .eventRow
+{
+  margin-left:0;
+  display:block;
+  margin-top:2px;
+  line-height: 18px;
+}
+
+.eventList .eventRow .hourBlock
+{
+  width:14%;
+  display:inline-block;
+  text-align:right;
+  vertical-align:top;
+  font-size:12px;
+  margin-right:2px;
+  padding:1px;
+}
+
+.eventList .eventRow .eventBlock
+{
+  width:84%;
+  display:inline-block;
+  vertical-align:top;
+  background:white;
+  border:1px solid gray;
+  padding:1px;
+}
+
+.eventList .eventRow .eventBlock:hover
+{
+  background:#F8F8D0;
+}
+
+.eventList .eventRow.selected .eventBlock
+{
+  background: #F0F0FF;
+  font-style: italic;
+}
+
+.eventList .eventRow .eventBlock .eventDescription
+{
+  width:85%;
+  display:inline-block;
+  vertical-align:top;
+}
+
+.eventList .eventRow .eventBlock .eventDescription .eventType
+{
+}
+
+.eventList .eventRow .eventBlock .eventDescription .eventSummary
+{
+  margin-left:4px;
+}
+
+.eventList .eventRow .eventBlock .actionsGroup
+{
+  width:15%;
+  display:inline-block;
+  text-align:right;
+  vertical-align:top;
+}
+
+/********** event_recurrences.jsp ****************/
+.eventRecurrences .collapsiblePanel
+{
+  background-color: #eeeeee;
+  padding:5px;
+}
+
+.eventRecurrences .collapsiblePanel .title
+{
+  width:100%;
+  font-weight:bold;
+}
+
+.eventRecurrences .actionBar
+{
+  width:100%;
+  text-align:right;
+  margin-top: 5px;
+}
+
+.eventRecurrences .selected
+{
+  color: gray;
+}
+
+/********** event_copy.jsp ****************/
+.eventRecurrences .patternContainer
+{
+  width:100%;
+  background-color:#ffffff;
+  border-style:solid;
+  border-width:1px;
+  text-align:left;
+  padding:4px
+}
+
+.eventRecurrences .rangeContainer
+{
+  background-color:#ffffff;
+  border-style:solid;
+  border-width:1px;
+  text-align:left;
+  padding:4px
+}
+
+.eventRecurrences .containerTitle
+{
+  font-weight: bold;
+}
+
+/* Event -> Cases */
+
+.resultList.eventCases .idColumn
+{
+  width: 10%;
+}
+
+.resultList.eventCases .caseColumn
+{
+  width: 70%;
+}
+
+.resultList.eventCases .caseColumn .caseDiv
+{
+  width: 100%;
+}
+
+.resultList.eventCases .caseColumn .caseDiv .caseType
+{
+  display: block;
+  color: Grey;
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.resultList.eventCases .caseColumn .caseDiv .caseTitle
+{
+  display: block;
+}
+
+.resultList.eventCases .actionsColumn
+{
+  width: 20%;
+}
+
+.buttonGroupSelection .buttonDisabled
+{
+  color: gray;
+  background: url("/themes/default/images/button_back.gif") repeat scroll center center #E0E0E0;
+  border-color: #E0E0E0;
+  border-style: solid;
+  border-width: 1px;
+  font-family: arial;
+  font-size: 10px;
+  margin: 0 0 0 4px;
+}
+
+.buttonGroupSelection .buttonEnabled
+{
+  color: black;
+  background: url("/themes/default/images/button_back.gif") repeat scroll center center #E0E0E0;
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px;
+  font-family: arial;
+  font-size: 10px;
+  margin: 0 0 0 4px;
+}
+
+.buttonGroupSelection .buttonEnabled:hover
+{
+  background: url("/themes/default/images/button_back_hover.gif") repeat scroll center center #E0E0E0;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+  color: black;
+  font-family: arial;
+  font-size: 10px;
+  margin: 0 0 0 4px;
+}
+
+.barGroupSelection
+{
+  width:100%;
+  font-weight:bold;
+  display:block;
+  background:#E8E8E8;
+  padding:1px 0px 1px 1px;
+}
+
+.editingPanel .eventCasesHelp
+{
+  font-size: 11px;
+  font-weight: bold;
+  margin-left: 2px;
+}

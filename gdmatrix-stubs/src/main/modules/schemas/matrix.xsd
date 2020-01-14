@@ -1,0 +1,47 @@
+<xs:schema version="1.0"
+  targetNamespace="http://base.matrix.org/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:mime="http://www.w3.org/2005/05/xmlmime"
+  xmlns:mx="http://base.matrix.org/">
+
+  <xs:simpleType name="dateTime">
+    <xs:annotation>
+      <xs:documentation xml:lang="ca">
+        Representa una data i una hora en format "yyyyMMddHHmmss" en el fus horari del servidor
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{14}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="date">
+    <xs:annotation>
+      <xs:documentation xml:lang="ca">
+        Representa una data en format "yyyyMMdd" en el fus horari del servidor
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{8}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="time">
+    <xs:annotation>
+      <xs:documentation xml:lang="ca">
+        Representa una hora en format "HHmmss" en el fus horari del servidor
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{6}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ManagerMetaData">
+    <xs:sequence>
+      <xs:element name="vendor" type="xs:string"></xs:element>
+      <xs:element name="version" type="xs:string"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

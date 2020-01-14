@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+ <managed-bean>
+  <managed-bean-name>forumConfigBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.forum.web.ForumConfigBean</managed-bean-class>
+
+  <managed-bean-scope>application</managed-bean-scope></managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>forumCatalogueBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.forum.web.ForumCatalogueBean</managed-bean-class>
+
+  <managed-bean-scope>request</managed-bean-scope></managed-bean>
+
+ <navigation-rule>
+  <from-view-id>*</from-view-id>
+  <navigation-case>
+   <from-outcome>forum_catalogue</from-outcome>
+   <to-view-id>/common/forum/forum_catalogue.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>questions_normal</from-outcome>
+   <to-view-id>/common/forum/normal_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>questions_interview</from-outcome>
+   <to-view-id>/common/forum/interview_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>forum_hits</from-outcome>
+   <to-view-id>/common/forum/forum_hits.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>/common/forum/forum_setup.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>store_normal</from-outcome>
+   <to-view-id>/common/forum/normal_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>store_interview</from-outcome>
+   <to-view-id>/common/forum/interview_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>remove</from-outcome>
+   <to-view-id>/common/forum/forum_catalogue.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>cancel_normal</from-outcome>
+   <to-view-id>/common/forum/normal_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>cancel_interview</from-outcome>
+   <to-view-id>/common/forum/interview_questions.xhtml</to-view-id>
+  </navigation-case>
+
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>/common/forum/forum_catalogue.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>show_forum_normal</from-outcome>
+   <to-view-id>/common/forum/normal_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>show_forum_interview</from-outcome>
+   <to-view-id>/common/forum/interview_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>create_forum</from-outcome>
+   <to-view-id>/common/forum/forum_setup.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>setup_forum</from-outcome>
+   <to-view-id>/common/forum/forum_setup.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>/common/forum/normal_questions.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>show_question</from-outcome>
+   <to-view-id>/common/forum/normal_answers.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>setup_forum</from-outcome>
+   <to-view-id>/common/forum/forum_setup.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>/common/forum/interview_questions.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>edit_question</from-outcome>
+   <to-view-id>/common/forum/interview_answer.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>setup_forum</from-outcome>
+   <to-view-id>/common/forum/forum_setup.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+  <navigation-rule>
+  <from-view-id>/common/forum/normal_answers.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>edit_answer</from-outcome>
+   <to-view-id>/common/forum/normal_answers.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>store_answer</from-outcome>
+   <to-view-id>/common/forum/normal_answers.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>cancel</from-outcome>
+   <to-view-id>/common/forum/normal_questions.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+ <navigation-rule>
+  <from-view-id>/common/forum/interview_answer.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>store_answer</from-outcome>
+   <to-view-id>/common/forum/interview_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>cancel</from-outcome>
+   <to-view-id>/common/forum/interview_questions.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+
+  <navigation-rule>
+  <from-view-id>/common/forum/forum_hits.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>cancel_interview</from-outcome>
+   <to-view-id>/common/forum/interview_questions.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>cancel_normal</from-outcome>
+   <to-view-id>/common/forum/normal_questions.xhtml</to-view-id>
+  </navigation-case>
+
+ </navigation-rule>
+
+</faces-config>
+
+

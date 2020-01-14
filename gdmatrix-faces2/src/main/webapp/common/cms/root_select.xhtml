@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/topframe/topframe.xhtml">
+    <ui:param name="css" value="/common/cms/css/cms.css" />
+    <ui:define name="page">
+      
+      <f:loadBundle basename="org.santfeliu.cms.web.resources.CMSBundle" var="cmsBundle" />
+
+      <t:saveState value="#{nodeEditBean}" />
+      <t:saveState value="#{cmsToolbarBean}" />
+
+      <h:panelGrid columns="1" styleClass="cmsRootSelection">
+        <h:panelGroup styleClass="subtoolbar">
+          <h:commandLink action="#{nodeEditBean.createRootNode}" styleClass="imageButton">
+            <t:graphicImage url="/common/cms/images/add.png" title="#{cmsBundle.createRoot}"
+                            alt="#{cmsBundle.createRoot}" />
+          </h:commandLink>
+        </h:panelGroup>
+        <h:outputText value="#{cmsBundle.selectRoot}" styleClass="title" />
+        <h:dataTable value="#{nodeEditBean.rootNodeList}" var="node" styleClass="rootTable" columnClasses="col1,col2" >
+          <h:column>
+            <h:outputText value="#{node.nodeId}" styleClass="midBox" />
+          </h:column>
+          <h:column>
+            <h:commandLink action="#{nodeEditBean.changeRootNode}" styleClass="rootLink">
+              <h:outputText value="#{nodeEditBean.nodeLabel}" styleClass="rootLabel" />
+            </h:commandLink>
+          </h:column>
+        </h:dataTable>
+      </h:panelGrid>      
+      
+    </ui:define>
+  </ui:composition>
+</html>

@@ -1,0 +1,1398 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+
+  <description>AudiCases</description>
+  <package>com.audifilm.matrix.cases.service</package>
+
+<!--
+  <named-query name="countCases">
+    <query>
+      SELECT count(e)
+      FROM Case e
+      WHERE
+        (locate(concat(',', concat(e.caseId, ',')), :caseId) > 0
+        or locate(concat(',', concat(e.caseTypeNum, ',')), :caseId) > 0
+        or :caseId is null)
+        AND (trim(e.caseTypeId) = :caseTypeId OR :caseTypeId IS NULL)
+        AND (UPPER(e.description) LIKE :description OR :description IS NULL)
+        AND (UPPER(trim(e.assumpte)) LIKE :assumpte OR :assumpte IS NULL)
+        AND (((:registryFromDate &lt;= e.registryDate or :registryFromDate IS NULL)
+          and (:registryToDate &gt;= e.registryDate or :registryToDate IS NULL)
+          and :registryDateComparator = '1') or :registryDateComparator = '0')
+    </query>
+  </named-query>
+
+  <named-query name="findCases">
+    <query>
+      SELECT e
+      FROM Case e
+      WHERE
+        (locate(concat(',', concat(e.caseId, ',')), :caseId) > 0
+          or locate(concat(',', concat(e.caseTypeNum, ',')), :caseId) > 0
+          or :caseId is null)
+        AND (trim(e.caseTypeId) = :caseTypeId OR :caseTypeId IS NULL)
+        AND (UPPER(e.description) LIKE :description OR :description IS NULL)
+        AND (UPPER(trim(e.assumpte)) LIKE :assumpte OR :assumpte IS NULL)
+        AND (((:registryFromDate &lt;= e.registryDate or :registryFromDate IS NULL)
+          and (:registryToDate &gt;= e.registryDate or :registryToDate IS NULL)
+          and :registryDateComparator = '1') or :registryDateComparator = '0')
+      ORDER BY e.caseId
+    </query>
+  </named-query>
+
+  <named-query name="findCasesWithClassId">
+    <query>
+      SELECT e, ap.classId
+      FROM Case e, AplDocument ap
+      WHERE
+        (locate(concat(',', concat(e.caseId, ',')), :caseId) > 0
+        or locate(concat(',', concat(e.caseTypeNum, ',')), :caseId) > 0
+        or :caseId is null)
+        AND (trim(e.caseTypeId) = :caseTypeId OR :caseTypeId IS NULL)
+        AND (UPPER(e.sdetext) LIKE :description OR :description IS NULL)
+        AND (UPPER(trim(e.assumpte)) LIKE :assumpte OR :assumpte IS NULL)
+        AND (((:registryFromDate &lt;= e.registryDate or :registryFromDate IS NULL)
+          and (:registryToDate &gt;= e.registryDate or :registryToDate IS NULL)
+          and :registryDateComparator = '1') or :registryDateComparator = '0')
+        AND trim(ap.aplId) = 'SDE'
+        AND trim(ap.docorigen) = 'EXPED'
+        AND trim(ap.docId) = trim(e.caseTypeId)
+        AND (locate(concat(',', concat(trim(ap.classId), ',')), :classId) > 0 or :classId is null)
+      ORDER BY e.caseId
+    </query>
+  </named-query>
+
+  <named-query name="countCasesWithClassId">
+    <query>
+      SELECT count(e)
+      FROM Case e, AplDocument ap
+      WHERE
+        (locate(concat(',', concat(e.caseId, ',')), :caseId) > 0
+        or locate(concat(',', concat(e.caseTypeNum, ',')), :caseId) > 0
+        or :caseId is null)
+        AND (trim(e.caseTypeId) = :caseTypeId OR :caseTypeId IS NULL)
+        AND (UPPER(e.description) LIKE :description OR :description IS NULL)
+        AND (UPPER(trim(e.assumpte)) LIKE :assumpte OR :assumpte IS NULL)
+        AND (((:registryFromDate &lt;= e.registryDate or :registryFromDate IS NULL)
+          and (:registryToDate &gt;= e.registryDate or :registryToDate IS NULL)
+          and :registryDateComparator = '1') or :registryDateComparator = '0')
+        AND trim(ap.aplId) = 'SDE'
+        AND trim(ap.docorigen) = 'EXPED'
+        AND trim(ap.docId) = trim(e.caseTypeId)
+        AND (locate(concat(',', concat(trim(ap.classId), ',')), :classId) > 0 or :classId is null)
+    </query>
+  </named-query>
+-->
+  <named-query name="findCaseStates">
+    <query>
+      SELECT cs 
+      FROM CaseState cs
+      WHERE
+        (cs.caseId = :caseId OR :caseId IS NULL)
+        AND (cs.stateId = :stateId OR :stateId IS NULL)
+        AND (:dateTime IS NULL
+           OR (:dateTime &gt;= CONCAT(cs.startDate, cs.startTime)
+              AND (:dateTime &lt;= CONCAT(cs.endDate, cs.endTime) OR cs.endDate IS NULL)))
+      ORDER BY cs.caseId asc, cs.startDate, cs.startTime
+    </query>
+  </named-query>
+
+  <named-query name="findLastCaseState" >
+    <query>
+      SELECT cs
+      FROM CaseState cs
+      WHERE  
+        (cs.caseId = :caseId)
+        AND (cs.endDate IS NULL OR cs.stateId = '9999')
+      ORDER BY cs.startDate desc, cs.startTime desc
+    </query>
+  </named-query>
+
+  <named-query name="findCasePersons" >
+    <query>
+      SELECT c
+      FROM Case c
+      WHERE
+        (c.caseId = :caseId OR :caseId IS NULL)
+        AND (c.persId = :personId OR c.reprId = :personId OR :personId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="countCasePersons" >
+    <query>
+      SELECT count(c)
+      FROM Case c
+      WHERE
+        (c.caseId = :caseId OR :caseId IS NULL)
+        AND (c.persId = :personId OR c.reprId = :personId OR :personId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findInteressats" >
+    <query>
+      SELECT i
+      FROM Interessat i
+      WHERE
+        (i.caseId = :caseId OR :caseId IS NULL)
+        AND (i.personId = :personId OR i.representantId = :personId OR :personId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="countInteressats" >
+    <query>
+      SELECT count(i)
+      FROM Interessat i
+      WHERE
+        (i.caseId = :caseId OR :caseId IS NULL)
+        AND (i.personId = :personId OR i.representantId = :personId OR :personId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findCaseCases" >
+    <query>
+     SELECT cc, c, rc
+     FROM CaseCase cc JOIN cc.mainCase c JOIN cc.relCase rc
+     WHERE
+       (cc.caseId = :caseId OR :caseId IS NULL)
+       AND (cc.relCaseId = :relCaseId OR :relCaseId IS NULL)
+     ORDER BY cc.caseId
+    </query>
+  </named-query>
+
+  <named-query name="countCaseCases" >
+    <query>
+     SELECT count(cc)
+     FROM CaseCase cc
+     WHERE
+       (cc.caseId = :caseId OR :caseId IS NULL)
+       AND (cc.relCaseId = :relCaseId OR :relCaseId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="countCaseAddresses" >
+    <query>
+      SELECT count(ca)
+      FROM CaseAddress ca
+      WHERE
+        (ca.caseId = :caseId OR :caseId IS NULL)
+        AND (ca.addressId = :addressId
+            OR :addressId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findCaseAddresses" >
+    <query>
+      SELECT ca
+      FROM CaseAddress ca
+      WHERE
+        (ca.caseId = :caseId OR :caseId IS NULL)
+        AND 
+        (ca.addressId = :addressId OR :addressId IS NULL)
+      ORDER BY ca.caseId, ca.addressId
+    </query>
+  </named-query>
+
+  <named-query name="countCaseAddressCases" >
+    <query>
+      SELECT count(c)
+      FROM Case c
+      WHERE
+        (c.caseId = :caseId OR :caseId IS NULL)
+        AND (c.addressId = :addressId
+            OR :addressId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findCaseAddressCases" >
+    <query>
+      SELECT c
+      FROM Case c
+      WHERE
+        (c.caseId = :caseId OR :caseId IS NULL)
+        AND 
+        (c.addressId = :addressId OR :addressId IS NULL)
+      ORDER BY c.caseId, c.addressId
+    </query>
+  </named-query>
+
+  <named-query name="findSituacions" >
+    <query>
+      SELECT si
+      FROM Situacio si
+      WHERE
+        (si.caseId = :caseId OR :caseId IS NULL)
+         AND (si.dataAcceptacio IS NULL OR :tot IS NULL OR :tot = 'S')
+    </query>
+  </named-query>
+
+  <named-query name="incrementGenericCounter">
+    <query>
+      UPDATE Counter c
+      SET
+        c.counter = c.counter + 1,
+        c.stdumod = :userId,
+        c.stddmod = :day,
+        c.stdhmod = :hour
+      WHERE
+        trim(c.claupref) = trim(:claupref)
+        AND trim(c.claucod) = trim(:claucod)
+        AND trim(c.clauorigen) = trim(:clauorigen)
+    </query>
+  </named-query>
+
+  <named-query name="readGenericCounter">
+    <query>
+      SELECT c.counter
+      FROM Counter c
+      WHERE
+        trim(c.claupref) = trim(:claupref)
+        AND trim(c.claucod) = trim(:claucod)
+        AND trim(c.clauorigen) = trim(:clauorigen)
+    </query>
+  </named-query>
+
+
+  <named-query name="findCaseDocument" >
+    <query>
+      SELECT
+        cd
+      FROM
+        CaseDocument cd
+      WHERE
+        (:caseId is Null OR trim(cd.caseId) = :caseId)
+        AND (:aplcod is Null OR trim(cd.aplcod) = :aplcod)
+        AND (:docorigen is Null OR trim(cd.docorigen) = :docorigen)
+        AND (:doccod is Null OR trim(cd.doccod) = :doccod)
+        AND (:modelcod is Null OR trim(cd.modelcod) = :modelcod)
+        AND (:docnompc is Null OR trim(cd.docnompc) = :docnompc)
+        AND (:identificador is Null OR trim(cd.identificador) = :identificador)
+      ORDER BY cd.caseId, cd.docnompc
+     </query>
+  </named-query>
+
+  <named-query name="findCaseDocumentViews" >
+    <query>
+      SELECT
+        c, cd
+      FROM
+        Case c, CaseDocument cd
+      WHERE
+        trim(c.caseId) = trim(cd.caseId)
+        AND NOT (cd.docId is NULL)
+        AND (:caseId is NULL OR c.caseId = :caseId)
+        AND (:docId is NULL OR cd.docId = :docId)
+      ORDER BY c.caseId, cd.docnompc
+     </query>
+  </named-query>
+
+ <named-query name="findCaseVariables" >
+    <query>
+      SELECT
+        cv, v
+      FROM
+        CaseVariable cv, Variable v
+      WHERE
+        cv.caseId = :caseId
+        AND trim(cv.caseTypeId) = v.caseTypeId
+        AND trim(cv.variableId) = v.variableId
+      ORDER BY cv.caseId, cv.caseTypeId, cv.variableId
+    </query>
+  </named-query>
+
+  <named-query name="countCaseVariables" >
+    <query>
+      SELECT
+        count(cv)
+      FROM
+        CaseVariable cv
+      WHERE
+        cv.caseId = :caseId
+    </query>
+  </named-query>
+
+  <named-query name="findCaseState" >
+    <query>
+      SELECT cs
+      FROM CaseState cs
+      WHERE
+        cs.caseId = :caseId
+        AND cs.endDate is null
+     </query>
+  </named-query>
+
+  <named-query name="findCaseStateResponsible" >
+    <query>
+      SELECT csr
+      FROM CaseStateResponsible csr, CaseState cs
+      WHERE cs.caseId = :caseId
+       AND cs.endDate is null
+       AND cs.caseId = csr.caseId
+       AND cs.caseStateReferece = csr.caseStateReferece
+    </query>
+  </named-query>
+
+  <named-query name="findCaseClassId" >
+    <query>
+      SELECT ap.classId
+      FROM Case c, AplDocument ap
+      WHERE
+        trim(ap.aplId) = 'SDE'
+        AND trim(ap.docorigen) = 'EXPED'
+        AND trim(ap.docId) = trim(c.caseTypeId)
+        AND (c.caseId = :caseId)
+        AND NOT ap.classId is null
+    </query>
+  </named-query>
+
+<!--
+  <named-native-query name="loadExpedientEstatResponsables" >
+    <query>
+      SELECT to_char(e.sdenum) AS sdenum, to_char(e.sdeestatref) AS sdeestatref,
+        to_char(e.areacod) AS areaId, to_char(e.depcod) AS depId, to_char(e.grupcod) AS grupId,
+        e.areadesc AS area, e.depdesc AS departament, e.grupdesc AS grup
+      FROM
+        SDE_ESTAT e
+      WHERE
+          e.sdenum = ?caseId
+          AND e.texpcod = ?caseTypeId
+          AND e.sdedestats is null
+      UNION (SELECT to_char(r.sdenum) AS sdenum, to_char(r.sdeestatref) AS sdeestatref,
+          to_char(r.areacod) AS areaId, to_char(r.depcod) AS depId, to_char(r.grupcod) AS grupId,
+          r.areadesc AS area, r.depdesc AS departament, r.grupdesc AS grup
+        FROM
+          SDE_ESTAT e
+            JOIN SDE_ESTAT_RESP r
+            on e.SDENUM = r.SDENUM and e.SDEESTATREF = r.SDEESTATREF
+        WHERE
+          e.sdenum = ?caseId
+          AND e.texpcod = ?caseTypeId
+          AND e.sdedestats is null
+       )
+    </query>
+  </named-native-query>
+-->
+
+  <entity class="DBCase" name="Case">
+    <table name="SDE_EXPEDIENT" />
+    <attributes>
+      <id name="caseId">
+        <column name="SDENUM" />
+      </id>
+      <basic name="caseTypeId">
+        <column name="TEXPCOD" />
+      </basic>
+      <basic name="caseTypeNum">
+        <column name="SDENUMTEXP" />
+      </basic>
+      <basic name="sdetext">
+        <column name="SDETEXT" />
+      </basic>
+      <basic name="assumpte">
+        <column name="DESCASSUMPTE" />
+      </basic>
+      <basic name="subassumpte">
+        <column name="DESCSUBASSUMPTE" />
+      </basic>
+      <basic name="registryDate" >
+        <column name="sdedreg" />
+      </basic>
+      <basic name="registryTime" >
+        <column name="sdehreg" />
+      </basic>
+
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+
+      <basic name="extrcod" >
+        <column name="EXTRCOD" />
+      </basic>  
+      <basic name="arxsigtop" >
+        <column name="ARXSIGTOP" />
+      </basic>
+      <basic name="identval" >
+        <column name="IDENTVAL" />
+      </basic>
+      <basic name="idiomacod" >
+        <column name="IDIOMACOD" />
+      </basic>   
+      <basic name="eventexpr" >
+        <column name="EVENTEXPR" />
+      </basic>
+      <basic name="persId" >
+        <column name="PERSCOD" />
+      </basic>
+      <basic name="persnd" >
+        <column name="PERSND" />
+      </basic>
+      <basic name="reprId" >
+        <column name="REPRCOD" />
+      </basic>
+      <basic name="reprnd" >
+        <column name="REPRND" />
+      </basic>
+      <basic name="addressId" >
+        <column name="SDEDOMCOD" />
+      </basic>
+      <basic name="sderel" >
+        <column name="SDEREL" />
+      </basic>
+      <basic name="resracodec" >
+        <column name="RESRACODEC" />
+      </basic>
+      <basic name="resrorg" >
+        <column name="RESRORG" />
+      </basic>
+      <basic name="resrdata" >
+        <column name="RESRDATA" />
+      </basic>
+      <basic name="treccod" >
+        <column name="TRECCOD" />
+      </basic>
+      <basic name="persnom" >
+        <column name="PERSNOM" />
+      </basic>
+      <basic name="perscog1" >
+        <column name="PERSCOG1" />
+      </basic>
+      <basic name="perscog2" >
+        <column name="PERSCOG2" />
+      </basic>
+      <basic name="domicili" >
+        <column name="DOMICILI" />
+      </basic>
+      <basic name="repnom" >
+        <column name="REPNOM" />
+      </basic>
+      <basic name="repcog1" >
+        <column name="REPCOG1" />
+      </basic>
+      <basic name="repcog2" >
+        <column name="REPCOG2" />
+      </basic>
+      <basic name="repdomi" >
+        <column name="REPDOMI" />
+      </basic>
+      <basic name="persnif" >
+        <column name="PERSNIF" />
+      </basic>
+      <basic name="repnif" >
+        <column name="REPNIF" />
+      </basic>
+      <basic name="assumcod" >
+        <column name="ASSUMCOD" />
+      </basic>
+      <basic name="subassumcod" >
+        <column name="SUBASSUMCOD" />
+      </basic>
+      <basic name="sdenumcont" >
+        <column name="SDENUMCONT" />
+      </basic>
+      <basic name="fcontacn" >
+        <column name="FCONTACN" />
+      </basic>
+      <basic name="numconordre" >
+        <column name="NUMCONORDRE" />
+      </basic>
+      <basic name="tipocod" >
+        <column name="TIPOCOD" />
+      </basic>
+      <basic name="licitacion" >
+        <column name="LICITACION" />
+      </basic>
+      <basic name="transcod" >
+        <column name="TRANSCOD" />
+      </basic>
+      <basic name="transcodarea" >
+        <column name="TRANSCODAREA" />
+      </basic>
+      <basic name="assumcodorg" >
+        <column name="ASSUMCODORG" />
+      </basic>
+      <basic name="subassumcodorg" >
+        <column name="SUBASSUMCODORG" />
+      </basic>
+      <basic name="seccod" >
+        <column name="SECCOD" />
+      </basic>
+      <basic name="subseccod" >
+        <column name="SUBSECCOD" />
+      </basic>
+      <basic name="sercod" >
+        <column name="SERCOD" />
+      </basic>
+      <basic name="subsercod" >
+        <column name="SUBSERCOD" />
+      </basic>
+      <basic name="plataforma" >
+        <column name="PLATAFORMA" />
+      </basic>
+
+      <transient name="description" />
+      <transient name="caseStates" />
+      <transient name="properties" />
+
+      <transient name="fotoPersonaId" />
+      <transient name="fotoRepresentantId" />
+      <transient name="fotoAdrecaPersonaId" />
+      <transient name="fotoAdrecaRepresentantId" />
+
+    </attributes>
+  </entity>
+
+  <entity class="DBCaseState" name="CaseState">
+    <table name="SDE_ESTAT"  />
+    <secondary-table name="WKF_ESTAT"  >
+      <primary-key-join-column name="TEXPCOD" referenced-column-name="TEXPCOD" />
+      <primary-key-join-column name="ESTATCOD" referenced-column-name="ESTATCOD" />
+    </secondary-table>
+    <id-class class="DBCaseStatePK" />
+    <attributes>
+      <id name="caseId">
+        <column name="SDENUM" />
+      </id>
+      <id name="caseStateReferece">
+        <column name="SDEESTATREF" />
+      </id>
+      <basic name="caseTypeId">
+        <column name="TEXPCOD" />
+      </basic>
+      <basic name="stateId">
+        <column name="ESTATCOD" />
+      </basic>
+      <basic name="startDate" >
+        <column name="SDEDESTATE" />
+      </basic>
+      <basic name="startTime" >
+        <column name="SDEHESTATE" />
+      </basic>
+      <basic name="endDate" >
+        <column name="SDEDESTATS" />
+      </basic>
+      <basic name="endTime" >
+        <column name="SDEHESTATS" />
+      </basic>
+      <basic name="area" >
+        <column name="AREADESC" />
+      </basic>
+      <basic name="departament" >
+        <column name="DEPDESC" />
+      </basic>
+      <basic name="grup" >
+        <column name="GRUPDESC" />
+      </basic>
+
+      <basic name="areaId" >
+        <column name="AREACOD" />
+      </basic>
+      <basic name="departamentId" >
+        <column name="DEPCOD" />
+      </basic>
+      <basic name="grupId" >
+        <column name="GRUPCOD" />
+      </basic>
+
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+
+      <basic name="description" >
+        <column name="ESTATDESC" table="WKF_ESTAT" />
+      </basic>
+      
+      <transient name="case" />
+      <transient name="propertyValue" />
+      
+    </attributes>
+  </entity>
+
+  <entity class="DBStateDefinition" name="StateDefinition" >
+    <table name="WKF_ESTAT"  />
+    <id-class class="DBStateDefinitionPK" />
+    <attributes>
+      <id name="caseTypeId" >
+        <column name="TEXPCOD"  />
+      </id>
+      <id name="stateId" >
+        <column name="ESTATCOD" />
+      </id>
+      <basic name="description"  >
+        <column name="ESTATDESC" />
+      </basic>
+      <basic name="areaId"  >
+        <column name="AREACOD" />
+      </basic>
+      <basic name="departamentId"  >
+        <column name="DEPCOD" />
+      </basic>
+      <basic name="grupId"  >
+        <column name="GRUPCOD" />
+      </basic>
+
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+    </attributes>
+  </entity >
+
+  <entity class="DBCaseType" name="CaseType">
+    <table name="WKF_EXPEDIENT"  />
+    <attributes>
+      <id name="typeId">
+        <column name="TEXPCOD" />
+      </id>
+      <basic name="description">
+        <column name="TEXPDESC" />
+      </basic>
+      <basic name="longDescription" >
+        <column name="TEXPLONGDESC" />
+      </basic>
+      <basic name="organizationId" >
+        <column name="ORGCOD" />
+      </basic>
+      <basic name="caseCounter" >
+        <column name="CONTADOREXP" />
+      </basic>
+      <basic name="departamentId" >
+        <column name="DEPCOD" />
+      </basic>
+      <basic name="areaId" >
+        <column name="AREACOD" />
+      </basic>
+      <basic name="arxiuId" >
+        <column name="ARXCOD" />
+      </basic>
+
+
+      <basic name="texpdmax" >
+        <column name="TEXPDMAX" />
+      </basic>
+      <basic name="texpdmig" >
+        <column name="TEXPDMIG" />
+      </basic>
+      <basic name="rbrecap" >
+        <column name="RBRECAP" />
+      </basic>
+      <basic name="prioritat" >
+        <column name="SDEPRIORITAT" />
+      </basic>
+      <basic name="llibreId" >
+        <column name="LLIBRECOD" />
+      </basic>
+      <basic name="trecId" >
+        <column name="TRECCOD" />
+      </basic>
+      <basic name="swoff" >
+        <column name="SWOFF" />
+      </basic>
+
+      <basic name="stdugr" >
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" />
+      </basic>
+     
+    </attributes>
+  </entity>
+
+  <entity name="Variable" class="DBVariable" >
+    <table name="WKF_VARIABLE" />
+    <id-class class="DBVariablePK" />
+    <attributes>
+      <id name="caseTypeId" >
+        <column name="TEXPCOD" />
+      </id>
+      <id name="variableId" >
+        <column name="VARCOD" />
+      </id>
+      <basic name="label" >
+        <column name="VARLABEL" />
+      </basic>
+      <basic name="type" >
+        <column name="VARTIP" />
+      </basic>
+      <basic name="size" >
+        <column name="VARSIZE" />
+      </basic>
+      <basic name="decimals" >
+        <column name="VARDECIM" />
+      </basic>
+      <basic name="description" >
+        <column name="VARDESC" />
+      </basic>
+      <basic name="ambit" >
+        <column name="VARAMBIT" />
+      </basic>
+      <basic name="opcional" >
+        <column name="VAROPC" />
+      </basic>
+      <basic name="agrupacioId" >
+        <column name="AGRUPCOD" />
+      </basic>
+      <basic name="swseg" >
+        <column name="SWSEG" />
+      </basic>
+
+      <basic name="stdugr" >
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity name="CaseCase" class="DBCaseCase" >
+    <table name="SDE_EXPRELEXP" />
+    <id-class class="DBCaseCasePK" />
+    <attributes>
+      <id name="caseId" >
+        <column name="SDENUM" />
+      </id>
+      <id name="relCaseId" >
+        <column name="SDENUMREL" />
+      </id>
+      <basic name="stdugr" >
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" />
+      </basic>
+      <many-to-one name="mainCase">
+        <join-column name="SDENUM" referenced-column-name="SDENUM"
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <many-to-one name="relCase">
+        <join-column name="SDENUMREL" referenced-column-name="SDENUM"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+  <entity name="Interessat" class="DBInteressat" >
+    <table name="SDE_INTERESSAT" />
+    <id-class class="DBInteressatPK" />
+    <attributes>
+      <id name="caseId" >
+        <column name="SDENUM"  nullable="false" />
+      </id>
+      <id name="personId" >
+        <column name="PERSCOD" nullable="false" />
+      </id>
+      <id name="personAddressNumber" >
+        <column name="PERSND" />
+      </id>
+      <basic name="representantId" >
+        <column name="REPRCOD" nullable="true"/>
+      </basic>
+      <basic name="representantAddressNumber" >
+        <column name="REPRND" />
+      </basic>
+      <basic name="personName" >
+        <column name="PERSNOM" />
+      </basic>
+      <basic name="personSurname1" >
+        <column name="PERSCOG1" />
+      </basic>
+      <basic name="personSurname2" >
+        <column name="PERSCOG2" />
+      </basic>
+      <basic name="addressDescription" >
+        <column name="DOMICILI" />
+      </basic>
+      <basic name="representantName" >
+        <column name="REPNOM" />
+      </basic>
+      <basic name="representantSurname1" >
+        <column name="REPCOG1" />
+      </basic>
+      <basic name="representantSurname2" >
+        <column name="REPCOG2" />
+      </basic>
+      <basic name="representantAddressDescription" >
+        <column name="REPDOMI" />
+      </basic>
+      <basic name="personNif" >
+        <column name="PERSNIF" />
+      </basic>
+      <basic name="representantNif" >
+        <column name="REPNIF" />
+      </basic>
+      <basic name="notisw"  >
+        <column name="NOTISW" updatable="false"/>
+      </basic>
+      <basic name="motiu"  >
+        <column name="MOTIU" updatable="false"/>
+      </basic>
+      <basic name="trecId"  >
+        <column name="TRECCOD" updatable="false"/>
+      </basic>
+      <basic name="licitador"  >
+        <column name="LICITADOR" updatable="false"/>
+      </basic>
+      <basic name="datos"  >
+        <column name="DATOS" updatable="false"/>
+      </basic>
+      <basic name="fcontacn"  >
+        <column name="FCONTACN" updatable="false"/>
+      </basic>
+      <basic name="numconordre"  >
+        <column name="NUMCONORDRE" updatable="false"/>
+      </basic>
+      <basic name="valnotint"  >
+        <column name="VALNOTINT" updatable="false" />
+      </basic>
+      <basic name="plataforma"  >
+        <column name="PLATAFORMA" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" />
+      </basic>
+      <many-to-one name="caseObject">
+        <join-column name="SDENUM" referenced-column-name="SDENUM"
+            insertable="false" updatable="false" />
+      </many-to-one>
+
+      <transient name="fotoPersonaId" />
+      <transient name="fotoRepresentantId" />
+      <transient name="fotoAdrecaPersonaId" />
+      <transient name="fotoAdrecaRepresentantId" />
+
+
+    </attributes>
+  </entity>
+  
+  <entity name="CaseAddress" class="DBCaseAddress" >
+    <table name="SDE_EXPEDIENTDOM" />
+    <id-class class="DBCaseAddressPK" />
+    <attributes>
+      <id name="caseId" >
+        <column name="SDENUM" />
+      </id>
+      <id name="addressId" >
+        <column name="SDEDOMCOD" />
+      </id>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+      <many-to-one name="caseObject">
+        <join-column name="SDENUM" referenced-column-name="SDENUM"
+            insertable="false" updatable="false" />
+      </many-to-one>
+
+    </attributes>
+  </entity>
+
+  <entity class="DBSituacio" name="Situacio">
+    <table name="SDE_SITUACIO" />
+    <attributes>
+      <id name="caseId" >
+        <column name="SDENUM"  />
+      </id>
+      <basic name="areaId" >
+        <column name="AREACOD" updatable="false" />
+      </basic>
+      <basic name="deptId" >
+        <column name="DEPCOD" updatable="false" />
+      </basic>
+      <basic name="grupId" >
+        <column name="GRUPCOD" updatable="false" />
+      </basic>
+      
+      <basic name="dataAcceptacio" >
+        <column name="DACCEPTA" updatable="false" />
+      </basic>
+      <basic name="horaAcceptacio" >
+        <column name="HACCEPTA" updatable="false" />
+      </basic>
+      <basic name="dataTrasllat" >
+        <column name="DTRASLLAT" />
+      </basic>
+      <basic name="horaTrasllat" >
+        <column name="HTRASLLAT" updatable="false" />
+      </basic>
+      <basic name="observacions" >
+        <column name="OBSERVACIONS" updatable="false" />
+      </basic>
+      
+      <basic name="destiAreaId" >
+        <column name="AREACODD" updatable="false" />
+      </basic>
+      <basic name="destiDeptId" >
+        <column name="DEPCODD" updatable="false" />
+      </basic>
+      <basic name="destiGrupId" >
+        <column name="GRUPCODD" updatable="false" />
+      </basic>
+      <basic name="idseg" >
+        <column name="IDSEG" updatable="false" />
+      </basic>
+        
+      <basic name="ident" >
+        <column name="IDENT" updatable="false" />
+      </basic>
+      <basic name="area" >
+        <column name="AREADESC" updatable="false" />
+      </basic>
+      <basic name="departament" >
+        <column name="DEPDESC" updatable="false" />
+      </basic>
+      <basic name="grup" >
+        <column name="GRUPDESC" updatable="false" />
+      </basic>
+      
+      <basic name="destiArea" >
+        <column name="AREADESCD" updatable="false" />
+      </basic>
+      <basic name="destiDepartament" >
+        <column name="DEPDESCD" updatable="false" />
+      </basic>
+      <basic name="destiGrup" >
+        <column name="GRUPDESCD" updatable="false" />
+      </basic>
+     
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false"/>
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false"/>
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+
+      <transient name="propertyValue" />
+    </attributes>
+  </entity>
+
+  <entity class="DBCounter" name="Counter">
+    <table name="NCL_CLAU" />
+    <attributes>
+      <id name="claupref">
+        <column name="CLAUPREF" />
+      </id>
+      <id name="claucod">
+        <column name="CLAUCOD" />
+      </id>
+      <id name="clauorigen">
+        <column name="CLAUORIGEN" />
+      </id>
+      <basic name="claudesc">
+        <column name="CLAUDESC" />
+      </basic>
+      <basic name="counter">
+        <column name="CLAUVNUM" />
+      </basic>
+      <basic name="stdugr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+    </attributes>
+  </entity>
+
+  <!-- Table: APL_DOCSAPL-->
+  <entity name="CaseDocument" class="DBCaseDocument" >
+    <table name="APL_DOCSAPL" />
+    <id-class class="DBCaseDocumentPK" />
+    <attributes>
+      <id name="aplcod" >
+        <column name="APLCOD" />
+      </id>
+      <id name="docorigen" >
+        <column name="DOCORIGEN" />
+      </id>
+      <id name="doccod" >
+        <column name="DOCCOD" />
+      </id>
+      <id name="modelcod" >
+        <column name="MODELCOD" />
+      </id>
+      <id name="docnompc" >
+        <column name="DOCNOMPC" />
+      </id>
+      <id name="identificador" >
+        <column name="IDENTIFICADOR" />
+      </id>
+      <basic name="docId" >
+        <column name="ID_NREG" updatable="false" />
+      </basic>
+      <basic name="caseId" >
+        <column name="SDENUM" updatable="false" />
+      </basic>
+      <basic name="doctip" >
+        <column name="DOCTIP" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+      <basic name="estatsig" >
+        <column name="ESTATSIG" updatable="false" />
+      </basic>
+      <basic name="motiurebu" >
+        <column name="MOTIUREBU" updatable="false" />
+      </basic>
+      <basic name="descriptor" >
+        <column name="DESCRIPTOR" updatable="false" />
+      </basic>
+      <basic name="guid" >
+        <column name="GUID" updatable="false" />
+      </basic>
+      <basic name="eliminat" >
+        <column name="ELIMINAT" updatable="false" />
+      </basic>
+      <basic name="texpcod" >
+        <column name="TEXPCOD" updatable="false" />
+      </basic>
+      <basic name="observacions" >
+        <column name="OBSERVACIONS" updatable="false" />
+      </basic>
+      <basic name="docprotect" >
+        <column name="DOCPROTECT" updatable="false" />
+      </basic>
+      <basic name="acciogen" >
+        <column name="ACCIOGEN" updatable="false" />
+      </basic>
+      <basic name="estatgen" >
+        <column name="ESTATGEN" updatable="false" />
+      </basic>
+      <basic name="estatenv" >
+        <column name="ESTATENV" updatable="false" />
+      </basic>
+      <basic name="orgcod" >
+        <column name="ORGCOD" updatable="false" />
+      </basic>
+      <basic name="doctitol" >
+        <column name="DOCTITOL" updatable="false" />
+      </basic>
+      <basic name="datasessio" >
+        <column name="DATASESSIO" updatable="false" />
+      </basic>
+      <basic name="fechanoti" >
+        <column name="FECHANOTI" updatable="false" />
+      </basic>
+      <basic name="docnum" >
+        <column name="DOCNUM" updatable="false" />
+      </basic>
+      <basic name="estatcod" >
+        <column name="ESTATCOD" updatable="false" />
+      </basic>
+      <basic name="perscod" >
+        <column name="PERSCOD" updatable="false" />
+      </basic>
+      <basic name="persnd" >
+        <column name="PERSND" updatable="false" />
+      </basic>
+      <basic name="estatnot" >
+        <column name="ESTATNOT" updatable="false" />
+      </basic>
+      <basic name="docnomprop" >
+        <column name="DOCNOMPROP" updatable="false" />
+      </basic>
+      <basic name="propcod" >
+        <column name="PROPCOD" updatable="false" />
+      </basic>
+      <basic name="carrecdesc" >
+        <column name="CARRECDESC" updatable="false" />
+      </basic>
+      <basic name="transcod" >
+        <column name="TRANSCOD" updatable="false" />
+      </basic>
+      <basic name="treccod" >
+        <column name="TRECCOD" updatable="false" />
+      </basic>
+    </attributes>
+
+  </entity>
+
+  <entity name="CaseVariable" class="DBCaseVariable" >
+    <table name="SDE_VARIABLE" />
+    <id-class class="DBCaseVariablePK" />
+    <attributes>
+      <id name="caseId" >
+        <column name="SDENUM" />
+      </id>
+      <id name="caseTypeId" >
+        <column name="TEXPCOD" />
+      </id>
+      <id name="variableId" >
+        <column name="VARCOD" />
+      </id>
+      <basic name="value" >
+        <column name="SDEVARVAL" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <!-- Table: SDE_ESTAT_RESP-->
+  <entity name="CaseStateResponsible" class="DBCaseStateResponsible" >
+    <table name="SDE_ESTAT_RESP" />
+    <attributes>
+      <id name="caseId" >
+        <column name="SDENUM" />
+      </id>
+      <id name="caseStateReferece" >
+        <column name="SDEESTATREF" />
+      </id>
+      <id name="areaId" >
+        <column name="AREACOD" />
+      </id>
+      <id name="departamentId" >
+        <column name="DEPCOD" />
+      </id>
+      <id name="grupId" >
+        <column name="GRUPCOD" />
+      </id>
+      <basic name="area" >
+        <column name="AREADESC" updatable="false" />
+      </basic>
+      <basic name="departament" >
+        <column name="DEPDESC" updatable="false" />
+      </basic>
+      <basic name="grup" >
+        <column name="GRUPDESC" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+      
+      <transient name="propertyValue" />
+    </attributes>
+  </entity>
+
+  <entity class="DBKernelListItem" name="KernelListItem">
+    <table name="NCL_TAULA" />
+    <id-class class="DBKernelListItemPK" />
+    <attributes>
+      <id name="listId">
+        <column name="TCCODI0" />
+      </id>
+      <id name="itemId">
+        <column name="TCCODI1" />
+      </id>
+      <basic name="auxItemId">
+        <column name="TCCODI2" />
+      </basic>
+      <basic name="label">
+        <column name="TCDESC"/>
+      </basic>
+      <basic name="description">
+        <column name="TCDESC2"/>
+      </basic>
+      <basic name="tcqual" />
+      <basic name="tcvnum" />
+      <basic name="stdugr" />
+      <basic name="stdumod" />
+      <basic name="stddgr" />
+      <basic name="stddmod" />
+      <basic name="stdhgr" />
+      <basic name="stdhmod" />
+    </attributes>
+  </entity>
+
+  <entity name="AplDocument" class="DBAplDocument" >
+    <table name="APL_DOCUMENT" />
+    <id-class class="DBAplDocumentPK" />
+    <attributes>
+      <id name="aplId" >
+        <column name="APLCOD" />
+      </id>
+      <id name="docorigen" >
+        <column name="DOCORIGEN" />
+      </id>
+      <id name="docId" >
+        <column name="DOCCOD" />
+      </id>
+      <basic name="docdesc" >
+        <column name="DOCDESC" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+      <basic name="aliesdoc" >
+        <column name="ALIESDOC" updatable="false" />
+      </basic>
+      <basic name="aliesplant" >
+        <column name="ALIESPLANT" updatable="false" />
+      </basic>
+      <basic name="ext" >
+        <column name="EXT" updatable="false" />
+      </basic>
+      <basic name="seg" >
+        <column name="SEG" updatable="false" />
+      </basic>
+      <basic name="max" >
+        <column name="MAX" updatable="false" />
+      </basic>
+      <basic name="icona" >
+        <column name="ICONA" updatable="false" />
+      </basic>
+      <basic name="bloqueig" >
+        <column name="BLOQUEIG" updatable="false" />
+      </basic>
+      <basic name="acces" >
+        <column name="ACCES" updatable="false" />
+      </basic>
+      <basic name="classId" >
+        <column name="CLASS" updatable="false" />
+      </basic>
+      <basic name="modef" >
+        <column name="MODEF" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+</entity-mappings>
+
+

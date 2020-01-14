@@ -1,0 +1,84 @@
+[
+  {
+    "displayName" : "Workflow",
+    "extension" : "xml",
+    "className" : "org.santfeliu.matrix.ide.WorkflowPanel",
+    "propertyName" : "workflow.xml", 
+    "mimeType" : "text/xml",
+    "icon" : "workflow.gif",
+    "docTypeId" : "WORKFLOW"
+  },
+  {
+    "displayName" : "HTML visual form",
+    "extension" : "form",
+    "className" : "org.santfeliu.matrix.ide.FormPanel",
+    "propertyName" : "workflow.form", 
+    "mimeType" : "text/html",
+    "icon" : "form.gif",
+    "docTypeId" : "FORM"
+  },
+  {
+    "displayName" : "HTML document",
+    "extension" : "html",
+    "className" : "org.santfeliu.matrix.ide.HtmlPanel",
+    "propertyName" : "workflow.html",
+    "mimeType" : "text/html",
+    "icon" : "html.gif",
+    "docTypeId" : "FORM"
+  },
+  {
+    "displayName" : "XSL template",
+    "extension" : "xsl",
+    "className" : "org.santfeliu.matrix.ide.XslPanel",
+    "propertyName" : "workflow.xsl",
+    "mimeType" : "text/xsl",
+    "icon" : "xsl.gif",
+    "docTypeId" : "TEMPLATE"
+  },
+  {
+    "displayName" : "Javascript code",
+    "extension" : "js",
+    "className" : "org.santfeliu.matrix.ide.JavaScriptPanel",
+    "propertyName" : "workflow.js",
+    "mimeType" : "application/x-javascript",
+    "icon" : "javascript.gif",
+    "docTypeId" : "CODE"
+  },
+  {
+    "displayName" : "ANT project",
+    "extension" : "ant",
+    "className" : "org.santfeliu.matrix.ide.AntPanel",
+    "propertyName" : "ide.ant",
+    "mimeType" : "text/xml",
+    "icon" : "ant.gif",
+    "docTypeId" : "ANT"
+  },
+  {
+    "displayName" : "Roles graph",
+    "extension" : "xrg",
+    "className" : "org.santfeliu.matrix.ide.RolesGraphPanel",
+    "propertyName" : "security.xrg",
+    "mimeType" : "text/xml",
+    "icon" : "rolesgraph.gif",
+    "docTypeId" : "Document"
+  },
+  {
+    "displayName" : "Report template",
+    "extension" : "jst",
+    "className" : "org.santfeliu.matrix.ide.ReportTemplatePanel",
+    "propertyName" : "report",
+    "mimeType" : "text/html",
+    "icon" : "template.gif",
+    "docTypeId" : "REPORT",
+    "properties" : { "technology" : "template" }
+  },
+  {
+    "displayName" : "Upload setup",
+    "extension" : "upl",
+    "className" : "org.santfeliu.matrix.ide.DocumentUploaderPanel",
+    "propertyName" : "setupId",
+    "mimeType" : "text/plain",
+    "icon" : "uploader.gif",
+    "docTypeId" : "UploaderSetup"
+  }
+]

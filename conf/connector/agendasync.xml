@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<agendasync logsPath="c:/AgendaSync/logs">
+  <userstore class="org.santfeliu.agenda.connector.store.DBUserStore">
+    <property name="driver">oracle.jdbc.driver.OracleDriver</property>
+    <property name="url">jdbc:oracle:thin:@polux:1521:devfeliu</property>
+    <property name="username">ajuntament</property>
+    <property name="password">******</property>
+  </userstore>
+
+  <synchronizer class="org.santfeliu.agenda.connector.exchange.ExchangeSynchronizer">
+    <property name="userId">exchangeadmin@santfeliu.local</property>
+    <property name="password">******</property>
+    <property name="email">exchangeadmin@santfeliu.cat</property>
+    <property name="errorsBcc">blanquepa@santfeliu.cat</property>
+    <observer class="org.santfeliu.agenda.connector.matrix.MatrixObserver">
+      <property name="wsDirURL">http://localhost/wsdirectory</property>
+      <property name="userId">admin</property>
+      <property name="password">******</property>
+    </observer>
+  </synchronizer>
+  
+  <synchronizer class="org.santfeliu.agenda.connector.matrix.MatrixSynchronizer">
+    <property name="wsDirURL">http://localhost/wsdirectory</property>
+    <property name="userId">admin</property>
+    <property name="password">******</property>
+    <property name="mailServer">helios</property>
+    <property name="mailSender">exchangeadmin@santfeliu.cat</property>
+    <property name="errorsBcc">blanquepa@santfeliu.cat</property>
+    <observer class="org.santfeliu.agenda.connector.exchange.ExchangeObserver">
+      <property name="userId">exchangeadmin@santfeliu.local</property>
+      <property name="password">******</property>
+      <property name="adminEmail">exchangeadmin@santfeliu.cat</property>
+      <property name="culture">ca-ES</property>
+    </observer>
+  </synchronizer>
+  
+</agendasync>

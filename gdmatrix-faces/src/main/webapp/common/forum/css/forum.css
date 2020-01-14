@@ -1,0 +1,296 @@
+.sheet
+{
+  background-color: gray;
+}
+
+.messages
+{
+  margin: 5px;
+}
+
+.objectSearch .editingPanel
+{
+  border: 1px solid #C8C8C8;
+  padding: 2px;
+  margin-top: 5px;
+  background-color: white;
+}
+
+.user
+{
+  font-weight: bold;
+}
+
+.topButtons
+{
+  text-align: right;
+  height: 20px;
+}
+
+.buttonsBar
+{
+  text-align: right;
+  height: 20px;
+}
+
+.filterPanel
+{
+  padding-top: 10px;
+}
+
+/******* forum_catalogue.jsp ********/
+.forumName
+{
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.questionHeader,
+.normalAnswers .questionHeader
+{
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.fieldName
+{
+  font-weight: bold;
+}
+
+.openStatusMessage
+{
+  padding: 5px;
+  background-color: green;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  line-height:20px;
+  font-size: 12px;
+  color: white;
+  font-weight: bold;
+ }
+
+.closedStatusMessage
+{
+  padding: 5px;
+  background-color: red;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  line-height:20px;
+  font-size: 12px;
+  color: white;
+  font-weight: bold;
+ }
+
+/******* interview_questions.jsp *******/
+.forumTotals
+{
+  text-align:right;
+  margin-top:10px;
+}
+
+.interviewQuestionsColumn
+{
+  padding-top:5px;
+  padding-bottom:10px;
+  background-color: transparent;
+}
+
+.interviewQuestionsColumn .statusAnsweredVisible
+{
+}
+
+.interviewQuestionsColumn .statusAnsweredInvisible
+{
+}
+
+.interviewQuestionsColumn .statusPendingVisible
+{
+}
+
+.interviewQuestionsColumn .statusPendingInvisible
+{
+}
+
+.interviewQuestionsColumn .questionInfo
+{
+  padding-left:5px;
+  font-size:11px;
+  background-color: #eeeeee;
+  height: 20px;
+}
+
+.interviewQuestionsColumn .questionInfo .inputIndex
+{
+  margin-right: 5px;
+}
+
+.interviewQuestionsColumn .questionInfo .boldInputIndex
+{
+  font-weight: bold;
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+.interviewQuestionsColumn .questionInfo .outputIndex
+{
+}
+
+.interviewQuestionsColumn .questionInfo .boldOutputIndex
+{
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.interviewQuestionsColumn .questionBody .userImage
+{
+  width: 12px;
+  height: 12px;
+  margin:0px 2px 0px 2px;
+}
+
+.interviewAnswer .questionInfo .inputIndex
+{
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.interviewAnswer .questionInfo .outputIndex
+{
+  font-weight: bold;
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.interviewAnswer .questionInfo .dateTime
+{
+  font-size: 11px;
+}
+
+.normalQuestionsColumn .questionInfo .dateInfo,
+.interviewAnswer .questionInfo
+{
+  float:left;
+}
+
+.interviewAnswer .questionBody
+{
+  padding-left:5px;
+  padding-top:5px;
+  padding-bottom:5px;
+  padding-right: 5px;
+  text-align: justify;
+  clear:left;
+}
+.interviewQuestionsColumn .questionBody,
+.interviewQuestionsColumn .answerBody,
+.interviewAnswer .answerBody
+{
+  padding-left:5px;
+  padding-top:5px;
+  padding-bottom:5px;
+  padding-right:5px;
+  border-top: none 1px gray;
+  text-align: justify;
+  font-size: 12px;
+}
+
+.interviewQuestionsColumn .answerBody .text,
+.interviewAnswer .answerBody .text
+{
+  font-style: italic;
+}
+
+.interviewQuestionsColumn .answerBody .comments
+{
+  color: blue;
+}
+
+.answerBody .boxLabel
+{
+  display:block;
+  margin-top:8px;
+  margin-left:2px;
+  font-weight: bold;
+}
+
+.questionBody .text
+{
+  display: block;
+  width: 580px;
+}
+
+ /********** normal_questions.jsp *********/
+ .normalQuestionsColumn .questionInfo,
+ .normalAnswers .answerInfo
+{
+  padding-left:5px;
+  font-size:11px;
+}
+
+.normalAnswers .questionInfo
+{
+  font-size:11px;
+}
+
+.normalQuestionsColumn .questionInfo .userImage
+{
+  width: 8px;
+  height: 8px;
+  margin:0px 2px 0px 2px;
+}
+
+.normalQuestionsColumn .questionBody
+{
+  padding-left:5px;
+  padding-top:5px;
+  padding-bottom:5px;
+  padding-right: 5px;
+  text-align: justify;
+  clear:left;
+  font-size: 14px;
+}
+
+.normalAnswers .questionBody
+{
+  padding:15px 0px 20px 0px;
+  font-size:14px
+}
+
+.normalAnswers .answerBody
+{
+  margin-top:5px;
+  margin-left: 5px;
+  font-size:14px
+}
+
+.normalQuestionsColumn .counter
+{
+  font-weight: bold;
+}
+
+.normalQuestionsColumn .counters
+{
+  width:100%;
+  text-align:right;
+}
+
+/**************** forum_hits.jsp ******************/
+.userName
+{
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.fileUploadLabel
+{
+}
+
+.fileUploadInput
+{
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;  
+}

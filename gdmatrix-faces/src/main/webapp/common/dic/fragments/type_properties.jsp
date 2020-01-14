@@ -1,0 +1,304 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:t="http://myfaces.apache.org/tomahawk"
+          xmlns:sf="http://www.santfeliu.org/jsf">
+
+  <f:loadBundle basename="org.santfeliu.dic.web.resources.DictionaryBundle"
+    var="dictionaryBundle" />
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle"
+    var="objectBundle" />
+
+  <t:div style="width:100%;font-weight:bold;display:block;padding:1px 0px 1px 1px;"
+            rendered="#{typePropertiesBean.renderSuperTypes}">
+    <h:commandLink action="#{typePropertiesBean.changeRenderInheritedProperties}" >
+      <h:graphicImage url="/images/expand.gif"
+        style="border:0;vertical-align:middle;margin:2px 2px 2px 2px"
+        rendered="#{!typePropertiesBean.inheritedPropertiesRendered}"/>
+      <h:graphicImage url="/images/collapse.gif"
+        style="border:0;vertical-align:middle;margin:2px 2px 2px 2px"
+        rendered="#{typePropertiesBean.inheritedPropertiesRendered}"/>
+    </h:commandLink>
+    <h:outputText value="#{dictionaryBundle.typeProperties_inheritedProperties}"
+                  styleClass="textBox" />
+  </t:div>
+
+  <t:dataList value="#{typePropertiesBean.superTypes}" var="type"
+              rendered="#{typePropertiesBean.renderSuperTypes}">
+    <t:div rendered="#{typePropertiesBean.inheritedPropertiesRendered}"
+      style="width:100%;font-weight:bold;display:block;background:#E8E8E8;padding:1px 0px 1px 1px;">
+      <h:outputText value="#{dictionaryBundle.typeProperties_type}: #{type.typeId} (#{type.description})"
+        styleClass="textBox" style="width:95%"/>
+      <h:commandButton action="#{typePropertiesBean.showType}"
+        value="#{objectBundle.show}"
+        image="#{userSessionBean.icons.show}"
+        alt="#{objectBundle.show}" title="#{objectBundle.show}" styleClass="showButton"/>
+    </t:div>
+    <t:dataTable value="#{typePropertiesBean.superTypePropertyDefinitions}" var="row"
+      rowClasses="row1,row2" headerClass="header" footerClass="footer"
+      styleClass="resultList" style="width:100%;margin-top:-3px"
+      bodyStyle="#{empty typePropertiesBean.superTypePropertyDefinitions ? 'display:none' : ''}"
+      rendered="#{typePropertiesBean.inheritedPropertiesRendered}">
+
+      <t:column style="width:22%" styleClass="#{row.hidden ? 'hidden' : ''}">
+        <f:facet name="header">
+          <h:outputText value="#{dictionaryBundle.typeProperties_name}:" />
+        </f:facet>
+        <h:panelGroup>
+          <h:graphicImage rendered="#{typePropertiesBean.typeIcon != null}"
+            url="/common/dic/images/#{typePropertiesBean.typeIcon}.gif"
+            style="vertical-align:middle;margin-right:2px" />
+          <h:outputText value="#{row.name}#{row.maxOccurs != 1 ? '[]' : ''}" style="font-family:Courier New" />
+        </h:panelGroup>
+      </t:column>
+
+      <t:column style="width:30%">
+        <f:facet name="header">
+          <h:outputText value="#{dictionaryBundle.typeProperties_description}:" />
+        </f:facet>
+        <h:outputText value="#{row.description}" />
+      </t:column>
+
+      <t:column style="width:8%">
+        <f:facet name="header">
+          <h:outputText value="#{dictionaryBundle.typeProperties_size}:" />
+        </f:facet>
+        <h:outputText value="#{row.size}" />
+      </t:column>
+
+      <t:column style="width:20%">
+        <f:facet name="header">
+          <h:outputText value="#{dictionaryBundle.typeProperties_value}:" />
+        </f:facet>
+        <h:outputText value="#{row.value[0]}" />
+      </t:column>
+
+      <t:column style="width:20%" styleClass="actionsColumn">
+        <h:commandButton image="/common/dic/images/override.gif"
+          alt="#{dictionaryBundle.typeProperties_override}"
+          title="#{dictionaryBundle.typeProperties_override}"
+          action="#{typePropertiesBean.overrideProperty}"
+          rendered="#{not typePropertiesBean.overrided}"
+          styleClass="showButton" />
+      </t:column>
+
+    </t:dataTable>
+  </t:dataList>
+
+  <t:div style="width:100%;font-weight:bold;display:block;padding:1px 0px 1px 1px;">
+    <h:outputText value="#{dictionaryBundle.typeProperties_ownProperties}"
+                  styleClass="textBox" />
+  </t:div>
+
+  <t:dataTable value="#{typePropertiesBean.rows}" var="row"
+    rowClasses="row1,row2" headerClass="header" footerClass="footer"
+    rowStyleClass="#{(typePropertiesBean.editingPropertyDefinitionItem != null and
+      row.propertyDefinition.name == typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.name) ? 'selectedRow' : null}"
+    styleClass="resultList" style="width:100%"
+    bodyStyle="#{empty typePropertiesBean.rows ? 'display:none' : ''}"
+    previousRowDataVar="prev"
+    rows="#{typePropertiesBean.pageSize}">
+
+    <t:column style="width:22%" styleClass="#{row.propertyDefinition.hidden ? 'hidden' : ''}">
+      <f:facet name="header">
+        <h:outputText value="#{dictionaryBundle.typeProperties_name}:" />
+      </f:facet>
+      <h:panelGroup>
+        <h:graphicImage rendered="#{typePropertiesBean.typeIcon != null}"
+          url="/common/dic/images/#{typePropertiesBean.typeIcon}.gif"
+          style="vertical-align:middle;margin-right:2px" />
+        <h:outputText value="#{row.propertyDefinition.name}#{row.propertyDefinition.maxOccurs != 1 ? '[]' : ''}"
+                      styleClass="#{typePropertiesBean.propertyDefinitionStyleClass}"
+                      style="font-family:Courier New" />
+      </h:panelGroup>
+    </t:column>
+
+    <t:column style="width:30%">
+      <f:facet name="header">
+        <h:outputText value="#{dictionaryBundle.typeProperties_description}:" />
+      </f:facet>
+      <h:outputText value="#{row.propertyDefinition.description}"
+                    styleClass="#{typePropertiesBean.propertyDefinitionStyleClass}" />
+    </t:column>
+
+    <t:column style="width:8%">
+      <f:facet name="header">
+        <h:outputText value="#{dictionaryBundle.typeProperties_size}:" />
+      </f:facet>
+      <h:outputText value="#{row.propertyDefinition.size}"
+                    styleClass="#{typePropertiesBean.propertyDefinitionStyleClass}" />
+    </t:column>
+
+    <t:column style="width:20%">
+      <f:facet name="header">
+        <h:outputText value="#{dictionaryBundle.typeProperties_value}:" />
+      </f:facet>
+      <h:outputText value="#{row.propertyDefinition.value[0]}"
+                    styleClass="#{typePropertiesBean.propertyDefinitionStyleClass}" />
+    </t:column>
+
+    <t:column style="width:20%" styleClass="actionsColumn">
+      <h:panelGroup>
+        <h:commandButton action="#{typePropertiesBean.editPropertyDefinition}"
+          rendered="#{row.propertyDefinition.name != null}"
+          disabled="#{typePropertiesBean.editingPropertyDefinitionItem != null}"
+          styleClass="editButton" value="#{objectBundle.edit}"
+          image="#{userSessionBean.icons.detail}"
+          alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
+        <h:commandButton image="#{userSessionBean.icons.remove}"
+          alt="#{objectBundle.remove}" title="#{objectBundle.remove}"
+          value="#{objectBundle.remove}"
+          action="#{typePropertiesBean.removePropertyDefinition}"
+          rendered="#{row.propertyDefinition.name != null}"
+          disabled="#{typePropertiesBean.editingPropertyDefinitionItem != null}"
+          styleClass="removeButton"
+          onclick="return confirm('#{objectBundle.confirm_remove}');" />
+      </h:panelGroup>
+    </t:column>
+
+    <f:facet name="footer">
+      <t:dataScroller
+        fastStep="100"
+        paginator="true"
+        paginatorMaxPages="9"
+        immediate="true"
+        styleClass="scrollBar"
+        paginatorColumnClass="page"
+        paginatorActiveColumnClass="activePage"
+        nextStyleClass="nextButton"
+        previousStyleClass="previousButton"
+        firstStyleClass="firstButton"
+        lastStyleClass="lastButton"
+        fastfStyleClass="fastForwardButton"
+        fastrStyleClass="fastRewindButton"
+        renderFacetsIfSinglePage="false">
+        <f:facet name="first">
+          <t:div title="#{objectBundle.first}"></t:div>
+        </f:facet>
+        <f:facet name="last">
+          <t:div title="#{objectBundle.last}"></t:div>
+        </f:facet>
+        <f:facet name="previous">
+          <t:div title="#{objectBundle.previous}"></t:div>
+        </f:facet>
+        <f:facet name="next">
+          <t:div title="#{objectBundle.next}"></t:div>
+        </f:facet>
+        <f:facet name="fastrewind">
+          <t:div title="#{objectBundle.fastRewind}"></t:div>
+        </f:facet>
+        <f:facet name="fastforward">
+          <t:div title="#{objectBundle.fastForward}"></t:div>
+        </f:facet>
+      </t:dataScroller>
+    </f:facet>
+  </t:dataTable>
+
+  <t:div style="width:100%;text-align:right">
+    <h:commandButton value="#{objectBundle.add}"
+      image="#{userSessionBean.icons.add}"
+      alt="#{objectBundle.add}" 
+      title="#{objectBundle.add}"
+      action="#{typePropertiesBean.addPropertyDefinition}"
+      rendered="#{row.name == null}"
+      disabled="#{typePropertiesBean.editingPropertyDefinitionItem != null}"
+      styleClass="addButton"  />
+  </t:div>
+
+  <t:div rendered="#{typePropertiesBean.editingPropertyDefinitionItem != null}"
+    styleClass="editingPanel">
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_name}:"
+        style="width:15%" styleClass="textBox" />
+      <h:inputText value="#{typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.name}"
+        style="width:40%;font-family:Courier New" styleClass="inputBox" required="true" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_description}:"
+        style="width:15%" styleClass="textBox" />
+      <h:inputText value="#{typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.description}"
+        style="width:80%" styleClass="inputBox" required="true" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_type}:"
+        style="width:15%" styleClass="textBox" />
+      <t:selectOneMenu value="#{typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.type}"
+        style="width:15%" styleClass="selectBox" forceId="true" id="propType">
+          <f:selectItems value="#{typePropertiesBean.propertyTypeSelectItems}" />
+        <f:converter converterId="EnumConverter" />
+        <f:attribute name="enum" value="org.matrix.dic.PropertyType" />
+      </t:selectOneMenu>
+    </t:div>
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_enumType}:" style="width:15%"
+        styleClass="textBox" />
+      <t:selectOneMenu value="#{typePropertiesBean.enumTypeId}"
+        style="width:70%" styleClass="selectBox">
+          <f:selectItems value="#{typePropertiesBean.enumTypeSelectItems}" />
+      </t:selectOneMenu>
+      <h:commandButton value="#{objectBundle.search}"
+        image="#{userSessionBean.icons.search}"
+        alt="#{objectBundle.search}" title="#{objectBundle.search}"
+        styleClass="searchButton"
+        action="#{typePropertiesBean.searchEnumType}" disabled="#{not typeBean.editable}" />
+      <h:commandButton value="#{objectBundle.show}"
+        image="#{userSessionBean.icons.show}"
+        alt="#{objectBundle.show}" title="#{objectBundle.show}"
+        styleClass="showButton"
+        action="#{typePropertiesBean.showEnumType}" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_size}:"
+         style="width:15%" styleClass="textBox" />
+      <h:inputText value="#{typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.size}"
+        style="width:8%;text-align:right" styleClass="inputBox" required="true" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_minOccurs}:"
+         style="width:15%" styleClass="textBox"/>
+      <h:inputText value="#{typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.minOccurs}"
+        style="width:8%;text-align:right" styleClass="inputBox" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_maxOccurs}:"
+         style="width:15%" styleClass="textBox"/>
+      <h:inputText value="#{typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.maxOccurs}"
+        style="width:8%;text-align:right" styleClass="inputBox" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_value}:"
+         style="width:15%" styleClass="textBox"/>
+      <h:inputTextarea value="#{typePropertiesBean.editingPropertyDefinitionValue}"
+        style="width:80%" styleClass="inputBox" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_hidden}:"
+         style="width:15%" styleClass="textBox"/>
+      <h:selectBooleanCheckbox value="#{typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.hidden}" />
+    </t:div>
+
+    <t:div>
+      <h:outputText value="#{dictionaryBundle.typeProperties_readOnly}:"
+         style="width:15%" styleClass="textBox"/>
+      <h:selectBooleanCheckbox value="#{typePropertiesBean.editingPropertyDefinitionItem.propertyDefinition.readOnly}" />
+    </t:div>
+
+    <t:div styleClass="actionsRow">
+      <h:commandButton action="#{typePropertiesBean.storePropertyDefinition}"
+        styleClass="addButton" value="#{objectBundle.accept}" />
+      <h:commandButton action="#{typePropertiesBean.cancelPropertyDefinition}"
+        styleClass="cancelButton" immediate="true" value="#{objectBundle.cancel}" />
+    </t:div>
+  </t:div>
+
+</jsp:root>

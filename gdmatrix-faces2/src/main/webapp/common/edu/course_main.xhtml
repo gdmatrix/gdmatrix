@@ -1,0 +1,41 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/obj/object.xhtml">
+    <ui:param name="css" value="/common/edu/css/edu.css" />
+    <ui:define name="tab">
+
+  <f:loadBundle basename="org.santfeliu.edu.web.resources.EducationBundle" 
+    var="educationBundle" />
+
+  <t:div>
+    <h:outputText value="#{educationBundle.course_code}:" 
+      styleClass="textBox" style="width:18%" />
+    <h:inputText value="#{courseMainBean.course.code}" 
+      styleClass="inputBox" />
+  </t:div>
+
+  <t:div>
+    <h:outputText value="#{educationBundle.school_name}:" 
+      styleClass="textBox" style="width:18%" />
+    <t:selectOneMenu value="#{courseMainBean.course.schoolId}" 
+      styleClass="selectBox">
+      <f:selectItems value="#{courseMainBean.schoolSelectItems}" />
+    </t:selectOneMenu>
+  </t:div>
+
+  <t:div>
+    <h:outputText value="#{educationBundle.course_name}:" 
+      styleClass="textBox" style="width:18%" />
+    <h:inputText value="#{courseMainBean.course.name}" 
+      styleClass="inputBox" />
+  </t:div>
+
+    </ui:define>
+  </ui:composition>
+</html>
+      

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0">
+  <name>planol_guia</name>
+  <title>Plànol guia</title>
+  <description><![CDATA[<b>Plànol guia</b> de Sant Feliu de Llobregat.]]></description>
+  <srs>EPSG:23031</srs>
+  <bounds>416437.89061623,4579777.3889251,424506.03389955,4586482.4841111</bounds>
+  <service>
+    <name>aju</name>
+    <description>Ajuntament</description>
+    <url>http://10.30.30.81:8080/geoserver/wms</url>
+  </service>
+  <service>
+    <name>icc</name>
+    <description>ICC</description>
+    <url>http://shagrat.icc.es/lizardtech/iserv/ows</url>
+  </service>
+  <layer id="0">
+    <service-name>aju</service-name>
+    <name>sf:cadastre</name>
+    <label>Cadastre</label>
+    <base>true</base>
+    <visible>true</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <format>image/png</format>
+  </layer>
+  <layer id="1">
+    <service-name>icc</service-name>
+    <name>orto25c</name>
+    <label>Orto 25c</label>
+    <base>true</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <format>image/jpeg</format>
+  </layer>
+  <layer id="2">
+    <service-name>icc</service-name>
+    <name>mtc5m</name>
+    <label>MTC</label>
+    <base>true</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <format>image/png</format>
+  </layer>
+  <layer id="3">
+    <service-name>aju</service-name>
+    <name>sf:PARCELLES</name>
+    <label>Parcel·les</label>
+    <base>false</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <format>image/png</format>
+    <style>line_orange</style>
+  </layer>
+  <layer id="4">
+    <service-name>aju</service-name>
+    <name>sf:SUBPARCELLES</name>
+    <label>Subparcelles</label>
+    <base>false</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <format>image/png</format>
+  </layer>
+  <layer id="5">
+    <service-name>aju</service-name>
+    <name>sf:EQUIPAMENT_INFO</name>
+    <label>Equipaments</label>
+    <base>false</base>
+    <visible>true</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <format>image/png</format>
+  </layer>
+  <layer id="6">
+    <service-name>aju</service-name>
+    <name>sf:BUSURBA</name>
+    <label>Linia de bus urbà</label>
+    <base>false</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <legend-graphic>49191</legend-graphic>
+    <format>image/png</format>
+    <sld>planol_guia</sld>
+    <style>basic</style>
+  </layer>
+  <layer id="7">
+    <service-name>aju</service-name>
+    <name>sf:PARADESBUSURBA</name>
+    <label>Parades de bus urbà</label>
+    <base>false</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <legend-graphic>49166</legend-graphic>
+    <format>image/png</format>
+    <sld>planol_guia</sld>
+    <style>basic</style>
+  </layer>
+  <layer id="8">
+    <service-name>aju</service-name>
+    <name>sf:BUSINTERURBA</name>
+    <label>Linies de bus interurbà</label>
+    <base>false</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <legend-graphic>49192</legend-graphic>
+    <format>image/png</format>
+    <sld>planol_guia</sld>
+    <style>basic</style>
+  </layer>
+  <layer id="9">
+    <service-name>aju</service-name>
+    <name>sf:PARADESBUSINTERURBA</name>
+    <label>Parades de bus interurbà</label>
+    <base>false</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <legend-graphic>49165</legend-graphic>
+    <format>image/png</format>
+    <sld>planol_guia</sld>
+    <style>basic</style>
+  </layer>
+  <layer id="10">
+    <service-name>aju</service-name>
+    <name>sf:PARADESTAXI</name>
+    <label>Parades de taxi</label>
+    <base>false</base>
+    <visible>false</visible>
+    <locatable>true</locatable>
+    <legend>true</legend>
+    <legend-graphic>49199</legend-graphic>
+    <format>image/png</format>
+    <sld>planol_guia</sld>
+    <style>basic</style>
+  </layer>
+  <layer id="11">
+    <service-name>aju</service-name>
+    <name>sf:SENTITSCIRCULACIO</name>
+    <label>Sentits de circulació</label>
+    <base>false</base>
+    <visible>false</visible>
+    <locatable>false</locatable>
+    <legend>true</legend>
+    <legend-graphic>49196</legend-graphic>
+    <format>image/png</format>
+    <sld>planol_guia</sld>
+    <style>basic</style>
+  </layer>
+  <info-layer>
+    <name>PARCELLES</name>
+    <form-selector></form-selector>
+    <highlight>true</highlight>
+  </info-layer>
+  <info-layer>
+    <name>EQUIPAMENT_INFO</name>
+    <form-selector></form-selector>
+    <highlight>false</highlight>
+  </info-layer>
+  <property>
+    <name>map.background.color</name>
+    <value>#F0F0FF</value>
+  </property>
+  <property>
+    <name>print.legend.border</name>
+    <value>none</value>
+  </property>
+  <property>
+    <name>print.legend.icons</name>
+    <value>true</value>
+  </property>
+</map>

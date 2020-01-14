@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="elections"
+  namespace="http://elections.matrix.org/"
+  title="Gestor d'eleccions"
+  wsdlLocation="../services/elections?wsdl"
+  service="ElectionsManagerService"
+  port="ElectionsManagerPort"
+  version="1.1"
+  status="REVISION"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+  </imports>
+
+  <types>
+
+    <entity name="Councillor">
+      <identifier name="partyId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="order" type="xs:int">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="imageURL" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="PoliticalParty">
+      <identifier name="partyId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="abbreviation" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="image" type="xs:string" minOccurs="0">
+      </property>
+      <property name="color" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Board">
+      <identifier name="districtId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="sectionId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="boardId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="electors" type="xs:int">
+      </property>
+      <property name="totalVotes" type="xs:int">
+      </property>
+      <property name="blankVotes" type="xs:int">
+      </property>
+      <property name="nullVotes" type="xs:int">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="ElectionsResult">
+      <identifier name="partyId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="districtId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="sectionId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="boardId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="votes" type="xs:int">
+      </property>
+    </entity>
+
+    <entity name="Call">
+      <identifier name="callId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="date" type="xs:dateTime" minOccurs="0">
+      </property>
+      <property name="councillorsCount" type="xs:int">
+      </property>
+    </entity>
+
+    <entity name="District">
+      <identifier name="districtId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+  </types>
+
+  <operations>
+
+    <operation name="listCouncillors">
+      <parameter name="date" type="xs:dateTime">
+      </parameter>
+      <parameter name="callId" type="xs:string">
+      </parameter>
+      <response name="councillor" type="elections:Councillor" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="listPoliticalParties">
+      <parameter name="date" type="xs:dateTime">
+      </parameter>
+      <parameter name="callId" type="xs:string">
+      </parameter>
+      <response name="politicalParty" type="elections:PoliticalParty"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="listBoards">
+      <parameter name="date" type="xs:dateTime">
+      </parameter>
+      <parameter name="callId" type="xs:string">
+      </parameter>
+      <response name="board" type="elections:Board" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="listResults">
+      <parameter name="date" type="xs:dateTime">
+      </parameter>
+      <parameter name="callId" type="xs:string">
+      </parameter>
+      <response name="electionResult" type="elections:ElectionsResult"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="listCalls">
+      <response name="call" type="elections:Call" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="listDistricts">
+      <parameter name="date" type="xs:dateTime">
+      </parameter>
+      <response name="district" type="elections:District" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+  </operations>
+</module>

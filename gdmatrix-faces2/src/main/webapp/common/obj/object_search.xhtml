@@ -1,0 +1,51 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/templates/#{userSessionBean.template}/template.xhtml">
+    <ui:define name="body">
+
+      <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                    var="objectBundle" />
+
+      <t:buffer into="#{buffer}">
+        <ui:include src="/common/obj/page_history.xhtml" />
+
+        <t:div styleClass="objectSearch">
+          <t:div styleClass="header"
+                 rendered="#{userSessionBean.selectedMenuItem.properties.showHeader == 'true'}">
+            <h:panelGroup style="width:80%;display:inline-block;">
+
+              <h:graphicImage rendered="#{controllerBean.objectBean != null and controllerBean.objectBean.renderObjectTypeIcon}"
+                              value="#{controllerBean.objectBean.rootObjectTypeIconPath}"
+                              style="border:none" alt="" />
+
+              <sf:outputText value="#{controllerBean.searchBean.title}:"
+                             translator="#{userSessionBean.translator}"
+                             translationGroup="#{userSessionBean.translationGroup}"
+                             style="text-align:left" />
+            </h:panelGroup>
+            <h:panelGroup style="width:20%;display:inline-block;text-align:right">
+              <h:commandButton action="#{controllerBean.close}"
+                               value="#{objectBundle.close}" immediate="true"
+                               styleClass="closeButton"
+                               image="#{userSessionBean.icons.close}"
+                               alt="#{objectBundle.close}" title="#{objectBundle.close}" />
+            </h:panelGroup>
+          </t:div>
+          <ui:insert name="filterlist">filterlist</ui:insert>
+        </t:div>
+      </t:buffer>
+
+      <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
+                  errorClass="errorMessage" warnClass="warnMessage_line"
+                  infoClass="infoMessage_line"/>
+
+      <h:outputText value="#{buffer}" escape="false"/>
+
+    </ui:define>
+  </ui:composition>
+</html>

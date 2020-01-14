@@ -1,0 +1,46 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/templates/#{userSessionBean.template}/template.xhtml">
+    <ui:define name="body">
+<!--
+  <h:panelGrid columns="1" binding="#{widgetTestBean.panel}" border="1" />
+
+  <h:commandButton action="#{widgetTestBean.outcomeNull}" value="NULL" />
+  <h:commandButton action="#{widgetTestBean.outcome}" value="NOT NULL" />
+  <h:commandButton action="#{widgetTestBean.addInputText}" value="ADD" />
+-->
+
+<h:panelGrid columns="1" border="1" >
+  <sf:agenda theme="#{widgetTestBean.theme}"
+             var="e"
+             url="/common/agenda/esdeveniment.faces?xmid=#{widgetTestBean.agendaMid}&amp;eventid=#{e.eventId}"
+             rows="4"
+             translator="#{userSessionBean.translator}"
+             translationGroup="event"
+             styleClass="eventsContainer"
+             dateStyleClass="eventDate"
+             nameStyleClass="eventName"
+             commentsStyleClass="eventComments"/>
+
+  <sf:news section="#{widgetTestBean.section}"
+           var="n"
+           url="/go.faces?xmid=#{widgetTestBean.section}&amp;newid=#{n.newId}"
+           rows="4"
+           translator="#{userSessionBean.translator}"
+           translationGroup="new"
+           styleClass="container"
+           dateStyleClass="date"
+           headLineStyleClass="headLine"
+           imageStyleClass="image"
+           summaryStyleClass="summary"/>
+</h:panelGrid>
+
+
+    </ui:define>
+  </ui:composition>
+</html>

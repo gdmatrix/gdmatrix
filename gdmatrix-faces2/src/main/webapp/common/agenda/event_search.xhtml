@@ -1,0 +1,88 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"      
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/obj/object_search.xhtml">
+    <ui:param name="css" value="/common/agenda/css/agenda.css" />
+    <ui:define name="filterlist">
+
+
+      <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
+        var="agendaBundle" />
+
+      <t:div style="width:100%"  
+        styleClass="headerDocument"
+        rendered="#{eventSearchBean.headerBrowser != null}">
+        <sf:browser binding="#{eventSearchBean.headerBrowser}"
+          port="#{applicationBean.defaultPort}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}" />
+      </t:div>
+
+      <t:div style="width:100%" rendered="#{eventSearchBean.renderFilterInfo}">
+        <t:div style="width:100%"
+          styleClass="infoDocument"
+          rendered="#{eventSearchBean.infoBrowser != null}" >
+          <sf:browser binding="#{eventSearchBean.infoBrowser}"
+            port="#{applicationBean.defaultPort}"
+            translator="#{userSessionBean.translator}"
+            translationGroup="#{userSessionBean.translationGroup}" />
+        </t:div>
+      </t:div>
+
+      <t:div styleClass="confirmPickup"
+        rendered="#{eventSearchBean.selectedEvent != null and
+          eventSearchBean.renderPickUpButton}" >
+        <t:div styleClass="header">
+          <h:outputText value="#{agendaBundle.confirmAddSelectedEvent}" />
+        </t:div>
+        <t:div styleClass="body">
+          <h:outputText value="#{eventSearchBean.selectedEvent.summary}" />
+        </t:div>
+        <t:div styleClass="footer">
+          <h:commandButton value="#{agendaBundle.confirmYes}"
+            action="#{eventSearchBean.addSelectedEvent}" immediate="true" />
+          <h:commandButton value="#{agendaBundle.confirmNo}"
+            action="#{eventSearchBean.discardSelectedEvent}" immediate="true" />
+        </t:div>
+      </t:div>
+
+      <ui:include src="/common/agenda/templates/${eventSearchBean.templateName}.xhtml" />
+
+      <t:div styleClass="actionsBar" rendered="#{eventSearchBean.renderActionsBar}">
+         <h:commandButton value="#{objectBundle.search}"
+            styleClass="searchButton"
+            action="#{eventSearchBean.pickUpEvent}"
+            image="#{userSessionBean.icons.search}"
+            alt="#{objectBundle.search}" title="#{objectBundle.search}"
+            rendered="#{eventSearchBean.renderPickUpButton}"/>
+        <h:commandButton value="#{objectBundle.current}"
+           image="#{userSessionBean.icons.current}"
+           alt="#{objectBundle.current}" title="#{objectBundle.current}"
+           action="#{eventBean.show}" immediate="true"
+           styleClass="currentButton"
+           rendered="#{eventSearchBean.editorUser and userSessionBean.menuModel.browserType == 'desktop'}"/>
+         <h:commandButton value="#{objectBundle.create}"
+           image="#{userSessionBean.icons['new']}"
+           alt="#{objectBundle.create}" title="#{objectBundle.create}"
+           action="#{eventBean.create}" immediate="true"
+           styleClass="createButton"
+           rendered="#{eventSearchBean.editorUser and userSessionBean.menuModel.browserType == 'desktop'}"/>
+      </t:div>
+
+      <t:div style="width:100%"
+        rendered="#{eventSearchBean.footerBrowser!=null}"
+        styleClass="footerDocument">
+        <sf:browser binding="#{eventSearchBean.footerBrowser}"
+          port="#{applicationBean.defaultPort}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}" />
+      </t:div>
+
+
+    </ui:define>
+  </ui:composition>
+</html>

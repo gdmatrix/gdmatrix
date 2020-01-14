@@ -1,0 +1,333 @@
+BODY
+{
+  background-color: #E0E0E0;
+  color: black;
+  font-size: 12px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+.general_main
+{
+  background-color:white;
+  width:780px;
+  margin-top: 3px;
+  margin-left: auto;
+  margin-right: auto;  
+  border-spacing: 0px;  
+  border-collapse: collapse;   
+}
+
+.general_main > tbody > tr > td
+{
+  padding: 0px;
+}
+
+.general_header
+{
+  font-size: 12px;
+  font-weight: normal;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+
+  border-style:solid;
+  border-color:white;
+  border-bottom-width:3px;
+  border-top-width:0px;
+  border-left-width:0px;
+  border-right-width:0px;
+  padding: 0;
+}
+
+.general_header .headerTable
+{  
+  border-spacing: 0px;  
+  border-collapse: collapse;    
+}
+
+.general_header .headerTable > tbody > tr > td
+{
+  padding: 0px;
+}
+
+.general_body
+{
+  border-style:none;
+}
+
+.general_footer
+{
+  border-style:solid;
+  border-color:white;
+  border-top-width:3px;
+  border-bottom-width:0px;
+  border-left-width:0px;
+  border-right-width:0px;
+  border-collapse:collapse;
+  color: white;
+  text-align:center;
+  background-color:#ac0f54;
+  background-image:url("../images/footer_back.gif");
+  font-size:11px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+.general_footer .footerTable
+{
+  width: 100%;  
+  border-spacing: 0px;  
+  border-collapse: collapse;    
+}
+
+.general_footer .footerTable > tbody > tr > td
+{
+  padding: 0px;
+}
+
+.general_footer .column1
+{
+  width:78%;
+  text-align:center;
+}
+
+.general_footer .column2
+{
+  width:22%;
+  text-align:center;
+  border-style:solid;
+  border-color:white;
+  border-left-width:3px;
+  border-right-width:0px;
+  border-top-width:0px;
+  border-bottom-width:0px;
+}
+
+.general_bar
+{
+  height:41px;
+  background-color:#ac0f54;
+ 
+}
+
+.general_bar .buttonSelected
+{
+  color: white;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.general_bar .buttonUnselected
+{  
+  color: white;
+  text-decoration: none;
+}
+
+.general_bar .column1
+{
+  text-align:left;
+  width:78%;
+}
+
+.general_bar .column2
+{
+  text-align: left;
+  width:20%;
+}
+
+.general_bar .column3
+{
+  text-align:right;
+  width:2%;
+}
+
+
+.menubar
+{
+  position:absolute;
+  top:40px;
+  left:2px;
+  width:174px;
+  z-index:10;
+  background:white;
+  overflow:hidden;
+  overflow-x:hidden;
+}
+
+.mbar_item
+{
+  text-align:left;
+  font-weight:normal;
+  font-family:Verdana;
+  font-size:11px;
+}
+
+.mbar_item A
+{
+  display:block;
+  width:100%;
+  padding:3px;
+  text-decoration:none;
+  color:black;
+}
+
+.mbar_item A:hover
+{
+  background:#C0C0C0;
+}
+
+.loginBox
+{
+  border-collapse:collapse;
+  border-style:solid;
+  border-width:1px;
+  border-color:#D00000;
+  font-size:14px;  
+  vertical-align:middle;
+  background: white url('../images/login_box_back.gif') left top repeat-x;
+}
+
+.searchBox
+{
+  border-collapse:collapse;
+  border-style:solid;
+  border-width:1px;
+  border-color:black;
+  font-size:14px;  
+  vertical-align:middle;
+}
+
+.submitButton
+{
+  border-collapse:collapse;
+  color:white;
+  font-size:14px;
+  background-color:black;
+  border-style:none;
+  border-width:1px;
+  border-color:black;
+  vertical-align:middle;
+  padding:0px;
+  margin:0px;
+}
+
+.displayNameText
+{
+  font-size:14px;
+  color:gray;
+  font-weight:normal;
+  text-align:right;
+  vertical-align:middle;
+}
+
+.loginCommand
+{
+  font-size:11px;
+  color: #AF0000;
+  font-weight:normal;  
+  text-decoration: none;
+  text-align:right;
+}
+
+A.loginCommand:hover
+{
+  font-size:11px;
+  color: #FF0000;
+  font-weight:normal;  
+  text-decoration: none;
+  text-align:right;
+}
+
+.infoMessage
+{
+  color: green;
+}
+
+.warnMessage
+{
+  color: orange;
+}
+
+.errorMessage
+{
+  color: #A80000;
+}
+
+.fatalMessage
+{
+  color:Yellow;
+  background: red;
+}
+
+ul > .errorMessage,
+ul > .warnMessage,
+ul > .infoMessage,
+ul > .fatalMessage,
+ul > .errorMessage_line,
+ul > .warnMessage_line,
+ul > .infoMessage_line,
+ul > .fatalMessage_line
+{
+  margin-left: -40px;
+}
+
+.infoMessage_line
+{
+  color: green;
+  display: block;
+  font-weight: bold;
+}
+
+.warnMessage_line
+{
+  color: orange;
+  display: block;
+  font-weight: bold;
+}
+
+.errorMessage_line
+{
+  color: #A80000;
+  display: block;
+  font-weight: bold;
+}
+
+.fatalMessage_line
+{
+  color:Yellow;
+  background: red;
+  display: block;
+  font-weight: bold;
+}
+
+A.bottomLink
+{
+  color:white;
+  text-decoration:none;
+}
+
+A.bottomLink:hover
+{
+  text-decoration:underline;
+}
+
+.websText
+{
+  color:black;font-weight:bold
+}
+
+/* Accessibilitat - Skip links */
+
+div.skipDiv#templateSkipTop
+{
+  background: transparent;
+  position: absolute;
+}
+
+div.skipDiv a
+{
+  background-image: none !important;
+}
+
+div.skipDiv#templateSkipTop img
+{
+  margin-top: 3px;
+  margin-left: 3px;
+}

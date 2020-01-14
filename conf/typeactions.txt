@@ -1,0 +1,3 @@
+Document:Translate,Print
+Case:Export,Print
+Event:Duplicate,Copy,ReserveRoom,Print

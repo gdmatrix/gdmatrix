@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+  <managed-bean>
+    <managed-bean-name>educationConfigBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.EducationConfigBean</managed-bean-class>
+    <managed-bean-scope>application</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>inscriptionBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.InscriptionBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>inscriptionSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.InscriptionSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>inscriptionMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.InscriptionMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  
+  <managed-bean>
+    <managed-bean-name>personInscriptionsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.PersonInscriptionsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>courseSearchBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.CourseSearchBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>courseBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.CourseBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>courseMainBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.CourseMainBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  
+  <managed-bean>
+    <managed-bean-name>courseInscriptionsBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.edu.web.CourseInscriptionsBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  
+  
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+
+    <navigation-case>
+      <from-outcome>inscription_search</from-outcome>
+      <to-view-id>/common/edu/inscription_search.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>inscription_main</from-outcome>
+      <to-view-id>/common/edu/inscription_main.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>person_inscriptions</from-outcome>
+      <to-view-id>/common/edu/person_inscriptions.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>course_search</from-outcome>
+      <to-view-id>/common/edu/course_search.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>course_main</from-outcome>
+      <to-view-id>/common/edu/course_main.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>course_inscriptions</from-outcome>
+      <to-view-id>/common/edu/course_inscriptions.xhtml</to-view-id>
+    </navigation-case>
+
+  </navigation-rule>
+</faces-config>

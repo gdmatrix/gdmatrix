@@ -1,0 +1,32 @@
+<jnlp spec="1.0+" codebase="${jwsURL}" href="matrix-ide.jnlp">
+  <information>
+    <title>Matrix IDE</title>
+    <vendor>Ajuntament de Sant Feliu de Llobregat</vendor>
+    <homepage href="index.jsp"/>
+    <description>version 1.0</description>
+    <offline-allowed/>
+  </information>
+  <security>
+    <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.7+" />
+    <jar href="lib/gdmatrix-ide.jar" download="eager" main="true"/>
+    <jar href="lib/gdmatrix-common.jar" download="eager" main="false"/>
+    <jar href="lib/gdmatrix-stubs.jar" download="eager" main="false"/>  
+    <jar href="lib/jgraph.jar" download="eager" main="false"/>    
+    <jar href="lib/l2fprod-common-shared.jar" download="eager" main="false"/>
+    <jar href="lib/l2fprod-common-sheet.jar" download="eager" main="false"/>
+    <jar href="lib/filedrop.jar" download="eager" main="false"/>
+    <jar href="lib/commons-codec.jar" download="eager" main="false"/>
+    <jar href="lib/commons-lang.jar" download="eager" main="false"/>
+    <jar href="lib/jtidy.jar" download="eager" main="false"/>
+    <jar href="lib/js.jar" download="eager" main="false"/>
+    <jar href="lib/json-simple.jar" download="eager" main="false"/>
+    <jar href="lib/javax.mail.jar" download="eager" main="false"/>  
+    <jar href="lib/metadata-extractor.jar" download="eager" main="false"/>
+    <jar href="lib/xmpcore.jar" download="eager" main="false"/>
+    <jar href="lib/jcoord.jar" download="eager" main="false"/>
+  </resources>
+  <application-desc main-class="org.santfeliu.matrix.ide.MatrixIDE"/>
+</jnlp>

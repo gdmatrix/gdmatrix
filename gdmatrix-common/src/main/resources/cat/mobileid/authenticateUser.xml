@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns2:authenticateUser xmlns:ns2="http://idbcn.bcn.cat">
+      <docType>${docType}</docType>
+      <docNum>${docNum}</docNum>
+      <subject>${subject}</subject>
+      <source>${source}</source>
+      <level>${level}</level>
+      <minAge>${minAge}</minAge>
+    </ns2:authenticateUser>
+  </S:Body>
+</S:Envelope>

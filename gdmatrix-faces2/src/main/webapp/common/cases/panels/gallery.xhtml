@@ -1,0 +1,28 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+
+    <t:div styleClass="galleryPanel">
+      <sf:imagesCarousel id="carousel" imageId="#{panel.imageIds}"
+        thumbnailWidth="#{panel.thumbnailWidth}"
+        thumbnailHeight="#{panel.thumbnailHeight}" thumbnailCrop="auto"
+        thumbnailClickMode="#{thumbnailClickMode != null ? thumbnailClickMode : 'select'}"
+        thumbnailHoverMode="#{panel.thumbnailHoverMode}"
+        mainImageWidth="#{panel.imageWidth}"
+        mainImageHeight="#{panel.imageHeight}" mainImageCrop="auto"
+        mainImageClickMode="#{panel.mainImageClickMode != null ? mainImageClickMode : 'open'}"
+        renderMainImage="#{panel.renderMainImage}"
+        renderNavLinks="#{panel.renderNavLinks}"
+        renderThumbnails="#{panel.renderThumbnails}"
+        thumbnailShiftMode="#{panel.thumbnailShiftMode != null ? thumbnailShiftMode : 'thumbnail'}"
+        thumbnailCount="#{panel.thumbnailCount}"
+        thumbnailWindow="#{panel.thumbnailWindow}"
+        continueTime="#{panel.continueTime}"
+        transitionTime="#{panel.transitionTime}"  />
+    </t:div>
+
+</html>

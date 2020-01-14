@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="forum"
+  namespace="http://forum.matrix.org/"
+  title="Gestor de fòrums"
+  wsdlLocation="../services/forum?wsdl"
+  service="ForumManagerService"
+  port="ForumManagerPort"
+  version="1.0"
+  status="REVISION"
+  authors="Jordi Lopez, Abel Blanque, Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+  </imports>
+
+  <types>
+
+    <entity name="Forum">
+      <identifier name="forumId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="type" type="forum:ForumType" minOccurs="0">
+      </property>      
+      <property name="emailFrom" type="xs:string" minOccurs="0">
+      </property>
+      <property name="emailTo" type="xs:string" minOccurs="0">
+      </property>
+      <property name="lastInputIndex" type="xs:int">
+      </property>
+      <property name="lastOutputIndex" type="xs:int">
+      </property>
+      <property name="group" type="xs:string" minOccurs="0">
+      </property>
+      <property name="adminRoleId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="maxQuestions" type="xs:int">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Question">
+      <identifier name="questionId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="forumId" type="xs:string" minOccurs="0"
+        references="forum:Forum">
+      </property>
+      <property name="inputIndex" type="xs:int">
+      </property>
+      <property name="outputIndex" type="xs:int">
+      </property>
+      <property name="title" type="xs:string" minOccurs="0">
+      </property>
+      <property name="text" type="xs:string" minOccurs="0">
+      </property>
+      <property name="readCount" type="xs:int">
+      </property>
+      <property name="visible" type="xs:boolean">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="activityDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+    </entity>
+
+    <entity name="Answer">
+      <identifier name="answerId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="questionId" type="xs:string" minOccurs="0" 
+        references="forum:Question">
+      </property>
+      <property name="text" type="xs:string" minOccurs="0">
+      </property>
+      <property name="comments" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+    </entity>
+
+    <struct name="ForumView">
+      <property name="forum" type="forum:Forum" minOccurs="0">
+      </property>
+      <property name="visibleQuestionCount" type="xs:int">
+      </property>
+      <property name="visibleAnswerCount" type="xs:int">
+      </property>
+      <property name="pendentQuestionCount" type="xs:int">
+      </property>
+      <property name="editable" type="xs:boolean">
+      </property>
+      <property name="status" type="forum:ForumStatus">
+      </property>
+    </struct>
+
+    <struct name="QuestionView">
+      <property name="question" type="forum:Question" minOccurs="0">
+      </property>
+      <property name="answer" type="forum:Answer" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="ForumFilter">
+      <property name="forumId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="group" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="QuestionFilter">
+      <property name="questionId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="forumId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="showAnswered" type="forum:ShowAnswered" minOccurs="0">
+      </property>
+      <property name="showVisible" type="forum:ShowVisible" minOccurs="0">
+      </property>
+      <property name="orderBy" type="forum:OrderBy" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <enumeration name="ForumStatus">
+      <value name="OPEN_BEFORE"/>
+      <value name="CLOSED_BEFORE"/>
+      <value name="OPEN"/>
+      <value name="CLOSED"/>
+    </enumeration>
+
+    <enumeration name="ForumType">
+      <value name="NORMAL"/>
+      <value name="INTERVIEW"/>
+      <value name="UNCENSORED_INTERVIEW"/>
+    </enumeration>
+
+    <enumeration name="ShowAnswered">
+      <value name="YES"/>
+      <value name="NO"/>
+    </enumeration>
+
+    <enumeration name="ShowVisible">
+      <value name="YES"/>
+      <value name="NO"/>
+    </enumeration>
+
+    <enumeration name="OrderBy">
+      <value name="ACTIVITY"/>
+      <value name="INPUTINDEX"/>
+      <value name="OUTPUTINDEX"/>
+      <value name="USER"/>
+    </enumeration>
+
+  </types>
+
+  <operations>
+
+    <operation name="loadForum">
+      <parameter name="forumId" type="xs:string">
+      </parameter>
+      <response name="forum" type="forum:Forum">
+      </response>
+    </operation>
+
+    <operation name="storeForum">
+      <parameter name="forum" type="forum:Forum">
+      </parameter>
+      <response name="storedForum" type="forum:Forum">
+      </response>
+    </operation>
+
+    <operation name="removeForum">
+      <parameter name="forumId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="loadQuestion">
+      <parameter name="questionId" type="xs:string">
+      </parameter>
+      <response name="question" type="forum:Question">
+      </response>
+    </operation>
+
+    <operation name="storeQuestion">
+      <parameter name="question" type="forum:Question">
+      </parameter>
+      <response name="storedQuestion" type="forum:Question">
+      </response>
+    </operation>
+
+    <operation name="removeQuestion">
+      <parameter name="questionId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="readQuestion">
+      <parameter name="questionId" type="xs:string">
+      </parameter>
+      <response name="question" type="forum:Question">
+      </response>
+    </operation>
+
+    <operation name="loadAnswer">
+      <parameter name="answerId" type="xs:string">
+      </parameter>
+      <response name="answer" type="forum:Answer">
+      </response>
+    </operation>
+
+    <operation name="storeAnswer">
+      <parameter name="answer" type="forum:Answer">
+      </parameter>
+      <response name="storedAnswer" type="forum:Answer">
+      </response>
+    </operation>
+
+    <operation name="removeAnswer">
+      <parameter name="answerId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countForums">
+      <parameter name="filter" type="forum:ForumFilter">
+      </parameter>
+      <response name="forumCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findForums">
+      <parameter name="filter" type="forum:ForumFilter">
+      </parameter>
+      <response name="forum" type="forum:Forum" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="findForumViews">
+      <parameter name="filter" type="forum:ForumFilter">
+      </parameter>
+      <response name="forumView" type="forum:ForumView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="countQuestionViews">
+      <parameter name="filter" type="forum:QuestionFilter">
+      </parameter>
+      <response name="questionViewCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findQuestionViews">
+      <parameter name="filter" type="forum:QuestionFilter">
+      </parameter>
+      <response name="questionView" type="forum:QuestionView" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+  </operations>
+  
+</module>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.matrix</groupId>
+        <artifactId>gdmatrix</artifactId>
+        <version>3.0</version>
+    </parent>
+    <artifactId>gdmatrix-ws</artifactId>
+    <packaging>pom</packaging>
+    <repositories>    
+      <repository>
+        <id>central</id>
+        <url>http://repo.maven.apache.org/maven2/</url>
+      </repository>     
+      <repository>
+        <id>local-repo</id>
+        <url>file://${basedir}/../../repository</url>
+      </repository>
+    </repositories>      
+    <modules>
+        <module>gdmatrix-ws-common</module>      
+        <module>gdmatrix-ws-agenda-ri</module> 
+        <module>gdmatrix-ws-cases-ri</module>
+        <module>gdmatrix-ws-classif-ri</module>          
+        <module>gdmatrix-ws-cms-ri</module>  
+        <module>gdmatrix-ws-dic-ri</module>          
+        <module>gdmatrix-ws-doc-ri</module>              
+        <module>gdmatrix-ws-edu-ri</module>
+        <module>gdmatrix-ws-elections-ri</module>
+        <module>gdmatrix-ws-feed-ri</module>        
+        <module>gdmatrix-ws-forum-ri</module>
+        <module>gdmatrix-ws-kernel-ri</module>        
+        <module>gdmatrix-ws-news-ri</module>
+        <module>gdmatrix-ws-policy-ri</module>
+        <module>gdmatrix-ws-presence-ri</module>
+        <module>gdmatrix-ws-report-ri</module>  
+        <module>gdmatrix-ws-search-ri</module>
+        <module>gdmatrix-ws-security-ri</module>             
+        <module>gdmatrix-ws-sign-ri</module>
+        <module>gdmatrix-ws-signature-ri</module>
+        <module>gdmatrix-ws-sql-ri</module>
+        <module>gdmatrix-ws-survey-ri</module>
+        <module>gdmatrix-ws-translation-ri</module>
+        <module>gdmatrix-ws-workflow-ri</module> 
+        <module>gdmatrix-ws-audifilm</module>
+  </modules>
+    
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>gdmatrix-common</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>    
+    
+    
+</project>

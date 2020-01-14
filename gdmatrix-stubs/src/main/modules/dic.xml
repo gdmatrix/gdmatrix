@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="dic"
+  namespace="http://dic.matrix.org/"
+  title="Diccionari de tipologies"
+  wsdlLocation="../services/dic?wsdl"
+  service="DictionaryManagerService"
+  port="DictionaryManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="security"/>
+  </imports>
+
+  <types>
+    <entity name="Type">
+      <identifier name="typeId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="superTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="typePath" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="instantiable" type="xs:boolean">
+      </property>
+      <property name="restricted" type="xs:boolean">
+      </property>
+      <property name="detail" type="xs:string">
+      </property>
+      <property name="propertyDefinition" type="dic:PropertyDefinition"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="accessControl" type="security:AccessControl" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+    </entity>
+
+    <entity name="EnumType">
+      <identifier name="enumTypeId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="superEnumTypeId" type="xs:string" minOccurs="0"
+        references="dic:EnumType">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="itemType" type="dic:PropertyType" minOccurs="0">
+      </property>
+      <property name="sorted" type="xs:boolean">
+      </property>
+      <property name="creationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="creationUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+      <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="changeUserId" type="xs:string" minOccurs="0" references="security:User">
+      </property>
+    </entity>
+
+    <entity name="EnumTypeItem">
+      <identifier name="enumTypeItemId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="enumTypeId" type="xs:string" minOccurs="0" references="dic:EnumType">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+      <property name="index" type="xs:int" minOccurs="0">
+      </property>      
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+    </entity>
+
+    <struct name="EnumTypeFilter">
+      <property name="enumTypeId" type="xs:string" minOccurs="0" maxOccurs="unbounded"
+        nillable="true" references="dic:EnumType">
+      </property>
+      <property name="superEnumTypeId" type="xs:string" minOccurs="0" references="dic:EnumType">
+      </property>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="EnumTypeItemFilter">
+      <property name="enumTypeId" type="xs:string" minOccurs="0" references="dic:EnumType">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+      <property name="label" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="PropertyDefinition">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="type" type="dic:PropertyType" minOccurs="0">
+      </property>
+      <property name="enumTypeId" type="xs:string" minOccurs="0" references="dic:EnumType">
+      </property>
+      <property name="size" type="xs:int">
+      </property>
+      <property name="minOccurs" type="xs:int">
+      </property>
+      <property name="maxOccurs" type="xs:int">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="hidden" type="xs:boolean">
+      </property>
+      <property name="readOnly" type="xs:boolean">
+      </property>
+    </struct>
+
+    <struct name="TypeFilter">
+      <property name="typeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="superTypeId" type="xs:string" minOccurs="0"
+        references="dic:Type">
+      </property>
+      <property name="typePath" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="action" type="xs:string" minOccurs="0">
+      </property>
+      <property name="minChangeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="maxChangeDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <struct name="Property">
+      <property name="name" type="xs:string">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <enumeration name="PropertyType">
+      <value name="NUMERIC"/>
+      <value name="TEXT"/>
+      <value name="DATE"/>
+      <value name="BOOLEAN"/>
+      <value name="STRUCT"/>
+    </enumeration>
+  </types>
+
+  <operations>
+    <operation name="removeType">
+      <parameter name="typeId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="loadType">
+      <parameter name="typeId" type="xs:string">
+      </parameter>
+      <response name="type" type="dic:Type">
+      </response>
+    </operation>
+
+    <operation name="storeType">
+      <parameter name="type" type="dic:Type">
+      </parameter>
+      <response name="storedType" type="dic:Type">
+      </response>
+    </operation>
+
+    <operation name="countTypes">
+      <parameter name="filter" type="dic:TypeFilter">
+      </parameter>
+      <response name="typeCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findTypes">
+      <parameter name="filter" type="dic:TypeFilter">
+      </parameter>
+      <response name="type" type="dic:Type" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="initProperties">
+      <parameter name="typeId" type="xs:string">
+      </parameter>
+      <parameter name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <response name="outProperty" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="completeProperties">
+      <parameter name="typeId" type="xs:string">
+      </parameter>
+      <parameter name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <response name="outProperty" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="getTypeActions">
+      <parameter name="typeId" type="xs:string">
+      </parameter>
+      <response name="action" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="listModifiedTypes">
+      <parameter name="dateTime1" type="mx:dateTime">
+      </parameter>
+      <parameter name="dateTime2" type="mx:dateTime">
+      </parameter>
+      <response name="typeId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadEnumType">
+      <parameter name="enumTypeId" type="xs:string">
+      </parameter>
+      <response name="enumType" type="dic:EnumType">
+      </response>
+    </operation>
+
+    <operation name="storeEnumType">
+      <parameter name="enumType" type="dic:EnumType">
+      </parameter>
+      <response name="storedEnumType" type="dic:EnumType">
+      </response>
+    </operation>
+
+    <operation name="removeEnumType">
+      <parameter name="enumTypeId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countEnumTypes">
+      <parameter name="filter" type="dic:EnumTypeFilter">
+      </parameter>
+      <response name="enumTypeCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findEnumTypes">
+      <parameter name="filter" type="dic:EnumTypeFilter">
+      </parameter>
+      <response name="enumType" type="dic:EnumType" minOccurs="0" maxOccurs="unbounded"
+        nillable="true">
+      </response>
+    </operation>
+
+    <operation name="loadEnumTypeItem">
+      <parameter name="enumTypeItemId" type="xs:string">
+      </parameter>
+      <response name="enumTypeItem" type="dic:EnumTypeItem">
+      </response>
+    </operation>
+
+    <operation name="storeEnumTypeItem">
+      <parameter name="enumTypeItem" type="dic:EnumTypeItem">
+      </parameter>
+      <response name="storedEnumTypeItem" type="dic:EnumTypeItem">
+      </response>
+    </operation>
+
+    <operation name="removeEnumTypeItem">
+      <parameter name="enumTypeItemId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="countEnumTypeItems">
+      <parameter name="filter" type="dic:EnumTypeItemFilter">
+      </parameter>
+      <response name="enumTypeItemCount" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="findEnumTypeItems">
+      <parameter name="filter" type="dic:EnumTypeItemFilter">
+      </parameter>
+      <response name="enumTypeItem" type="dic:EnumTypeItem" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+  </operations>
+</module>

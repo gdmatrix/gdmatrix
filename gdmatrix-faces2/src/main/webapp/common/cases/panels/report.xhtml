@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+    <t:div styleClass="reportPanel">
+      <sf:browser url="#{panel.url}"
+        port="#{applicationBean.defaultPort}"
+        iframe="#{panel.showInIFrame}" width="100%" height="500px"
+        translator="#{not panel.showInIFrame ? userSessionBean.translator : null}"
+        translationGroup="#{userSessionBean.translationGroup}"
+        allowedHtmlTags="#{panel.allowedHtmlTags}" />
+    </t:div>
+
+</html>

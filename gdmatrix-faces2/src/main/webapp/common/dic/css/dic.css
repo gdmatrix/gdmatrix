@@ -1,0 +1,30 @@
+.hidden {color:blue}
+
+.treePaginator
+{
+  text-decoration:none;
+  color: #0000A0;
+}
+
+.newAccessControl, .newPropertyDefinition
+{
+  font-style: italic;
+}
+
+.existingAccessControl, .existingPropertyDefinition
+{
+  font-style: normal;
+}
+
+.removedAccessControl, .removedPropertyDefinition
+{
+  text-decoration: line-through;
+  font-style: normal;
+}
+
+.editedAccessControl, .editedPropertyDefinition
+{
+  font-style: italic;
+}
+
+

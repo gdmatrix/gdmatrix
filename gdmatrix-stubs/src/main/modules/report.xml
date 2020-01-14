@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="report"
+  namespace="http://report.matrix.org/"
+  title="Generador d'informes"
+  wsdlLocation="../services/report?wsdl"
+  service="ReportManagerService"
+  port="ReportManagerPort"
+  version="1.0"
+  status="REVISION"
+  authors="Ricard Real">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="doc"/>
+  </imports>
+
+  <types>
+
+    <entity name="Report" extends="doc:Document">
+      <identifier name="reportId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="technology" type="xs:string" minOccurs="0">
+      </property>
+      <property name="defaultConnectionName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="parameterDefinition" type="report:ParameterDefinition"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </property>
+    </entity>
+
+    <struct name="ParameterDefinition">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="type" type="report:ParameterType" minOccurs="0">
+      </property>
+      <property name="forPrompting" type="xs:boolean">
+      </property>
+      <property name="defaultValue" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="Parameter">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="value" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="ExportOptions">
+      <property name="format" type="xs:string" minOccurs="0">
+      </property>
+      <property name="fromPage" type="xs:int" minOccurs="0">
+      </property>
+      <property name="toPage" type="xs:int" minOccurs="0">
+      </property>
+      <property name="ignorePagination" type="xs:boolean">
+      </property>
+      <property name="ignorePageMargins" type="xs:boolean">
+      </property>
+      <property name="characterEncoding" type="xs:string" minOccurs="0">
+      </property>
+      <property name="parameter" type="report:Parameter" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="ReportFilter">
+      <property name="reportId" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+    </struct>
+
+    <enumeration name="ParameterType">
+      <value name="INTEGER"/>
+      <value name="DOUBLE"/>
+      <value name="FLOAT"/>
+      <value name="STRING"/>
+      <value name="DATE"/>
+      <value name="BOOLEAN"/>
+    </enumeration>
+  </types>
+
+  <operations>
+
+    <operation name="loadReport">
+      <parameter name="reportId" type="xs:string">
+      </parameter>
+      <parameter name="includeSourceData" type="xs:boolean">
+      </parameter>
+      <response name="report" type="report:Report">
+      </response>
+    </operation>
+
+    <operation name="executeReport">
+      <parameter name="reportId" type="xs:string">
+      </parameter>
+      <parameter name="connectionName" type="xs:string">
+      </parameter>
+      <parameter name="parameter" type="report:Parameter" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <parameter name="exportOptions" type="report:ExportOptions">
+      </parameter>
+      <response name="return" type="xs:base64Binary" expectedContentTypes="*/*">
+      </response>
+    </operation>
+
+    <operation name="storeReport">
+      <parameter name="report" type="report:Report">
+      </parameter>
+      <response name="storedReport" type="report:Report">
+      </response>
+    </operation>
+
+    <operation name="removeReport">
+      <parameter name="reportId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="findReports">
+      <parameter name="filter" type="report:ReportFilter">
+      </parameter>
+      <response name="report" type="report:Report" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+  </operations>
+</module>

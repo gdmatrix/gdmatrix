@@ -1,0 +1,1194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sign"
+  namespace="http://sign.matrix.org/"
+  title="Gestor de signatures electròniques"
+  wsdlLocation="../services/sign?wsdl"
+  service="SignatureManagerService"
+  port="SignatureManagerPort"
+  version="2.0"
+  status="DRAFT"
+  authors="Ricard Real">
+
+  <documentation language="ca">
+    <div>
+      <h1>Característiques generals</h1>
+      El mòdul <i>sign</i> és l'encarregat de:
+      <ul>
+        <li>Signar electrònicament documents emmagatzemats al gestor de documents (mòdul <i>doc</i>).</li>
+        <li>Gestionar l'estat i el flux de signatura del document.</li>
+        <li>Obtenir la llista de documents pendents de signar d'un determinat signatari (funció porta-firmes)</li>
+        <li>Validar les signatures d'un document.</li>
+        <li>Generar còpies autèntiques i realitzar transformacions de documents electrònics originals.</li>
+      </ul>
+    </div>
+    <div>
+      <h1>Document signat (<i>SignedDocument</i>)</h1>
+      Els documents signats es representen en el mòdul <i>sign</i> mitjançant objectes <a href="#type-SignedDocument">SignedDocument</a>.
+      Un <a href="#type-SignedDocument">SignedDocument</a> es defineix com una extensió de l'objecte <a href="doc.html#type-Document">Document</a> del mòdul <i>doc</i>
+      i per tant, igual que aquest, conté les metadades i el contingut del document, però a més, incorpora:
+      <ul>
+        <li>La llista de signatures i de signataris del document.</li>
+        <li>Una representació de l'estructura interna del document, que és independent del seu format documental.</li>
+        <li>La relació estructural entre les signatures i les dades signades.</li>
+        <li>La semàntica i el flux de les signatures del document.</li>
+      </ul>
+    </div>
+    <div>
+      <h1>Formats de signatura</h1>
+      Les signatures d'un document signat es representaran mitjançant algun dels següents formats estàndard:
+      <ul>
+        <li>CMS: Cryptografic Message Syntax (<a href="http://www.ietf.org/rfc/rfc5652.txt">http://www.ietf.org/rfc/rfc5652.txt</a>)</li>
+        <li>CAdES: CMS Advanced Electronic Signature (<a href="http://tools.ietf.org/html/rfc5126">http://tools.ietf.org/html/rfc5126</a>, ETSI TS 101 733 versions 1.6.3 i 1.7.4)</li>
+        <li>XMLDSig: XML Digital Signature (<a href="http://www.w3.org/TR/xmldsig-core/">http://www.w3.org/TR/xmldsig-core/</a>)</li>
+        <li>XAdES: XML Advanced Electronic Signature (<a href="http://www.w3.org/TR/XAdES/">http://www.w3.org/TR/XAdES/</a>, ETSI TS 101 903 versions 1.2.2 i 1.3.2) </li>
+      </ul>
+      En la majoria dels casos, el format de les signatures estarà condicionat pel format del document.
+    </div>
+    <div>
+      <h1>Estructura interna d'un document signat</h1>
+        L'objecte <a href="#type-SignedDocument">SignedDocument</a> proporciona una representació genèrica de l'estructura interna del document.
+        En aquesta representació, el document es veu com un contenidor d'una seqüència de blocs de dades,
+        on cada bloc (<a href="#type-Block">Block</a>) pot ser d'un d'aquests dos tipus:
+        <ul>
+          <li>Dades (<a href="#type-Data">Data</a>): bloc que conté dades a signar</li>
+          <li>Signatura (<a href="#type-Signature">Signature</a>): bloc que representa una signatura electrònica que signa el contingut d'altres blocs.</li>
+        </ul>
+        Alhora, un bloc (de dades o de signatura) pot contenir una nova seqüència de blocs.
+        <br/><br/>
+        En funció de la relació estructural entre una signatura (bloc de signatura) i les dades que signa (blocs de dades), aquesta pot ser:
+        <ul>
+         <li><u>Adjunta</u> (Attached): si els respectius blocs estan imbricats. En aquest cas, la signatura pot ser:
+           <ul>
+             <li><u>Embolcallant</u> (Enveloping): si la signatura embolcalla la informació que signa (la signatura conté el bloc de dades).</li>
+             <li><u>Embolcallada</u> (Enveloped): si la signatura està embolcallada per la informació que signa (la signatura està dins del bloc de dades).</li>
+           </ul>
+         </li>
+         <li><u>Separada</u> (Dettached): si estan en blocs separats. En aquest cas, la signatura pot ser:
+           <ul>
+             <li><u>Interna</u> (Internally dettached): si la signatura i la informació que signa estan dins del mateix contenidor.</li>
+             <li><u>Externa</u> (Externally dettached): si la signatura referencia un contingut d'un altre document, és a dir, la signatura i la informació que signa no estan en el mateix contenidor.</li>
+           </ul>
+        </li>
+      </ul>
+      <div class="figure">
+        <a href="resources/sign1.svg"><img src="resources/sign1.png" alt="tipus de signatura" /></a>
+        <div>Figura 1: tipus de signatura</div>
+      </div>
+    </div>
+    <div>
+      <h1>Formats documentals que admeten signatures</h1>
+      El mòdul <i>sign</i> pot gestionar les signatures electròniques de documents
+      representats en diferents formats documentals. A continuació es descriuen alguns d'aquests formats:
+      <table class="inner">
+        <tr class="columns">
+          <td>format</td>
+          <td>descripció</td>
+          <td>signatura</td>
+        </tr>
+        <tr>
+          <td><u>PAdES</u>
+          <br/>PDF (Portable Document Format) + Advanced Electronic Signature (ISO 32000)</td>
+          <td>
+            Format estàndard utilitzat principalment per representar documents de text.
+            És el format escollit per signar documents de compulsa, còpies autèntiques o documents de vida curta.
+          </td>
+          <td>CAdES internally dettached</td>
+        </tr>
+        <tr>
+          <td><u>ASiC</u>
+          <br/>Associate Signature Container (ETSI TS 102 918 V1.1.1)</td>
+          <td>
+            Arxiu ZIP que conté fitxers de dades en qualsevol format i seves les signatures CADES o XAdES.
+            Alineat amb normes ENI. Compatible amb el format Open Document Format.
+            Aquest és el format preferent.
+          </td>
+          <td>CAdES/XAdES internally dettached</td>
+        </tr>
+        <tr>
+          <td><u>OOXML</u>
+          <br/>Office Open XML (ECMA-376/ISO/IEC 29500:2008)</td>
+          <td>
+            Format estàndard d'ofimàtica. És un arxiu ZIP que conté fitxers XML, imatges i signatures XMLDSig.
+          </td>
+          <td>XMLDSig internally dettached</td>
+        </tr>
+        <tr>
+          <td><u>MatrixSD</u>
+          <br/>Matrix Signed Document</td>
+          <td>
+            Format basat en XML que s'utilitza per la creació d'instàncies telemàtiques i relacions de documents 
+            (foliat d'expedients) dins la plataforma MATRIX. Pot contenir text, binaris i referències a continguts externs.
+          </td>
+          <td>XAdES internally/externally dettached</td>
+        </tr>
+        <tr>
+          <td><u>Facturae</u>
+          <br/>Factura electrònica (<a href="http://www.facturae.es">http://www.facturae.es</a>)</td>
+          <td>
+            Format basat en XML que representa una factura electrònica.
+          </td>
+          <td>XAdES enveloped</td>
+        </tr>
+        <tr>
+          <td><u>ENIDoc</u>
+          <br/>Document de l'Esquema Nacional d'Interoperabilitat</td>
+          <td>
+            Format basat en XML dissenyat per l'intercanvi de documents signats entre administracions.
+          </td>
+          <td>CAdES/XAdES internally dettached</td>
+        </tr>
+      </table>
+      Cada implementació indicarà la llista de formats que suporta per mitjà de la propietat
+      <i>sigDocFormatSupport</i> de <a href="#type-SignatureManagerMetaData">SignatureManagerMetaData</a>.
+    </div>
+    <div>
+      <h1>Modalitats de generació de la signatura</h1>
+      Existeixen diferents modalitats de generació de la signatura en funció de:
+      <ul class="num">
+        <li>1) On està la clau privada del certificat del signatari:
+          <ul class="num">
+            <li>a. <u>Clau privada externa</u>: En aquest cas, el mòdul <i>sign</i> no té accés al dispositiu criptogràfic que genera la signatura (Per exemple, quan l'usuari signa amb el seu clauer IDCat). El xifrat amb clau privada es fa fora d'aquest mòdul.</li>
+            <li>b. <u>Clau privada interna</u>: En aquest altre cas, el mòdul <i>sign</i> té accés al dispositiu criptogràfic que genera la signatura (Per exemple, quan es tracta d'una signatura d'òrgan o segell de temps). El xifrat amb clau privada es fa dins d'aquest mòdul.</li>
+         </ul>
+        </li>
+        <li>2) On es construeix l'objecte que representa la signatura (CAdES o XAdES):
+          <ul class="num">
+            <li>a. <u>El servidor</u>: la signatura, amb tots els seus atributs, es construeix dins del mòdul <i>sign</i>.</li>
+            <li>b. <u>El client</u>: l'aplicació client (per exemple, Adobe Acrobat o Microsoft Word) construeix la signatura amb els seus atributs.</li>
+          </ul>
+        </li>
+      </ul><br/>
+      En total, hi ha 4 possibles modalitats de generació de la signatura:
+      <ul>
+        <li><u>Modalitat 1</u>: clau privada externa, construcció en el client.
+          En aquesta modalitat, l'aplicació client recupera el document a signar del gestor documental, el signa (en un determinat format) i un cop signat, el torna a desar en el gestor. El mòdul <i>sign</i>, en aquest cas, només s'encarrega de validar les signatures del document i comprovar que es respecta el flux de signatura establert.</li>
+        <li><u>Modalitat 2</u>: clau privada externa, construcció en el servidor.
+          En aquest cas, la signatura electrònica es fa en tres passos:
+          <ul>
+            <li>Pas 1. El mòdul <i>sign</i> inicia la construcció de la signatura del document en un determinat format (CAdES o XAdES), i calcula el hash (resum criptogràfic) que ha de signar l'aplicació client (per exemple, un applet Java).</li>
+            <li>Pas 2. L'aplicació client signa el hash per mitjà del dispositiu criptogràfic de l'usuari i  retorna el hash signat al mòdul <i>sign</i>.</li>
+            <li>Pas 3. El mòdul <i>sign</i> rep el hash signat i completa la construcció de la signatura amb tots els seus atributs.</li>
+          </ul>
+        </li>
+        <li><u>Modalitat 3</u>: clau privada interna, construcció en el servidor.
+          En aquest tercer cas, el mòdul <i>sign</i> fa tot el procés de xifrat i de construcció de la signatura. Acostuma a ser el mètode utilitzat per generar signatures d'òrgan.
+        </li>
+        <li><u>Modalitat 4</u>: clau privada interna, construcció en el client.
+          Aquesta modalitat permet a l'usuari signar un document des d'una aplicació client, tenint el seu certificat instal·lat en el servidor al qual accedeix a través d'un canal segur.  És equivalent a la modalitat 1, però aquí el servidor també actua com un magatzem de certificats d'usuari.
+          Tot i que aquesta modalitat pot ser interessant en alguns casos (per exemple, signatura des d'un smartphone) no estarà inicialment suportada pel mòdul <i>sign</i>.
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h1>Flux de signatura d'un document</h1>
+      El flux de signatura d'un document determina en quin ordre s'han de produïr les seves signatures.
+      Aquest flux s'especifica dins del propi objecte <a href="#type-SignedDocument">SignedDocument</a> mitjançant
+      la propietat <i>signingAct</i> que defineix una seqüència ordenada d'actes de signatura (<a href="#type-SigningAct">SigningAct</a>),
+      on cada acte agrupa un conjunt de signatures que tenen la mateixa semàntica.<br/><br/>
+      El processament del flux de signatura es fa d'acord amb aquests criteris:
+      <ul>
+        <li>L'ordre de les signatures dins d'un mateix acte és irrellevant.
+         Si dues signatures s'han de produir en un determinat ordre, llavors hauran de pertànyer a actes diferents.</li>
+        <li>Un acte es considera tancat quan el nombre de signatures produïdes dins d'aquest acte és igual al valor de la propietat <i>minimumSigners</i>.</li>
+        <li>Les signatures d'un acte no es produiran fins que no s'hagin tancat tots els actes anteriors.</li>
+        <li>La propietat <i>currentSigningAct</i> del document indica quin és l'acte de signatura actual, que és el primer acte no tancat de la seqüència d'actes.</li>
+        <li>En qualsevol moment, un usuari autoritzat (amb rol SIGN_ADMIN) podrà modificar el flux de signatura del document, afegint nous actes de signatura al final de la seqüència d'actes.</li>
+      </ul>
+    </div>
+    <div>
+      <h1>Casos d'ús</h1>
+      <ul>
+        <li>Enviar a signar un document emmagatzemat al gestor documental:
+          <pre class="java">
+SignedDocument sd = new SignedDocument();
+sd.setDocId(docId); <i>// docId del document a signar</i>
+<i>// Establim el mode incremental perquè no volem informar les metadades del document:</i>
+sd.setIncremental(true);
+SigningAct sa1 = ... <i>// creem l'acte signatura</i>
+Signer signer1 = ... <i>// establim les dades del signatari</i>
+Signature sig1 = ... <i>// creem el bloc de signatura</i>
+sd.getSigningAct().add(sa1);
+sd.getSignature().add(sig1);
+sd.getSigner().add(signer1);
+sd = port.storeSignedDocument(sd); <i>// desem el document</i></pre>
+        </li>
+        <li>Crear un nou document a partir d'un contingut i enviar a signar:
+          <pre class="java">
+SignedDocument sd = new SignedDocument();
+<i>// Informem les metadades del document</i>
+sd.setTitle("Informe tècnic del cas Sau"); <i>// títol del document</i>
+sd.setDocTypeId("INFORME_TECNIC"); <i>// codi del tipus de document</i>
+sd.getClassId().add("G049"); <i>// serie documental</i>
+...
+sd.setSigDocFormatId("PADES"); <i>// indiquem el format del document</i>
+sd.setContent(...);  <i>// passem el contingut a signar</i>
+SigningAct sa1 = ... <i>// creem l'acte signatura</i>
+Signer signer1 = ... <i>// establim les dades del signatari</i>
+Signature sig1 = ...<i>// creem el bloc de signatura</i>
+<i>// Afegim aquests objectes al document:</i>
+sd.getSigningAct().add(sa1);
+sd.getSignature().add(sig1);
+sd.getSigner().add(signer1);
+sd = port.storeSignedDocument(sd); <i>// desem el document</i></pre>
+        </li>
+        <li>Crear un nou document, afegir-li dades i enviar a signar:
+          <pre class="java">
+SignedDocument sd = new SignedDocument();
+<i>// Informem les metadades del document</i>
+sd.setTitle("Índex de l'expedient G024-20110189"); <i>// títol del document</i>
+sd.setDocTypeId("FOLIAT"); <i>// codi del tipus de document</i>
+sd.getClassId().add("G024"); <i>// serie documental</i>
+...
+sd.setSigDocFormatId("MATRIXSD"); <i>// indiquem el format del document</i>
+sd.getData().add(data1);  <i>// afegim bloc de dades</i>
+sd.getData().add(data2);  <i>// afegim bloc de dades</i>
+SigningAct sa1 = ... <i>// creem l'acte signatura</i>
+Signer signer1 = ... <i>// establim les dades del signatari</i>
+Signature sig1 = ... <i>// creem el bloc de signatura</i>
+<i>// Afegim aquests objectes al document:</i>
+sd.getSigningAct().add(sa1);
+sd.getSignature().add(sig1);
+sd.getSigner().add(signer1);
+sd = port.storeSignedDocument(sd); <i>// desem el document</i></pre>
+        </li>
+        <li>Fer introspecció de les signatures d'un contingut signat:
+          <pre class="java">
+<i>// Creem un nou document a partir del contingut signat</i>
+SignedDocument sd = new SignedDocument();
+sd.setTitle("Introspecció"); <i>// títol del document</i>
+sd.setDocTypeId("Document"); <i>// codi del tipus de document</i>
+sd.setSigDocFormatId("PADES"); <i>// indiquem el format del document,
+// tot i que algunes implementacions podrien detectar-ho automàticament.</i>
+sd.setContent(...);  <i>// passem el contingut signat</i>
+sd = port.storeSignedDocument(sd); <i>// al desar el document</i>
+<i>// les signatures són detectades i es poden consultar a través de sd</i>
+for (Signature signature : sd.getSignature())
+{
+  Signer signer = SignUtils.getSigner(sd, "signerId", signature.getSignerId());
+  System.out.println("Signer: " + signer.getSignerName());
+  System.out.println("Format: " + signature.getFormat());
+  System.out.println(...);
+}</pre>
+        </li>
+        <li>Cercar els documents pendents de signar d'un signatari:
+          <pre class="java">
+SignedDocumentFilter filter = new SignedDocumentFilter();
+Signer signer = new Signer();
+<i>// Si volem seleccionar els documents assignats a un signatari identificat per NIF:</i>
+String NIF = "...";
+signer.setSignerIdentCode(NIF);
+<i>// Si volem seleccionar els assignats a un determinat usuari o algun dels seus rols:</i>
+signer.setSignerUserId("sanjosebj");
+<i>// Si volem seleccionar els assignats a un determinat rol:</i>
+signer.setSignerRoleId("ALCALDE");
+
+filter.setSigner(signer);
+filter.setSigDocState(REQUIRED); <i>// indiquem l'estat dels documents que volem cercar</i>
+List&lt;SignedDocument&gt; docs = port.findSignedDocuments(filter); <i>// cerquem documents</i></pre>
+        </li>
+        <li>Signar un document en modalitat 1:
+          <pre class="java">
+SignedDocument sd = port.loadSignedDocument(sigDocId, ALL, METADATA, false);
+DataHandler contentData = sd.getContent().getData();
+<i>// Signem el contingut des de l'aplicació client</i>
+DataHandler signedContentData = sign(contentData, ...);
+<i>// Creem un nou objecte Content amb el contingut signat</i>
+Content signedContent = new Content();
+signedContent.setData(signedContentData);
+<i>// Desem el document amb aquest nou contingut</i>
+sd.setContent(signedContent);
+sd = port.storeSignedDocument(sd); <i>// al desar el document
+// el servei valida la signatura, la seva política i el flux.</i></pre>
+        </li>
+        <li>Signar un document en modalitat 2:
+          <pre class="java">
+<i>// Pas 1: obtenció del hash a signar</i>
+SignedDocument sd = ... <i>// recuperem el document a signar</i>
+<i>// informem el certificat del signatari</i>
+Signer signer = SignUtils.getSigner(sd, "signerIdentCode", NIF);
+signer.setSignerCertificate(certificate.getEncoded());
+sd = port.storeSignedDocument(sd); <i>// el servei valida el certificat i</i>
+<i>// calcula el hash a signar</i>
+Signature signature = SignUtils.getSignature(sd, "signerIdentCode", NIF);
+byte[] hashToSign = signature.getSignedInfoHash();
+<i>// Pas 2: signatura del hash</i>
+byte[] signatureValue = sign(hashToSign, ...);
+<i>// Pas 3: completat de la signatura</i>
+signature.setSignatureValue(signatureValue);
+sd = port.storeSignedDocument(sd); <i>// al desar el document
+// el servei valida la signatura, la seva política i el flux.</i>
+<i>// NOTA: aquesta modalitat de signatura també és coneguda amb el nom de
+// "signatura cega" perquè permet signar el document sense veure el seu contingut.</i></pre>
+        </li>
+        <li>Signar un document en modalitat 3:
+          <pre class="java">
+SignedDocument sd = ... <i>// recuperem el document.</i>
+<i>// Si l'acte de signatura actual és un acte automatitzat al desar-lo,
+la signatura d'aquest acte es produirà automàticament.</i>
+sd = port.storeSignedDocument(sd);</pre>
+        </li>
+        <li>Validar les signatures d'un document:
+          <pre class="java">
+<i>// Recuperem el document amb el paràmetre validate a true.</i>
+SignedDocument sd = port.loadSignedDocument(sigDocId, ID, ALL, true);
+for (Signature signature : sd.getSignature())
+{
+  <i>// Mostrem per pantalla el resultat de la validació:</i>
+  System.out.println("Acte: " + signature.getSigningActId());
+  System.out.println("State: " + signature.getState());
+  System.out.println("Validation:" + signature.getValidation());
+}</pre>
+        </li>
+        <li>Modificar el flux de signatura d'un document:
+          <pre class="java">
+SignedDocument sd = ... <i>// recuperem el document.</i>
+SigningAct sa = ... <i>// creem el nou acte de signatura.</i>
+Signer signer = ... <i>// configurem el signatari de l'acte.</i>
+Signature signature = ... <i>// configurem la signatura de l'acte.</i>
+<i>// Afegim aquests objectes al document:</i>
+sd.getSigningAct().add(sa);
+sd.getSigner().add(signer);
+sd.getSignature().add(signature);
+sd = port.storeSignedDocument(sd);<i>// desem la nova configuració del document.
+// Cal el rol SIGN_ADMIN per poder fer canvis en el flux de signatura del document</i></pre>
+        </li>
+        <li>Crear una còpia autèntica d'un document:
+          <pre class="java">
+<i>// Indiquem les opcions de la transformació</i>
+ArrayList options = new ArrayList();
+Option option = new Option();
+<i>// p.e. Opció per incloure la URL per validar el document</i>
+option.setName("validationURL");
+option.getValue().add("http://www.santfeliu.cat/validacio");
+options.add(option);
+<i>// Creem una còpia autèntica del document identificat per sigDocId en format PDF.</i>
+DataHandler data = port.transformSignedDocument(sigDocId, "PADES", options);
+IOUtils.write(data, "c:/copia.pdf");</pre>
+        </li>
+        <li>Actualitzar a format C (complet) les signatures d'un document:
+          <pre class="java">
+<i>// Aquest procés d'actualització de signatures es programarà mitjançant 
+// una política de gestió documental (mòdul policy).</i>
+SignedDocument sd = ... <i>// recuperem el document.</i>
+for (Signature signature : sd.getSignature())
+{
+  signature.setState(C_UPDATED); <i>// indiquem el nou estat</i>
+}
+sd = port.storeSignedDocument(sd); <i>// al desar el document, el servei intentarà
+// actualitzar les signatures a format C.</i></pre>
+        </li>
+      </ul>
+    </div>
+  </documentation>
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />
+    <import module="security"/>
+    <import module="dic"/>
+    <import module="doc"/>
+  </imports>
+
+  <types>
+    <entity name="SignedDocument" extends="doc:Document">
+      <documentation language="ca">
+        <i>SignedDocument</i> representa un document amb signatures electròniques.
+        <div class="figure">
+          <a href="resources/sign2.svg"><img src="resources/sign2.png" alt="tipus de signatura" /></a>
+          <div>Figura 2: exemple d'objecte SignedDocument</div>
+        </div>
+      </documentation>
+      <identifier name="sigDocId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Codi segur d'identificació i verificació del document signat.
+          Amb aquest codi serà possible descarregar el document des del web i validar les seves signatures.
+          Típicament tindrà el format d'un UUID (norma ISO/IEC 11578:1996).
+        </documentation>
+      </identifier>
+      <property name="sigDocFormatId" type="xs:string" minOccurs="0"
+        references="sign:SignedDocumentFormat">
+        <documentation language="ca">
+          Format del document signat (PADES, ASIC, OOXML, ODF, MATRIXSD, etc.).
+          La llista de formats suportats per una determinada implementació d'aquest servei s'indica mitjançant la propietat
+          <i>sigDocFormatSupport</i> de <a href="#type-SignatureManagerMetaData">SignatureManagerMetaData</a>.
+        </documentation>
+      </property>
+      <property name="sigDocState" type="sign:SignedDocumentState" minOccurs="0"
+        maxOccurs="unbounded" readOnly="true">
+        <documentation language="ca">
+          Estat global de les signatures del document.
+        </documentation>
+      </property>
+      <property name="currentSigningAct" type="xs:int" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Índex (basat en 0) de l'acte de signatura actual del document.
+          No està informat si el document no té actes de signatura pendents.
+        </documentation>
+      </property>
+      <property name="signingAct" type="sign:SigningAct" minOccurs="0"
+        maxOccurs="unbounded">
+        <documentation language="ca">
+          Llista ordenada d'actes de signatura que determina el flux de signatura del document.
+        </documentation>
+      </property>
+      <property name="data" type="sign:Data" minOccurs="0"
+        maxOccurs="unbounded">
+        <documentation language="ca">
+          Llista de blocs de dades del document.
+        </documentation>
+      </property>
+      <property name="signature" type="sign:Signature" minOccurs="0"
+        maxOccurs="unbounded">
+        <documentation language="ca">
+          Llista de signatures del document.
+        </documentation>
+      </property>
+      <property name="signer" type="sign:Signer" minOccurs="0"
+        maxOccurs="unbounded" >
+        <documentation language="ca">
+          Llista de signataris del document.
+        </documentation>
+      </property>
+    </entity>
+
+    <struct name="SigningAct">
+      <documentation language="ca">
+        El flux de signatura d'un document s'especifica mitjançant una seqüència ordenada
+        d'actes de signatura (propietat <i>SigningAct</i> de <i>SignedDocument</i>) on cada acte té associada la següent informació:
+        <ul>
+          <li>La semàntica de la signatura (<i>description</i> i <i>type</i>).</li>
+          <li>La llista de signatures de l'acte. L'ordre en que es produiran no és rellevant dins d'un mateix acte.
+            Cada signatura està relacionada amb un acte de signatura mitjançant la propietat <i>signingActId</i> i
+            amb un signatari mitjançant la propietat <i>signerId</i>.</li>
+          <li>El nombre mínim de signataris (o signatures) que requereix l'acte (<i>minimumSigners</i>).</li>
+          <li>La política de signatura que s'aplicarà a les signatures d'aquest acte.</li>
+        </ul>
+        Un acte de signatura automatitzat és aquell on el signatari de l'acte té la propietat <i>automatic</i>
+        a valor <span class="code">true</span>.
+      </documentation>
+      <identifier name="signingActId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador de l'acte de signatura.     
+        </documentation>
+      </identifier>
+      <property name="description" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Descripció de la semàntica d'aquest acte de signatura.
+        </documentation>
+      </property>
+      <property name="type" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Tipologia de l'acte de signatura. Només té valor informatiu. 
+          El valor de <i>type</i> podria ser un codi que referenciés una tipologia
+          d'acte dins d'una determinada llibreria o catàleg d'actes de signatura.
+        </documentation>
+      </property>
+      <property name="minimumSigners" type="xs:int" minOccurs="0">
+        <documentation language="ca">
+          Nombre mínim de signataris de l'acte. Si <i>minimumSigners</i> no està informat, llavors totes les signatures proposades per aquest acte s'hauran de produir.
+          Si <i>minimumSigners</i> és inferior al nombre de signatures proposades, llavors aquest serà un acte de firma solidària.
+        </documentation>
+      </property>
+      <property name="signaturePolicy" type="sign:SignaturePolicy" minOccurs="0">
+        <documentation language="ca">
+          Política de signatura que s'aplicarà a les signatures d'aquest acte.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="Block">
+      <documentation language="ca">
+        Part del document (seqüència de bits) que pot contenir dades i/o signatures.
+      </documentation>
+      <identifier name="blockId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador del bloc dins del document.
+        </documentation>
+      </identifier>
+      <property name="containerBlockId" type="xs:string" minOccurs="0"
+        references="sign:Block">
+        <documentation language="ca">
+          Identificador del bloc contenidor d'aquest bloc.
+          No tots els formats documentals admetran l'anidament de blocs.
+        </documentation>
+      </property>
+      <property name="containerIndex" type="xs:int" minOccurs="0">
+        <documentation language="ca">
+          Posició que ocupa aquest bloc dins del bloc contenidor. El primer bloc té índex 0.
+        </documentation>
+      </property>
+      <property name="data" type="xs:base64Binary" minOccurs="0">
+        <documentation language="ca">
+          Contingut binari d'aquest bloc.
+        </documentation>
+      </property>
+      <property name="hash" type="xs:base64Binary" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Resum criptogràfic del contingut d'aquest bloc.
+        </documentation>
+      </property>
+      <property name="hashAlgorithm" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Algorisme utilitzat per generar el resum criptogràfic del contingut d'aquest bloc (SHA1, SHA256, etc.).
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="Data" extends="sign:Block">
+      <documentation language="ca">
+        Part del document que conté dades.
+      </documentation>
+      <property name="label" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Etiqueta descriptiva del contingut d'aquest bloc.
+        </documentation>
+      </property>
+      <property name="type" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Tipus de dades del bloc. Depenent del format documental.
+        </documentation>
+      </property>
+      <property name="mimeType" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Tipus MIME del bloc (per exemple, "application/pdf", "text/xml", etc.).
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="Signature" extends="sign:Block">
+      <documentation language="ca">
+        Conté les metadades essencials d'una signatura del document. Cada signatura pot signar el contingut de:
+        <ul>
+          <li>Un o més blocs de dades referenciats per mitjà de la propietat <i>referencedBlockId</i>.</li>
+          <li>Un o més blocs de signatura referenciats per mitjà de la propietat <i>referencedBlockId</i>.
+          Una signatura que signa una altra signatura rep el nom de "contrasignatura".
+          Les contrasignatures s'utilitzen en aquells casos on es vol deixar constància que dues signatures s'han produït en un determinat ordre.</li>
+          <li>Un o més documents externs referenciats per mitjà de la propietat <i>externalReference</i>.</li>
+        </ul>
+        El resum criptogràfic del conjunt de blocs i continguts externs a signar, que es calcula d'acord amb les especificacions dels corresponents formats de signatura (CMS i XMLDig),
+        es representa mitjançant la propietat <i>signedInfoHash</i>.
+      </documentation>
+      <property name="format" type="sign:SignatureFormat">
+        <documentation language="ca">
+          Format de la signatura electrònica. En la majoria dels casos aquesta propietat és només de lectura perquè el format de la
+          signatura està condicionat pel format del document.
+        </documentation>
+      </property>
+      <property name="state" type="sign:SignatureState">
+        <documentation language="ca">
+          Estat actual de la signatura electrònica.
+        </documentation>
+      </property>
+      <property name="referencedBlockId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" references="sign:Block">
+        <documentation language="ca">
+          Llista d'identificadors de blocs que està signant aquesta signatura.
+        </documentation>
+      </property>
+      <property name="externalReference" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded">
+        <documentation language="ca">
+          Llista de referencies a continguts externs (URIs) que està signant aquesta signatura.
+          No tots els formats documentals suportaran signatures amb referències externes.
+        </documentation>
+      </property>
+      <property name="signerId" type="xs:string" minOccurs="0" 
+        references="sign:Signer">
+        <documentation language="ca">
+          Identificador del signatari d'aquesta signatura que referencia un
+          objecte <i>Signer</i> de <i>SignedDocument</i>.
+        </documentation>
+      </property>
+      <property name="signingActId" type="xs:string" minOccurs="0"
+        references="sign:SigningAct">
+        <documentation language="ca">
+          Identificador de l'acte de signatura al que pertany aquesta signatura.
+        </documentation>
+      </property>
+      <property name="signedInfoHash" type="xs:base64Binary" minOccurs="0">
+        <documentation language="ca">
+          Resum criptogràfic del conjunt de blocs i continguts externs que està signant aquesta signatura.
+          En la modalitat de signatura 2, aquest resum es calcularà en el moment d'informar el certificat del signatari (propietat <i>signerCertificate</i>
+          de <i>Signature</i>) per mitjà de l'operació <a href="#oper-storeSignedDocument">storeSignedDocument</a>.
+          En les altres modalitats es calcularà en el moment de generar la signatura (també a través de la operació <i>storeSignedDocument</i>).
+        </documentation>
+      </property>
+      <property name="signedInfoHashAlgorithm" type="xs:string" minOccurs="0" >
+        <documentation language="ca">
+          Algorisme utilitzar per calcular el resum criptogràfic de tots els blocks i continguts externs que està signant aquesta signatura (SHA1, SHA256, etc).
+        </documentation>
+      </property>
+      <property name="signatureAlgorithm" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Algorisme de signatura (DSA, RSA).
+        </documentation>
+      </property>
+      <property name="signatureValue" type="xs:base64Binary" minOccurs="0">
+        <documentation language="ca">
+          Valor de la signatura electrònica generat segons l'algorisme <i>signedInfoAlgorithm</i> sobre <i>signedInfoHash</i>.
+        </documentation>
+      </property>
+      <property name="signaturePolicy" type="sign:SignaturePolicy" minOccurs="0">
+        <documentation language="ca">
+          Política de signatura que s'aplicarà a aquesta signatura.
+        </documentation>
+      </property>
+      <property name="signingDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data i hora de la signatura en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="rejectionDateTime" type="mx:dateTime" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Data i hora del rebuig de la signatura en format yyyyMMddHHmmss.
+        </documentation>
+      </property>
+      <property name="rejectionReason" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Motiu del rebuig de la signatura.
+        </documentation>
+      </property>
+      <property name="validation" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Resultat del procés de validació de la signatura.
+        </documentation>
+      </property>
+      <property name="signingCallbackUrl" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded">
+        <documentation language="ca">
+          Url que serà invocada un cop s'hagi produït la signatura.
+        </documentation>
+      </property>
+      <property name="rejectionCallbackUrl" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded">
+        <documentation language="ca">
+          Url que serà invocada si la signatura és rebutjada.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="Signer">
+      <documentation language="ca">
+        <div><i>Signer</i> conté les propietats que descriuen un signatari del document.</div>
+        <div>El signatari pot ser una persona física, una persona jurídica o un determinat òrgan i es pot especificar
+          per mitjà d'algun d'aquests camps:
+          <ul>
+            <li><i>signerIdentCode:</i> Codi d'identificació del signatari (per exemple, el NIF).</li>
+            <li><i>signerUserId:</i> Codi d'usuari del signatari (veure mòdul <a href="security.html">security</a>).</li>
+            <li><i>signerRoleId:</i> Rol del signatari (veure mòdul <a href="security.html">security</a>).</li>
+            <li><i>signerCertificate:</i> Certificat X509 amb que es generà la signatura.</li>
+          </ul>
+        </div>
+        <div>
+          En les modalitats de signatura 2 i 3, la propietat <i>signerCertificate</i> haurà de ser informada per poder
+          generar la signatura (consultar casos d'ús). En la modalitat 1 aquesta propietat es deduirà del contingut del document un cop signat.
+        </div>
+        <div>A partir del moment en que es determini el valor de <i>signerCertificate</i>, es deduiran automàticament els valors dels camps
+        <i>signerName, signerCertificatId i signerCertificateIssuer</i> de l'objecte <i>Signer</i>.</div>
+      </documentation>
+      <identifier name="signerId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador del signatari dins del document (assignat externalment, admet qualsevol format).
+        </documentation>
+      </identifier>
+      <property name="signerIdentCode" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Codi identificatiu del signatari (per exemple, NIF, Passaport, etc.) que haurà de correspondre amb el del seu certificat digital.
+        </documentation>
+      </property>
+      <property name="signerUserId" type="xs:string" minOccurs="0"
+        references="security:User">
+        <documentation language="ca">
+          Identificador d'usuari del signatari dins del sistema Matrix.
+        </documentation>
+      </property>
+      <property name="signerRoleId" type="xs:string" minOccurs="0"
+        references="security:Role">
+        <documentation language="ca">
+          Rol que ha de tenir el signatari per poder signar.
+        </documentation>
+      </property>
+      <property name="signerCertificate" type="xs:base64Binary" minOccurs="0">
+        <documentation language="ca">
+          Certificat digital X509 del signatari en base64.
+        </documentation>
+      </property>
+      <property name="automatic" type="xs:boolean" minOccurs="0">
+        <documentation language="ca">
+          Indica si aquest signatari produeix signatures de forma automàtica, sense la intervenció d'un humà.
+          En aquest cas, la clau privada del certificat d'aquest signatari haurà d'estar instal·lada en el
+          magatzem de claus d'aquest servei.
+        </documentation>
+      </property>
+      <property name="signerName" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Nom complet del signatari (nom de persona física, jurídica o òrgan).
+        </documentation>
+      </property>
+      <property name="signerCertificateId" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Identificador del certificat del signatari.
+        </documentation>
+      </property>
+      <property name="signerCertificateIssuer" type="xs:string" minOccurs="0" readOnly="true">
+        <documentation language="ca">
+          Nom de l'emissor del certificat del signatari.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="SignaturePolicy">
+      <documentation language="ca">
+        Defineix un determinada política de signatura.
+      </documentation>
+      <property name="policyId" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Identificador (OID) de la política de signatura.
+        </documentation>
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Descripció de la política de signatura.
+        </documentation>
+      </property>
+      <property name="policyHash" type="xs:base64Binary" minOccurs="0">
+        <documentation language="ca">
+          Resum criptogràfic de la política de signatura.
+        </documentation>
+      </property>
+      <property name="policyHashAlgorithm" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Algorisme utilitzat per generar el resum criptogràfic de la política de signatura (SHA1, SHA256, etc).
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="SignedDocumentFilter" extends="doc:DocumentFilter">
+      <documentation language="ca">
+        <div>
+          Filtre per cercar documents través de l'operació
+          <a href="#oper-findSignedDocuments">findSignedDocuments</a>.
+        </div>
+        <div>
+          El resultat de la cerca contindrà aquells documents que satisfan les condicions expressades a través de les propietats de
+          <a href="doc.html#type-DocumentFilter">DocumentFilter</a> i alhora les
+          expressades per mitjà de les propietats <i>signer</i> i <i>sigDocState</i> de <i>SignedDocumentFilter</i>.
+        </div>
+      </documentation>
+      <property name="signer" type="sign:Signer" minOccurs="0">
+        <documentation language="ca">
+          El signatari del qual volem obtenir els documents.
+        </documentation>
+      </property>
+      <property name="sigDocState" type="sign:SignedDocumentState" minOccurs="0" >
+        <documentation language="ca">
+          Estat dels documents que volem cercar. En cas d'omissió no es filtrarà per l'estat del document.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="SignatureManagerMetaData" extends="mx:ManagerMetaData">
+      <documentation language="ca">
+        Conté les propietats que descriuen les característiques de la implementació d'aquest servei.
+      </documentation>
+      <property name="certificateValidationService" readOnly="true"
+        type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom del servei de validació de certificats (per exemple, PSIS o @Firma)
+        </documentation>
+      </property>
+      <property name="signatureValidationService" readOnly="true"
+        type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom del servei de validació de signatures (per exemple, PSIS o @Firma)
+        </documentation>
+      </property>
+      <property name="timeStampService" readOnly="true"
+        type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Nom del servei de segellat de temps (per exemple, PSIS o @Firma)
+        </documentation>
+      </property>
+      <property name="sigDocFormatSupport" readOnly="true"
+        type="sign:SignedDocumentFormatSupport" minOccurs="0" maxOccurs="unbounded">
+        <documentation language="ca">
+          Llista de formats documentals suportats per la implementació del servei.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="SignedDocumentFormatSupport">
+      <documentation language="ca">
+        Descriu el suport d'un determinat format documental.
+      </documentation>
+      <property name="sigDocFormatId" type="xs:string" references="sign:SignedDocumentFormat">
+        <documentation language="ca">
+          Identificador del format documental: PADES, ASIC, MATRIXSD, OOXML, etc. <br/>
+          També pot ser un format no recollit a l'enumeració <a href="#type-SignedDocumentFormat">SignedDocumentFormat</a>.
+        </documentation>
+      </property>
+      <property name="version" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Versió del format suportada (per exemple, "8.0").
+        </documentation>
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Descripció del format (per exemple, "Portable Document Format")
+        </documentation>
+      </property>
+      <property name="creationSupported" type="xs:boolean">
+        <documentation language="ca">
+          Indica si la implementació del servei permet crear nous documents en aquest format o només la lectura esta suportada.
+        </documentation>
+      </property>
+      <property name="toSigDocFormatId" type="xs:string"
+        minOccurs="0" maxOccurs="unbounded" references="sign:SignedDocumentFormat">
+        <documentation language="ca">
+          Llista de formats documentals als quals es pot transformar un document en aquest format amb aquesta implementació del servei.
+        </documentation>
+      </property>
+    </struct>
+
+    <struct name="TransformOption">
+      <documentation language="ca">
+        Estableix una opció del procés de transformació d'un document.
+      </documentation>
+      <property name="name" type="xs:string">
+        <documentation language="ca">
+          Nom de l'opció de transformació. Es depenent del format documental i la implementació del servei.
+        </documentation>
+      </property>
+      <property name="value" type="xs:string"
+        minOccurs="0" maxOccurs="unbounded" nillable="false">
+        <documentation language="ca">
+          Valors de l'opció de transformació.
+        </documentation>
+      </property>
+    </struct>
+
+    <enumeration name="SignatureInfo">
+      <documentation language="ca">
+        Indica quina informació relativa a les signatures del document contindrà l'objecte <i>SignedDocument</i> retornat
+        per l'operació <i>loadSignedDocument</i>.
+      </documentation>
+      <value name="NONE">
+        <documentation language="ca">No es retornarà cap informació relativa a la signatura del document.</documentation>
+      </value>
+      <value name="ID">
+        <documentation language="ca">Només es retornaran els camps identificatius dels objectes <i>Data, Signature, Signer, SignaturePolicy i SigningAct</i>.</documentation>
+      </value>
+      <value name="METADATA">
+        <documentation language="ca">Totes les metadades dels objectes anteriors seran retornades excepte els continguts binaris dels blocs (<i>data</i>).</documentation>
+      </value>
+      <value name="ALL">
+        <documentation language="ca">Tota la informació (metadades i contingut) dels objectes anteriors serà retornada.</documentation>
+      </value>
+    </enumeration>
+
+    <enumeration name="SignedDocumentFormat">
+      <documentation language="ca">
+        Llista no exhaustiva de formats documentals que admeten signatures.
+      </documentation>
+      <value name="PADES">
+        <documentation language="ca">PDF + AdES (Portable Document Format + Advanced Electronic signature)</documentation>
+      </value>
+      <value name="ASIC">
+        <documentation language="ca">Associate Signature Container</documentation>
+      </value>
+      <value name="MATRIXSD">
+        <documentation language="ca">Matrix Signed Document</documentation>
+      </value>
+      <value name="OOXML">
+        <documentation language="ca">Office Open XML (Microsoft Office)</documentation>
+      </value>
+      <value name="ODF">
+        <documentation language="ca">Open Document format (Open Office)</documentation>
+      </value>
+      <value name="ENIDOC">
+        <documentation language="ca">Document de l'Esquema Nacional d'Interoperabilitat</documentation>
+      </value>
+      <value name="FACTURAE">
+        <documentation language="ca">Factura electrònica</documentation>
+      </value>
+      <value name="SMIME">
+        <documentation language="ca">Secure MIME (CAdES)</documentation>
+      </value>
+    </enumeration>
+
+    <enumeration name="SignedDocumentState">
+      <documentation language="ca">
+        Indica l'estat global de les signatures d'un document.
+      </documentation>
+      <value name="REQUIRED">
+        <documentation language="ca">El document té alguna signatura pendent i totes les que ja s'han produït són vàlides.</documentation>
+      </value>
+      <value name="SIGNED">
+        <documentation language="ca">Totes les signatures del document han estat generades i són vàlides.</documentation>
+      </value>
+      <value name="FAILED">
+        <documentation language="ca">Alguna de les signatures del document ha estat rebutjada pel signatari o no és vàlida.</documentation>
+      </value>
+    </enumeration>
+
+    <enumeration name="SignatureFormat">
+      <documentation language="ca">
+        Indica el format d'una signatura electrònica.
+      </documentation>
+      <value name="CMS">
+        <documentation language="ca">Signatura CMS.</documentation>
+      </value>
+      <value name="CADES">
+        <documentation language="ca">Signatura avançada CMS.
+        La propietat <i>state</i> de <i>Signature</i> indica la variant del format (T, C, X, XL, A).
+        </documentation>
+      </value>
+      <value name="XMLDSIG">
+        <documentation language="ca">Signatura XMLDSig.</documentation>
+      </value>
+      <value name="XADES">
+        <documentation language="ca">Signatura avançada XML.
+        La propietat <i>state</i> de <i>Signature</i> indica la variant del format (T, C, X, XL, A).
+        </documentation>
+      </value>
+    </enumeration>
+
+    <enumeration name="SignatureState">
+      <documentation language="ca">
+        <div>Indica l'estat actual d'una signatura electrònica.</div>
+        <div>Més informació sobre els formats de signatura avançada a
+        <a href="http://tools.ietf.org/html/rfc5126">http://tools.ietf.org/html/rfc5126</a> i <a href="http://www.w3.org/TR/XAdES/">http://www.w3.org/TR/XAdES/</a>.</div>
+      </documentation>
+      <value name="REQUIRED">
+        <documentation language="ca">Signatura requerida.</documentation>
+      </value>
+      <value name="REJECTED">
+        <documentation language="ca">Signatura rebutjada pel signatari. El camp <i>rejectionReason</i> de <i>Signature</i> conté el motiu del rebuig.</documentation>
+      </value>
+      <value name="CREATED">
+        <documentation language="ca">Signatura creada (la propietat <i>SignatureValue</i> de <i>Signature</i> conté un valor però encara no s'ha validat).</documentation>
+      </value>
+      <value name="INVALIDATED">
+        <documentation language="ca">Signatura no vàlida. El camp <i>validation</i> de <i>Signature</i> conté els detalls de la validació.</documentation>
+      </value>
+      <value name="VALIDATED">
+        <documentation language="ca">Signatura validada (sense validació completa del certificat). El camp <i>validation</i> de <i>Signature</i> conté els detalls de la validació.</documentation>
+      </value>
+      <value name="COMPLETELY_VALIDATED">
+        <documentation language="ca">Signatura validada completament (amb validació completa del certificat). El camp <i>validation</i> de <i>Signature</i> conté els detalls de la validació.</documentation>
+      </value>
+      <value name="T_UPDATED">
+        <documentation language="ca">Signatura actualitzada a format T (segell de temps).</documentation>
+      </value>
+      <value name="C_UPDATED">
+        <documentation language="ca">Signatura actualitzada a format C (completa).</documentation>
+      </value>
+      <value name="X_UPDATED">
+        <documentation language="ca">Signatura actualitzada a format X (extesa).</documentation>
+      </value>
+      <value name="XL_UPDATED">
+        <documentation language="ca">Signatura actualitzada a format XL (extesa llarga).</documentation>
+      </value>
+      <value name="A_UPDATED">
+        <documentation language="ca">Signatura actualitzada a format A (arxiu).</documentation>
+      </value>
+      <value name="FINALIZED">
+        <documentation language="ca">Signatura finalitzada. El mateniment d'aquesta signatura es farà a través del foliat de l'expedient al que pertany el document.</documentation>
+      </value>
+    </enumeration>
+  </types>
+
+  <operations>
+    <operation name="loadSignedDocument">
+      <documentation language="ca">
+        Recupera un document a partir del seu identificador.
+      </documentation>
+      <parameter name="sigDocId" type="xs:string">
+        <documentation language="ca">
+          Identificador del document a recuperar.
+        </documentation>
+      </parameter>
+      <parameter name="contentInfo" type="doc:ContentInfo">
+        <documentation language="ca">
+          Permet seleccionar la informació del contingut del document (objecte <a href="doc.html#type-Content">Content</a>) que serà retornada:
+          <ul>
+            <li>ID: Només l'identificador del contingut (<i>contentId</i>) serà retornat.</li>
+            <li>METADATA: Es retornaran totes les metadades del contingut (<i>size, contentType, language, captureDate,</i> etc.)
+            però no el contingut binari (<i>data</i>).</li>
+            <li>ALL: Tota la informació del contingut serà retornada (metadades i el propi contingut binari).</li>
+          </ul>
+        </documentation>
+      </parameter>
+      <parameter name="signatureInfo" type="sign:SignatureInfo">
+        <documentation language="ca">
+          Permet seleccionar la informació relativa a les signatures del contingut que es retornarà dins l'objecte <i>SignedDocument</i>.
+        </documentation>
+      </parameter>
+      <parameter name="validate" type="xs:boolean" minOccurs="0">
+        <documentation language="ca">
+          Quan <i>validate</i> es <span class="code">true</span>, totes les signatures del document seran validades.
+          El resultat d'aquesta validació quedarà recollit en les propietats <i>validation</i> i <i>state</i> de les signatures
+          i en la propietat <i>sigDocState</i> del document retornat.
+        </documentation>
+      </parameter>
+      <response name="signedDocument" type="sign:SignedDocument">
+        <documentation language="ca">
+          L'objecte <i>SignedDocument</i> que correspon a l'identificador <i>sigDocId</i>.
+        </documentation>
+      </response>
+      <error name="DOCUMENT_NOT_FOUND" message="Document no trobat">
+        <documentation language="ca">
+          No s'ha trobat cap document que correspongui a aquest <i>sigDocId</i>.
+        </documentation>
+      </error>
+      <error name="VALIDATION_NOT_AVAILABLE" message="Validació no disponible">
+        <documentation language="ca">
+          No s'ha pogut validar en document a causa d'un error en el servei de validació.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="storeSignedDocument">
+      <documentation language="ca">
+        <documentation language="ca">
+          <div>Modifica l'estructura, el contingut, l'estat o el flux de signatura d'un document.</div>
+          <div>En funció del valor de l'atribut <i>incremental</i> de l'objecte <i>SignedDocument</i> (heretat de <a href="doc.html#type-Document">Document</a>), aquesta operació admet dos modes d'execució:
+            <ul>
+              <li>Mode <u>absolut</u> (<i>incremental=false</i>): Si el paràmetre <i>signedDocument</i> inclou tota la informació que ha de contenir el document un cop desat.</li>
+              <li>Mode <u>incremental</u> (<i>incremental=true</i>): Si el paràmetre <i>signedDocument</i> només conté el subconjunt d'informació del document que es vol desar.
+              En aquest cas, només es crearan o modificaran els objectes <i>Property (o propietats directes com title)</i>, <i>Content</i>, <i>Signature</i>, <i>Signer</i>,
+              <i>SigningAct</i>, <i>SignaturePolicy</i> que contingui l'objecte <i>SignedDocument</i>, preservant tots els altres objectes desats en operacions anteriors.</li>
+            </ul>
+          </div>
+          <div>
+            Per mitjà d'aquesta operació, es pot establir i modificar el flux de signatura del document, amb les seves signatures i signataris
+            (la modificació del flux de signatura d'un document requerirà el rol SIGN_ADMIN).
+          </div>
+          <div>
+            La signatura d'un document, en qualsevol de les 3 modalitats suportades per aquest servei, també es farà mitjançant aquesta operació (consultar els casos d'ús).
+          </div>
+          <div>
+            Cada cop que es crida aquesta operació aportant un nou contingut (objecte <a href="doc.html#type-Content">Content</a>)
+            dins de <i>SignedDocument</i>, el servei detectarà les seves signatures i llurs signataris i els representarà mitjançant
+            objectes <i>Signature</i> i <i>Signer</i> respectivament.
+            A més, aquestes signatures hauran respectar el flux de signatura que tingui definit el document,
+            altrament aquesta operació retornarà l'error INVALID_FLOW.
+          </div>
+        </documentation>
+      </documentation>
+      <parameter name="signedDocument" type="sign:SignedDocument">
+        <documentation language="ca">
+          Objecte <i>SignedDocument</i> que es vol desar.
+        </documentation>
+      </parameter>
+      <response name="storedSignedDocument" type="sign:SignedDocument">
+        <documentation language="ca">
+          Objecte <i>SignedDocument</i> que ha estat desat. Aquest contindrà els mateixos objectes interiors que tenia el paràmetre <i>signedDocument</i>
+          amb totes les metadades informades a excepció de les de tipus xs:base64Binary.
+        </documentation>
+      </response>
+      <error name="INVALID_STRUCTURE" message="Estructura no vàlida">
+        <documentation language="ca">
+          L'estructura del document no és vàlida (per exemple, signatures amb refèrencies incorrectes).
+        </documentation>
+      </error>
+      <error name="INVALID_FLOW" message="Flux de signatura no vàlid">
+        <documentation languFage="ca">
+          S'ha definit un flux de signatura no vàlid (per exemple, un flux amb actes repetits) o
+          bé alguna de les signatures del document no respecta el flux establert.
+        </documentation>
+      </error>
+      <error name="INVALID_CERTIFICATE" message="Certificat no vàlid">
+        <documentation language="ca">
+          El certificat del signatari no és vàlid (està caducat, revocat o suspès).
+        </documentation>
+      </error>
+      <error name="INVALID_OPERATION" message="Operació no vàlida">
+        <documentation language="ca">
+          S'ha intentat fer una modificació del document que no és vàlida.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="removeSignedDocument">
+      <documentation language="ca">
+        <div>Elimina un document signat a partir del seu identificador.</div>
+        <div>Serà necessari el rol SIGN_ADMIN per poder realitzar aquesta operació.</div>
+      </documentation>
+      <parameter name="sigDocId" type="xs:string">
+        <documentation language="ca">
+          Identificador del document a eliminar.
+        </documentation>
+      </parameter>
+      <response name="removed" type="xs:boolean">
+        <documentation language="ca">
+          Indica si el document ha estat eliminat.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="findSignedDocuments">
+      <documentation language="ca">
+        Cerca documents que satisfan unes determinades condicions expressades per mitjà d'un filtre <i>SignedDocumentFilter</i>.
+      </documentation>
+      <parameter name="filter" type="sign:SignedDocumentFilter">
+        <documentation language="ca">
+          Filtre que es vol aplicar a la cerca.
+        </documentation>
+      </parameter>
+      <response name="signedDocument" type="sign:SignedDocument"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de documents que satisfan les condicions del filtre.
+        </documentation>
+      </response>
+    </operation>
+
+    <operation name="transformSignedDocument">
+      <documentation language="ca">
+        Transforma un document a un altre format documental.
+      </documentation>
+      <parameter name="sigDocId" type="xs:string">
+        <documentation language="ca">
+          Identificador del document a transformar.
+        </documentation>
+      </parameter>
+      <parameter name="toSigDocFormatId" type="xs:string"
+        references="sign:SignedDocument">
+        <documentation language="ca">
+          Identificador del format documental del resultat de la transformació.
+        </documentation>
+      </parameter>
+      <parameter name="option" type="sign:TransformOption"
+        minOccurs="0" maxOccurs="unbounded" nillable="false">
+        <documentation language="ca">
+          Llista d'opcions que permeten modificar certs aspectes del funcionament del procés de transformació.
+          Aquestes opcions són depenents del format i la implementació.
+        </documentation>
+      </parameter>
+      <response name="result" type="xs:base64Binary" minOccurs="0" expectedContentTypes="*/*">
+        <documentation language="ca">
+          Retorna una còpia del document original representat en el format indicat mitjançant el paràmetre <i>toSigDocFormatId</i>.
+        </documentation>
+      </response>
+      <error name="UNSUPPORTED_TRANSFORMATION" message="Transformació no suportada">
+        <documentation language="ca">
+          La transformació sol·licitada no està suportada per aquesta implementació del servei.
+        </documentation>
+      </error>
+    </operation>
+
+    <operation name="getManagerMetaData">
+      <documentation language="ca">
+        Recupera les caracterítiques de la implementació del servei.
+      </documentation>
+      <response name="managerMetaData" type="sign:SignatureManagerMetaData">
+        <documentation language="ca">
+          Retorna un objecte <i>signatureMetaData</i> que conté les caracterítiques de la implementació del servei (proveïdor, versió, formats documentals suportats, etc.).
+        </documentation>
+      </response>
+    </operation>
+
+  </operations>
+</module>

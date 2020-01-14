@@ -1,0 +1,112 @@
+package org.santfeliu.cms.web;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+import org.matrix.cms.Workspace;
+import org.santfeliu.faces.FacesBean;
+import org.santfeliu.web.UserSessionBean;
+
+public class WorkspaceEditBean extends FacesBean implements Serializable
+{
+  private Workspace workspace;
+
+  public WorkspaceEditBean()
+  {
+    try
+    {
+      String workspaceId =
+        UserSessionBean.getCurrentInstance().getWorkspaceId();
+      workspace = CMSConfigBean.getPort().loadWorkspace(workspaceId);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public Workspace getWorkspace()
+  {
+    return workspace;
+  }
+
+  public void setWorkspace(Workspace workspace)
+  {
+    this.workspace = workspace;
+  }
+
+  public SelectItem[] getRefWorkspaceItems()
+  {
+    List<SelectItem> auxList = new ArrayList<SelectItem>();
+    SelectItem noReferenceItem = new SelectItem();
+    noReferenceItem.setLabel(getLocalizedText("noReferenceWorkspace"));
+    noReferenceItem.setValue("");
+    auxList.add(noReferenceItem);
+    SelectItem[] workspaceItems = 
+      CMSToolbarBean.getCurrentInstance().getWorkspaceItems();
+    for (SelectItem selectItem : workspaceItems)
+    {
+      if (!((String)selectItem.getValue()).equals(workspace.getWorkspaceId()))
+      {
+        auxList.add(selectItem);
+      }
+    }
+    SelectItem[] result = new SelectItem[auxList.size()];
+    for (int i = 0; i < result.length; i++)
+    {
+      result[i] = auxList.get(i);
+    }
+    return result;
+  }
+
+  public String save()
+  {
+    try
+    {
+      if ("".equals(workspace.getRefWorkspaceId()))
+      {
+        workspace.setRefWorkspaceId(null);
+      }
+      CMSConfigBean.getPort().storeWorkspace(workspace);    
+      return "node_edit";      
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;
+  }
+
+  public String cancel()
+  {
+    return "node_edit";
+  }
+
+  private String getLocalizedText(String text)
+  {
+    String result = null;
+    try
+    {
+      Locale locale =
+        FacesContext.getCurrentInstance().getViewRoot().getLocale();
+      result = loadResourceBundle(locale).getString(text);
+    }
+    catch (MissingResourceException ex)
+    {
+      result = "{" + text + "}";
+    }
+    return result;
+  }
+  
+  private ResourceBundle loadResourceBundle(Locale locale)
+  {
+    return ResourceBundle.getBundle(
+      "org.santfeliu.cms.web.resources.CMSBundle", locale);
+  }
+
+}

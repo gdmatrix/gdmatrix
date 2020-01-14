@@ -1,0 +1,1355 @@
+DIV.objectForm
+{
+  background: #F0F0F0;
+  margin-top:0;
+  margin-bottom:0;
+  margin-left:auto;
+  margin-right:auto;
+  width:97%;
+  border-width:1px;
+  border-color:gray;
+  border-style:solid;
+  padding:1%;
+  font-family:arial;
+  font-size:14px;
+}
+
+.objectForm TABLE.navBar
+{
+  margin: 0;
+  padding: 0;
+  border-collapse:collapse;
+}
+
+.objectForm TABLE.navBar TD.col1
+{
+  width:0;
+  text-align:left;
+  vertical-align:middle;
+  padding:0;
+}
+
+.objectForm TABLE.navBar TD.col1 img
+{
+  margin-right: 4px;
+}
+
+.objectForm TABLE.navBar TD.col2
+{
+  width:0;
+  text-align:left;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+
+.objectForm TABLE.navBar TD.col3
+{
+  width:100%;
+  text-align:right;
+  vertical-align:middle;
+}
+
+.objectForm TABLE.navBar TD.col4
+{
+  width:0;
+  text-align:left;
+  vertical-align:middle;
+}
+
+.objectForm DIV.tabs
+{
+  font-size: 12px; 
+  font-family: Arial;
+  background: url('images/bg.gif') repeat-x bottom; 
+  width: 100%; 
+  float:left;
+  line-height: normal;
+  clear:both;
+}
+
+.objectForm DIV.tabs UL
+{
+  padding-top: 10px; 
+  padding-right: 0px; 
+  padding-left: 0px; 
+  padding-bottom: 0px; 
+  margin: 0px; 
+  list-style-type: none;
+}
+
+.objectForm DIV.tabs UL LI
+{
+  padding-right: 0px; 
+  padding-left: 6px; 
+  padding-bottom: 0px;
+  padding-top: 0px;
+  background: url('images/left.gif') no-repeat left top;
+  float: left;
+  margin-right: 2px;
+}
+
+.objectForm DIV.tabs UL LI A
+{
+  padding-left: 0px;
+  padding-right: 6px;
+  padding-top: 5px;
+  padding-bottom: 4px;
+  display: block;
+  font-weight: normal;
+  background: url('images/right.gif') no-repeat right top; 
+  float: left;
+  color: #505050;
+  text-decoration: none;
+}
+
+.objectForm DIV.tabs UL LI A:hover
+{
+  color: #202020;
+}
+
+.objectForm DIV.tabs UL LI.selected
+{
+  background-image: url('images/left_on.gif')
+}
+
+.objectForm DIV.tabs UL LI.selected A
+{
+  background-image: url('images/right_on.gif'); 
+  padding-bottom: 5px;
+  font-weight: bold;
+  color: #202020;
+}
+
+.objectForm DIV.tabs UL LI.more
+{
+  background-image: none;
+}
+
+.objectForm DIV.tabs UL LI.more A
+{
+  padding-bottom: 5px;
+  background-image: none;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.objectForm DIV.sheet
+{
+  margin: 0 0 0 0;
+  border-color: gray;
+  border-width: 0 1px 1px 1px;
+  border-style: solid;
+  background: white url('images/sheet_back.gif') bottom repeat-x;
+  font-family:arial;
+  font-size:12px;
+  clear:both;  
+  padding:16px 4px 16px 4px;
+}
+
+.objectForm DIV.sheet DIV.resultBar
+{
+  margin-top:-6px;
+}
+
+.objectForm .sheet .row
+{
+  margin-top:4px;
+  margin-bottom: 4px;
+}
+
+.objectForm .sheet > DIV
+{
+  margin-top:4px;
+  margin-bottom: 4px;
+}
+
+.objectForm DIV.footer
+{
+  text-align:right;
+  padding: 6px 0px 0px 0px;
+}
+
+/* buttons */
+
+.objectSearch .filterPanel .footer .searchButton,
+.objectForm .storeButton, 
+.objectForm .removeButton,
+.objectForm .cancelButton, 
+.objectForm .selectButton,
+.objectForm .showButton, 
+.objectForm .addButton,
+.objectForm .editButton, 
+.objectForm .acceptButton,
+.objectForm .lockButton,
+.objectForm .unlockButton
+.objectForm .moveDownButton,
+.objectForm .moveUpButton
+{
+  font-family: arial;
+  font-size: 14px;
+  color: black;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back.gif') center center;
+  margin: 0 0 0 4px;
+}
+
+.objectSearch .filterPanel .footer .searchButton:hover,
+.objectForm .storeButton:hover, 
+.objectForm .removeButton:hover,
+.objectForm .cancelButton:hover, 
+.objectForm .selectButton:hover,
+.objectForm .showButton:hover, 
+.objectForm .addButton:hover,
+.objectForm .editButton:hover, 
+.objectForm .acceptButton:hover,
+.objectForm .lockButton:hover,
+.objectForm .unlockButton:hover
+.objectForm .moveDownButton:hover,
+.objectForm .moveUpButton:hover
+{
+  font-family: arial;
+  font-size: 14px;
+  color: black;
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back_hover.gif') center center;
+  margin: 0 0 0 4px;
+}
+
+.objectForm .storeButton[disabled],
+.objectForm .removeButton[disabled],
+.objectForm .cancelButton[disabled],
+.objectForm .selectButton[disabled],
+.objectForm .showButton[disabled],
+.objectForm .addButton[disabled],
+.objectForm .editButton[disabled],
+.objectForm .acceptButton[disabled],
+.objectForm .lockButton[disabled],
+.objectForm .unlockButton[disabled],
+.objectForm .moveDownButton[disabled],
+.objectForm .moveUpButton[disabled]
+{
+  font-family: arial;
+  font-size: 14px;
+  color: #999999;
+  border-style: solid;
+  border-color: #999999;
+  border-width: 1px;
+  background: transparent;
+  margin: 0 0 0 4px;
+}
+
+.objectSearch .selectButton,
+.objectSearch .showButton,
+.objectSearch .editButton,
+.objectSearch .addButton,
+.objectSearch .removeButton,
+.objectSearch .searchButton,
+.objectSearch .moveUpButton,
+.objectSearch .moveDownButton,
+.objectSearch .actionsBar .createButton,
+.objectSearch .actionsBar .currentButton,
+.objectForm .resultList .showButton,
+.objectForm .createButton,
+.objectForm .searchButton,
+.objectForm .selectButton,
+.objectForm .closeButton,
+.pageHistory .closeButton,
+.objectSearch .closeButton,
+.objectForm .sheet .createButton, 
+.objectForm .sheet .searchButton,
+.objectForm .sheet .storeButton, 
+.objectForm .sheet .removeButton,
+.objectForm .sheet .cancelButton, 
+.objectForm .sheet .selectButton,
+.objectForm .sheet .showButton, 
+.objectForm .sheet .addButton,
+.objectForm .sheet .editButton, 
+.objectForm .sheet .acceptButton,
+.objectForm .sheet .lockButton,
+.objectForm .sheet .unlockButton,
+.objectForm .sheet .moveDownButton,
+.objectForm .sheet .moveUpButton,
+.objectSearch .filterPanel .searchButton,
+.actions .button
+{
+  font-family:arial;
+  font-size:11px;
+  color:black;
+  border-style:solid;
+  border-color: gray;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back.gif') center center;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+  vertical-align: middle;
+}
+
+.objectSearch .selectButton:hover,
+.objectSearch .showButton:hover,
+.objectSearch .editButton:hover,
+.objectSearch .addButton:hover,
+.objectSearch .removeButton:hover,
+.objectSearch .searchButton:hover,
+.objectSearch .moveUpButton:hover,
+.objectSearch .moveDownButton:hover,
+.objectSearch .actionsBar .createButton:hover,
+.objectSearch .actionsBar .currentButton:hover,
+.objectForm .resultList .showButton:hover,
+.objectForm .createButton:hover,
+.objectForm .searchButton:hover,
+.objectForm .selectButton:hover,
+.objectForm .closeButton:hover,
+.pageHistory .closeButton:hover,
+.objectSearch .closeButton:hover,
+.objectForm .sheet .createButton:hover, 
+.objectForm .sheet .searchButton:hover,
+.objectForm .sheet .storeButton:hover, 
+.objectForm .sheet .removeButton:hover,
+.objectForm .sheet .cancelButton:hover, 
+.objectForm .sheet .selectButton:hover,
+.objectForm .sheet .showButton:hover, 
+.objectForm .sheet .addButton:hover,
+.objectForm .sheet .editButton:hover,
+.objectForm .sheet .acceptButton:hover,
+.objectForm .sheet .lockButton:hover,
+.objectForm .sheet .unlockButton:hover,
+.objectForm .sheet .moveDownButton:hover,
+.objectForm sheet .moveUpButton:hover,
+.objectSearch .filterPanel .searchButton:hover,
+.actions .button:hover
+{
+  font-family: arial;
+  font-size: 11px;
+  color: black;
+  border-style: solid;
+  border-color: #604040;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back_hover.gif') center center;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+}
+
+.objectSearch .selectButton[disabled],
+.objectSearch .showButton[disabled],
+.objectSearch .editButton[disabled],
+.objectSearch .addButton[disabled],
+.objectSearch .removeButton[disabled],
+.objectSearch .searchButton[disabled],
+.objectSearch .moveUpButton[disabled],
+.objectSearch .moveDownButton[disabled],
+.objectSearch .closeButton[disabled],
+.objectSearch .actionsBar .createButton[disabled],
+.objectSearch .actionsBar .currentButton[disabled],
+.objectForm .resultList .showButton[disabled],
+.objectForm .createButton[disabled],
+.objectForm .searchButton[disabled],
+.objectForm .selectButton[disabled],
+.objectForm .closeButton[disabled],
+.pageHistory .closeButton[disabled],
+.objectForm .sheet .createButton[disabled],
+.objectForm .sheet .searchButton[disabled],
+.objectForm .sheet .storeButton[disabled],
+.objectForm .sheet .removeButton[disabled],
+.objectForm .sheet .cancelButton[disabled],
+.objectForm .sheet .selectButton[disabled],
+.objectForm .sheet .showButton[disabled],
+.objectForm .sheet .addButton[disabled],
+.objectForm .sheet .editButton[disabled],
+.objectForm .sheet .acceptButton[disabled],
+.objectForm .sheet .lockButton[disabled],
+.objectForm .sheet .unlockButton[disabled],
+.objectForm .sheet .moveDownButton[disabled],
+.objectForm .sheet .moveUpButton[disabled] ,
+.objectSearch .filterPanel .searchButton[disabled],
+.actions .button[disabled]
+{
+  font-family:arial;
+  font-size:11px;
+  color:#999999;
+  border-style:solid;
+  border-color: silver;
+  border-width: 1px;
+  background:transparent;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+  vertical-align: middle;
+  opacity: 0.5;
+}
+
+.objectSearch .button,
+.objectSearch .actionsBar .button,
+.objectForm .resultList .button,
+.objectForm .button,
+.pageHistory .button,
+.objectSearch .button,
+.objectForm sheet .button,
+.objectSearch .filterPanel .button
+{
+  font-family:arial;
+  font-size:11px;
+  color:black;
+  border-style:solid;
+  border-color: gray;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back.gif') center center;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+  vertical-align: middle;
+}
+
+.objectSearch .button:hover,
+.objectSearch .actionsBar .button:hover,
+.objectForm .resultList .button:hover,
+.objectForm .button:hover,
+.pageHistory .button:hover,
+.objectSearch .button:hover,
+.objectForm sheet .button:hover,
+.objectSearch .filterPanel .button:hover
+{
+  font-family: arial;
+  font-size: 11px;
+  color: black;
+  border-style: solid;
+  border-color: #604040;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back_hover.gif') center center;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+}
+
+.objectSearch .button[disabled],
+.objectSearch .actionsBar .button[disabled],
+.objectForm .resultList .button[disabled],
+.objectForm .button[disabled],
+.pageHistory .button[disabled],
+.objectSearch .button[disabled],
+.objectForm sheet .button[disabled],
+.objectSearch .filterPanel .button[disabled]
+{
+  font-family:arial;
+  font-size:11px;
+  color:#999999;
+  border-style:solid;
+  border-color: silver;
+  border-width: 1px;
+  background:transparent;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+  vertical-align: middle;
+}
+
+.objectSearch .selectedButton,
+.objectSearch .actionsBar .selectedButton,
+.objectForm .resultList .selectedButton,
+.objectForm .selectedButton,
+.pageHistory .selectedButton,
+.objectSearch .selectedButton,
+.objectForm sheet .selectedButton,
+.objectSearch .filterPanel .selectedButton
+{
+  font-family:arial;
+  font-size:11px;
+  color:black;
+  border-style:solid;
+  border-color: gray;
+  border-width: 2px;
+  background: #E0E0E0 url('images/button_back.gif') center center;
+  margin: 0 0 0 4px;
+  padding: 1px 1px 1px 1px;
+  width:auto;
+  overflow:visible;
+  vertical-align: middle;
+}
+
+
+
+.objectSearch .nextButton,
+.objectSearch .previousButton
+{
+  font-family: arial;
+  font-size: 11px;
+  color: black;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back.gif') center center;
+  margin: 0 0 0 4px; 
+}
+
+.objectSearch .nextButton:hover,
+.objectSearch .previousButton:hover
+{
+  font-family: arial;
+  font-size: 11px;
+  color: black;
+  border-style: solid;
+  border-color: #604040;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back_hover.gif') center center;
+  margin: 0 0 0 4px; 
+}
+
+.objectSearch .nextButtonDisabled,
+.objectSearch .previousButtonDisabled
+{
+  font-family: arial;
+  font-size: 11px;
+  color: #999999;
+  border-width: 0px;
+  background: transparent;
+  margin: 0 0 0 4px; 
+}
+
+.objectSearch .textBox,
+.objectForm .textBox
+{
+  display:-moz-inline-box;
+  display:inline-block;
+  margin-left:2px;
+  margin-right:2px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.objectSearch .inputBox,
+.objectForm .inputBox
+{
+  font-family: arial;
+  font-size: 12px;
+  background: white url('images/text_box_back.gif') top left repeat-x;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  margin-left:2px;
+  margin-right:2px;
+  vertical-align: middle;
+  padding:2px 1px 2px 1px;
+}
+
+.objectSearch .inputBox[readonly],
+.objectForm .inputBox[readonly]
+{  
+  color: #808080;
+}
+
+.objectSearch .outputBox,
+.objectForm .outputBox
+{
+  color:#A08080;
+  font-family: arial;
+  font-size: 12px;
+  display:inline-block;
+  background: white url('images/text_box_back.gif') top left repeat-x;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  margin-left:2px;
+  margin-right:2px;
+  vertical-align: middle;
+  padding:2px 1px 2px 1px;
+  height:14px;
+  overflow:hidden;
+}
+
+.objectSearch .selectBox,
+.objectForm .selectBox
+{
+  font-family: arial;
+  font-size: 12px;
+  margin-left:2px;
+  margin-right:2px;
+  vertical-align: middle;
+  background: white url('images/text_box_back.gif') top left repeat-x;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  margin-left:2px;
+  margin-right:2px;
+}
+
+.objectSearch .readOnlySelectBox,
+.objectForm .readOnlySelectBox
+{
+  font-family: arial;
+  font-size: 12px;
+  margin-left:2px;
+  margin-right:2px;
+  vertical-align: middle;
+  background: white top left repeat-x;  
+  border-style: solid;
+  border-color: #E0E0E0;
+  border-width: 1px;
+  margin-left:2px;
+  margin-right:2px;
+}
+
+.objectSearch .autocompleteBox input,
+.objectForm .autocompleteBox input
+{
+  font-family: arial;
+  font-size: 12px;
+  background: white url('images/text_box_back.gif') top left repeat-x;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  margin-left:2px;
+  vertical-align: middle;
+  padding:2px 1px 2px 1px;
+}
+
+.objectSearch .autocompleteBox a,
+.objectForm .autocompleteBox a
+{
+  font-family: arial;
+  font-size: 14px;
+  color: black;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back.gif') center center;
+}
+
+.objectSearch .autocompleteBox a:hover,
+.objectForm .autocompleteBox a:hover
+{
+  font-family: arial;
+  font-size: 14px;
+  color: black;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back_hover.gif') center center;
+}
+
+.objectSearch .autocompleteBox a[disabled]
+{
+  font-family: arial;
+  font-size: 14px;
+  color: #999999;
+  border-style: solid;
+  border-color: #999999;
+  border-width: 1px;
+  background: transparent;
+}
+
+.objectSearch .autocompleteBox .ui-button-icon-only,
+.objectForm .autocompleteBox .ui-button-icon-only
+{
+  width: 16px;
+}
+
+.objectSearch .radioButton,
+.objectForm .radioButton
+{
+  vertical-align:middle;
+  margin:0px;
+}
+
+.objectForm .editingPanel
+{
+  border-style:solid;
+  border-width:1px;
+  border-color: #C8C8C8;  
+  padding:2px;
+}
+
+.objectForm .editingPanel .actionsRow
+{
+  text-align:right;
+  padding:0;
+}
+
+.objectForm .editingPanel > DIV
+{
+  margin-top:4px;
+  margin-bottom: 4px;
+}
+
+DIV.objectSearch
+{
+  background: #F0F0F0;
+  margin-left:auto;
+  margin-right:auto;
+  width:97%;
+  border-width:1px;
+  border-color:gray;
+  border-style:solid;
+  padding:1%;
+  font-family:arial;
+  font-size:12px;
+}
+
+.objectSearch .header,.objectForm .header
+{
+  font-size:14px;
+  font-weight:normal;
+  text-align:left;
+  padding-bottom:4px;
+}
+
+.objectSearch .header img
+{
+  margin-right:4px;
+}
+
+.objectSearch .filterPanel
+{
+  margin: 0 0 0 0;
+  border-color: gray;
+  border-width: 1px;
+  border-style: solid;
+  background: white url('images/sheet_back.gif') bottom repeat-x;
+  font-family:arial;
+  font-size:12px;
+  width:100%;
+}
+
+.objectSearch .filterPanel .header
+{
+  height:6px;
+}
+
+.objectSearch .filterPanel .footer
+{
+  text-align:right;
+}
+
+.objectSearch .filterPanel .column1
+{
+  width:20%;
+}
+
+.objectSearch .filterPanel .column2
+{
+  width:80%;
+}
+
+/* Tableless FilterPanel (with divs) */
+.objectSearch div.filterPanel
+{
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+.objectSearch .filterPanel div.header
+{
+  padding: 1px;
+  padding-bottom: 4px;
+}
+
+.objectSearch .filterPanel div.footer
+{
+  display: inline-block;
+  width: 100%;
+}
+
+.objectSearch .filterPanel div.column1
+{
+  float:left;
+  height: 20px;
+  padding: 2px 0;
+}
+.objectSearch .filterPanel div.column1 label
+{
+  vertical-align: middle;
+  display: table-cell;
+  height: 20px;
+}
+.objectSearch .filterPanel div.column2
+{
+  float:right;
+  height: 20px;
+  padding: 2px 0;
+}
+
+.objectSearch .resultBar
+{
+  margin: 8px 0 0 0;
+  text-align:left;
+}
+
+.objectSearch .actionsBar
+{
+  margin: 6px 0 0 0;
+  text-align:right;
+}
+
+table.resultList
+{
+  width:100%;
+}
+
+.objectSearch .resultList,
+.objectForm .resultList
+{
+  padding:4px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #B0B0B0;
+  background:#F0F0F0;
+  margin: 4px 0 10px 0;
+  border-collapse: collapse;
+}
+
+.objectSearch .resultList .row1,
+.objectForm .resultList .row1
+{
+  color:black;
+  background:white;
+}
+
+.objectSearch .resultList .row2,
+.objectForm .resultList .row2
+{
+  color:black;
+  background:#F8F8F8;
+}
+
+.objectSearch .resultList .row1 > TD,
+.objectSearch .resultList .row2 > TD,
+.objectForm .resultList .row1 > TD,
+.objectForm .resultList .row2 > TD
+{
+  border-width:0px;
+  border-top-style:dotted;
+  border-top-width:1px;  
+  border-top-color:#C8C8B8;
+  border-right-style:dotted;
+  border-right-width:1px;
+  border-right-color:#C8C8B8;
+  padding:2px;
+}
+
+.objectForm .resultList > tbody > TR:hover,
+.objectSearch .resultList > tbody > TR:hover
+{
+  background:#FFFFE0;
+}
+
+.objectForm .resultList .selectedRow > TD,
+.objectSearch .resultList .selectedRow > TD
+{
+  font-style:italic;
+  background:#E0E0D8;
+  border-width:0px;
+  border-top-style:dotted;
+  border-top-width:1px;
+  border-top-color:#B0B0A8;
+  border-right-style:dotted;
+  border-right-width:1px;
+  border-right-color:#B0B0A8;
+}
+
+.objectForm .resultList .disabledRow > TD,
+.objectSearch .resultList .disabledRow > TD
+{
+  color: #999999;
+  background: transparent;
+  border-width:0px;
+  border-top-style:dotted;
+  border-top-width:1px;
+  border-top-color:#C8C8B8;
+  border-right-style:dotted;
+  border-right-width:1px;
+  border-right-color:#C8C8B8;
+}
+
+.objectSearch .resultList .actionsColumn,
+.objectForm .resultList .actionsColumn
+{
+  text-align:right;
+}
+
+.objectSearch .resultList .header,
+.objectForm .resultList .header
+{
+  color:#505050;
+  font-size:14px;
+  background: #F0F0F0 url('images/header.gif') bottom repeat-x;
+  border-style:solid;
+  border-color:#C0C0C0;
+  border-width:0 0 1px 0;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.objectForm .resultList .theader
+{
+  width:100%;
+  font-weight:bold;
+  display:block;
+  background-color:#E8E8E8;
+  padding: 0;
+  border: 0;
+  text-align: left;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.objectSearch .resultList .footer,
+.objectForm .resultList .footer
+{
+  border-style:solid;
+  border-color:#C0C0C0;
+  border-width:1px 0 0 0;
+  text-align:center;
+  background: #F0F0F0 url('images/footer.gif') bottom repeat-x;
+  height: 24px;
+}
+
+.objectSearch .paginator A
+{
+  padding:2px;
+  margin:2px;
+  border-style:solid;
+  border-width:1px;
+  border-color:gray;
+  text-decoration:none;
+  color:black;
+  background-color: white;
+}
+
+.objectSearch .paginator A.current
+{
+  color:white;
+  border-color:black;
+  background: gray;
+}
+
+.objectSearch .paginator A:hover
+{
+  color:black;
+  background-color: #E0E0E0;
+}
+
+.objectSearch .paginator A.current:hover
+{
+  color:white;
+  border-color:black;
+  background: gray;
+}
+
+.objectSearch A.documentLink,
+.objectForm A.documentLink
+{
+  text-decoration: none;
+}
+
+.objectSearch A.documentLink:hover,
+.objectForm A.documentLink:hover
+{
+  text-decoration: underline;
+}
+
+.objectSearch .calendarBox,
+.objectForm .calendarBox
+{
+  font-family: arial;
+  font-size: 12px;
+  background: white url('images/text_box_back.gif') top left repeat-x;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  vertical-align:middle;
+  margin-left:2px;
+}
+
+.objectSearch .calendarButton,
+.objectForm .calendarButton
+{
+  vertical-align:middle;
+  margin-left:2px;
+  margin-right:2px;  
+}
+
+.calendar
+{
+  position:absolute;
+  background: white;
+  z-index:2;
+  border-collapse:collapse;
+  border:1px solid #ABABAB;
+  z-index:2;
+}
+
+.calendar .header
+{
+}
+
+.calendar .dow
+{
+  background:#C0C0C0;
+}
+
+.calendar .dow TD
+{
+  text-align:center;
+}
+
+.calendar .days TD
+{
+  width:20px;
+  height:20px;
+  cursor:default;
+  text-decoration:none;
+  text-align:center;
+}
+
+.calendar .days TD.normalCell
+{
+}
+
+.calendar .days TD.weekendCell
+{
+  background:#F0F0F0;
+  color:gray;
+}
+
+.calendar .days TD.selectedCell
+{
+  background:yellow;
+}
+
+.pageHistory
+{
+  margin-top:0;
+  margin-bottom:0;
+  margin-left:auto;
+  margin-right:auto;
+  width:99%;
+  border-style:none;
+  border-collapse:collapse;
+  font-family:arial;
+  font-size:12px;
+}
+
+.pageHistory TR
+{
+  background: #F0F0F0 url('images/back_shadow.gif') bottom center;
+}
+
+.pageHistory TR TD.col1
+{
+  width:85%;
+  border-width:1px 0px 0px 1px;
+  border-color:gray;
+  border-style:solid;
+  padding:2px 2px 2px 6px;
+  text-align:left;
+}
+
+.pageHistory TR TD.col1 img
+{
+  margin-right:4px;
+}
+
+.pageHistory TR TD.col2
+{
+  width:15%;
+  border-width:1px 1px 0px 0px;
+  border-color:gray;
+  border-style:solid;
+  padding:2px 6px 2px 2px;
+  text-align:right;
+}
+
+.pageHistory A
+{
+  color:gray;
+  text-decoration:none;
+}
+
+.pageHistory A:hover
+{
+  color:black;
+  text-decoration:none;
+}
+
+.scrollBar
+{
+  border-collapse:collapse;
+  margin-left:auto;
+  margin-right:auto;
+  list-style: none;
+  display: table;  
+}
+
+.scrollBar li
+{
+  display: table-cell;
+}
+
+.scrollBar TR TD,
+.scrollBar li
+{
+  vertical-align:middle;
+}
+
+.scrollBar li ul
+{
+  padding: 0;
+}
+
+.scrollBar TR TD A IMG
+{
+  vertical-align:middle;
+  border:none;
+  margin:1px;
+}
+
+.scrollBar TR TD.page
+{
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.scrollBar li.page
+{
+  padding-left: 3px;
+  padding-right: 3px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: transparent;  
+}
+
+.scrollBar TR TD.page A,
+.scrollBar li.page A
+{
+  color:gray;
+  border:none;
+  text-decoration:none;
+}
+
+.scrollBar TR TD.page A:hover,
+.scrollBar li.page A:hover
+{
+  color:black;
+}
+
+.scrollBar TR TD.activePage,
+.scrollBar li.activePage
+{
+  padding-left: 3px;
+  padding-right: 3px;
+  background: #E0E0E0 url('images/button_back_hover.gif') center center;
+}
+
+.scrollBar TR TD.activePage A,
+.scrollBar li.activePage A
+{
+  color:black;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.scrollBar TR TD.nextButton,
+.scrollBar TR TD.previousButton,
+.scrollBar TR TD.firstButton,
+.scrollBar TR TD.lastButton,
+.scrollBar TR TD.fastForwardButton,
+.scrollBar TR TD.fastRewindButton,
+.scrollBar li.nextButton,
+.scrollBar li.previousButton,
+.scrollBar li.firstButton,
+.scrollBar li.lastButton,
+.scrollBar li.fastForwardButton,
+.scrollBar li.fastRewindButton
+{
+  font-family: arial;
+  font-size: 11px;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back.gif') center center;
+}
+
+.scrollBar TR TD.nextButton:hover,
+.scrollBar TR TD.previousButton:hover,
+.scrollBar TR TD.firstButton:hover,
+.scrollBar TR TD.lastButton:hover,
+.scrollBar TR TD.fastForwardButton:hover,
+.scrollBar TR TD.fastRewindButton:hover,
+.scrollBar li.nextButton:hover,
+.scrollBar li.previousButton:hover,
+.scrollBar li.firstButton:hover,
+.scrollBar li.lastButton:hover,
+.scrollBar li.fastForwardButton:hover,
+.scrollBar li.fastRewindButton:hover
+{
+  font-family: arial;
+  font-size: 11px;
+  border-style: solid;
+  border-color: #604040;
+  border-width: 1px;
+  background: #E0E0E0 url('images/button_back_hover.gif') center center;
+}
+
+.scrollBar TR TD div,
+.scrollBar TR TD img
+{
+  width:16px;
+  height:16px;
+  padding:2px;
+}
+
+.scrollBar li img
+{
+  width:16px;
+  height:16px;
+  padding:3px 2px 0px 2px;
+}
+
+
+.scrollBar TR TD.nextButton > a > div
+{
+  background:url(../../../../images/next.gif) center center no-repeat;
+}
+.scrollBar TR TD.previousButton > a > div
+{
+  background:url(../../../../images/previous.gif) center center no-repeat;
+}
+.scrollBar TR TD.firstButton > a > div
+{
+  background:url(../../../../images/first.gif) center center no-repeat;
+}
+.scrollBar TR TD.lastButton > a > div
+{
+  background:url(../../../../images/last.gif) center center no-repeat;
+}
+.scrollBar TR TD.fastForwardButton > a > div
+{
+  background:url(../../../../images/fastforward.gif) center center no-repeat;
+}
+.scrollBar TR TD.fastRewindButton > a > div
+{
+  background:url(../../../../images/fastrewind.gif) center center no-repeat;
+}
+
+.objectForm .objectActions
+{
+  margin-top:0;
+  margin-left:0px;
+  text-indent:0;
+  padding-left:0;
+}
+
+.objectForm .objectAction
+{
+  padding:2px;
+  list-style-type: none;
+  text-indent:0;
+  margin-left:0;
+}
+
+.objectForm .objectActions IMG
+{
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+.objectForm .objectAction A
+{
+  color:black;
+  font-size:12px;
+  text-decoration:none;
+  vertical-align: middle;
+}
+
+.objectForm .objectAction A:hover
+{
+  background:#E0E0E0;
+}
+
+.actionsPopup
+{
+  width:auto;
+  height:auto;
+  overflow:auto;
+  background:#F0F0C0;
+  border:1px solid black;
+  padding:6px
+}
+
+.actionsPopup .item
+{
+  text-decoration: none;
+  display:block;
+  color:gray;
+  border-bottom:1px solid #D0D0A0;
+}
+
+.actionsPopup .item:hover
+{
+  background:#D0D0A0;
+  color:black;
+}
+
+.actionsPopup .popupHeader
+{
+  font-weight: bold;
+  display:block;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+div.ui-datepicker
+{
+ font-size:0.9em;
+}
+
+.objectSearch .actionsBar.top
+{
+  float: right;
+  margin-bottom: 4px;
+}
+
+div.selectBox
+{
+  background: white url('images/text_box_back.gif') top left repeat-x;
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+  margin-left:2px;
+  margin-right:2px;  
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+div.selectBox div:hover
+{
+  background-color:#E0E0E0;
+}
+
+div.selectBox div input
+{
+  vertical-align: middle;
+}
+
+div.selectBox div label
+{
+  vertical-align: middle;
+}
+
+div.selectBox.inline div
+{
+  display:inline-block;
+  padding-right: 6px;
+}

@@ -1,0 +1,202 @@
+/* sqlweb */
+
+#sqlweb_header
+{
+  margin: 2px;
+  font-weight: bold;
+}
+
+#sqlweb_editor
+{
+  width:100%;
+  padding: 2px;
+  box-sizing:border-box;
+}
+
+#driver,
+#url
+{
+  display:inline-block;
+  width: 362px;
+  box-sizing:border-box;
+}
+
+#username,
+#password
+{
+  width: 140px;
+  box-sizing:border-box;
+}
+
+#sql_stmt
+{
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size:14px;
+  border: 1px solid gray;
+  background: linear-gradient(#F0F0F0, white);
+}
+
+#max_rows
+{
+  width: 60px;
+}
+
+.show_hide_button
+{
+  display: inline-block;
+  width: 16px;
+  height: 16px;  
+  background-image: url(../images/eye.png);
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.button
+{
+  display:inline-block;
+  font-family:Arial, "Helvetica", sans-serif;
+  font-size:13px;
+  color:black;
+  text-decoration:none;
+  text-align:center;
+  padding: 2px 6px 2px 6px;
+  margin:2px;  
+  cursor:pointer;
+  border: 1px solid #B0B0B0;
+  background: #D0D0FF;
+  border-radius: 5px;
+  background-image: linear-gradient(#F8F8F8, #E0E0E0);
+  outline: none;
+  box-shadow: 0px 1px 2px 0px #D0D0D0;
+}
+
+.button:hover
+{
+  border-color: gray;
+}
+
+.button:active
+{
+  background-image: linear-gradient(#D0D0D0, #F0F0F0);
+}
+
+input[type='checkbox']
+{
+  vertical-align: middle;
+}
+
+.output_label
+{
+  display:inline-block;
+  width: 80px;
+  vertical-align: middle;
+}
+
+.output_label.center
+{
+  text-align: center;
+}
+
+.input_text
+{
+  margin: 1px;
+  background: linear-gradient(#F0F0F0, white);
+  border: 1px solid #C0C0C0;
+}
+
+.message
+{
+  font-weight: bold;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-right: 4px;
+}
+
+.message.block
+{
+  display: block;
+}
+
+.message.error
+{
+  color: red;
+}
+
+#table_container
+{
+  margin:2px;
+  margin-top: 4px;
+  border: 1px solid gray;
+  position:relative;
+  background-color: #F0F0F0;
+}
+
+div.scroll
+{
+  height: 280px; 
+  overflow: auto;
+}
+
+table.table
+{
+  border-collapse: collapse;
+}
+
+table.table tr
+{
+  border-bottom: 1px solid #B0B0B0;
+}
+
+table.table tr.even
+{
+  background-color: white;
+}
+
+table.table tr:hover
+{
+  background-color: #F0F080;
+}
+
+table.table tr td,
+table.table tr th
+{
+  border-right: 1px solid gray;
+  padding: 2px;
+}
+
+.type_VARCHAR2,
+.type_VARCHAR
+{
+  color: #000060;  
+}
+
+.type_CHAR
+{
+  color: blue;
+}
+
+.type_DATE,
+.type_TIMESTAMP
+{
+  color: magenta;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.index
+{
+  color: #C00000;
+  text-align: right
+}
+
+.type_NUMBER,
+.type_DECIMAL,
+.type_INTEGER,
+.type_FLOAT
+{
+  color: #006000;
+  text-align: right;
+}

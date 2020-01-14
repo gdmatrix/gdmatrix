@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow-fixer>
+  <rule name="r1">
+    <for node="org.santfeliu.workflow.node.WebServiceNode" property="requestMessage" />
+    <for node="org.santfeliu.workflow.node.JavaScriptNode" property="code" />
+    <for node="org.santfeliu.workflow.node.ConditionNode" property="condition" />
+    <for node="org.santfeliu.workflow.node.WaitConditionNode" property="condition" />
+    <for node="org.santfeliu.workflow.node.FormNode" property="checkExpression" />
+    <for node="org.santfeliu.workflow.node.FormNode" property="cancelExpression" />
+    <for node="org.santfeliu.workflow.node.FormNode" property="outcomeExpression" />
+    <replace>
+      <regexp>personType\s</regexp>
+      <with>personTypeId\s</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>NATIONAL_PERSON</regexp>
+      <with>g5:P_F</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>RESIDENT_PERSON</regexp>
+      <with>g5:P_R</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>FOREIGN_PERSON</regexp>
+      <with>g5:P_P</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>UNIDENTIFIED_PERSON</regexp>
+      <with>g5:P_Z</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>NATIONAL_JURISTIC_PERSON</regexp>
+      <with>g5:P_J</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>FOREIGN_JURISTIC_PERSON</regexp>
+      <with>g5:P_X</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>UNIDENTIFIED_JURISTIC_PERSON</regexp>
+      <with>g5:P_Y</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+  </rule>
+
+  <rule name="r2">
+    <for node="org.santfeliu.workflow.node.JavaScriptNode" property="code" />
+    <for node="org.santfeliu.workflow.node.ConditionNode" property="condition" />
+    <for node="org.santfeliu.workflow.node.WaitConditionNode" property="condition" />
+    <replace>
+      <regexp>\w*\.indexOf\(\"JURISTIC\"\)\s*\>\s*0</regexp>
+      <with script="true">
+        i = text.indexOf('.'); v = text.substring(0, i);
+        result = "(" + v + " == 'g5:P_J' || " + v + " == 'g5:P_X' || " + v + " == 'g5:P_Y')"
+      </with>
+      <reason>Comparing with deprecated constant "JURISTIC"</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>\w*\.indexOf\(\"JURISTIC\"\)\s*\>=\s*0</regexp>
+      <with script="true">
+        i = text.indexOf('.'); v = text.substring(0, i);
+        result = "(" + v + " == 'g5:P_J' || " + v + " == 'g5:P_X' || " + v + " == 'g5:P_Y')"
+      </with>
+      <reason>Comparing with deprecated constant "JURISTIC"</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>\w*\.indexOf\(\"JURISTIC\"\)\s*\&lt;\s*0</regexp>
+      <with script="true">
+        i = text.indexOf('.'); v = text.substring(0, i);
+        result = "!(" + v + " == 'g5:P_J' || " + v + " == 'g5:P_X' || " + v + " == 'g5:P_Y')"
+      </with>
+      <reason>Comparing with deprecated constant "JURISTIC"</reason>
+      <level>error</level>
+    </replace>
+  </rule>
+
+  <rule name="r3">
+    <for node="org.santfeliu.workflow.node.JavaScriptNode" property="code" />
+    <for node="org.santfeliu.workflow.node.ConditionNode" property="condition" />
+    <for node="org.santfeliu.workflow.node.WaitConditionNode" property="condition" />
+    <replace>
+      <regexp>MatrixConfig\.getProperty\(\".*\"\,\s*</regexp>
+      <with>MatrixConfig.getProperty(</with>
+      <reason>Deprecated method MatrixConfig.getProperty(ns, property)</reason>
+      <level>warning</level>
+    </replace>
+    <replace>
+      <regexp>getPersonType\(</regexp>
+      <with>getPersonTypeId\(</with>
+      <reason>Deprecated method getPersonType()</reason>
+      <level>error</level>
+    </replace>
+  </rule>
+
+
+  <rule name="r4">
+    <for node="org.santfeliu.workflow.node.WebServiceNode" property="requestMessage" />
+    <replace>
+      <regexp>personType&gt;</regexp>
+      <with>personTypeId&gt;</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+  </rule>
+
+  <rule name="r5">
+    <for node="org.santfeliu.workflow.node.WebServiceNode" property="requestMessage" />
+    <replace>
+      <regexp>addressTypeId&gt;POST&lt;/</regexp>
+      <with>addressTypeId&gt;g5:TCTDOM_POST&lt;/</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+  </rule>
+
+  <rule name="r6">
+    <for node="org.santfeliu.workflow.node.WebServiceNode" property="requestMessage" />
+    <for node="org.santfeliu.workflow.node.JavaScriptNode" property="code" />
+    <for node="org.santfeliu.workflow.node.ConditionNode" property="condition" />
+    <for node="org.santfeliu.workflow.node.WaitConditionNode" property="condition" />
+    <for node="org.santfeliu.workflow.node.FormNode" property="checkExpression" />
+    <for node="org.santfeliu.workflow.node.FormNode" property="cancelExpression" />
+    <for node="org.santfeliu.workflow.node.FormNode" property="outcomeExpression" />
+    <replace>
+      <regexp>"EMOB"</regexp>
+      <with>"g5:TCTCON_EMOB"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>"BEEP"</regexp>
+      <with>"g5:TCTCON_BEEP"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>"BUSC"</regexp>
+      <with>"g5:TCTCON_BUSC"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>"EMAI"</regexp>
+      <with>"g5:TCTCON_EMAI"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>"ETRA"</regexp>
+      <with>"g5:TCTCON_ETRA"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>"FAX"</regexp>
+      <with>"g5:TCTCON_FAX"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>"MOV"</regexp>
+      <with>"g5:TCTCON_MOV"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>"TEL"</regexp>
+      <with>"g5:TCTCON_TEL"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+    <replace>
+      <regexp>"WWW"</regexp>
+      <with>"g5:TCTCON_WWW"</with>
+      <reason>Service API update</reason>
+      <level>error</level>
+    </replace>
+  </rule>
+
+
+</workflow-fixer>

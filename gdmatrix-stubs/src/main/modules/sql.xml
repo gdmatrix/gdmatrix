@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="sql"
+  namespace="http://sql.matrix.org/"
+  title="Executor de comandes SQL"
+  wsdlLocation="../services/sql?wsdl"
+  service="SQLManagerService"
+  port="SQLManagerPort"
+  version="1.0"
+  status="FINAL"
+  authors="Abel Blanque">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+     location="matrix.xsd" />
+  </imports>
+
+  <types>
+
+    <struct name="QueryParameters">
+      <property name="parameters" type="sql:QueryParameter"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="QueryParameter">
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="value" type="xs:anyType" minOccurs="0">
+      </property>
+    </struct>
+
+    <struct name="QueryTable">
+      <property name="columnName" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+      <property name="queryRow" type="sql:QueryRow" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="QueryRow">
+      <property name="values" type="xs:anyType" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+  </types>
+
+  <operations>
+
+    <operation name="executeDriverQuery">
+      <parameter name="sql" type="xs:string">
+      </parameter>
+      <parameter name="parameters" type="sql:QueryParameters">
+      </parameter>
+      <parameter name="driver" type="xs:string">
+      </parameter>
+      <parameter name="url" type="xs:string">
+      </parameter>
+      <parameter name="username" type="xs:string">
+      </parameter>
+      <parameter name="password" type="xs:string">
+      </parameter>
+      <response name="queryTable" type="sql:QueryTable">
+      </response>
+    </operation>
+
+    <operation name="executeAliasQuery">
+      <parameter name="sql" type="xs:string">
+      </parameter>
+      <parameter name="parameters" type="sql:QueryParameters">
+      </parameter>
+      <parameter name="alias" type="xs:string">
+      </parameter>
+      <parameter name="username" type="xs:string">
+      </parameter>
+      <parameter name="password" type="xs:string">
+      </parameter>
+      <response name="queryTable" type="sql:QueryTable">
+      </response>
+    </operation>
+
+    <operation name="executeDriverUpdate">
+      <parameter name="sql" type="xs:string">
+      </parameter>
+      <parameter name="parameters" type="sql:QueryParameters">
+      </parameter>
+      <parameter name="driver" type="xs:string">
+      </parameter>
+      <parameter name="url" type="xs:string">
+      </parameter>
+      <parameter name="username" type="xs:string">
+      </parameter>
+      <parameter name="password" type="xs:string">
+      </parameter>
+      <response name="numUpdated" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="executeAliasUpdate">
+      <parameter name="sql" type="xs:string">
+      </parameter>
+      <parameter name="parameters" type="sql:QueryParameters">
+      </parameter>
+      <parameter name="alias" type="xs:string">
+      </parameter>
+      <parameter name="username" type="xs:string">
+      </parameter>
+      <parameter name="password" type="xs:string">
+      </parameter>
+      <response name="numUpdated" type="xs:int">
+      </response>
+    </operation>
+
+    <operation name="createConnection">
+      <parameter name="alias" type="xs:string">
+      </parameter>
+      <parameter name="driver" type="xs:string">
+      </parameter>
+      <parameter name="url" type="xs:string">
+      </parameter>
+    </operation>
+
+    <operation name="removeConnection">
+      <parameter name="alias" type="xs:string">
+      </parameter>
+    </operation>
+  </operations>
+</module>

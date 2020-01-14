@@ -1,0 +1,102 @@
+body
+{
+  background:white;
+  margin:0;
+  padding:0;
+  background:#E0E0E0;
+  font-family: Arial;
+  font-size:14px;
+}
+
+span.centralSheet
+{
+  display:block;
+  width:860px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top:0px;
+  padding:0;
+}
+
+
+table.centralPanel
+{
+  background: white;
+  width:100%;  
+  padding:0;
+  border:0;
+}
+
+td.cpcol1
+{
+  width:25%;
+  vertical-align: top;
+}
+
+td.cpcol2
+{
+  width:75%;
+  vertical-align: top;
+}
+
+div.headerPanel
+{
+  height:30px;
+  background-color:orange;  
+}
+
+div.footerPanel
+{
+  clear:both;
+  height:30px;
+  background-color:orange;
+  margin-bottom:30px;
+}
+
+.headerPanel .logo
+{
+  display:inline-block;
+  float:left;
+  border:none;
+}
+
+.loginPanel
+{
+  float:right;
+  margin-top:10px;
+  display:inline-block;
+}
+
+.loginPanel .loginButton
+{
+  text-decoration:none;
+  background:#C0C0C0;
+  padding-left:2px;
+  padding-right:2px;
+  margin-left:2px;
+  margin-right:2px;
+}
+
+.loginPanel .username,
+.loginPanel .password
+{
+  color:black;
+  vertical-align:middle;
+  margin-right:4px;
+}
+
+.loginPanel .displayName
+{
+  color:gray;
+  vertical-align:middle;
+  margin-right:4px;
+}
+
+.loginPanel .loginBox
+{
+  vertical-align:middle;
+  font-family: Arial;
+  font-size:14px;
+  margin-right:4px;
+}
+

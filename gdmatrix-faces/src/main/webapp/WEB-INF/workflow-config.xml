@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+
+ <managed-bean>
+  <managed-bean-name>procedureCatalogueBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.ProcedureCatalogueBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>procedureInfoBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.ProcedureInfoBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ 
+ <managed-bean>
+  <managed-bean-name>startInstanceBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.StartInstanceBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>instanceListBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.InstanceListBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>instanceBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.InstanceBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>addressFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.AddressFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>personFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.PersonFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>loginFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.LoginFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>inputNumberFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.InputNumberFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>inputTextFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.InputTextFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>outputTextFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.OutputTextFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>selectMenuFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.SelectMenuFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>signatureFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.SignatureFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ 
+ <managed-bean>
+  <managed-bean-name>biometricFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.BiometricFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>mobileIdFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.MobileIdFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>showDocumentFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.ShowDocumentFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean> 
+ 
+ <managed-bean>
+  <managed-bean-name>identificationFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.IdentificationFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean> 
+ 
+ <managed-bean>
+  <managed-bean-name>uploadDocumentsFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.UploadDocumentsFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean> 
+
+ <managed-bean>
+  <managed-bean-name>customFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.CustomFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean> 
+
+ <managed-bean>
+  <managed-bean-name>dynamicFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.DynamicFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+
+ <managed-bean>
+  <managed-bean-name>monitorFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.MonitorFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ 
+ <managed-bean>
+  <managed-bean-name>scanDocumentFormBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.workflow.web.ScanDocumentFormBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean> 
+
+ <navigation-rule>
+   <from-view-id>*</from-view-id>
+   
+   <navigation-case>
+     <from-outcome>start_instance</from-outcome>
+     <to-view-id>/common/workflow/start_instance.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>procedure_catalogue</from-outcome>
+     <to-view-id>/common/workflow/procedure_catalogue.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>procedure_info</from-outcome>
+     <to-view-id>/common/workflow/procedure_info.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>instance_list</from-outcome>
+     <to-view-id>/common/workflow/instance_list.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>not_logged_in</from-outcome>
+     <to-view-id>/common/workflow/not_logged_in.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>instance_terminated</from-outcome>
+     <to-view-id>/common/workflow/instance_terminated.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>nothing_to_do</from-outcome>
+     <to-view-id>/common/workflow/nothing_to_do.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>error_detected</from-outcome>
+     <to-view-id>/common/workflow/error_detected.jsp</to-view-id>
+   </navigation-case>
+
+   <!-- FORMS -->
+
+   <navigation-case>
+     <from-outcome>address_form</from-outcome>
+     <to-view-id>/common/workflow/address_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>person_form</from-outcome>
+     <to-view-id>/common/workflow/person_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>login_form</from-outcome>
+     <to-view-id>/common/workflow/login_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>input_number_form</from-outcome>
+     <to-view-id>/common/workflow/input_number_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>input_text_form</from-outcome>
+     <to-view-id>/common/workflow/input_text_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>output_text_form</from-outcome>
+     <to-view-id>/common/workflow/output_text_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>select_menu_form</from-outcome>
+     <to-view-id>/common/workflow/select_menu_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>signature_form</from-outcome>
+     <to-view-id>/common/workflow/signature_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>show_document_form</from-outcome>
+     <to-view-id>/common/workflow/show_document_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>custom_form</from-outcome>
+     <to-view-id>/common/workflow/custom_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>dynamic_form</from-outcome>
+     <to-view-id>/common/workflow/dynamic_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>identification_form</from-outcome>
+     <to-view-id>/common/workflow/identification_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>upload_documents_form</from-outcome>
+     <to-view-id>/common/workflow/upload_documents_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>monitor_form</from-outcome>
+     <to-view-id>/common/workflow/monitor_form.jsp</to-view-id>
+   </navigation-case>
+   
+   <navigation-case>
+     <from-outcome>scan_form</from-outcome>
+     <to-view-id>/common/workflow/scan_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>biometric_form</from-outcome>
+     <to-view-id>/common/workflow/biometric_form.jsp</to-view-id>
+   </navigation-case>
+
+   <navigation-case>
+     <from-outcome>mobileid_form</from-outcome>
+     <to-view-id>/common/workflow/mobileid_form.jsp</to-view-id>
+   </navigation-case>
+
+ </navigation-rule>
+
+ <validator>
+  <validator-id>org.apache.myfaces.validator.Email</validator-id>
+  <validator-class>org.apache.myfaces.custom.emailvalidator.EmailValidator</validator-class>
+ </validator>
+
+ <validator>
+  <validator-id>org.apache.myfaces.validator.RegExpr</validator-id>
+  <validator-class>org.apache.myfaces.custom.regexprvalidator.RegExprValidator</validator-class>
+ </validator>
+
+</faces-config>

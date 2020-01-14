@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+
+  <description>GenesysSecurity</description>
+  <package>com.audifilm.matrix.security.service</package>
+
+  <named-query name="findUserAreas" >
+    <query>
+      SELECT a
+      FROM Area a, GrupUsuari gu
+      WHERE a.areaId = gu.areaId
+        and (trim(gu.userId) = :userId or :userId is null)
+        and (trim(gu.areaId) = :areaId or :areaId is null)
+    </query>
+  </named-query >
+
+  <named-query name="findUserDepartaments" >
+    <query>
+      SELECT d
+      FROM Departament d, GrupUsuari gu
+      WHERE d.areaId = gu.areaId
+        and d.departamentId = gu.departamentId
+        and (trim(gu.userId) = :userId or :userId is null)
+        and (trim(gu.areaId) = :areaId or :areaId is null)
+        and (trim(gu.departamentId) = :departamentId or :departamentId is null)
+    </query>
+  </named-query >
+
+  <named-query name="findUserGrups" >
+    <query>
+      SELECT g
+      FROM Grup g, GrupUsuari gu
+      WHERE g.areaId = gu.areaId
+        and g.departamentId = gu.departamentId
+        and g.grupId = gu.grupId
+        and (trim(gu.userId) = :userId or :userId is null)
+        and (trim(gu.areaId) = :areaId or :areaId is null)
+        and (trim(gu.departamentId) = :departamentId or :departamentId is null)
+        and (trim(gu.grupId) = :grupId or :grupId is null)
+    </query>
+  </named-query >
+
+  <named-query name="findAccesItem" >
+    <query>  
+    SELECT  
+      i
+    FROM AccessItem i
+    WHERE
+      (trim(i.aplId)=trim(:aplId) OR :aplId IS NULL) 
+      AND (trim(i.itemId)=trim(:itemId) OR :itemId IS NULL)
+      AND (trim(i.nivellId)=trim(:nivellId) OR :nivellId IS NULL)
+      AND (trim(i.roleId)=trim(:roleId) OR :roleId IS NULL)
+    ORDER BY i.aplId, i.itemId, i.nivellId, i.mode
+    </query> 
+  </named-query>
+
+  <named-query name="findAccessControl" >
+    <query>
+    SELECT
+      c
+    FROM AccessControl c
+    WHERE
+      (trim(c.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(c.itemId)=trim(:itemId) OR :itemId IS NULL)
+      AND (trim(c.nivellId)=trim(:nivellId) OR :nivellId IS NULL)
+      AND (trim(c.controlId)=trim(:controlId) OR :controlId IS NULL)
+    ORDER BY c.aplId, c.itemId, c.nivellId, c.mode
+    </query>
+  </named-query>
+
+  <named-query name="findNivellUsuari" >
+    <query>
+    SELECT n
+    FROM NivellUsuari n
+    WHERE
+      trim(n.userId)=trim(:userId)
+      AND (trim(n.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(n.nivellId)=trim(:nivellId) OR :nivellIs IS NULL)
+      AND (trim(n.userId)=trim(:userId) OR :userId IS NULL)
+    ORDER BY n.nivellId DESC, n.aplId, n.userId
+    </query>
+  </named-query>
+
+  <named-query name="findNivellArea" >
+    <query>
+    SELECT n
+    FROM NivellArea n
+    WHERE
+      trim(n.areaId)=trim(:areaId)
+      AND (trim(n.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(n.nivellId)=trim(:nivellId) OR :nivellIs IS NULL)
+   ORDER BY n.nivellId DESC, n.aplId, n.areaId
+   </query>
+  </named-query>
+
+  <named-query name="findNivellDepartament" >
+    <query>
+    SELECT n
+    FROM NivellDepartament n
+    WHERE
+      (trim(n.areaId)=trim(:areaId) OR :areaId IS NULL)
+      AND (trim(n.departamentId)=trim(:departamentId) OR :departamentId IS NULL)
+      AND (trim(n.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(n.nivellId)=trim(:nivellId) OR :nivellIs IS NULL)
+    ORDER BY n.nivellId DESC, n.aplId, n.areaId, n.departamentId
+    </query>
+  </named-query>
+
+  <named-query name="findNivellGrup" >
+    <query>
+    SELECT n
+    FROM NivellGrup n
+    WHERE
+      (trim(n.areaId)=trim(:areaId) OR :areaId IS NULL)
+      AND (trim(n.departamentId)=trim(:departamentId) OR :departamentId IS NULL)
+      AND (trim(n.grupId)=trim(:grupId) OR :grupId IS NULL)
+      AND (trim(n.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(n.nivellId)=trim(:nivellId) OR :nivellIs IS NULL)
+    ORDER BY n.nivellId DESC, n.aplId, n.areaId, n.departamentId, n.grupId
+    </query>
+  </named-query>
+
+  <named-query name="findUsuarisDelGrup" >
+    <query>
+    SELECT g.userId
+    FROM GrupUsuari g
+    WHERE
+      (trim(g.areaId)=trim(:areaId) OR :areaId IS NULL)
+      AND (trim(g.departamentId)=trim(:departamentId) OR :departamentId IS NULL)
+      AND (trim(g.grupId)=trim(:grupId) OR :grupId IS NULL)
+      </query>
+  </named-query>
+
+  <named-query name="findGrupsDelUsuari" >
+    <query>
+    SELECT g
+    FROM GrupUsuari g
+    WHERE
+      trim(g.userId)=trim(:userId)
+      AND (trim(g.areaId)=trim(:areaId) OR :areaId IS NULL)
+      AND (trim(g.departamentId)=trim(:departamentId) OR :departamentId IS NULL)
+      AND (trim(g.grupId)=trim(:grupId) OR :grupId IS NULL)
+     </query>
+  </named-query>
+
+
+  <named-query name="findAccessItemNivellsUsuari" >
+    <query>
+    SELECT i, nu
+    FROM NivellUsuari nu, AccessItem i
+    WHERE  
+      i.aplId = nu.aplId
+      AND i.nivellId = nu.nivellId
+      AND (trim(i.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(i.itemId)=trim(:itemId) OR :itemId IS NULL)
+      AND (trim(nu.userId)=trim(:userId) OR :userId IS NULL)
+    ORDER BY nu.userId
+    </query>
+  </named-query>
+
+  <named-query name="findAccessItemNivellsArea" >
+    <query>
+   SELECT i, na
+    FROM GrupUsuari gu, NivellArea na, AccessItem i
+    WHERE
+      gu.areaId = na.areaId
+      AND i.aplId = na.aplId
+      AND i.nivellId = na.nivellId
+      AND (trim(i.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(i.itemId)=trim(:itemId) OR :itemId IS NULL)
+      AND (trim(gu.userId)=trim(:userId) OR :userId IS NULL)
+      AND (trim(gu.areaId)=trim(:areaId) OR :areaId IS NULL)
+    ORDER BY gu.areaId, gu.departamentId, gu.grupId, na.nivellId
+    </query>
+  </named-query>
+
+  <named-query name="findAccessItemNivellsDepartament" >
+    <query>
+   SELECT i, nd
+    FROM GrupUsuari gu, NivellDepartament nd, AccessItem i
+    WHERE
+      (trim(gu.areaId) = trim(nd.areaId))
+      AND (trim(gu.departamentId) = trim(nd.departamentId))
+      AND (trim(i.aplId) = trim(nd.aplId))
+      AND (trim(i.nivellId) = trim(nd.nivellId))
+      AND (trim(i.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(i.itemId)=trim(:itemId) OR :itemId IS NULL)
+      AND (trim(gu.userId)=trim(:userId) OR :userId IS NULL)
+      AND (trim(gu.areaId)=trim(:areaId) OR :areaId IS NULL)
+      AND (trim(gu.departamentId)=trim(:departamentId) OR :departamentId IS NULL)
+    ORDER BY gu.areaId, gu.departamentId, gu.grupId, nd.nivellId
+    </query>
+  </named-query>
+
+  <named-query name="findAccessItemNivellsGrup" >
+    <query>
+   SELECT i, ng
+    FROM GrupUsuari gu, NivellGrup ng, AccessItem i
+    WHERE
+      gu.areaId = ng.areaId
+      AND gu.departamentId = ng.departamentId
+      AND gu.grupId = ng.grupId
+      AND trim(i.aplId) = ng.aplId
+      AND i.nivellId = ng.nivellId
+      AND (trim(i.aplId)=trim(:aplId) OR :aplId IS NULL)
+      AND (trim(i.itemId)=trim(:itemId) OR :itemId IS NULL)
+      AND (trim(gu.userId)=trim(:userId) OR :userId IS NULL)
+      AND (trim(gu.areaId)=trim(:areaId) OR :areaId IS NULL)
+      AND (trim(gu.departamentId)=trim(:departamentId) OR :departamentId IS NULL)
+      AND (trim(gu.grupId)=trim(:grupId) OR :grupId IS NULL)
+    ORDER BY gu.areaId, gu.departamentId, gu.grupId, ng.nivellId
+    </query>
+  </named-query>
+
+  <!-- Table: APL_ACCESMENUITEM-->
+  <entity name="AccessItem" class="DBAccessMenuItem" >
+    <table name="APL_ACCESMENUITEM" />
+    <attributes>
+      <id name="aplId" >
+        <column name="APLCOD" />
+      </id>
+      <id name="itemId" >
+        <column name="MENUITEM" />
+      </id>
+      <id name="nivellId" >
+        <column name="NIVELLCOD" />
+      </id>
+      <id name="roleId" >
+        <column name="ROL" />
+      </id>
+      <basic name="mode" >
+        <column name="MODO" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+    <!-- Table: APL_ACCESCONTROL-->
+  <entity name="AccessControl" class="DBAccessControl" >
+    <table name="APL_ACCESCONTROL" />
+    <attributes>
+      <id name="aplId" >
+        <column name="APLCOD" />
+      </id>
+      <id name="itemId" >
+        <column name="MENUITEM" />
+      </id>
+      <id name="controlId" >
+        <column name="CONTROL" />
+      </id>
+      <id name="nivellId" >
+        <column name="NIVELLCOD" />
+      </id>
+      <basic name="mode" >
+        <column name="MODO" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <!-- Table: APL_NIVUSRAPL-->
+  <entity name="NivellUsuari" class="DBNivellUsuari" >
+    <table name="APL_NIVUSRAPL" />
+    <attributes>
+      <id name="userId" >
+        <column name="USRCOD" />
+      </id>
+      <id name="aplId" >
+        <column name="APLCOD" />
+      </id>
+      <id name="nivellId" >
+        <column name="NIVELLCOD" />
+      </id>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity name="NivellArea" class="DBNivellArea" >
+    <table name="APL_NIVAREAPL" />
+    <attributes>
+      <id name="areaId" >
+        <column name="AREACOD" />
+      </id>
+      <id name="aplId" >
+        <column name="APLCOD" />
+      </id>
+      <id name="nivellId" >
+        <column name="NIVELLCOD" />
+      </id>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <!-- Table: APL_NIVDEPAPL-->
+  <entity name="NivellDepartament" class="DBNivellDepartament" >
+    <table name="APL_NIVDEPAPL" />
+    <attributes>
+      <id name="areaId" >
+        <column name="AREACOD" />
+      </id>
+      <id name="departamentId" >
+        <column name="DEPCOD" />
+      </id>
+      <id name="aplId" >
+        <column name="APLCOD" />
+      </id>
+      <id name="nivellId" >
+        <column name="NIVELLCOD" />
+      </id>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity name="NivellGrup" class="DBNivellGrup" >
+    <table name="APL_NIVGRUPAPL" />
+    <attributes>
+      <id name="areaId" >
+        <column name="AREACOD" />
+      </id>
+      <id name="departamentId" >
+        <column name="DEPCOD" />
+      </id>
+      <id name="grupId" >
+        <column name="GRUPCOD" />
+      </id>
+      <id name="aplId" >
+        <column name="APLCOD" />
+      </id>
+      <id name="nivellId" >
+        <column name="NIVELLCOD" />
+      </id>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+
+  <!-- Table: ORG_GRUPUSR-->
+  <entity name="GrupUsuari" class="DBGrupUsuari" >
+    <table name="ORG_GRUPUSR" />
+    <attributes>
+      <id name="areaId" >
+        <column name="AREACOD" />
+      </id>
+      <id name="departamentId" >
+        <column name="DEPCOD" />
+      </id>
+      <id name="grupId" >
+        <column name="GRUPCOD" />
+      </id>
+      <id name="userId" >
+        <column name="USRCOD" />
+      </id>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+  <entity name="Area" class="DBArea" >
+    <table name="ORG_AREA" />
+    <attributes>
+      <id name="areaId" >
+        <column name="AREACOD" />
+      </id>
+      <id name="description" >
+        <column name="GROUPDESC" />
+      </id>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity name="Departament" class="DBDepartament" >
+    <table name="ORG_DEPARTAMENT" />
+    <attributes>
+      <id name="areaId" >
+        <column name="AREACOD" />
+      </id>
+      <id name="departamentId" >
+        <column name="DEPCOD" />
+      </id>
+      <id name="description" >
+        <column name="DEPDESC" />
+      </id>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+  <entity name="Grup" class="DBGrup" >
+    <table name="ORG_GRUPTREBALL" />
+    <attributes>
+      <id name="areaId" >
+        <column name="AREACOD" />
+      </id>
+      <id name="departamentId" >
+        <column name="DEPCOD" />
+      </id>
+      <id name="grupId" >
+        <column name="GRUPCOD" />
+      </id>
+      <id name="description" >
+        <column name="GRUPDESC" />
+      </id>
+      <basic name="stdumod" >
+        <column name="STDUMOD" updatable="false" />
+      </basic>
+      <basic name="stdugr" >
+        <column name="STDUGR" updatable="false" />
+      </basic>
+      <basic name="stddgr" >
+        <column name="STDDGR" updatable="false" />
+      </basic>
+      <basic name="stdhgr" >
+        <column name="STDHGR" updatable="false" />
+      </basic>
+      <basic name="stddmod" >
+        <column name="STDDMOD" updatable="false" />
+      </basic>
+      <basic name="stdhmod" >
+        <column name="STDHMOD" updatable="false" />
+      </basic>
+    </attributes>
+  </entity>
+</entity-mappings>

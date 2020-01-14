@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+
+  <description>forum</description>
+  <package>org.santfeliu.forum.service</package>
+
+  <named-query name="countForums">
+    <query>
+      SELECT COUNT(f.forumId)
+      FROM Forum f
+      WHERE (f.group LIKE :group OR :group IS NULL)
+        AND (UPPER(f.name) LIKE :name OR :name IS NULL)
+        AND (UPPER(f.description) LIKE :description OR :description IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(f.forumId, ',')), :forumId) &gt; 0) OR :forumId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findForums">
+    <query>
+      SELECT f
+      FROM Forum f
+      WHERE (f.group LIKE :group OR :group IS NULL)
+        AND (UPPER(f.name) LIKE :name OR :name IS NULL)
+        AND (UPPER(f.description) LIKE :description OR :description IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(f.forumId, ',')), :forumId) &gt; 0) OR :forumId IS NULL)
+      ORDER BY f.creationDateTime DESC, f.forumId DESC
+    </query>
+  </named-query>
+
+  <named-query name="removeForumQuestions">
+    <query>
+      DELETE FROM Question q
+      WHERE q.forumId = :forumId
+    </query>
+  </named-query>
+
+  <named-query name="removeForumAnswers">
+    <query>
+      DELETE FROM Answer a
+      WHERE EXISTS
+      (
+        SELECT q
+        FROM Question q
+        WHERE q.questionId = a.questionId
+          AND q.forumId = :forumId
+      )
+    </query>
+  </named-query>
+
+  <named-query name="removeQuestionAnswers">
+    <query>
+      DELETE FROM Answer a
+      WHERE a.questionId = :questionId
+    </query>
+  </named-query>
+
+  <named-query name="lockForum">
+    <query>
+      UPDATE Forum f
+      SET f.forumId = f.forumId
+      WHERE f.forumId = :forumId
+    </query>
+  </named-query>
+
+  <named-query name="findQuestionsAnswers">
+    <query>
+      SELECT q.questionId, a
+      FROM Question q JOIN q.answers a
+      WHERE (LOCATE(CONCAT(',', CONCAT(q.questionId, ',')), :questionId) &gt; 0)
+      ORDER BY q.questionId, a.answerId
+    </query>
+  </named-query>
+  
+  <named-query name="getIndicesCorrespondence">
+    <query>
+      SELECT q.inputIndex, q.outputIndex
+      FROM Question q, Question qa
+      WHERE q.forumId = qa.forumId AND qa.questionId = :questionId
+        AND (LOCATE(CONCAT(',', CONCAT(q.inputIndex, ',')), :inputIndexList) &gt; 0)
+        AND q.strVisible = 'Y'
+    </query>
+  </named-query>
+
+  <entity class="org.santfeliu.forum.service.DBForum" name="Forum">
+    <table name="FRU_FORUM"  />
+    <attributes>
+      <id name="forumId">
+        <column name="FORUMID" />
+        <generated-value strategy="TABLE" generator="FRU_FORUM"/>
+        <table-generator name="FRU_FORUM" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>            
+      </id>
+      <basic name="startDateTime">
+        <column name="STARTDT" />
+      </basic>
+      <basic name="endDateTime">
+        <column name="ENDDT" />
+      </basic>
+      <basic name="name">
+        <column name="NAME" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" />
+      </basic>
+      <basic name="typeValue">
+        <column name="TYPE" />
+      </basic>
+      <basic name="emailFrom">
+        <column name="EMAILFROM" />
+      </basic>
+      <basic name="emailTo">
+        <column name="EMAILTO" />
+      </basic>
+      <basic name="lastInputIndex">
+        <column name="LASTINPUTINDEX" />
+      </basic>
+      <basic name="lastOutputIndex">
+        <column name="LASTOUTPUTINDEX" />
+      </basic>
+      <basic name="group">
+        <column name="GRP" />
+      </basic>
+      <basic name="adminRoleId">
+        <column name="ADMINROLE" />
+      </basic>
+      <basic name="maxQuestions">
+        <column name="MAXQUESTIONS" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+      <one-to-many name="questions" mapped-by="questionForum" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.forum.service.DBQuestion" name="Question">
+    <table name="FRU_QUESTION"  />
+    <attributes>
+      <id name="questionId">
+        <column name="QUESTIONID" />
+        <generated-value strategy="TABLE" generator="FRU_QUESTION"/>
+        <table-generator name="FRU_QUESTION" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>
+      </id>
+      <basic name="forumId">
+        <column name="FORUMID" />
+      </basic>
+      <basic name="title">
+        <column name="TITLE" />
+      </basic>
+      <basic name="text">
+        <column name="TEXT" />
+      </basic>
+      <basic name="readCount">
+        <column name="READCOUNT" />
+      </basic>
+      <basic name="strVisible">
+        <column name="VISIBLE" />
+      </basic>
+      <basic name="inputIndex">
+        <column name="INPUTINDEX" />
+      </basic>
+      <basic name="outputIndex">
+        <column name="OUTPUTINDEX" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+      <basic name="activityDateTime">
+        <column name="ACTIVITYDT" />
+      </basic>
+      <many-to-one name="questionForum">
+        <join-column name="FORUMID" referenced-column-name="FORUMID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <one-to-many name="answers" mapped-by="answerQuestion" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.forum.service.DBAnswer" name="Answer">
+    <table name="FRU_ANSWER"  />
+    <attributes>
+      <id name="answerId">
+        <column name="ANSWERID" />
+        <generated-value strategy="TABLE" generator="FRU_ANSWER"/>
+        <table-generator name="FRU_ANSWER" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>
+      </id>
+      <basic name="questionId">
+        <column name="QUESTIONID" />
+      </basic>
+      <basic name="text">
+        <column name="TEXT" />
+      </basic>
+      <basic name="comments">
+        <column name="COMMENTS" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" />
+      </basic>
+      <many-to-one name="answerQuestion">
+        <join-column name="QUESTIONID" referenced-column-name="QUESTIONID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+</entity-mappings>

@@ -1,0 +1,163 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"      
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+
+        <t:dataTable rows="#{caseSearchBean.pageSize}"
+                     id="data" rowIndexVar="index"
+                     first="#{caseSearchBean.firstRowIndex}"
+                     value="#{caseSearchBean.rows}" var="row"
+                     rendered="#{caseSearchBean.rowCount > 0}"
+                     rowStyleClass="#{caseSearchBean.rowStyleClass} row#{(index % 2) + 1}"
+                     styleClass="resultList"
+                     rowClasses="row1,row2" headerClass="header" footerClass="footer">
+
+          <t:columns value="#{caseSearchBean.columnNames}" var="column"
+                     style="#{caseSearchBean.columnStyle}"
+                     styleClass="#{caseSearchBean.columnStyleClass}">
+            <f:facet name="header">
+              <sf:outputText value="#{caseSearchBean.localizedColumnName}"
+                            rendered="#{not (caseSearchBean.columnName == 'actions' and caseSearchBean.customColumn)}"
+                            translator="#{caseSearchBean.translator}"
+                            translationGroup="#{userSessionBean.translationGroup}"/>
+            </f:facet>
+
+            <!-- title link -->
+            <h:panelGroup rendered="#{caseSearchBean.columnName == 'title' and caseSearchBean.customColumn}">
+              <t:div rendered="#{caseSearchBean.columnName == 'title' and caseSearchBean.customColumn}"
+                     styleClass="title">
+                 <h:commandLink target="_blank"
+                   action="#{caseSearchBean.showCase}">
+                  <sf:outputText value="#{caseSearchBean.columnValue}" escape="#{caseSearchBean.valueEscaped}" 
+                                 translator="#{caseSearchBean.translator}"
+                                 translationGroup="#{userSessionBean.translationGroup}"/>
+                </h:commandLink>
+              </t:div>
+              <t:div styleClass="description">
+                <sf:outputText value="#{row.description}" escape="#{caseSearchBean.valueEscaped}" 
+                               translator="#{caseSearchBean.translator}"
+                               translationGroup="#{userSessionBean.translationGroup}" />
+              </t:div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{!caseSearchBean.customColumn}">
+              <!-- render as command link -->
+              <t:div rendered="#{caseSearchBean.submitColumn and not caseSearchBean.showParametersOnUrl}">
+                <h:commandLink immediate="true"
+                               action="#{caseSearchBean.showCase}"
+                               rendered="#{caseSearchBean.submitColumn}">
+                  <sf:outputText value="#{caseSearchBean.columnValue}" escape="#{caseSearchBean.valueEscaped}"
+                                 translator="#{caseSearchBean.translator}"
+                                 translationGroup="#{userSessionBean.translationGroup}"/>
+                </h:commandLink>
+              </t:div>
+
+              <!-- render as link -->
+              <t:div rendered="#{caseSearchBean.linkColumn}">
+                <h:outputLink target="_blank" value="#{caseSearchBean.columnValue}"
+                              rendered="#{caseSearchBean.linkColumn}">
+                  <sf:outputText value="#{caseSearchBean.columnValue}" rendered="#{caseSearchBean.columnDescription == null}" escape="#{caseSearchBean.valueEscaped}" 
+                                 translator="#{caseSearchBean.translator}"
+                                 translationGroup="#{userSessionBean.translationGroup}"/>
+                  <sf:outputText value="#{caseSearchBean.columnDescription}" rendered="#{caseSearchBean.columnDescription != null}" escape="#{caseSearchBean.valueEscaped}" 
+                                 translator="#{caseSearchBean.translator}"
+                                 translationGroup="#{userSessionBean.translationGroup}" />
+                </h:outputLink>
+              </t:div>
+
+              <!-- render as showlink -->
+              <t:div rendered="#{caseSearchBean.showParametersOnUrl}" styleClass="#{caseSearchBean.columnName}">
+                <h:outputLink value="#{caseSearchBean.showLinkUrl}"
+                              >
+                  <sf:outputText value="#{caseSearchBean.columnValue}" rendered="#{caseSearchBean.columnDescription == null}" escape="#{caseSearchBean.valueEscaped}" 
+                                 translator="#{caseSearchBean.translator}"
+                                 translationGroup="#{userSessionBean.translationGroup}" />
+                  <sf:outputText value="#{caseSearchBean.columnDescription}" rendered="#{caseSearchBean.columnDescription != null}" escape="#{caseSearchBean.valueEscaped}" 
+                                 translator="#{caseSearchBean.translator}"
+                                 translationGroup="#{userSessionBean.translationGroup}"/>
+                </h:outputLink>
+              </t:div>
+
+              <!-- render as image -->
+              <t:div rendered="#{caseSearchBean.imageColumn and caseSearchBean.columnValue != null}">
+                <h:graphicImage value="#{caseSearchBean.columnValue}"
+                  rendered="#{caseSearchBean.imageColumn and caseSearchBean.columnValue != null}"
+                  alt="#{caseSearchBean.columnDescription}"
+                  title="#{caseSearchBean.columnDescription}"/>
+              </t:div>
+
+              <!-- render as text -->
+              <t:div rendered="#{not caseSearchBean.imageColumn and not caseSearchBean.linkColumn
+                                 and not caseSearchBean.submitColumn}">
+                <sf:outputText value="#{caseSearchBean.columnValue}"
+                  rendered="#{not caseSearchBean.imageColumn and not caseSearchBean.linkColumn                        
+                    and not caseSearchBean.submitColumn}"
+                  escape="#{caseSearchBean.valueEscaped}" 
+                  translator="#{caseSearchBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}" />
+              </t:div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{caseSearchBean.columnName == 'actions'
+              and caseSearchBean.customColumn}" styleClass="actionsColumn"
+                          style="width:20%">
+              <t:commandButton value="#{objectBundle.select}"
+                               image="#{userSessionBean.icons.back}"
+                               alt="#{objectBundle.select}" title="#{objectBundle.select}"
+                               rendered="#{controllerBean.selectableNode}"
+                               styleClass="selectButton" immediate="true"
+                               action="#{caseSearchBean.selectCase}" />
+              <t:commandButton value="#{objectBundle.show}"
+                               image="#{userSessionBean.icons.show}"
+                               alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                               styleClass="showButton" immediate="true"
+                               onclick="showOverlay(); return true;"
+                               action="#{caseSearchBean.showCase}"/>
+            </h:panelGroup>
+
+          </t:columns>
+
+        </t:dataTable>
+
+        <t:dataScroller for="data"
+                        fastStep="100"
+                        paginator="true"
+                        paginatorMaxPages="9"
+                        immediate="true"
+                        rendered="#{caseSearchBean.rows != null}"
+                        styleClass="scrollBar"
+                        paginatorColumnClass="page"
+                        paginatorActiveColumnClass="activePage"
+                        nextStyleClass="nextButton"
+                        previousStyleClass="previousButton"
+                        firstStyleClass="firstButton"
+                        lastStyleClass="lastButton"
+                        fastfStyleClass="fastForwardButton"
+                        fastrStyleClass="fastRewindButton"
+                        renderFacetsIfSinglePage="false">
+          <f:facet name="first">
+            <h:graphicImage value="/themes/#{userSessionBean.theme}/images/first.png" alt="#{objectBundle.first}" title="#{objectBundle.first}"/>
+          </f:facet>
+          <f:facet name="last">
+            <h:graphicImage value="/themes/#{userSessionBean.theme}/images/last.png" alt="#{objectBundle.last}" title="#{objectBundle.last}"/>
+          </f:facet>
+          <f:facet name="previous">
+            <h:graphicImage value="/themes/#{userSessionBean.theme}/images/previous.png" alt="#{objectBundle.previous}" title="#{objectBundle.previous}"/>
+          </f:facet>
+          <f:facet name="next">
+            <h:graphicImage value="/themes/#{userSessionBean.theme}/images/next.png" alt="#{objectBundle.next}" title="#{objectBundle.next}"/>
+          </f:facet>
+          <f:facet name="fastrewind">
+            <h:graphicImage value="/themes/#{userSessionBean.theme}/images/fastrewind.png" alt="#{objectBundle.fastRewind}" title="#{objectBundle.fastRewind}"/>
+          </f:facet>
+          <f:facet name="fastforward">
+            <h:graphicImage value="/themes/#{userSessionBean.theme}/images/fastforward.png" alt="#{objectBundle.fastForward}" title="#{objectBundle.fastForward}"/>
+          </f:facet>
+        </t:dataScroller> 
+
+
+</html>
+      

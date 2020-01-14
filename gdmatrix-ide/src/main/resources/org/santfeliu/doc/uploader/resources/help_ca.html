@@ -1,0 +1,32 @@
+<html>
+  <body>
+    <h3>DocumentUploader</h3>
+
+    <p><u>Path</u>: Camí del directori que conté els fitxers que volem pujar al gestor documental.</p>
+    <p><u>Pattern</u>: Patró que han de satisfer els camins dels fitxers per ser pujats al gestor (expressió regular de Java). Exemples:</p>
+    <table border="1" width="540">
+      <tr><td><font color="green">.*jpg</font></td><td>qualsevol fitxer jpg.</td></tr>
+      <tr><td><font color="green">.*(jpg|gif)</font></td><td>qualsevol fitxer jpg o gif.</td></tr>
+      <tr><td><font color="green">.*/FOTO.*jpg</font></td><td>qualsevol fitxer jpg que comenci per FOTO.</td></tr>
+      <tr><td><font color="green">.*/fotos/.*jpg</font></td><td>qualsevol fitxer jpg de la subcarpeta fotos.</td></tr>
+    </table>
+    <p><u>Filter</u>: Expressió javascript de filtrat dels fitxers pel seu estat o les seves propietats. Exemples:</p>
+    <table border="1" width="540">
+      <tr><td><font color="green">file.state == 'NEW'</font></td><td>Només els fitxers que són nous (que encara no existeixen al gestor).</td></tr>
+      <tr><td><font color="green">file.state == 'NEW' || file.state == 'MODIFIED'</font></td><td>Només els fitxers nous o modificats.</td></tr>
+      <tr><td><font color="green">file.length &lt; 20000</font></td><td>Només els fitxers que tenen una mida inferior a 20Kb.</td></tr>
+      <tr><td><font color="green">file.image</font></td><td>Només els fitxers que siguin imatges.</td></tr>
+      <tr><td><font color="green">file.position == 0</font></td><td>Només si és el primer fitxer del directori.</td></tr>
+    </table>
+    
+    <p><u>Document properties</u>: Codi javascript que determina les metadades del document. Exemples:</p>
+    <table border="1" width="540">
+      <tr><td><font color="green">document.metadata.put("title", "Foto de prova " + file.simpleName);</font></td><td>Estableix el títol a partir del nom del fitxer.</td></tr>
+      <tr><td><font color="green">document.metadata.put("docTypeId", "sf:IMAGE");</font></td><td>Estableix la tipologia del document.</td></tr>
+      <tr><td><font color="green">document.metadata.put("gpsLat", file.metadata.get("GPS Latitude"));</font></td><td>Estableix la latitud GPS a partir de les metadades del fitxer.</td></tr>
+      <tr><td><font color="green">document.metadata.put("gpsLon", file.metadata.get("GPS Longitude"));</font></td><td>Estableix la longitud GPS a partir de les metadades del fitxer.</td></tr>
+      <tr><td><font color="green">document.metadata.putAll(file.metadata);</font></td><td>Copia totes les metadades del fitxer en el document.</td></tr>
+      <tr><td><font color="green">document.metadata.put("tipus", "T" + file.position);</font></td><td>Estableix la propietat "tipus" en funció de la posició del fitxer dintre del seu directori.</td></tr>
+    </table>
+  </body>
+</html>

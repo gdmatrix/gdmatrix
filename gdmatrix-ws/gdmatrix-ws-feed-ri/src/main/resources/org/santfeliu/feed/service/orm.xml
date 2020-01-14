@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+
+  <description>feed</description>
+  <package>org.santfeliu.feed.service</package>
+
+  <named-query name="countFolders">
+    <query>
+      SELECT COUNT(f)
+      FROM Folder f
+      WHERE (UPPER(f.name) LIKE :name OR :name IS NULL)
+        AND (f.alias = :alias OR :alias IS NULL)
+        AND (f.parentFolderId = :parentFolderId OR :parentFolderId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(f.folderId, ',')), :folderId) > 0) OR :folderId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findFolders">
+    <query>
+      SELECT f
+      FROM Folder f
+      WHERE (UPPER(f.name) LIKE :name OR :name IS NULL)
+        AND (f.alias = :alias OR :alias IS NULL)
+        AND (f.parentFolderId = :parentFolderId OR :parentFolderId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(f.folderId, ',')), :folderId) > 0) OR :folderId IS NULL)
+      ORDER BY f.folderId
+    </query>
+  </named-query>
+
+  <named-query name="countFeeds">
+    <query>
+      SELECT COUNT(f)
+      FROM Feed f
+      WHERE (UPPER(f.name) LIKE :name OR :name IS NULL)
+        AND (UPPER(f.url) LIKE :url OR :url IS NULL)
+        AND (UPPER(f.type) = :type OR :type IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(f.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findFeeds">
+    <query>
+      SELECT f
+      FROM Feed f
+      WHERE (UPPER(f.name) LIKE :name OR :name IS NULL)
+        AND (UPPER(f.url) LIKE :url OR :url IS NULL)
+        AND (UPPER(f.type) = :type OR :type IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(f.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+      ORDER BY f.feedId
+    </query>
+  </named-query>
+
+  <named-query name="countFeedFolders">
+    <query>
+      SELECT COUNT(ff)
+      FROM FeedFolder ff
+      WHERE ((LOCATE(CONCAT(',', CONCAT(ff.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(ff.folderId, ',')), :folderId) > 0) OR :folderId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findFeedFolders">
+    <query>
+      SELECT ff
+      FROM FeedFolder ff
+      WHERE ((LOCATE(CONCAT(',', CONCAT(ff.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(ff.folderId, ',')), :folderId) > 0) OR :folderId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="findFeedFolderViews">
+    <query>
+      SELECT fe.feedId, fe.name, fe.url, fe.type, fo.folderId, fo.name
+      FROM Folder fo JOIN fo.feedFolders ff JOIN ff.feed fe
+      WHERE ((LOCATE(CONCAT(',', CONCAT(fe.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(fo.folderId, ',')), :folderId) > 0) OR :folderId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="removeFeedFolders">
+    <query>
+      DELETE FROM FeedFolder ff
+      WHERE (ff.feedId = :feedId OR :feedId IS NULL)
+        AND (ff.folderId = :folderId OR :folderId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="removeFeedsEntries">
+    <query>
+      DELETE FROM Entry e
+      WHERE ((LOCATE(CONCAT(',', CONCAT(e.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+    </query>
+  </named-query>
+  
+  <named-query name="removeFeeds">
+    <query>
+      DELETE FROM Feed f
+      WHERE ((LOCATE(CONCAT(',', CONCAT(f.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+    </query>
+  </named-query>
+
+  <named-query name="countEntries">
+    <query>
+      SELECT COUNT(e)
+      FROM Entry e
+      WHERE (UPPER(e.title) LIKE :title OR :title IS NULL)
+        AND (UPPER(e.url) LIKE :url OR :url IS NULL)        
+        AND (e.pubDateTime &gt;= :startDateTime OR :startDateTime IS NULL)
+        AND (e.pubDateTime &lt;= :endDateTime OR :endDateTime IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(e.entryId, ',')), :entryId) > 0) OR :entryId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(e.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+        AND (
+              (:excludeInvisible = 'N') 
+              OR
+              ( 
+                (:excludeInvisible = 'Y')
+                AND
+                (e.strVisible IS NULL OR e.strVisible = 'Y')
+              )
+            )      
+    </query>
+  </named-query>
+
+  <named-query name="findEntries">
+    <query>
+      SELECT e
+      FROM Entry e
+      WHERE (UPPER(e.title) LIKE :title OR :title IS NULL)
+        AND (UPPER(e.url) LIKE :url OR :url IS NULL)        
+        AND (e.pubDateTime &gt;= :startDateTime OR :startDateTime IS NULL)
+        AND (e.pubDateTime &lt;= :endDateTime OR :endDateTime IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(e.entryId, ',')), :entryId) > 0) OR :entryId IS NULL)
+        AND ((LOCATE(CONCAT(',', CONCAT(e.feedId, ',')), :feedId) > 0) OR :feedId IS NULL)
+        AND (
+              (:excludeInvisible = 'N') 
+              OR
+              ( 
+                (:excludeInvisible = 'Y')
+                AND
+                (e.strVisible IS NULL OR e.strVisible = 'Y')
+              )
+            )
+      ORDER BY e.pubDateTime DESC, e.entryId
+    </query>
+  </named-query>
+
+  <entity class="org.santfeliu.feed.service.DBFolder" name="Folder">
+    <table name="FED_FOLDER"  />
+    <attributes>
+      <id name="folderId">
+        <column name="FOLDERID" />
+        <generated-value strategy="TABLE" generator="feed.folder"/>
+        <table-generator name="feed.folder" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>            
+      </id>
+      <basic name="name">
+        <column name="NAME" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" />
+      </basic>
+      <basic name="iconDocId">
+        <column name="ICONDOCID" />
+      </basic>
+      <basic name="alias">
+        <column name="ALIAS" />
+      </basic>
+      <basic name="parentFolderId">
+        <column name="PARENTFOLDERID" />
+      </basic>
+      <basic name="defaultEntryCount">
+        <column name="DEFAULTENTRYCOUNT" />
+      </basic>
+      <one-to-many name="feedFolders" mapped-by="folder" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.feed.service.DBFeed" name="Feed">
+    <table name="FED_FEED"  />
+    <attributes>
+      <id name="feedId">
+        <column name="FEEDID" />
+        <generated-value strategy="TABLE" generator="feed.feed"/>
+        <table-generator name="feed.feed" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>
+      </id>
+      <basic name="name">
+        <column name="NAME" />
+      </basic>
+      <basic name="url">
+        <column name="URL" />
+      </basic>
+      <basic name="internalUrl">
+        <column name="INTERNALURL" />
+      </basic>
+      <basic name="type">
+        <column name="TYPE" />
+      </basic>
+      <basic name="refreshInterval">
+        <column name="REFRESHINTERVAL" />
+      </basic>
+      <basic name="refreshDateTime">
+        <column name="REFRESHDT" />
+      </basic>
+      <basic name="entryLifeSpan">
+        <column name="ENTRYLIFESPAN" />
+      </basic>
+      <basic name="iconUrl">
+        <column name="ICONURL" />
+      </basic>
+      <one-to-many name="entries" mapped-by="entryFeed" />
+      <one-to-many name="feedFolders" mapped-by="feed" />
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.feed.service.DBEntry" name="Entry">
+    <table name="FED_ENTRY" />
+    <attributes>
+      <id name="entryId">
+        <column name="ENTRYID" />
+        <generated-value strategy="TABLE" generator="feed.entry"/>
+        <table-generator name="feed.entry" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          initial-value="0" allocation-size="1"/>
+      </id>
+      <basic name="title">
+        <column name="TITLE" />
+      </basic>
+      <basic name="url">
+        <column name="URL" />
+      </basic>
+      <basic name="baDescription">
+        <column name="DESCRIPTION" />
+        <lob/>
+      </basic>
+      <basic name="pubDateTime">
+        <column name="PUBDT" />
+      </basic>
+      <basic name="feedId">
+        <column name="FEEDID" />
+      </basic>
+      <basic name="hash">
+        <column name="HASH" />
+      </basic>
+      <basic name="strVisible">
+        <column name="VISIBLE" />
+      </basic>
+      <many-to-one name="entryFeed">
+        <join-column name="FEEDID" referenced-column-name="FEEDID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.feed.service.DBFeedFolder" name="FeedFolder">
+    <table name="FED_FEEDFOLDER" />
+    <id-class class="org.santfeliu.feed.service.DBFeedFolderPK" />
+    <attributes>
+      <id name="feedId">
+        <column name="FEEDID" />
+      </id>
+      <id name="folderId">
+        <column name="FOLDERID" />
+      </id>
+      <many-to-one name="feed">
+        <join-column name="FEEDID" referenced-column-name="FEEDID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <many-to-one name="folder">
+        <join-column name="FOLDERID" referenced-column-name="FOLDERID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+    </attributes>
+  </entity>
+
+</entity-mappings>

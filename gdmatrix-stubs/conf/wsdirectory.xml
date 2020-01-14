@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<directory>
+
+  <!-- AgendaManagerService -->
+  <endpoint name="agenda"
+    service="{http://agenda.matrix.org/}AgendaManagerService"
+    url="${base}/services/agenda"
+    wsdl="${base}/services/agenda?wsdl"
+    only-local="true">
+    <description>Agenda</description>
+    <internal-entity name="Event" />
+    <internal-entity name="Theme" />
+    <internal-entity name="Attendant" />
+    <internal-entity name="EventDocument" />
+    <internal-entity name="EventPlace" />
+    <internal-entity name="EventTheme" />
+    <external-entity name="Document" from="doc" />
+    <external-entity name="Type" from="dic_sf" />
+    <external-entity name="Person" from="kernel" />
+    <external-entity name="Room" from="kernel" />
+  </endpoint>
+
+  <!-- CaseManagerService -->
+  <endpoint name="cases"
+    service="{http://cases.matrix.org/}CaseManagerService"
+    url="${base}/services/cases"
+    wsdl="${base}/services/cases?wsdl">
+    <description>Cases Proxy</description>
+  </endpoint>
+
+  <endpoint name="cases_sf"
+    service="{http://cases.matrix.org/}CaseManagerService"
+    url="${base}/services/cases_sf"
+    wsdl="${base}/services/cases_sf?wsdl"
+    only-local="true">
+    <description>Cases Sant Feliu</description>
+    <internal-entity name="Case" prefix="sf" />
+    <internal-entity name="CasePerson" prefix="sf" />
+    <internal-entity name="CaseAddress" prefix="sf" />
+    <internal-entity name="CaseDocument" prefix="sf" />
+    <internal-entity name="CaseEvent" prefix="sf" />    
+    <internal-entity name="CaseCase" prefix="sf" />
+    <internal-entity name="Demand" prefix="sf" />
+    <internal-entity name="Problem" prefix="sf" />
+    <internal-entity name="Intervention" prefix="sf" />
+    <internal-entity name="InterventionProblem" prefix="sf" />    
+    <external-entity name="Type" from="dic_sf" />
+    <external-entity name="Person" from="kernel" />
+    <external-entity name="Address" from="kernel" />
+    <external-entity name="Document" from="doc" />
+    <external-entity name="Class" from="classif" />
+    <external-entity name="User" from="security" />
+    <external-entity name="Role" from="security" />
+    <external-entity name="Case" />
+  </endpoint>
+
+  <endpoint name="cases_g5"
+    service="{http://cases.matrix.org/}CaseManagerService"
+    url="${base}/services/cases_g5"
+    wsdl="${base}/services/cases_g5?wsdl">
+    <description>Cases SDE</description>
+    <internal-entity name="Case" prefix="g5" />
+    <internal-entity name="CasePerson" prefix="g5" />
+    <internal-entity name="CaseAddress" prefix="g5" />
+    <internal-entity name="CaseDocument" prefix="g5" />
+    <internal-entity name="CaseCase" prefix="g5" />
+    <external-entity name="Type" from="dic_g5" />
+    <external-entity name="Person" from="kernel"/>
+    <external-entity name="Address" from="kernel" />
+    <external-entity name="Document" from="doc" />
+    <external-entity name="Class" from="classif" />
+    <external-entity name="User" from="security" />
+    <external-entity name="Role" from="security" />
+    <external-entity name="Case" from="cases_g5" />
+  </endpoint>
+
+
+  <!-- ClassificationManagerService -->
+  <endpoint name="classif"
+    service="{http://classif.matrix.org/}ClassificationManagerService"
+    url="${base}/services/classif"
+    wsdl="${base}/services/classif?wsdl">
+    <description>Classification</description>
+    <internal-entity name="Class" />
+    <external-entity name="Type" from="dic_sf" />
+  </endpoint>
+
+  <!-- DictionaryManagerService -->
+  <endpoint name="dic"
+    service="{http://dic.matrix.org/}DictionaryManagerService"
+    url="${base}/services/dic"
+    wsdl="${base}/services/dic?wsdl">
+    <description>Dictionary Proxy</description>
+  </endpoint>
+
+  <endpoint name="dic_sf"
+    service="{http://dic.matrix.org/}DictionaryManagerService"
+    url="${base}/services/dic_sf"
+    wsdl="${base}/services/dic_sf?wsdl"
+    only-local="true">
+    <description>Dictionary Sant Feliu</description>
+    <internal-entity name="Type" prefix="sf" />
+    <internal-entity name="EnumType" prefix="sf" />
+    <internal-entity name="EnumTypeItem" prefix="sf" />
+  </endpoint>
+
+  <endpoint name="dic_g5"
+    service="{http://dic.matrix.org/}DictionaryManagerService"
+    url="${base}/services/dic_g5"
+    wsdl="${base}/services/dic_g5?wsdl">
+    <description>Dictionary SDE</description>
+    <internal-entity name="Type" prefix="g5" />
+    <internal-entity name="EnumType" prefix="g5" />
+    <internal-entity name="EnumTypeItem" prefix="g5" />
+  </endpoint>
+
+  <!-- PolicyManagerService  -->
+  <endpoint name="policy"
+    service="{http://policy.matrix.org/}PolicyManagerService"
+    url="${base}/services/policy"
+    wsdl="${base}/services/policy?wsdl"
+    only-local="true">
+    <description>Policy</description>
+    <internal-entity name="Policy" />
+    <internal-entity name="ClassPolicy" />
+    <internal-entity name="CasePolicy" />
+    <internal-entity name="DocumentPolicy" />
+    <internal-entity name="DisposalHold" />
+    <external-entity name="Class" />
+    <external-entity name="Case" />
+    <external-entity name="Document" />
+    <external-entity name="Type" from="dic_sf" />
+  </endpoint>
+
+  <!-- DocumentManagerService -->
+  <endpoint name="doc"
+    service="{http://doc.matrix.org/}DocumentManagerService"
+    url="${base}/services/ldoc"
+    wsdl="${base}/services/ldoc?wsdl"
+    only-local="true">
+    <description>Documents</description>
+    <internal-entity name="Document"/>
+    <internal-entity name="Content"/>
+    <external-entity name="Type" from="dic_sf" />
+    <external-entity name="Person" from="kernel" />
+  </endpoint>
+
+  <endpoint name="ldoc"
+    service="{http://doc.matrix.org/}DocumentManagerService"
+    url="${base}/services/ldoc"
+    wsdl="${base}/services/ldoc?wsdl"
+    only-local="true">
+    <description>Documents</description>
+    <internal-entity name="Document"/>
+    <internal-entity name="Content"/>
+    <external-entity name="Type" from="dic_sf" />
+    <external-entity name="Person" from="kernel"/>
+  </endpoint>
+
+  <!-- EducationManagerService -->
+  <endpoint name="edu"
+    service="{http://edu.matrix.org/}EducationManagerService"
+    url="${base}/services/edu"
+    wsdl="${base}/services/edu?wsdl"
+    only-local="true">
+    <description>Education</description>
+    <internal-entity name="Course" />
+    <internal-entity name="Inscription" />
+    <internal-entity name="School" />
+  </endpoint>
+
+  <!-- ElectionsManagerService -->
+  <endpoint name="elections"
+    service="{http://elections.matrix.org/}ElectionsManagerService"
+    url="${base}/services/elections"
+    wsdl="${base}/services/elections?wsdl"
+    only-local="true">
+    <description>Education</description>    
+    <internal-entity name="Call" />
+    <internal-entity name="District" />
+    <internal-entity name="Board" />
+    <internal-entity name="Councillor" />
+    <internal-entity name="PoliticalParty" />
+    <internal-entity name="ElectionsResult" />
+  </endpoint>
+
+  <!-- ForumManagerService -->
+  <endpoint name="forum"
+    service="{http://forum.matrix.org/}ForumManagerService"
+    url="${base}/services/forum"
+    wsdl="${base}/services/forum?wsdl"
+    only-local="true">
+    <description>Forum</description>
+    <internal-entity name="Forum" />
+    <internal-entity name="Question" />
+    <internal-entity name="Answer" />
+  </endpoint>
+
+  <!-- KernelManagerService -->
+
+  <endpoint name="kernel"
+    service="{http://kernel.matrix.org/}KernelManagerService"
+    url="${base}/services/kernel"
+    wsdl="${base}/services/kernel?wsdl">
+    <description>Kernel G5</description>
+    <internal-entity name="Person"/>
+    <internal-entity name="Address"/>
+    <internal-entity name="PersonAddress"/>
+    <internal-entity name="PersonDocument"/>
+    <internal-entity name="PersonRepresentant"/>
+    <internal-entity name="PersonPerson"/>
+    <internal-entity name="Teleco"/>
+    <internal-entity name="Room"/>
+    <internal-entity name="KernelListItem"/>
+    <internal-entity name="Contact"/>
+    <internal-entity name="Country"/>
+    <internal-entity name="Province"/>
+    <internal-entity name="City"/>
+    <internal-entity name="Street"/>
+    <external-entity name="Type" from="dic_g5"/>
+    <external-entity name="Person"/>
+    <external-entity name="Address"/>
+  </endpoint>
+
+  <!-- NewsManagerService -->
+  <endpoint name="news"
+    service="{http://news.matrix.org/}NewsManagerService"
+    url="${base}/services/news"
+    wsdl="${base}/services/news?wsdl"
+    only-local="true">
+    <description>News</description>
+    <internal-entity name="New" />
+    <external-entity name="Document" from="doc" />
+    <external-entity name="Type" from="dic_sf" />
+  </endpoint>
+
+  <!-- ReportManagerService -->
+  <endpoint name="report"
+    service="{http://report.matrix.org/}ReportManagerService"
+    url="${base}/services/lreport"
+    wsdl="${base}/services/lreport?wsdl"
+    only-local="true">
+    <description>Report</description>
+    <internal-entity name="Report" />
+  </endpoint>
+
+  <!-- SearchManagerService -->
+  <endpoint name="search"
+    service="{http://search.matrix.org/}SearchManagerService"
+    url="${base}/services/search"
+    wsdl="${base}/services/search?wsdl"
+    only-local="true">
+    <description>Search</description>
+  </endpoint>
+
+  <!-- SecurityManagerService -->
+  <endpoint name="security"
+    service="{http://security.matrix.org/}SecurityManagerService"
+    url="${base}/services/security"
+    wsdl="${base}/services/security?wsdl"
+    only-local="true">
+    <description>Security</description>
+    <internal-entity name="User" />
+    <internal-entity name="Role" />
+    <internal-entity name="UserInRole" />
+    <internal-entity name="RoleInRole" />
+  </endpoint>
+
+  <!-- SignatureManagerService v2 -->
+  <endpoint name="sign"
+    service="{http://sign.matrix.org/}SignatureManagerService"
+    url="${base}/services/sign"
+    wsdl="${base}/services/sign?wsdl"
+    only-local="true">
+    <description>Signature</description>
+    <internal-entity name="SignedDocument" />
+  </endpoint>
+
+  <!-- SignatureManagerService -->
+  <endpoint name="signature"
+    service="{http://signature.matrix.org/}SignatureManagerService"
+    url="${base}/services/signature"
+    wsdl="${base}/services/signature?wsdl"
+    only-local="true">
+    <description>Signature</description>
+    <internal-entity name="SignedDocument" />
+  </endpoint>
+
+  <!-- SQLManagerService -->
+  <endpoint name="sql"
+    service="{http://sql.matrix.org/}SQLManagerService"
+    url="${base}/services/sql"
+    wsdl="${base}/services/sql?wsdl"
+    only-local="true">
+    <description>SQL</description>
+  </endpoint>
+
+  <!-- SurveyManagerService -->
+  <endpoint name="survey"
+    service="{http://survey.matrix.org/}SurveyManagerService"
+    url="${base}/services/survey"
+    wsdl="${base}/services/survey?wsdl"
+    only-local="true">
+    <description>Survey</description>
+    <internal-entity name="Survey" />
+    <internal-entity name="Answer" />
+  </endpoint>
+
+  <!-- TranslationManagerService -->
+  <endpoint name="translation"
+    service="{http://translation.matrix.org/}TranslationManagerService"
+    url="${base}/services/translation"
+    wsdl="${base}/services/translation?wsdl"
+    only-local="true">
+    <description>Translation</description>
+    <internal-entity name="Translation" />
+  </endpoint>
+
+  <!-- WorkflowManagerService -->
+  <endpoint name="workflow"
+    service="{http://workflow.matrix.org/}WorkflowManagerService"
+    url="${base}/services/workflow"
+    wsdl="${base}/services/workflow?wsdl"
+    only-local="true">
+    <description>Workflow</description>
+  </endpoint>
+
+  <!-- CMSManagerService -->
+  <endpoint name="cms"
+    service="{http://cms.matrix.org/}CMSManagerService"
+    url="${base}/services/cms"
+    wsdl="${base}/services/cms?wsdl">
+    <description>CMS</description>
+    <internal-entity name="Workspace" />
+    <internal-entity name="Node" />
+    <external-entity name="User" from="security" />
+  </endpoint>
+
+  <!-- FeedManagerService -->
+  <endpoint name="feed"
+    service="{http://feed.matrix.org/}FeedManagerService"
+    url="${base}/services/feed"
+    wsdl="${base}/services/feed?wsdl">
+    <description>Feed</description>
+    <internal-entity name="Folder" />
+    <internal-entity name="Feed" />
+    <internal-entity name="FeedFolder" />
+    <internal-entity name="Entry" />
+  </endpoint>
+
+  <!-- PresenceManagerService -->
+  <endpoint name="presence"
+    service="{http://presence.matrix.org/}PresenceManagerService"
+    url="${base}/services/presence"
+    wsdl="${base}/services/presence?wsdl">
+    <description>Presence</description>
+    <internal-entity name="Absence" />
+    <internal-entity name="PresenceEntry" />
+    <internal-entity name="AbsenceType" />
+    <internal-entity name="Holiday" />
+    <internal-entity name="WorkReduction" />
+    <internal-entity name="Worker" />
+    <internal-entity name="WeekType" />
+    <internal-entity name="DayType" />
+  </endpoint>
+
+</directory>
