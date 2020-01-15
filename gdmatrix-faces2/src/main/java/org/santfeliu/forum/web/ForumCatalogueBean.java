@@ -749,7 +749,7 @@ public class ForumCatalogueBean extends WebBean implements Serializable
       error(ex);
       return null;
     }
-    return "store_question";
+    return null;
   }
 
   public String removeQuestion()
@@ -766,7 +766,7 @@ public class ForumCatalogueBean extends WebBean implements Serializable
       error(ex);
       return null;
     }
-    return "remove_question";
+    return null;
   }
 
   public String setSelectedQuestionVisible()
