@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.matrix</groupId>
-    <artifactId>gdmatrix</artifactId>
-    <version>3.0</version>
-    <packaging>pom</packaging>
-    <repositories>    
-      <repository>
-        <id>central</id>
-        <url>http://repo.maven.apache.org/maven2/</url>
-      </repository>     
-      <repository>
-        <id>project-repo</id>
-        <url>file://${basedir}/../repository</url>
-      </repository>
-    </repositories>  
-    <build>
-     <pluginManagement>
-        <plugins>
-           <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-dependency-plugin</artifactId>
-             <version>3.0.0</version>
-          </plugin>
-          <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-assembly-plugin</artifactId>
-             <version>3.0.0</version>
-          </plugin>
-       </plugins>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.matrix</groupId>
+  <artifactId>gdmatrix</artifactId>
+  <version>3.0</version>
+  <packaging>pom</packaging>
+  <repositories>    
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2/</url>
+    </repository>     
+    <repository>
+      <id>project-repo</id>
+      <url>file://${basedir}/../repository</url>
+    </repository>
+  </repositories>  
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+      </plugins>
     </pluginManagement>
     <plugins>
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.7.1</version>
       </plugin> 
     </plugins>
   </build>    
@@ -53,20 +53,20 @@
   </modules>
     
   <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <maven.compiler.source>1.8</maven.compiler.source>
-      <maven.compiler.target>1.8</maven.compiler.target>
-      <maven.test.skip>true</maven.test.skip>
-      <ks.alias>matrix</ks.alias>
-      <ks.password>matrix</ks.password>
-      <ks.path>${project.parent.basedir}/conf/certificates/matrix.p12</ks.path>
-      <ks.type>PKCS12</ks.type>  
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.test.skip>true</maven.test.skip>
+    <ks.alias>matrix</ks.alias>
+    <ks.password>matrix</ks.password>
+    <ks.path>${project.parent.basedir}/conf/certificates/matrix.p12</ks.path>
+    <ks.type>PKCS12</ks.type>  
   </properties>
   
   <scm>
-   <connection>scm:svn:http://guest:guest@subversion.esantfeliu.org:9090/svn/gdmatrix</connection>
-   <developerConnection>scm:svn:http://guest:guest@subversion.esantfeliu.org:9090/svn/gdmatrix</developerConnection>
-   <url>http://subversion.esantfeliu.org:9090/svn/gdmatrix</url>
+    <connection>scm:svn:http://guest:guest@subversion.esantfeliu.org:9090/svn/gdmatrix</connection>
+    <developerConnection>scm:svn:http://guest:guest@subversion.esantfeliu.org:9090/svn/gdmatrix</developerConnection>
+    <url>http://subversion.esantfeliu.org:9090/svn/gdmatrix</url>
   </scm>  
   
   <distributionManagement>
