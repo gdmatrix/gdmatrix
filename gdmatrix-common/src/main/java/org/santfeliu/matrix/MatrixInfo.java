@@ -32,6 +32,7 @@ package org.santfeliu.matrix;
 
 import java.io.InputStream;
 import java.util.Properties;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -45,9 +46,9 @@ public class MatrixInfo
   }
 
   private static Properties properties;
-  private static final String VERSION = "version";
-  private static final String REVISION = "revision";
-  private static final String DATE = "date";
+  private static final String VERSION = "git.build.version";
+  private static final String REVISION = "git.total.commit.count";
+  private static final String TAGS = "git.tags";
 
   private static final String LICENSE = "Not defined yet.";
   private static final String[][] TEAM =
@@ -64,7 +65,8 @@ public class MatrixInfo
 
   public static String getFullVersion()
   {
-    return getVersion() + " (revision " + getRevision() + ")";
+    String version = (!StringUtils.isBlank(getTags()) ? getTags() : getVersion());
+    return version + "-r" + getRevision();
   }
 
   public static String getVersion()
@@ -77,6 +79,11 @@ public class MatrixInfo
     return properties.getProperty(REVISION, "???");
   }
 
+  public static String getTags()
+  {
+    return properties.getProperty(TAGS, null);
+  }
+  
   public static String getLicense()
   {
     return LICENSE;
