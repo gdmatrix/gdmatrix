@@ -100,7 +100,7 @@
           styleClass="calendarBox" style="width:12%"
           buttonStyleClass="calendarButton" />
         <h:outputText value="#{kernelBundle.person_age}: #{personMainBean.age}"
-          rendered="#{personMainBean.person.birthDate != null}"
+          rendered="#{!empty personMainBean.person.birthDate}"
           style="margin-left:6px" />
       </t:div>
 

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.faces.model.SelectItem;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.kernel.KernelConstants;
@@ -83,7 +84,7 @@ public class PersonMainBean extends TypifiedPageBean
   {
     int age = 0;
     String birthDate = person.getBirthDate();
-    if (birthDate != null)
+    if (!StringUtils.isBlank(birthDate))
     {
       SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
       String todayDate = df.format(new java.util.Date());
