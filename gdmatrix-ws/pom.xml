@@ -8,7 +8,12 @@
     </parent>
     <artifactId>gdmatrix-ws</artifactId>
     <packaging>pom</packaging>
-            
+    <repositories>       
+      <repository>
+        <id>local-repo</id>
+        <url>file://${basedir}/../../repository</url>
+      </repository>
+    </repositories>             
     <modules>
         <module>gdmatrix-ws-common</module>      
         <module>gdmatrix-ws-agenda-ri</module> 
