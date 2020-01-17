@@ -12,18 +12,7 @@
   <packaging>war</packaging>
   <version>3.0</version>
   <name>gdmatrix-faces</name>
-  
-  <repositories>    
-    <repository>
-      <id>central</id>
-      <url>http://repo.maven.apache.org/maven2/</url>
-    </repository>     
-    <repository>
-      <id>local-repo</id>
-      <url>file://${basedir}/../repository</url>
-    </repository>
-  </repositories>   
-  
+
   <properties>
     <maven.test.skip>true</maven.test.skip>
     <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>

@@ -12,18 +12,7 @@
   <packaging>war</packaging>
   <version>3.0</version>
   <name>gdmatrix-faces2</name>
-  
-  <repositories>    
-    <repository>
-      <id>central</id>
-      <url>http://repo.maven.apache.org/maven2/</url>
-    </repository>     
-    <repository>
-      <id>local-repo</id>
-      <url>file://${basedir}/../repository</url>
-    </repository>
-  </repositories>   
-  
+    
   <properties>
     <maven.test.skip>true</maven.test.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -358,8 +347,7 @@
               <includeClassifiers>resources</includeClassifiers>
               <excludeTransitive>true</excludeTransitive>
             </configuration>
-          </execution>
-<!--          
+          </execution>       
           <execution>
             <id>unpack-jws-libs</id>
             <goals>
@@ -374,12 +362,10 @@
               <excludeTransitive>true</excludeTransitive>
             </configuration>
           </execution>           
--->
         </executions>
       </plugin>  
       
-      <!-- sign javawebstart jars -->
-<!--      
+      <!-- sign javawebstart jars -->  
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jarsigner-plugin</artifactId>
@@ -401,7 +387,6 @@
           <archiveDirectory>${project.build.directory}/gdmatrix-faces2-${project.version}/javawebstart/lib</archiveDirectory>
         </configuration>
       </plugin> 
--->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>

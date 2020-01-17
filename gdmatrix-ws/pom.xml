@@ -8,16 +8,7 @@
     </parent>
     <artifactId>gdmatrix-ws</artifactId>
     <packaging>pom</packaging>
-    <repositories>    
-      <repository>
-        <id>central</id>
-        <url>http://repo.maven.apache.org/maven2/</url>
-      </repository>     
-      <repository>
-        <id>local-repo</id>
-        <url>file://${basedir}/../../repository</url>
-      </repository>
-    </repositories>      
+            
     <modules>
         <module>gdmatrix-ws-common</module>      
         <module>gdmatrix-ws-agenda-ri</module> 
