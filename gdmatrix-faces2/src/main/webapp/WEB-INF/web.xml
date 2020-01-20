@@ -3,13 +3,14 @@
     <display-name>Matrix-2.2</display-name>
     <description>Matrix</description>
     
+    <welcome-file-list>
+        <welcome-file>main.faces</welcome-file>
+    </welcome-file-list>  
+      
     <context-param>
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
-    <welcome-file-list>
-        <welcome-file>main.faces</welcome-file>
-    </welcome-file-list>
     
     <context-param>
         <param-name>javax.faces.FACELETS_LIBRARIES</param-name>
@@ -29,7 +30,12 @@
     <context-param>
       <param-name>primefaces.THEME</param-name>
       <param-value>none</param-value>
-    </context-param>        
+    </context-param> 
+    
+    <context-param>
+      <param-name>javax.faces.SAVING_STATE_METHOD</param-name>
+      <param-value>client</param-value>
+    </context-param>
     
     <!-- ********** Web parameters  ********** -->
     <context-param>
