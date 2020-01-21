@@ -1,7 +1,7 @@
 -- This file helps to migrate agenda data from version 1 to version 2
 
 CREATE OR REPLACE VIEW "AJUNTAMENT"."AGD_DICTYPE" AS 
-select replace(initcap(translate(lower(tipesdevnom),'àèéíòóú/,''().·','aeeioou_')),' ','')||'Event' as typeid,
+select replace(initcap(translate(lower(tipesdevnom),'Ã Ã¨Ã©Ã­Ã²Ã³Ãº/,''().Â·','aeeioou_')),' ','')||'Event' as typeid,
 'Event' as supertypeid,
 tipesdevnom as description,
 'T' as instantiable,
@@ -10,7 +10,7 @@ to_char(sysdate,'yyyyMMddHH24miss') as creationdt,
 to_char(sysdate,'yyyyMMddHH24miss') as modifydt,
 'blanquepa' as modifyuserid,
 decode(actiu, 'S', 'F', 'T') as removed,
-'/Event/'||replace(initcap(translate(lower(tipesdevnom),'àèéíòóú/,''().·','aeeioou_')),' ','')||'Event/' as typepath,
+'/Event/'||replace(initcap(translate(lower(tipesdevnom),'Ã Ã¨Ã©Ã­Ã²Ã³Ãº/,''().Â·','aeeioou_')),' ','')||'Event/' as typepath,
 'F' as restricted,
 tipesdevcod, rolviscod, rolmodcod
 from AGD_TIPUSESDEVENIMENT

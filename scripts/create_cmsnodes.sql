@@ -1,7 +1,7 @@
 INSERT INTO CMS_WORKSPACE
 (WORKSPACEID, NAME, DESCRIPTION, CREATIONDT, CREATIONUSERID, REFWORKSPACEID)
 VALUES
-('1', 'ProducciÛ', 'Web corporativa en producciÛ', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL);
+('1', 'Producci√≥', 'Web corporativa en producci√≥', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL);
 
 INSERT INTO CMS_NODE
 (WORKSPACEID, NODEID, PARENTNODEID, IDX, NAME, CHANGEDT, CHANGEUSERID, SYNCDT, SYNCUSERID)
@@ -71,7 +71,7 @@ VALUES
 INSERT INTO CMS_NODE
 (WORKSPACEID, NODEID, PARENTNODEID, IDX, NAME, CHANGEDT, CHANGEUSERID, SYNCDT, SYNCUSERID)
 VALUES
-('1', '24', '7', '6', 'Doc PolÌtiques', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'neo', NULL, NULL);
+('1', '24', '7', '6', 'Doc Pol√≠tiques', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'neo', NULL, NULL);
 
 INSERT INTO CMS_NODE
 (WORKSPACEID, NODEID, PARENTNODEID, IDX, NAME, CHANGEDT, CHANGEUSERID, SYNCDT, SYNCUSERID)
@@ -1081,7 +1081,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '38', 'label', '1', 'IdentificaciÛ');
+('1', '38', 'label', '1', 'Identificaci√≥');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1131,7 +1131,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '40', 'label', '1', 'DescripciÛ');
+('1', '40', 'label', '1', 'Descripci√≥');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1241,7 +1241,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '46', 'label', '1', 'PolÌtiques');
+('1', '46', 'label', '1', 'Pol√≠tiques');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1286,7 +1286,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '48', 'oc.pageTitle', '1', 'Cercador de paÔsos');
+('1', '48', 'oc.pageTitle', '1', 'Cercador de pa√Øsos');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1311,7 +1311,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '48', 'label', '1', 'PaÌs');
+('1', '48', 'label', '1', 'Pa√≠s');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1331,7 +1331,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '49', 'oc.pageTitle', '1', 'Cercador de provÌncies');
+('1', '49', 'oc.pageTitle', '1', 'Cercador de prov√≠ncies');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1476,7 +1476,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '56', 'label', '1', 'DescripciÛ');
+('1', '56', 'label', '1', 'Descripci√≥');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1506,7 +1506,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '59', 'oc.searchTitle', '1', 'Quadre de classificaciÛ');
+('1', '59', 'oc.searchTitle', '1', 'Quadre de classificaci√≥');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1536,7 +1536,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '60', 'oc.objectTitle', '1', 'SËrie');
+('1', '60', 'oc.objectTitle', '1', 'S√®rie');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1561,7 +1561,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '61', 'oc.objectTitle', '1', 'SËrie');
+('1', '61', 'oc.objectTitle', '1', 'S√®rie');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1571,12 +1571,12 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '61', 'label', '1', 'HistÚric');
+('1', '61', 'label', '1', 'Hist√≤ric');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '62', 'label', '1', 'PolÌtiques');
+('1', '62', 'label', '1', 'Pol√≠tiques');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1591,7 +1591,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '62', 'oc.objectTitle', '1', 'SËrie');
+('1', '62', 'oc.objectTitle', '1', 'S√®rie');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1621,12 +1621,12 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '64', 'label', '1', 'Cataleg de tr‡mits');
+('1', '64', 'label', '1', 'Cataleg de tr√†mits');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '65', 'label', '1', 'Inst‡ncia general');
+('1', '65', 'label', '1', 'Inst√†ncia general');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1656,12 +1656,12 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '66', 'catalogueIntro', '1', 'Escull el tr‡mit que vols comenÁar:');
+('1', '66', 'catalogueIntro', '1', 'Escull el tr√†mit que vols comen√ßar:');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '66', 'label', '1', 'Tr‡mits on-line');
+('1', '66', 'label', '1', 'Tr√†mits on-line');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1691,7 +1691,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '67', 'label', '1', 'Els meus tr‡mits');
+('1', '67', 'label', '1', 'Els meus tr√†mits');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1731,7 +1731,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '68', 'label', '1', 'Tr‡mits');
+('1', '68', 'label', '1', 'Tr√†mits');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1751,7 +1751,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '69', 'catalogueIntro', '1', 'Escull el tr‡mit que vols comenÁar:');
+('1', '69', 'catalogueIntro', '1', 'Escull el tr√†mit que vols comen√ßar:');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1761,7 +1761,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '69', 'label', '1', 'Tr‡mits on-line');
+('1', '69', 'label', '1', 'Tr√†mits on-line');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1796,7 +1796,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '70', 'label', '1', 'Els meus tr‡mits');
+('1', '70', 'label', '1', 'Els meus tr√†mits');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1861,7 +1861,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '74', 'label', '1', 'Tr‡mits on-line');
+('1', '74', 'label', '1', 'Tr√†mits on-line');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1876,7 +1876,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '74', 'catalogueIntro', '1', 'Escull el tr‡mit que vols comenÁar:');
+('1', '74', 'catalogueIntro', '1', 'Escull el tr√†mit que vols comen√ßar:');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1901,7 +1901,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '76', 'label', '1', 'Els meus tr‡mits');
+('1', '76', 'label', '1', 'Els meus tr√†mits');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1931,7 +1931,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '77', 'label', '1', 'Els meus tr‡mits 2');
+('1', '77', 'label', '1', 'Els meus tr√†mits 2');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1941,7 +1941,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '81', 'label', '1', 'Tr‡mit de test de certificats');
+('1', '81', 'label', '1', 'Tr√†mit de test de certificats');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1961,7 +1961,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '82', 'oc.objectTitle', '1', 'PolÌtica');
+('1', '82', 'oc.objectTitle', '1', 'Pol√≠tica');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1971,7 +1971,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '82', 'label', '1', 'PolÌtiques');
+('1', '82', 'label', '1', 'Pol√≠tiques');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -1981,7 +1981,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '82', 'oc.searchTitle', '1', 'PolÌtiques');
+('1', '82', 'oc.searchTitle', '1', 'Pol√≠tiques');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -2006,7 +2006,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '84', 'oc.searchTitle', '1', 'PolÌtiques sobre documents');
+('1', '84', 'oc.searchTitle', '1', 'Pol√≠tiques sobre documents');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
@@ -2021,7 +2021,7 @@ VALUES
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)
 VALUES
-('1', '85', 'oc.searchTitle', '1', 'PolÌtiques sobre expedients');
+('1', '85', 'oc.searchTitle', '1', 'Pol√≠tiques sobre expedients');
 
 INSERT INTO CMS_PROPERTY
 (WORKSPACEID, NODEID, NAME, IDX, VALUE)

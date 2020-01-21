@@ -11,7 +11,7 @@ VALUES
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('CaseIntervention', NULL, 'Intervenció d''un cas', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', 'T', '/CaseIntervention/', NULL);
+('CaseIntervention', NULL, 'IntervenciÃ³ d''un cas', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', 'T', '/CaseIntervention/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
@@ -26,7 +26,7 @@ VALUES
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('CaseAddress', NULL, 'Adreça vinculada a un expedient', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', 'T', '/CaseAddress/', NULL);
+('CaseAddress', NULL, 'AdreÃ§a vinculada a un expedient', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', 'T', '/CaseAddress/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
@@ -61,7 +61,7 @@ VALUES
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('DispositionRule', NULL, 'Regla de disposició', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/DispositionRule/', NULL);
+('DispositionRule', NULL, 'Regla de disposiciÃ³', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/DispositionRule/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
@@ -81,52 +81,52 @@ VALUES
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('Inscription', NULL, 'Inscripció a curs', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/Inscription/', NULL);
+('Inscription', NULL, 'InscripciÃ³ a curs', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/Inscription/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('Intervention', NULL, 'Actuació d''un expedient', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/Intervention/', NULL);
+('Intervention', NULL, 'ActuaciÃ³ d''un expedient', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/Intervention/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('New', NULL, 'Notícia', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/New/', NULL);
+('New', NULL, 'NotÃ­cia', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/New/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('NewDocument', NULL, 'Document d''una notícia', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/', NULL);
+('NewDocument', NULL, 'Document d''una notÃ­cia', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('NewDocumentCarouselImage', 'NewDocument', 'Imatge de carrousel d''una notícia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentCarouselImage/', NULL);
+('NewDocumentCarouselImage', 'NewDocument', 'Imatge de carrousel d''una notÃ­cia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentCarouselImage/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('NewDocumentDetailsImage', 'NewDocument', 'Imatge de detall d''una notícia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentDetailsImage/', NULL);
+('NewDocumentDetailsImage', 'NewDocument', 'Imatge de detall d''una notÃ­cia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentDetailsImage/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('NewDocumentExtendedInfo', 'NewDocument', 'Document d''informació extendida d''una notícia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentExtendedInfo/', NULL);
+('NewDocumentExtendedInfo', 'NewDocument', 'Document d''informaciÃ³ extendida d''una notÃ­cia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentExtendedInfo/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('NewDocumentListAndDetailsImage', 'NewDocument', 'Imatge de llistat i detall d''una notícia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentListAndDetailsImage/', NULL);
+('NewDocumentListAndDetailsImage', 'NewDocument', 'Imatge de llistat i detall d''una notÃ­cia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentListAndDetailsImage/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('NewDocumentCarouselAndDetailsImage', 'NewDocument', 'Imatge de carrousel i detall d''una notícia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentCarouselAndDetailsImage/', NULL);
+('NewDocumentCarouselAndDetailsImage', 'NewDocument', 'Imatge de carrousel i detall d''una notÃ­cia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentCarouselAndDetailsImage/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('NewDocumentListImage', 'NewDocument', 'Imatge de llistat d''una notícia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentListImage/', NULL);
+('NewDocumentListImage', 'NewDocument', 'Imatge de llistat d''una notÃ­cia', 'T', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/NewDocument/NewDocumentListImage/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
@@ -151,7 +151,7 @@ VALUES
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('Policy', NULL, 'Política de gestió documental', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', 'F', '/Policy/', NULL);
+('Policy', NULL, 'PolÃ­tica de gestiÃ³ documental', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', 'F', '/Policy/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
@@ -166,7 +166,7 @@ VALUES
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
 VALUES
-('Role', NULL, 'Rol d''accés', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/Role/', NULL);
+('Role', NULL, 'Rol d''accÃ©s', 'F', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', to_char(sysdate, 'YYYYMMDDHH24MISS'), 'admin', NULL, '/Role/', NULL);
 
 INSERT INTO DIC_TYPE
 (TYPEID, SUPERTYPEID, DESCRIPTION, INSTANTIABLE, CREATIONDT, CREATIONUSERID, MODIFYDT, MODIFYUSERID, REMOVED, TYPEPATH, RESTRICTED)
@@ -206,12 +206,12 @@ VALUES
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Case', 'changeDateTime', 'Data i hora de modificació', 'D', '0', '0', '0', NULL, 'F', 'T');
+('Case', 'changeDateTime', 'Data i hora de modificaciÃ³', 'D', '0', '0', '0', NULL, 'F', 'T');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Case', 'changeUserId', 'Usuari de modificació', 'T', '0', '0', '0', NULL, 'F', 'T');
+('Case', 'changeUserId', 'Usuari de modificaciÃ³', 'T', '0', '0', '0', NULL, 'F', 'T');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
@@ -221,12 +221,12 @@ VALUES
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Case', 'creationDateTime', 'Data i hora de creació', 'D', '0', '0', '0', NULL, 'F', 'T');
+('Case', 'creationDateTime', 'Data i hora de creaciÃ³', 'D', '0', '0', '0', NULL, 'F', 'T');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Case', 'creationUserId', 'Usuari de creació', 'T', '0', '0', '0', NULL, 'F', 'T');
+('Case', 'creationUserId', 'Usuari de creaciÃ³', 'T', '0', '0', '0', NULL, 'F', 'T');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
@@ -266,7 +266,7 @@ VALUES
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Case', 'title', 'Títol', 'T', '0', '0', '1', NULL, 'F', 'F');
+('Case', 'title', 'TÃ­tol', 'T', '0', '0', '1', NULL, 'F', 'F');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
@@ -281,22 +281,22 @@ VALUES
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Document', 'changeDateTime', 'Data de modificació', 'D', '0', '0', '1', NULL, 'F', 'F');
+('Document', 'changeDateTime', 'Data de modificaciÃ³', 'D', '0', '0', '1', NULL, 'F', 'F');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Document', 'changeUserId', 'Usuari de modificació', 'T', '0', '0', '1', NULL, 'F', 'F');
+('Document', 'changeUserId', 'Usuari de modificaciÃ³', 'T', '0', '0', '1', NULL, 'F', 'F');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Document', 'classId', 'Codis de sèrie', 'T', '0', '0', '0', NULL, 'F', 'F');
+('Document', 'classId', 'Codis de sÃ¨rie', 'T', '0', '0', '0', NULL, 'F', 'F');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Document', 'creationDate', 'Data de creació', 'D', '0', '0', '1', NULL, 'F', 'F');
+('Document', 'creationDate', 'Data de creaciÃ³', 'D', '0', '0', '1', NULL, 'F', 'F');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
@@ -331,12 +331,12 @@ VALUES
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Document', 'title', 'Títol', 'T', '0', '1', '1', NULL, 'F', 'F');
+('Document', 'title', 'TÃ­tol', 'T', '0', '1', '1', NULL, 'F', 'F');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)
 VALUES
-('Document', 'version', 'Versió del document', 'N', '0', '1', '1', NULL, 'F', 'F');
+('Document', 'version', 'VersiÃ³ del document', 'N', '0', '1', '1', NULL, 'F', 'F');
 
 INSERT INTO DIC_PROPDEF
 (TYPEID, PROPNAME, DESCRIPTION, PROPTYPE, PROPSIZE, MINOCCURS, MAXOCCURS, DEFAULTVALUE, HIDDEN, READONLY)

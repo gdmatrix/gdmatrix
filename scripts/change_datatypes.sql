@@ -10,7 +10,7 @@ UPDATE CAS_PERSON SET TEMPCOLUMN = PERSCOD;
 ALTER TABLE CAS_PERSON DROP CONSTRAINT CAS_PERSON_PK;
 --ALTER TABLE CAS_PERSON MODIFY (PERSCOD NULL);
 
--- 4. Anul穕a els valors de la columna a modificar
+-- 4. Anul路la els valors de la columna a modificar
 UPDATE CAS_PERSON SET PERSCOD = null;
 -- 5. Modifica el tipus de la columna
 ALTER TABLE CAS_PERSON MODIFY
@@ -38,7 +38,7 @@ UPDATE CAS_ADDRESS SET TEMPCOLUMN = ADDRESSID;
 ALTER TABLE CAS_ADDRESS DROP CONSTRAINT CAS_ADDRESS_PK;
 --ALTER TABLE CAS_ADDRESS MODIFY (ADDRESSID NULL);
 
--- 4. Anul穕a els valors de la columna a modificar
+-- 4. Anul路la els valors de la columna a modificar
 UPDATE CAS_ADDRESS SET ADDRESSID = null;
 -- 5. Modifica el tipus de la columna
 ALTER TABLE CAS_ADDRESS MODIFY
@@ -65,7 +65,7 @@ UPDATE CAS_DOCUMENT SET TEMPCOLUMN = DOCID;
 -- 3. Drop de la PK
 ALTER TABLE CAS_DOCUMENT DROP CONSTRAINT PK_CAS_DOCUMENT;
 --ALTER TABLE CAS_DOCUMENT MODIFY (DOCID NULL);
--- 4. Anul穕a els valors de la columna a modificar
+-- 4. Anul路la els valors de la columna a modificar
 UPDATE CAS_DOCUMENT SET DOCID = null;
 -- 5. Modifica el tipus de la columna
 ALTER TABLE CAS_DOCUMENT MODIFY
@@ -114,7 +114,7 @@ UPDATE DOM_PERSON SET TEMPCOLUMN = PERSONID;
 -- 3. Drop de la PK
 ALTER TABLE DOM_PERSON DROP CONSTRAINT DOM_PERSON_PK;
 ALTER TABLE DOM_PERSON MODIFY (PERSONID NULL);
--- 4. Anul穕a els valors de la columna a modificar
+-- 4. Anul路la els valors de la columna a modificar
 UPDATE DOM_PERSON SET PERSONID = null;
 -- 5. Modifica el tipus de la columna
 ALTER TABLE DOM_PERSON MODIFY
@@ -144,7 +144,7 @@ ALTER TABLE INF_NEWDOC MODIFY (DOCID NULL);
 -- 4. Drop unique index
 DROP INDEX AJUNTAMENT.INF_NEWDOC_PK;
 
--- 5. Anul穕a els valors de la columna a modificar
+-- 5. Anul路la els valors de la columna a modificar
 UPDATE INF_NEWDOC SET DOCID = null;
 -- 6. Modifica el tipus de la columna
 ALTER TABLE INF_NEWDOC MODIFY
@@ -156,7 +156,7 @@ UPDATE INF_NEWDOC SET DOCID = TEMPCOLUMN;
 -- 8. Afegeix de nou la PK
 ALTER TABLE INF_NEWDOC
   ADD CONSTRAINT INF_NEWDOC_PK PRIMARY KEY (NEWID, DOCID);
--- 9. Crea 韓dex
+-- 9. Crea 铆ndex
 CREATE UNIQUE INDEX "AJUNTAMENT"."INF_NEWDOC_PK" ON "AJUNTAMENT"."INF_NEWDOC" ("NEWID", "DOCID")
 TABLESPACE "USER_DATA" PCTFREE 10 INITRANS 2 MAXTRANS 255 STORAGE ( INITIAL 64K BUFFER_POOL DEFAULT)
 LOGGING LOCAL

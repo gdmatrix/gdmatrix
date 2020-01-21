@@ -4,7 +4,7 @@ INSERT INTO ORG_USUARI (usrcod, usrdesc, usrpass, perscod) values ('admin', 'Adm
 INSERT INTO APL_ROL
 (ROLCOD, ROLDESC, OBSERV, STDDMOD, STDHMOD)
 VALUES
-('KERNEL_ADMIN', 'Administració de nucli (proves)', NULL, to_char(sysdate, 'YYYYMMDD'), to_char(sysdate, 'HH24MISS'));
+('KERNEL_ADMIN', 'AdministraciÃ³ de nucli (proves)', NULL, to_char(sysdate, 'YYYYMMDD'), to_char(sysdate, 'HH24MISS'));
 
 INSERT INTO APL_ROL
 (ROLCOD, ROLDESC, OBSERV, STDDMOD, STDHMOD)
@@ -39,7 +39,7 @@ VALUES
 INSERT INTO APL_ROL
 (ROLCOD, ROLDESC, OBSERV, STDDMOD, STDHMOD)
 VALUES
-('CLASSIF_ADMIN', 'Administrador del mòdul de classificació', NULL, to_char(sysdate, 'YYYYMMDD'), to_char(sysdate, 'HH24MISS'));
+('CLASSIF_ADMIN', 'Administrador del mÃ²dul de classificaciÃ³', NULL, to_char(sysdate, 'YYYYMMDD'), to_char(sysdate, 'HH24MISS'));
 
 INSERT INTO APL_ROL
 (ROLCOD, ROLDESC, OBSERV, STDDMOD, STDHMOD)

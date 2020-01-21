@@ -1498,7 +1498,7 @@ insert into ORG_USUARI (usrcod, usrpass, perscod) values ('neo', '!!,+zF\{', 0);
 insert into APL_ROL (rolcod, roldesc) values ('config', 'Configuration role');
 insert into APL_ROLUSR (usrcod, rolcod) values ('admin','config');
 
-insert into cms_workspace(workspaceid,name,description,creationdt,creationuserid) values (1,'Producció','Web corporativa en producció','20100701080000','neo');
+insert into cms_workspace(workspaceid,name,description,creationdt,creationuserid) values (1,'ProducciÃ³','Web corporativa en producciÃ³','20100701080000','neo');
 insert into cms_node(workspaceid,nodeid,parentnodeid,idx,name,changedt,changeuserid,syncdt,syncuserid,"PATH") values (1,1,null,1,'Root','20100701080000','neo',null,null,'/1/');
 
 INSERT INTO TABLESEQ (COUNTER, VALUE) VALUES ('POL_POLICY', 0);
