@@ -170,10 +170,12 @@ public class AttendantsBean extends TypifiedPageBean
   public String storeAttendant()
   {
     try
-    {
-      
+    {     
+      if (attendant == null || attendant.getAttendantId() == null)
+        throw new Exception("ATTENDANT_MUST_BE_SELECTED");
+    
       String eventId = getObjectId();
-      attendant.setEventId(eventId);
+      attendant.setEventId(eventId);    
 
       preStore();
       

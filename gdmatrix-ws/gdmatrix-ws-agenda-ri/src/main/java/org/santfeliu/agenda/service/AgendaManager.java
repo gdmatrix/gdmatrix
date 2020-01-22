@@ -160,6 +160,7 @@ public class AgendaManager
   {
   }
 
+  @Override
   public Event loadEvent(String eventId)
   {
     Event event = null;
@@ -202,6 +203,7 @@ public class AgendaManager
     return getEndpoint().toGlobal(Event.class, event);
   }
 
+  @Override
   public Event storeEvent(Event event)
   {
     event = getEndpoint().toLocal(Event.class, event);
@@ -291,6 +293,7 @@ public class AgendaManager
     return getEndpoint().toGlobal(Event.class, event);
   }
 
+  @Override
   public boolean removeEvent(String eventId)
   {
     eventId = getEndpoint().toLocalId(Event.class, eventId);
@@ -337,6 +340,7 @@ public class AgendaManager
     return true;
   }
 
+  @Override
   public int countEvents(EventFilter filter)
   {
     User user = UserCache.getUser(wsContext);
@@ -352,6 +356,7 @@ public class AgendaManager
     }
   }
 
+  @Override
   public List<Event> findEvents(EventFilter filter)
   {
     List<Event> globalEvents = new ArrayList<Event>();
@@ -407,6 +412,7 @@ public class AgendaManager
     return globalEvents;
   }
 
+  @Override
   public List<EventView> findEventViews(EventFilter filter)
   {
     List<EventView> eventViews = new ArrayList<EventView>();
@@ -675,9 +681,18 @@ public class AgendaManager
     return trustors;
   }  
 
+  @Override
   public EventDocument storeEventDocument(EventDocument eventDocument)
   {
+    if (eventDocument == null)
+      throw new WebServiceException("agenda:INVALID_EVENT_DOCUMENT"); 
+    
     eventDocument = getEndpoint().toLocal(EventDocument.class, eventDocument);
+    
+    if (StringUtils.isBlank(eventDocument.getDocId()))
+      throw new WebServiceException("agenda:INVALID_DOCUMENT"); 
+    if (StringUtils.isBlank(eventDocument.getEventId()))
+      throw new WebServiceException("agenda:INVALID_EVENT");    
 
     DBEventDocument dbEventDocument = new DBEventDocument(eventDocument);
     String eventDocId = eventDocument.getEventDocId();
@@ -698,6 +713,7 @@ public class AgendaManager
     return eventDocument;
   }
 
+  @Override
   public EventDocument loadEventDocument(String eventDocId)
   {
     if (eventDocId == null)
@@ -714,6 +730,7 @@ public class AgendaManager
     return getEndpoint().toGlobal(EventDocument.class, dbEventDocument);
   }
 
+  @Override
   public boolean removeEventDocument(String eventDocId)
   {
     eventDocId = getEndpoint().toLocalId(EventDocument.class, eventDocId);
@@ -725,11 +742,13 @@ public class AgendaManager
     return true;
   }
 
+  @Override
   public List<EventDocument> findEventDocuments(EventDocumentFilter filter)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public List<EventDocumentView> findEventDocumentViews(EventDocumentFilter filter)
   {
     List<EventDocumentView> eventDocuments = new ArrayList<EventDocumentView>();
@@ -799,9 +818,13 @@ public class AgendaManager
     return eventDocuments;
   }
 
+  @Override
   public EventPlace storeEventPlace(EventPlace eventPlace)
   {
-    eventPlace = getEndpoint().toLocal(EventPlace.class, eventPlace);
+    if (eventPlace == null)
+      throw new WebServiceException("agenda:INVALID_EVENT_PLACE"); 
+    
+    eventPlace = getEndpoint().toLocal(EventPlace.class, eventPlace);    
     DBEventPlace dbEventPlace = new DBEventPlace(eventPlace);
 
     if (eventPlace.getRoomId() != null && eventPlace.getRoomId().length() > 0)
@@ -849,6 +872,7 @@ public class AgendaManager
     return eventPlace;
   }
 
+  @Override
   public EventPlace loadEventPlace(String eventPlaceId)
   {
     if (eventPlaceId == null)
@@ -865,6 +889,7 @@ public class AgendaManager
     return getEndpoint().toGlobal(EventPlace.class, dbEventPlace);
   }
 
+  @Override
   public boolean removeEventPlace(String eventPlaceId)
   {
     eventPlaceId = getEndpoint().toLocalId(EventPlace.class, eventPlaceId);
@@ -879,6 +904,7 @@ public class AgendaManager
     return true;
   }
 
+  @Override
   public List<EventPlace> findEventPlaces(EventPlaceFilter filter)
   {
     List<EventPlace> result = new ArrayList();
@@ -925,6 +951,7 @@ public class AgendaManager
     return result;
   }
 
+  @Override
   public List<EventPlaceView> findEventPlaceViews(EventPlaceFilter filter)
   {
     List<EventPlaceView> eventPlaces = new ArrayList<EventPlaceView>();
@@ -970,9 +997,18 @@ public class AgendaManager
     return eventPlaces;
   }
 
+  @Override
   public Attendant storeAttendant(Attendant attendant)
   {
+    if (attendant == null)
+      throw new WebServiceException("agenda:INVALID_ATTENDANT"); 
+      
     attendant = getEndpoint().toLocal(Attendant.class, attendant);
+    
+    if (StringUtils.isBlank(attendant.getPersonId()))
+      throw new WebServiceException("agenda:INVALID_PERSON"); 
+    if (StringUtils.isBlank(attendant.getEventId()))
+      throw new WebServiceException("agenda:INVALID_EVENT");
 
     String attendantTypeId = attendant.getAttendantTypeId();
     attendantTypeId =
@@ -1006,6 +1042,7 @@ public class AgendaManager
     return attendant;
   }
 
+  @Override
   public Attendant loadAttendant(String attendantId)
   {
     if (attendantId == null)
@@ -1022,6 +1059,7 @@ public class AgendaManager
     return getEndpoint().toGlobal(Attendant.class, dbAttendant);
   }
 
+  @Override
   public boolean removeAttendant(String attendantId)
   {
     attendantId = getEndpoint().toLocalId(Attendant.class, attendantId);
@@ -1036,6 +1074,7 @@ public class AgendaManager
     return true;
   }
 
+  @Override
   public List<Attendant> findAttendants(AttendantFilter filter)
   {
     List<Attendant> globalAttendants = new ArrayList<Attendant>();
@@ -1082,6 +1121,7 @@ public class AgendaManager
   }
 
 
+  @Override
   public List<AttendantView> findAttendantViews(AttendantFilter filter)
   {
     List<AttendantView> attendants = new ArrayList<AttendantView>();
@@ -1123,6 +1163,7 @@ public class AgendaManager
     return attendants;
   }
 
+  @Override
   public List<Attendant> findAttendantsOccupancy(String eventId)
   {
     List<Attendant> attendants = new ArrayList<Attendant>();
@@ -1145,6 +1186,7 @@ public class AgendaManager
     return attendants;
   }
 
+  @Override
   public Theme storeTheme(Theme theme)
   {
     theme = getEndpoint().toLocal(Theme.class, theme);
@@ -1166,6 +1208,7 @@ public class AgendaManager
     return theme;
   }
 
+  @Override
   public Theme loadTheme(String themeId)
   {
     if (themeId == null)
@@ -1181,6 +1224,7 @@ public class AgendaManager
     return getEndpoint().toGlobal(Theme.class, dbTheme);
   }
 
+  @Override
   public boolean removeTheme(String themeId)
   {
     themeId = getEndpoint().toLocalId(Theme.class, themeId);
@@ -1192,6 +1236,7 @@ public class AgendaManager
     return true;
   }
 
+  @Override
   public int countThemes(ThemeFilter filter)
   {
     Query query =
@@ -1205,6 +1250,7 @@ public class AgendaManager
     return ((Number)query.getSingleResult()).intValue();
   }
 
+  @Override
   public List<Theme> findThemes(ThemeFilter filter)
   {
     Query query =
@@ -1221,9 +1267,18 @@ public class AgendaManager
     return query.getResultList();
   }
 
+  @Override
   public EventTheme storeEventTheme(EventTheme eventTheme)
   {
+    if (eventTheme == null)
+      throw new WebServiceException("agenda:INVALID_EVENT_THEME"); 
+    
     eventTheme = getEndpoint().toLocal(EventTheme.class, eventTheme);
+    
+    if (StringUtils.isBlank(eventTheme.getThemeId()))
+      throw new WebServiceException("agenda:INVALID_THEME"); 
+    if (StringUtils.isBlank(eventTheme.getEventId()))
+      throw new WebServiceException("agenda:INVALID_EVENT");
 
     DBEventTheme dbEventTheme = new DBEventTheme(eventTheme);
     String eventThemeId = eventTheme.getEventThemeId();
@@ -1251,6 +1306,7 @@ public class AgendaManager
     return eventTheme;
   }
 
+  @Override
   public EventTheme loadEventTheme(String eventThemeId)
   {
     if (eventThemeId == null)
@@ -1267,6 +1323,7 @@ public class AgendaManager
     return getEndpoint().toGlobal(EventTheme.class, dbEventTheme);
   }
 
+  @Override
   public boolean removeEventTheme(String eventThemeId)
   {
     eventThemeId = getEndpoint().toLocalId(EventTheme.class, eventThemeId);
@@ -1281,11 +1338,13 @@ public class AgendaManager
     return true;
   }
 
+  @Override
   public List<EventTheme> findEventThemes(EventThemeFilter filter)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public List<EventThemeView> findEventThemeViews(EventThemeFilter filter)
   {
     List<EventThemeView> eventThemeViews = new ArrayList<EventThemeView>();

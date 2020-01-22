@@ -129,6 +129,9 @@ public class EventThemesBean extends PageBean
   {
     try
     {
+      if (editingEventTheme == null || editingEventTheme.getThemeId() == null)
+        throw new Exception("THEME_MUST_BE_SELECTED");
+      
       String eventId = getObjectId();
       editingEventTheme.setEventId(eventId);
       
