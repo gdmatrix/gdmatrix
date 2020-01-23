@@ -93,7 +93,7 @@ public class SendDocumentCommand extends DocumentCommand
         catch (Exception ex)
         {
           messageWindow.hideWindow();
-          JOptionPane.showMessageDialog(null, "S'ha produÃ¯t un error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(null, "S'ha produït un error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }        
         finally
         {

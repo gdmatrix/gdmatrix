@@ -164,7 +164,7 @@ public class EditDocumentCommand extends DocumentCommand
           if (!editionWithLock)
           {
             SaveDialog saveDialog = new SaveDialog();
-            saveDialog.showMessage("Has acabat l'ediciÃ³ del document?");
+            saveDialog.showMessage("Has acabat l'edició del document?");
             int result = saveDialog.waitForResponse();
             if (result == SaveDialog.YES)
             {
