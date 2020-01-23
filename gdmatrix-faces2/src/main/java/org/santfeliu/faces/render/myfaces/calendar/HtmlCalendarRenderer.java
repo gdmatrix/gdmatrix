@@ -899,7 +899,7 @@ public class HtmlCalendarRenderer extends org.apache.myfaces.custom.calendar.Htm
         }
 
         HtmlAriaCommandLink link
-                = (HtmlAriaCommandLink)application.createComponent("AriaCommandLink");
+                = (HtmlAriaCommandLink)application.createComponent("HtmlAriaCommandLink");
         link.setId(component.getId() + "_" + valueForLink.getTime() + "_link");
         link.setTransient(true);
         link.setImmediate(component.isImmediate());
