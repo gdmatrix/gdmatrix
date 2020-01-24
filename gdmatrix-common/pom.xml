@@ -160,11 +160,21 @@
       <type>jar</type>
       <exclusions>
         <exclusion>
+          <!-- Exclusion to avoid xalan-2.6.0 memory leak bug -->
+          <groupId>xalan</groupId>
+          <artifactId>xalan</artifactId>
+        </exclusion>
+        <exclusion>
           <!-- Exclusion to avoid collision with rhino.js jar -->
           <groupId>org.apache.xmlgraphics</groupId>
           <artifactId>batik-js</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.7.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
