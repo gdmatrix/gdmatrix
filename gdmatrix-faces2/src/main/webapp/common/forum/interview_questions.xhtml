@@ -70,12 +70,12 @@
       translationGroup="#{userSessionBean.translationGroup}"/>
   </t:div>
 
-  <h:panelGrid columns="1" width="100%" styleClass="filterPanel" style="margin-top:3px"
+  <h:panelGrid columns="1" styleClass="filterPanel" style="margin-top:3px;width:100%;"
     columnClasses="column"
     headerClass="header" footerClass="footer">
     <t:div>
-      <h:outputText value="Mostra " />
-      <t:selectOneMenu styleClass="selectBox"
+      <h:outputLabel value="#{forumBundle.show} " for="showAnsweredSelect" />
+      <t:selectOneMenu id="showAnsweredSelect" styleClass="selectBox"
         value="#{forumCatalogueBean.questionFilter.showAnswered}"
         valueChangeListener="#{forumCatalogueBean.processQuestionFilterValueChange}">
         <f:selectItem itemValue="" itemLabel="#{forumBundle.showAnsweredAll}" />
@@ -94,8 +94,7 @@
         <f:attribute name="enum" value="org.matrix.forum.ShowVisible" />
       </t:selectOneMenu>
 
-      <h:outputText value="ordenades per " rendered="#{forumCatalogueBean.editorUser}"
-                    />
+      <h:outputText value="#{forumBundle.orderedBy} " rendered="#{forumCatalogueBean.editorUser}" />
       <t:selectOneMenu style="vertical-align:middle;" styleClass="selectBox"
         value="#{forumCatalogueBean.questionFilter.orderBy}"
         valueChangeListener="#{forumCatalogueBean.processQuestionFilterValueChange}"
@@ -269,7 +268,7 @@
 
     <t:div styleClass="editingPanel">
       <t:div>
-        <t:inputTextarea id="questionText" value="#{forumCatalogueBean.currentQuestion.text}"
+        <t:inputTextarea title="#{forumBundle.question}" id="questionText" value="#{forumCatalogueBean.currentQuestion.text}"
           styleClass="inputBox" style="width:99%" rows="4"
           onmouseout="checkMaxLength(this, #{forumCatalogueBean.questionMaxLength})"
           onmousemove="checkMaxLength(this, #{forumCatalogueBean.questionMaxLength})"
