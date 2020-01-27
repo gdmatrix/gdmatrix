@@ -15,6 +15,6 @@ Any value defined here will override the pom.xml file value but is only applicab
 -->
         <org-netbeans-modules-whitelist.whitelist-oracle>false</org-netbeans-modules-whitelist.whitelist-oracle>
         <org-netbeans-modules-javascript2-requirejs.enabled>true</org-netbeans-modules-javascript2-requirejs.enabled>
-        <netbeans.hint.licensePath>${project.basedir}/../LICENSE.txt</netbeans.hint.licensePath>
+        <netbeans.hint.licensePath>${project.basedir}/../licenseheader.txt</netbeans.hint.licensePath>
     </properties>
 </project-shared-configuration>
