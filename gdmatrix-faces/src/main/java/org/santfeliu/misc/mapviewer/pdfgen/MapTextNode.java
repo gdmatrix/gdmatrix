@@ -6,7 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
-import org.apache.batik.gvt.TextNode;
+import org.apache.batik.bridge.TextNode;
 import org.santfeliu.pdfgen.PdfGenerator;
 
 /**

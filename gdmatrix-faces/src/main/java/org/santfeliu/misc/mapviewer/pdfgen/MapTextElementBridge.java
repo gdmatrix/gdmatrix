@@ -6,11 +6,15 @@ import org.apache.batik.bridge.CSSUtilities;
 import org.apache.batik.bridge.SVGTextElementBridge;
 
 import org.apache.batik.gvt.GraphicsNode;
-import org.apache.batik.gvt.TextNode;
+import org.apache.batik.bridge.TextNode;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+/**
+ *
+ * @author unknown
+ */
 public class MapTextElementBridge extends SVGTextElementBridge
 {
   @Override

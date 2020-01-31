@@ -5,16 +5,16 @@
   <artifactId>gdmatrix</artifactId>
   <version>3.0</version>
   <packaging>pom</packaging>
-  <repositories>    
+  <repositories>
     <repository>
       <id>central</id>
       <url>https://repo.maven.apache.org/maven2/</url>
-    </repository>     
+    </repository>
     <repository>
       <id>project-repo</id>
       <url>file://${basedir}/../repository</url>
     </repository>
-  </repositories>  
+  </repositories>
   <build>
     <pluginManagement>
       <plugins>
@@ -35,23 +35,25 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>3.7.1</version>
-      </plugin> 
+      </plugin>
     </plugins>
-  </build>    
-          
+  </build>
+
   <modules>
     <module>gdmatrix-modgen</module>
     <module>gdmatrix-stubs</module>
-    <module>gdmatrix-common</module>      
-    <module>gdmatrix-ws</module>   
-    <module>gdmatrix-ant</module>       
+    <module>gdmatrix-common</module>
+    <module>gdmatrix-ws</module>
+    <module>gdmatrix-ant</module>
+    <!--
     <module>gdmatrix-faces</module>
-    <module>gdmatrix-faces2</module>    
-    <module>gdmatrix-ide</module>  
-    <module>gdmatrix-elections</module>         
+    -->
+    <module>gdmatrix-faces2</module>
+    <module>gdmatrix-ide</module>
+    <module>gdmatrix-elections</module>
     <module>gdmatrix-client</module>
   </modules>
-    
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -60,22 +62,16 @@
     <ks.alias>matrix</ks.alias>
     <ks.password>matrix</ks.password>
     <ks.path>${project.parent.basedir}/conf/certificates/matrix.p12</ks.path>
-    <ks.type>PKCS12</ks.type>  
+    <ks.type>PKCS12</ks.type>
   </properties>
-  
-  <scm>
-    <connection>scm:svn:http://guest:guest@subversion.esantfeliu.org:9090/svn/gdmatrix</connection>
-    <developerConnection>scm:svn:http://guest:guest@subversion.esantfeliu.org:9090/svn/gdmatrix</developerConnection>
-    <url>http://subversion.esantfeliu.org:9090/svn/gdmatrix</url>
-  </scm>  
-  
+
   <distributionManagement>
     <site>
       <id>gdmatrix</id>
       <url>http://gdmatrix.org/</url>
     </site>
   </distributionManagement>
- 
+
   <reporting>
     <plugins>
       <plugin>
@@ -86,9 +82,8 @@
           <headingDateFormat>dd/MM/yyyy</headingDateFormat>
           <range>15</range>
         </configuration>
-      </plugin>     
+      </plugin>
     </plugins>
-  </reporting> 
+  </reporting>
 
-    
 </project>
