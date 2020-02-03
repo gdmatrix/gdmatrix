@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.form;
@@ -48,13 +48,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import org.santfeliu.swing.Utilities;
 import org.santfeliu.swing.form.event.FormChangeListener;
 import org.santfeliu.swing.form.event.FormSelectionListener;
 
@@ -76,7 +76,7 @@ public class FormDesigner extends JPanel
   private ArrayList<FormChangeListener> changeListeners =
     new ArrayList<FormChangeListener>();
   private UndoableEditListener undoableEditListener;
-  
+
   private boolean dragging = false;
   private Drag drag;
   private Point windowStart = null;
@@ -91,7 +91,7 @@ public class FormDesigner extends JPanel
   private boolean showTabIndexes = false;
   private boolean showCoordinates = false;
   private boolean showOutputOrder = false;
-  
+
   public FormDesigner()
   {
     try
@@ -132,7 +132,7 @@ public class FormDesigner extends JPanel
   {
     undoableEditListener = null;
   }
-  
+
   public boolean isShowAccessibility()
   {
     return showAccessibility;
@@ -174,7 +174,7 @@ public class FormDesigner extends JPanel
   public void setShowCoordinates(boolean showCoordinates)
   {
     this.showCoordinates = showCoordinates;
-    this.repaint();    
+    this.repaint();
   }
 
   public boolean isShowOutputOrder()
@@ -185,9 +185,9 @@ public class FormDesigner extends JPanel
   public void setShowOutputOrder(boolean showOutputOrder)
   {
     this.showOutputOrder = showOutputOrder;
-    this.repaint();    
+    this.repaint();
   }
-  
+
   @Override
   public void paintComponent(Graphics g)
   {
@@ -197,7 +197,7 @@ public class FormDesigner extends JPanel
     g.setColor(Color.black);
     for (ComponentView view : components)
     {
-      view.paint(g, showAccessibility, showIds, showTabIndexes, 
+      view.paint(g, showAccessibility, showIds, showTabIndexes,
         showCoordinates, showOutputOrder);
     }
     for (ComponentView view : selection)
@@ -205,7 +205,7 @@ public class FormDesigner extends JPanel
       view.paintSelection(g);
     }
   }
-  
+
   public void setMouseHandlerEnabled(boolean mouseHandlerEnabled)
   {
     this.mouseHandlerEnabled = mouseHandlerEnabled;
@@ -273,7 +273,7 @@ public class FormDesigner extends JPanel
     }
     return new Dimension(maxx, maxy);
   }
-  
+
   @Override
   public Dimension getPreferredSize()
   {
@@ -282,14 +282,14 @@ public class FormDesigner extends JPanel
     dim.height += 20;
     return dim;
   }
-  
+
   public void addComponentView(ComponentView view)
   {
     components.add(view);
     fireFormChangeEvent(new ChangeEvent(this));
     repaint();
   }
-  
+
   public void insertComponentView(ComponentView view, int index)
   {
     components.add(index, view);
@@ -322,9 +322,9 @@ public class FormDesigner extends JPanel
       components.add(v.get(i));
     }
     fireFormChangeEvent(new ChangeEvent(this));
-    repaint();    
+    repaint();
   }
-  
+
   public void toBottom()
   {
     ArrayList<ComponentView> v = new ArrayList<ComponentView>();
@@ -343,7 +343,7 @@ public class FormDesigner extends JPanel
       components.add(0, v.get(i));
     }
     fireFormChangeEvent(new ChangeEvent(this));
-    repaint();    
+    repaint();
   }
 
   public void sortComponentsByPosition()
@@ -359,7 +359,7 @@ public class FormDesigner extends JPanel
     fireFormChangeEvent(new ChangeEvent(this));
     repaint();
   }
-  
+
   public Collection getSelection()
   {
     return selection;
@@ -423,7 +423,7 @@ public class FormDesigner extends JPanel
         catch (CloneNotSupportedException ex)
         {
         }
-      }      
+      }
     }
   }
 
@@ -495,12 +495,12 @@ public class FormDesigner extends JPanel
     else result = point;
     return result;
   }
-  
+
   public void fireAccessibilityChangeEvent()
   {
     fireFormChangeEvent(new ChangeEvent(this));
   }
-  
+
   protected void fireSelectionChangeEvent(ChangeEvent event)
   {
     Iterator iter = selectionListeners.iterator();
@@ -521,7 +521,7 @@ public class FormDesigner extends JPanel
     }
     if (undoableEditListener != null)
     {
-      undoableEditListener.undoableEditHappened(new UndoableEditEvent(this, 
+      undoableEditListener.undoableEditHappened(new UndoableEditEvent(this,
         new FormDesignerUndoableEdit()));
     }
   }
@@ -551,13 +551,14 @@ public class FormDesigner extends JPanel
           ComponentView view = FormDesigner.this.findView(point);
           if (view != null)
           {
-            ComponentEditor editor = 
+            ComponentEditor editor =
               ComponentEditorFactory.getComponentEditor(view);
             if (editor != null)
             {
-              Frame frame = (Frame)Utilities.getParentWindow(FormDesigner.this);
+              Frame frame =
+                (Frame)SwingUtilities.getWindowAncestor(FormDesigner.this);
               ComponentEditorDialog dialog = new ComponentEditorDialog(frame);
-              int option = dialog.editView(FormDesigner.this, view, editor);
+              int option = dialog.editView(frame, view, editor);
               if (option == ComponentEditorDialog.OK_OPTION)
               {
                 fireFormChangeEvent(new ChangeEvent(this));
@@ -594,7 +595,7 @@ public class FormDesigner extends JPanel
         else // dragging
         {
           Point endPoint = roundPoint(point);
-          Point dragPoint = 
+          Point dragPoint =
             (drag.getPosition() == ComponentView.INTERNAL) ?
              roundPoint(drag.getDragPoint()) : drag.getDragPoint();
           int deltax = endPoint.x - dragPoint.x;
@@ -605,7 +606,7 @@ public class FormDesigner extends JPanel
             ComponentView view = (ComponentView)iter.next();
             if (selection.contains(view))
             {
-              Rectangle rect = 
+              Rectangle rect =
                 view.getResizedBounds(drag.getPosition(), deltax, deltay);
               view.setBounds(rect);
               fireFormChangeEvent(new ChangeEvent(this));
@@ -619,7 +620,7 @@ public class FormDesigner extends JPanel
         repaint();
       }
     });
-    
+
     addMouseMotionListener(new MouseMotionAdapter()
     {
       @Override
@@ -655,7 +656,7 @@ public class FormDesigner extends JPanel
               break;
             case ComponentView.SOUTH_EAST:
               setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
-              break;            
+              break;
             case ComponentView.INTERNAL:
               setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
               break;
@@ -683,7 +684,7 @@ public class FormDesigner extends JPanel
             if (selectionWindow == null)
             {
               windowStart = event.getPoint();
-              selectionWindow = 
+              selectionWindow =
                 new Rectangle(windowStart.x, windowStart.y, 1, 1);
               paintWindow();
               setCursor(Cursor.getDefaultCursor());
@@ -695,7 +696,7 @@ public class FormDesigner extends JPanel
               selectionWindow.x = Math.min(windowStart.x, windowEnd.x);
               selectionWindow.y = Math.min(windowStart.y, windowEnd.y);
               selectionWindow.width = Math.abs(windowStart.x - windowEnd.x);
-              selectionWindow.height = Math.abs(windowStart.y - windowEnd.y);              
+              selectionWindow.height = Math.abs(windowStart.y - windowEnd.y);
               paintWindow();
             }
           }
@@ -722,7 +723,7 @@ public class FormDesigner extends JPanel
           paintRubberbands(); // remove previous
           rubberbands.clear();
           Point endPoint = roundPoint(event.getPoint());
-          Point dragPoint = 
+          Point dragPoint =
             (drag.getPosition() == ComponentView.INTERNAL) ?
              roundPoint(drag.getDragPoint()) : drag.getDragPoint();
           int deltax = endPoint.x - dragPoint.x;
@@ -733,7 +734,7 @@ public class FormDesigner extends JPanel
             ComponentView view = (ComponentView)iter.next();
             if (selection.contains(view))
             {
-              Rectangle rubberband = 
+              Rectangle rubberband =
                 view.getResizedBounds(drag.getPosition(), deltax, deltay);
               rubberbands.add(rubberband);
             }
@@ -763,7 +764,7 @@ public class FormDesigner extends JPanel
     }
     return newDrag;
   }
-  
+
   private ComponentView findView(Point point)
   {
     ComponentView view = null;
@@ -776,7 +777,7 @@ public class FormDesigner extends JPanel
     }
     return view;
   }
-  
+
   private void paintRubberbands()
   {
     Graphics g = getGraphics();
@@ -784,25 +785,25 @@ public class FormDesigner extends JPanel
     {
       Rectangle rubberband = (Rectangle)rubberbands.get(i);
       g.setXORMode(Color.cyan);
-      g.drawRect(rubberband.x - 1, rubberband.y - 1, 
+      g.drawRect(rubberband.x - 1, rubberband.y - 1,
         rubberband.width + 2, rubberband.height + 2);
-      g.drawRect(rubberband.x, rubberband.y, 
+      g.drawRect(rubberband.x, rubberband.y,
         rubberband.width, rubberband.height);
-      g.drawRect(rubberband.x + 1, rubberband.y + 1, 
+      g.drawRect(rubberband.x + 1, rubberband.y + 1,
         rubberband.width - 2, rubberband.height - 2);
     }
     g.dispose();
   }
-  
+
   private void paintWindow()
   {
     Graphics g = getGraphics();
     g.setXORMode(Color.cyan);
-    g.drawRect(selectionWindow.x, selectionWindow.y, 
+    g.drawRect(selectionWindow.x, selectionWindow.y,
       selectionWindow.width, selectionWindow.height);
     g.dispose();
   }
-  
+
   private void paintGrid(Graphics g)
   {
     int xcount = getWidth() / gridSize;
@@ -816,7 +817,7 @@ public class FormDesigner extends JPanel
         {
           int x = gridSize * i;
           int y = gridSize * j;
-          g.drawLine(x, y, x, y);        
+          g.drawLine(x, y, x, y);
         }
       }
     }
@@ -831,11 +832,11 @@ public class FormDesigner extends JPanel
       for (int i = 0; i <= xcount; i++)
       {
         int x = gridSize * i;
-        g.drawLine(x, 0, x, getHeight());        
+        g.drawLine(x, 0, x, getHeight());
       }
     }
   }
-  
+
   private List<ComponentView> getCloneList(List<ComponentView> list)
   {
     List<ComponentView> result = new ArrayList<ComponentView>();
@@ -852,43 +853,43 @@ public class FormDesigner extends JPanel
     }
     return result;
   }
-  
+
   class FormDesignerUndoableEdit extends AbstractUndoableEdit
   {
-    private ArrayList<ComponentView> backupBefore = 
+    private ArrayList<ComponentView> backupBefore =
       new ArrayList<ComponentView>();
-    private ArrayList<ComponentView> backupAfter = 
+    private ArrayList<ComponentView> backupAfter =
       new ArrayList<ComponentView>();
-    
+
     public FormDesignerUndoableEdit()
     {
       init();
     }
-    
+
     @Override
     public void redo() throws CannotRedoException
     {
-      super.redo();      
-      selection.clear();      
+      super.redo();
+      selection.clear();
       components.clear();
-      components.addAll(getCloneList(backupAfter));      
+      components.addAll(getCloneList(backupAfter));
       componentsBackup.clear();
-      componentsBackup.addAll(getCloneList(components));      
+      componentsBackup.addAll(getCloneList(components));
       repaint();
     }
-    
+
     @Override
     public void undo() throws CannotUndoException
     {
-      super.undo();      
-      selection.clear();      
+      super.undo();
+      selection.clear();
       components.clear();
-      components.addAll(getCloneList(backupBefore));      
+      components.addAll(getCloneList(backupBefore));
       componentsBackup.clear();
-      componentsBackup.addAll(getCloneList(components));      
+      componentsBackup.addAll(getCloneList(components));
       repaint();
     }
-    
+
     private void init()
     {
       backupBefore.addAll(getCloneList(componentsBackup));
@@ -896,7 +897,5 @@ public class FormDesigner extends JPanel
       componentsBackup.clear();
       componentsBackup.addAll(getCloneList(components));
     }
-    
   }
-  
 }

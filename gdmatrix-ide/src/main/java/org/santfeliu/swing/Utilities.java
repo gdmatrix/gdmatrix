@@ -43,7 +43,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class Utilities
 {
