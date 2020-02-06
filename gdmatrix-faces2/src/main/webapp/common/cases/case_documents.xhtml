@@ -269,18 +269,18 @@
           <h:outputText value="#{caseBundle.caseDocuments_document}: "
                         style="width:15%" styleClass="textBox"/>
           <h:panelGroup>
-            <t:selectOneMenu value="#{caseDocumentsBean.editingDocument.docId}"
+            <h:selectOneMenu value="#{caseDocumentsBean.editingDocument.docId}"
                              styleClass="selectBox" style="width:70%"
                              disabled="#{not caseBean.editable}">
               <f:selectItems value="#{caseDocumentsBean.documentSelectItems}" />
-            </t:selectOneMenu>
+            </h:selectOneMenu>
             <h:commandButton value="#{objectBundle.search}" 
                              action="#{caseDocumentsBean.searchDocument}"
                              image="#{userSessionBean.icons.search}"
                              alt="#{objectBundle.search}" title="#{objectBundle.search}"
                              styleClass="searchButton"
                              disabled="#{not caseBean.editable}"/>
-            <h:commandButton action="#{caseDocumentsBean.createDocument}"
+            <h:commandButton action="#{caseDocumentsBean.createDocument}" 
                              styleClass="addButton" value="#{objectBundle.create}"
                              image="#{userSessionBean.icons['new']}"
                              alt="#{objectBundle.create}" title="#{objectBundle.create}"
@@ -291,10 +291,10 @@
         <t:div rendered="#{caseDocumentsBean.rootTypeId != 'CaseDocument'}">
           <h:outputText value="#{caseBundle.caseDocuments_type}:"
                         style="width:15%" styleClass="textBox"/>
-          <t:selectOneMenu value="#{caseDocumentsBean.editingDocument.caseDocTypeId}"
+          <h:selectOneMenu value="#{caseDocumentsBean.editingDocument.caseDocTypeId}"
                            styleClass="selectBox" style="width:70%">
             <f:selectItems value="#{caseDocumentsBean.allTypeItems}" />
-          </t:selectOneMenu>
+          </h:selectOneMenu>
         </t:div>
 
         <t:div>
