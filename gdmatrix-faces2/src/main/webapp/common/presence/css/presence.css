@@ -3002,5 +3002,31 @@ input::-moz-focus-inner
   margin-left: 60px;
 }
 
+/*** Override of PrimeFaces dataTable styles ***/
+.ui-datatable .ui-state-default
+{
+  background: none;
+}
 
+.ui-datatable .ui-state-default .ui-icon 
+{
+  background-image: url("/plugins/jquery/ui/1.11.4/themes/custom/images/ui-icons_222222_256x240.png");  
+}
+
+.ui-datatable .ui-sortable-column-icon 
+{
+	display: inline-block;
+	margin: -3px 0 -3px 2px;
+}
+
+.ui-icon-carat-2-n-s 
+{
+	background-position: -128px 0;
+}
+
+.ui-icon 
+{
+	width: 16px;
+	height: 16px;
+}
 

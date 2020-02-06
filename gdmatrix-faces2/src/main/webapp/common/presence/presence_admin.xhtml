@@ -27,9 +27,10 @@
       <!-- PresenceEntryType -->
 
       <t:panelTab label="#{presenceBundle.entryTypes}">
-        <p:dataTable id="entryTypes" value="#{presenceAdminBean.entryTypes}" var="entryType"
+        <p:dataTable id="entryTypes" value="#{presenceAdminBean.entryTypes}" 
+          var="entryType" styleClass="presence_table" 
           rowStyleClass="#{entryType == presenceAdminBean.editingEntryType ? 'selected': null}" 
-          styleClass="presence_table" tableStyleClass="#{empty presenceAdminBean.entryTypes ? 'empty' : null}">
+          tableStyleClass="#{empty presenceAdminBean.entryTypes ? 'empty' : null}">
           <p:column sortBy="#{entryType.entryTypeId}" style="width:5%" styleClass="center">
             <f:facet name="header">
               <h:outputText value="#{presenceBundle.id}" />

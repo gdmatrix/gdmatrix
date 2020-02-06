@@ -45,8 +45,7 @@
         </t:panelGrid>
 
         <p:dataTable
-          value="#{entriesBean.entries}" var="entry" 
-          
+          value="#{entriesBean.entries}" var="entry"        
           tableStyleClass="#{empty entriesBean.entries ? 'empty' : null}"
           styleClass="presence_table">
           <p:column style="width:18%" sortBy="#{entry.workerName}">
