@@ -32,14 +32,14 @@
       <link rel="stylesheet" type="text/css"
         href="${pageContext.request.contextPath}/topframe/css/topframe.css?v=${applicationBean.resourcesVersion}" />
       <c:if test="${userSessionBean.viewMode == 'RENDER'}">
-      <link rel="stylesheet" type="text/css"
-        href="${pageContext.request.contextPath}/frames/${userSessionBean.frame}/css/frame.css?v=${applicationBean.resourcesVersion}" />
-      <link rel="stylesheet" type="text/css"
-        href="${pageContext.request.contextPath}/templates/${userSessionBean.template}/css/template.css?v=${applicationBean.resourcesVersion}" />
+        <link rel="stylesheet" type="text/css"
+          href="${pageContext.request.contextPath}/frames/${userSessionBean.frame}/css/frame.css?v=${applicationBean.resourcesVersion}" />
+        <link rel="stylesheet" type="text/css"
+          href="${pageContext.request.contextPath}/templates/${userSessionBean.template}/css/template.css?v=${applicationBean.resourcesVersion}" />
       </c:if>
-      
-      <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}${css}?v=${applicationBean.resourcesVersion}" /> 
-
+      <c:if test="${!empty css}">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}${css}?v=${applicationBean.resourcesVersion}" /> 
+      </c:if>
       <c:if test="${userSessionBean.viewMode == 'RENDER'}">
         <link rel="stylesheet" type="text/css"
               href="${pageContext.request.contextPath}/themes/${userSessionBean.theme}/theme.css?v=${applicationBean.resourcesVersion}" />
