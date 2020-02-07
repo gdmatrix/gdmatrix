@@ -111,13 +111,15 @@ public class MatrixClient extends javax.swing.JFrame
   private void initLogger()
   {
     try
-    {
-      File dir = new File("logs");
+    {      
+      File dir = new File(getBaseDir(), "logs");
       if (!dir.exists())
         dir.mkdir();
       SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
       String today = df.format(new Date());
-      Handler handler = new FileHandler("logs/" + today + ".log", true);
+      String logFile = 
+        getBaseDir().getAbsolutePath() + "/logs/" + today + ".log";
+      Handler handler = new FileHandler(logFile, true);
       handler.setFormatter(new SimpleFormatter());
       Logger logger = Logger.getLogger("");
       logger.addHandler(handler);
@@ -130,8 +132,8 @@ public class MatrixClient extends javax.swing.JFrame
 
   private void loadSetup(String configURL)
   {
-    Logger.getLogger(getClass().getName()).info("Trying setup file " + configURL);
-    Image iconImage = null;
+    Logger.getLogger(getClass().getName()).log(
+      Level.INFO, "Trying setup file {0}", configURL);
     try
     {
       //clientId, version & hosts properties
@@ -230,7 +232,7 @@ public class MatrixClient extends javax.swing.JFrame
         String trustStore = setupProperties.getProperty("trustStoreFile");
         if (trustStore != null)
         {
-          File trustStoreFile = new File(trustStore);
+          File trustStoreFile = new File(getBaseDir(), trustStore);
           if (!trustStoreFile.exists())
           {
             InputStream tis = getClass().getResourceAsStream("conf/truststore.jks");
@@ -260,21 +262,9 @@ public class MatrixClient extends javax.swing.JFrame
             String.valueOf(version)));
         }
       }
-      if (iconImage == null)
-      {
-        try
-        {
-          iconImage = ImageIO.read(getClass().getResourceAsStream(
-          "conf/icon.png"));
-        }
-        catch (Exception ex)
-        {
-          if (iconImage == null)
-            iconImage = ImageIO.read(getClass().getResourceAsStream(
-              "ui/resources/icon.png"));
-        }
-      }
-      setIconImage(iconImage);
+      
+      setIconImages(loadIcons(
+        "icon.png", "icon32.png", "icon64.png", "icon128.png", "icon256.png"));
 
       setupComplete = true;
     }
@@ -285,6 +275,24 @@ public class MatrixClient extends javax.swing.JFrame
     }
   }
 
+  private List<Image> loadIcons(String... names)
+  {
+    List<Image> icons = new ArrayList<>();
+    for (String name : names)
+    {
+      try
+      {
+        String resource = "conf/" + name;
+        icons.add(ImageIO.read(getClass().getResourceAsStream(resource)));
+      }
+      catch (Exception ex)
+      {
+        // ignore
+      }
+    }
+    return icons;
+  }
+  
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always
@@ -846,65 +854,6 @@ public class MatrixClient extends javax.swing.JFrame
     return new File(getBaseDir(), "client.properties");
   }
 
-//  private void checkNewRelease() throws IOException
-//  {
-//    boolean isNewVersion = false;
-//
-//    if (downloadUrl != null)
-//    {
-//      Properties release = new Properties();
-//      URL url = new URL(downloadUrl + "/release.properties");
-//      HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-//      conn.setRequestMethod("GET");
-//      writeSessionId(conn);
-//      conn.connect();
-//      InputStream is = conn.getInputStream();
-//      try
-//      {
-//        release.load(is);
-//        String date = (String) release.get("date");
-//        String type = (String) release.get("type");
-//        isNewVersion = (date != null && date.compareTo(this.release) > 0);
-//      }
-//      finally
-//      {
-//        is.close();
-//      }
-//    }
-//
-//    if (isNewVersion)
-//    {
-//      // html content
-//      String downloadMessage = bundle.getString("DOWNLOAD_MESSAGE");
-//      downloadMessage = MessageFormat.format(downloadMessage, getTitle());
-//
-//      // show
-//      int option = JOptionPane.showConfirmDialog(null, downloadMessage,
-//        getTitle(), JOptionPane.YES_NO_OPTION);
-//      if (option == JOptionPane.YES_OPTION)
-//      {
-//        try
-//        {
-//          //Execute updater
-//          Runtime.getRuntime()
-//            .exec("java -cp lib/matrix-client-updater.jar org.santfeliu.matrix.client.updater.MatrixClientUpdater " + downloadUrl);
-//          Logger.getLogger(MatrixClient.class.getName()).info("Launching updater");
-//          Thread.sleep(1000);
-//        }
-//        catch (Exception ex)
-//        {
-//          JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//          Logger.getLogger(MatrixClient.class.getName()).severe(ex.getMessage());
-//        }
-//        finally
-//        {
-//          Logger.getLogger(MatrixClient.class.getName()).info("Closing client to update");
-//          System.exit(0);
-//        }
-//      }
-//    }
-//  }
-
   private String getHostname(String url)
   {
     String protocol = null;
@@ -915,7 +864,7 @@ public class MatrixClient extends javax.swing.JFrame
       protocol = "http";
 
     String host = url;
-    if (protocol != null)
+    if (protocol != null && url != null)
     {
       host = url.replace(protocol + "://", "");
       host = host.substring(0, host.indexOf("/"));

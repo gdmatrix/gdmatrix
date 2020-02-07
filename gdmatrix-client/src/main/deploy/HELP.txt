@@ -1,0 +1,12 @@
+GDMatrixClient
+==============
+
+Java runtime is required to execute GDMatrixClient.
+You can download and install it from this URL:
+https://adoptopenjdk.net/
+
+Windows:
+bin/run.bat
+
+Unix systems:
+bin/run.sh

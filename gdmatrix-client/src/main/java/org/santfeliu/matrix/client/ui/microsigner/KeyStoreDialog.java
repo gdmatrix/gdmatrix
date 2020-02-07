@@ -188,6 +188,7 @@ public class KeyStoreDialog extends JDialog
     provClassNameComboBox.setPreferredSize(new Dimension(350, prefHeight));
     provClassNameComboBox.addActionListener(new ActionListener()
     {
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         provClassNameComboBox_actionPerformed(e);
@@ -196,11 +197,10 @@ public class KeyStoreDialog extends JDialog
     southPanel.add(acceptButton, null);
     southPanel.add(cancelButton, null);
 
-    provClassNameComboBox.addItem("be.cardon.cryptoapi.provider.CryptoAPIProvider");
-    provClassNameComboBox.addItem("se.assembla.jce.provider.ms.MSProvider");
-    provClassNameComboBox.addItem("sun.security.provider.Sun");
-    provClassNameComboBox.addItem("sun.security.pkcs11.SunPKCS11");
     provClassNameComboBox.addItem("sun.security.mscapi.SunMSCAPI");
+    provClassNameComboBox.addItem("sun.security.pkcs11.SunPKCS11");
+    provClassNameComboBox.addItem("sun.security.provider.Sun");
+    provClassNameComboBox.addItem("apple.security.AppleProvider");
     provClassNameComboBox.addItem("com.sun.net.ssl.internal.ssl.Provider");
     provClassNameComboBox.addItem("org.bouncycastle.jce.provider.BouncyCastleProvider");
     provClassNameComboBox.addItem("iaik.security.provider.IAIK");

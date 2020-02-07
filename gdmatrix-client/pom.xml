@@ -5,104 +5,185 @@
   <artifactId>gdmatrix-client</artifactId>
   <version>3.0</version>
   <packaging>jar</packaging>
+  <name>gdmatrix-client</name>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <warp_packer_version>v0.3.0</warp_packer_version>
+    <jre_download_url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download</jre_download_url>
+    <jre_name>OpenJDK8U</jre_name>
+    <jre_version>jdk8u242-b08</jre_version>
+    <jre_file>8u242b08</jre_file>
+    <project_nv>${project.name}-${project.version}</project_nv>
   </properties>
-    
+
   <dependencies>
-  
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gdmatrix-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
       <version>2.0.17</version>
     </dependency>
     <dependency>
-        <groupId>org.apache.pdfbox</groupId>
-        <artifactId>xmpbox</artifactId>
-        <version>2.0.17</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-common</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>xmpbox</artifactId>
+      <version>2.0.17</version>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
-
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-jar-plugin</artifactId>
-      <configuration>
-        <archive>
-          <manifest>
-            <addClasspath>true</addClasspath>
-            <classpathPrefix>lib/</classpathPrefix>
-            <mainClass>org.santfeliu.matrix.client.MatrixClient</mainClass>
-          </manifest>            
-        </archive>
-      </configuration>
-    </plugin>       
-
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-libs</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <descriptors>
-                <descriptor>src/main/assembly/package.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-        </executions>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>org.santfeliu.matrix.client.MatrixClient</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
       </plugin>
-
     </plugins>
   </build>
-    
+
   <profiles>
     <profile>
       <id>gen-binaries</id>
-      <build>   
-        <plugins>     
+      <build>
+        <plugins>
           <plugin>
-            <!-- OS-specific requirements
-              (Windows) EXE installers: Inno Setup
-              (Windows) MSI installers: WiX (at least version 3.7)
-            -->
-            <groupId>com.zenjava</groupId>
-            <artifactId>javafx-maven-plugin</artifactId>
-            <version>8.8.3</version>
-            <configuration>
-              <verbose>true</verbose>
-              <vendor>GDMatrix</vendor>
-              <appName>MatrixClient</appName>
-              <mainClass>org.santfeliu.matrix.client.MatrixClient</mainClass>
-            </configuration>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
             <executions>
               <execution>
+                <id>windows-assembly</id>
                 <goals>
-                  <goal>native</goal>
+                  <goal>single</goal>
                 </goals>
-                <phase>install</phase>                  
+                <phase>package</phase>
+                <configuration>
+                  <descriptors>
+                    <descriptor>src/main/assembly/windows-assembly.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+              <execution>
+                <id>macos-assembly</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <descriptors>
+                    <descriptor>src/main/assembly/macos-assembly.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+              <execution>
+                <id>java-assembly</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <finalName>GDMatrixClientJavaInstall</finalName>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <descriptors>
+                    <descriptor>src/main/assembly/java-assembly.xml</descriptor>
+                  </descriptors>
+                </configuration>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+              <execution>
+                <id>warp-packer</id>
+                <phase>package</phase>
+                <configuration>
+                  <target>
+                    <mkdir dir="${user.home}/gdmatrix_build" />
 
-          </plugin> 
+                    <script language="javascript">
+                      var osName = java.lang.System.getProperty("os.name");
+                      java.lang.System.out.println("OS name: " + osName);
+                      osName = osName.toLowerCase();
+                      if (osName.indexOf("win") !== -1)
+                      {
+                      project.setProperty("warp_packer", "windows-x64.warp-packer.exe");
+                      }
+                      else if (osName.indexOf("mac") !== -1)
+                      {
+                      project.setProperty("warp_packer", "macos-x64.warp-packer");
+                      }
+                      else
+                      {
+                      project.setProperty("warp_packer", "linux-x64.warp-packer");
+                      }
+                    </script>
+                    <echo>Downloading ${warp_packer}...</echo>
+                    <get src="https://github.com/dgiagio/warp/releases/download/${warp_packer_version}/${warp_packer}"
+                         dest="${user.home}/gdmatrix_build/${warp_packer}" skipexisting="true" />
+                    <chmod file="${user.home}/gdmatrix_build/${warp_packer}" perm="755" />
+
+                    <echo>Packaging GDMatrixClient for Windows-x64...</echo>
+                    <get src="${jre_download_url}/${jre_version}/${jre_name}-jre_x64_windows_hotspot_${jre_file}.zip"
+                         dest="${user.home}/gdmatrix_build/windows-jre.zip" skipexisting="true" />
+                    <unzip src="${user.home}/gdmatrix_build/windows-jre.zip"
+                           dest="${basedir}/target/${project_nv}-windows/gdmatrix-client" />
+                    <move file="${basedir}/target/${project_nv}-windows/gdmatrix-client/${jre_version}-jre"
+                          tofile="${basedir}/target/${project_nv}-windows/gdmatrix-client/jre" />
+                    <exec executable="${user.home}/gdmatrix_build/${warp_packer}">
+                      <arg line="-a windows-x64 -i ${basedir}/target/${project_nv}-windows/gdmatrix-client -e install.bat -o ${basedir}/target/GDMatrixClientWinInstall.exe" />
+                    </exec>
+                    <delete dir="${basedir}/target/${project_nv}-windows" failonerror="false" />
+
+                    <echo>Packaging GDMatrixClient for MacOS-64...</echo>
+                    <get src="${jre_download_url}/${jre_version}/${jre_name}-jre_x64_mac_hotspot_${jre_file}.tar.gz"
+                         dest="${user.home}/gdmatrix_build/macos-jre.tar.gz" skipexisting="true" />
+                    <untar src="${user.home}/gdmatrix_build/macos-jre.tar.gz" compression="gzip"
+                           dest="${basedir}/target/${project_nv}-macos/gdmatrix-client" />
+                    <move file="${basedir}/target/${project_nv}-macos/gdmatrix-client/${jre_version}-jre"
+                          tofile="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE" />
+                    <zip destfile="${basedir}/target/GDMatrixClientMacInstall.zip">
+                      <zipfileset file="${basedir}/src/main/deploy/Info.plist"
+                                     fullpath="GDMatrixClient.app/Contents/Info.plist" />
+                      <zipfileset file="${basedir}/src/main/deploy/JavaAppLauncher"
+                                     fullpath="GDMatrixClient.app/Contents/MacOS/JavaAppLauncher"
+                                     filemode="755" />
+                      <zipfileset file="${basedir}/src/main/deploy/gdmatrix.icns"
+                                     fullpath="GDMatrixClient.app/Contents/Resources/gdmatrix.icns" />
+                      <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE/Contents/Home/bin"
+                                     prefix="GDMatrixClient.app/Contents/PlugIns/JRE/Contents/Home/jre/bin"
+                                     filemode="755" />
+                      <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE/Contents/Home/lib"
+                                     prefix="GDMatrixClient.app/Contents/PlugIns/JRE/Contents/Home/jre/lib" />
+                      <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/Java"
+                                     prefix="GDMatrixClient.app/Contents/Java" />
+                    </zip>
+                    <delete dir="${basedir}/target/${project_nv}-macos" failonerror="false" />
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
   </profiles>
-                  
-
-  <name>gdmatrix-client</name>
 </project>

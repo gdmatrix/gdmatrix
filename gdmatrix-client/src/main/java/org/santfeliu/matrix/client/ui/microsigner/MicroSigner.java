@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -254,11 +255,21 @@ public class MicroSigner extends JFrame
 
   private void autoSetup() throws Throwable
   {
-    // autosetup in Windows
-    if (System.getProperty("os.name").contains("Windows"))
+    String os = System.getProperty("os.name").toLowerCase();
+    if (os.contains("windows"))
     {
-      String providerClassName = "be.cardon.cryptoapi.provider.CryptoAPIProvider";
-      String ksType = "CryptoAPI";
+      String providerClassName = "sun.security.mscapi.SunMSCAPI";
+      String ksType = "Windows-MY";
+      String ksPath = null;
+      String ksPassword = null;
+      KeyStoreNode ksNode = loadKeyStore(providerClassName, ksType,
+                                         ksPath, ksPassword, null);
+      mainPanel.addKeyStoreNode(ksNode);
+    }
+    else if (os.contains("mac"))
+    {
+      String providerClassName = "apple.security.AppleProvider";
+      String ksType = "KeychainStore";
       String ksPath = null;
       String ksPassword = null;
       KeyStoreNode ksNode = loadKeyStore(providerClassName, ksType,
@@ -549,13 +560,11 @@ public class MicroSigner extends JFrame
                                           KeyStoreNode ksNode) throws Throwable
   {
     // load provider
-    Provider provider = null;
-    KeyStore keyStore = null;
     char[] password = (ksPassword == null || ksPassword.length() == 0) ?
        null : ksPassword.toCharArray();
     if (ksPath != null && ksPath.trim().length() == 0) ksPath = null;
 
-    provider = loadProvider(provClassName);
+    Provider provider = loadProvider(provClassName);
     InputStream is = (ksPath == null) ? null : new FileInputStream(ksPath);
 
     // install provider
@@ -564,7 +573,7 @@ public class MicroSigner extends JFrame
     Security.insertProviderAt(provider, 1);
 
     // create a KeyStore
-    keyStore = KeyStore.getInstance(ksType, provider);
+    KeyStore keyStore = KeyStore.getInstance(ksType, provider);
 
     // load KeyStore
     keyStore.load(is, password);
@@ -574,8 +583,8 @@ public class MicroSigner extends JFrame
     ksNode.setKeyStorePath(ksPath);
     Logger.getLogger(MicroSigner.class.getName()).info("Provider: " + providerName);
     ksNode.setAskForPIN(
-     !(providerName.equals("assembla") ||
-       providerName.equals("SunMSCAPI") ||
+     !(providerName.equals("SunMSCAPI") ||
+       providerName.equals("SunPKCS11") ||
        providerName.equals("MicrosoftCryptoAPIBridge")));
 
     if (password != null)
@@ -623,7 +632,8 @@ public class MicroSigner extends JFrame
 
     try
     {
-      Logger.getLogger(MicroSigner.class.getName()).info("Loading class " + provClassName);
+      Logger.getLogger(MicroSigner.class.getName()).log(
+        Level.INFO, "Loading class {0}", provClassName);
       provider = (Provider)Class.forName(provClassName).newInstance();
       Logger.getLogger(MicroSigner.class.getName()).info(provider.toString());
     }
