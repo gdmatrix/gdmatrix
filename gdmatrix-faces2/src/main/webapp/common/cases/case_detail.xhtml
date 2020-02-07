@@ -106,12 +106,18 @@
                 <t:panelGroup rendered="#{panel.type == 'workflows'}">
                   <ui:include src="/common/cases/panels/workflows.xhtml" />
                 </t:panelGroup>
-                <t:panelGroup rendered="#{panel.type == 'persons'}">
-                  <ui:include src="/common/cases/panels/persons.xhtml" />
+                <t:panelGroup rendered="#{panel.type == 'persons' and panel.getProperty('resultsLayout') != 'list'}">
+                  <ui:include src="/common/cases/panels/persons_table.xhtml" />
                 </t:panelGroup>
-                <t:panelGroup rendered="#{panel.type == 'addresses'}">
-                  <ui:include src="/common/cases/panels/addresses.xhtml" />
+                <t:panelGroup rendered="#{panel.type == 'persons' and panel.getProperty('resultsLayout') == 'list'}">
+                  <ui:include src="/common/cases/panels/persons_list.xhtml" />
+                </t:panelGroup>                
+                <t:panelGroup rendered="#{panel.type == 'addresses' and panel.getProperty('resultsLayout') != 'list'}">
+                  <ui:include src="/common/cases/panels/addresses_table.xhtml" />
                 </t:panelGroup>
+                <t:panelGroup rendered="#{panel.type == 'addresses' and panel.getProperty('resultsLayout') == 'list'}">
+                  <ui:include src="/common/cases/panels/addresses_list.xhtml" />
+                </t:panelGroup>                
                 <t:panelGroup rendered="#{panel.type == 'contacts'}">
                   <ui:include src="/common/cases/panels/contacts.xhtml" />
                 </t:panelGroup>

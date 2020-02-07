@@ -1,0 +1,78 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+    <t:div styleClass="addressesPanel">
+      <t:dataList value="#{panel.caseAddresses}" var="row" summary="#{panel.tableSummary}"
+                   rowClasses="row1,row2" footerClass="footer" headerClass="header"
+                   styleClass="resultList">
+
+       <t:dataList value="#{panel.resultsManager.columnNames}" var="column"
+                   style="#{panel.resultsManager.columnStyle}"
+                   styleClass="#{panel.resultsManager.columnStyleClass}">
+        <f:facet name="header">
+          <t:commandSortHeader columnName="#{panel.resultsManager.localizedColumnName}" arrow="true" immediate="false"
+                               action="#{panel.sort}" >
+              <h:outputText value="#{panel.resultsManager.columnName}" />
+          </t:commandSortHeader>
+        </f:facet>
+
+        <h:panelGroup rendered="#{panel.resultsManager.customColumn and
+          panel.resultsManager.columnName == 'description'}">
+          <h:outputText value="#{row.addressView.description} " />
+          <h:outputText value="(#{row.addressView.city}) " />
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{panel.resultsManager.customColumn and
+          panel.resultsManager.columnName == 'linktomap'}">
+          <h:outputLink value="#{panel.mapCode}"
+                        target="_blank"
+                        styleClass="showButton" style="margin-left:5px">
+            <h:graphicImage value="/common/agenda/images/directions.png" style="vertical-align:middle" alt=""/>
+          </h:outputLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{panel.resultsManager.customColumn and
+          panel.resultsManager.columnName == 'maponly'}">
+          <t:div styleClass="map">
+            <h:outputText value="#{panel.mapCode}" escape="false"/>
+          </t:div>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{panel.resultsManager.customColumn and
+          panel.resultsManager.columnName == 'descandmap'}">
+          <t:div styleClass="description">
+            <h:outputText value="#{row.addressView.description} " />
+            <h:outputText value="(#{row.addressView.city}) " />
+          </t:div>
+          <t:div styleClass="map" rendered="#{panel.localAddress}">
+            <h:outputText value="#{panel.mapCode}" escape="false"/>
+          </t:div>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{!panel.resultsManager.customColumn}">
+          <!-- render as link -->
+          <h:outputLink target="_blank" value="#{panel.resultsManager.columnValue}"
+                        rendered="#{panel.resultsManager.linkColumn}">
+            <h:outputText value="#{panel.resultsManager.columnValue}"/>
+          </h:outputLink>
+
+          <!-- render as image -->
+          <h:graphicImage value="#{panel.resultsManager.columnValue}" alt=""
+            rendered="#{panel.resultsManager.imageColumn and
+                        panel.resultsManager.columnValue != null}"/>
+
+          <!-- render as text -->
+          <h:outputText value="#{panel.resultsManager.columnValue}"
+            rendered="#{not panel.resultsManager.imageColumn and
+                        not panel.resultsManager.linkColumn}"/>
+        </h:panelGroup>
+       </t:dataList>
+
+      </t:dataList>
+    </t:div>
+
+</html>
