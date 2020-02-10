@@ -111,13 +111,11 @@
           </t:div>
 
           <t:div style="text-align: right;width:100%">
-            <h:commandButton value="#{objectBundle.store}" styleClass="workflowButton"
-              action="#{uploadDocumentsFormBean.storeFile}"
-              image="#{userSessionBean.icons.store}"
+            <h:commandButton value="#{objectBundle.store}" styleClass="workflowButton store"
+              action="#{uploadDocumentsFormBean.storeFile}"   
               alt="#{objectBundle.store}" title="#{objectBundle.store}"/>
-            <h:commandButton value="#{objectBundle.cancel}" styleClass="workflowButton"
-              action="#{uploadDocumentsFormBean.cancelFile}"
-              image="#{userSessionBean.icons.cancel}"
+            <h:commandButton value="#{objectBundle.cancel}" styleClass="workflowButton cancel"
+              action="#{uploadDocumentsFormBean.cancelFile}"              
               alt="#{objectBundle.cancel}" title="#{objectBundle.cancel}"/>
           </t:div>
 

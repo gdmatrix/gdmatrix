@@ -746,6 +746,22 @@ A.workflowCommandLink:hover
   background:url("/common/workflow/images/button_hover.gif");
 }
 
+.workflowInstance .uploadDocumentForm input.workflowButton.store
+{
+  background-image: url(/common/workflow/images/accept.gif), url(/common/workflow/images/button.gif);
+  background-position: 10%, top;
+  background-repeat: no-repeat, repeat;
+  padding-left: 22px;
+}
+
+.workflowInstance .uploadDocumentForm input.workflowButton.cancel
+{
+  background-image: url(/common/workflow/images/cancel.gif), url(/common/workflow/images/button.gif);
+  background-position: 10%, top;
+  background-repeat: no-repeat, repeat;
+  padding-left: 22px;
+}
+
 .buttonBar
 {
   margin-top: 4px;
