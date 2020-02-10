@@ -51,6 +51,9 @@ public class SelectMenuFormBean extends FormBean implements Serializable
   private String message;
   private List options;
   private String selectedCode;
+  private String layout = "list";
+  private String cssCustom;
+  private String cssFileUrl;
 
   public SelectMenuFormBean()
   {
@@ -74,6 +77,36 @@ public class SelectMenuFormBean extends FormBean implements Serializable
   public List getOptions()
   {
     return options;
+  }
+
+  public String getLayout()
+  {
+    return layout;
+  }
+
+  public void setLayout(String layout)
+  {
+    this.layout = layout;
+  }
+
+  public String getCssCustom()
+  {
+    return cssCustom;
+  }
+
+  public void setCssCustom(String cssCustom)
+  {
+    this.cssCustom = cssCustom;
+  }
+
+  public String getCssFileUrl()
+  {
+    return cssFileUrl;
+  }
+
+  public void setCssFileUrl(String cssFileUrl)
+  {
+    this.cssFileUrl = cssFileUrl;
   }
 
   public String show(Form form)
@@ -103,6 +136,14 @@ public class SelectMenuFormBean extends FormBean implements Serializable
       i++;
       code = parameters.get("code" + i);
     }
+
+    value = parameters.get("layout");
+    if (value != null) layout = String.valueOf(value);
+    value = parameters.get("cssCustom");
+    cssCustom = (value != null ? String.valueOf(value) : null);
+    value = parameters.get("cssFileUrl");
+    cssFileUrl = (value != null ? String.valueOf(value) : null);
+
     return "select_menu_form";
   }
   

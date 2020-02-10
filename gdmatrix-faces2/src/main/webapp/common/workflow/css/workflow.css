@@ -833,3 +833,59 @@ ul.messages li
   text-align: center;
   font-weight: bold;
 }
+
+/* SelectMenu form assistant default styles */
+
+.workflowInstance .body .bot
+{
+  
+}
+
+.workflowInstance .body table.assistant
+{
+  margin-top: 15px;
+}
+
+.workflowInstance .body table.assistant tr
+{
+  display: inline-block;
+}
+
+.workflowInstance .body table.assistant tr td
+{
+  
+}
+
+.workflowInstance .body table.assistant tr td a 
+{
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: normal;
+  border: 0;
+  border-radius: 4px;
+  color: #ffffff;
+  background-color: #ac1354;  
+  margin: 5px;
+  margin-right: 0;
+  margin-left: 10px;  
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.workflowInstance .body table.assistant tr td a:hover
+{
+  background-color: #d36b73;  
+} 
+
+.workflowInstance .body table.assistant tr td img
+{
+  display: none;
+}
+
+.workflowInstance .body table.list
+{
+}
+
+.workflowInstance .body table.css_file
+{
+}

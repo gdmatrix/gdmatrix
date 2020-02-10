@@ -47,6 +47,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
@@ -81,6 +82,13 @@ public class SelectMenuFormParametersEditor extends JPanel
   private JButton addButton = new JButton();
   private JButton insertButton = new JButton();
   private JButton deleteButton = new JButton();
+  private JLabel layoutLabel = new JLabel();
+  private JComboBox layoutComboBox = new JComboBox();
+  private JScrollPane scrollPane3 = new JScrollPane();
+  private JLabel cssCustomLabel = new JLabel();
+  private JTextArea cssCustomTextArea = new JTextArea();
+  private JLabel cssFileUrlLabel = new JLabel();
+  private JTextField cssFileUrlTextField = new JTextField();
 
   public SelectMenuFormParametersEditor()
   {
@@ -120,6 +128,33 @@ public class SelectMenuFormParametersEditor extends JPanel
       i++;
       code = parameters.get("code" + i);
     }
+
+    String layout = (String)parameters.getProperty("layout");    
+    if ("list".equals(layout))
+    {
+      layoutComboBox.setSelectedIndex(0);
+    }
+    else if ("assistant".equals(layout))
+    {
+      layoutComboBox.setSelectedIndex(1);
+    }
+    else if ("css_file".equals(layout))
+    {
+      layoutComboBox.setSelectedIndex(2);
+    }
+
+    Object cssFileUrl = parameters.get("cssFileUrl");
+    if (cssFileUrl != null && String.valueOf(cssFileUrl).trim().length() > 0)
+    {
+      cssFileUrlTextField.setText(cssFileUrl.toString());
+    }
+
+    Object cssCustom = parameters.get("cssCustom");
+    if (cssCustom != null && String.valueOf(cssCustom).trim().length() > 0)
+    {
+      cssCustomTextArea.setText(cssCustom.toString());
+      cssCustomTextArea.setCaretPosition(0);
+    }
     return this;
   }
 
@@ -148,6 +183,34 @@ public class SelectMenuFormParametersEditor extends JPanel
         parameters.setProperty("label" + i, label);
       }
     }
+    int index = layoutComboBox.getSelectedIndex();
+    String layout = null;
+    if (index == 0)
+    {
+      layout = "list";
+    }
+    else if (index == 1)
+    {
+      layout = "assistant";
+    }
+    else if (index == 2)
+    {
+      layout = "css_file";
+    }
+    parameters.setProperty("layout", layout);
+
+    String cssFileUrl = cssFileUrlTextField.getText();
+    if (cssFileUrl != null && cssFileUrl.trim().length() > 0)
+    {
+      parameters.setProperty("cssFileUrl", cssFileUrl);
+    }
+
+    String cssCustom = cssCustomTextArea.getText();
+    if (cssCustom != null && cssCustom.trim().length() > 0)
+    {
+      parameters.setProperty("cssCustom", cssCustom);
+    }
+
     formNode.setParameters(parameters);
   }
 
@@ -161,12 +224,17 @@ public class SelectMenuFormParametersEditor extends JPanel
     this.setLayout(gridBagLayout1);
     varLabel.setText("Variable:");
     messageLabel.setText("Message:");
+    layoutLabel.setText("Layout:");
+    cssFileUrlLabel.setText("CSS File URL:");
+    cssCustomLabel.setText("Custom CSS:");
     varTextField.setPreferredSize(new Dimension(140, 24));
     varTextField.setMinimumSize(new Dimension(140, 24));
     messageTextArea.setFont(new Font("Dialog", 0, 14));
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
-    
+    cssCustomTextArea.setFont(new Font("Courier New", 0, 14));
+    cssCustomTextArea.setLineWrap(true);
+    cssCustomTextArea.setWrapStyleWord(true);
     optionsLabel.setText("Options:");
     this.add(varLabel, 
              new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
@@ -196,7 +264,27 @@ public class SelectMenuFormParametersEditor extends JPanel
     this.add(deleteButton, 
              new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, 
                                     new Insets(2, 2, 2, 2), 0, 0));
+    this.add(layoutLabel, 
+             new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
+                                    new Insets(2, 4, 2, 4), 0, 0));
+    this.add(layoutComboBox, 
+             new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
+                                    new Insets(2, 4, 2, 4), 0, 0));
+    this.add(cssFileUrlLabel, 
+             new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
+                                    new Insets(2, 4, 2, 4), 0, 0));
+    this.add(cssFileUrlTextField, 
+             new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
+                                    new Insets(2, 4, 2, 4), 0, 0));
+    this.add(cssCustomLabel, 
+             new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, 
+                                    new Insets(2, 4, 2, 4), 0, 0));
+    this.add(scrollPane3, 
+             new GridBagConstraints(1, 8, 1, 1, 1.0, 0.2, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
+                                    new Insets(2, 4, 2, 4), 0, 0));
     scrollPane.getViewport().add(messageTextArea);
+    scrollPane3.getViewport().add(cssCustomTextArea);
+    
     this.varTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
     optionsTable.setAutoCreateColumnsFromModel(false);    
     tableModel.addColumn("Label");
@@ -233,6 +321,10 @@ public class SelectMenuFormParametersEditor extends JPanel
     optionsTable.addColumn(new TableColumn(1, 100, null, editor));
     optionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     optionsTable.setRowHeight(20);
+
+    layoutComboBox.addItem("List");
+    layoutComboBox.addItem("Assistant");    
+    layoutComboBox.addItem("From CSS file");    
   }
 
   private void addButton_actionPerformed(ActionEvent e)

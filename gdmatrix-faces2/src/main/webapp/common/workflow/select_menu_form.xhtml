@@ -3,7 +3,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:sf="http://faces.santfeliu.org"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
   <ui:composition template="/common/workflow/instance.xhtml">
 
@@ -11,14 +12,31 @@
 
       <t:saveState value="#{selectMenuFormBean}" />
 
+      <c:if test="${selectMenuFormBean.cssFileUrl != null}">
+        <link rel="stylesheet" type="text/css" 
+              href="${selectMenuFormBean.cssFileUrl.startsWith('http') ? '' : pageContext.request.contextPath}${selectMenuFormBean.cssFileUrl}" />       
+      </c:if>
+      
+      <c:if test="${selectMenuFormBean.layout == 'assistant'}">
+        <div class="bot">          
+        </div>        
+      </c:if>     
+      
       <sf:outputText value="#{selectMenuFormBean.message}" 
         translator="#{instanceBean.translationEnabled ? 
           applicationBean.translator : null}" 
         translationGroup="wf:#{instanceBean.workflowName}"
         styleClass="workflowMessage" />
 
+      <c:if test="${selectMenuFormBean.cssCustom != null}">
+        <style>
+          ${selectMenuFormBean.cssCustom}
+        </style>        
+      </c:if>
+      
       <t:dataTable value="#{selectMenuFormBean.options}" 
-        var="option" width="100%">
+                   var="option" width="100%"                     
+                   styleClass="#{selectMenuFormBean.layout}">
         <t:column>
           <h:commandLink action="#{selectMenuFormBean.selectOption}" 
             styleClass="selectMenuLink">
@@ -30,8 +48,8 @@
               translationGroup="wf:#{instanceBean.workflowName}" />
           </h:commandLink>
         </t:column>
-      </t:dataTable>
-
+      </t:dataTable>      
+      
     </ui:define>
   </ui:composition>
 </html>
