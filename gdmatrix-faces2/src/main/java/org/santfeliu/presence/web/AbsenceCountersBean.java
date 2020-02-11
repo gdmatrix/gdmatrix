@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.presence.web;
@@ -58,17 +58,17 @@ public class AbsenceCountersBean extends WebBean implements Savable
   private List<AbsenceCounterView> absenceCounterViews;
   private AbsenceCounterView editingAbsenceCounterView;
   private String absenceTypeId;
-  
+
   public AbsenceCountersBean()
   {
-    currentYear();    
+    currentYear();
   }
-  
+
   public int getYear()
   {
     return year;
   }
-  
+
   public String show()
   {
     return "absence_counters";
@@ -89,7 +89,7 @@ public class AbsenceCountersBean extends WebBean implements Savable
   {
     this.absenceTypeId = absenceTypeId;
   }
-  
+
   public AbsenceCounterView getEditingAbsenceCounterView()
   {
     return editingAbsenceCounterView;
@@ -115,7 +115,7 @@ public class AbsenceCountersBean extends WebBean implements Savable
     }
     return absenceCounterViews;
   }
-  
+
   public String getCounterCounting()
   {
     AbsenceCounting counting = (AbsenceCounting)getValue("#{absenceCounterView.absenceType.counting}");
@@ -124,16 +124,16 @@ public class AbsenceCountersBean extends WebBean implements Savable
 
   public void editAbsenceCounter()
   {
-    AbsenceCounterView absenceCounterView = 
+    AbsenceCounterView absenceCounterView =
       (AbsenceCounterView)getValue("#{absenceCounterView}");
     editingAbsenceCounterView = absenceCounterView;
   }
-  
+
   public void removeAbsenceCounter()
   {
     try
     {
-      AbsenceCounter absenceCounter = 
+      AbsenceCounter absenceCounter =
         (AbsenceCounter)getValue("#{absenceCounterView.absenceCounter}");
       PresenceManagerPort port = PresenceConfigBean.getPresencePort();
       port.removeAbsenceCounter(absenceCounter.getAbsenceCounterId());
@@ -144,12 +144,12 @@ public class AbsenceCountersBean extends WebBean implements Savable
       error(ex);
     }
   }
-  
+
   public void storeAbsenceCounter()
   {
     try
     {
-      AbsenceCounter absenceCounter = 
+      AbsenceCounter absenceCounter =
         (AbsenceCounter)getValue("#{absenceCounterView.absenceCounter}");
       PresenceManagerPort port = PresenceConfigBean.getPresencePort();
       port.storeAbsenceCounter(absenceCounter);
@@ -168,36 +168,60 @@ public class AbsenceCountersBean extends WebBean implements Savable
     editingAbsenceCounterView.setAbsenceCounter(null);
     editingAbsenceCounterView = null;
   }
-  
+
   public void moveAbsenceCounter()
   {
     try
     {
-      AbsenceCounterView absenceCounterView = 
+      AbsenceCounterView absenceCounterView =
         (AbsenceCounterView)getValue("#{absenceCounterView}");
       AbsenceCounter absenceCounter = absenceCounterView.getAbsenceCounter();
-      if (absenceCounter.getRemainingTime() > 0)
+      double remainingTime = absenceCounter.getRemainingTime();
+
+      if (remainingTime > 0)
       {
         PresenceManagerPort port = PresenceConfigBean.getPresencePort();
-        double remainingTime = absenceCounter.getRemainingTime();        
+
+        String selAbsenceTypeId = absenceCounter.getAbsenceTypeId();
+        String personId = getWorker().getPersonId();
+        String nextYear = String.valueOf(
+          Integer.parseInt(absenceCounter.getYear()) + 1);
+
         AbsenceCounterFilter filter = new AbsenceCounterFilter();
-        filter.setAbsenceTypeId(absenceCounter.getAbsenceTypeId());
-        int nextYear = Integer.parseInt(absenceCounter.getYear()) + 1;
-        filter.setYear(String.valueOf(nextYear));
-        filter.setPersonId(getWorker().getPersonId());
-        List<AbsenceCounter> absenceCounters = port.findAbsenceCounters(filter);
-        if (!absenceCounters.isEmpty())
+        filter.setAbsenceTypeId(selAbsenceTypeId);
+        filter.setPersonId(personId);
+        filter.setYear(nextYear);
+        List<AbsenceCounter> nextAbsenceCounters =
+          port.findAbsenceCounters(filter);
+        AbsenceCounter nextAbsenceCounter;
+        if (nextAbsenceCounters.isEmpty())
         {
-          absenceCounter.setRemainingTime(0);
-          port.storeAbsenceCounter(absenceCounter);
-          
-          absenceCounter = absenceCounters.get(0);
-          absenceCounter.setRemainingTime(absenceCounter.getRemainingTime() + remainingTime);
-          port.storeAbsenceCounter(absenceCounter);
-          absenceCounterViews = null;
-          message("org.santfeliu.presence.web.resources.PresenceBundle", 
-            "counterMoved", null, FacesMessage.SEVERITY_INFO);
+          // counter does not exist for next year
+          nextAbsenceCounter = new AbsenceCounter();
+          nextAbsenceCounter.setPersonId(personId);
+          nextAbsenceCounter.setAbsenceTypeId(selAbsenceTypeId);
+          nextAbsenceCounter.setYear(nextYear);
+          nextAbsenceCounter.setTotalTime(remainingTime);
+          nextAbsenceCounter.setRemainingTime(remainingTime);
         }
+        else
+        {
+          // counter exists for next year
+          nextAbsenceCounter = nextAbsenceCounters.get(0);
+          nextAbsenceCounter.setTotalTime(
+            nextAbsenceCounter.getTotalTime() + remainingTime);
+          nextAbsenceCounter.setRemainingTime(
+            nextAbsenceCounter.getRemainingTime() + remainingTime);
+        }
+        // store  next year counter
+        port.storeAbsenceCounter(nextAbsenceCounter);
+        // reset current year counter
+        absenceCounter.setRemainingTime(0);
+        port.storeAbsenceCounter(absenceCounter);
+
+        absenceCounterViews = null;
+        message("org.santfeliu.presence.web.resources.PresenceBundle",
+          "counterMoved", null, FacesMessage.SEVERITY_INFO);
       }
     }
     catch (Exception ex)
@@ -228,7 +252,7 @@ public class AbsenceCountersBean extends WebBean implements Savable
       error(ex);
     }
   }
-  
+
   public void createAbsenceCounters()
   {
     createAbsenceCounters(false);
@@ -244,9 +268,9 @@ public class AbsenceCountersBean extends WebBean implements Savable
     try
     {
       PresenceManagerPort port = PresenceConfigBean.getPresencePort();
-      int created = port.createAbsenceCounters(getWorker().getPersonId(), 
+      int created = port.createAbsenceCounters(getWorker().getPersonId(),
         String.valueOf(year), zeroCounters);
-      message("org.santfeliu.presence.web.resources.PresenceBundle", 
+      message("org.santfeliu.presence.web.resources.PresenceBundle",
         "createdCounters", new Object[]{created}, FacesMessage.SEVERITY_INFO);
       if (created > 0)
       {
@@ -258,7 +282,7 @@ public class AbsenceCountersBean extends WebBean implements Savable
       error(ex);
     }
   }
-  
+
   public List<SelectItem> getAbsenceTypeSelectItems()
   {
     List<SelectItem> selectItems = new ArrayList<SelectItem>();
@@ -285,7 +309,7 @@ public class AbsenceCountersBean extends WebBean implements Savable
     }
     return selectItems;
   }
- 
+
   public void previousYear()
   {
     year--;
@@ -306,8 +330,8 @@ public class AbsenceCountersBean extends WebBean implements Savable
 
   public Worker getWorker()
   {
-    PresenceMainBean presenceMainBean = 
+    PresenceMainBean presenceMainBean =
       (PresenceMainBean)getBean("presenceMainBean");
     return presenceMainBean.getWorker();
-  }  
+  }
 }
