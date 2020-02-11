@@ -3019,14 +3019,23 @@ input::-moz-focus-inner
 	margin: -3px 0 -3px 2px;
 }
 
-.ui-icon-carat-2-n-s 
-{
-	background-position: -128px 0;
-}
-
 .ui-icon 
 {
 	width: 16px;
 	height: 16px;
 }
 
+.ui-icon-carat-2-n-s 
+{
+	background-position: -128px 0;
+}
+
+.ui-icon-triangle-1-n 
+{
+	background-position: 0 -16px;
+}
+
+.ui-icon-triangle-1-s 
+{
+	background-position: -64px -16px;
+}
