@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.text;
@@ -42,14 +42,10 @@ import javax.swing.text.JTextComponent;
 
 /**
  *
- * @author blanquepa
+ * @author blanquepa, realor
  */
 public class SymbolHighlighter implements CaretListener
 {
-  private final static String SCRIPTLET = "SCRIPTLET";
-  private final static String CODE = "CODE";
-  private final static String NOBLOCK = "NOBLOCK";
-
   private JTextComponent component;
 
   private String openSymbols;
@@ -62,7 +58,7 @@ public class SymbolHighlighter implements CaretListener
   private String openTag;
   private String closeTag;
 
-  private List<CodeBlock> blocks;
+  private final List<Block> blocks = new ArrayList<Block>();
 
   public SymbolHighlighter(JTextComponent textComponent,
     String openSymbols, String closeSymbols)
@@ -74,31 +70,29 @@ public class SymbolHighlighter implements CaretListener
   public SymbolHighlighter(JTextComponent textComponent, String openSymbols,
     String closeSymbols, Color matchedColor, Color unmatchedColor)
   {
+    if (textComponent == null)
+      throw new RuntimeException("Text component is null");
+
     if (!isValidSymbols(openSymbols, closeSymbols))
       throw new RuntimeException("Invalid symbols");
 
+    this.component = textComponent;
     this.openSymbols = openSymbols;
     this.closeSymbols = closeSymbols;
 
-    if (textComponent != null)
-    {
-      this.component = textComponent;
-      component.getDocument().putProperty(
-        DefaultEditorKit.EndOfLineStringProperty, "\n");
-      textComponent.addCaretListener(this);
-    }
+    component.getDocument().putProperty(
+      DefaultEditorKit.EndOfLineStringProperty, "\n");
+
+    component.addCaretListener(this);
 
     try
     {
-      leftHighlighter =
-        textComponent.getHighlighter().addHighlight(0, 0,
-          new DefaultHighlighter.DefaultHighlightPainter(matchedColor));
-      rightHighlighter =
-        textComponent.getHighlighter().addHighlight(0, 0,
-          new DefaultHighlighter.DefaultHighlightPainter(matchedColor));
-      unmatchedHighlight =
-        textComponent.getHighlighter().addHighlight(0, 0,
-          new DefaultHighlighter.DefaultHighlightPainter(unmatchedColor));
+      leftHighlighter = textComponent.getHighlighter().addHighlight(0, 0,
+        new DefaultHighlighter.DefaultHighlightPainter(matchedColor));
+      rightHighlighter = textComponent.getHighlighter().addHighlight(0, 0,
+        new DefaultHighlighter.DefaultHighlightPainter(matchedColor));
+      unmatchedHighlight = textComponent.getHighlighter().addHighlight(0, 0,
+        new DefaultHighlighter.DefaultHighlightPainter(unmatchedColor));
     }
     catch (BadLocationException ex)
     {
@@ -117,17 +111,15 @@ public class SymbolHighlighter implements CaretListener
     return openTag != null && closeTag != null;
   }
 
-  private void updateHighlight(int pos)
-  {
-    if (hasScriptlets()) identifyCodeBlocks();
-    doHighlight(pos);
-  }
-
   private void doHighlight(int pos)
   {
+    if (hasScriptlets()) findBlocks();
+
     String text = component.getText();
 
-    char ch = (pos < text.length() && text.length() > 0) ? text.charAt(pos) : ' ';
+    char ch = (pos < text.length() && text.length() > 0) ? 
+      text.charAt(pos) : ' ';
+    
     int pairedPosition = -2;
 
     //Tries at caret position
@@ -181,8 +173,8 @@ public class SymbolHighlighter implements CaretListener
       if (t1.equals(t2))
       {
         char pch = text.charAt(j);
-        if (isOpenSymbol(pch) && ch == pch) num++;
-        else if (isCloseSymbol(pch) && match(ch, pch))
+        if (ch == pch) num++;
+        else if (match(ch, pch))
         {
           if (num == 0) matchPosition = j;
           else num--;
@@ -205,8 +197,8 @@ public class SymbolHighlighter implements CaretListener
       if (t1.equals(t2))
       {
         char pch = text.charAt(j);
-        if (isCloseSymbol(pch) && ch == pch) num++;
-        else if (isOpenSymbol(pch) && match(pch, ch))
+        if (ch == pch) num++;
+        else if (match(pch, ch))
         {
           if (num == 0) matchPosition = j;
           else num--;
@@ -217,73 +209,86 @@ public class SymbolHighlighter implements CaretListener
     return matchPosition;
   }
 
-  private void identifyCodeBlocks()
+  private void findBlocks()
   {
-    blocks = new ArrayList();
+    blocks.clear();
 
     int state = 0;
 
     String text = component.getText();
+    String currentTag;
 
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < text.length(); i++)
     {
       char ch = text.charAt(i);
-      switch(state)
+      switch (state)
       {
-        case 0:
-          if (ch == openTag.charAt(buffer.length()))
+        case 0: // inside CODE block (html)
+          buffer.append(ch);
+          currentTag = buffer.toString();
+          if (openTag.equals(currentTag))
           {
-            buffer.append(ch);
-            if (openTag.equals(buffer.toString()))
+            addBlock(Block.SCRIPTLET, i - openTag.length() + 1);
+            state = 1;
+            buffer.setLength(0);
+          }
+          else if (!openTag.startsWith(currentTag))
+          {
+            buffer.setLength(0);
+            if (ch == openTag.charAt(0))
             {
-              addBlock(SCRIPTLET, i - openTag.length() + 1);
-              state = 1;
-              buffer = new StringBuffer();
+              buffer.append(ch);
             }
           }
           break;
-        case 1:
-          if (ch == closeTag.charAt(buffer.length()))
+        case 1: // inside SCRIPTLET block (javascript)
+          buffer.append(ch);
+          currentTag = buffer.toString();
+          if (closeTag.equals(currentTag))
           {
-            buffer.append(ch);
-            if (closeTag.equals(buffer.toString()))
+            addBlock(Block.CODE, i);
+            state = 0;
+            buffer.setLength(0);
+          }
+          else if (!closeTag.startsWith(currentTag))
+          {
+            buffer.setLength(0);
+            if (ch == closeTag.charAt(0))
             {
-              addBlock(CODE, i);
-              state = 0;
-              buffer = new StringBuffer();
+              buffer.append(ch);
             }
           }
           break;
       }
     }
-    if (!blocks.isEmpty()) blocks.get(blocks.size() - 1).setEndPosition(text.length());
+    if (!blocks.isEmpty())
+    {
+      blocks.get(blocks.size() - 1).setEndPosition(text.length());
+    }
   }
 
   private String getBlockType(int position)
   {
-    if (blocks == null || blocks.isEmpty())
-      return NOBLOCK;
-
-    for (CodeBlock block : blocks)
+    for (Block block : blocks)
     {
-      if (block.getStartPosition() <= position && position <= block.getEndPosition())
+      if (block.getStartPosition() <= position &&
+          position <= block.getEndPosition())
         return block.getType();
     }
-    return NOBLOCK;
+    return Block.NOBLOCK;
   }
 
   private void addBlock(String type, int position)
   {
-    if (blocks == null || blocks.isEmpty())
+    if (blocks.isEmpty())
     {
-      blocks = new ArrayList<CodeBlock>();
-      blocks.add(new CodeBlock(CODE, 0));
+      blocks.add(new Block(Block.CODE, 0));
     }
 
     blocks.get(blocks.size() - 1).setEndPosition(position - 1);
 
-    blocks.add(new CodeBlock(type, position));
+    blocks.add(new Block(type, position));
   }
 
   private boolean isOpenSymbol(char ch)
@@ -369,18 +374,20 @@ public class SymbolHighlighter implements CaretListener
   @Override
   public void caretUpdate(CaretEvent e)
   {
-    updateHighlight(e.getDot());
+    doHighlight(e.getDot());
   }
 
-
-
-  private class CodeBlock
+  private class Block
   {
-    private String type;
+    private final static String SCRIPTLET = "SCRIPTLET";
+    private final static String CODE = "CODE";
+    private final static String NOBLOCK = "NOBLOCK";
+
+    private String type; // CODE or SCRIPLET
     private int startPosition;
     private int endPosition;
 
-    public CodeBlock(String type, int startPosition)
+    public Block(String type, int startPosition)
     {
       this.type = type;
       this.startPosition = startPosition;
