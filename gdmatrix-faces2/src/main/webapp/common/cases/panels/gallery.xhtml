@@ -10,19 +10,28 @@
       <sf:imagesCarousel id="carousel" imageId="#{panel.imageIds}"
         thumbnailWidth="#{panel.thumbnailWidth}"
         thumbnailHeight="#{panel.thumbnailHeight}" thumbnailCrop="auto"
-        thumbnailClickMode="#{thumbnailClickMode != null ? thumbnailClickMode : 'select'}"
+        thumbnailClickMode="#{panel.thumbnailClickMode != null ? 
+                              panel.thumbnailClickMode : 'select'}"
         thumbnailHoverMode="#{panel.thumbnailHoverMode}"
         mainImageWidth="#{panel.imageWidth}"
         mainImageHeight="#{panel.imageHeight}" mainImageCrop="auto"
-        mainImageClickMode="#{panel.mainImageClickMode != null ? mainImageClickMode : 'open'}"
+        mainImageClickMode="#{panel.mainImageClickMode != null ? 
+                              panel.mainImageClickMode : 'open'}"
         renderMainImage="#{panel.renderMainImage}"
         renderNavLinks="#{panel.renderNavLinks}"
         renderThumbnails="#{panel.renderThumbnails}"
-        thumbnailShiftMode="#{panel.thumbnailShiftMode != null ? thumbnailShiftMode : 'thumbnail'}"
+        thumbnailShiftMode="#{panel.thumbnailShiftMode != null ? 
+                              panel.thumbnailShiftMode : 'thumbnail'}"
         thumbnailCount="#{panel.thumbnailCount}"
         thumbnailWindow="#{panel.thumbnailWindow}"
         continueTime="#{panel.continueTime}"
-        transitionTime="#{panel.transitionTime}"  />
+        transitionTime="#{panel.transitionTime}" 
+        thumbnailPrevLabel="#{panel.thumbnailPrevLabel}" 
+        thumbnailNextLabel="#{panel.thumbnailNextLabel}" 
+        thumbnailPrevIconUrl="#{panel.thumbnailPrevIconUrl}" 
+        thumbnailNextIconUrl="#{panel.thumbnailNextIconUrl}" 
+        translator="#{userSessionBean.translator}"
+        translationGroup="#{userSessionBean.translationGroup}" />      
     </t:div>
 
 </html>

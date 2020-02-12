@@ -14,8 +14,7 @@ function ImagesCarousel(id)
   this.thumbnailClickMode = "";
   this.renderMainImage = false;
   this.renderThumbnails = false;
-  this.mainImageURLArray = [];
-  this.externalImageURLArray = [];
+  this.mainImageArray = [];  
   this.running = false;
 }
 
@@ -146,16 +145,19 @@ ImagesCarousel.prototype.changeImage = function(index)
   if (this.renderMainImage)
   {
     var mainImage = document.getElementById('imagesCarouselMainImage' + '_' + this.id);
+    var title = this.mainImageArray[index - 1].title;
     if (mainImage)
     {
-      var docURL = this.mainImageURLArray[index - 1];
+      var docURL = this.mainImageArray[index - 1].docURL;
       mainImage.setAttribute('src', docURL);    
+      mainImage.setAttribute('alt', title);
     }  
     var mainLink = document.getElementById('imagesCarouselMainLink' + '_' + this.id);
     if (mainLink)
     {
-      var externalURL = this.externalImageURLArray[index - 1];
+      var externalURL = this.mainImageArray[index - 1].externalURL;
       mainLink.setAttribute('href', externalURL);    
+      mainLink.setAttribute('title', title);
     }      
   }
   if (this.renderThumbnails)

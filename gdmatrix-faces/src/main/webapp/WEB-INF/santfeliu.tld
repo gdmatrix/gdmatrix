@@ -3117,6 +3117,30 @@
       <rtexprvalue>false</rtexprvalue>
       <description>Behavior on clicking the main image</description>
     </attribute>
+    <attribute>
+      <name>thumbnailPrevLabel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>thumbnailPrevLabel</description>
+    </attribute>
+    <attribute>
+      <name>thumbnailNextLabel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>thumbnailNextLabel</description>
+    </attribute>
+    <attribute>
+      <name>thumbnailPrevIconUrl</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>thumbnailPrevIconUrl</description>
+    </attribute>
+    <attribute>
+      <name>thumbnailNextIconUrl</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>thumbnailNextIconUrl</description>
+    </attribute>    
   </tag>
   <tag>
     <name>autocomplete</name>

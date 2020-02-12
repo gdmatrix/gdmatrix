@@ -41,6 +41,10 @@ public class HtmlImagesCarouselTag extends UIComponentTag
   private String thumbnailClickMode;
   private String mainImageClickMode;
   private String imageId;
+  private String thumbnailPrevLabel;
+  private String thumbnailNextLabel;
+  private String thumbnailPrevIconUrl;
+  private String thumbnailNextIconUrl;    
 
   public String getCaseId()
   {
@@ -300,6 +304,46 @@ public class HtmlImagesCarouselTag extends UIComponentTag
   public void setImageId(String imageId)
   {
     this.imageId = imageId;
+  }
+
+  public String getThumbnailPrevLabel()
+  {
+    return thumbnailPrevLabel;
+  }
+
+  public void setThumbnailPrevLabel(String thumbnailPrevLabel)
+  {
+    this.thumbnailPrevLabel = thumbnailPrevLabel;
+  }
+
+  public String getThumbnailNextLabel()
+  {
+    return thumbnailNextLabel;
+  }
+
+  public void setThumbnailNextLabel(String thumbnailNextLabel)
+  {
+    this.thumbnailNextLabel = thumbnailNextLabel;
+  }
+
+  public String getThumbnailPrevIconUrl()
+  {
+    return thumbnailPrevIconUrl;
+  }
+
+  public void setThumbnailPrevIconUrl(String thumbnailPrevIconUrl)
+  {
+    this.thumbnailPrevIconUrl = thumbnailPrevIconUrl;
+  }
+
+  public String getThumbnailNextIconUrl()
+  {
+    return thumbnailNextIconUrl;
+  }
+
+  public void setThumbnailNextIconUrl(String thumbnailNextIconUrl)
+  {
+    this.thumbnailNextIconUrl = thumbnailNextIconUrl;
   }
   
   @Override
@@ -590,7 +634,55 @@ public class HtmlImagesCarouselTag extends UIComponentTag
         else
           UIComponentTagUtils.setStringProperty(
             context, component, "mainImageClickMode", mainImageClickMode);      
-      }                        
+      }
+      if (thumbnailPrevLabel != null)
+      {
+        if (isValueReference(thumbnailPrevLabel))
+        {
+          ValueBinding vb = context.getApplication().createValueBinding(
+            thumbnailPrevLabel);
+          component.setValueBinding("thumbnailPrevLabel", vb);
+        }
+        else
+          UIComponentTagUtils.setStringProperty(
+            context, component, "thumbnailPrevLabel", thumbnailPrevLabel);      
+      }                  
+      if (thumbnailNextLabel != null)
+      {
+        if (isValueReference(thumbnailNextLabel))
+        {
+          ValueBinding vb = context.getApplication().createValueBinding(
+            thumbnailNextLabel);
+          component.setValueBinding("thumbnailNextLabel", vb);
+        }
+        else
+          UIComponentTagUtils.setStringProperty(
+            context, component, "thumbnailNextLabel", thumbnailNextLabel);      
+      }                  
+      if (thumbnailPrevIconUrl != null)
+      {
+        if (isValueReference(thumbnailPrevIconUrl))
+        {
+          ValueBinding vb = context.getApplication().createValueBinding(
+            thumbnailPrevIconUrl);
+          component.setValueBinding("thumbnailPrevIconUrl", vb);
+        }
+        else
+          UIComponentTagUtils.setStringProperty(
+            context, component, "thumbnailPrevIconUrl", thumbnailPrevIconUrl);      
+      }                  
+      if (thumbnailNextIconUrl != null)
+      {
+        if (isValueReference(thumbnailNextIconUrl))
+        {
+          ValueBinding vb = context.getApplication().createValueBinding(
+            thumbnailNextIconUrl);
+          component.setValueBinding("thumbnailNextIconUrl", vb);
+        }
+        else
+          UIComponentTagUtils.setStringProperty(
+            context, component, "thumbnailNextIconUrl", thumbnailNextIconUrl);      
+      }
     }
     catch (Exception ex)
     {
@@ -628,6 +720,10 @@ public class HtmlImagesCarouselTag extends UIComponentTag
     thumbnailClickMode = null;
     mainImageClickMode = null;
     imageId = null;
+    thumbnailPrevLabel = null;
+    thumbnailNextLabel = null;
+    thumbnailPrevIconUrl = null;
+    thumbnailNextIconUrl = null;    
   }
 
   @Override

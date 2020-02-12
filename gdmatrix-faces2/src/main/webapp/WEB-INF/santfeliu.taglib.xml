@@ -2091,6 +2091,22 @@
       <name>mainImageClickMode</name>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <name>thumbnailPrevLabel</name>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>thumbnailNextLabel</name>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>thumbnailPrevIconUrl</name>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>thumbnailNextIconUrl</name>
+      <type>java.lang.String</type>
+    </attribute>    
   </tag>
   
   <tag>

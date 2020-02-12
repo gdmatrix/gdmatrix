@@ -77,6 +77,10 @@ public class HtmlImagesCarousel extends UIComponentBase
   private List _docId;
   private Integer _thumbnailCount;
   private Integer _thumbnailWindow;
+  private String _thumbnailPrevLabel;
+  private String _thumbnailNextLabel;
+  private String _thumbnailPrevIconUrl;
+  private String _thumbnailNextIconUrl;  
   private Integer _transitionTime;
   private Integer _continueTime;  
   private Translator _translator;
@@ -166,12 +170,12 @@ public class HtmlImagesCarousel extends UIComponentBase
     ValueExpression ve = getValueExpression("thumbnailCount");
     if (ve != null)    
     {
-      try
+      Object number = ve.getValue(getFacesContext().getELContext());
+      if (number instanceof Number)
       {
-        String sNumber = (String)ve.getValue(getFacesContext().getELContext());      
-        return Integer.parseInt(sNumber);
-      }
-      catch (Exception ex) { }
+        int count = ((Number)number).intValue();
+        if (count > 0) return count;        
+      }      
     }
     return 10;
   }
@@ -187,12 +191,12 @@ public class HtmlImagesCarousel extends UIComponentBase
     ValueExpression ve = getValueExpression("thumbnailWindow");
     if (ve != null)    
     {
-      try
+      Object number = ve.getValue(getFacesContext().getELContext());
+      if (number instanceof Number)
       {
-        String sNumber = (String)ve.getValue(getFacesContext().getELContext());      
-        return Integer.parseInt(sNumber);
-      }
-      catch (Exception ex) { }
+        int count = ((Number)number).intValue();
+        if (count > 0) return count;        
+      }      
     }
     return 4;
   }
@@ -202,20 +206,72 @@ public class HtmlImagesCarousel extends UIComponentBase
     this._thumbnailWindow = _thumbnailWindow;
   }
 
+  public String getThumbnailPrevLabel()
+  {
+    if (_thumbnailPrevLabel != null) return _thumbnailPrevLabel;
+    ValueExpression ve = getValueExpression("thumbnailPrevLabel");
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : 
+      "Mostrar miniatura anterior";
+  }
+
+  public void setThumbnailPrevLabel(String _thumbnailPrevLabel)
+  {
+    this._thumbnailPrevLabel = _thumbnailPrevLabel;
+  }
+
+  public String getThumbnailNextLabel()
+  {
+    if (_thumbnailNextLabel != null) return _thumbnailNextLabel;
+    ValueExpression ve = getValueExpression("thumbnailNextLabel");
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : 
+      "Mostrar miniatura següent";
+  }
+
+  public void setThumbnailNextLabel(String _thumbnailNextLabel)
+  {
+    this._thumbnailNextLabel = _thumbnailNextLabel;
+  }
+
+  public String getThumbnailPrevIconUrl()
+  {
+    if (_thumbnailPrevIconUrl != null) return _thumbnailPrevIconUrl;
+    ValueExpression ve = getValueExpression("thumbnailPrevIconUrl");
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : 
+      null;
+  }
+
+  public void setThumbnailPrevIconUrl(String _thumbnailPrevIconUrl)
+  {
+    this._thumbnailPrevIconUrl = _thumbnailPrevIconUrl;
+  }
+
+  public String getThumbnailNextIconUrl()
+  {
+    if (_thumbnailNextIconUrl != null) return _thumbnailNextIconUrl;
+    ValueExpression ve = getValueExpression("thumbnailNextIconUrl");
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : 
+      null;
+  }
+
+  public void setThumbnailNextIconUrl(String _thumbnailNextIconUrl)
+  {
+    this._thumbnailNextIconUrl = _thumbnailNextIconUrl;
+  }
+  
   public int getTransitionTime()
   {
     if (_transitionTime != null) return _transitionTime.intValue();
     ValueExpression ve = getValueExpression("transitionTime");
-    if (ve != null)    
+    if (ve == null) return 0;
+    else
     {
-      try
+      Object number = ve.getValue(getFacesContext().getELContext());
+      if (number instanceof Number)
       {
-        String sNumber = (String)ve.getValue(getFacesContext().getELContext());      
-        return Integer.parseInt(sNumber);
+        return ((Number)number).intValue();
       }
-      catch (Exception ex) { }
+      else return 0;
     }
-    return 0;           
   }
 
   public void setTransitionTime(int _transitionTime)
@@ -227,16 +283,16 @@ public class HtmlImagesCarousel extends UIComponentBase
   {
     if (_continueTime != null) return _continueTime.intValue();
     ValueExpression ve = getValueExpression("continueTime");
-    if (ve != null)    
+    if (ve == null) return 0;
+    else
     {
-      try
+      Object number = ve.getValue(getFacesContext().getELContext());
+      if (number instanceof Number)
       {
-        String sNumber = (String)ve.getValue(getFacesContext().getELContext());      
-        return Integer.parseInt(sNumber);
+        return ((Number)number).intValue();
       }
-      catch (Exception ex) { }
+      else return 0;
     }
-    return 0;           
   }
 
   public void setContinueTime(int _continueTime)
@@ -566,7 +622,7 @@ public class HtmlImagesCarousel extends UIComponentBase
         }
         if (isRenderNavLinks() && itemList.size() > 1)
         {
-          encodeNavLinks(writer);
+          encodeNavLinks(writer, translator);
         }        
         encodeJavaScriptInit(writer, itemList);
         writer.endElement("div");
@@ -583,7 +639,7 @@ public class HtmlImagesCarousel extends UIComponentBase
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[26];
+    Object values[] = new Object[30];
     values[0] = super.saveState(context);
     values[1] = _caseId;
     values[2] = _newId;
@@ -610,6 +666,10 @@ public class HtmlImagesCarousel extends UIComponentBase
     values[23] = _thumbnailClickMode;
     values[24] = _mainImageClickMode;
     values[25] = _imageId;
+    values[26] = _thumbnailPrevLabel;
+    values[27] = _thumbnailNextLabel;
+    values[28] = _thumbnailPrevIconUrl;
+    values[29] = _thumbnailNextIconUrl;      
     return values;
   }
 
@@ -643,6 +703,10 @@ public class HtmlImagesCarousel extends UIComponentBase
     _thumbnailClickMode = (String)values[23];
     _mainImageClickMode = (String)values[24];   
     _imageId = (List)values[25];
+    _thumbnailPrevLabel = (String)values[26];
+    _thumbnailNextLabel = (String)values[27];
+    _thumbnailPrevIconUrl = (String)values[28];
+    _thumbnailNextIconUrl = (String)values[29];
   }
 
 //Private
@@ -654,20 +718,19 @@ public class HtmlImagesCarousel extends UIComponentBase
       "org.santfeliu.faces.imagescarousel.resources.ImagesCarouselBundle", locale);     
     writer.startElement("div", this);
     writer.writeAttribute("class", "mainImageArea", null);
+    String linkDescription = getMainImageItemTitle(item, translator, bundle);
     if ("open".equals(getMainImageClickMode()))
     {      
       writer.startElement("a", this);
       writer.writeAttribute("id", "imagesCarouselMainLink" + "_" + getId(), null);
       writer.writeAttribute("href", item.getURL(), null);
       writer.writeAttribute("target", "_blank", null);
+      writer.writeAttribute("title", linkDescription, null);
     }    
     writer.startElement("img", this);
     writer.writeAttribute("id", "imagesCarouselMainImage" + "_" + getId(), null);
     writer.writeAttribute("src", item.getMainURL(), null);
-    
-    String imageAltText = ("open".equals(getMainImageClickMode()) ? 
-      bundle.getString("openNewTab") : getTranslation(item.getDescription(), translator));   
-    writer.writeAttribute("alt", imageAltText, null);    
+    writer.writeAttribute("alt", linkDescription, null);    
     writer.endElement("img");
     if ("open".equals(getMainImageClickMode()))
     {  
@@ -678,48 +741,81 @@ public class HtmlImagesCarousel extends UIComponentBase
 
   private void encodeThumbnailsArea(ResponseWriter writer, Translator translator, List<ImageItem> itemList) throws IOException
   {
+    Locale locale = getFacesContext().getViewRoot().getLocale();
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.faces.imagescarousel.resources.ImagesCarouselBundle", 
+      locale);    
+    String openNewWindowLabel = 
+      MatrixConfig.getProperty("org.santfeliu.web.OpenNewWindowLabel");        
+    openNewWindowLabel = getTranslation(openNewWindowLabel, translator);
     writer.startElement("div", this);
     writer.writeAttribute("class", "thumbnailsArea", null);
     int index = 1;
     for (ImageItem item : itemList)
     {
-      writer.startElement("div", this);
-      writer.writeAttribute("id", "imagesCarouselThumbnailDiv" + index + "_" + getId(), null);      
-      writer.writeAttribute("class", "thumbnail", null);
-      writer.writeAttribute("onmouseover", getJSVarName() + ".thumbnailMouseOver(" + index + ");", null);
-      writer.writeAttribute("onmouseout", getJSVarName() + ".thumbnailMouseOut();", null);
-      writer.writeAttribute("onclick", getJSVarName() + ".thumbnailMouseClick(" + index + ");", null);      
+      String linkDescription = getThumbnailItemTitle(item, translator, bundle, 
+        openNewWindowLabel, index);
+      writer.startElement("a", this);
+      writer.writeAttribute("id", "imagesCarouselThumbnailDiv" + index + "_" + 
+        getId(), null);      
+      writer.writeAttribute("class", "thumbnail", null);      
+      writer.writeAttribute("title", linkDescription, null);
+      writer.writeAttribute("onmouseover", getJSVarName() + 
+        ".thumbnailMouseOver(" + index + ");", null);
+      writer.writeAttribute("onfocus", getJSVarName() + 
+        ".thumbnailMouseOver(" + index + ");", null);
+      writer.writeAttribute("onmouseout", getJSVarName() + 
+        ".thumbnailMouseOut();", null);
+      writer.writeAttribute("onblur", getJSVarName() + 
+        ".thumbnailMouseOut();", null);
+      writer.writeAttribute("onclick", getJSVarName() + 
+        ".thumbnailMouseClick(" + index + ");", null);
       if ("selectAndOpen".equals(getThumbnailClickMode()))
       {
-        writer.startElement("a", this);
         writer.writeAttribute("href", item.getURL(), null);
         writer.writeAttribute("target", "_blank", null);
       }
       writer.startElement("img", this);
-      writer.writeAttribute("id", "imagesCarouselThumbnailImg" + index + "_" + getId(), null);
+      writer.writeAttribute("id", "imagesCarouselThumbnailImg" + index + "_" + 
+        getId(), null);
       writer.writeAttribute("src", item.getThumbnailURL(), null);      
-      writer.writeAttribute("alt", getTranslation(item.getDescription(), translator), null);
-      writer.endElement("img"); 
-      if ("selectAndOpen".equals(getThumbnailClickMode()))
-      {  
-        writer.endElement("a");
-      }
-      writer.endElement("div");
+      writer.writeAttribute("alt", linkDescription, null);
+      writer.endElement("img");
+      writer.endElement("a");
       index++;
     }
     writer.endElement("div");  
   }
   
-  private void encodeNavLinks(ResponseWriter writer) throws Exception
-  {
-    writer.startElement("div", this);
-    writer.writeAttribute("class", "goLeft", null);
-    writer.writeAttribute("onclick", getJSVarName() + ".goLeft();", null);    
-    writer.endElement("div");
-    writer.startElement("div", this);
-    writer.writeAttribute("class", "goRight", null);
-    writer.writeAttribute("onclick", getJSVarName() + ".goRight();", null);    
-    writer.endElement("div");
+  private void encodeNavLinks(ResponseWriter writer, Translator translator) 
+    throws Exception
+  {    
+    if (getThumbnailPrevIconUrl() != null)
+    {
+      writer.startElement("a", this);
+      writer.writeAttribute("class", "goLeft", null);
+      String prevLabel = getTranslation(getThumbnailPrevLabel(), translator);
+      writer.writeAttribute("title", prevLabel, null);     
+      writer.writeAttribute("onclick", getJSVarName() + ".goLeft();", null);    
+      writer.startElement("img", this);
+      writer.writeAttribute("src", getThumbnailPrevIconUrl(), null);
+      writer.writeAttribute("alt", prevLabel, null);
+      writer.endElement("img");
+      writer.endElement("a");
+    }
+    if (getThumbnailNextIconUrl() != null)
+    {
+      writer.startElement("a", this);
+      writer.writeAttribute("class", "goRight", null);
+      String nextLabel = getTranslation(getThumbnailNextLabel(), translator);
+      writer.writeAttribute("title", nextLabel, null);         
+      writer.writeAttribute("onclick", getJSVarName() + ".goRight();", null);    
+      writer.startElement("img", this);
+      writer.writeAttribute("src", getThumbnailNextIconUrl(), null);
+      writer.writeAttribute("alt", nextLabel, null);
+      writer.endElement("img");    
+      writer.endElement("a");
+    }
   }
   
   private void encodeJavaScriptInit(ResponseWriter writer, List<ImageItem> itemList) throws Exception
@@ -741,18 +837,23 @@ public class HtmlImagesCarousel extends UIComponentBase
     writer.writeText(getJSVarName() + ".mainImageClickMode = '" + getMainImageClickMode() + "';", null);    
     writer.writeText(getJSVarName() + ".renderMainImage = " + String.valueOf(isRenderMainImage()) + ";", null);    
     writer.writeText(getJSVarName() + ".renderThumbnails = " + String.valueOf(isRenderThumbnails()) + ";", null);    
-    writer.writeText(getJSVarName() + ".mainImageURLArray = [];", null);
-    writer.writeText(getJSVarName() + ".externalImageURLArray = [];", null);
-    //writer.writeText("var imagesCarouselThumbnailURLArray = [];", null);
+    writer.writeText(getJSVarName() + ".mainImageArray = [];", null);
     int i = 0;
+    Locale locale = getFacesContext().getViewRoot().getLocale();
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.faces.imagescarousel.resources.ImagesCarouselBundle", 
+      locale);    
     for (ImageItem item : itemList)
     {
-      writer.writeText(getJSVarName() + ".mainImageURLArray[" + i + "] = '" +
-        item.getMainURL() + "';", null);
-      writer.writeText(getJSVarName() + ".externalImageURLArray[" + i + "] = '" +
-        item.getURL() + "';", null);
-//      writer.writeText("imagesCarouselThumbnailURLArray[" + i + "] = '" +
-//        item.getThumbnailURL() + "';", null);
+      writer.writeText(getJSVarName() + ".mainImageArray[" + i + 
+        "] = {};", null);
+      writer.writeText(getJSVarName() + ".mainImageArray[" + i + 
+        "].docURL = '" + item.getMainURL() + "';", null);
+      writer.writeText(getJSVarName() + ".mainImageArray[" + i + 
+        "].externalURL = '" + item.getURL() + "';", null);
+      writer.writeText(getJSVarName() + ".mainImageArray[" + i + 
+        "].title = '" + getMainImageItemTitle(item, getTranslator(), bundle) + 
+        "';", null);      
       i++;
     }
     writer.writeText(getJSVarName() + ".changeImage(1);", null);
@@ -899,7 +1000,14 @@ public class HtmlImagesCarousel extends UIComponentBase
         itemList.addAll(getDocIdImages(docIds));
     }
 
-    return itemList;    
+    if (itemList.size() <= getThumbnailCount())
+    {    
+      return itemList;    
+    }
+    else
+    {
+      return itemList.subList(0, getThumbnailCount());
+    }
   }
   
   private boolean isImage(CaseDocumentView cdv)
@@ -955,6 +1063,32 @@ public class HtmlImagesCarousel extends UIComponentBase
     {
       return "";
     }    
+  }
+  
+  private String getMainImageItemTitle(ImageItem item, Translator translator, 
+    ResourceBundle bundle) throws IOException
+  {
+    String title = getTranslation(item.getDescription(), translator).trim();
+    if ("open".equals(getMainImageClickMode()))
+    {
+      title = bundle.getString("openNewTab") + 
+        (title.isEmpty() ? "" : (": " + title));
+    }
+    return title;    
+  }
+  
+  private String getThumbnailItemTitle(ImageItem item, Translator translator, 
+    ResourceBundle bundle, String openNewWindowLabel, int index) 
+    throws IOException
+  {
+    String title = getTranslation(item.getDescription(), translator).trim();
+    title = bundle.getString("selectImage") + " " + index + 
+      (title.isEmpty() ? "" : (": " + title));
+    if ("selectAndOpen".equals(getThumbnailClickMode()))
+    {      
+      title = title + " (" + openNewWindowLabel + ")";  
+    }    
+    return title;
   }
   
   class ImageItem

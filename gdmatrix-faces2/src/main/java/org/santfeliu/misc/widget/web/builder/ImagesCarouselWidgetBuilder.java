@@ -51,6 +51,10 @@ public class ImagesCarouselWidgetBuilder extends WidgetBuilder
   private static final String DEFAULT_THUMBNAIL_SHIFT_MODE = "thumbnail";  
   private static final String DEFAULT_THUMBNAIL_HOVER_MODE = "select";  
   private static final String DEFAULT_THUMBNAIL_CLICK_MODE = "selectAndOpen";  
+  private static final String DEFAULT_THUMBNAIL_PREV_LABEL = 
+    "Mostrar miniatura anterior";
+  private static final String DEFAULT_THUMBNAIL_NEXT_LABEL = 
+    "Mostrar miniatura següent";  
   private static final String DEFAULT_MAIN_IMAGE_CLICK_MODE = "open";  
   private static final String DEFAULT_MAIN_IMAGE_WIDTH = "0";
   private static final String DEFAULT_MAIN_IMAGE_HEIGHT = "0";
@@ -171,6 +175,20 @@ public class ImagesCarouselWidgetBuilder extends WidgetBuilder
       String thumbnailCrop = (String)properties.get("thumbnailCrop");
       if (thumbnailCrop == null) thumbnailCrop = DEFAULT_THUMBNAIL_CROP;
       component.setThumbnailCrop(thumbnailCrop);
+      String thumbnailPrevLabel = (String)properties.get("thumbnailPrevLabel");
+      if (thumbnailPrevLabel == null) 
+        thumbnailPrevLabel = DEFAULT_THUMBNAIL_PREV_LABEL;
+      component.setThumbnailPrevLabel(thumbnailPrevLabel);
+      String thumbnailNextLabel = (String)properties.get("thumbnailNextLabel");
+      if (thumbnailNextLabel == null) 
+        thumbnailNextLabel = DEFAULT_THUMBNAIL_NEXT_LABEL;
+      component.setThumbnailNextLabel(thumbnailNextLabel);
+      String thumbnailPrevIconUrl = 
+        (String)properties.get("thumbnailPrevIconUrl");
+      component.setThumbnailPrevIconUrl(thumbnailPrevIconUrl);
+      String thumbnailNextIconUrl = 
+        (String)properties.get("thumbnailNextIconUrl");
+      component.setThumbnailNextIconUrl(thumbnailNextIconUrl);
 
       //render properties
       String renderMainImage = (String)properties.get("renderMainImage");

@@ -68,9 +68,14 @@ public class GalleryDetailPanel extends DetailPanel
   private static final String RENDER_MAIN_IMAGE = "renderMainImage";
   private static final String RENDER_NAV_LINKS = "renderNavLinks";
   private static final String RENDER_THUMBNAILS = "renderThumbnails";
+  private static final String THUMBNAIL_CLICK_MODE = "thumbnailClickMode";
   private static final String THUMBNAIL_SHIFT_MODE = "thumbnailShiftMode";
   private static final String THUMBNAIL_COUNT = "thumbnailCount";
   private static final String THUMBNAIL_WINDOW = "thumbnailWindow";
+  private static final String THUMBNAIL_PREV_LABEL = "thumbnailPrevLabel";
+  private static final String THUMBNAIL_NEXT_LABEL = "thumbnailNextLabel";
+  private static final String THUMBNAIL_PREV_ICON_URL = "thumbnailPrevIconUrl";
+  private static final String THUMBNAIL_NEXT_ICON_URL =  "thumbnailNextIconUrl";
 
 
   @Override
@@ -230,16 +235,42 @@ public class GalleryDetailPanel extends DetailPanel
     return getProperty(THUMBNAIL_SHIFT_MODE);
   }
 
+  public String getThumbnailClickMode()
+  {
+    return getProperty(THUMBNAIL_CLICK_MODE);
+  }
+
   public String getThumbnailWindow()
   {
-    return getProperty(THUMBNAIL_WINDOW);
+    return getProperty(THUMBNAIL_WINDOW);    
   }
 
   public String getThumbnailCount()
   {
-    return getProperty(THUMBNAIL_COUNT);
+    return getProperty(THUMBNAIL_COUNT);    
   }
 
+  public String getThumbnailPrevLabel()
+  {
+    String property = getProperty(THUMBNAIL_PREV_LABEL);
+    return property != null ? property : "Mostrar miniatura anterior";
+  }
+
+  public String getThumbnailNextLabel()
+  {
+    String property = getProperty(THUMBNAIL_NEXT_LABEL);
+    return property != null ? property : "Mostrar miniatura següent";
+  }
+
+  public String getThumbnailPrevIconUrl()
+  {
+    return getProperty(THUMBNAIL_PREV_ICON_URL);
+  }
+
+  public String getThumbnailNextIconUrl()
+  {
+    return getProperty(THUMBNAIL_NEXT_ICON_URL);
+  }
 
   @Override
   public boolean isRenderContent()
