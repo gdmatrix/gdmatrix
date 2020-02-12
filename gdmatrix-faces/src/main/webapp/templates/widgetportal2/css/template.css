@@ -257,7 +257,7 @@ body.webfont textarea
 .topBar #loginPanel div.subHeaderLine
 {
   font-size: 11px;
-  line-height: 13px !important;
+  line-height: 13px;
   text-align: justify !important;
   margin-bottom: 2px;
 }
@@ -2602,12 +2602,12 @@ h6.element-invisible
 
 .newsCarousel .bottomLayer .navPanel a
 {
-  line-height: 20px !important;
+  line-height: 20px;
 }
 
 .newsCarousel .bottomLayer .moreNews a
 {
-  line-height: 20px !important;
+  line-height: 20px;
 }
 
 /* NOUS BANNER WIDGETS */
