@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.model.SelectItem;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.AgendaManagerPort;
 import org.matrix.agenda.Attendant;
 import org.matrix.agenda.AttendantFilter;
@@ -171,7 +172,7 @@ public class AttendantsBean extends TypifiedPageBean
   {
     try
     {     
-      if (attendant == null || attendant.getAttendantId() == null)
+      if (attendant == null || StringUtils.isBlank(attendant.getPersonId()))
         throw new Exception("ATTENDANT_MUST_BE_SELECTED");
     
       String eventId = getObjectId();
