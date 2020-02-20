@@ -2472,6 +2472,30 @@ label.element-invisible
 
 /* Widget container pagination */
 
+.widgetContainerPaginator
+{
+  height: 18px;
+}
+
+.widgetContainerPaginator > a
+{
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  margin-right: 6px;
+  float: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;  
+}
+
+.widgetContainerPaginator .pagePrev,
+.widgetContainerPaginator .pageNext
+{
+  display: none;    
+}
+
 .interiorLayout .widget_container .widgetContainerWindow,
 .portalLayout .widget_container .widgetContainerWindow
 {

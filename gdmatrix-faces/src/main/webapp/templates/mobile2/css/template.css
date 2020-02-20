@@ -872,6 +872,31 @@
 
 /* Widget container pagination */
 
+.mobile .widgetContainerPaginator
+{
+  height: 18px;
+  margin-top: 6px;
+}
+
+.mobile .widgetContainerPaginator > a
+{
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  margin-right: 6px;
+  float: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;  
+}
+
+.mobile .widgetContainerPaginator .pagePrev,
+.mobile .widgetContainerPaginator .pageNext
+{
+  display: none;    
+}
+
 .mobile .widget_container .widgetContainerWindow
 {
   overflow: hidden;

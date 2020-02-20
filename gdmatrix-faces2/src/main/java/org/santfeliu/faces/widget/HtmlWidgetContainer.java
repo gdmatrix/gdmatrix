@@ -359,7 +359,7 @@ public class HtmlWidgetContainer extends UIPanel
     ResponseWriter writer = context.getResponseWriter();    
     if (isRenderPaginator()) 
     {
-      encodePaginator(writer);
+      encodePaginator(writer, getTranslator());
       writer.startElement("div", this);
       writer.writeAttribute("id", getJSVarName() + "_window", null); 
       writer.writeAttribute("class", "widgetContainerWindow", null);
@@ -791,7 +791,8 @@ public class HtmlWidgetContainer extends UIPanel
     writer.endElement("script");
   }
   
-  private void encodePaginator(ResponseWriter writer) throws IOException
+  private void encodePaginator(ResponseWriter writer, Translator translator) 
+    throws IOException
   {
     writer.startElement("script", this);
     writer.writeAttribute("type", "text/javascript", null);
@@ -801,26 +802,32 @@ public class HtmlWidgetContainer extends UIPanel
     writer.startElement("div", this);
     writer.writeAttribute("class", "widgetContainerPaginator", null);
     
-    writer.startElement("div", this);
+    writer.startElement("a", this);
     writer.writeAttribute("id", getJSVarName() + "_prev", null);
+    writer.writeAttribute("title", 
+      getTranslation(getPagePrevLabel(), translator), null);    
     writer.writeAttribute("class", "pagePrev", null);
     writer.writeAttribute("onclick", getJSVarName() + ".prevPageSelect();", null);    
-    writer.endElement("div");
+    writer.endElement("a");
     
     for (int i = 0; i < getPageCount(); i++)
     {
-      writer.startElement("div", this);
+      writer.startElement("a", this);
       writer.writeAttribute("id", getJSVarName() + "_point_" + i, null);
+      writer.writeAttribute("title", 
+        getTranslation(getPageLabel(i + 1), translator), null);
       writer.writeAttribute("class", "point", null);
       writer.writeAttribute("onclick", getJSVarName() + ".selectPage(" + i + ");", null);
-      writer.endElement("div");
+      writer.endElement("a");
     }
     
-    writer.startElement("div", this);
+    writer.startElement("a", this);
     writer.writeAttribute("id", getJSVarName() + "_next", null);
+    writer.writeAttribute("title", 
+      getTranslation(getPageNextLabel(), translator), null);
     writer.writeAttribute("class", "pageNext", null);
     writer.writeAttribute("onclick", getJSVarName() + ".nextPageSelect();", null);        
-    writer.endElement("div");
+    writer.endElement("a");
     
     writer.endElement("div");
   }
@@ -828,6 +835,46 @@ public class HtmlWidgetContainer extends UIPanel
   private String getJSVarName()
   {
     return getId();
+  }
+  
+  private String getTranslation(String text, Translator translator) 
+    throws IOException
+  {
+    if (text != null)
+    {      
+      if (translator != null)
+      {
+        String userLanguage = FacesUtils.getViewLanguage();
+        String translationGroup = getTranslationGroup();
+        StringWriter sw = new StringWriter();
+        translator.translate(new StringReader(text), sw, "text/plain",
+          userLanguage, translationGroup);
+        return sw.toString();
+      }
+      else
+      {
+        return text;
+      }
+    }
+    else
+    {
+      return "";
+    }    
+  }  
+  
+  private String getPagePrevLabel() 
+  {
+    return "Mostrar anterior pàgina de widgets";
+  }
+
+  private String getPageLabel(int pageNum) 
+  {
+    return "Mostrar pàgina de widgets " + pageNum;
+  }
+
+  private String getPageNextLabel() 
+  {
+    return "Mostrar següent pàgina de widgets";
   }
   
   // INDEXED PROPERTIES METHODS
