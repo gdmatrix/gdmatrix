@@ -30,16 +30,18 @@
         document.getElementById(divId).style.display='block';
         if (divId == 'profileDiv')
         {
-          document.getElementById('showProfileLinkBg').className='showProfileLinkBg selected';
+          document.getElementById('showProfileLinkBg').className = 'showProfileLinkBg selected';
+          document.getElementsByClassName('showProfileLink')[0].title = '${webBundle.hideProfilePanel}';             
           hideTopDiv('searchDiv');
         }
         else if (divId == 'searchDiv')
         {
-          document.getElementById('showSearchLink').className='showSearchLink selected';
+          document.getElementsByClassName('showSearchLink')[0].className = 'showSearchLink selected';
+          document.getElementsByClassName('showSearchLink')[0].title = '${webBundle.hideGlobalSearch}';             
           hideTopDiv('profileDiv');
         }
         setCookieValue('mobile2_' + divId, 'true');
-      }     
+      }
       
       function hideTopDiv(divId)
       {
@@ -47,10 +49,12 @@
         if (divId == 'profileDiv')
         {
           document.getElementById('showProfileLinkBg').className='showProfileLinkBg';        
+          document.getElementsByClassName('showProfileLink')[0].title = '${webBundle.showProfilePanel}';             
         }
         else if (divId == 'searchDiv')
         {
-          document.getElementById('showSearchLink').className='showSearchLink';        
+          document.getElementsByClassName('showSearchLink')[0].className='showSearchLink';        
+          document.getElementsByClassName('showSearchLink')[0].title = '${webBundle.showGlobalSearch}';             
         }
         setCookieValue('mobile2_' + divId, 'false');
       }
@@ -95,7 +99,12 @@
       function showSiblingsMenuDiv()
       {
         hideChildrenMenuDiv();
-        document.getElementById('siblingsMenuDiv').style.display='block';
+        if (document.getElementById('siblingsMenuDiv') != null)
+        {
+          document.getElementById('siblingsMenuDiv').style.display='block';
+          document.getElementsByClassName('showSiblingsMenuLink')[0].title = 
+             '${webBundle.hideSiblingsMenu}';
+        }
         if (document.getElementById('interiorContainerDiv') != null)
         {
           document.getElementById('interiorContainerDiv').style.display='block';
@@ -106,7 +115,12 @@
       
       function hideSiblingsMenuDiv()
       {
-        document.getElementById('siblingsMenuDiv').style.display='none';
+        if (document.getElementById('siblingsMenuDiv') != null)
+        {      
+          document.getElementById('siblingsMenuDiv').style.display='none';
+          document.getElementsByClassName('showSiblingsMenuLink')[0].title = 
+             '${webBundle.showSiblingsMenu}';
+        }
         if (document.getElementById('interiorContainerDiv') != null)
         {
           document.getElementById('interiorContainerDiv').style.display='none';
@@ -130,19 +144,32 @@
       function showChildrenMenuDiv()
       {
         hideSiblingsMenuDiv();
-        document.getElementById('childrenMenuDiv').style.display='block';
+        if (document.getElementById('childrenMenuDiv') != null)
+        {        
+          document.getElementById('childrenMenuDiv').style.display='block';
+          document.getElementsByClassName('showChildrenMenuLink')[0].title = 
+             '${webBundle.hideChildrenMenu}';
+        }
         if (document.getElementById('interiorContainerDiv') != null)
         {        
           document.getElementById('interiorContainerDiv').style.display='block';
         }
-        document.getElementById('showChildrenMenuDiv').className='showChildrenMenuDiv open';
+        if (document.getElementById('showChildrenMenuDiv'))
+        {
+          document.getElementById('showChildrenMenuDiv').className='showChildrenMenuDiv open';
+        }
         document.getElementById('titleBar').className='titleBar open';
         showChildrenMenu = true;
       }
       
       function hideChildrenMenuDiv()
       {
-        document.getElementById('childrenMenuDiv').style.display='none';
+        if (document.getElementById('childrenMenuDiv') != null)
+        {
+          document.getElementById('childrenMenuDiv').style.display='none';
+          document.getElementsByClassName('showChildrenMenuLink')[0].title = 
+             '${webBundle.showChildrenMenu}';                              
+        }
         if (document.getElementById('interiorContainerDiv') != null)
         {        
           document.getElementById('interiorContainerDiv').style.display='none';
@@ -166,20 +193,23 @@
     
     <t:div styleClass="topBar">    
       <t:div styleClass="logoDiv">
-        <h:outputLink styleClass="logoLink"
+        <sf:outputLink styleClass="logoLink"
           value="#{userSessionBean.selectedMenuItem.properties['mobile2.pantoneUrl']}"
           title="#{userSessionBean.selectedMenuItem.properties['mobile2.pantoneTitle'] == null ?
-            '' : userSessionBean.selectedMenuItem.properties['mobile2.pantoneTitle']}">          
-        </h:outputLink>
+            'Inici' : userSessionBean.selectedMenuItem.properties['mobile2.pantoneTitle']}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}">          
+        </sf:outputLink>
       </t:div>
       <t:div id="showProfileLinkBg" forceId="true" styleClass="showProfileLinkBg">
-        <t:div id="showProfileLink" forceId="true" styleClass="showProfileLink#{userSessionBean.anonymousUser ? '' : ' logged'}"
-               onclick="switchTopDiv('profileDiv')">
-        </t:div>              
+        <h:outputLink id="showProfileLink" title="#{webBundle.showProfilePanel}"
+                       styleClass="showProfileLink#{userSessionBean.anonymousUser ? '' : ' logged'}"
+                       onclick="switchTopDiv('profileDiv')" value="#">
+        </h:outputLink>
       </t:div>
-      <t:div id="showSearchLink" forceId="true" styleClass="showSearchLink"
-             onclick="switchTopDiv('searchDiv')">              
-      </t:div>
+      <h:outputLink id="showSearchLink" title="#{webBundle.showGlobalSearch}" styleClass="showSearchLink"
+                     onclick="switchTopDiv('searchDiv')" value="#">              
+      </h:outputLink>
     </t:div>
 
     <t:div id="profileDiv" forceId="true" styleClass="profileDiv" style="display:none;">    
@@ -286,44 +316,49 @@
          translationGroup="#{userSessionBean.translationGroup}" />
     </t:div>
 
-    <t:div id="titleBar" styleClass="titleBar" forceId="true">
+    <t:div id="titleBar" styleClass="titleBar" forceId="true">      
       <t:div styleClass="moveUpDiv">
         <t:div id="moveUpMenuLink" styleClass="titleMenuLink" forceId="true"             
-               rendered="#{(not (userSessionBean.selectedMenuItem.parentWithAction.mid == null and 
-                           userSessionBean.selectedMenuItem.directProperties['mobile2.moveUpMid'] == null))}">
+             rendered="#{(not (userSessionBean.selectedMenuItem.parentWithAction.mid == null and 
+                         userSessionBean.selectedMenuItem.directProperties['mobile2.moveUpMid'] == null))}">
           <h:outputLink value="/go.faces?xmid=#{userSessionBean.selectedMenuItem.directProperties['mobile2.moveUpMid'] == null ? 
-                                                userSessionBean.selectedMenuItem.parentWithAction.mid : 
-                                                userSessionBean.selectedMenuItem.directProperties['mobile2.moveUpMid']}">
+                                              userSessionBean.selectedMenuItem.parentWithAction.mid : 
+                                                userSessionBean.selectedMenuItem.directProperties['mobile2.moveUpMid']}"
+                         title="#{webBundle.moveUp}">
           </h:outputLink>
-        </t:div>        
+        </t:div>
       </t:div>
       <t:div styleClass="titleDiv">
-        <t:div id="showSiblingsMenuLink" forceId="true"
+        <h:outputLink id="showSiblingsMenuLink" value="#"
+                       styleClass="showSiblingsMenuLink"
                onclick="switchSiblingsMenuDiv()"
                rendered="#{userSessionBean.selectedMenuItem.rendered and ((userSessionBean.selectedMenuItem.properties.interiorWidgetRender == 'true' and userSessionBean.selectedMenuItem.properties.interiorWidgetLayout != null) or 
-                (userSessionBean.selectedMenuItem.anyRenderedSibling))}">
+                (userSessionBean.selectedMenuItem.anyRenderedSibling))}"
+               title="#{webBundle.showSiblingsMenu}">
           <t:div styleClass="showSiblingsIcon"></t:div>
-            <sf:outputText value="#{userSessionBean.selectedMenuItem.label}"
-              translator="#{userSessionBean.translator}"
-              translationGroup="#{userSessionBean.translationGroup}" />
-        </t:div>
-        <sf:outputText value="#{userSessionBean.selectedMenuItem.label}"
-          translator="#{userSessionBean.translator}"
-        translationGroup="#{userSessionBean.translationGroup}" 
-        rendered="#{not (userSessionBean.selectedMenuItem.rendered and ((userSessionBean.selectedMenuItem.properties.interiorWidgetRender == 'true' and userSessionBean.selectedMenuItem.properties.interiorWidgetLayout != null) or 
-                         (userSessionBean.selectedMenuItem.anyRenderedSibling)))}" />
+          <sf:outputText value="#{userSessionBean.selectedMenuItem.label}"
+            translator="#{userSessionBean.translator}"
+            translationGroup="#{userSessionBean.translationGroup}" />
+        </h:outputLink>
+        <sf:outputText value="#{userSessionBean.selectedMenuItem.label}"      
+                       translator="#{userSessionBean.translator}"
+                       translationGroup="#{userSessionBean.translationGroup}" 
+                       rendered="#{not (userSessionBean.selectedMenuItem.rendered and ((userSessionBean.selectedMenuItem.properties.interiorWidgetRender == 'true' and userSessionBean.selectedMenuItem.properties.interiorWidgetLayout != null) or 
+                                         (userSessionBean.selectedMenuItem.anyRenderedSibling)))}" />
       </t:div>
       <t:div id="showChildrenMenuDiv" forceId="true" styleClass="showChildrenMenuDiv">        
-        <t:div id="showChildrenMenuLink" styleClass="titleMenuLink" forceId="true"
+        <h:outputLink value="#" id="showChildrenMenuLink" styleClass="showChildrenMenuLink titleMenuLink"
                onclick="switchChildrenMenuDiv()"
-               rendered="#{userSessionBean.selectedMenuItem.anyRenderedChildren}">              
-        </t:div>          
+               rendered="#{userSessionBean.selectedMenuItem.anyRenderedChildren}"
+               title="#{webBundle.showChildrenMenu}">
+        </h:outputLink>
       </t:div>
       <t:div style="clear:both;" />
     </t:div>
     <h:outputText value="&lt;/header&gt;" escape="false"/>
        
-    <t:div id="siblingsMenuDiv" forceId="true" styleClass="titleMenuDiv" style="display:none">
+    <t:div id="siblingsMenuDiv" forceId="true" styleClass="titleMenuDiv" style="display:none" 
+           rendered="#{userSessionBean.selectedMenuItem.anyRenderedSibling}">
       <h:outputText value="&lt;nav id='wp2_mobile_nav_siblings' aria-label='#{webBundle.mobileSiblingsMenu}'&gt;" escape="false"/> 
       <sf:heading level="2" styleClass="element-invisible">
         <h:outputText value="#{webBundle.mobileSiblingsMenu}" />
@@ -335,7 +370,7 @@
           <t:div styleClass="#{(item.mid == userSessionBean.selectedMid) ? 'menuItemDiv selected' : 'menuItemDiv'}" 
                  rendered="#{item.rendered}">
             <t:div styleClass="iconDiv" rendered="#{item.properties.mobileIcon != null}">
-              <h:graphicImage url="#{item.properties.mobileIcon}" title="#{item.label}" />              
+              <h:graphicImage url="#{item.properties.mobileIcon}" alt="#{item.label}" />              
             </t:div>
             <t:div styleClass="textDiv">
               <sf:outputLink value="#{item.actionURL}"
@@ -360,7 +395,8 @@
       <h:outputText value="&lt;/nav&gt;" escape="false"/>                    
     </t:div>      
 
-    <t:div id="childrenMenuDiv" forceId="true" styleClass="titleMenuDiv" style="display:none">
+    <t:div id="childrenMenuDiv" forceId="true" styleClass="titleMenuDiv" style="display:none" 
+           rendered="#{userSessionBean.selectedMenuItem.anyRenderedChildren}">
       <h:outputText value="&lt;nav id='wp2_mobile_nav_children' aria-label='#{webBundle.mobileChildrenMenu}'&gt;" escape="false"/>       
       <sf:heading level="2" styleClass="element-invisible">
         <h:outputText value="#{webBundle.mobileChildrenMenu}" />
@@ -371,7 +407,7 @@
         <f:facet name="data">          
           <t:div styleClass="menuItemDiv" rendered="#{item.rendered}">
             <t:div styleClass="iconDiv" rendered="#{item.properties.mobileIcon != null}">
-              <h:graphicImage url="#{item.properties.mobileIcon}" title="#{item.label}" />              
+              <h:graphicImage url="#{item.properties.mobileIcon}" alt="#{item.label}" />              
             </t:div>
             <t:div styleClass="textDiv">
               <sf:outputLink value="#{item.actionURL}"
@@ -514,15 +550,18 @@
         <sf:outputText value="#{webBundle.language}" />
       </sf:heading>        
       <t:div styleClass="langDiv">
-        <h:outputLink value="/go.faces?language=ca" styleClass="langLink">
+        <h:outputLink value="/go.faces?language=ca" styleClass="langLink"
+                       lang="ca" title="català">
           <sf:outputText value="ca" />          
         </h:outputLink>
         <sf:outputText value="|" />          
-        <h:outputLink value="/go.faces?language=es" styleClass="langLink">
+        <h:outputLink value="/go.faces?language=es" styleClass="langLink"
+                       lang="es" title="castellano">
           <sf:outputText value="es" />          
         </h:outputLink>
         <sf:outputText value="|" />          
-        <h:outputLink value="/go.faces?language=en" styleClass="langLink">
+        <h:outputLink value="/go.faces?language=en" styleClass="langLink"
+                       lang="en" title="english">
           <sf:outputText value="en" />          
         </h:outputLink>
       </t:div>

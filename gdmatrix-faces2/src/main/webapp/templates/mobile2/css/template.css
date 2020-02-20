@@ -44,7 +44,9 @@
 
 .mobile .topBar .showProfileLink
 {
+  width: 100%;
   height: 100%;  
+  display: block;  
   background: url("/templates/mobile2/images/profile_login.png") no-repeat scroll center center rgba(0, 0, 0, 0);  
 }
 
@@ -413,12 +415,13 @@
   text-align: center;
 }
 
-.mobile .titleBar .titleDiv #showSiblingsMenuLink
+.mobile .titleBar .titleDiv .showSiblingsMenuLink
 {
-  
+  color: white;
+  text-decoration: none;
 }
 
-.mobile .titleBar .titleDiv #showSiblingsMenuLink .showSiblingsIcon
+.mobile .titleBar .titleDiv .showSiblingsMenuLink .showSiblingsIcon
 {
   width: 24px;
   height: 24px;
@@ -492,13 +495,14 @@
   background-size: 20px;
 }
 
-.mobile .titleBar .showChildrenMenuDiv .titleMenuLink#showChildrenMenuLink
+.mobile .titleBar .showChildrenMenuDiv .showChildrenMenuLink
 {  
   background: url("/templates/mobile2/images/unfold.png") no-repeat scroll center center rgba(0, 0, 0, 0);
   background-size: 20px;
+  display: block;
 }
 
-.mobile .titleBar .showChildrenMenuDiv.open .titleMenuLink#showChildrenMenuLink
+.mobile .titleBar .showChildrenMenuDiv.open .showChildrenMenuLink
 {  
   background: url("/templates/mobile2/images/fold.png") no-repeat scroll center center rgba(0, 0, 0, 0);
   background-size: 20px;
