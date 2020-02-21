@@ -17,7 +17,7 @@
 #url
 {
   display:inline-block;
-  width: 362px;
+  width: 366px;
   box-sizing:border-box;
 }
 
@@ -112,7 +112,7 @@ input[type='checkbox']
   font-weight: bold;
   margin-top: 4px;
   margin-bottom: 4px;
-  margin-right: 4px;
+  padding: 5px;
 }
 
 .message.block
@@ -125,7 +125,7 @@ input[type='checkbox']
   color: red;
 }
 
-#table_container
+.scroll
 {
   margin:2px;
   margin-top: 4px;
@@ -199,4 +199,68 @@ table.table tr th
 {
   color: #006000;
   text-align: right;
+}
+
+.progress_bar
+{
+  background: blue;
+  height: 24px;
+  color: blue;
+}
+
+.ui-button-text-only .ui-button-text 
+{
+  padding: 0;
+}
+
+.button:disabled
+{
+  color: #c0c0c0;
+}
+
+
+#progress_panel
+{
+  position: relative;
+  width:100%;
+  height:5px;
+  overflow-x: hidden;
+}
+
+#progress_panel .line
+{
+  position:absolute;
+  opacity: 0.4;
+  background:#4a8df8;
+  width:150%;
+  height:5px;
+}
+
+#progress_panel .subline
+{
+  position:absolute;
+  background:#4a8df8;
+  height:5px; 
+}
+
+#progress_panel .inc 
+{
+  animation: pg_increase 2s infinite;
+}
+
+#progress_panel .dec
+{
+  animation: pg_decrease 2s 0.5s infinite;
+}
+
+@keyframes pg_increase 
+{
+  from { left: -5%; width: 5%; }
+  to { left: 130%; width: 100%;}
+}
+
+@keyframes pg_decrease
+{
+  from { left: -80%; width: 80%; }
+  to { left: 110%; width: 10%;}
 }

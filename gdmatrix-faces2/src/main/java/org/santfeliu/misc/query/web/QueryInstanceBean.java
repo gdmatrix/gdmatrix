@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.html.HtmlCommandButton;
@@ -892,15 +891,17 @@ public class QueryInstanceBean extends FacesBean implements Savable
     putAutomaticParameters();
     QueryBean queryBean = (QueryBean)getBean("queryBean");
     SqlWebBean sqlWebBean = (SqlWebBean)getBean("sqlWebBean");
-    Query.Connection connection = getQuery().getConnection();
+    Query query = getQuery();
+    Query.Connection connection = query.getConnection();
     sqlWebBean.setDriver(connection.getDriver());
     sqlWebBean.setUrl(connection.getUrl());
     sqlWebBean.setUsername(connection.getUsername());
     sqlWebBean.setPassword(connection.getPassword());
+    sqlWebBean.setTitle(query.getTitle());
     sqlWebBean.setSql(selectedInstance.generateSql());
     sqlWebBean.setEditMode(queryBean.isEditionEnabled());
     sqlWebBean.setMaxRows(1000);
-    sqlWebBean.execute();
+    sqlWebBean.setAutoExecute(true);
     return sqlWebBean.showFullscreen();
   }
 
