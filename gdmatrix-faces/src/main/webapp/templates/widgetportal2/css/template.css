@@ -632,15 +632,15 @@ label.element-invisible
 
 .headerBar .mainMenu ul button + ul
 {
-  display: none;
+  display: none;  
   position: absolute;
-  top: 24px;
   /*left: 0;*/
   width: 400px;
   border: 2px solid white;
   background-color: rgb(220,220,220);
   opacity:0.98;
   margin-left: -2px;
+  z-index: 1;
 }
 
 .headerBar .mainMenu ul ul > li
@@ -669,7 +669,7 @@ label.element-invisible
   height: auto;
   color: black;
   float: left;
-  margin-right: 5px;
+  margin-right: 2px;
   width: 93%;
 }
 
@@ -706,25 +706,23 @@ label.element-invisible
 /* Main menu: Tercer nivell: vertical */
 
 .headerBar .mainMenu ul ul ul
-{
+{    
   left: 100%; 
-  top: 0px; 
+  top: 100%; 
   position: absolute;  
-  margin-top: 25px;
+  margin-top: 0;
   margin-left:-80px;
   background-color: #A0A0A0;  
   z-index: 1;
 }
 
 .headerBar .mainMenu ul ul button + ul
-{
-  left: 0;
-  top: 22px; 
-  position: absolute;  
-  margin-top: 3px;
+{    
+  left: 0;  
+  position: absolute;
   margin-left: 80px;
   background-color: #A0A0A0;
-  z-index: 1;
+  z-index: 2;
 }
 
 .headerBar .mainMenu ul ul ul > li
