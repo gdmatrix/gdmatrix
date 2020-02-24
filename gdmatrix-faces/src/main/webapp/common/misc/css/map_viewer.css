@@ -710,7 +710,7 @@ input::-moz-focus-inner /*Remove button padding in FF*/
   text-align: justify;
 }
 
-#mapViewer #infoDividerUpButton
+#mapViewer .infoDividerUpButton
 {
   position: absolute;
   bottom: 0;
@@ -718,18 +718,28 @@ input::-moz-focus-inner /*Remove button padding in FF*/
   z-index: 9999;
 }
 
-#mapViewer #infoDividerUpButton:hover,
-#mapViewer #infoDividerDownButton:hover
+#mapViewer .infoDividerUpButton img
+{
+  vertical-align: bottom; 
+}
+
+#mapViewer .infoDividerUpButton:hover,
+#mapViewer .infoDividerDownButton:hover
 {
   cursor: pointer;
 }
 
-#mapViewer #infoDividerDownButton
+#mapViewer .infoDividerDownButton
 {
   position: absolute;
   top: 0;
   right:24px;
   z-index: 9999;
+}
+
+#mapViewer .infoDividerDownButton img
+{
+  vertical-align: top; 
 }
 
 #mapViewer #map
@@ -890,7 +900,7 @@ input::-moz-focus-inner /*Remove button padding in FF*/
   border:1px solid #D0D0C0;
 }
 
-#mapViewer #legend span.expand
+#mapViewer #legend .expand
 {
   display:inline-block;
   width:9px;
@@ -899,9 +909,10 @@ input::-moz-focus-inner /*Remove button padding in FF*/
   vertical-align: middle;
   margin-left: 2px;
   margin-right: 3px;
+  cursor: pointer;
 }
 
-#mapViewer #legend span.collapse
+#mapViewer #legend .collapse
 {
   display:inline-block;
   width:9px;
@@ -910,6 +921,7 @@ input::-moz-focus-inner /*Remove button padding in FF*/
   vertical-align: middle;
   margin-left: 2px;
   margin-right: 3px;
+  cursor: pointer;
 }
 
 #mapViewer #legend div input
