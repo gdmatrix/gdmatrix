@@ -598,8 +598,10 @@ public class MapViewerBean extends WebBean
   }
 
   private void addLayersToLegend(Map map, Group group, boolean baseLayers,
-    boolean expandGroups, StringBuilder buffer)
+    boolean expandGroups, StringBuilder bufferOut)
   {
+    StringBuilder buffer = new StringBuilder();
+    boolean render = false;
     List<Layer> groupLayers = map.getLayers(group, baseLayers);
     if (!groupLayers.isEmpty())
     {
@@ -615,9 +617,10 @@ public class MapViewerBean extends WebBean
 
         // expand/collapase group button
         String buttonClass = expandGroups ? "collapse" : "expand";
-        buffer.append("<span class=\"").append(buttonClass).
-          append("\" onclick=\"groupClicked('").
-          append(groupName).append("',this);\"></span>");
+        buffer.append("<a title=\"").append(getSwitchGroupTitle(group, map)). 
+          append("\" class=\"").append(buttonClass).
+          append("\" value=\"#\" onclick=\"groupClicked('").
+          append(groupName).append("',this);\"></a>");
 
         if (!baseLayers)
         {
@@ -644,6 +647,7 @@ public class MapViewerBean extends WebBean
       {
         if (layer.isOnLegend() && isLayerViewable(layer))
         {
+          render = true;
           int layerId = layer.getId();
           buffer.append("<li class=\"item\">");
           if (baseLayers)
@@ -715,6 +719,7 @@ public class MapViewerBean extends WebBean
       buffer.append("</ul>");
       buffer.append("</li>");
     }
+    if (render) bufferOut.append(buffer);
   }
 
   private boolean isLayerVisible(Layer layer)
@@ -766,5 +771,13 @@ public class MapViewerBean extends WebBean
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     return userSessionBean.translate(text, group);
+  }
+
+  private String getSwitchGroupTitle(Group group, Map map) 
+  {
+    return HtmlEncoder.encode(
+      translate("Fes clic per expandir o contraure grup " + 
+      (group.getLabel() != null ? group.getLabel() : group.getName()), 
+      "map:" + map.getName()));
   }
 }

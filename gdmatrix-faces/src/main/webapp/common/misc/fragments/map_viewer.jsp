@@ -12,6 +12,13 @@
 
   <t:saveState value="#{mapBean.map}" />
 
+  <sf:heading level="1" styleClass="hidden">
+    <sf:outputText value="#{mapViewerBundle.mapUpper}:" />
+    <sf:outputText value="#{mapBean.map.title}"
+      translator="#{userSessionBean.translator}"
+      translationGroup="map:#{mapBean.map.name}" />      
+  </sf:heading>
+  
   <t:panelGroup id="mapViewer" forceId="true">
     
     <t:div id="subHeader" forceId="true">
@@ -38,12 +45,13 @@
     </t:div>
 
     <t:div id="screenBody" forceId="true">
-      <f:verbatim><h3 class="hidden">${mapViewerBundle.search}</h3></f:verbatim> 
+      <f:verbatim><h2 class="hidden">${mapViewerBundle.searchPanel}</h2></f:verbatim>
+      <h:outputText value="#{mapViewerBundle.searchPanel}" styleClass="element-invisible"/>
       <t:div id="leftPanel" forceId="true">
       </t:div>
-
+      
       <sf:div id="map" forceId="true" ariaHidden="true">
-        <f:verbatim><h3 class="hidden">${mapViewerBundle.map}</h3></f:verbatim>       
+        <f:verbatim><h2 class="hidden">${mapViewerBundle.mapUpper}</h2></f:verbatim>       
         <h:outputLink id="toggleLeftPanel" styleClass="leftPanelButton" onclick="toggleLeftPanel(); return false"
            title="#{mapViewerBundle.searchPanelLabel}">
           <t:outputText id="toggleLeftPanelText" forceId="true"
@@ -69,7 +77,7 @@
       </sf:div>
 
       <t:div id="rightPanel" forceId="true">
-        <f:verbatim><h3 class="hidden">${mapViewerBundle.info}</h3></f:verbatim>
+        <f:verbatim><h2 class="hidden">${mapViewerBundle.info}</h2></f:verbatim>
         <t:div id="info" forceId="true">
           <t:div id="infoContent" styleClass="mapDescription" forceId="true">
             <sf:outputText value="#{mapBean.description}"
@@ -77,17 +85,20 @@
                translator="#{userSessionBean.translator}"
                translationGroup="map:#{mapBean.map.name}" />
           </t:div>
-          <t:graphicImage id="infoDividerUpButton" forceId="true"
-            onclick="infoDividerUp()" title="#{mapViewerBundle.upPanelLabel}"
-            alt="#{mapViewerBundle.upPanelLabel}"
-            url="/plugins/mapviewer/img/north-mini.png" />
+          <h:outputLink value="#" onclick="infoDividerUp()" 
+                        styleClass="infoDividerUpButton"
+                        title="#{mapViewerBundle.upPanelLabel}">
+            <h:graphicImage alt="#{mapViewerBundle.upPanelLabel}"
+              url="/plugins/mapviewer/img/north-mini.png" />
+          </h:outputLink>
         </t:div>
-        <f:verbatim><h3 class="hidden">${mapViewerBundle.legend}</h3></f:verbatim>        
+        <f:verbatim><h2 class="hidden">${mapViewerBundle.legend}</h2></f:verbatim>        
         <t:div id="legend" forceId="true">
-          <t:graphicImage id="infoDividerDownButton" forceId="true"
-            onclick="infoDividerDown()" title="#{mapViewerBundle.downPanelLabel}"
-            alt="#{mapViewerBundle.downPanelLabel}"
-            url="/plugins/mapviewer/img/south-mini.png" />
+          <h:outputLink value="#" styleClass="infoDividerDownButton"
+            onclick="infoDividerDown()" title="#{mapViewerBundle.downPanelLabel}">
+            <h:graphicImage alt="#{mapViewerBundle.downPanelLabel}"
+              url="/plugins/mapviewer/img/south-mini.png" />              
+          </h:outputLink>
           <t:div id="legendContent" forceId="true">
             <h:outputText value="#{mapViewerBundle.legend}:"
               styleClass="legendHeader" />
