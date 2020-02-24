@@ -115,14 +115,6 @@
                rendered="#{document2Bean.editable and documentContentBean.content != null and
                documentContentBean.content.url == null
                and (documentMainBean.document.lockUserId == null or userSessionBean.username == documentMainBean.document.lockUserId)
-               and not userSessionBean.matrixClientEnabled}"
-               styleClass="editButton" onclick="javascript:htmlSendFile_edit('#{documentMainBean.document.docId}','#{documentMainBean.document.content.language}');return false"
-               image="#{userSessionBean.icons.edit}"
-               alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
-            <h:commandButton value="#{objectBundle.edit}"
-               rendered="#{document2Bean.editable and documentContentBean.content != null and
-               documentContentBean.content.url == null
-               and (documentMainBean.document.lockUserId == null or userSessionBean.username == documentMainBean.document.lockUserId)
                and userSessionBean.matrixClientEnabled}"
                styleClass="editButton" onclick="javascript:editDocument({docId:'#{documentMainBean.document.docId}'});return false"
                image="#{userSessionBean.icons.edit}"
@@ -204,11 +196,6 @@
                       styleClass="textBox" style="vertical-align:middle;"/>
       </t:div>
 
-      <sf:sendfile height="0" width="0" action="#{documentContentBean.refresh}"
-        fileProperties="#{documentSearchBean.documentProperties}"
-        docTypes="#{documentConfigBean.docTypes}"
-        port="#{applicationBean.serverSecurePort}"
-        rendered="#{not userSessionBean.matrixClientEnabled}"/>
       <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
         action="#{documentContentBean.documentEdited}"
         model="#{documentContentBean.model}" 

@@ -296,11 +296,6 @@
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
                          rendered="#{documentSearchBean.editorUser}"/>
         <h:commandButton value="#{objectBundle.upload}"
-                         styleClass="createButton" onclick="javascript:htmlSendFile_send();return false"
-                         image="#{userSessionBean.icons.upload}"
-                         alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
-                         rendered="#{documentSearchBean.editorUser and (not userSessionBean.matrixClientEnabled)}"/>
-        <h:commandButton value="#{objectBundle.upload}"
                          styleClass="createButton" onclick="javascript:sendDocument();return false"
                          image="#{userSessionBean.icons.upload}"
                          alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
@@ -454,22 +449,12 @@
                              alt="#{objectBundle.show}" title="#{objectBundle.show}" />
 
             <h:commandButton value="#{objectBundle.edit}"
-                             rendered="#{row.content != null and (documentSearchBean.editorUser) and (row.docId != null) and (row.lockUserId == null or userSessionBean.username == row.lockUserId) and (not userSessionBean.matrixClientEnabled)}"
-                             styleClass="editButton" onclick="javascript:htmlSendFile_edit('#{row.docId}', '#{row.language}');return false"
-                             image="#{userSessionBean.icons.edit}"
-                             alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
-            <h:commandButton value="#{objectBundle.edit}"
                              rendered="#{row.content != null and (documentSearchBean.editorUser) and (row.docId != null) and (row.lockUserId == null or userSessionBean.username == row.lockUserId) and userSessionBean.matrixClientEnabled}"
                              styleClass="editButton" 
                              onclick="javascript:editDocument({docId: '#{row.docId}'});return false"
                              image="#{userSessionBean.icons.edit}"
                              alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
-
-            <h:commandButton value="#{objectBundle.upload}"
-                             rendered="#{(documentSearchBean.editorUser) and (row.docId != null) and (row.lockUserId == null or userSessionBean.username == row.lockUserId) and (not userSessionBean.matrixClientEnabled)}"
-                             styleClass="editButton" onclick="javascript:htmlSendFile_update('#{row.docId}');return false"
-                             image="#{userSessionBean.icons.upload}"
-                             alt="#{objectBundle.upload}" title="#{objectBundle.upload}" />
+            
             <h:commandButton value="#{objectBundle.upload}"
                              rendered="#{(documentSearchBean.editorUser) and (row.docId != null) and (row.lockUserId == null or userSessionBean.username == row.lockUserId) and userSessionBean.matrixClientEnabled}"
                              styleClass="editButton" 
@@ -558,23 +543,11 @@
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
                          rendered="#{documentSearchBean.editorUser}"/>
         <h:commandButton value="#{objectBundle.upload}"
-                         styleClass="createButton" onclick="javascript:htmlSendFile_send();return false"
-                         image="#{userSessionBean.icons.upload}"
-                         alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
-                         rendered="#{documentSearchBean.editorUser and (not userSessionBean.matrixClientEnabled)}"/>
-        <h:commandButton value="#{objectBundle.upload}"
                          styleClass="createButton" onclick="javascript:sendDocument();return false"
                          image="#{userSessionBean.icons.upload}"
                          alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
                          rendered="#{documentSearchBean.editorUser and userSessionBean.matrixClientEnabled}"/>
       </t:div>
-
-      <sf:sendfile height="0" width="0" rendered="#{documentSearchBean.editorUser 
-                                                    and not userSessionBean.matrixClientEnabled}"
-                   action="#{documentSearchBean.searchIfFilterNotEmpty}"
-                   fileProperties="#{documentSearchBean.documentProperties}"
-                   docTypes="#{documentConfigBean.docTypes}"
-                   port="#{applicationBean.serverSecurePort}"/>
 
       <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.SendDocumentCommand"
                        model="#{documentSearchBean.sendModel}"                   

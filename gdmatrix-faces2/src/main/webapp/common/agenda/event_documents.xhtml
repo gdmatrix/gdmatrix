@@ -95,31 +95,12 @@
                                 image="#{userSessionBean.icons.edit}"
                                 alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                                 styleClass="editButton"
-                                onclick="javascript:htmlSendFile_edit('#{row.document.docId}');return false"
-                                rendered="#{row.document != null and row.document.docId != null
-                                        and eventDocumentsBean.editingDocument != row
-                                        and row.document.content != null
-                                        and not userSessionBean.matrixClientEnabled}"
-                                disabled="#{not eventBean.editable}"/>
-               <h:commandButton value="#{objectBundle.edit}"
-                                image="#{userSessionBean.icons.edit}"
-                                alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                                styleClass="editButton"
                                 onclick="javascript:editDocument({docId:'#{row.document.docId}'});return false"
                                 rendered="#{row.document != null and row.document.docId != null
                                         and eventDocumentsBean.editingDocument != row
                                         and row.document.content != null
                                         and userSessionBean.matrixClientEnabled}"
                                 disabled="#{not eventBean.editable}"/>
-              <h:commandButton value="#{objectBundle.upload}"
-                               rendered="#{row.document != null and row.document.docId != null
-                                       and (row.document.lockUserId == null
-                                       or userSessionBean.username == row.document.lockUserId)
-                                       and not userSessionBean.matrixClientEnabled}"
-                               styleClass="editButton" onclick="javascript:htmlSendFile_update('#{row.document.docId}');return false"
-                               image="#{userSessionBean.icons.upload}"
-                               alt="#{objectBundle.replace}" title="#{objectBundle.replace}"
-                               disabled="#{not eventBean.editable}"/>
               <h:commandButton value="#{objectBundle.upload}"
                                rendered="#{row.document != null and row.document.docId != null
                                        and (row.document.lockUserId == null
@@ -207,12 +188,6 @@
       </t:dataScroller>
 
       <t:div style="width:100%;text-align:right">
-        <h:commandButton value="#{objectBundle.upload}"
-                         styleClass="createButton" onclick="javascript:htmlSendFile_send();return false"
-                         image="#{userSessionBean.icons.upload}"
-                         alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
-                         disabled="#{not eventBean.editable}"
-                         rendered="#{not userSessionBean.matrixClientEnabled}"/>
         <h:commandButton value="#{objectBundle.upload}"
                          styleClass="createButton" onclick="javascript:sendDocument();return false"
                          image="#{userSessionBean.icons.upload}"
@@ -310,13 +285,6 @@
         </t:div>
       </t:div>
 
-      <sf:sendfile action="#{eventDocumentsBean.refresh}"
-                   command="#{eventDocumentsBean.command}"
-                   result="#{eventDocumentsBean.docId}"
-                   docTypes="#{documentConfigBean.docTypes}"
-                   port="#{applicationBean.serverSecurePort}"
-                   width="0" height="0"
-                   rendered="#{not userSessionBean.matrixClientEnabled}"/>
       <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.SendDocumentCommand"
         model="#{eventDocumentsBean.models.sendModel}"                   
         action="#{eventDocumentsBean.documentSent}"

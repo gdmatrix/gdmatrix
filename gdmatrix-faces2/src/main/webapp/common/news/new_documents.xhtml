@@ -68,19 +68,8 @@
                                image="#{userSessionBean.icons.edit}"
                                alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                                styleClass="editButton"
-                               onclick="javascript:htmlSendFile_edit('#{row.documentId}');return false"
-                               rendered="#{row.newDocumentId != null and not userSessionBean.matrixClientEnabled}"/>
-              <h:commandButton value="#{objectBundle.edit}"
-                               image="#{userSessionBean.icons.edit}"
-                               alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                               styleClass="editButton"
                                onclick="javascript:editDocument({docId: '#{row.documentId}'});return false"
                                rendered="#{row.newDocumentId != null and userSessionBean.matrixClientEnabled}"/>           
-              <h:commandButton value="#{objectBundle.upload}"
-                               rendered="#{row.newDocumentId != null and not userSessionBean.matrixClientEnabled}"
-                               styleClass="editButton" onclick="javascript:htmlSendFile_update('#{row.documentId}');return false"
-                               image="#{userSessionBean.icons.upload}"
-                               alt="#{objectBundle.replace}" title="#{objectBundle.replace}" />
               <h:commandButton value="#{objectBundle.upload}"
                                rendered="#{row.newDocumentId != null and userSessionBean.matrixClientEnabled}"
                                styleClass="editButton" onclick="javascript:updateDocument({docId: '#{row.documentId}'});return false"
@@ -160,14 +149,7 @@
 
       <h:outputText value="#{table}" escape="false"/>
 
-
-
       <t:div style="width:100%;text-align:right">
-        <h:commandButton value="#{objectBundle.upload}"
-                         styleClass="createButton" onclick="javascript:htmlSendFile_send();return false"
-                         image="#{userSessionBean.icons.upload}"
-                         alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
-                         rendered="#{newDocumentsBean.editingDocument == null and not userSessionBean.matrixClientEnabled}"/>
         <h:commandButton value="#{objectBundle.upload}"
                          styleClass="createButton" onclick="javascript:sendDocument();return false"
                          image="#{userSessionBean.icons.upload}"
@@ -222,14 +204,6 @@
 
       </t:div>
 
-      <sf:sendfile action="#{newDocumentsBean.refresh}"
-                   command="#{newDocumentsBean.command}"
-                   result="#{newDocumentsBean.uploadedDocId}"
-                   fileProperties="#{newDocumentsBean.documentProperties}"
-                   docTypes="#{documentConfigBean.docTypes}"
-                   port="#{applicationBean.serverSecurePort}"
-                   width="0" height="0"
-                   rendered="#{not userSessionBean.matrixClientEnabled}"/>
       <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.SendDocumentCommand"
                        model="#{newDocumentsBean.models.sendModel}"                   
                        action="#{newDocumentsBean.documentSent}"

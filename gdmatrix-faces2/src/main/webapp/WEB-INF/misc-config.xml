@@ -61,14 +61,6 @@
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>
 
- <!-- presence -->
-
-  <managed-bean>
-    <managed-bean-name>presenceBean</managed-bean-name>
-    <managed-bean-class>org.santfeliu.misc.presence.web.PresenceBean</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>
-
   <!-- map viewer -->
 
   <managed-bean>
@@ -202,33 +194,6 @@
     <navigation-case>
       <from-outcome>matrix_info</from-outcome>
       <to-view-id>/common/misc/matrix_info.xhtml</to-view-id>
-    </navigation-case>
-
-  <!-- presence -->
-
-    <navigation-case>
-      <from-outcome>presence</from-outcome>
-      <to-view-id>/common/misc/presence.xhtml</to-view-id>
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>presence_id</from-outcome>
-      <to-view-id>/common/misc/presence_id.xhtml</to-view-id>
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>presence_entry</from-outcome>
-      <to-view-id>/common/misc/presence_entry.xhtml</to-view-id>
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>presence_entry</from-outcome>
-      <to-view-id>/common/misc/presence_entry.xhtml</to-view-id>
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>presence_worker</from-outcome>
-      <to-view-id>/common/misc/presence_worker.xhtml</to-view-id>
     </navigation-case>
 
   <!-- map viewer -->

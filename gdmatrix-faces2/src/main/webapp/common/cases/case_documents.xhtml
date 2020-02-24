@@ -131,31 +131,12 @@
                                image="#{userSessionBean.icons.edit}"
                                alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                                styleClass="editButton"
-                                onclick="javascript:htmlSendFile_edit('#{row.document.docId}');return false"
-                               rendered="#{row.document != null and row.document.docId != null
-                                 and caseDocumentsBean.editingDocument != row
-                                 and row.document.content != null
-                                 and (not userSessionBean.matrixClientEnabled)}"
-                               disabled="#{not caseBean.editable or !caseDocumentsBean.rowEditable}"/>
-              <h:commandButton value="#{objectBundle.edit}"
-                               image="#{userSessionBean.icons.edit}"
-                               alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                               styleClass="editButton"
                                onclick="javascript:editDocument({docId:'#{row.document.docId}'});return false"
                                rendered="#{row.document != null and row.document.docId != null
                                  and caseDocumentsBean.editingDocument != row
                                  and row.document.content != null
                                  and userSessionBean.matrixClientEnabled}"
                                disabled="#{not caseBean.editable or !caseDocumentsBean.rowEditable}"/>          
-              <h:commandButton value="#{objectBundle.upload}"
-                               rendered="#{row.document != null and row.document.docId != null
-                                       and (row.document.lockUserId == null
-                                       or userSessionBean.username == row.document.lockUserId)
-                                       and not userSessionBean.matrixClientEnabled}"
-                               styleClass="editButton" onclick="javascript:htmlSendFile_update('#{row.document.docId}');return false"
-                               image="#{userSessionBean.icons.upload}"
-                               alt="#{objectBundle.replace}" title="#{objectBundle.replace}"
-                               disabled="#{not caseBean.editable or !caseDocumentsBean.rowEditable}"/>
               <h:commandButton value="#{objectBundle.upload}"
                                rendered="#{row.document != null and row.document.docId != null
                                        and (row.document.lockUserId == null
@@ -248,13 +229,6 @@
           alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
           disabled="#{not caseBean.editable}"
           rendered="#{userSessionBean.matrixClientEnabled}"/>
-        <h:commandButton value="#{objectBundle.upload}"
-          styleClass="createButton" 
-          onclick="javascript:htmlSendFile_send();return false"
-          image="#{userSessionBean.icons.upload}"
-          alt="#{objectBundle.upload}" title="#{objectBundle.upload}"
-          disabled="#{not caseBean.editable}"
-          rendered="#{not userSessionBean.matrixClientEnabled}"/>    
         <h:commandButton action="#{caseDocumentsBean.createCaseDocument}"
           disabled="#{not caseBean.editable or caseDocumentsBean.editingDocument != null}"
           styleClass="addButton" value="#{objectBundle.add}"
@@ -355,13 +329,6 @@
         </t:div>
       </t:div>
 
-      <sf:sendfile action="#{caseDocumentsBean.refresh}"
-                   command="#{caseDocumentsBean.command}"
-                   result="#{caseDocumentsBean.docId}"
-                   docTypes="#{caseDocumentsBean.userDocTypes}"
-                   port="#{applicationBean.serverSecurePort}"
-                   width="0" height="0"
-                   rendered="#{not userSessionBean.matrixClientEnabled}"/>
       <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.SendDocumentCommand"
         model="#{caseDocumentsBean.models.sendModel}"                   
         action="#{caseDocumentsBean.documentSent}"

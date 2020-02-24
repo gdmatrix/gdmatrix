@@ -592,86 +592,7 @@
       <type>java.lang.String</type>
     </attribute>
   </tag>
-  
-  <tag>
-    <tag-name>sendfile</tag-name>
-    <component>
-      <component-type>HtmlSendFile</component-type>
-    </component>
-    <attribute>
-      <name>id</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>action</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>actionListener</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>immediate</name>
-      <type>java.lang.Boolean</type>
-    </attribute>
-    <attribute>
-      <name>binding</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>command</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>result</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>style</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>styleClass</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>buttonClass</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>width</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>height</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>fileProperties</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>docTypes</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>port</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>maxFileSize</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>validExtensions</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>rendered</name>
-      <type>java.lang.Boolean</type>
-    </attribute>
-  </tag>
-  
+    
   <tag>
     <tag-name>paginator</tag-name>
     <component>
@@ -907,53 +828,6 @@
     </attribute>
     <attribute>
       <name>enabled</name>
-      <type>java.lang.String</type>
-    </attribute>
-  </tag>
-  
-  <tag>
-    <tag-name>taskMonitor</tag-name>
-    <component>
-      <component-type>HtmlTaskMonitor</component-type>
-    </component>
-    <attribute>
-      <name>id</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>rendered</name>
-      <type>java.lang.Boolean</type>
-    </attribute>
-    <attribute>
-      <name>action</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>actionListener</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>immediate</name>
-      <type>java.lang.Boolean</type>
-    </attribute>
-    <attribute>
-      <name>binding</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>task</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>enabled</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>style</name>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <name>styleClass</name>
       <type>java.lang.String</type>
     </attribute>
   </tag>
