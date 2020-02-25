@@ -34,9 +34,12 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.matrix.cases.Case;
+import org.matrix.dic.Property;
 import org.matrix.report.ParameterDefinition;
 import org.matrix.report.Report;
 import org.matrix.report.ReportManagerPort;
+import org.santfeliu.dic.util.DictionaryUtils;
 import static org.santfeliu.report.web.ReportBean.CONNECTION_NAME_PROPERTY;
 import org.santfeliu.report.web.ReportConfigBean;
 import org.santfeliu.report.web.ReportServlet;
@@ -60,6 +63,7 @@ public class ReportDetailPanel extends DetailPanel
   public static final String ALLOWED_TAGS_PROPERTY = "allowedHtmlTags";
   
   private String url;
+  private Case cas;
   
 
   public String getUrl()
@@ -75,6 +79,8 @@ public class ReportDetailPanel extends DetailPanel
   @Override
   public void loadData(DetailBean detailBean)
   {
+    this.cas = ((CaseDetailBean) detailBean).getCase(); 
+    
     String reportName = getReportName();
     if (reportName != null)
     {
@@ -145,6 +151,17 @@ public class ReportDetailPanel extends DetailPanel
           buffer.append(buffer.length() == 0 ? "?" : "&");
           buffer.append(parameter).append("=");
           buffer.append(URLEncoder.encode(value, "UTF-8"));
+        }
+        else
+        {
+          Property property = DictionaryUtils.getProperty(this.cas, parameter);
+          if (property != null && property.getValue() != null && 
+            !property.getValue().isEmpty())
+          {
+            buffer.append(buffer.length() == 0 ? "?" : "&");
+            buffer.append(parameter).append("=");
+            buffer.append(URLEncoder.encode(property.getValue().get(0), "UTF-8"));            
+          }
         }
       }
       
