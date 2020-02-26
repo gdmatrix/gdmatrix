@@ -1162,7 +1162,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     
     String logoutURL = HttpUtils.getDefaultURL(request, FacesServlet.GO_URI,
       FacesServlet.XMID_PARAM + "=" + mid + "&workspaceid=" + getWorkspaceId() + 
-      "&btype=" + getBrowserType());
+      "&btype=" + getBrowserType() + "&language=" + getLastPageLanguage());
     
     System.out.println("Redirecting to " + logoutURL);
 
@@ -1423,14 +1423,18 @@ public final class UserSessionBean extends FacesBean implements Serializable
     email = user.getEmail();
     roles = user.getRoles();
     userPreferences = null;
+    String defaultLanguage;
     try
     {
-      String defaultLanguage = getUserPreferences().getDefaultLanguage();
-      Locale locale = new Locale(defaultLanguage);
-      FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
-      setLastPageLanguage(defaultLanguage);
+      defaultLanguage = getUserPreferences().getDefaultLanguage();
     }
-    catch (Exception ex) { } //no default language defined
+    catch (Exception ex) //no default language defined
+    { 
+      defaultLanguage = getLastPageLanguage();
+    } 
+    Locale locale = new Locale(defaultLanguage);
+    FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+    setLastPageLanguage(defaultLanguage);
     try
     {
       setTheme(getUserPreferences().getDefaultTheme());

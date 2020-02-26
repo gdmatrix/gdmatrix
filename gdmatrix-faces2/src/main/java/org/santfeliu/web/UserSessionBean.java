@@ -680,7 +680,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public void setViewLanguage(String language)
   {
     viewLocale = new Locale(language);
-    FacesContext.getCurrentInstance().getViewRoot().setLocale(viewLocale);    
+    FacesContext.getCurrentInstance().getViewRoot().setLocale(viewLocale);
   }
   
   public String getViewLanguage()
@@ -1201,14 +1201,14 @@ public final class UserSessionBean extends FacesBean implements Serializable
     {
       mid = menuModel.getRootMid();
     }
-    else
+    else 
     {
       mid = menuItem.getMid();
     }
     
     String logoutURL = HttpUtils.getDefaultURL(request, CMSListener.GO_URI,
       CMSListener.XMID_PARAM + "=" + mid + "&workspaceid=" + getWorkspaceId() + 
-      "&btype=" + getBrowserType());
+      "&btype=" + getBrowserType() + "&language=" + getLastPageLanguage());
     
     System.out.println("Redirecting to " + logoutURL);
 
@@ -1469,15 +1469,17 @@ public final class UserSessionBean extends FacesBean implements Serializable
     email = user.getEmail();
     roles = user.getRoles();
     userPreferences = null;
+    String defaultLanguage;
     try
     {
-      String defaultLanguage = getUserPreferences().getDefaultLanguage();
-      Locale locale = new Locale(defaultLanguage);
-      //FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
-      setViewLanguage(locale.getLanguage());
-      setLastPageLanguage(defaultLanguage);
+      defaultLanguage = getUserPreferences().getDefaultLanguage();
     }
-    catch (Exception ex) { } //no default language defined
+    catch (Exception ex) //no default language defined
+    { 
+      defaultLanguage = getLastPageLanguage();
+    }     
+    setViewLanguage(defaultLanguage);      
+    setLastPageLanguage(defaultLanguage);      
     try
     {
       setTheme(getUserPreferences().getDefaultTheme());
@@ -1506,7 +1508,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     out.writeObject(email);
     out.writeObject(roles);
     out.writeObject(attributes);
-    out.writeObject(theme);
+    out.writeObject(theme);    
     out.writeObject(lastPageLanguage);
     out.writeObject(workspaceId);
     String mid = null;
@@ -1532,7 +1534,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     email = (String)in.readObject();
     roles = (Set)in.readObject();
     attributes = (Map)in.readObject();
-    theme = (String)in.readObject();
+    theme = (String)in.readObject();    
     lastPageLanguage = (String)in.readObject();
     workspaceId = (String)in.readObject();
     selectedMid = (String)in.readObject(); // lazy loading
@@ -1609,5 +1611,5 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
 
     return result;    
-  }   
+  }  
 }
