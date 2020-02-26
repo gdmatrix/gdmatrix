@@ -35,6 +35,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.dic.Property;
@@ -50,17 +51,19 @@ import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.security.util.URLCredentialsCipher;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.web.obj.ControllerBean;
+import org.santfeliu.web.obj.ObjectBean;
 
 /**
  *
- * @author unknown
+ * @author realor
+ * @author blanquepa
  */
 @CMSManagedBean
-public class ReportBean extends WebBean implements Serializable
+public class ReportBean extends ObjectBean implements Serializable
 {
   @CMSProperty(mandatory=true)
   public static final String REPORT_NAME_PROPERTY = "reportName";
@@ -308,6 +311,11 @@ public class ReportBean extends WebBean implements Serializable
   }
   
   /* actions */
+  
+  /** Report loading action.
+   * 
+   * @return outcome
+   */
   @CMSAction
   public String showForm()
   {
@@ -315,11 +323,26 @@ public class ReportBean extends WebBean implements Serializable
     return "report";
   }
 
+  /** Report execution action. 
+   *  If current node configures oc properties (oc.pageBean and oc.objectBean) 
+   *  then calls ControllerBean.showObject to benefit from pageHistory and be 
+   *  able to navigate through objects, otherwise self show() method is called
+   *  directly for compatibility reasons. 
+   * 
+   *  @return outcome
+   */
   @CMSAction
   public String executeReport()
   {
-    reportRendered = true;
-    return "report";
+    MenuItemCursor menuItem = getSelectedMenuItem();
+    if (menuItem.getDirectProperty(ControllerBean.OBJECT_BEAN_PROPERTY) != null 
+      && menuItem.getDirectProperty(ControllerBean.PAGE_BEAN_PROPERTY) != null)
+    {
+      return getControllerBean().showObject(
+        DictionaryConstants.REPORT_TYPE, getReportName());
+    }
+    else
+      return show();
   }
 
   /* private methods */
@@ -466,5 +489,16 @@ public class ReportBean extends WebBean implements Serializable
   {
     DocumentManagerClient client = new DocumentManagerClient();
     return client;
+  }
+
+  @Override
+  public String show() {
+    reportRendered = true;
+    return "report";
+  }
+
+  @Override
+  public String getObjectTypeId() {
+    return DictionaryConstants.REPORT_TYPE;
   }
 }
