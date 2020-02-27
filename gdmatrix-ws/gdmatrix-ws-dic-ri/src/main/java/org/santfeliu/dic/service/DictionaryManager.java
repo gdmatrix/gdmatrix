@@ -58,6 +58,7 @@ import javax.xml.ws.WebServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.*;
 import org.matrix.security.AccessControl;
+import org.matrix.security.SecurityConstants;
 import org.santfeliu.dic.RootTypeFactory;
 import org.santfeliu.jpa.JPA;
 import org.santfeliu.security.User;
@@ -159,6 +160,7 @@ public class DictionaryManager implements DictionaryManagerPort
       checkType(type);
       dbPropertyDefinitionList = null;
       dbAccessControlList = null;
+      addNominalRoles(user, type);      
       if (dbType == null) // New Type
       {
         dbType = new DBType(type);        
@@ -1223,4 +1225,19 @@ public class DictionaryManager implements DictionaryManagerPort
     if (value == null || value.length() == 0) return null;
     return "%" + value.toUpperCase() + "%";
   }
+  
+  private void addNominalRoles(User user, Type typeObject)
+  {
+    AccessControl ac = new AccessControl();
+    ac.setRoleId(SecurityConstants.SELF_ROLE_PREFIX + user.getUserId().trim() +
+      SecurityConstants.SELF_ROLE_SUFFIX);
+    ac.setAction(DictionaryConstants.MODIFY_DEFINITION_ACTION);
+    typeObject.getAccessControl().add(ac);
+    ac = new AccessControl();
+    ac.setRoleId(SecurityConstants.SELF_ROLE_PREFIX + user.getUserId().trim() +
+      SecurityConstants.SELF_ROLE_SUFFIX);
+    ac.setAction(DictionaryConstants.DERIVE_DEFINITION_ACTION);
+    typeObject.getAccessControl().add(ac);
+  }
+  
 }
