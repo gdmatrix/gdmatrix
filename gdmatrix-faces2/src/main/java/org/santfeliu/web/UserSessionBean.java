@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.web;
@@ -49,7 +49,6 @@ import java.util.Set;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.el.MethodBinding;
@@ -79,8 +78,8 @@ import org.santfeliu.web.obj.ExternalEditable;
 
 public final class UserSessionBean extends FacesBean implements Serializable
 {
-  public static final String ACTION_SCRIPT_PREFIX = "script";  
-  
+  public static final String ACTION_SCRIPT_PREFIX = "script";
+
   public static final String FRAME = "frame";
   public static final String TEMPLATE = "template";
   public static final String LAYOUT = "layout";
@@ -93,7 +92,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String ERROR_OUTCOME = "error";
   public static final String BLANK_OUTCOME = "blank";
   public static final String TRANSLATION_ENABLED = "translationEnabled";
-  
+
   public static final String DEFAULT_FRAME = "default";
   public static final String DEFAULT_TEMPLATE = "default";
   public static final String DEFAULT_SECTION = "default";
@@ -102,22 +101,24 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String MENU_ADMIN_ROLE = "WEBMASTER";
   public static final String CMS_ADMIN_ROLE = "CMS_ADMIN";
 
+  public static final String MATRIX_INFO_VIEW = "MATRIX_INFO";
   public static final String RENDER_VIEW = "RENDER";
   public static final String EDIT_VIEW = "EDIT";
   public static final String CSS_VIEW = "CSS";
   public static final String SYNC_VIEW = "SYNC";
   public static final String SEARCH_VIEW = "SEARCH";
-  
+  public static final String SYSTEM_INFO_VIEW = "SYSTEM_INFO";
+
   public static final String VIEW_MODE_PARAM = "viewMode";
-  public static final String VIEW_MODE_EDIT = "edit";  
-  
+  public static final String VIEW_MODE_EDIT = "edit";
+
   private static final String BEAN_NAME = "userSessionBean";
-  
+
   public static final String LOGIN_PASSWORD = "PASSWORD";
   public static final String LOGIN_CERTIFICATE = "CERTIFICATE";
-  
+
   private static List<String> intranetRoles;
-  
+
   private String userId;
   private String password;
   private String displayName;
@@ -136,13 +137,13 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private String browserType;
   private String loginMethod;
   private String logoutAction;
-  
+
   private Locale viewLocale;
 
   private UserPreferences userPreferences;
 
   private transient String selectedMid;
-  private transient MenuModel menuModel;  
+  private transient MenuModel menuModel;
 
   public UserSessionBean()
   {
@@ -151,8 +152,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
     view = RENDER_VIEW;
     attributes = new HashMap();
     viewLocale = FacesContext.getCurrentInstance().
-      getExternalContext().getRequestLocale();    
-    autoLogin();    
+      getExternalContext().getRequestLocale();
+    autoLogin();
   }
 
   public static UserSessionBean getCurrentInstance()
@@ -169,13 +170,13 @@ public final class UserSessionBean extends FacesBean implements Serializable
         resolveVariable(context, BEAN_NAME);
     }
   }
-  
+
   public static UserSessionBean getInstance(HttpSession session)
   {
     // can return null
     return (UserSessionBean)session.getAttribute(BEAN_NAME);
-  }  
-  
+  }
+
   /* this method can be called outside faces context */
   public static Credentials getCredentials(HttpServletRequest request)
   {
@@ -204,7 +205,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     return userId;
   }
-  
+
   public String getUsername()
   {
     return userId;
@@ -327,7 +328,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     return loginMethod;
   }
-  
+
   public boolean isAnonymousUser()
   {
     return SecurityConstants.ANONYMOUS.equals(userId) ||
@@ -343,14 +344,14 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     return userId.startsWith(SecurityConstants.AUTH_USER_PREFIX);
   }
-  
+
   public boolean isAutoLoginUser()
   {
     String autoLoginUserId =
       MatrixConfig.getProperty("org.santfeliu.web.autoLogin.userId");
     return userId.equals(autoLoginUserId);
   }
-  
+
   public boolean isMatrixClientEnabled()
   {
     return isUserInRole("MATRIX_CLIENT");
@@ -358,14 +359,14 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public String getRemoteAddress()
   {
-    ExternalContext externalContext = 
+    ExternalContext externalContext =
       FacesContext.getCurrentInstance().getExternalContext();
-    HttpServletRequest request = 
+    HttpServletRequest request =
       (HttpServletRequest)externalContext.getRequest();
-    
+
     return HttpUtils.getRemoteAddress(request);
   }
-  
+
   public MenuModel getMenuModel()
   {
     if (menuModel == null) createMenuModel(workspaceId, selectedMid);
@@ -448,7 +449,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       cursor = getMenuModel().getRootMenuItem();
     }
     String template = cursor.getBrowserSensitiveProperty(TEMPLATE);
-    if (template == null) 
+    if (template == null)
     {
       template = (String)cursor.getProperties().get(SECTION);
     }
@@ -478,7 +479,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
     String section = (String)cursor.getProperties().get(SECTION);
     if (section == null) section = DEFAULT_SECTION;
-    
+
     return section;
   }
 
@@ -490,9 +491,9 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public String getTheme()
   {
     List<String> themes = getSelectedMenuItem().getMultiValuedProperty(THEME);
-    
-    if (themes.isEmpty() || themes.contains(theme)) return theme;  
-    
+
+    if (themes.isEmpty() || themes.contains(theme)) return theme;
+
     Iterator iter = themes.iterator();
     if (iter.hasNext())
     {
@@ -525,7 +526,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     List<String> themes = getSelectedMenuItem().getMultiValuedProperty(THEME);
 
     for (String th : themes)
-    {      
+    {
       if (th != null)
       {
         if (th.length() > 0)
@@ -541,7 +542,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     List<String> themes = getSelectedMenuItem().getMultiValuedProperty(THEME);
 
-    return themes.size() > 1;    
+    return themes.size() > 1;
   }
 
   public List<String> getNodeCSS()
@@ -579,7 +580,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     if (result.isEmpty()) //use default node.css
     {
       String template = getTemplate();
-      result.add("/templates/" + template + "/css/node.css?v=" + 
+      result.add("/templates/" + template + "/css/node.css?v=" +
         ApplicationBean.getCurrentInstance().getResourcesVersion());
     }
     return result;
@@ -621,7 +622,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     return isUserInRole(getIntranetRoles()) || isAutoLoginUser();
   }
-  
+
   public List<String> getIntranetRoles()
   {
     if (intranetRoles == null)
@@ -629,7 +630,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       String rolesString =
         MatrixConfig.getProperty("org.santfeliu.web.intranetRoles");
       if (rolesString == null)
-      { 
+      {
         intranetRoles = Collections.EMPTY_LIST;
       }
       else
@@ -640,14 +641,14 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
     return intranetRoles;
   }
-  
+
   public HttpSession getSession()
   {
     return (HttpSession)getExternalContext().getSession(true);
   }
-  
+
   /**
-   * 
+   *
    * @param role
    * @return true if user is in role <code>role</code>, or false otherwise.
    */
@@ -676,13 +677,13 @@ public final class UserSessionBean extends FacesBean implements Serializable
   }
 
   /* Translation methods */
-  
+
   public void setViewLanguage(String language)
   {
     viewLocale = new Locale(language);
     FacesContext.getCurrentInstance().getViewRoot().setLocale(viewLocale);
   }
-  
+
   public String getViewLanguage()
   {
     return viewLocale.getLanguage();
@@ -764,7 +765,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     Locale locale = (Locale)getExternalContext().getRequestMap().get("locale");
     //FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
     setViewLanguage(locale.getLanguage());
-    FacesContext.getCurrentInstance().renderResponse();    
+    FacesContext.getCurrentInstance().renderResponse();
   }
 
   public Translator getTranslator()
@@ -812,7 +813,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
     return text;
   }
-  
+
   public String translateProperty(String propertyName)
   {
     return translateProperty(propertyName, getTranslationGroup());
@@ -822,9 +823,9 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     MenuItemCursor cursor = getMenuModel().getSelectedMenuItem();
     return translateProperty(propertyName, group, cursor);
-  }  
-  
-  public String translateProperty(String propertyName, String group, 
+  }
+
+  public String translateProperty(String propertyName, String group,
     MenuItemCursor cursor)
   {
     String label = (String)cursor.getProperties().get(propertyName);
@@ -833,8 +834,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
       label = translate(label, group);
     }
     return label;
-  }  
-  
+  }
+
   public String getTranslatedTitleProperty()
   {
     MenuItemCursor cursor = (MenuItemCursor)getRequestMap().get("item");
@@ -844,7 +845,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
     return null;
   }
-  
+
   /* session attributes */
 
   public void setAttributes(Map attributes)
@@ -866,7 +867,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     return attributes.get(name);
   }
-  
+
   public String getSystemTime()
   {
     Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
@@ -886,7 +887,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
     return request.getLocalAddr();
   }
-  
+
   public boolean isRenderDisabled()
   {
     MenuItemCursor cursor = getMenuModel().getSelectedMenuItem();
@@ -895,7 +896,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
     return (MenuUtils.URL_ACTION.equals(action));
   }
 
-  /**** JSF actions ****/
+  public String showMatrixInfoView()
+  {
+    view = MATRIX_INFO_VIEW;
+    return "matrix_info";
+  }
 
   public String showRenderView()
   {
@@ -906,58 +911,37 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public String showEditView()
   {
-    if (isRenderViewSelected())
-    {
-      view = EDIT_VIEW;
-      return "node_edit";
-    }
-    else
-    {
-      view = EDIT_VIEW;
-      return null;
-    }
+    view = EDIT_VIEW;
+    return "node_edit";
   }
 
   public String showCssView()
   {
-    if (isRenderViewSelected())
-    {
-      view = CSS_VIEW;
-      return "node_edit";
-    }
-    else
-    {
-      view = CSS_VIEW;
-      return null;
-    }
+    view = CSS_VIEW;
+    return "node_edit";
   }
 
   public String showSyncView()
   {
-    if (isRenderViewSelected())
-    {
-      view = SYNC_VIEW;
-      return "node_edit";
-    }
-    else
-    {
-      view = SYNC_VIEW;
-      return null;
-    }
+    view = SYNC_VIEW;
+    return "node_edit";
   }
 
   public String showSearchView()
   {
-    if (isRenderViewSelected())
-    {
-      view = SEARCH_VIEW;
-      return "node_edit";
-    }
-    else
-    {
-      view = SEARCH_VIEW;
-      return null;
-    }
+    view = SEARCH_VIEW;
+    return "node_edit";
+  }
+
+  public String showSystemInfoView()
+  {
+    view = SYSTEM_INFO_VIEW;
+    return "system_info";
+  }
+
+  public boolean isMatrixInfoViewSelected()
+  {
+    return MATRIX_INFO_VIEW.equals(view);
   }
 
   public boolean isRenderViewSelected()
@@ -983,6 +967,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public boolean isSearchViewSelected()
   {
     return SEARCH_VIEW.equals(view);
+  }
+
+  public boolean isSystemInfoViewSelected()
+  {
+    return SYSTEM_INFO_VIEW.equals(view);
   }
 
   /**** special methods ****/
@@ -1057,22 +1046,22 @@ public final class UserSessionBean extends FacesBean implements Serializable
     if (isAdministrator())
     {
       FacesContext facesContext = getFacesContext();
-      HttpServletRequest request = 
+      HttpServletRequest request =
         (HttpServletRequest)facesContext.getExternalContext().getRequest();
-      boolean editMode = 
+      boolean editMode =
         VIEW_MODE_EDIT.equals((String)request.getParameter(VIEW_MODE_PARAM));
       if (editMode)
       {
         menuItem.select();
         showEditView();
-        NavigationHandler navigationHandler = 
+        NavigationHandler navigationHandler =
           facesContext.getApplication().getNavigationHandler();
         navigationHandler.handleNavigation(facesContext, null, "node_edit");
         facesContext.renderResponse();
         return;
-      }      
+      }
     }
-    
+
     // skip menuItems with null action if possible.
     menuItem = getExecutableMenuItem(menuItem);
     if (menuItem.getAction() == null)
@@ -1080,7 +1069,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       MenuItemCursor rootMenuItem = getMenuModel().getRootMenuItem();
       menuItem = getExecutableMenuItem(rootMenuItem);
     }
-    
+
     // TODO: reference to ControllerBean!!
     ControllerBean controllerBean = ControllerBean.getCurrentInstance();
     if (controllerBean.getSearchBean(menuItem) != null)
@@ -1094,7 +1083,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
     System.out.println(">>>>> Executing mid:" + menuItem.getMid() +
       " action:" + action);
-    
+
     // select MenuItem
     menuItem.select();
 
@@ -1119,7 +1108,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     LoginBean loginBean = (LoginBean)getBean("loginBean");
     if (messageId != null)
     {
-      FacesMessage message = FacesUtils.getFacesMessage(messageId, null, 
+      FacesMessage message = FacesUtils.getFacesMessage(messageId, null,
         FacesMessage.SEVERITY_ERROR);
       loginBean.setLoginMessage(message.getSummary());
     }
@@ -1148,11 +1137,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public void loginCertificate() throws Exception
   {
-    ExternalContext externalContext = 
+    ExternalContext externalContext =
       FacesContext.getCurrentInstance().getExternalContext();
 
     HttpServletRequest request = (HttpServletRequest)externalContext.getRequest();
-    
+
     byte[] cert = HttpUtils.getUserCertificate(request);
 
     User user = UserCache.loginCertificate(cert);
@@ -1160,14 +1149,14 @@ public final class UserSessionBean extends FacesBean implements Serializable
     getMenuModel().setRoles(roles);
     loginMethod = LOGIN_CERTIFICATE;
   }
-  
-  public void loginMobile(String idNumber, String mobilePlatform) 
+
+  public void loginMobile(String idNumber, String mobilePlatform)
     throws Exception
   {
     loginMobile(idNumber, mobilePlatform, null);
   }
-  
-  public void loginMobile(String idNumber, String mobilePlatform, 
+
+  public void loginMobile(String idNumber, String mobilePlatform,
     String logoutAction) throws Exception
   {
     userId = SecurityConstants.AUTH_USER_PREFIX + idNumber;
@@ -1185,7 +1174,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     FacesContext facesContext = FacesContext.getCurrentInstance();
     ExternalContext extContext = facesContext.getExternalContext();
     HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
-    
+
     // method to execute clean up tasks
     if (logoutAction != null)
     {
@@ -1201,15 +1190,15 @@ public final class UserSessionBean extends FacesBean implements Serializable
     {
       mid = menuModel.getRootMid();
     }
-    else 
+    else
     {
       mid = menuItem.getMid();
     }
-    
+
     String logoutURL = HttpUtils.getDefaultURL(request, CMSListener.GO_URI,
-      CMSListener.XMID_PARAM + "=" + mid + "&workspaceid=" + getWorkspaceId() + 
+      CMSListener.XMID_PARAM + "=" + mid + "&workspaceid=" + getWorkspaceId() +
       "&btype=" + getBrowserType() + "&language=" + getLastPageLanguage());
-    
+
     System.out.println("Redirecting to " + logoutURL);
 
     try
@@ -1264,7 +1253,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     return getFacesContext().getMessages().hasNext();
   }
-  
+
   public void initDefaultWorkspaceId()
   {
     ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
@@ -1282,25 +1271,25 @@ public final class UserSessionBean extends FacesBean implements Serializable
     String iconsPath = "/themes/" + getTheme() + "/images/object/";
     return new IconMap(iconsPath);
   }
-  
+
   public void clearWSCallCaches()
-  {    
+  {
     FeedManagerClient.getCache().clear();
     NewsManagerClient.getCache().clear();
     AgendaManagerClient.getCache().clear();
   }
-  
-  
+
+
   public void setDesktopBrowserType()
   {
     changeBrowserTypeTo("desktop");
   }
-  
+
   public void setMobileBrowserType()
   {
-    changeBrowserTypeTo("mobile");    
+    changeBrowserTypeTo("mobile");
   }
-  
+
   /**** private methods ****/
 
   private void changeBrowserTypeTo(String browserType)
@@ -1309,7 +1298,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     try
     {
       FacesContext.getCurrentInstance().getExternalContext().redirect(
-        "/go.faces?xmid=" + menuModel.getSelectedMid());      
+        "/go.faces?xmid=" + menuModel.getSelectedMid());
     }
     catch (Exception ex)
     {
@@ -1389,18 +1378,18 @@ public final class UserSessionBean extends FacesBean implements Serializable
     menuModel = applicationBean.createMenuModel(workspaceId);
     if (menuModel == null)
       throw new RuntimeException("MenuModel creation failed");
-    
+
     FacesContext facesContext = getFacesContext();
-    HttpServletRequest request = 
+    HttpServletRequest request =
       (HttpServletRequest)facesContext.getExternalContext().getRequest();
-    
+
     if (browserType == null)
     {
-      String navMode = 
+      String navMode =
         UserAgentDetector.isMobile(request) ? "mobile" : "desktop";
-      setBrowserType(navMode);      
+      setBrowserType(navMode);
     }
-        
+
     menuModel.setRoles(roles);
     menuModel.setIpAddress(getRemoteAddress());
     if (fastUpdate)
@@ -1475,11 +1464,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
       defaultLanguage = getUserPreferences().getDefaultLanguage();
     }
     catch (Exception ex) //no default language defined
-    { 
+    {
       defaultLanguage = getLastPageLanguage();
-    }     
-    setViewLanguage(defaultLanguage);      
-    setLastPageLanguage(defaultLanguage);      
+    }
+    setViewLanguage(defaultLanguage);
+    setLastPageLanguage(defaultLanguage);
     try
     {
       setTheme(getUserPreferences().getDefaultTheme());
@@ -1490,8 +1479,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private String getLocaleDescription(Locale locale)
   {
     return locale.getDisplayLanguage(locale).toLowerCase();
-  }  
-  
+  }
+
   // Serialization methods
 
   private void writeObject(java.io.ObjectOutputStream out)
@@ -1508,7 +1497,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     out.writeObject(email);
     out.writeObject(roles);
     out.writeObject(attributes);
-    out.writeObject(theme);    
+    out.writeObject(theme);
     out.writeObject(lastPageLanguage);
     out.writeObject(workspaceId);
     String mid = null;
@@ -1534,12 +1523,12 @@ public final class UserSessionBean extends FacesBean implements Serializable
     email = (String)in.readObject();
     roles = (Set)in.readObject();
     attributes = (Map)in.readObject();
-    theme = (String)in.readObject();    
+    theme = (String)in.readObject();
     lastPageLanguage = (String)in.readObject();
     workspaceId = (String)in.readObject();
     selectedMid = (String)in.readObject(); // lazy loading
   }
-  
+
   public String jumpToObject()
   {
     String outcome = null;
@@ -1562,7 +1551,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
     return outcome;
   }
-  
+
   String jumpCommand;
 
   public String getJumpCommand()
@@ -1574,7 +1563,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     this.jumpCommand = jumpCommand;
   }
-  
+
   //Script actions
   String actionToExecute;
 
@@ -1586,18 +1575,18 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public void setActionToExecute(String actionToExecute)
   {
     this.actionToExecute = actionToExecute;
-  }  
-  
+  }
+
   public void executeAction()
   {
     if (this.actionToExecute != null)
       executeAction(actionToExecute);
   }
-  
+
   public Object executeScriptAction(String action)
     throws Exception
   {
-    Object result = null;    
+    Object result = null;
 
     if (action != null)
     {
@@ -1610,6 +1599,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
       result = client.executeScript(action);
     }
 
-    return result;    
-  }  
+    return result;
+  }
 }

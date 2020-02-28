@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.web;
@@ -37,6 +37,8 @@ import java.io.Reader;
 import java.io.Serializable;
 
 import java.io.Writer;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -80,9 +82,9 @@ public class ApplicationBean
   private static final String BEAN_NAME = "applicationBean";
 
   private static final String PARAM_DESKTOP_MAIN_NODE = "desktopMainNode";
-  private static final String PARAM_MOBILE_MAIN_NODE = "mobileMainNode";  
+  private static final String PARAM_MOBILE_MAIN_NODE = "mobileMainNode";
   private static final String PARAM_RESOURCES_VERSION = "resourcesVersion";
-  
+
   protected static final Logger log = Logger.getLogger("ApplicationBean");
   protected static final String mobileAgentList[] =
   {
@@ -118,7 +120,7 @@ public class ApplicationBean
       log.info("ApplicationBean init");
       String userId =
         MatrixConfig.getProperty("adminCredentials.userId");
-      String password = 
+      String password =
         MatrixConfig.getProperty("adminCredentials.password");
       Integer cWorkspaceCacheMaxSize = getCWorkspaceCacheMaxSize();
       if (cWorkspaceCacheMaxSize != null)
@@ -171,7 +173,7 @@ public class ApplicationBean
     return FacesContext.getCurrentInstance().
       getExternalContext().getInitParameter(parameter);
   }
-  
+
   public String getStartMid(boolean isMobileAgent)
   {
     CWorkspace cWorkspace = cmsCache.getWorkspace(getDefaultWorkspaceId());
@@ -186,28 +188,28 @@ public class ApplicationBean
       return auxNodeId;
     }
   }
-      
+
   public String getResourcesVersion()
   {
     String result;
     try
     {
       CWorkspace cWorkspace = cmsCache.getWorkspace(getDefaultWorkspaceId());
-      String nodeId = getDefaultNodeId(cWorkspace);    
+      String nodeId = getDefaultNodeId(cWorkspace);
       CNode node = cWorkspace.getNode(nodeId);
       result = node.getSinglePropertyValue(PARAM_RESOURCES_VERSION);
-      if (result == null) 
+      if (result == null)
       {
         result = getVersion();
       }
     }
     catch (Exception ex)
-    {      
+    {
       result = "0";
     }
     return result;
   }
-      
+
   public synchronized List<Locale> getSupportedLocales()
   {
     if (locales == null)
@@ -266,7 +268,7 @@ public class ApplicationBean
   {
     return MatrixConfig.getProperty("org.santfeliu.web.defaultWorkspaceId");
   }
-  
+
   public CMSCache getCmsCache()
   {
     return cmsCache;
@@ -277,11 +279,37 @@ public class ApplicationBean
     return MatrixInfo.getFullVersion();
   }
 
+  public String getServerName()
+  {
+    try
+    {
+      InetAddress addr = InetAddress.getLocalHost();
+      return addr.getHostName();
+    }
+    catch (UnknownHostException ex)
+    {
+      return null;
+    }
+  }
+
+  public String getServerAddress()
+  {
+    try
+    {
+      InetAddress addr = InetAddress.getLocalHost();
+      return addr.getHostAddress();
+    }
+    catch (UnknownHostException ex)
+    {
+      return null;
+    }
+  }
+
   public org.santfeliu.faces.Translator getTranslator()
   {
     return translator;
   }
-  
+
   public String evalExpression(String expression)
   {
     String value;
@@ -306,7 +334,7 @@ public class ApplicationBean
     }
     else value = expression;
     return value;
-  }  
+  }
 
   private Integer getCWorkspaceCacheMaxSize()
   {
@@ -374,7 +402,7 @@ public class ApplicationBean
   {
     return nowMillis - lastMainNodesClearMillis > MAIN_NODES_CLEAR_TIME;
   }
-  
+
   public class WebTranslator
     implements org.santfeliu.faces.Translator, Serializable
   {
@@ -382,7 +410,7 @@ public class ApplicationBean
     {
       return TranslatorFactory.getDefaultLanguage();
     }
-    
+
     // binary format translation
     public void translate(InputStream in, OutputStream out, String contentType,
       String language, String group) throws IOException

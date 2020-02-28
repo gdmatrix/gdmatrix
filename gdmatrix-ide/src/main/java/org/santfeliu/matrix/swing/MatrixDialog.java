@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.swing;
@@ -71,9 +71,9 @@ import org.santfeliu.matrix.MatrixInfo;
 public class MatrixDialog extends JDialog
 {
   private static final Color BACKGROUND_COLOR = new Color(192, 192, 192);
-  private static final Color LINE_COLOR = new Color(180, 180, 180);  
+  private static final Color LINE_COLOR = new Color(180, 180, 180);
   private static final Font VERSION_FONT = new Font("Arial", Font.PLAIN, 12);
-  
+
   private JLabel matrixLabel = new MatrixLabel();
   private JTabbedPane tabbedPane = new JTabbedPane();
   private JPanel southPanel = new JPanel();
@@ -83,17 +83,17 @@ public class MatrixDialog extends JDialog
   private JPanel propertiesPanel = new JPanel();
   private JPanel versionPanel = new JPanel();
   private JPanel creditsPanel = new JPanel();
-  private JPanel licensePanel = new JPanel();  
-  
+  private JPanel licensePanel = new JPanel();
+
   private JTable propertiesTable = new JTable();
   private JTable versionTable = new JTable();
   private JTable teamTable = new JTable();
-  
+
   private JScrollPane scrollPane1 = new JScrollPane();
   private JScrollPane scrollPane2 = new JScrollPane();
   private JScrollPane scrollPane3 = new JScrollPane();
   private JScrollPane scrollPane4 = new JScrollPane();
-  
+
   private BorderLayout borderLayout1 = new BorderLayout();
   private BorderLayout borderLayout2 = new BorderLayout();
   private BorderLayout borderLayout3 = new BorderLayout();
@@ -122,7 +122,7 @@ public class MatrixDialog extends JDialog
       e.printStackTrace();
     }
   }
-  
+
   public void setMainIcon(Icon icon)
   {
     imageLabel.setIcon(icon);
@@ -182,10 +182,10 @@ public class MatrixDialog extends JDialog
     aboutPanel.add(imageLabel, BorderLayout.CENTER);
 
     tabbedPane.addTab("About", aboutPanel);
-    tabbedPane.addTab("Properties", propertiesPanel);
-    tabbedPane.addTab("Version", versionPanel);    
+    tabbedPane.addTab("Version", versionPanel);
     tabbedPane.addTab("Credits", creditsPanel);
     tabbedPane.addTab("License", licensePanel);
+    tabbedPane.addTab("Properties", propertiesPanel);
 
     this.getContentPane().add(tabbedPane, BorderLayout.CENTER);
     southPanel.add(acceptButton, null);
@@ -204,7 +204,8 @@ public class MatrixDialog extends JDialog
       teamModel.addRow(member);
     }
     licenseTextArea.setText(MatrixInfo.getLicense());
-    licenseTextArea.setFont(new Font("Dialog", 0, 11));
+    licenseTextArea.setFont(new Font("Dialog", 0, 12));
+    licenseTextArea.setCaretPosition(0);
   }
 
   private void acceptButton_actionPerformed(ActionEvent e)
@@ -212,7 +213,7 @@ public class MatrixDialog extends JDialog
     setVisible(false);
     dispose();
   }
-  
+
   public class MatrixLabel extends JLabel
   {
     @Override

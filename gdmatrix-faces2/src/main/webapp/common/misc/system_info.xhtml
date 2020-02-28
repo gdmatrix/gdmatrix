@@ -1,0 +1,99 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/topframe/topframe.xhtml">
+    <ui:param name="css" value="/common/misc/css/matrix_info.css" />
+    <ui:define name="page">
+
+      <div class="system_info">
+        <h1>
+          <h:outputText value="JVM Info" />
+        </h1>
+
+        <h2>
+          <h:outputText value="Up Time" />
+        </h2>
+        <h:outputText value="#{systemInfoBean.upTime} (from #{systemInfoBean.startDateTime})" />
+
+        <h2>
+          <h:outputText value="JVM Name" />
+        </h2>
+        <h:outputText value="#{systemInfoBean.runtimeBean.name}" />
+
+        <h2>
+          <h:outputText value="Input arguments" />
+        </h2>
+        <t:dataList value="#{systemInfoBean.runtimeBean.inputArguments}" var="row"
+                    layout="unorderedList">
+          <h:outputText value="#{row}" />
+        </t:dataList>
+
+        <h2>
+          <h:outputText value="JVM Specification"/>
+        </h2>
+        <ul>
+          <li><h:outputText value="Name: #{systemInfoBean.runtimeBean.specName}" /></li>
+          <li><h:outputText value="Vendor: #{systemInfoBean.runtimeBean.specVendor}" /></li>
+          <li><h:outputText value="Version: #{systemInfoBean.runtimeBean.specVersion}" /></li>
+        </ul>
+
+        <h2>
+          <h:outputText value="JVM Implementation"/>
+        </h2>
+        <ul>
+          <li><h:outputText value="Name: #{systemInfoBean.runtimeBean.vmName}" /></li>
+          <li><h:outputText value="Vendor: #{systemInfoBean.runtimeBean.vmVendor}" /></li>
+          <li><h:outputText value="Version: #{systemInfoBean.runtimeBean.vmVersion}" /></li>
+        </ul>
+
+        <h2>    
+          <h:outputText value="System properties" />
+        </h2>
+        <t:dataList value="#{systemInfoBean.systemProperties}" var="row"
+                    layout="unorderedList">
+          <h:outputText value="#{row}" />
+        </t:dataList>
+
+        <h2>
+          <h:outputText value="Management spec version" />
+        </h2>
+        <h:outputText value="#{systemInfoBean.runtimeBean.managementSpecVersion}" />
+
+        <h2>
+          <h:outputText value="Boot classpath" />
+        </h2>
+        <t:dataList value="#{systemInfoBean.bootClassPath}" var="row"
+                    layout="unorderedList">
+          <h:outputText value="#{row}" />
+        </t:dataList>
+
+        <h2>
+          <h:outputText value="Boot classpath supported" />
+        </h2>
+        <h:outputText value="#{systemInfoBean.runtimeBean.bootClassPathSupported}" />
+
+        <h2>
+          <h:outputText value="Classpath" />
+        </h2>
+        <t:dataList value="#{systemInfoBean.classPath}" var="row"
+                            layout="unorderedList">
+                  <h:outputText value="#{row}" />
+        </t:dataList>
+
+        <h2>
+          <h:outputText value="Library path" />
+        </h2>
+        <t:dataList value="#{systemInfoBean.libraryPath}" var="row"
+                    layout="unorderedList">
+          <h:outputText value="#{row}" />
+        </t:dataList>
+      </div>
+
+    </ui:define>
+  </ui:composition>
+
+</html>

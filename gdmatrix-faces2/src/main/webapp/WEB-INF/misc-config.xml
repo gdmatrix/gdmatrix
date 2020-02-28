@@ -61,6 +61,14 @@
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>
 
+  <!-- system info -->
+
+  <managed-bean>
+    <managed-bean-name>systemInfoBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.misc.systeminfo.web.SystemInfoBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
   <!-- map viewer -->
 
   <managed-bean>
@@ -194,6 +202,13 @@
     <navigation-case>
       <from-outcome>matrix_info</from-outcome>
       <to-view-id>/common/misc/matrix_info.xhtml</to-view-id>
+    </navigation-case>
+
+  <!-- system info -->
+
+    <navigation-case>
+      <from-outcome>system_info</from-outcome>
+      <to-view-id>/common/misc/system_info.xhtml</to-view-id>
     </navigation-case>
 
   <!-- map viewer -->
