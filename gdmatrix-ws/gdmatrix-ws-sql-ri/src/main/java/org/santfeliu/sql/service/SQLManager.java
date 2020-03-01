@@ -92,6 +92,7 @@ public class SQLManager extends ObjectManager
     }
   }
 
+  @Override
   public QueryTable executeDriverQuery(String sql, QueryParameters parameters, 
     String driver, String url, String username, String password)
   {
@@ -114,6 +115,7 @@ public class SQLManager extends ObjectManager
     }
   }
 
+  @Override
   public QueryTable executeAliasQuery(String sql, QueryParameters parameters, 
     String alias, String username, String password)
   {
@@ -137,6 +139,7 @@ public class SQLManager extends ObjectManager
     }    
   }
   
+  @Override
   public int executeDriverUpdate(String sql, QueryParameters parameters, 
     String driver, String url, String username, String password)
   {
@@ -162,6 +165,7 @@ public class SQLManager extends ObjectManager
     }
   }
   
+  @Override
   public int executeAliasUpdate(String sql, QueryParameters parameters, 
     String alias, String username, String password)
   {
@@ -185,6 +189,7 @@ public class SQLManager extends ObjectManager
     }
   }
   
+  @Override
   public void createConnection(String alias, String driver, String url)
   {
     try
@@ -198,6 +203,7 @@ public class SQLManager extends ObjectManager
     }
   }
   
+  @Override
   public void removeConnection(String alias)
   {
     try

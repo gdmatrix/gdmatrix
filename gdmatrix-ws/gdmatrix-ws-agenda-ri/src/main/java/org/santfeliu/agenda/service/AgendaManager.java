@@ -122,7 +122,7 @@ import org.santfeliu.ws.WSUtils;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 @WebService(endpointInterface = "org.matrix.agenda.AgendaManagerPort")
 @HandlerChain(file="handlers.xml")

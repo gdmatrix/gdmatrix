@@ -34,7 +34,6 @@ import java.io.ByteArrayInputStream;
 
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,24 +44,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.annotation.Resource;
-
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
 import javax.xml.ws.WebServiceContext;
-
 import javax.xml.ws.WebServiceException;
 import org.apache.commons.lang.StringUtils;
-import static org.matrix.dic.DictionaryConstants.ROLE_TYPE;
-import org.matrix.security.*;
-
 import org.santfeliu.jpa.JPA;
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.security.UserCache;
@@ -72,11 +63,13 @@ import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.ws.WSExceptionFactory;
+import org.matrix.security.*;
+import static org.matrix.dic.DictionaryConstants.ROLE_TYPE;
 
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @WebService(endpointInterface="org.matrix.security.SecurityManagerPort")
 @HandlerChain(file="handlers.xml")
@@ -1333,16 +1326,17 @@ public class SecurityManager implements SecurityManagerPort
   private boolean isValidMatrixPassword(String userId, String password,
     String digestedPassword) throws Exception
   {
+    if (digestedPassword == null) return true; // user has no password
+    
     // check master password
-    if (password.equals(masterPassword))
+    if (masterPassword != null && masterPassword.equals(password))
     {
       log.log(Level.INFO, "User {0} logged with master password", userId);
       return true;
     }
 
     // check matrix password
-    return digestedPassword == null ||
-      digestedPassword.equals(calcHash(password));
+    return digestedPassword.equals(calcHash(password));
   }
 
   private LDAPConnector createLDAPConnector(String userId, String password)

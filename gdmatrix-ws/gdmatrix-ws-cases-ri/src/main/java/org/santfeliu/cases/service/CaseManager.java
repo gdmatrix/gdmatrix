@@ -105,7 +105,6 @@ import org.matrix.security.SecurityConstants;
 import org.matrix.util.ExternalEntity;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
-
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.service.DBType;
@@ -127,7 +126,7 @@ import org.santfeliu.ws.WSUtils;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 @WebService(endpointInterface = "org.matrix.cases.CaseManagerPort")
 @HandlerChain(file="handlers.xml")
@@ -150,12 +149,14 @@ public class CaseManager implements CaseManagerPort
   {
   }
 
+  @Override
   public CaseMetaData getCaseMetaData()
   {
     CaseMetaData metaData = new CaseMetaData();
     return metaData;
   }
 
+  @Override
   public Case loadCase(String caseId)
   {
     try
@@ -202,6 +203,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public Case storeCase(Case caseObject)
   {
     try
@@ -290,6 +292,7 @@ public class CaseManager implements CaseManagerPort
       "true".equals(propDef.getValue().get(0)));
   }
 
+  @Override
   public boolean removeCase(String caseId)
   {
     try
@@ -375,6 +378,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public List<Case> findCases(CaseFilter filter)
   {
     try
@@ -415,6 +419,7 @@ public class CaseManager implements CaseManagerPort
     return caseList;
   }
   
+  @Override
   public int countCases(CaseFilter filter)
   {
     try
@@ -438,7 +443,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
   
-  public int doCountCases(CaseFilter filter) throws Exception
+  private int doCountCases(CaseFilter filter) throws Exception
   {
     FindCasesQueryBuilder queryBuilder = FindCasesQueryBuilder.getInstance();
     queryBuilder.setFilter(filter);
@@ -448,6 +453,7 @@ public class CaseManager implements CaseManagerPort
     return ((Number)query.getSingleResult()).intValue();    
   }
 
+  @Override
   public CasePerson loadCasePerson(String casePersonId)
   {
     try
@@ -479,6 +485,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public CasePerson storeCasePerson(CasePerson casePerson)
   {
     try
@@ -517,6 +524,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeCasePerson(String id)
   {
     try
@@ -538,6 +546,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
   
+  @Override
   public List<CasePersonView> findCasePersonViews(CasePersonFilter filter)
   {
     try
@@ -678,6 +687,7 @@ public class CaseManager implements CaseManagerPort
     }
   }  
   
+  @Override
   public int countCasePersons(CasePersonFilter filter)
   {
     try
@@ -731,6 +741,7 @@ public class CaseManager implements CaseManagerPort
     }
   }  
   
+  @Override
   public CaseAddress loadCaseAddress(String id)
   {
     try
@@ -763,6 +774,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public CaseAddress storeCaseAddress(CaseAddress caseAddress)
   {
     try
@@ -807,6 +819,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeCaseAddress(String id)
   {
     try
@@ -829,6 +842,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public List<CaseAddressView> findCaseAddressViews(CaseAddressFilter filter)
   {
     try
@@ -952,6 +966,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public int countCaseAddresses(CaseAddressFilter filter)
   {
     try
@@ -1023,6 +1038,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public Intervention storeIntervention(Intervention intervention)
   {
     try
@@ -1055,6 +1071,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeIntervention(String intId)
   {
     try
@@ -1087,6 +1104,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public List<InterventionView> findInterventionViews(InterventionFilter filter)
   {
     try
@@ -1211,6 +1229,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
   
+  @Override
   public int countInterventions(InterventionFilter filter)
   {
     try
@@ -1236,6 +1255,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public CaseDocument loadCaseDocument(String caseDocId)
   {
     try
@@ -1269,6 +1289,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public CaseDocument storeCaseDocument(CaseDocument caseDocument)
   {
     try
@@ -1331,6 +1352,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeCaseDocument(String id)
   {
     try
@@ -1354,6 +1376,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public List<CaseDocumentView> findCaseDocumentViews(CaseDocumentFilter filter)
   {
     try
@@ -1445,6 +1468,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public List<String> findCaseVolumes(String caseId)
   {
     try
@@ -1463,6 +1487,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public int countCaseDocuments(CaseDocumentFilter filter)
   {
     try
@@ -1487,6 +1512,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public CaseEvent loadCaseEvent(String caseEventId)
   {
     try
@@ -1513,6 +1539,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public CaseEvent storeCaseEvent(CaseEvent caseEvent)
   {
     try
@@ -1544,6 +1571,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeCaseEvent(String caseEventId)
   {
     try
@@ -1569,6 +1597,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public int countCaseEvents(CaseEventFilter filter)
   {
     try
@@ -1588,6 +1617,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
   
+  @Override
   public List<CaseEventView> findCaseEventViews(CaseEventFilter filter)
   {
     try
@@ -1649,6 +1679,7 @@ public class CaseManager implements CaseManagerPort
     }
   }  
   
+  @Override
   public Problem loadProblem(String caseProbId)
   {
     try
@@ -1667,6 +1698,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public Problem storeProblem(Problem problem)
   {
     try
@@ -1692,6 +1724,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeProblem(String caseProbId)
   {
     try
@@ -1712,6 +1745,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public List<ProblemView> findProblemViews(ProblemFilter filter)
   {
     try
@@ -1791,6 +1825,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public int countProblems(ProblemFilter filter)
   {
     try
@@ -1803,6 +1838,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public Demand loadDemand(String demandId)
   {
     try
@@ -1821,6 +1857,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public Demand storeDemand(Demand caseDemand)
   {
     try
@@ -1847,6 +1884,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeDemand(String caseDemandId)
   {
     try
@@ -1867,6 +1905,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public List<Demand> findDemands(DemandFilter filter)
   {
     try
@@ -1894,6 +1933,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public int countDemands(DemandFilter filter)
   {
     try
@@ -1906,6 +1946,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public CaseCase loadCaseCase(String caseCaseId)
   {
     try
@@ -1942,6 +1983,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public CaseCase storeCaseCase(CaseCase caseCase)
   {
     try
@@ -1973,6 +2015,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeCaseCase(String caseCaseId)
   {
     try
@@ -2000,6 +2043,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
   
+  @Override
   public List<CaseCaseView> findCaseCaseViews(CaseCaseFilter filter)
   {
     try
@@ -2111,6 +2155,7 @@ public class CaseManager implements CaseManagerPort
     }
   }  
   
+  @Override
   public int countCaseCases(CaseCaseFilter filter)
   {
     try
@@ -2130,6 +2175,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
   
+  @Override
   public InterventionProblem loadInterventionProblem(String intProbId)
   {
     try
@@ -2158,6 +2204,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public InterventionProblem storeInterventionProblem(InterventionProblem interventionProblem)
   {
     try
@@ -2186,6 +2233,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public boolean removeInterventionProblem(String intProbId)
   {
     try
@@ -2209,6 +2257,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public List<InterventionProblemView> 
       findInterventionProblemViews(InterventionProblemFilter filter)
   {
@@ -2271,6 +2320,7 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
+  @Override
   public int countInterventionProblems(InterventionProblemFilter filter)
   {
     try

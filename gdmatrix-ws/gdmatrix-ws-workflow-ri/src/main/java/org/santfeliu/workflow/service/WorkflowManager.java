@@ -67,7 +67,7 @@ import org.santfeliu.ws.WSExceptionFactory;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @WebService(endpointInterface = "org.matrix.workflow.WorkflowManagerPort")
 @HandlerChain(file="handlers.xml")
@@ -138,6 +138,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
   
+  @Override
   public String createInstance(String workflowName, List<Variable> variables)
   {
     try
@@ -152,6 +153,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
 
+  @Override
   public boolean destroyInstance(String instanceId)
   {
     try
@@ -164,6 +166,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
 
+  @Override
   public String assignAgent(String instanceId, String agentName)
   {
     try
@@ -176,6 +179,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
 
+  @Override
   public List<Variable> processInstance(String instanceId,
     List<Variable> variables, boolean returnVariables)
   {
@@ -192,6 +196,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
 
+  @Override
   public boolean doStep(String instanceId)
   {
     try
@@ -206,6 +211,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
 
+  @Override
   public boolean undoStep(String instanceId)
   {
     try
@@ -218,6 +224,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
 
+  @Override
   public int setVariables(String instanceId, List<Variable> variables)
   {
     try
@@ -233,6 +240,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
   
+  @Override
   public List<Variable> getVariables(String instanceId)
   {
     try
@@ -247,6 +255,7 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
 
+  @Override
   public List<InstanceView> findInstances(InstanceFilter filter)
   {
     try
@@ -293,6 +302,8 @@ public class WorkflowManager implements WorkflowManagerPort
     log.log(Level.INFO, "Destroying WorkflowManager, killing agents...");
     engine.killAllAgents();
   }
+  
+  /**** private methods ****/
 
   private WorkflowUser getWorkflowUser()
   {

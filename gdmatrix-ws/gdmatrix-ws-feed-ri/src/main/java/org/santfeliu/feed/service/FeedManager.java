@@ -79,6 +79,7 @@ public class FeedManager implements FeedManagerPort
 
   protected static final Logger log = Logger.getLogger("Feed");
 
+  @Override
   public Folder loadFolder(String folderId)
   {
     log.log(Level.INFO, "loadFolder {0}", new Object[]{folderId});
@@ -95,6 +96,7 @@ public class FeedManager implements FeedManagerPort
     return folder;
   }
 
+  @Override
   public Folder storeFolder(Folder folder)
   {
     String folderId = folder.getFolderId();
@@ -120,6 +122,7 @@ public class FeedManager implements FeedManagerPort
     return folder;
   }
 
+  @Override
   public boolean removeFolder(String folderId)
   {
     log.log(Level.INFO, "removeFolder {0}", new Object[]{folderId});
@@ -146,6 +149,7 @@ public class FeedManager implements FeedManagerPort
     return true;
   }
 
+  @Override
   public int countFolders(FolderFilter filter)
   {
     log.log(Level.INFO, "countFolders");
@@ -156,6 +160,7 @@ public class FeedManager implements FeedManagerPort
     return number.intValue();
   }
 
+  @Override
   public List<Folder> findFolders(FolderFilter filter)
   {
     log.log(Level.INFO, "findFolders");
@@ -175,6 +180,7 @@ public class FeedManager implements FeedManagerPort
     return folderList;
   }
 
+  @Override
   public Feed loadFeed(String feedId)
   {
     log.log(Level.INFO, "loadFeed {0}", new Object[]{feedId});
@@ -190,6 +196,7 @@ public class FeedManager implements FeedManagerPort
     return feed;
   }
 
+  @Override
   public Feed storeFeed(Feed feed)
   {
     String feedId = feed.getFeedId();
@@ -215,6 +222,7 @@ public class FeedManager implements FeedManagerPort
     return feed;
   }
 
+  @Override
   public boolean removeFeed(String feedId)
   {
     log.log(Level.INFO, "removeFeed {0}", new Object[]{feedId});
@@ -243,6 +251,7 @@ public class FeedManager implements FeedManagerPort
     return true;
   }
 
+  @Override
   public int countFeeds(FeedFilter filter)
   {
     log.log(Level.INFO, "countFeeds");
@@ -253,6 +262,7 @@ public class FeedManager implements FeedManagerPort
     return number.intValue();
   }
 
+  @Override
   public List<Feed> findFeeds(FeedFilter filter)
   {
     log.log(Level.INFO, "findFeeds");
@@ -272,6 +282,7 @@ public class FeedManager implements FeedManagerPort
     return feedList;
   }
 
+  @Override
   public int countFeedFolders(FeedFolderFilter filter)
   {
     log.log(Level.INFO, "countFeedFolders");
@@ -282,6 +293,7 @@ public class FeedManager implements FeedManagerPort
     return number.intValue();
   }
 
+  @Override
   public List<FeedFolder> findFeedFolders(FeedFolderFilter filter)
   {
     log.log(Level.INFO, "findFeedFolders");
@@ -301,6 +313,7 @@ public class FeedManager implements FeedManagerPort
     return feedFolderList;
   }
 
+  @Override
   public List<FeedFolderView> findFeedFolderViews(FeedFolderFilter filter)
   {
     log.log(Level.INFO, "findFeedFolderViews");
@@ -329,6 +342,7 @@ public class FeedManager implements FeedManagerPort
     return feedFolderViewList;
   }
 
+  @Override
   public FeedFolder loadFeedFolder(String feedFolderId)
   {
     log.log(Level.INFO, "loadFeedFolder {0}", new Object[]{feedFolderId});
@@ -345,6 +359,7 @@ public class FeedManager implements FeedManagerPort
     return feedFolder;
   }
 
+  @Override
   public FeedFolder storeFeedFolder(FeedFolder feedFolder)
   {
     String feedFolderId = feedFolder.getFeedFolderId();
@@ -370,6 +385,7 @@ public class FeedManager implements FeedManagerPort
     return feedFolder;
   }
 
+  @Override
   public boolean removeFeedFolder(String feedFolderId)
   {
     log.log(Level.INFO, "removeFeedFolder {0}", new Object[]{feedFolderId});
@@ -395,6 +411,7 @@ public class FeedManager implements FeedManagerPort
     return true;
   }
 
+  @Override
   public Entry loadEntry(String entryId)
   {
     log.log(Level.INFO, "loadEntry {0}", new Object[]{entryId});
@@ -412,6 +429,7 @@ public class FeedManager implements FeedManagerPort
     return entry;
   }
 
+  @Override
   public Entry storeEntry(Entry entry)
   {
     String entryId = entry.getEntryId();
@@ -436,6 +454,7 @@ public class FeedManager implements FeedManagerPort
     return entry;
   }
 
+  @Override
   public boolean removeEntry(String entryId)
   {
     log.log(Level.INFO, "removeEntry {0}", new Object[]{entryId});
@@ -457,6 +476,7 @@ public class FeedManager implements FeedManagerPort
     return true;
   }
 
+  @Override
   public int countEntries(EntryFilter filter)
   {
     log.log(Level.INFO, "countEntries");
@@ -467,6 +487,7 @@ public class FeedManager implements FeedManagerPort
     return number.intValue();
   }
 
+  @Override
   public List<Entry> findEntries(EntryFilter filter)
   {
     log.log(Level.INFO, "findEntries");

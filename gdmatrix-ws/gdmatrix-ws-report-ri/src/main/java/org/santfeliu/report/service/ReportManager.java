@@ -64,7 +64,7 @@ import javax.xml.ws.handler.MessageContext;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @WebService(endpointInterface = "org.matrix.report.ReportManagerPort")
 public class ReportManager implements ReportManagerPort
@@ -75,7 +75,7 @@ public class ReportManager implements ReportManagerPort
   private HashMap<String, ReportEngine> engines =
     new HashMap<String, ReportEngine>();
 
-  protected static CSVLogger logger;
+  protected static CSVLogger csvLogger;
   protected static final String LOG_CONFIG = "org.santfeliu.ws.logConfig";
   protected static final String DEFAULT_TECHNOLOGY = "jasper";
   protected static long executionTimeout = 5 * 60 * 1000; // 5 minutes
@@ -85,7 +85,7 @@ public class ReportManager implements ReportManagerPort
     String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
     if (logConfig != null)
     {
-      logger = CSVLogger.getInstance(logConfig);
+      csvLogger = CSVLogger.getInstance(logConfig);
     }
     String value = MatrixConfig.getClassProperty(
       ReportManager.class, "executionTimeout");
@@ -105,6 +105,7 @@ public class ReportManager implements ReportManagerPort
   {
   }
 
+  @Override
   public Report loadReport(String reportId, boolean includeSourceData)
   {
     try
@@ -142,6 +143,7 @@ public class ReportManager implements ReportManagerPort
     }
   }
 
+  @Override
   public DataHandler executeReport(String reportId,
     String connectionName, List<Parameter> parameters,
     ExportOptions exportOptions)
@@ -213,20 +215,25 @@ public class ReportManager implements ReportManagerPort
     }
   }
 
+  @Override
   public Report storeReport(Report report)
   {
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
 
+  @Override
   public boolean removeReport(String reportId)
   {
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
 
+  @Override
   public List<Report> findReports(ReportFilter reportFilter)
   {
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
+  
+  /**** private methods ****/
 
   private Report internalLoadReport(String reportId, Credentials credentials)
     throws Exception
@@ -293,7 +300,7 @@ public class ReportManager implements ReportManagerPort
   private void logOperation(String operation, String messageType,
     String message, String userId)
   {
-    if (logger != null)
+    if (csvLogger != null)
     {
       // TODO: CHECK URL
       HttpServletRequest request =
@@ -302,7 +309,7 @@ public class ReportManager implements ReportManagerPort
       String url = request.getRequestURL().toString();
       String ip = request.getRemoteAddr();
 
-      logger.log(getCurrentDateTime("dd/MM/yyyy-HH:mm:ss"),
+      csvLogger.log(getCurrentDateTime("dd/MM/yyyy-HH:mm:ss"),
         userId, ip, url, operation, messageType, message);
     }
   }

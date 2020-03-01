@@ -104,7 +104,7 @@ import org.santfeliu.ws.WSUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @WebService(endpointInterface = "org.matrix.kernel.KernelManagerPort")
 @HandlerChain(file="handlers.xml")
@@ -137,6 +137,7 @@ public class KernelManager implements KernelManagerPort
     return metaData;
   }
 
+  @Override
   public Person loadPerson(String personId)
   {
     DBPerson dbPerson = entityManager.find(DBPerson.class, personId);
@@ -147,6 +148,7 @@ public class KernelManager implements KernelManagerPort
     return person;
   }
 
+  @Override
   public Person storePerson(Person person)
   {
     person = getWSEndpoint().toLocal(Person.class, person);
@@ -180,6 +182,7 @@ public class KernelManager implements KernelManagerPort
     return getWSEndpoint().toGlobal(Person.class, person);
   }
 
+  @Override
   public boolean removePerson(String personId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
@@ -188,6 +191,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<Person> findPersons(PersonFilter filter)
   {
     validatePersonFilter(filter);
@@ -212,6 +216,7 @@ public class KernelManager implements KernelManagerPort
     return persons;
   }
 
+  @Override
   public List<PersonView> findPersonViews(PersonFilter filter)
   {
     validatePersonFilter(filter);
@@ -232,6 +237,7 @@ public class KernelManager implements KernelManagerPort
     return personViews;
   }
 
+  @Override
   public int countPersons(PersonFilter filter)
   {
     Query query = entityManager.createNamedQuery("countPersons");
@@ -243,6 +249,7 @@ public class KernelManager implements KernelManagerPort
   }
 
   /* Contact */
+  @Override
   public Contact loadContact(String contactId)
   {
     if (contactId.startsWith("1" + PK_SEPARATOR)) // person contact: teleco1
@@ -262,6 +269,7 @@ public class KernelManager implements KernelManagerPort
     }
   }
 
+  @Override
   public Contact storeContact(Contact contact)
   {
     validateContact(contact);
@@ -310,6 +318,7 @@ public class KernelManager implements KernelManagerPort
     return contact;
   }
 
+  @Override
   public boolean removeContact(String contactId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
@@ -327,11 +336,13 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public int countContacts(ContactFilter filter)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public List<ContactView> findContactViews(ContactFilter filter)
   {
     List<ContactView> contactViews = new ArrayList<ContactView>();
@@ -374,6 +385,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* Address */
+  @Override
   public Address loadAddress(String addressId)
   {
     DBAddress dbAddress = entityManager.find(DBAddress.class, addressId);
@@ -384,6 +396,7 @@ public class KernelManager implements KernelManagerPort
     return address;
   }
 
+  @Override
   public Address storeAddress(Address address)
   {
     address = getWSEndpoint().toLocal(Address.class, address);
@@ -415,6 +428,7 @@ public class KernelManager implements KernelManagerPort
     return getWSEndpoint().toGlobal(Address.class, address);    
   }
 
+  @Override
   public boolean removeAddress(String addressId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);  
@@ -424,11 +438,13 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<Address> findAddresses(AddressFilter filter)
   {
     return null;
   }
 
+  @Override
   public List<AddressView> findAddressViews(AddressFilter filter)
   {
     if (filter.getAddressIdList().isEmpty() &&
@@ -469,6 +485,7 @@ public class KernelManager implements KernelManagerPort
     return addressViews;
   }
 
+  @Override
   public int countAddresses(AddressFilter filter)
   {
     Query query = entityManager.createNamedQuery("countAddresses");
@@ -483,6 +500,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* PersonAddress */
+  @Override
   public PersonAddress loadPersonAddress(String personAddressId)
   {
     DBPersonAddressPK pk = new DBPersonAddressPK(personAddressId);
@@ -495,6 +513,7 @@ public class KernelManager implements KernelManagerPort
     return personAddress;
   }
 
+  @Override
   public PersonAddress storePersonAddress(PersonAddress personAddress)
   {
     validatePersonAddress(personAddress);
@@ -526,6 +545,7 @@ public class KernelManager implements KernelManagerPort
     return personAddress;
   }
 
+  @Override
   public boolean removePersonAddress(String personAddressId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
@@ -536,6 +556,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public int countPersonAddresses(PersonAddressFilter filter)
   {
     Query query = entityManager.createNamedQuery("countPersonAddresses");
@@ -545,6 +566,7 @@ public class KernelManager implements KernelManagerPort
     return count.intValue();
   }
 
+  @Override
   public List<PersonAddressView> findPersonAddressViews(
     PersonAddressFilter filter)
   {
@@ -613,6 +635,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* PersonRepresentant */
+  @Override
   public PersonRepresentant loadPersonRepresentant(
     String personRepresentantId)
   {
@@ -627,6 +650,7 @@ public class KernelManager implements KernelManagerPort
     return personRepresentant;
   }
 
+  @Override
   public PersonRepresentant storePersonRepresentant(
     PersonRepresentant personRepresentant)
   {
@@ -677,6 +701,7 @@ public class KernelManager implements KernelManagerPort
       .toGlobal(PersonRepresentant.class, personRepresentant);
   }
 
+  @Override
   public boolean removePersonRepresentant(String personRepresentantId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);  
@@ -688,6 +713,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<PersonRepresentantView> findPersonRepresentantViews(
     PersonRepresentantFilter filter)
   {
@@ -733,6 +759,7 @@ public class KernelManager implements KernelManagerPort
     return personRepresentantViews;
   }
 
+  @Override
   public PersonPerson loadPersonPerson(String personPersonId)
   {
     PersonPerson personPerson = null;
@@ -755,6 +782,7 @@ public class KernelManager implements KernelManagerPort
     return personPerson;
   }
 
+  @Override
   public PersonPerson storePersonPerson(PersonPerson personPerson)
   {
     String personPersonId = personPerson.getPersonPersonId();
@@ -775,6 +803,7 @@ public class KernelManager implements KernelManagerPort
     return dbPersonPerson;
   }
 
+  @Override
   public boolean removePersonPerson(String personPersonId)
   {
     DBPersonPerson dbPersonPerson =
@@ -787,6 +816,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<PersonPersonView> findPersonPersonViews(PersonPersonFilter filter)
   {
     List<PersonPersonView> personPersonViewList = new ArrayList<PersonPersonView>();
@@ -846,6 +876,7 @@ public class KernelManager implements KernelManagerPort
   }
 
   /* Room */
+  @Override
   public Room loadRoom(String roomId)
   {
     roomId = getWSEndpoint().toLocalId(Room.class, roomId);
@@ -860,6 +891,7 @@ public class KernelManager implements KernelManagerPort
     return getWSEndpoint().toGlobal(Room.class, room);
   }
 
+  @Override
   public Room storeRoom(Room room)
   {
     room = getWSEndpoint().toLocal(Room.class, room);
@@ -902,6 +934,7 @@ public class KernelManager implements KernelManagerPort
     return getWSEndpoint().toGlobal(Room.class, room);
   }
 
+  @Override
   public boolean removeRoom(String roomId)
   {
     roomId = getWSEndpoint().toLocalId(Room.class, roomId);
@@ -914,6 +947,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public int countRooms(RoomFilter globalFilter)
   {
     RoomFilter filter = getWSEndpoint().toLocal(RoomFilter.class, globalFilter);
@@ -928,6 +962,7 @@ public class KernelManager implements KernelManagerPort
     return count.intValue();
   }
 
+  @Override
   public List<Room> findRooms(RoomFilter globalFilter)
   {
     RoomFilter filter = getWSEndpoint().toLocal(RoomFilter.class, globalFilter);
@@ -950,6 +985,7 @@ public class KernelManager implements KernelManagerPort
     return rooms;
   }
 
+  @Override
   public List<RoomView> findRoomViews(RoomFilter globalFilter)
   {
     RoomFilter filter = getWSEndpoint().toLocal(RoomFilter.class, globalFilter);
@@ -969,6 +1005,7 @@ public class KernelManager implements KernelManagerPort
   }
 
   /* Country */
+  @Override
   public Country loadCountry(String countryId)
   {
     DBCountry dbCountry = entityManager.find(DBCountry.class, countryId);
@@ -979,6 +1016,7 @@ public class KernelManager implements KernelManagerPort
     return country;
   }
 
+  @Override
   public Country storeCountry(Country country)
   {
     String countryId = country.getCountryId();
@@ -996,6 +1034,7 @@ public class KernelManager implements KernelManagerPort
     return country;
   }
 
+  @Override
   public boolean removeCountry(String countryId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
@@ -1005,11 +1044,13 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public int countCountries(CountryFilter filter)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public List<Country> findCountries(CountryFilter filter)
   {
     List<Country> countries = new ArrayList<Country>();
@@ -1037,6 +1078,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* Provinces */
+  @Override
   public Province loadProvince(String provinceId)
   {
     DBProvince dbProvince = entityManager.find(DBProvince.class, 
@@ -1048,6 +1090,7 @@ public class KernelManager implements KernelManagerPort
     return province;
   }
 
+  @Override
   public Province storeProvince(Province province)
   {
     String provinceId = province.getProvinceId();
@@ -1080,6 +1123,7 @@ public class KernelManager implements KernelManagerPort
     return province;
   }
 
+  @Override
   public boolean removeProvince(String provinceId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
@@ -1089,11 +1133,13 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public int countProvinces(ProvinceFilter filter)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public List<Province> findProvinces(ProvinceFilter filter)
   {
     List<Province> provinces = new ArrayList<Province>();
@@ -1122,6 +1168,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* City */
+  @Override
   public City loadCity(String cityId)
   {
     DBCity dbCity = entityManager.find(DBCity.class, 
@@ -1133,6 +1180,7 @@ public class KernelManager implements KernelManagerPort
     return city;
   }
 
+  @Override
   public City storeCity(City city)
   {
     String cityId = city.getCityId();
@@ -1170,6 +1218,7 @@ public class KernelManager implements KernelManagerPort
     return city;
   }
 
+  @Override
   public boolean removeCity(String cityId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
@@ -1179,11 +1228,13 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public int countCities(CityFilter filter)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public List<City> findCities(CityFilter filter)
   {
     List<City> cities = new ArrayList<City>();
@@ -1216,6 +1267,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* Street */
+  @Override
   public Street loadStreet(String streetId)
   {
     DBStreet dbStreet = entityManager.find(DBStreet.class, 
@@ -1227,6 +1279,7 @@ public class KernelManager implements KernelManagerPort
     return street;
   }
 
+  @Override
   public Street storeStreet(Street street)
   {
     String streetId = street.getStreetId();
@@ -1265,6 +1318,7 @@ public class KernelManager implements KernelManagerPort
     return street;
   }
 
+  @Override
   public boolean removeStreet(String streetId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
@@ -1274,11 +1328,13 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public int countStreets(StreetFilter filter)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public List<Street> findStreets(StreetFilter filter)
   {
     List<Street> streets = new ArrayList<Street>();
@@ -1325,6 +1381,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* KernelList */
+  @Override
   public KernelListItem loadKernelListItem(KernelList list, 
                                            String itemId)
   {
@@ -1337,6 +1394,7 @@ public class KernelManager implements KernelManagerPort
     return kernelListItem;
   }
 
+  @Override
   public KernelListItem storeKernelListItem(KernelList list,
                                             KernelListItem kernelListItem)
   {
@@ -1356,6 +1414,7 @@ public class KernelManager implements KernelManagerPort
     return kernelListItem;
   }
 
+  @Override
   public boolean removeKernelListItem(KernelList list, String itemId)
   {
     String listId = getKernelListId(list);
@@ -1365,6 +1424,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<KernelListItem> listKernelListItems(KernelList list)
   {
     List<KernelListItem> kernelListItems = new ArrayList<KernelListItem>();
@@ -1389,6 +1449,7 @@ public class KernelManager implements KernelManagerPort
     return kernelListItems;
   }
 
+  @Override
   public PersonDocument loadPersonDocument(String personDocId)
   {
     DBPersonDocument dbPersonDocument =
@@ -1403,6 +1464,7 @@ public class KernelManager implements KernelManagerPort
     return personDocument;
   }
 
+  @Override
   public PersonDocument storePersonDocument(PersonDocument personDocument)
   {
     String userId = getUserId();
@@ -1423,16 +1485,7 @@ public class KernelManager implements KernelManagerPort
     return dbPersonDocument;
   }
 
-  private PersonDocument createPersonDocument(PersonDocument personDocument,
-    String userId) 
-  {
-    DBPersonDocument dbPersonDocument = new DBPersonDocument(personDocument);
-    Auditor.auditCreation(dbPersonDocument, userId);
-    entityManager.persist(dbPersonDocument);
-
-    return dbPersonDocument;
-  }
-
+  @Override
   public boolean removePersonDocument(String personDocId)
   {
     DBPersonDocument dbDocPerson =
@@ -1444,8 +1497,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
-  //TODO: Se puede hacer + eficiente con una sola query. Esta versión está
-  //heredada de la implementación que habia en versiones previas de doc.
+  @Override
   public List<PersonDocumentView> findPersonDocumentViews(PersonDocumentFilter filter)
   {
     if (StringUtils.isBlank(filter.getDocId()) &&
@@ -1501,21 +1553,25 @@ public class KernelManager implements KernelManagerPort
     return personDocViewList;
   }
 
+  @Override
   public List<AddressDocumentView> findAddressDocumentViews(AddressDocumentFilter filter)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public AddressDocument loadAddressDocument(String addressDocId)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public boolean removeAddressDocument(String addressDocId)
   {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
   public AddressDocument storeAddressDocument(AddressDocument addressDocument)
   {
     throw new UnsupportedOperationException("Not supported yet.");
@@ -1623,6 +1679,16 @@ public class KernelManager implements KernelManagerPort
     {
       throw new WebServiceException("NOT_AUTHORIZED");
     }
+  }
+
+  private PersonDocument createPersonDocument(PersonDocument personDocument,
+    String userId) 
+  {
+    DBPersonDocument dbPersonDocument = new DBPersonDocument(personDocument);
+    Auditor.auditCreation(dbPersonDocument, userId);
+    entityManager.persist(dbPersonDocument);
+
+    return dbPersonDocument;
   }
   
   private void checkUserInRoleOrAuthor(String role, DBEntityBase entity)

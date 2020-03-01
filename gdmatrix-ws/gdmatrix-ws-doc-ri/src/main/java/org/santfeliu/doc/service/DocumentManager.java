@@ -117,7 +117,7 @@ import uk.gov.nationalarchives.droid.signatureFile.FileFormat;
 
 /**
  *
- * @author unknown
+ * @author blanquepa, realor
  */
 @WebService(endpointInterface = "org.matrix.doc.DocumentManagerPort")
 public class DocumentManager implements DocumentManagerPort
@@ -143,7 +143,7 @@ public class DocumentManager implements DocumentManagerPort
 
   public static final String LOG_CONFIG = "org.santfeliu.ws.logConfig";
 
-  protected static CSVLogger logger;
+  protected static CSVLogger csvLogger;
 
 
   static
@@ -151,7 +151,7 @@ public class DocumentManager implements DocumentManagerPort
     String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
     if (logConfig != null)
     {
-      logger = CSVLogger.getInstance(logConfig);
+      csvLogger = CSVLogger.getInstance(logConfig);
     }
   }
 
@@ -162,7 +162,6 @@ public class DocumentManager implements DocumentManagerPort
       initDocumentStore();
       initContentStore();
       initDroid();
-//      SOAPFaultBuilder.captureStackTrace = false;
     }
     catch (Exception ex)
     {
@@ -170,6 +169,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
 
+  @Override
   public DocumentMetaData getDocumentMetaData()
   {
     DocumentMetaData metaData = new DocumentMetaData();
@@ -178,6 +178,7 @@ public class DocumentManager implements DocumentManagerPort
     return metaData;
   }
 
+  @Override
   public DocumentManagerMetaData getManagerMetaData()
   {
     DocumentManagerMetaData metaData = new DocumentManagerMetaData();
@@ -187,6 +188,7 @@ public class DocumentManager implements DocumentManagerPort
 
   /* Content operations */
 
+  @Override
   public Content loadContent(String contentId)
   {
     try
@@ -222,6 +224,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
 
+  @Override
   public Content storeContent(Content content)
   {
     try
@@ -254,6 +257,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
   
+  @Override
   public boolean removeContent(String contentId)
   {
     try
@@ -285,6 +289,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
 
+  @Override
   public DataHandler markupContent(String contentId, String searchExpression)
   {
     try
@@ -315,9 +320,10 @@ public class DocumentManager implements DocumentManagerPort
       logOperation("markupContent", "FAULT", ex.getMessage());
       throw WSExceptionFactory.create(ex);
     }
-  }  
+  }
 
   /* Document operations */
+  @Override
   public Document loadDocument(String docId, int version, 
     ContentInfo contentInfo)
   {
@@ -378,7 +384,8 @@ public class DocumentManager implements DocumentManagerPort
         }
         docConn.commit();
         logOperation("loadDocument", "OUT", "docId=" + document.getDocId() +
-          "&version=" + document.getVersion() + (content != null ? "&contentId=" + content.getContentId() : ""));
+          "&version=" + document.getVersion() + 
+          (content != null ? "&contentId=" + content.getContentId() : ""));
         return document;
       }
       catch (Exception ex)
@@ -398,6 +405,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
 
+  @Override
   public Document storeDocument(Document document)
   {
     Document storedDocument = null;
@@ -449,6 +457,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
 
+  @Override
   public boolean removeDocument(String docId, int version)
   {
     try
@@ -563,6 +572,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
 
+  @Override
   public List<Document> findDocuments(DocumentFilter documentFilter)
   {
     try
@@ -648,6 +658,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
 
+  @Override
   public int countDocuments(DocumentFilter documentFilter)
   {
     try
@@ -682,6 +693,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
   
+  @Override
   public void lockDocument(String docId, int version)
   {
     try
@@ -732,6 +744,7 @@ public class DocumentManager implements DocumentManagerPort
     }
   }
 
+  @Override
   public void unlockDocument(String docId, int version)
   {
     try
@@ -1618,7 +1631,10 @@ public class DocumentManager implements DocumentManagerPort
   private void logOperation(String operation, String messageType,
     String message, String userId)
   {
-    if (logger != null)
+    log.log(Level.INFO, "{0} {1}: {2}", 
+      new Object[]{operation, messageType, message});
+
+    if (csvLogger != null)
     {
       // TODO: CHECK URL
       HttpServletRequest request =
@@ -1627,7 +1643,7 @@ public class DocumentManager implements DocumentManagerPort
       String url = request.getRequestURL().toString();
       String ip = request.getRemoteAddr();
 
-      logger.log(
+      csvLogger.log(
         getCurrentDateTime("dd/MM/yyyy-HH:mm:ss"),
         userId, ip, url, operation, messageType, message);
     }

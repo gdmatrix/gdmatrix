@@ -67,12 +67,8 @@ import org.santfeliu.jpa.JPAUtils;
 
 
 /**
- * @autor: Abel Blanque, Ricard Real
- * @version: 0.3
- */
-/**
  *
- * @author unknown
+ * @author blanquepa, realor
  */
 @WebService(endpointInterface = "org.matrix.elections.ElectionsManagerPort")
 @HandlerChain(file="handlers.xml")
@@ -87,6 +83,7 @@ public class ElectionsManager implements ElectionsManagerPort
 
   protected static final Logger log = Logger.getLogger("Elections");
 
+  @Override
   public List<Councillor> listCouncillors(XMLGregorianCalendar date,
     String callId)
   {
@@ -106,6 +103,7 @@ public class ElectionsManager implements ElectionsManagerPort
     return result;
   }
 
+  @Override
   public List<PoliticalParty> listPoliticalParties(
     XMLGregorianCalendar date, String callId)
   {
@@ -125,6 +123,7 @@ public class ElectionsManager implements ElectionsManagerPort
     return result;
   }
 
+  @Override
   public List<Board> listBoards(XMLGregorianCalendar date, String callId)
   {
     Calendar calendar = (date != null ? date.toGregorianCalendar() : null);
@@ -143,6 +142,7 @@ public class ElectionsManager implements ElectionsManagerPort
     return result;
   }
 
+  @Override
   public List<ElectionsResult> listResults(XMLGregorianCalendar date,
     String callId)
   {
@@ -165,6 +165,7 @@ public class ElectionsManager implements ElectionsManagerPort
     return electionsResults;
   }
 
+  @Override
   public List<org.matrix.elections.Call> listCalls()
   {
     log.log(Level.INFO, "listCalls");
@@ -207,6 +208,7 @@ public class ElectionsManager implements ElectionsManagerPort
     return result;
   }
 
+  @Override
   public List<District> listDistricts(XMLGregorianCalendar date)
   {
     log.log(Level.INFO, "listDistricts");

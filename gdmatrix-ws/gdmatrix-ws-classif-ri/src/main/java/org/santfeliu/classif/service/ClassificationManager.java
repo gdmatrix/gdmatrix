@@ -85,6 +85,7 @@ public class ClassificationManager implements ClassificationManagerPort
 
   private static final String PERIOD_SEQUENCE_NAME = "classif.period";
 
+  @Override
   public Class loadClass(String classId, String dateTime)
   {
     if (classId == null)
@@ -122,6 +123,7 @@ public class ClassificationManager implements ClassificationManagerPort
     }
   }
 
+  @Override
   public Class storeClass(Class classObject)
   {
     classObject = getWSEndpoint().toLocal(Class.class, classObject);
@@ -239,6 +241,7 @@ public class ClassificationManager implements ClassificationManagerPort
     return classObject;
   }
 
+  @Override
   public boolean removeClass(String classId)
   {
     if (classId == null)
@@ -278,6 +281,7 @@ public class ClassificationManager implements ClassificationManagerPort
     }
   }
 
+  @Override
   public int countClasses(ClassFilter filter)
   {
     filter = getWSEndpoint().toLocal(ClassFilter.class, filter);
@@ -287,6 +291,7 @@ public class ClassificationManager implements ClassificationManagerPort
     return count.intValue();
   }
 
+  @Override
   public List<Class> findClasses(ClassFilter filter)
   {
     filter = getWSEndpoint().toLocal(ClassFilter.class, filter);
@@ -311,6 +316,7 @@ public class ClassificationManager implements ClassificationManagerPort
     return classList;
   }
 
+  @Override
   public List<String> listModifiedClasses(String dateTime1, String dateTime2)
   {
     Query query = entityManager.createNamedQuery("listModifiedClasses");

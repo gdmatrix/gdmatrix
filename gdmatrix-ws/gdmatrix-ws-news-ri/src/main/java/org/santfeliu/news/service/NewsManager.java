@@ -72,7 +72,7 @@ import org.santfeliu.ws.WSUtils;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
  */
 @WebService(endpointInterface = "org.matrix.news.NewsManagerPort")
 @HandlerChain(file="handlers.xml")
@@ -98,12 +98,14 @@ public class NewsManager implements NewsManagerPort
   {
   }
 
+  @Override
   public NewsManagerMetaData getManagerMetaData()
   {
     NewsManagerMetaData metaData = new NewsManagerMetaData();
     return metaData;
   }
 
+  @Override
   public New storeNew(New newObject, NewStoreOptions storeOptions)
   {
     log.log(Level.INFO, "storeNew");
@@ -147,6 +149,7 @@ public class NewsManager implements NewsManagerPort
     return newObject;
   }
 
+  @Override
   public New loadNew(String newId)
   {
     log.log(Level.INFO, "loadNew {0}", newId);        
@@ -157,6 +160,7 @@ public class NewsManager implements NewsManagerPort
     return newObject;
   }
 
+  @Override
   public int incrementNewCounter(String newId, String sectionId)
   {
     log.log(Level.INFO, "incrementNewCounter newId {0} sectionId {1}",
@@ -169,6 +173,7 @@ public class NewsManager implements NewsManagerPort
     return totalCounter;
   }
 
+  @Override
   public int getTotalNewCounter(String newId)
   {
     log.log(Level.INFO, "getTotalNewCounter {0}", newId);
@@ -176,6 +181,7 @@ public class NewsManager implements NewsManagerPort
     return dbNew.getTotalReadingCount();
   }
 
+  @Override
   public boolean removeNew(String newId)
   {
     try
@@ -200,6 +206,7 @@ public class NewsManager implements NewsManagerPort
     }
   }
 
+  @Override
   public int countNews(NewsFilter filter)
   {
     log.log(Level.INFO, "countNews");
@@ -208,6 +215,7 @@ public class NewsManager implements NewsManagerPort
     return ((Number)query.getSingleResult()).intValue();
   }
 
+  @Override
   public List<New> findNews(NewsFilter filter)
   {
     log.log(Level.INFO, "findNews");
@@ -255,6 +263,7 @@ public class NewsManager implements NewsManagerPort
     return result;
   }
 
+  @Override
   public List<NewView> findNewViews(NewsFilter filter)
   {
     log.log(Level.INFO, "findNewViews");
@@ -294,6 +303,7 @@ public class NewsManager implements NewsManagerPort
     return result;
   }
 
+  @Override
   public NewSection storeNewSection(NewSection newSection)
   {
     log.log(Level.INFO, "storeNewSection newId {0},sectionId {1}",
@@ -320,6 +330,7 @@ public class NewsManager implements NewsManagerPort
     return newSection;
   }    
 
+  @Override
   public boolean removeNewSection(String newSectionId)
   {
     try
@@ -337,6 +348,7 @@ public class NewsManager implements NewsManagerPort
     }
   }
 
+  @Override
   public List<NewSection> findNewSections(String newId)
   {
     log.log(Level.INFO, "findNewSections newId:{0}", newId);
@@ -353,6 +365,7 @@ public class NewsManager implements NewsManagerPort
     return newSectionList;
   }
 
+  @Override
   public NewDocument storeNewDocument(NewDocument newDocument)
   {
     log.log(Level.INFO, "storeNewDocument newId {0},documentId {1}",
@@ -374,6 +387,7 @@ public class NewsManager implements NewsManagerPort
     return newDocument;              
   }
 
+  @Override
   public boolean removeNewDocument(String newDocumentId)
   {
     try
@@ -391,6 +405,7 @@ public class NewsManager implements NewsManagerPort
     }
   }
 
+  @Override
   public List<NewDocument> findNewDocuments(String newId, String docType)
   {
     log.log(Level.INFO, "findNewDocuments newId:{0} docType:{1}",
@@ -400,6 +415,7 @@ public class NewsManager implements NewsManagerPort
     return newDocumentList;
   }
   
+  @Override
   public NewSection loadNewSection(String newSectionId)
   {
     log.log(Level.INFO, "loadNewSection {0}", newSectionId);        
@@ -412,6 +428,7 @@ public class NewsManager implements NewsManagerPort
     return newSection;    
   }
 
+  @Override
   public List<Source> findSources()
   {
     log.log(Level.INFO, "findSources");
@@ -427,6 +444,7 @@ public class NewsManager implements NewsManagerPort
     return resultList;
   }
 
+  @Override
   public int countNewsBySection(SectionFilter filter)
   {
     log.log(Level.INFO, "countNewsBySection");
@@ -442,6 +460,7 @@ public class NewsManager implements NewsManagerPort
     return result;
   }  
 
+  @Override
   public List<SectionView> findNewsBySection(SectionFilter filter)
   {
     log.log(Level.INFO, "findNewsBySection");
@@ -458,6 +477,8 @@ public class NewsManager implements NewsManagerPort
     if (result.size() > 0) fillDocumentFields(result);
     return result;
   }
+  
+  /**** private methods ****/
   
   private int increaseSectionReadCount(String newId, String sectionId)
   {

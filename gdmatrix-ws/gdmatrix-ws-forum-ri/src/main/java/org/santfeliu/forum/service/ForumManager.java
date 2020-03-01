@@ -109,6 +109,7 @@ public class ForumManager implements ForumManagerPort
 
   // Forums
 
+  @Override
   public Forum loadForum(String forumId)
   {
     log.log(Level.INFO, "loadForum {0}", new Object[]{forumId});
@@ -127,6 +128,7 @@ public class ForumManager implements ForumManagerPort
     return forum;
   }
 
+  @Override
   public Forum storeForum(Forum forum)
   {
     WSEndpoint endpoint = getWSEndpoint();
@@ -158,6 +160,7 @@ public class ForumManager implements ForumManagerPort
     return forum;
   }
 
+  @Override
   public boolean removeForum(String forumId)
   {
     log.log(Level.INFO, "removeForum {0}", new Object[]{forumId});
@@ -190,6 +193,7 @@ public class ForumManager implements ForumManagerPort
     return true;
   }
 
+  @Override
   public int countForums(ForumFilter filter)
   {
     log.log(Level.INFO, "countForums");
@@ -199,6 +203,7 @@ public class ForumManager implements ForumManagerPort
     return ((Number)query.getSingleResult()).intValue();
   }
 
+  @Override
   public List<Forum> findForums(ForumFilter filter)
   {
     log.log(Level.INFO, "findForums");
@@ -214,6 +219,7 @@ public class ForumManager implements ForumManagerPort
     return forumList;
   }
 
+  @Override
   public List<ForumView> findForumViews(ForumFilter filter)
   {
     try
@@ -296,18 +302,21 @@ public class ForumManager implements ForumManagerPort
 
   // Questions
 
+  @Override
   public Question loadQuestion(String questionId)
   {
     log.log(Level.INFO, "loadQuestion {0}", new Object[]{questionId});
     return doLoadQuestion(questionId, false);
   }
 
+  @Override
   public Question readQuestion(String questionId)
   {
     log.log(Level.INFO, "readQuestion {0}", new Object[]{questionId});
     return doLoadQuestion(questionId, true);
   }
 
+  @Override
   public Question storeQuestion(Question question)
   {
     String questionId = question.getQuestionId();
@@ -396,6 +405,7 @@ public class ForumManager implements ForumManagerPort
     return question;
   }
 
+  @Override
   public boolean removeQuestion(String questionId)
   {
     log.log(Level.INFO, "removeQuestion {0}", new Object[]{questionId});
@@ -437,6 +447,7 @@ public class ForumManager implements ForumManagerPort
     return true;
   }
 
+  @Override
   public int countQuestionViews(QuestionFilter filter)
   {
     try
@@ -472,6 +483,7 @@ public class ForumManager implements ForumManagerPort
     }
   }
 
+  @Override
   public List<QuestionView> findQuestionViews(QuestionFilter filter)
   {
     try
@@ -547,6 +559,7 @@ public class ForumManager implements ForumManagerPort
 
   // Answers
 
+  @Override
   public Answer loadAnswer(String answerId)
   {
     log.log(Level.INFO, "loadAnswer {0}", new Object[]{answerId});
@@ -573,6 +586,7 @@ public class ForumManager implements ForumManagerPort
     return answer;
   }
 
+  @Override
   public Answer storeAnswer(Answer answer)
   {
     String answerId = answer.getAnswerId();
@@ -624,6 +638,7 @@ public class ForumManager implements ForumManagerPort
     return answer;
   }
 
+  @Override
   public boolean removeAnswer(String answerId)
   {
     log.log(Level.INFO, "removeAnswer {0}", new Object[]{answerId});

@@ -69,7 +69,7 @@ import org.santfeliu.util.MatrixConfig;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @WebService(endpointInterface = "org.matrix.signature.SignatureManagerPort")
 @HandlerChain(file="handlers.xml")

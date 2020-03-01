@@ -97,6 +97,7 @@ public class DictionaryManager implements DictionaryManagerPort
     HashMap<String, List<String>>();
   private static long lastModified;
   
+  @Override
   public Type loadType(String typeId)
   {
     log.log(Level.INFO, "loadType {0}", new Object[]{typeId});
@@ -137,6 +138,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return type;
   }
 
+  @Override
   public Type storeType(Type type)
   {
     User user = UserCache.getUser(wsContext);
@@ -202,6 +204,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return type;
   }
 
+  @Override
   public boolean removeType(String typeId)
   {
     User user = UserCache.getUser(wsContext);
@@ -250,6 +253,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return true;
   }
 
+  @Override
   public int countTypes(TypeFilter filter)
   {
     User user = UserCache.getUser(wsContext);
@@ -269,6 +273,7 @@ public class DictionaryManager implements DictionaryManagerPort
     }
   }
   
+  @Override
   public List<Type> findTypes(TypeFilter filter)
   {
     User user = UserCache.getUser(wsContext);
@@ -304,16 +309,19 @@ public class DictionaryManager implements DictionaryManagerPort
     return types;
   }
 
+  @Override
   public List<Property> initProperties(String typeId, List<Property> property)
   {
     return property;
   }
 
+  @Override
   public List<Property> completeProperties(String typeId, List<Property> property)
   {
     return property;
   }
 
+  @Override
   public List<String> getTypeActions(String typeId)
   {
     String path =
@@ -332,6 +340,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return typeActionsList;
   }
 
+  @Override
   public List<String> listModifiedTypes(String dateTime1, String dateTime2)
   {
     Query query = entityManager.createNamedQuery("listModifiedTypes");
@@ -340,6 +349,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return query.getResultList();
   }
 
+  @Override
   public EnumType loadEnumType(String enumTypeId)
   {
     log.log(Level.INFO, "loadEnumType {0}", new Object[]{enumTypeId});
@@ -357,6 +367,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return enumType;
   }
 
+  @Override
   public EnumType storeEnumType(EnumType enumType)
   {
     String enumTypeId = enumType.getEnumTypeId();
@@ -381,6 +392,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return enumType;
   }
 
+  @Override
   public boolean removeEnumType(String enumTypeId)
   {
     log.log(Level.INFO, "removeEnumType {0}", new Object[]{enumTypeId});
@@ -411,6 +423,7 @@ public class DictionaryManager implements DictionaryManagerPort
     }
   }
 
+  @Override
   public int countEnumTypes(EnumTypeFilter filter)
   {
     log.log(Level.INFO, "countEnumTypes");
@@ -420,6 +433,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return number.intValue();
   }
 
+  @Override
   public List<EnumType> findEnumTypes(EnumTypeFilter filter)
   {
     log.log(Level.INFO, "findEnumTypes");
@@ -438,6 +452,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return result;
   }
 
+  @Override
   public EnumTypeItem loadEnumTypeItem(String enumTypeItemId)
   {
     log.log(Level.INFO, "loadEnumTypeItem {0}", enumTypeItemId);
@@ -457,6 +472,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return enumTypeItem;
   }
 
+  @Override
   public EnumTypeItem storeEnumTypeItem(EnumTypeItem enumTypeItem)
   {
     log.log(Level.INFO, "storeEnumTypeItem enumTypeId {0}, value {1}",
@@ -480,6 +496,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return enumTypeItem;
   }
   
+  @Override
   public boolean removeEnumTypeItem(String enumTypeItemId)
   {
     log.log(Level.INFO, "removeEnumTypeItem {0}", new String[]{enumTypeItemId});
@@ -502,6 +519,7 @@ public class DictionaryManager implements DictionaryManagerPort
     }
   }
 
+  @Override
   public int countEnumTypeItems(EnumTypeItemFilter filter)
   {
     log.log(Level.INFO, "countEnumTypeItems");
@@ -511,6 +529,7 @@ public class DictionaryManager implements DictionaryManagerPort
     return number.intValue();
   }
 
+  @Override
   public List<EnumTypeItem> findEnumTypeItems(EnumTypeItemFilter filter)
   {
     log.log(Level.INFO, "findEnumTypeItems");

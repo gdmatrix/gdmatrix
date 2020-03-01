@@ -70,7 +70,7 @@ import org.santfeliu.util.TextUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @WebService(endpointInterface = "org.matrix.translation.TranslationManagerPort")
 @HandlerChain(file="handlers.xml")
@@ -90,7 +90,7 @@ public class TranslationManager implements TranslationManagerPort
   private static final int TRANSLATION_MAX_SIZE = 4000;
   private static final int MAX_GROUP_SIZE = 500;
   
-  protected static final Logger logger = Logger.getLogger("Translation");
+  protected static final Logger log = Logger.getLogger("Translation");
 
   static
   {
@@ -105,10 +105,11 @@ public class TranslationManager implements TranslationManagerPort
     }
     catch (Exception ex)
     {
-      logger.log(Level.SEVERE, "init failed", ex);
+      log.log(Level.SEVERE, "init failed", ex);
     }
   }
 
+  @Override
   public TranslationMetaData getTranslationMetaData()
   {
     TranslationMetaData metaData = new TranslationMetaData();
@@ -116,9 +117,10 @@ public class TranslationManager implements TranslationManagerPort
     return metaData;
   }
 
+  @Override
   public Translation translate(String language, String text, String group)
   {
-    logger.log(Level.INFO, "translate language:{0} text:{1} group:{2}",
+    log.log(Level.INFO, "translate language:{0} text:{1} group:{2}",
       new String[]{language, text, group});
 
     if (text == null || !isValidLanguage(language))
@@ -141,11 +143,12 @@ public class TranslationManager implements TranslationManagerPort
     return translateText(language, text, group);
   }
 
+  @Override
   public List<Translation> translateGroup(String language, String text,
      String group)
   {
     List<Translation> result = new ArrayList<Translation>();
-    logger.log(Level.INFO, "translateGroup language:{0} text:{1} group:{2}",
+    log.log(Level.INFO, "translateGroup language:{0} text:{1} group:{2}",
       new String[]{language, text, group});
 
     if (text == null || !isValidLanguage(language) || group == null)
@@ -178,6 +181,7 @@ public class TranslationManager implements TranslationManagerPort
     return result;
   }
 
+  @Override
   public Translation loadTranslation(String transId)
   {
     DBTranslation dbTranslation = 
@@ -188,6 +192,7 @@ public class TranslationManager implements TranslationManagerPort
     return dbTranslation;
   }
 
+  @Override
   public Translation storeTranslation(Translation translation)
   {
     User user = UserCache.getUser(wsContext);
@@ -220,6 +225,7 @@ public class TranslationManager implements TranslationManagerPort
     return translation;
   }
   
+  @Override
   public boolean removeTranslation(String transId)
   {
     try
@@ -241,6 +247,7 @@ public class TranslationManager implements TranslationManagerPort
     }
   }
 
+  @Override
   public int countTranslations(TranslationFilter filter)
   {
     Query query = entityManager.createQuery(createQueryString(filter, true));
@@ -249,6 +256,7 @@ public class TranslationManager implements TranslationManagerPort
     return count.intValue();
   }
 
+  @Override
   public List<Translation> findTranslations(TranslationFilter filter)
   {
     Query query = entityManager.createQuery(createQueryString(filter, false));
@@ -270,6 +278,7 @@ public class TranslationManager implements TranslationManagerPort
     return result;
   }
 
+  @Override
   public List<String> listModifiedTranslations(
     String language, String dateTime1, String dateTime2)
   {
@@ -283,11 +292,12 @@ public class TranslationManager implements TranslationManagerPort
     }
     catch (Exception ex)
     {
-      logger.log(Level.SEVERE, "listModifiedTranslations", ex);
+      log.log(Level.SEVERE, "listModifiedTranslations", ex);
       throw new WebServiceException(ex);
     }
   }
 
+  @Override
   public int setActiveTranslations(List<Translation> translations)
   {
     int numUpdated = 0;
@@ -303,7 +313,7 @@ public class TranslationManager implements TranslationManagerPort
     }
     catch (Exception ex)
     {
-      logger.log(Level.SEVERE, "setActiveTranslations", ex);
+      log.log(Level.SEVERE, "setActiveTranslations", ex);
       throw new WebServiceException(ex);
     }
     return numUpdated;

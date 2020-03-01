@@ -62,7 +62,7 @@ import org.santfeliu.ws.WSExceptionFactory;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
  */
 @WebService(endpointInterface = "org.matrix.survey.SurveyManagerPort")
 @HandlerChain(file="handlers.xml")
@@ -88,6 +88,7 @@ public class SurveyManager implements SurveyManagerPort
   {
   }
 
+  @Override
   public SurveyMetaData getSurveyMetaData()
   {
     SurveyMetaData metaData = new SurveyMetaData();
@@ -98,6 +99,7 @@ public class SurveyManager implements SurveyManagerPort
 
 // CREATE SURVEY
 
+  @Override
   public String storeSurvey(String text, List<String> answers)
   {
     String surveyId = null;
@@ -136,6 +138,7 @@ public class SurveyManager implements SurveyManagerPort
 
 // OPEN SURVEY
 
+  @Override
   public void openSurvey(String surveyId)
   {
     log.log(Level.INFO, "openSurvey {0}", surveyId);        
@@ -147,6 +150,7 @@ public class SurveyManager implements SurveyManagerPort
 
 // CLOSE SURVEY
 
+  @Override
   public void closeSurvey(String surveyId)
   {
     log.log(Level.INFO, "closeSurvey {0}", surveyId);        
@@ -158,6 +162,7 @@ public class SurveyManager implements SurveyManagerPort
 
 // VOTE SURVEY
 
+  @Override
   public void voteSurvey(String surveyId, String answerId)
   {
     log.log(Level.INFO, "voteSurvey {0}", surveyId);        
@@ -169,6 +174,7 @@ public class SurveyManager implements SurveyManagerPort
 
 // SELECT SURVEY
 
+  @Override
   public Survey loadSurvey(String surveyId)
   {
     log.log(Level.INFO, "loadSurvey {0}", surveyId);        
@@ -205,6 +211,7 @@ public class SurveyManager implements SurveyManagerPort
 
   // FIND SURVEYS
 
+  @Override
   public SurveyTable findSurveys()
   {
     SurveyTable surveyTable = new SurveyTable();
@@ -231,6 +238,8 @@ public class SurveyManager implements SurveyManagerPort
     }
     return surveyTable;
   }
+  
+  /**** private methods ****/
 
   private void validateSurvey(String text, List<String> answers)
     throws Exception
