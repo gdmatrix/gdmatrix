@@ -45,20 +45,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.el.ValueExpression;
 import javax.faces.component.FacesComponent;
-
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.FacesEvent;
-
 import javax.faces.event.FacesListener;
 import javax.faces.event.PhaseId;
+import org.apache.commons.lang.StringUtils;
 import org.apache.myfaces.shared_tomahawk.renderkit.RendererUtils;
-
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
@@ -68,7 +65,7 @@ import org.santfeliu.web.UserSessionBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @FacesComponent(value = "HtmlTreeMenu")
 public class HtmlTreeMenu extends UIComponentBase
@@ -629,7 +626,7 @@ public class HtmlTreeMenu extends UIComponentBase
     MenuItemCursor baseMenuItem;
     String baseMid = getBaseMid();
     
-    if (baseMid == null)
+    if (StringUtils.isBlank(baseMid))
     {
       baseMid = null; //TODO: getRoot()
     }

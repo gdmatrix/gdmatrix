@@ -42,6 +42,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import org.apache.commons.lang.StringUtils;
 
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
@@ -50,7 +51,7 @@ import org.santfeliu.web.UserSessionBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @FacesComponent(value = "HtmlNavigationMenu")
 public class HtmlNavigationMenu extends UIComponentBase
@@ -406,7 +407,7 @@ public class HtmlNavigationMenu extends UIComponentBase
     
     String baseMid = getBaseMid();
 
-    if (baseMid == null)
+    if (StringUtils.isBlank(baseMid))
     {
       baseMenuItem = menuModel.getSelectedMenuItem();
       if (!baseMenuItem.isNull())

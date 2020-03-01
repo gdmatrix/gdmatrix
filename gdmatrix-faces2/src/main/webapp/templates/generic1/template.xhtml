@@ -94,6 +94,7 @@
             <nav id="interior_nav_left" aria-label="#{webBundle.leftMenu}">
               <t:div styleClass="menuColTable" id="menuCol">
                 <h:graphicImage alt="" styleClass="logo"
+                                rendered="#{userSessionBean.selectedMenuItem.properties.imageId != null}"
                                 url="/documents/#{userSessionBean.selectedMenuItem.properties.imageId}" />
                 <sf:navigationMenu id="vmenu"
                                    var="item"
