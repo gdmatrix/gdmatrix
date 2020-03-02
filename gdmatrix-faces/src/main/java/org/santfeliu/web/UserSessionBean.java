@@ -1423,18 +1423,24 @@ public final class UserSessionBean extends FacesBean implements Serializable
     email = user.getEmail();
     roles = user.getRoles();
     userPreferences = null;
-    String defaultLanguage;
+    
     try
     {
-      defaultLanguage = getUserPreferences().getDefaultLanguage();
+      String language;    
+      try
+      {
+        language = getUserPreferences().getDefaultLanguage();
+      }
+      catch (Exception ex)
+      {
+        language = getLastPageLanguage();
+      }
+      Locale locale = new Locale(language);
+      FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+      setLastPageLanguage(language);
     }
-    catch (Exception ex) //no default language defined
-    { 
-      defaultLanguage = getLastPageLanguage();
-    } 
-    Locale locale = new Locale(defaultLanguage);
-    FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
-    setLastPageLanguage(defaultLanguage);
+    catch (Exception ex) { } //no default language defined
+    
     try
     {
       setTheme(getUserPreferences().getDefaultTheme());
