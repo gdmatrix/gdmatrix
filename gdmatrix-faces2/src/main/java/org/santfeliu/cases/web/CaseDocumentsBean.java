@@ -69,25 +69,35 @@ import org.santfeliu.web.obj.TypifiedPageBean;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class CaseDocumentsBean extends TypifiedPageBean
 {
   @CMSProperty
   public static final String REPLACE_BY_WHITESPACE_PATTERN_PROPERTY =
     "replaceByWhitespacePattern";
+  public static final String ALL_TYPES_VISIBLE_PROPERTY = 
+    "_documentsAllTypesVisible";  
+  public static final String ROOT_TYPE_ID_PROPERTY = 
+    "_documentRootTypeId";
+  public static final String UPLOAD_TYPE_ID_PROPERTY = 
+    
+    "_documentsUploadTypeId";  
+  public static final String GROUPBY_PROPERTY = 
+    "_documentsGroupBy";
+  public static final String GROUP_SELECTION_MODE_PROPERTY = 
+    "_documentsGroupSelectionMode";
+  public static final String ORDERBY_PROPERTY = 
+    "_documentsOrderBy";
+  public static final String SPREAD_ROLES_PROPERTY = 
+    "_documentsSpreadRoles";
+  public static final String ALLOWED_DOC_TYPES = 
+    "_documentsAllowedTypes";
+  public static final String DEFAULT_DOC_TYPE = 
+    "_documentsDefaultType";
 
-  public static final String ALL_TYPES_VISIBLE_PROPERTY = "_documentsAllTypesVisible";  
-  public static final String ROOT_TYPE_ID_PROPERTY = "_documentRootTypeId";
-  public static final String UPLOAD_TYPE_ID_PROPERTY = "_documentsUploadTypeId";  
-  public static final String GROUPBY_PROPERTY = "_documentsGroupBy";
-  public static final String GROUP_SELECTION_MODE_PROPERTY = "_documentsGroupSelectionMode";
-  public static final String ORDERBY_PROPERTY = "_documentsOrderBy";
-  public static final String SPREAD_ROLES_PROPERTY = "_documentsSpreadRoles";
-  public static final String ALLOWED_DOC_TYPES = "_documentsAllowedTypes";
-  public static final String DEFAULT_DOC_TYPE = "_documentsDefaultType";
-
-  private static final String FLAGS_PATH_URL = "/common/translation/images/flags/";
+  private static final String FLAGS_PATH_URL = 
+    "/common/translation/images/flags/";
   
   private CaseDocument editingDocument;
 
@@ -97,8 +107,7 @@ public class CaseDocumentsBean extends TypifiedPageBean
   private List<SelectItem> volumeSelectItems;
   private Map userDocTypes;
   private String defaultDocType;
-  
-  
+   
   private DocMatrixClientModels models;
 
   public CaseDocumentsBean()
@@ -108,51 +117,52 @@ public class CaseDocumentsBean extends TypifiedPageBean
     CaseMainBean caseMainBean = (CaseMainBean)getBean("caseMainBean");
     Case cas = caseMainBean.getCase();
     
+    //Get list of doc types that user is allowed to create documents.
     DocumentConfigBean configBean =
       (DocumentConfigBean)getBean("documentConfigBean");
     userDocTypes = configBean.getDocTypes();
     
+    //Set bean properties from type.
     Type caseType = TypeCache.getInstance().getType(cas.getCaseTypeId());
     if (caseType != null)
     {
-      PropertyDefinition pd1 =
-        caseType.getPropertyDefinition(ROOT_TYPE_ID_PROPERTY);
-      if (pd1 != null && pd1.getValue() != null && pd1.getValue().size() > 0)
-        setRootTypeId(pd1.getValue().get((0)));
+      String pdValue = 
+        getPropertyDefinitionValue(caseType, ROOT_TYPE_ID_PROPERTY);
+      if (pdValue != null)
+        setRootTypeId(pdValue);
 
-      PropertyDefinition pd2 =
-        caseType.getPropertyDefinition(GROUPBY_PROPERTY);
-      if (pd2 != null && pd2.getValue() != null && pd2.getValue().size() > 0)
-        groupBy = pd2.getValue().get(0);
+      pdValue = 
+        getPropertyDefinitionValue(caseType, GROUPBY_PROPERTY);
+      if (pdValue != null)
+        this.groupBy = pdValue;
 
-      PropertyDefinition pd3 =
-        caseType.getPropertyDefinition(GROUP_SELECTION_MODE_PROPERTY);
-      if (pd3 != null && pd3.getValue() != null && pd3.getValue().size() > 0)
-        groupSelectionMode = pd3.getValue().get(0);
+      pdValue = 
+        getPropertyDefinitionValue(caseType, GROUP_SELECTION_MODE_PROPERTY);
+      if (pdValue != null)
+        this.groupSelectionMode = pdValue;
 
-      PropertyDefinition pd4 =
-        caseType.getPropertyDefinition(ORDERBY_PROPERTY);
-      if (pd4 != null && pd4.getValue() != null && pd4.getValue().size() > 0)
+      pdValue =
+        getPropertyDefinitionValue(caseType, ORDERBY_PROPERTY);
+      if (pdValue != null)
       {
-        String orderByString = pd4.getValue().get(0);
-        String[] array = orderByString.split(",");
+        String[] array = pdValue.split(",");
         if (array != null)
           orderBy = Arrays.asList(array);
       }
       if (orderBy == null)
         orderBy = Arrays.asList(new String[]{"document.creationDate"});
       
-      PropertyDefinition pd5 =
-        caseType.getPropertyDefinition(ALL_TYPES_VISIBLE_PROPERTY);
-      if (pd5 != null && pd5.getValue() != null && pd5.getValue().size() > 0)
-        setAllTypesVisible(Boolean.parseBoolean(pd5.getValue().get(0)));      
+      pdValue =
+        getPropertyDefinitionValue(caseType, ALL_TYPES_VISIBLE_PROPERTY);
+      if (pdValue != null)
+        setAllTypesVisible(Boolean.parseBoolean(pdValue));      
       
-      PropertyDefinition pd6 =
-        caseType.getPropertyDefinition(ALLOWED_DOC_TYPES);
-      if (pd6 != null && pd6.getValue() != null && pd6.getValue().size() > 0)
+      //if only restricted types are allowed then filters userDocTypes.
+      pdValue =
+        getPropertyDefinitionValue(caseType, ALLOWED_DOC_TYPES);
+      if (pdValue != null)
       {
-        String allowedTypes = pd6.getValue().get(0);
-        String[] array = allowedTypes.split(",");
+        String[] array = pdValue.split(",");
         if (array != null)
         {
           Map allowedUserDocTypes = new HashMap();
@@ -163,14 +173,14 @@ public class CaseDocumentsBean extends TypifiedPageBean
               allowedUserDocTypes.put(item, userDocType);
           }
           userDocTypes = allowedUserDocTypes;
-        }
+        }        
       }
-
+      
+      //Mark user favorite types
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
       if (userSessionBean.isMatrixClientEnabled())
       {
-        //Add favorites
-        List<String> docTypePreferences = null;
+        List<String> docTypePreferences;
         try
         {
           docTypePreferences =
@@ -178,28 +188,34 @@ public class CaseDocumentsBean extends TypifiedPageBean
           for (String typePreference : docTypePreferences)
           {
             if (userDocTypes.containsKey(typePreference))
-              userDocTypes.put("*" + typePreference, userDocTypes.get(typePreference));
+            {
+              String key = "*" + typePreference;
+              userDocTypes.put(key, userDocTypes.get(typePreference));
+            }
           }
         }
         catch (Exception ex)
         {
         }      
-      }
+      }        
       
-      PropertyDefinition pd7 =
-        caseType.getPropertyDefinition(DEFAULT_DOC_TYPE);
-      if (pd7 != null && pd7.getValue() != null && pd7.getValue().size() > 0)
-        defaultDocType = pd7.getValue().get(0);      
-    }
+      pdValue = 
+        getPropertyDefinitionValue(caseType, DEFAULT_DOC_TYPE);
+      if (pdValue != null)
+        defaultDocType = pdValue;         
+    }     
     
-    String maxSize = MatrixConfig.getProperty("org.santfeliu.doc.uploadMaxFileSize");
+    //Set MatrixClientModels.
+    String maxSize = 
+      MatrixConfig.getProperty("org.santfeliu.doc.uploadMaxFileSize");
     if (maxSize != null)
       models = new DocMatrixClientModels(userDocTypes, maxSize);
     else
       models = new DocMatrixClientModels(userDocTypes); 
     
     if (defaultDocType != null)
-      models.getSendModel().putParameter(DocumentConstants.DOCTYPEID, defaultDocType);
+      models.getSendModel().putParameter(DocumentConstants.DOCTYPEID, 
+        defaultDocType);
     
     load();
   }
@@ -267,8 +283,9 @@ public class CaseDocumentsBean extends TypifiedPageBean
   
   public boolean isRenderVolumeSelector()
   {
-    return volumeSelectItems != null && !volumeSelectItems.isEmpty() &&
-      !(volumeSelectItems.size() == 1 && CaseConstants.UNDEFINED_VOLUME.equals(currentVolume));
+    return volumeSelectItems != null && !volumeSelectItems.isEmpty() 
+      && !(volumeSelectItems.size() == 1 
+      && CaseConstants.UNDEFINED_VOLUME.equals(currentVolume));
   }
 
   public CaseDocument getEditingDocument()
@@ -282,9 +299,9 @@ public class CaseDocumentsBean extends TypifiedPageBean
   }
   
   //Object actions
+  @Override
   public String show()
   {
-
     return "case_documents";
   }
 
@@ -294,13 +311,15 @@ public class CaseDocumentsBean extends TypifiedPageBean
     {
       if (!isNew())
       {
-        List<String> volumes = CaseConfigBean.getPort().findCaseVolumes(getObjectId());
+        List<String> volumes = 
+          CaseConfigBean.getPort().findCaseVolumes(getObjectId());
         Collections.replaceAll(volumes, null, CaseConstants.UNDEFINED_VOLUME);
-        if (volumes != null && !volumes.isEmpty() && !volumes.contains(currentVolume))
-          currentVolume = volumes.get(0);
+        if (volumes != null && !volumes.isEmpty() 
+          && !volumes.contains(currentVolume))
+            currentVolume = volumes.get(0);
         createVolumeSelectItems(volumes);
         List<CaseDocumentView> rows = getResults();
-          setGroups(rows, getGroupExtractor());
+        setGroups(rows, getGroupExtractor());
       }
     }
     catch (Exception ex)
@@ -414,6 +433,7 @@ public class CaseDocumentsBean extends TypifiedPageBean
     try
     {
       models.getEditModel().parseResult();
+      refreshData();
     }
     catch (Exception ex)
     {
@@ -640,7 +660,8 @@ public class CaseDocumentsBean extends TypifiedPageBean
 
   public Date getCreationDateTime()
   {
-    if (editingDocument != null && editingDocument.getCreationDateTime() != null)
+    if (editingDocument != null 
+      && editingDocument.getCreationDateTime() != null)
       return TextUtils.parseInternalDate(editingDocument.getCreationDateTime());
     else
       return null;
@@ -671,7 +692,8 @@ public class CaseDocumentsBean extends TypifiedPageBean
     CaseDocumentView cdRow = (CaseDocumentView)row;
     return cdRow.getCaseDocTypeId();
   }
-
+  
+  //Private methods
   private int countResults()
   {
     try
@@ -681,7 +703,8 @@ public class CaseDocumentsBean extends TypifiedPageBean
       filter.setVolume(currentVolume);
       if (groupBy != null && groupBy.startsWith("document.property["))
       {
-        String property = groupBy.replaceAll("document.property[", "");
+        String property;
+        property = groupBy.replaceAll("document.property[", "");
         property = property.replaceAll("]", "");
         String[] outProps = property.split(",");
         filter.getOutputProperty().addAll(Arrays.asList(outProps));
@@ -731,6 +754,7 @@ public class CaseDocumentsBean extends TypifiedPageBean
       volumeSelectItems.add(item);
     }
     Collections.sort(volumeSelectItems, new Comparator() {
+      @Override
       public int compare(Object o1, Object o2)
       {
         SelectItem item1 = (SelectItem)o1;
@@ -858,4 +882,6 @@ public class CaseDocumentsBean extends TypifiedPageBean
     boolean mc = UserSessionBean.getCurrentInstance().isMatrixClientEnabled();
     return (!mc && "sendFile".equals(command));
   }
+  
+ 
 }

@@ -70,7 +70,7 @@ public abstract class TypifiedPageBean extends GroupablePageBean
     this.adminRole = adminRole;
   }
 
-  public void setRootTypeId(String rootTypeId)
+  public final void setRootTypeId(String rootTypeId)
   {
     this.rootTypeId = rootTypeId;
   }
@@ -129,7 +129,7 @@ public abstract class TypifiedPageBean extends GroupablePageBean
     return allTypesVisible;
   }
 
-  public void setAllTypesVisible(boolean allTypesVisible)
+  public final void setAllTypesVisible(boolean allTypesVisible)
   {
     this.allTypesVisible = allTypesVisible;
   }
@@ -306,32 +306,34 @@ public abstract class TypifiedPageBean extends GroupablePageBean
         if (actionName.equals(action))
         {
           String roleId = acl.getRoleId();
-          if (UserSessionBean.getCurrentInstance().isUserInRole(roleId)) return true;
+          UserSessionBean userSessionBean = 
+            UserSessionBean.getCurrentInstance();
+          if (userSessionBean.isUserInRole(roleId)) return true;
           searchAscendants = false; 
         }
       }
       String superTypeId = auxType.getSuperTypeId();
-      auxType = (superTypeId == null ? null : TypeCache.getInstance().getType(superTypeId));
+      TypeCache typeCache =  TypeCache.getInstance();
+      auxType = (superTypeId == null ? null : typeCache.getType(superTypeId));
     }
     return false;
   }  
   
-  protected String getIndexedDicProperty(Type type, String propertyName, String defaultValue)
+  protected String getIndexedDicProperty(Type type, String propertyName, 
+    String defaultValue)
   {    
     if (type != null)
     {
-      PropertyDefinition pd = type.getPropertyDefinition(propertyName + getTabSuffix());
-      if (pd != null && pd.getValue() != null && pd.getValue().size() > 0)
+      String tabSuffix = getTabSuffix();
+      String pdValue = 
+        getPropertyDefinitionValue(type, propertyName + tabSuffix);
+      if (pdValue != null)
+        return pdValue;
+      else if (!"".equals(tabSuffix))
       {
-        return pd.getValue().get(0);
-      }
-      else if (!"".equals(getTabSuffix()))
-      {
-        pd = type.getPropertyDefinition(propertyName);
-        if (pd != null && pd.getValue() != null && pd.getValue().size() > 0)
-        {
-          return pd.getValue().get(0);
-        }
+        pdValue = getPropertyDefinitionValue(type, propertyName);
+        if (pdValue != null)
+          return pdValue;
       }
     }
     return defaultValue;
@@ -350,12 +352,22 @@ public abstract class TypifiedPageBean extends GroupablePageBean
     return null;
   }
   
+  protected final String getPropertyDefinitionValue(Type type, String name)
+  {
+    PropertyDefinition pd =
+      type.getPropertyDefinition(name);
+    if (pd != null && pd.getValue() != null && pd.getValue().size() > 0)
+      return pd.getValue().get(0);
+    else
+      return null;
+  }     
+  
   private String getTabSuffix()
   {
     String value = getSelectedMenuItem().getProperty(TAB_INDEX_PROPERTY);
     return ((value == null || value.equals("1")) ? "" : String.valueOf(value));
   }
-
+  
   protected class TypeGroupExtractor extends DefaultGroupExtractor
   {
     public TypeGroupExtractor(String typeIdPropertyName)
