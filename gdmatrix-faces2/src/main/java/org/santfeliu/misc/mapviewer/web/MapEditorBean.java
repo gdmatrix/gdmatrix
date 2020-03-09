@@ -429,9 +429,9 @@ public class MapEditorBean extends WebBean implements Savable
     List<Service> services = map.getServices();
     for (Service service : services)
     {
-      String serviceUrl = service.getUrl();
+      String serviceUrl = ServiceCache.getServiceUrl(service.getUrl());
       buffer.append("serviceArray.push('");
-      buffer.append(service.getUrl());
+      buffer.append(serviceUrl);
       buffer.append("');\n");
       buffer.append("serviceList[\"");
       buffer.append(service.getName());
@@ -470,7 +470,7 @@ public class MapEditorBean extends WebBean implements Savable
       Service service = layer.getService();
       StringBuilder buffer = new StringBuilder();
       buffer.append("/proxy?url=");
-      buffer.append(service.getUrl());
+      buffer.append(ServiceCache.getServiceUrl(service.getUrl()));
       buffer.append("&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap");
       buffer.append("&LAYERS=");
       buffer.append(layer.getNamesString());

@@ -62,6 +62,7 @@ import org.santfeliu.misc.mapviewer.MapDocument;
 import org.santfeliu.misc.mapviewer.Map.Layer;
 import org.santfeliu.misc.mapviewer.Map.Service;
 import org.santfeliu.misc.mapviewer.SLDStore;
+import org.santfeliu.misc.mapviewer.ServiceCache;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.enc.HtmlEncoder;
@@ -98,7 +99,7 @@ public class MapViewerBean extends WebBean
   public static final String JS_PROPERTY_NAME  = "workflow.js";
 
   public static final int SCRIPT_VERSION = 4;
-  private transient SLDCache sldCache = new SLDCache();
+  private final transient SLDCache sldCache = new SLDCache();
 
   public String getScripts()
   {
@@ -129,7 +130,9 @@ public class MapViewerBean extends WebBean
     if (baseLayerCount > 1)
     {
       buffer.append("<fieldset>")
-        .append("<legend>" + translate("Base layer" ,"map:" + map.getName()) + "</legend>")
+        .append("<legend>")
+        .append(translate("Base layer" ,"map:" + map.getName()))
+        .append("</legend>")
         .append("<ul class=\"baseLayers\">");
       addLayersToLegend(map, null, true, expandGroups, buffer);
       for (Group group : map.getGroups())
@@ -140,7 +143,9 @@ public class MapViewerBean extends WebBean
       buffer.append("</fieldset>");
     }
     buffer.append("<fieldset>")
-      .append("<legend>" + translate("Overlays" ,"map:" + map.getName()) + "</legend>")
+      .append("<legend>")
+      .append(translate("Overlays" ,"map:" + map.getName()))
+      .append("</legend>")
       .append("<ul class=\"baseLayers\">");
     
     buffer.append("<li><ul class=\"overlays\">");
@@ -151,7 +156,7 @@ public class MapViewerBean extends WebBean
     }
     buffer.append("</ul></li>");
     buffer.append("</ul>");
-    buffer.append("</fieldset>");    
+    buffer.append("</fieldset>");
     return buffer.toString();
   }
 
@@ -160,8 +165,9 @@ public class MapViewerBean extends WebBean
     String name = layer.getNames().get(0);
     MapBean mapBean = MapBean.getInstance();
     String baseUrl = mapBean.getBaseUrl();
-
-    String url = baseUrl + "/proxy?url=" + layer.getService().getUrl() +
+    String serviceUrl = ServiceCache.getServiceUrl(layer.getService().getUrl());
+    
+    String url = baseUrl + "/proxy?url=" + serviceUrl +
     "&service=WMS&version=1.0.0&request=GetLegendGraphic&layer=" + name +
     "&format=image/png&width=24&strict=false";
     String sld = layer.getSld();
@@ -485,7 +491,7 @@ public class MapViewerBean extends WebBean
     {
       for (Service service : map.getServices())
       {
-        String url = service.getUrl();
+        String url = ServiceCache.getServiceUrl(service.getUrl());
         buffer.append("wmsUrls.push(\"").append(url).append("\");\n");
       }
       for (Layer layer : map.getLayers())

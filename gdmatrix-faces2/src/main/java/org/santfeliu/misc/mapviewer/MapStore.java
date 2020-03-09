@@ -507,7 +507,7 @@ public class MapStore
         Service service = layer.getService();
         String layersString =
           URLEncoder.encode(layer.getNamesString(), "UTF-8");
-        String url = service.getUrl() +
+        String url = ServiceCache.getServiceUrl(service.getUrl()) +
          "?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&LAYERS=" + layersString +
          "&BBOX=" + bounds.getAdjusted(width, height) +
          "&WIDTH=" + width +
