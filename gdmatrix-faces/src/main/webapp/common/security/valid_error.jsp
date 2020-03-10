@@ -17,14 +17,19 @@
       <head>
         <meta content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width" />
-        <title>${loginBean.loginTitle}</title>
         <link rel="stylesheet" type="text/css"
           href="${pageContext.request.contextPath}/common/security/css/security.css?v=${applicationBean.resourcesVersion}" />
         <link rel="stylesheet" type="text/css"
               href="${pageContext.request.contextPath}/common/security/css/valid.css?v=${applicationBean.resourcesVersion}" />
+        <title>
+          <t:outputText value="#{validBean.title}" />
+        </title>        
       </head>
       <body class="loginPage">
         <h:form id="mainform" enctype="multipart/form-data">
+          <sf:heading level="1" styleClass="element-invisible">
+            <t:outputText value="#{validBean.title}" />
+          </sf:heading>            
           <t:div styleClass="validBox">
             <t:div styleClass="logo">
               <t:outputText value="#{validBean.title}" />
