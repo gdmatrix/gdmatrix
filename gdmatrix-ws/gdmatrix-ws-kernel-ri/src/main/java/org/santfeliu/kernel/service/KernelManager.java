@@ -467,19 +467,26 @@ public class KernelManager implements KernelManagerPort
     List<DBAddress> resultList = query.getResultList();
     for (DBAddress dbAddress : resultList)
     {
-//        DBAddress dbAddress = (DBAddress) row[0];
-      DBStreet dbStreet = dbAddress.getStreet();
-      DBCity dbCity = dbStreet.getCity();
-      DBProvince dbProvince = dbCity.getProvince();
-      DBCountry dbCountry = dbProvince.getCountry();
-      
       AddressView addressView = new AddressView();
       addressView.setAddressId(dbAddress.getAddressId());
+      DBStreet dbStreet = dbAddress.getStreet();      
       String description = describeAddress(dbAddress, dbStreet); 
       addressView.setDescription(description);
-      addressView.setCity(dbCity.getName());
-      addressView.setProvince(dbProvince.getName());
-      addressView.setCountry(dbCountry.getName());
+      if (dbStreet != null)
+      {
+        DBCity dbCity = dbStreet.getCity();
+        DBProvince dbProvince = dbCity.getProvince();
+        DBCountry dbCountry = dbProvince.getCountry();
+        addressView.setCity(dbCity.getName());
+        addressView.setProvince(dbProvince.getName());
+        addressView.setCountry(dbCountry.getName());
+      }
+      else
+      {
+        addressView.setCity("");
+        addressView.setProvince("");
+        addressView.setCountry("");
+      }
       addressViews.add(addressView);
     }
     return addressViews;
@@ -590,21 +597,29 @@ public class KernelManager implements KernelManagerPort
       for (DBPersonAddress dbPersonAddress : resultList)
       {
         DBAddress dbAddress = dbPersonAddress.getAddress();
-        DBStreet dbStreet = dbAddress.getStreet();
-        DBCity dbCity = dbStreet.getCity();
-        DBProvince dbProvince = dbCity.getProvince();
-        DBCountry dbCountry = dbProvince.getCountry();
-        
         PersonAddressView personAddressView = new PersonAddressView();
         personAddressView.setPersonAddressId(
           personId + PK_SEPARATOR + dbAddress.getAddressId());
         AddressView addressView = new AddressView();
-        String description = describeAddress(dbAddress, dbStreet); 
+        DBStreet dbStreet = dbAddress.getStreet();
+        String description = describeAddress(dbAddress, dbStreet);
         addressView.setAddressId(dbAddress.getAddressId());
         addressView.setDescription(description);
-        addressView.setCity(dbCity.getName());
-        addressView.setProvince(dbProvince.getName());
-        addressView.setCountry(dbCountry.getName());
+        if (dbStreet != null)
+        {
+          DBCity dbCity = dbStreet.getCity();
+          DBProvince dbProvince = dbCity.getProvince();
+          DBCountry dbCountry = dbProvince.getCountry();
+          addressView.setCity(dbCity.getName());
+          addressView.setProvince(dbProvince.getName());
+          addressView.setCountry(dbCountry.getName());
+        }
+        else
+        {
+          addressView.setCity("");
+          addressView.setProvince("");
+          addressView.setCountry("");
+        }
         personAddressView.setAddress(addressView);
         personAddressViews.add(personAddressView);
       }
@@ -1774,9 +1789,12 @@ public class KernelManager implements KernelManagerPort
   private String describeAddress(DBAddress dbAddress, DBStreet dbStreet)
   {
     StringBuffer buffer = new StringBuffer();
-    buffer.append(dbStreet.getStreetTypeId());
-    buffer.append(" ");
-    buffer.append(dbStreet.getName());
+    if (dbStreet != null)
+    {
+      buffer.append(dbStreet.getStreetTypeId());
+      buffer.append(" ");
+      buffer.append(dbStreet.getName());
+    }
     if (dbAddress.getNumber1() != null)
     {
       buffer.append(" ");

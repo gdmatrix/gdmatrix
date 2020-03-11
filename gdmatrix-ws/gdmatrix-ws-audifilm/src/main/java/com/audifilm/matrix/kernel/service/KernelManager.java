@@ -760,18 +760,26 @@ public class KernelManager implements KernelManagerPort
       for (DBAddress dbAddress : resultList)
       {
 //        DBAddress dbAddress = (DBAddress) row[0];
-        DBStreet dbStreet = dbAddress.getStreet();
-        DBCity dbCity = dbStreet.getCity();
-        DBProvince dbProvince = dbCity.getProvince();
-        DBCountry dbCountry = dbProvince.getCountry();
-
         AddressView addressView = new AddressView();
         addressView.setAddressId(dbAddress.getAddressId());
+        DBStreet dbStreet = dbAddress.getStreet();
         String description = describeAddress(dbAddress, dbStreet);
         addressView.setDescription(description);
-        addressView.setCity(dbCity.getName());
-        addressView.setProvince(dbProvince.getName());
-        addressView.setCountry(dbCountry.getName());
+        if (dbStreet != null)
+        {
+          DBCity dbCity = dbStreet.getCity();
+          DBProvince dbProvince = dbCity.getProvince();
+          DBCountry dbCountry = dbProvince.getCountry();
+          addressView.setCity(dbCity.getName());
+          addressView.setProvince(dbProvince.getName());
+          addressView.setCountry(dbCountry.getName());
+        }
+        else
+        {
+          addressView.setCity("");
+          addressView.setProvince("");
+          addressView.setCountry("");
+        }
         addressViews.add(getEndpoint().toGlobal(AddressView.class, addressView));
       }
     }
@@ -976,11 +984,6 @@ public class KernelManager implements KernelManagerPort
       {
         DBPerson dbPerson = dbPersonAddress.getPerson();
         DBAddress dbAddress = dbPersonAddress.getAddress();
-        DBStreet dbStreet = dbAddress.getStreet();
-        DBCity dbCity = dbStreet.getCity();
-        DBProvince dbProvince = dbCity.getProvince();
-        DBCountry dbCountry = dbProvince.getCountry();
-
         PersonAddressView personAddressView = new PersonAddressView();
         personAddressView.setPersonAddressId(getEndpoint().toGlobalId(PersonAddress.class, dbPersonAddress.getPersonAddressId()));
 
@@ -992,12 +995,25 @@ public class KernelManager implements KernelManagerPort
         personAddressView.setPerson(personView);
 
         AddressView addressView = new AddressView();
+        DBStreet dbStreet = dbAddress.getStreet();
         String description = describeAddress(dbAddress, dbStreet);
         addressView.setAddressId(getEndpoint().toGlobalId(AddressView.class, dbAddress.getAddressId()));
         addressView.setDescription(description);
-        addressView.setCity(dbCity.getName());
-        addressView.setProvince(dbProvince.getName());
-        addressView.setCountry(dbCountry.getName());
+        if (dbStreet != null)
+        {
+          DBCity dbCity = dbStreet.getCity();
+          DBProvince dbProvince = dbCity.getProvince();
+          DBCountry dbCountry = dbProvince.getCountry();            
+          addressView.setCity(dbCity.getName());
+          addressView.setProvince(dbProvince.getName());
+          addressView.setCountry(dbCountry.getName());
+        }
+        else
+        {
+          addressView.setCity("");
+          addressView.setProvince("");
+          addressView.setCountry("");
+        }
         personAddressView.setAddress(addressView);
 
         personAddressViews.add(personAddressView);
