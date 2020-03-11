@@ -33,6 +33,7 @@ package org.santfeliu.cms;
 import com.sun.faces.lifecycle.RestoreViewPhase;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -94,6 +95,15 @@ public class CMSListener implements PhaseListener
   private String forcedLanguage;
   private int clientSecurePort;  
   private final WebAuditor webAuditor = new WebAuditor();  
+  private final HashSet<String> pathExceptions = new HashSet<String>();
+  
+  public CMSListener()
+  {
+    //Set paths that shouldn't go through CMS lifecycle (full servletPath)
+    pathExceptions.add("/apps/ide.faces");
+    pathExceptions.add("/apps/client.faces");
+    pathExceptions.add("/apps/elections.faces");
+  }
   
   @Override
   public void beforePhase(PhaseEvent pe)
@@ -254,7 +264,7 @@ public class CMSListener implements PhaseListener
   {
     // Do not execute menuItem in forward requests
     if (request.getAttribute(FORWARD_REQUEST_URI) != null) return null;
-    
+        
     MenuItemCursor menuItem = null;
 
     if (userSessionBean.getWorkspaceId() == null)
@@ -299,7 +309,7 @@ public class CMSListener implements PhaseListener
         if ("GET".equals(method))
         {
           mid = (String)request.getParameter(SMID_PARAM);
-          if (mid == null)
+          if (mid == null && !isPathException(request))
           {
             mid = userSessionBean.getSelectedMid();
           }
@@ -584,20 +594,14 @@ public class CMSListener implements PhaseListener
       userSessionBean.redirectSelectedMenuItem();
     }
   } 
-  /*
-  private void setViewRootLocale(FacesContext context, 
-    UserSessionBean userSessionBean)
+  
+  private boolean isPathException(HttpServletRequest request)
   {
-    String language = userSessionBean.getLastPageLanguage();
-    if (language == null)
-    {
-      language = forcedLanguage;
-    }
-    if (context.getViewRoot() != null)
-    {
-      context.getViewRoot().setLocale(new Locale(language));
-      userSessionBean.setViewLocale(context.getViewRoot().getLocale());
-    }    
+    String servletPath = request.getServletPath();
+    if (servletPath != null)
+      return pathExceptions.contains(servletPath);
+    else
+      return false;
   }
-  */
+  
 }

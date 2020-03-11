@@ -777,15 +777,6 @@
     <url-pattern>/documents/*</url-pattern>
   </servlet-mapping>
   <servlet>
-    <description>JavaWebStart servlet</description>
-    <servlet-name>JavaWebStartServlet</servlet-name>
-    <servlet-class>org.santfeliu.web.servlet.JavaWebStartServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>JavaWebStartServlet</servlet-name>
-    <url-pattern>*.jnlp</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <description>Classification servlet</description>
     <servlet-name>ClassificationServlet</servlet-name>
     <servlet-class>org.santfeliu.classif.web.ClassificationServlet</servlet-class>

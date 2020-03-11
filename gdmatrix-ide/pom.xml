@@ -69,13 +69,6 @@
       <artifactId>json-simple</artifactId>
       <version>1.1.1</version>      
     </dependency>
-<!--    
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-swing-common</artifactId>
-      <version>${project.version}</version>
-    </dependency>
--->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-stubs</artifactId>
@@ -103,42 +96,39 @@
         <version>5.1.0</version>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.0</version>
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Application-Name>MatrixIDE</Application-Name>
-              <Permissions>all-permissions</Permissions>              
-              <mainClass>org.santfeliu.matrix.ide.MatrixIDE</mainClass>
-              <codebase>*</codebase>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>  
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-libs</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
+  
+  <profiles>
+    <profile>
+      <id>gen-binaries</id>
+      <build>
+        <plugins>  
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
             <configuration>
-              <descriptors>
-                <descriptor>src/main/assembly/resource.xml</descriptor>
-              </descriptors>
+              <archive>
+                <manifest>
+                  <mainClass>org.santfeliu.matrix.ide.MatrixIDE</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>${project.artifactId}</finalName>
+              <appendAssemblyId>false</appendAssemblyId>                 
             </configuration>
-          </execution>
-        </executions>
-      </plugin>      
-    </plugins>
-    
-  </build>
+            <executions>
+              <execution>
+                <id>assemble-all</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>      
+          </plugin>         
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  
 </project>

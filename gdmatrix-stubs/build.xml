@@ -269,7 +269,7 @@
   <target name="clean">
     <delete includeEmptyDirs="true" verbose="true" failonerror="false">
       <fileset dir="${basedir}/build" />
-    </delete>
+    </delete>   
     <delete includeEmptyDirs="true" verbose="true" failonerror="false">
       <fileset dir="${basedir}/src/main/webapp/WEB-INF/classes" />
     </delete>
@@ -281,10 +281,7 @@
     </delete>
     <delete includeEmptyDirs="true" verbose="true" failonerror="false">
       <fileset dir="${basedir}/src/main/webapp/wsdoc" />
-    </delete>
-    <delete includeEmptyDirs="true" verbose="true" failonerror="false">
-      <fileset dir="${basedir}/src/main/webapp/javawebstart/lib" />
-    </delete>
+    </delete>      
     <delete includeEmptyDirs="true" verbose="true" failonerror="false">
       <fileset dir="${basedir}/dist" />
     </delete>
