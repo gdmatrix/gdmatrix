@@ -73,7 +73,7 @@ import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
 import org.santfeliu.web.obj.util.ParametersManager;
 import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.ObjectActionParametersProcessor;
+import org.santfeliu.web.obj.util.JumpToObjectProcessor;
 import org.santfeliu.web.obj.util.CKEditorParametersProcessor;
 
 /**
@@ -235,7 +235,7 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   private transient List<SelectItem> typeSelectItems;
   private transient List<SelectItem> classSelectItems;
 
-  private ObjectActionParametersProcessor showActionProcessor;
+  private JumpToObjectProcessor jumpToObjectProcessor;
   private FillObjectParametersProcessor fillObjectProcessor;
   private CKEditorParametersProcessor ckEditorProcessor;
   
@@ -245,9 +245,9 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   {
     super("org.santfeliu.doc.web.resources.DocumentBundle", "documentSearch_", "docTypeId");
     parametersManager = new ParametersManager();
-    showActionProcessor = 
-      new ObjectActionParametersProcessor(this, "docid", DictionaryConstants.DOCUMENT_TYPE);
-    parametersManager.addProcessor(showActionProcessor);
+    jumpToObjectProcessor = new JumpToObjectProcessor(this, "docid", 
+      DictionaryConstants.DOCUMENT_TYPE);
+    parametersManager.addProcessor(jumpToObjectProcessor);
 
     filter = new DocumentFormFilter();
     fillObjectProcessor = new FillObjectParametersProcessor(filter);
@@ -705,7 +705,7 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   @Override
   public String showObject(String typeId, String docId)
   {
-    String version = (String)this.showActionProcessor.getParameter("version");
+    String version = (String)this.jumpToObjectProcessor.getParameter("version");
     int ver = version != null ? Integer.valueOf(version) : 0;
     return super.showObject(typeId, DocumentConfigBean.toObjectId(docId, ver));
   }

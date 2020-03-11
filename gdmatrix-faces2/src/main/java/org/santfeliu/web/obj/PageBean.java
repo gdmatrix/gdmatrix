@@ -40,6 +40,7 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.util.DateTimeRowStyleClassGenerator;
+import org.santfeliu.web.obj.util.JumpToObjectProcessor;
 import org.santfeliu.web.obj.util.ParametersManager;
 import org.santfeliu.web.obj.util.RowStyleClassGenerator;
 
@@ -55,6 +56,25 @@ public abstract class PageBean extends WebBean implements Savable
   public static final String PAGE_TITLE_PROPERTY = "oc.pageTitle";
   
   protected ParametersManager parametersManager;
+  protected JumpToObjectProcessor jumpToObjectProcessor;
+  
+  public PageBean()
+  {
+    super();
+    parametersManager = new ParametersManager();
+    jumpToObjectProcessor = 
+      new JumpToObjectProcessor(this, "joid", null);
+    parametersManager.addProcessor(jumpToObjectProcessor); 
+  }
+  
+  public String jshow()
+  {
+    String outcome = parametersManager.processParameters();
+    if (outcome != null)
+      return outcome;
+    else
+      return show();
+  }
   
   public String getTitle()
   {
@@ -158,6 +178,16 @@ public abstract class PageBean extends WebBean implements Savable
   {
     return ControllerBean.getCurrentInstance();
   }
+  
+  public String createObject()
+  {
+    return ControllerBean.getCurrentInstance().getObjectBean().create();
+  }
+
+  public String showObject(String typeId, String objectId)
+  {
+    return ControllerBean.getCurrentInstance().showObject(typeId, objectId);
+  }  
 
   public int getPageSize()
   {

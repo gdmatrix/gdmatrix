@@ -67,7 +67,7 @@ import org.santfeliu.web.obj.DetailBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
 import org.santfeliu.web.obj.util.ParametersManager;
 import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.ObjectActionParametersProcessor;
+import org.santfeliu.web.obj.util.JumpToObjectProcessor;
 
 /**
  *
@@ -156,7 +156,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
 
   private KeywordsManager keywordsManager;
   private ParametersManager parametersManager;
-  private ObjectActionParametersProcessor objectActionProcessor;
+  private JumpToObjectProcessor jumpToObjectProcessor;
   private FillObjectParametersProcessor setObjectProcessor;
   
   private CaseFormFilter filter;
@@ -168,9 +168,9 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   {
     super("org.santfeliu.cases.web.resources.CaseBundle", "case_", "caseTypeId");
     parametersManager = new ParametersManager();
-    objectActionProcessor = 
-      new ObjectActionParametersProcessor(this, "caseid", DictionaryConstants.CASE_TYPE);
-    parametersManager.addProcessor(objectActionProcessor);
+    jumpToObjectProcessor = 
+      new JumpToObjectProcessor(this, "caseid", DictionaryConstants.CASE_TYPE);
+    parametersManager.addProcessor(jumpToObjectProcessor);
     
     typeSelectItems = null;
     filter = new CaseFormFilter();
@@ -485,8 +485,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     String outcome = parametersManager.processParameters(); 
     if (outcome != null)
     {
-      if (objectActionProcessor.isObjectCreation() ||
-        checkCaseSuitability(objectActionProcessor.getObjectId()))
+      if (jumpToObjectProcessor.isObjectCreation() ||
+        checkCaseSuitability(jumpToObjectProcessor.getObjectId()))
         return outcome;
       else
         error("INVALID_CASE");
@@ -529,8 +529,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     String outcome = parametersManager.processParameters();
     if (outcome != null)
     {
-      if (objectActionProcessor.isObjectCreation() ||
-        checkCaseSuitability(objectActionProcessor.getObjectId()))
+      if (jumpToObjectProcessor.isObjectCreation() ||
+        checkCaseSuitability(jumpToObjectProcessor.getObjectId()))
         return outcome;
       else
         error("INVALID_CASE");

@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import org.matrix.dic.Property;
 import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.web.obj.util.ParametersManager.Parameter;
+import org.santfeliu.web.obj.util.ParametersManager.Parameters;
 
 
 /**
@@ -70,7 +72,7 @@ public class FillObjectParametersProcessor extends ParametersProcessor
   }
 
   @Override
-  public String processParameters(Map parameters)
+  public String processParameters(Parameters parameters)
   { 
     setParametersToObject(parameters, object);
     return null;
@@ -96,27 +98,31 @@ public class FillObjectParametersProcessor extends ParametersProcessor
     this.processedParameters = processedParameters;
   }
   
-  private void setParametersToObject(Map requestMap, Object object)
+  private void setParametersToObject(Parameters parameters, Object object)
   {
     objectModified = false;
     processedParameters = new ArrayList();
-    Set keys = requestMap.keySet();
-    Iterator it = keys.iterator();
+    List<Parameter> paramList = parameters.getList();
+    Iterator it = paramList.iterator();
     while (it.hasNext())
     {
-      String key = (String)it.next();
-      if ((key.startsWith(PARAMETER_PREFIX) || key.startsWith(PARAMETER_PREFIX2)) 
-        && !key.endsWith(PARAMETER_PREFIX2))
+      Parameter param = (Parameter)it.next();
+      if (param != null && param.isInURL())
       {
-        Object value = requestMap.get(key);
-        key = key.substring(1);
-        DictionaryUtils.setProperty(object, key, value);
+        String name = param.getName();
+        if ((name.startsWith(PARAMETER_PREFIX) || name.startsWith(PARAMETER_PREFIX2)) 
+          && !name.endsWith(PARAMETER_PREFIX2))
+        {
+          String value = param.getValue();
+          name = name.substring(1);
+          DictionaryUtils.setProperty(object, name, value);
 
-        if (DictionaryUtils.containsProperty(object, key) ||
-          KeywordsManager.KEYWORDS_PROPERTY.equals(key))
-            DictionaryUtils.addProperty(processedParameters, key, String.valueOf(value));
+          if (DictionaryUtils.containsProperty(object, name) ||
+            KeywordsManager.KEYWORDS_PROPERTY.equals(name))
+              DictionaryUtils.addProperty(processedParameters, name, String.valueOf(value));
 
-        objectModified = true;
+          objectModified = true;
+        }
       }
     }
   }  

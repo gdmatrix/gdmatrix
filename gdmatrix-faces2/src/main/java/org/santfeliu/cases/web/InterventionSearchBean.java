@@ -52,7 +52,7 @@ import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
 import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.ObjectActionParametersProcessor;
+import org.santfeliu.web.obj.util.JumpToObjectProcessor;
 import org.santfeliu.web.obj.util.ParametersManager;
 
 /**
@@ -114,18 +114,19 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
   private String footerBrowserUrl;
 
   private ParametersManager parametersManager;
-  private ObjectActionParametersProcessor objectActionProcessor;
+  private JumpToObjectProcessor jumpToObjectProcessor;
   private FillObjectParametersProcessor fillObjectProcessor;
   private InterventionFormFilter filter;
   
 
   public InterventionSearchBean()
   {
-    super("org.santfeliu.cases.web.resources.CaseBundle", "caseInterventions_", "intTypeId");
+    super("org.santfeliu.cases.web.resources.CaseBundle", "caseInterventions_", 
+      "intTypeId");
     parametersManager = new ParametersManager();
-    objectActionProcessor = 
-      new ObjectActionParametersProcessor(this, "caseid", "intid", DictionaryConstants.INTERVENTION_TYPE);
-    parametersManager.addProcessor(objectActionProcessor);
+    jumpToObjectProcessor = new JumpToObjectProcessor(this, "caseid", "intid", 
+      DictionaryConstants.INTERVENTION_TYPE);
+    parametersManager.addProcessor(jumpToObjectProcessor);
     
     fillObjectProcessor = new FillObjectParametersProcessor(this);
     parametersManager.addProcessor(fillObjectProcessor);
@@ -284,8 +285,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     String outcome = parametersManager.processParameters(); 
     if (outcome != null)
     {
-      if (objectActionProcessor.isObjectCreation() ||
-        checkSuitability(objectActionProcessor.getTabObjectId()))
+      if (jumpToObjectProcessor.isObjectCreation() ||
+        checkSuitability(jumpToObjectProcessor.getTabObjectId()))
         return outcome;
       else
         error("INVALID_INTERVENTION");
@@ -326,7 +327,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     
     CaseInterventionsBean caseInterventionsBean = 
       (CaseInterventionsBean)getBean("caseInterventionsBean");
-    caseInterventionsBean.editIntervention(objectActionProcessor.getTabObjectId());
+    caseInterventionsBean.editIntervention(jumpToObjectProcessor.getTabObjectId());
     
     return outcome;
   }

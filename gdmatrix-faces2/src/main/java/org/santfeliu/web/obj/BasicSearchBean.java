@@ -123,16 +123,6 @@ public abstract class BasicSearchBean extends PageBean
       return CACHE_SIZE;
   }
 
-  public String createObject()
-  {
-    return getObjectBean().create();
-  }
-
-  public String showObject(String typeId, String objectId)
-  {
-    return getControllerBean().showObject(typeId, objectId);
-  }
-
   // force new seach
   private void initRows()
   {
