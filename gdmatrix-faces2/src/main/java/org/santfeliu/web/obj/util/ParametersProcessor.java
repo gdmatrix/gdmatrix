@@ -31,8 +31,8 @@
 package org.santfeliu.web.obj.util;
 
 import java.io.Serializable;
-import java.util.Map;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.web.obj.util.ParametersManager.Parameters;
 
 /**
  *
@@ -40,5 +40,5 @@ import org.santfeliu.web.WebBean;
  */
 public abstract class ParametersProcessor extends WebBean implements Serializable
 {
-  public abstract String processParameters(Map parameters);
+  public abstract String processParameters(Parameters parameters);
 }

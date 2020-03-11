@@ -33,6 +33,7 @@ package org.santfeliu.web.obj.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.web.WebBean;
@@ -59,7 +60,7 @@ public class ParametersManager extends WebBean implements Serializable
   public String processParameters()
   {
     String outcome = null;
-    Map parameters = getRequestParameters();
+    Parameters parameters = getRequestParameters();
     for (ParametersProcessor processor : this.processors)
     {
       outcome = processor.processParameters(parameters);
@@ -68,25 +69,97 @@ public class ParametersManager extends WebBean implements Serializable
     return outcome;
   }
     
-  private Map getRequestParameters()
+  private Parameters getRequestParameters()
   {
     // Discard POST parameters
-    HashMap qsMap = new HashMap();
+    Parameters parameters = new Parameters();
     
     Map requestMap = getExternalContext().getRequestParameterMap();
     HttpServletRequest request = 
       (HttpServletRequest)getExternalContext().getRequest();
     String qs = request.getQueryString();
 
-    if (qs != null)
+    for (Object key : requestMap.keySet())
     {
-      for (Object key : requestMap.keySet())
-      {
-        if (qs.contains("?" + String.valueOf(key) + "=") || 
-            qs.contains("&" + String.valueOf(key) + "="))
-          qsMap.put(key, requestMap.get(key));
-      }
-    }    
-    return qsMap;
+      String skey = String.valueOf(key);
+      String svalue = String.valueOf(requestMap.get(key));
+      boolean inURL = qs != null && (qs.contains("?" + skey + "=") || 
+          qs.contains("&" + skey + "="));
+      parameters.add(new Parameter(skey, svalue, inURL));
+    }
+  
+    return parameters;
   } 
+  
+  public class Parameters implements Serializable
+  {
+    private Map<String, Parameter> map = new HashMap();
+
+    public void add(Parameter parameter)
+    {
+      if (parameter != null)
+        map.put(parameter.getName(), parameter);
+    }
+    
+    public String getParameterValue(String name)
+    {
+      Parameter parameter = map.get(name);
+      if (parameter != null)
+        return parameter.getValue();
+      return null;
+    }
+    
+    public List<Parameter> getList()
+    {
+      ArrayList<Parameter> list = new ArrayList();
+      list.addAll(map.values());
+      return list;
+    }
+     
+  }
+  
+  public class Parameter implements Serializable
+  {
+    private String name;
+    private String value;
+    private boolean inURL;
+
+    private Parameter(String name, String value, boolean inURL)
+    {
+      this.name = name;
+      this.value = value;
+      this.inURL = inURL;
+    }
+
+    public String getName()
+    {
+      return name;
+    }
+
+    public void setName(String name)
+    {
+      this.name = name;
+    }
+
+    public String getValue()
+    {
+      return value;
+    }
+
+    public void setValue(String value)
+    {
+      this.value = value;
+    }
+
+    public boolean isInURL()
+    {
+      return inURL;
+    }
+
+    public void setInURL(boolean inURL)
+    {
+      this.inURL = inURL;
+    }
+
+  }
 }

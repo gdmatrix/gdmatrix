@@ -30,7 +30,7 @@
  */
 package org.santfeliu.web.obj.util;
 
-import java.util.Map;
+import org.santfeliu.web.obj.util.ParametersManager.Parameters;
 
 /**
  * This parameters processor manage the parameters in a CKEditor call to custom 
@@ -49,11 +49,14 @@ public class CKEditorParametersProcessor extends ParametersProcessor
   private String language;
 
   @Override
-  public String processParameters(Map parameters)
+  public String processParameters(Parameters parameters)
   {
-    this.editorInstance = (String) parameters.get(EDITOR_INSTANCE_PARAM);
-    this.language = (String) parameters.get(LANGUAGE_PARAM);
-    this.callbackReference = (String) parameters.get(CALLBACK_PARAM);
+    if (parameters != null)
+    {
+      this.editorInstance = parameters.getParameterValue(EDITOR_INSTANCE_PARAM);
+      this.language = parameters.getParameterValue(LANGUAGE_PARAM);
+      this.callbackReference = parameters.getParameterValue(CALLBACK_PARAM);
+    }
     
     return null;
   }

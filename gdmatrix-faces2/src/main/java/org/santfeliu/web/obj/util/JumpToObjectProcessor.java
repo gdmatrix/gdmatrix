@@ -30,36 +30,44 @@
  */
 package org.santfeliu.web.obj.util;
 
-import java.lang.reflect.Method;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.web.obj.BasicSearchBean;
+import org.santfeliu.web.obj.ControllerBean;
+import org.santfeliu.web.obj.ExternalEditable;
+import org.santfeliu.web.obj.PageBean;
+import org.santfeliu.web.obj.util.ParametersManager.Parameters;
 
 /**
- * This ParametersProcessor decides whether to execute the object creation action 
- * or to show the object based on the presenece of NEW_OBJECT_PARAMETER as objectId.
+ * This ParametersProcessor decides whether to execute the object creation 
+ * action or to show the object based on the presenece of NEW_OBJECT_PARAMETER 
+ * as objectId.
  * 
  * @author blanquepa
  */
-public class ObjectActionParametersProcessor extends ParametersProcessor
+public class JumpToObjectProcessor extends ParametersProcessor
 {
-  public static final String NEW_OBJECT_PARAMETER = "new"; //
+  public static final String NEW_OBJECT_PARAMETER = "new"; 
+  public static final String JUMPCOMMAND_PARAMETER = "hiddenjumpcommand";
 
-  private BasicSearchBean searchBean;
+  private PageBean searchBean;
   private String idParameterName;
   private String idTabName;
   private String objectTypeId;  
   
-  public ObjectActionParametersProcessor(BasicSearchBean searchBean)
+  public JumpToObjectProcessor(PageBean searchBean)
   {
     this(searchBean, null, null, null);
   }
   
-  public ObjectActionParametersProcessor(BasicSearchBean searchBean, String idParameterName, String objectTypeId)
+  public JumpToObjectProcessor(PageBean searchBean, 
+    String idParameterName, String objectTypeId)
   {
     this(searchBean, idParameterName, null, objectTypeId);
   }
   
-  public ObjectActionParametersProcessor(BasicSearchBean searchBean, String idParameterName, String idTabName, String objectTypeId)
+  public JumpToObjectProcessor(PageBean searchBean, 
+    String idParameterName, String idTabName, String objectTypeId)
   {
     this.searchBean = searchBean;
     this.idParameterName = idParameterName;
@@ -98,8 +106,9 @@ public class ObjectActionParametersProcessor extends ParametersProcessor
   }
 
   @Override
-  public String processParameters(Map requestMap)
+  public String processParameters(Parameters parameters)
   {
+    //1. GET: jump to object specified in URL
     if (searchBean instanceof BasicSearchBean)
     {
       if (idParameterName == null)
@@ -108,22 +117,15 @@ public class ObjectActionParametersProcessor extends ParametersProcessor
         error("OBJECT_TYPEID_NOT_FOUND");
       else
       {
-        String objectId = (String)requestMap.get(idParameterName);
+        String objectId = parameters.getParameterValue(idParameterName);
         if (objectId != null)
         {
-          Class pageBeanClass = searchBean.getClass();
           try
           {
             if (objectId.equals(NEW_OBJECT_PARAMETER))
-            {
-              Method method = pageBeanClass.getMethod("createObject");
-              return (String)method.invoke(searchBean, new Object[]{});
-            }
+              return searchBean.createObject();
             else
-            {
-              Method method = pageBeanClass.getMethod("showObject", String.class, String.class);                          
-              return (String)method.invoke(searchBean, new Object[]{objectTypeId, objectId});
-            }
+              return searchBean.showObject(objectTypeId, objectId);
           }
           catch (Exception ex)
           {
@@ -131,6 +133,31 @@ public class ObjectActionParametersProcessor extends ParametersProcessor
           }            
         }          
       }
+    }
+    
+    //2. POST: jump to object specified in hiddenjumpcommand POST parameter.
+    String jumpCommand = parameters.getParameterValue(JUMPCOMMAND_PARAMETER);
+    if (!StringUtils.isBlank(jumpCommand))
+    {
+      String outcome = null;
+      String[] parts = jumpCommand.split("\\|");
+      if (parts[0].equals("type"))
+      {
+        String typeId = parts[1];
+        String objectId = parts[2];
+        outcome = ControllerBean.getCurrentInstance().showObject(typeId, objectId);
+      }
+      else if (parts[0].equals("tab"))
+      {
+        String mid = parts[1];
+        String objectId = parts[2];
+        String subObjectId = parts[3];
+        outcome = ControllerBean.getCurrentInstance().show(mid, objectId);
+        String beanName = getSelectedMenuItem().getProperty("oc.pageBean");
+        ExternalEditable editableBean = (ExternalEditable)getBean(beanName);
+        editableBean.editObject("new".equals(subObjectId) ? null : subObjectId);
+      } 
+      return outcome;
     }
     
     return null;
