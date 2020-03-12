@@ -55,8 +55,7 @@ import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.BasicSearchBean;
-import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.SetObjectManager;
 
 /**
  *
@@ -106,7 +105,7 @@ public class NewSearchBean extends BasicSearchBean
   private static final String DOC_SERVLET_PATH = "/documents/";
   
 
-  private FillObjectParametersProcessor fillObjectProcessor;  
+  private SetObjectManager setObjectManager;  
   private NewsFilter filter;  
   
   private Set<String> visibleSections = new HashSet<String>();
@@ -118,9 +117,7 @@ public class NewSearchBean extends BasicSearchBean
   public NewSearchBean()
   {
     filter = new NewsFilter();
-    parametersManager = new ParametersManager();
-    fillObjectProcessor = new FillObjectParametersProcessor(filter);
-    parametersManager.addProcessor(fillObjectProcessor); 
+    setObjectManager = new SetObjectManager(filter);
   }
 
   public NewsFilter getFilter()
@@ -290,9 +287,9 @@ public class NewSearchBean extends BasicSearchBean
         filter.setEndDateTime(getDefaultEndDateTime(now));
         filter.setContent("");
         filter.setUserId(null);
-        fillObjectProcessor.setObject(filter);
+        setObjectManager.setObject(filter);
       }
-      parametersManager.processParameters();
+      setObjectManager.execute(getRequestParameters());
       if (filter.getContent() != null)
       {
         setSearchContent(filter.getContent().replace("%", " "));

@@ -34,6 +34,9 @@ import java.util.List;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.BigList;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.web.obj.util.SetObjectManager;
+import org.santfeliu.web.obj.util.JumpManager;
+import org.santfeliu.web.obj.util.RequestParameters;
 
 /**
  *
@@ -122,7 +125,37 @@ public abstract class BasicSearchBean extends PageBean
     else
       return CACHE_SIZE;
   }
+  
+  protected String executeParametersManagers(
+    JumpManager jumpManager,
+    SetObjectManager setObjectManager,
+    String notSutaibleMessage)
+  {
+    RequestParameters reqParameters = getRequestParameters();
+    String outcome = jumpManager.execute(reqParameters); 
+    if (outcome != null)
+    {
+      if (!jumpManager.isObjectCreation() &&
+        !checkSuitability(jumpManager.getObjectId()))
+      {
+        error(notSutaibleMessage);
+        return null;
+      }
+    }
+    else
+    {
+      outcome = setObjectManager.execute(reqParameters);
+      if (outcome != null)
+        return outcome;
+    } 
+    return outcome;
+  } 
 
+  protected boolean checkSuitability(String objectId)
+  {
+    return true;
+  }
+  
   // force new seach
   private void initRows()
   {

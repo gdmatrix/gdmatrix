@@ -65,9 +65,8 @@ import org.santfeliu.util.FilterUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.DetailBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
-import org.santfeliu.web.obj.util.ParametersManager;
-import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.JumpToObjectProcessor;
+import org.santfeliu.web.obj.util.SetObjectManager;
+import org.santfeliu.web.obj.util.JumpManager;
 
 /**
  *
@@ -79,9 +78,11 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   @CMSProperty
   public static final String SEARCH_CASE_TYPE_PROPERTY = "searchCaseType";
   @CMSProperty
-  public static final String SEARCH_CASE_PROPERTY_NAME = "searchCasePropertyName";
+  public static final String SEARCH_CASE_PROPERTY_NAME = 
+    "searchCasePropertyName";
   @CMSProperty
-  public static final String SEARCH_CASE_PROPERTY_VALUE = "searchCasePropertyValue";
+  public static final String SEARCH_CASE_PROPERTY_VALUE = 
+    "searchCasePropertyValue";
   @CMSProperty
   public static final String ORDERBY_PROPERTY = "orderBy";
   @CMSProperty
@@ -120,7 +121,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   @CMSProperty
   public static final String RENDER_FILTER_PANEL = "renderFilterPanel";
   @CMSProperty
-  public static final String RENDER_PROPERTY_VALUE_FILTER = "renderPropertyValueFilter";
+  public static final String RENDER_PROPERTY_VALUE_FILTER = 
+    "renderPropertyValueFilter";
   @CMSProperty
   public static final String RENDER_CLEAR_BUTTON = "renderClearButton";
   @CMSProperty
@@ -128,13 +130,16 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   @CMSProperty
   public static final String LOAD_METADATA_PROPERTY = "loadMetadata";
   @CMSProperty
-  public static final String FORM_WILDCARD_PROPERTIES = "formWildcardProperties";  
+  public static final String FORM_WILDCARD_PROPERTIES = 
+    "formWildcardProperties";  
   @CMSProperty
-  public static final String RENDER_COLLAPSIBLE_PANEL_COLLAPSED = "renderCollapsiblePanelCollapsed";  
+  public static final String RENDER_COLLAPSIBLE_PANEL_COLLAPSED = 
+    "renderCollapsiblePanelCollapsed";  
   @CMSProperty
   public static final String FIND_AS_ADMIN_FOR_PROPERTY = "findAsAdminFor";
   @CMSProperty
-  public static final String ENABLE_TRANSLATION_PROPERTY = "searchCaseEnableTranslation";
+  public static final String ENABLE_TRANSLATION_PROPERTY = 
+    "searchCaseEnableTranslation";
   @CMSProperty
   public static final String RESULTS_LAYOUT_PROPERTY = "resultsLayout";
   public static final String RESULTS_LAYOUT_LIST = "list";
@@ -155,9 +160,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   private String footerBrowserUrl;
 
   private KeywordsManager keywordsManager;
-  private ParametersManager parametersManager;
-  private JumpToObjectProcessor jumpToObjectProcessor;
-  private FillObjectParametersProcessor setObjectProcessor;
+  private SetObjectManager setObjectManager;
   
   private CaseFormFilter filter;
   
@@ -167,16 +170,11 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   public CaseSearchBean()
   {
     super("org.santfeliu.cases.web.resources.CaseBundle", "case_", "caseTypeId");
-    parametersManager = new ParametersManager();
-    jumpToObjectProcessor = 
-      new JumpToObjectProcessor(this, "caseid", DictionaryConstants.CASE_TYPE);
-    parametersManager.addProcessor(jumpToObjectProcessor);
-    
+    jumpManager = 
+      new JumpManager(this, "caseid", DictionaryConstants.CASE_TYPE);
     typeSelectItems = null;
     filter = new CaseFormFilter();
-    setObjectProcessor = new FillObjectParametersProcessor(filter);
-    parametersManager.addProcessor(setObjectProcessor); 
-
+    setObjectManager = new SetObjectManager(filter);
   }
   
   public boolean isCollapsePanel()
@@ -409,7 +407,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
 
       //apply node filters
       String caseTypeId = getProperty(SEARCH_CASE_TYPE_PROPERTY);
-      if (caseTypeId != null && !isRenderCaseType()) setCurrentTypeId(caseTypeId);
+      if (caseTypeId != null && !isRenderCaseType()) 
+        setCurrentTypeId(caseTypeId);
 
       setSearchDynamicProperties(filter);
 
@@ -481,16 +480,11 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   {
     setHeaderBrowserUrl(null);
     setFooterBrowserUrl(null);
-
-    String outcome = parametersManager.processParameters(); 
+    
+    String outcome = executeParametersManagers(jumpManager, 
+      setObjectManager, "INVALID_CASE");
     if (outcome != null)
-    {
-      if (jumpToObjectProcessor.isObjectCreation() ||
-        checkCaseSuitability(jumpToObjectProcessor.getObjectId()))
-        return outcome;
-      else
-        error("INVALID_CASE");
-    }
+      return outcome;
 
     configureColumns();
 
@@ -501,7 +495,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     if (hasFirstLoadProperty())
       search();
 
-      return "case_search";
+    return "case_search";
   }
 
   /**
@@ -526,15 +520,10 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
       }
     }
 
-    String outcome = parametersManager.processParameters();
+    String outcome = executeParametersManagers(jumpManager, 
+      setObjectManager, "INVALID_CASE");
     if (outcome != null)
-    {
-      if (jumpToObjectProcessor.isObjectCreation() ||
-        checkCaseSuitability(jumpToObjectProcessor.getObjectId()))
-        return outcome;
-      else
-        error("INVALID_CASE");
-    }
+      return outcome;
 
     configureColumns();
 
@@ -551,7 +540,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
       //filter.setDefaultDateFilter(now, now, "3");
 
       dynamicFormsManager.setFormDataFromProperties(
-        setObjectProcessor.getProcessedParameters(), null);
+        setObjectManager.getProcessedParameters(), null);
 
       search();
     }
@@ -643,7 +632,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
 
   public String searchType()
   {
-    return searchType(DictionaryConstants.CASE_TYPE ,"#{caseSearchBean.currentTypeId}");
+    return searchType(DictionaryConstants.CASE_TYPE ,
+      "#{caseSearchBean.currentTypeId}");
   }
   
   @Override
@@ -655,7 +645,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
 
   public String searchClass()
   {
-    ClassSearchBean classSearchBean = (ClassSearchBean)getBean("classSearchBean");
+    ClassSearchBean classSearchBean = 
+      (ClassSearchBean)getBean("classSearchBean");
     if (classSearchBean == null)
       classSearchBean = new ClassSearchBean();
 
@@ -667,7 +658,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   
   public String searchPerson()
   {
-    PersonSearchBean personSearchBean = (PersonSearchBean)getBean("personSearchBean");
+    PersonSearchBean personSearchBean = 
+      (PersonSearchBean)getBean("personSearchBean");
     if (personSearchBean == null)
       personSearchBean = new PersonSearchBean();
 
@@ -687,11 +679,13 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
         if (StringUtils.isBlank(getProperty(SEARCH_CASE_TYPE_PROPERTY)))
         {
           typeSelectItems = typeBean.getSelectItems(
-            DictionaryConstants.CASE_TYPE, filter.getCaseFilter().getCaseTypeId());
+            DictionaryConstants.CASE_TYPE, 
+            filter.getCaseFilter().getCaseTypeId());
         }
         else
           typeSelectItems = typeBean.getAllSelectItems(
-            getProperty(SEARCH_CASE_TYPE_PROPERTY), CaseConstants.CASE_ADMIN_ROLE,
+            getProperty(SEARCH_CASE_TYPE_PROPERTY), 
+            CaseConstants.CASE_ADMIN_ROLE,
             new String[]{DictionaryConstants.READ_ACTION}, false);
       }
     }
@@ -742,9 +736,11 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     {
       Type type = TypeCache.getInstance().getType(typeId);
       if (type != null)
-      {
-        PropertyDefinition pd = type.getPropertyDefinition(PERSON_SEARCH_ENABLED);
-        if (pd != null && !pd.getValue().isEmpty() && pd.getValue().get(0).equalsIgnoreCase("true"))
+      {        
+        PropertyDefinition pd = 
+          type.getPropertyDefinition(PERSON_SEARCH_ENABLED);
+        if (pd != null && !pd.getValue().isEmpty() && 
+          pd.getValue().get(0).equalsIgnoreCase("true"))
         {
           render = render(RENDER_PERSONID_PROPERTY);
         }
@@ -948,7 +944,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   /*
    * Checks if the Case satisfy the filter type and filter search properties.
    */
-  private boolean checkCaseSuitability(String caseId)
+  @Override
+  protected boolean checkSuitability(String caseId)
   {
     CaseFormFilter formFilter = new CaseFormFilter();
     setSearchDynamicProperties(formFilter);

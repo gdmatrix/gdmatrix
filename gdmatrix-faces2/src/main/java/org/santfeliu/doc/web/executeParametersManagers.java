@@ -71,17 +71,17 @@ import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
-import org.santfeliu.web.obj.util.ParametersManager;
-import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.JumpToObjectProcessor;
-import org.santfeliu.web.obj.util.CKEditorParametersProcessor;
+import org.santfeliu.web.obj.util.SetObjectManager;
+import org.santfeliu.web.obj.util.JumpManager;
+import org.santfeliu.web.obj.util.CKEditorManager;
+import org.santfeliu.web.obj.util.RequestParameters;
 
 /**
  *
  * @author unknown
  */
 @CMSManagedBean
-public class DocumentSearchBean extends DynamicTypifiedSearchBean
+public class executeParametersManagers extends DynamicTypifiedSearchBean
 {
   //Node configuration properties
   @CMSProperty
@@ -235,26 +235,21 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   private transient List<SelectItem> typeSelectItems;
   private transient List<SelectItem> classSelectItems;
 
-  private JumpToObjectProcessor jumpToObjectProcessor;
-  private FillObjectParametersProcessor fillObjectProcessor;
-  private CKEditorParametersProcessor ckEditorProcessor;
+  private SetObjectManager setObjectManager;
+  private CKEditorManager ckEditorManager;
   
   private DocMatrixClientModels models;
 
-  public DocumentSearchBean()
+  public executeParametersManagers()
   {
     super("org.santfeliu.doc.web.resources.DocumentBundle", "documentSearch_", "docTypeId");
-    parametersManager = new ParametersManager();
-    jumpToObjectProcessor = new JumpToObjectProcessor(this, "docid", 
+    jumpManager = new JumpManager(this, "docid",
       DictionaryConstants.DOCUMENT_TYPE);
-    parametersManager.addProcessor(jumpToObjectProcessor);
 
     filter = new DocumentFormFilter();
-    fillObjectProcessor = new FillObjectParametersProcessor(filter);
-    parametersManager.addProcessor(fillObjectProcessor);
+    setObjectManager = new SetObjectManager(filter);
     
-    ckEditorProcessor = new CKEditorParametersProcessor();
-    parametersManager.addProcessor(ckEditorProcessor);    
+    ckEditorManager = new CKEditorManager();  
 
     docServletURL = getContextURL() + DOC_SERVLET_URL;
     DocumentConfigBean configBean =
@@ -641,14 +636,15 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   @CMSAction
   public String show()
   {
-    String outcome = parametersManager.processParameters();
+    String outcome = 
+      executeJumpManagers(jumpManager, setObjectManager, ckEditorManager, null);
     if (outcome != null)
       return outcome;
     else
     {
       configureColumns();
       if (isRenderDynamicForm() && !isRenderType()) refreshForms(); //reset dynamic form
-      if (!fillObjectProcessor.isObjectModified())
+      if (!setObjectManager.isObjectModified())
         resetFilterValues();
       
       if (hasFirstLoadProperty())
@@ -705,7 +701,7 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   @Override
   public String showObject(String typeId, String docId)
   {
-    String version = (String)this.jumpToObjectProcessor.getParameter("version");
+    String version = (String)this.jumpManager.getParameter("version");
     int ver = version != null ? Integer.valueOf(version) : 0;
     return super.showObject(typeId, DocumentConfigBean.toObjectId(docId, ver));
   }
@@ -1528,11 +1524,38 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   
   public boolean isCKEditorCall()
   {
-    return ckEditorProcessor.getEditorInstance() != null;
+    return ckEditorManager.getEditorInstance() != null;
   }
   
   public String getEditorCallback()
   {
-    return ckEditorProcessor.getCallbackReference();
-  }  
+    return ckEditorManager.getCallbackReference();
+  } 
+  
+  protected String executeJumpManagers(JumpManager jumpManager,
+    SetObjectManager setObjectManager,CKEditorManager ckEditorManager,
+    String notSutaibleMessage)
+  {
+    RequestParameters reqParameters = getRequestParameters();
+    
+    String outcome = jumpManager.execute(reqParameters); 
+    if (outcome != null)
+    {
+      if (!jumpManager.isObjectCreation() &&
+        !checkSuitability(jumpManager.getObjectId()))
+      {
+        error(notSutaibleMessage);
+        return null;
+      }
+    }
+    else
+    {
+      outcome = setObjectManager.execute(reqParameters);
+      if (outcome != null)
+        return outcome;
+      
+      outcome = ckEditorManager.execute(reqParameters);
+    } 
+    return outcome;
+  }   
 }
