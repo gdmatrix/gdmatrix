@@ -95,37 +95,7 @@
       <version>${project.version}</version>
       <classifier>resources</classifier>
       <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-elections</artifactId>
-      <version>${project.version}</version>
-      <classifier>jws-libs</classifier>
-      <type>zip</type>
-    </dependency>    
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-ide</artifactId>
-      <version>${project.version}</version>
-      <classifier>jws-libs</classifier>
-      <type>zip</type>
-    </dependency> 
-<!--           
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-class-importer</artifactId>
-      <version>${project.version}</version>
-      <classifier>jws-libs</classifier>
-      <type>zip</type>
-    </dependency>        
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-doc-uploader</artifactId>
-      <version>${project.version}</version>
-      <classifier>jws-libs</classifier>
-      <type>zip</type>
-    </dependency>      
--->      
+    </dependency>   
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-security-ri</artifactId>
@@ -275,21 +245,6 @@
       <artifactId>gdmatrix-ant</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- Toplink JPA implentation. TODO: Remove this dependency only needed for CMSTools & CMSTestBean  -->
-<!--    
-    <dependency>
-      <groupId>toplink.essentials</groupId>
-      <artifactId>toplink-essentials</artifactId>
-      <version>2.0-41b</version>
-    </dependency>    
--->    
-<!--    
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-ws-common</artifactId>
-      <version>${project.version}</version>      
-    </dependency>
--->
     <dependency>
       <groupId>com.itextpdf</groupId>
       <artifactId>itextpdf</artifactId>
@@ -335,47 +290,8 @@
               <excludeTransitive>true</excludeTransitive>
             </configuration>
           </execution>
-          <execution>
-            <id>unpack-jws-libs</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <outputDirectory>${project.build.directory}/gdmatrix-faces-${project.version}/javawebstart</outputDirectory>
-              <includeArtifactIds></includeArtifactIds>
-              <includeGroupIds>${project.groupId}</includeGroupIds>
-              <includeClassifiers>jws-libs</includeClassifiers>
-              <excludeTransitive>true</excludeTransitive>
-            </configuration>
-          </execution>           
-
         </executions>
       </plugin>  
-      
-      <!-- sign javawebstart jars -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jarsigner-plugin</artifactId>
-        <version>1.4</version>      
-        <executions>
-          <execution>
-            <id>sign</id>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-            <phase>prepare-package</phase>              
-          </execution>
-        </executions>
-        <configuration>
-          <keystore>${ks.path}</keystore>
-          <alias>${ks.alias}</alias>
-          <storepass>${ks.password}</storepass>
-          <storetype>${ks.type}</storetype>
-          <archiveDirectory>${project.build.directory}/gdmatrix-faces-${project.version}/javawebstart/lib</archiveDirectory>
-        </configuration>
-      </plugin> 
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -388,4 +304,128 @@
     
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>gen-binaries</id>
+      <dependencies>
+        <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>gdmatrix-elections</artifactId>
+          <version>${project.version}</version>  
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>           
+        </dependency>    
+        <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>gdmatrix-ide</artifactId>
+          <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>             
+        </dependency> 
+        <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>gdmatrix-client</artifactId>
+          <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>             
+        </dependency>                
+      </dependencies>
+      
+      <build>
+        <plugins>       
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>copy-client-resources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/gdmatrix-faces-${project.version}/apps</outputDirectory>
+                  <resources>          
+                    <resource>
+                      <directory>${project.parent.basedir}/gdmatrix-client/target</directory>
+                      <includes>
+                        <include>GDMatrixClient*.*</include>
+                      </includes>
+                      <filtering>false</filtering>
+                    </resource>                  
+                  </resources>              
+                </configuration>            
+              </execution>
+              <execution>  
+                <id>copy-elections-resources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/gdmatrix-faces-${project.version}/apps</outputDirectory>
+                  <resources>          
+                    <resource>
+                      <directory>${project.parent.basedir}/gdmatrix-elections/target</directory>
+                      <includes>
+                        <include>gdmatrix-elections.jar</include>
+                      </includes>
+                      <filtering>false</filtering>
+                    </resource>                    
+                  </resources>              
+                </configuration>            
+              </execution>  
+              <execution>  
+                <id>copy-ide-resources</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/gdmatrix-faces-${project.version}/apps</outputDirectory>
+                  <resources>          
+                    <resource>
+                      <directory>${project.parent.basedir}/gdmatrix-ide/target</directory>
+                      <includes>
+                        <include>gdmatrix-ide.jar</include>
+                      </includes>
+                      <filtering>false</filtering>
+                    </resource>                
+                  </resources>              
+                </configuration>            
+              </execution>                                          
+            </executions>
+          </plugin>  
+                  
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>3.2.2</version>
+            <configuration>
+              <useCache>true</useCache>
+              <attachClasses>true</attachClasses>
+              <packagingExcludes>
+                  WEB-INF/lib/gdmatrix-elections-*.jar,
+                  WEB-INF/lib/gdmatrix-ide-*.jar,
+                  WEB-INF/lib/gdmatrix-client-*.jar
+              </packagingExcludes>
+            </configuration>
+          </plugin>                      
+        </plugins>
+      </build>
+    </profile>
+  </profiles>  
 </project>
