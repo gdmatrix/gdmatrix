@@ -17,8 +17,8 @@ xcopy /s /i "%inst_dir%"\lib "%programdata%"\gdmatrix\client\lib
 echo cd "%programdata%"\gdmatrix\client > "%programdata%"\gdmatrix\client\%app_name%.bat
 echo start ..\jre\bin\javaw -cp lib/* org.santfeliu.matrix.client.MatrixClient %%1 >> "%programdata%"\gdmatrix\client\%app_name%.bat
 
+if "%1" == "silent" goto :end
 call "%programdata%"\gdmatrix\client\%app_name%.bat
-rmdir /s /q "%inst_dir%"
 goto :end
 
 :error
