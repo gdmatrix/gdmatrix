@@ -57,7 +57,7 @@ import org.matrix.doc.RelatedDocument;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.classif.web.ClassBean;
 import org.santfeliu.classif.web.ClassificationConfigBean;
-import static org.santfeliu.doc.web.executeParametersManagers.DISABLE_ROLES_PROPERTY;
+import static org.santfeliu.doc.web.DocumentSearchBean.DISABLE_ROLES_PROPERTY;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.obj.ControllerBean;
 import org.santfeliu.web.obj.util.SetObjectManager;

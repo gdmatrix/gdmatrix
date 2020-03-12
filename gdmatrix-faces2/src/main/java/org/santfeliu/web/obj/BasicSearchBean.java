@@ -128,32 +128,28 @@ public abstract class BasicSearchBean extends PageBean
   
   protected String executeParametersManagers(
     JumpManager jumpManager,
-    SetObjectManager setObjectManager,
-    String notSutaibleMessage)
+    SetObjectManager setObjectManager)
   {
     RequestParameters reqParameters = getRequestParameters();
     String outcome = jumpManager.execute(reqParameters); 
     if (outcome != null)
-    {
-      if (!jumpManager.isObjectCreation() &&
-        !checkSuitability(jumpManager.getObjectId()))
-      {
-        error(notSutaibleMessage);
-        return null;
-      }
-    }
-    else
-    {
-      outcome = setObjectManager.execute(reqParameters);
-      if (outcome != null)
-        return outcome;
-    } 
+      return outcome;
+
+    outcome = setObjectManager.execute(reqParameters);
+    if (outcome != null)
+      return outcome;
+
     return outcome;
   } 
 
-  protected boolean checkSuitability(String objectId)
+  public boolean checkJumpSuitability(String objectId)
   {
     return true;
+  }
+  
+  public String getNotSuitableMessage()
+  {
+    return "INVALID_OBJECT";
   }
   
   // force new seach

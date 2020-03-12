@@ -481,8 +481,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     setHeaderBrowserUrl(null);
     setFooterBrowserUrl(null);
     
-    String outcome = executeParametersManagers(jumpManager, 
-      setObjectManager, "INVALID_CASE");
+    String outcome = executeParametersManagers(jumpManager, setObjectManager);
     if (outcome != null)
       return outcome;
 
@@ -520,8 +519,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
       }
     }
 
-    String outcome = executeParametersManagers(jumpManager, 
-      setObjectManager, "INVALID_CASE");
+    String outcome = executeParametersManagers(jumpManager, setObjectManager);
     if (outcome != null)
       return outcome;
 
@@ -945,7 +943,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
    * Checks if the Case satisfy the filter type and filter search properties.
    */
   @Override
-  protected boolean checkSuitability(String caseId)
+  public boolean checkJumpSuitability(String caseId)
   {
     CaseFormFilter formFilter = new CaseFormFilter();
     setSearchDynamicProperties(formFilter);
@@ -966,6 +964,12 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
       return false;
     }
   }
+  
+  @Override
+  public String getNotSuitableMessage()
+  {
+    return "INVALID_CASE";
+  }  
 
   private boolean isOrderPreserved(String title, List<String> keywords)
   {
