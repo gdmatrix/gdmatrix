@@ -50,7 +50,7 @@ public class JumpManager extends ParametersManager
   public static final String NEW_OBJECT_PARAMETER = "new"; 
   public static final String JUMPCOMMAND_PARAMETER = "hiddenjumpcommand";
 
-  private PageBean searchBean;
+  private PageBean pageBean;
   private String idParameterName;
   private String idTabName;
   private String objectTypeId;  
@@ -69,7 +69,7 @@ public class JumpManager extends ParametersManager
   public JumpManager(PageBean searchBean, 
     String idParameterName, String idTabName, String objectTypeId)
   {
-    this.searchBean = searchBean;
+    this.pageBean = searchBean;
     this.idParameterName = idParameterName;
     this.idTabName = idTabName;
     this.objectTypeId = objectTypeId;
@@ -109,8 +109,9 @@ public class JumpManager extends ParametersManager
   public String execute(RequestParameters parameters)
   {
     //1. GET: jump to object specified in URL
-    if (searchBean instanceof BasicSearchBean)
+    if (pageBean instanceof BasicSearchBean)
     {
+      BasicSearchBean searchBean = (BasicSearchBean)pageBean;
       if (idParameterName == null)
         error("ID_PARAMETER_NAME_NOT_FOUND");
       else if(objectTypeId == null)
@@ -122,10 +123,15 @@ public class JumpManager extends ParametersManager
         {
           try
           {
-            if (objectId.equals(NEW_OBJECT_PARAMETER))
+            if (isObjectCreation(objectId))
               return searchBean.createObject();
-            else
+            else if (searchBean.checkJumpSuitability(objectId))            
               return searchBean.showObject(objectTypeId, objectId);
+            else
+            {
+              error(searchBean.getNotSuitableMessage());
+              return null;
+            }
           }
           catch (Exception ex)
           {
@@ -163,31 +169,13 @@ public class JumpManager extends ParametersManager
     return null;
   }
   
-  public boolean isObjectCreation()
+  private boolean isObjectCreation(String objectId)
   {
-    Map requestMap = getExternalContext().getRequestParameterMap();
-    String objectId = (String)requestMap.get(idParameterName);
     if (objectId != null)
       return objectId.equals(NEW_OBJECT_PARAMETER);
     else
-      return false;
-  }  
-  
-  public Object getParameter(String name)
-  {
-    return getExternalContext().getRequestParameterMap().get(name);
-  }  
-  
-  public String getObjectId()
-  {
-    Object value = getParameter(getIdParameterName());
-    return value != null ? String.valueOf(value) : null;
+      return false;    
   }
-  
-  public String getTabObjectId()
-  {
-    Object value = getParameter(getIdTabName());
-    return value != null ? String.valueOf(value) : null;
-  }  
+
   
 }

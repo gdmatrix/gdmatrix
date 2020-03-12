@@ -81,7 +81,7 @@ import org.santfeliu.web.obj.util.RequestParameters;
  * @author unknown
  */
 @CMSManagedBean
-public class executeParametersManagers extends DynamicTypifiedSearchBean
+public class DocumentSearchBean extends DynamicTypifiedSearchBean
 {
   //Node configuration properties
   @CMSProperty
@@ -240,7 +240,7 @@ public class executeParametersManagers extends DynamicTypifiedSearchBean
   
   private DocMatrixClientModels models;
 
-  public executeParametersManagers()
+  public DocumentSearchBean()
   {
     super("org.santfeliu.doc.web.resources.DocumentBundle", "documentSearch_", "docTypeId");
     jumpManager = new JumpManager(this, "docid",
@@ -637,7 +637,7 @@ public class executeParametersManagers extends DynamicTypifiedSearchBean
   public String show()
   {
     String outcome = 
-      executeJumpManagers(jumpManager, setObjectManager, ckEditorManager, null);
+      executeJumpManagers(jumpManager, setObjectManager, ckEditorManager);
     if (outcome != null)
       return outcome;
     else
@@ -701,7 +701,8 @@ public class executeParametersManagers extends DynamicTypifiedSearchBean
   @Override
   public String showObject(String typeId, String docId)
   {
-    String version = (String)this.jumpManager.getParameter("version");
+    RequestParameters params = getRequestParameters();
+    String version = params.getParameterValue("version");
     int ver = version != null ? Integer.valueOf(version) : 0;
     return super.showObject(typeId, DocumentConfigBean.toObjectId(docId, ver));
   }
@@ -1533,29 +1534,20 @@ public class executeParametersManagers extends DynamicTypifiedSearchBean
   } 
   
   protected String executeJumpManagers(JumpManager jumpManager,
-    SetObjectManager setObjectManager,CKEditorManager ckEditorManager,
-    String notSutaibleMessage)
+    SetObjectManager setObjectManager, CKEditorManager ckEditorManager)
   {
     RequestParameters reqParameters = getRequestParameters();
     
     String outcome = jumpManager.execute(reqParameters); 
     if (outcome != null)
-    {
-      if (!jumpManager.isObjectCreation() &&
-        !checkSuitability(jumpManager.getObjectId()))
-      {
-        error(notSutaibleMessage);
-        return null;
-      }
-    }
-    else
-    {
-      outcome = setObjectManager.execute(reqParameters);
-      if (outcome != null)
-        return outcome;
-      
-      outcome = ckEditorManager.execute(reqParameters);
-    } 
+      return outcome;
+
+    outcome = setObjectManager.execute(reqParameters);
+    if (outcome != null)
+      return outcome;
+
+    outcome = ckEditorManager.execute(reqParameters);
+
     return outcome;
   }   
 }

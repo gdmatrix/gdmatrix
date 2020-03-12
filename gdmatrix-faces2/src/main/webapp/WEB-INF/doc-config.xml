@@ -31,7 +31,7 @@
  
   <managed-bean>
     <managed-bean-name>documentSearchBean</managed-bean-name>
-    <managed-bean-class>org.santfeliu.doc.web.executeParametersManagers</managed-bean-class>
+    <managed-bean-class>org.santfeliu.doc.web.DocumentSearchBean</managed-bean-class>
   
     <managed-bean-scope>request</managed-bean-scope></managed-bean> 
 

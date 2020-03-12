@@ -53,6 +53,7 @@ import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
 import org.santfeliu.web.obj.util.SetObjectManager;
 import org.santfeliu.web.obj.util.JumpManager;
+import org.santfeliu.web.obj.util.RequestParameters;
 
 /**
  *
@@ -277,8 +278,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     setHeaderBrowserUrl(null);
     setFooterBrowserUrl(null);
 
-    String outcome = executeParametersManagers(jumpManager, 
-      setObjectManager, "INVALID_INTERVENTION");
+    String outcome = executeParametersManagers(jumpManager, setObjectManager);
     if (outcome != null)
         return outcome;
 
@@ -317,7 +317,9 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     
     CaseInterventionsBean caseInterventionsBean = 
       (CaseInterventionsBean)getBean("caseInterventionsBean");
-    caseInterventionsBean.editIntervention(jumpManager.getTabObjectId());
+    //TODO: get tab id transparent to bean
+    RequestParameters params = getRequestParameters();
+    caseInterventionsBean.editIntervention(params.getParameterValue("intid"));
     
     return outcome;
   }
@@ -634,7 +636,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
    * Checks if the Case satisfy the filter type and filter search properties.
    */
   @Override
-  protected boolean checkSuitability(String intId)
+  public boolean checkJumpSuitability(String intId)
   {
     InterventionFormFilter formFilter = new InterventionFormFilter();
     setSearchDynamicProperties(formFilter);
@@ -656,6 +658,12 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
       return false;
     }
   }  
+  
+  @Override
+  public String getNotSuitableMessage()
+  {
+    return "INVALID_INTERVENTION";
+  }
   
   private void configureColumns()
   {

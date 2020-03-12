@@ -34,7 +34,7 @@ import java.util.Date;
 import org.matrix.classif.Class;
 import org.santfeliu.cases.web.CaseSearchBean;
 import org.santfeliu.classif.ClassCache;
-import org.santfeliu.doc.web.executeParametersManagers;
+import org.santfeliu.doc.web.DocumentSearchBean;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.ControllerBean;
@@ -140,8 +140,8 @@ public class ClassBean extends ObjectBean
 
   public String searchDocuments()
   {
-    executeParametersManagers documentSearchBean =
-      (executeParametersManagers)getBean("documentSearchBean");
+    DocumentSearchBean documentSearchBean =
+      (DocumentSearchBean)getBean("documentSearchBean");
     documentSearchBean.reset();
     documentSearchBean.setClassId(getClassId());
     return ControllerBean.getCurrentInstance().searchObject("Document");
