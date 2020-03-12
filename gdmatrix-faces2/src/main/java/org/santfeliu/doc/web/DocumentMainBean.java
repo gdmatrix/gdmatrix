@@ -57,11 +57,10 @@ import org.matrix.doc.RelatedDocument;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.classif.web.ClassBean;
 import org.santfeliu.classif.web.ClassificationConfigBean;
-import static org.santfeliu.doc.web.DocumentSearchBean.DISABLE_ROLES_PROPERTY;
+import static org.santfeliu.doc.web.executeParametersManagers.DISABLE_ROLES_PROPERTY;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.obj.ControllerBean;
-import org.santfeliu.web.obj.util.ParametersManager;
-import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
+import org.santfeliu.web.obj.util.SetObjectManager;
 import org.santfeliu.ws.WSExceptionFactory;
 
 /**
@@ -76,7 +75,7 @@ public class DocumentMainBean extends DynamicTypifiedPageBean
   
   private static final String CLASSID_VALUES_SEPARATOR = ";";
 
-  private ParametersManager parametersManager;
+//  private ParametersManager parametersManager;
   private Document document;
   private String classIdString; // ex: T023;T021;G004
   private String classTitle; // title of first classId in classIdString
@@ -283,9 +282,10 @@ public class DocumentMainBean extends DynamicTypifiedPageBean
     if (isNew())
     {
       this.document = new Document();
-      parametersManager = new ParametersManager();
-      parametersManager.addProcessor(new FillObjectParametersProcessor(document));
-      parametersManager.processParameters();
+//      parametersManager = new ParametersManager();
+      SetObjectManager setObjectManager = 
+        new SetObjectManager(document);
+      setObjectManager.execute(getRequestParameters());
       setCurrentTypeId(document.getDocTypeId());
       setFormDataFromProperties(document.getProperty());     
     }

@@ -36,7 +36,7 @@ import org.santfeliu.web.obj.BasicSearchBean;
 import org.santfeliu.web.obj.ControllerBean;
 import org.santfeliu.web.obj.ExternalEditable;
 import org.santfeliu.web.obj.PageBean;
-import org.santfeliu.web.obj.util.ParametersManager.Parameters;
+
 
 /**
  * This ParametersProcessor decides whether to execute the object creation 
@@ -45,7 +45,7 @@ import org.santfeliu.web.obj.util.ParametersManager.Parameters;
  * 
  * @author blanquepa
  */
-public class JumpToObjectProcessor extends ParametersProcessor
+public class JumpManager extends ParametersManager
 {
   public static final String NEW_OBJECT_PARAMETER = "new"; 
   public static final String JUMPCOMMAND_PARAMETER = "hiddenjumpcommand";
@@ -55,18 +55,18 @@ public class JumpToObjectProcessor extends ParametersProcessor
   private String idTabName;
   private String objectTypeId;  
   
-  public JumpToObjectProcessor(PageBean searchBean)
+  public JumpManager(PageBean searchBean)
   {
     this(searchBean, null, null, null);
   }
   
-  public JumpToObjectProcessor(PageBean searchBean, 
+  public JumpManager(PageBean searchBean, 
     String idParameterName, String objectTypeId)
   {
     this(searchBean, idParameterName, null, objectTypeId);
   }
   
-  public JumpToObjectProcessor(PageBean searchBean, 
+  public JumpManager(PageBean searchBean, 
     String idParameterName, String idTabName, String objectTypeId)
   {
     this.searchBean = searchBean;
@@ -106,7 +106,7 @@ public class JumpToObjectProcessor extends ParametersProcessor
   }
 
   @Override
-  public String processParameters(Parameters parameters)
+  public String execute(RequestParameters parameters)
   {
     //1. GET: jump to object specified in URL
     if (searchBean instanceof BasicSearchBean)

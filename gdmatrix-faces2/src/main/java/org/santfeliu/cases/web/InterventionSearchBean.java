@@ -51,9 +51,8 @@ import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
-import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.JumpToObjectProcessor;
-import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.SetObjectManager;
+import org.santfeliu.web.obj.util.JumpManager;
 
 /**
  *
@@ -113,9 +112,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
   private String headerBrowserUrl;
   private String footerBrowserUrl;
 
-  private ParametersManager parametersManager;
-  private JumpToObjectProcessor jumpToObjectProcessor;
-  private FillObjectParametersProcessor fillObjectProcessor;
+  private SetObjectManager setObjectManager;
   private InterventionFormFilter filter;
   
 
@@ -123,13 +120,11 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
   {
     super("org.santfeliu.cases.web.resources.CaseBundle", "caseInterventions_", 
       "intTypeId");
-    parametersManager = new ParametersManager();
-    jumpToObjectProcessor = new JumpToObjectProcessor(this, "caseid", "intid", 
+//    parametersManager = new ParametersManager();
+    jumpManager = new JumpManager(this, "caseid", "intid", 
       DictionaryConstants.INTERVENTION_TYPE);
-    parametersManager.addProcessor(jumpToObjectProcessor);
     
-    fillObjectProcessor = new FillObjectParametersProcessor(this);
-    parametersManager.addProcessor(fillObjectProcessor);
+    setObjectManager = new SetObjectManager(this);
     
     typeSelectItems = null;
     personSelectItems = null;
@@ -282,15 +277,10 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     setHeaderBrowserUrl(null);
     setFooterBrowserUrl(null);
 
-    String outcome = parametersManager.processParameters(); 
+    String outcome = executeParametersManagers(jumpManager, 
+      setObjectManager, "INVALID_INTERVENTION");
     if (outcome != null)
-    {
-      if (jumpToObjectProcessor.isObjectCreation() ||
-        checkSuitability(jumpToObjectProcessor.getTabObjectId()))
         return outcome;
-      else
-        error("INVALID_INTERVENTION");
-    }
 
     configureColumns();
 
@@ -327,7 +317,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     
     CaseInterventionsBean caseInterventionsBean = 
       (CaseInterventionsBean)getBean("caseInterventionsBean");
-    caseInterventionsBean.editIntervention(jumpToObjectProcessor.getTabObjectId());
+    caseInterventionsBean.editIntervention(jumpManager.getTabObjectId());
     
     return outcome;
   }
@@ -629,6 +619,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     return render(RENDER_CLEAR_BUTTON, false);
   }  
   
+  @Override
   public String getRowStyleClass()
   {
     String defaultStyleClass = null;
@@ -642,7 +633,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
   /*
    * Checks if the Case satisfy the filter type and filter search properties.
    */
-  private boolean checkSuitability(String intId)
+  @Override
+  protected boolean checkSuitability(String intId)
   {
     InterventionFormFilter formFilter = new InterventionFormFilter();
     setSearchDynamicProperties(formFilter);
@@ -698,6 +690,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     return "true".equals(firstLoad);
   }  
 
+  @Override
   public String getAdminRole()
   {
     return CaseConstants.CASE_ADMIN_ROLE;

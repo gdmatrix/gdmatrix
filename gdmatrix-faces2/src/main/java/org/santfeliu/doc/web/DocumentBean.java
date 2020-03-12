@@ -90,7 +90,7 @@ public class DocumentBean extends ObjectBean
     String outcome = null;
     try
     {
-      DocumentSearchBean documentSearchBean = (DocumentSearchBean) getBean("documentSearchBean");
+      executeParametersManagers documentSearchBean = (executeParametersManagers) getBean("documentSearchBean");
       String[] objId = DocumentConfigBean.fromObjectId(getObjectId());
       String docId = objId[0];
       int version = Integer.parseInt(objId[1]);

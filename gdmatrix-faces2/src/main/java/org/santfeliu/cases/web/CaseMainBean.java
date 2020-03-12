@@ -58,8 +58,7 @@ import org.santfeliu.classif.web.ClassBean;
 import org.santfeliu.classif.web.ClassificationConfigBean;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.PojoUtils;
-import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.SetObjectManager;
 import org.santfeliu.ws.WSExceptionFactory;
 
 /**
@@ -412,10 +411,9 @@ public class CaseMainBean extends DynamicTypifiedPageBean
   {
     if (isNew())
     {
-      cas = new Case();
-      parametersManager = new ParametersManager();     
-      parametersManager.addProcessor(new FillObjectParametersProcessor(cas));
-      parametersManager.processParameters();
+      cas = new Case();    
+      SetObjectManager processor = new SetObjectManager(cas);
+      processor.execute(getRequestParameters());
       setCurrentTypeId(cas.getCaseTypeId());
       setFormDataFromProperties(cas.getProperty());
     }
