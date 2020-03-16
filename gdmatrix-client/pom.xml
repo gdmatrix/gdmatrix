@@ -191,20 +191,22 @@
                     <move file="${basedir}/target/${project_nv}-macos/gdmatrix-client/${jre_version}-jre"
                           tofile="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE" />
                     <zip destfile="${basedir}/target/GDMatrixClientMacInstall.zip">
+                      <zipfileset file="${basedir}/src/main/deploy/HELP_macos.txt"
+                                  fullpath="gdmatrix-client/HELP.txt" />
                       <zipfileset file="${basedir}/src/main/deploy/Info.plist"
-                                     fullpath="GDMatrixClient.app/Contents/Info.plist" />
+                                  fullpath="gdmatrix-client/GDMatrixClient.app/Contents/Info.plist" />
                       <zipfileset file="${basedir}/src/main/deploy/JavaAppLauncher"
-                                     fullpath="GDMatrixClient.app/Contents/MacOS/JavaAppLauncher"
-                                     filemode="755" />
+                                  fullpath="gdmatrix-client/GDMatrixClient.app/Contents/MacOS/JavaAppLauncher"
+                                  filemode="755" />
                       <zipfileset file="${basedir}/src/main/deploy/gdmatrix.icns"
-                                     fullpath="GDMatrixClient.app/Contents/Resources/gdmatrix.icns" />
+                                  fullpath="gdmatrix-client/GDMatrixClient.app/Contents/Resources/gdmatrix.icns" />
                       <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE/Contents/Home/bin"
-                                     prefix="GDMatrixClient.app/Contents/PlugIns/JRE/Contents/Home/jre/bin"
-                                     filemode="755" />
+                                  prefix="gdmatrix-client/GDMatrixClient.app/Contents/PlugIns/JRE/Contents/Home/jre/bin"
+                                  filemode="755" />
                       <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE/Contents/Home/lib"
-                                     prefix="GDMatrixClient.app/Contents/PlugIns/JRE/Contents/Home/jre/lib" />
+                                  prefix="gdmatrix-client/GDMatrixClient.app/Contents/PlugIns/JRE/Contents/Home/jre/lib" />
                       <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/Java"
-                                     prefix="GDMatrixClient.app/Contents/Java" />
+                                  prefix="gdmatrix-client/GDMatrixClient.app/Contents/Java" />
                     </zip>
                     <delete dir="${basedir}/target/${project_nv}-macos" failonerror="false" />
                   </target>

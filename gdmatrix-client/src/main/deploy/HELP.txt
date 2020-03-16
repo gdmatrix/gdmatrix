@@ -1,12 +1,47 @@
 GDMatrixClient
 ==============
 
+English:
+
 Java runtime is required to execute GDMatrixClient.
-You can download and install it from this URL:
+You can download it from this URL:
 https://adoptopenjdk.net/
+
+Once installed, run GDMatrixClient this way:
 
 Windows:
 bin/run.bat
 
 Unix systems:
 bin/run.sh
+
+------------------------------------------------------------------------------
+Español:
+
+El entorno de ejecución Java es necesario para ejecutar GDMatrixClient.
+Puedes descargarlo mediante esta URL:
+https://adoptopenjdk.net/
+
+Una vez instalado, inicia GDMatrixClient de esta manera:
+
+Windows:
+bin/run.bat
+
+Sistemas UNIX:
+bin/run.sh
+
+------------------------------------------------------------------------------
+Català:
+
+L'entorn d'execució Java es necessari per executar GDMatrixClient.
+Pots baixar-ho mitjançant aquesta URL:
+https://adoptopenjdk.net/
+
+Un cop instal·lat, inicia GDMatrixClient d'aquesta manera:
+
+Windows:
+bin/run.bat
+
+Sistemes UNIX:
+bin/run.sh
+

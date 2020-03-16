@@ -1,0 +1,17 @@
+GDMatrixClient
+==============
+
+English:
+
+Drag GDMatrixClient.app to applications folder
+
+------------------------------------------------------------------------------
+Español:
+
+Arrastra GDMatrixClient.app a la carpeta de aplicaciones
+
+------------------------------------------------------------------------------
+Català:
+
+Arrossega GDMatrixClient.app a la carpeta d'aplicacions
+
