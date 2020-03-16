@@ -75,12 +75,12 @@ public class MatrixInfo
 
   public static String getVersion()
   {
-    return properties.getProperty(VERSION, "???");
+    return properties.getProperty(VERSION, "0");
   }
 
   public static String getRevision()
   {
-    return properties.getProperty(REVISION, "???");
+    return properties.getProperty(REVISION, "0");
   }
 
   public static String getTags()

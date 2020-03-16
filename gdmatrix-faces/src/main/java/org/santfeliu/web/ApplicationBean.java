@@ -155,23 +155,24 @@ public class ApplicationBean
   
   public String getResourcesVersion()
   {
-    String result;
+    StringBuilder result = new StringBuilder();
+    result.append(MatrixInfo.getRevision());
+    result.append("_");
+    String resVersion;
     try
     {
       CWorkspace cWorkspace = cmsCache.getWorkspace(getDefaultWorkspaceId());
       String nodeId = getDefaultNodeId(cWorkspace);    
       CNode node = cWorkspace.getNode(nodeId);
-      result = node.getSinglePropertyValue(PARAM_RESOURCES_VERSION);
-      if (result == null) 
-      {
-        result = getVersion();
-      }
+      resVersion = node.getSinglePropertyValue(PARAM_RESOURCES_VERSION);
+      if (resVersion == null) resVersion = "0";
     }
     catch (Exception ex)
     {
-      result = "0";
+      resVersion = "0";
     }
-    return result;
+    result.append(resVersion);
+    return result.toString();
   }
 
   public synchronized List<Locale> getSupportedLocales()
