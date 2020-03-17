@@ -102,8 +102,12 @@
         if (document.getElementById('siblingsMenuDiv') != null)
         {
           document.getElementById('siblingsMenuDiv').style.display='block';
-          document.getElementsByClassName('showSiblingsMenuLink')[0].title = 
-             '${webBundle.hideSiblingsMenu}';
+          if (document.getElementsByClassName('showSiblingsMenuLink').
+            length > 0)
+          {
+            document.getElementsByClassName('showSiblingsMenuLink')[0].title = 
+              '${webBundle.hideSiblingsMenu}';
+          }
         }
         if (document.getElementById('interiorContainerDiv') != null)
         {
@@ -118,8 +122,12 @@
         if (document.getElementById('siblingsMenuDiv') != null)
         {      
           document.getElementById('siblingsMenuDiv').style.display='none';
-          document.getElementsByClassName('showSiblingsMenuLink')[0].title = 
-             '${webBundle.showSiblingsMenu}';
+          if (document.getElementsByClassName('showSiblingsMenuLink').
+            length > 0)
+          {
+            document.getElementsByClassName('showSiblingsMenuLink')[0].title = 
+              '${webBundle.showSiblingsMenu}';
+          }
         }
         if (document.getElementById('interiorContainerDiv') != null)
         {
@@ -147,8 +155,12 @@
         if (document.getElementById('childrenMenuDiv') != null)
         {        
           document.getElementById('childrenMenuDiv').style.display='block';
-          document.getElementsByClassName('showChildrenMenuLink')[0].title = 
-             '${webBundle.hideChildrenMenu}';
+          if (document.getElementsByClassName('showChildrenMenuLink').
+            length > 0)
+          {          
+            document.getElementsByClassName('showChildrenMenuLink')[0].title = 
+              '${webBundle.hideChildrenMenu}';
+          }
         }
         if (document.getElementById('interiorContainerDiv') != null)
         {        
@@ -167,8 +179,12 @@
         if (document.getElementById('childrenMenuDiv') != null)
         {
           document.getElementById('childrenMenuDiv').style.display='none';
-          document.getElementsByClassName('showChildrenMenuLink')[0].title = 
-             '${webBundle.showChildrenMenu}';                              
+          if (document.getElementsByClassName('showChildrenMenuLink').
+            length > 0)
+          {
+            document.getElementsByClassName('showChildrenMenuLink')[0].title = 
+              '${webBundle.showChildrenMenu}';                              
+          }
         }
         if (document.getElementById('interiorContainerDiv') != null)
         {        
