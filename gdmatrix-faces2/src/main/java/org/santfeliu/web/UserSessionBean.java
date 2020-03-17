@@ -1535,6 +1535,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     selectedMid = (String)in.readObject(); // lazy loading
   }
 
+  //Action executed from showObject command in common_script.js 
   public String jumpToObject()
   {
     String outcome = null;
@@ -1544,16 +1545,14 @@ public final class UserSessionBean extends FacesBean implements Serializable
     return outcome;
   }
 
-  String jumpCommand;
-
   public String getJumpCommand()
   {
     return null;
   }
 
+  //Value set in showObject command in common_script.js 
   public void setJumpCommand(String jumpCommand)
-  {
-//    this.jumpCommand = jumpCommand;
+  { 
   }
 
   //Script actions
