@@ -30,9 +30,10 @@
  */
 package org.santfeliu.web.obj.util;
 
-import java.util.Map;
-import org.apache.commons.lang.StringUtils;
-import org.santfeliu.web.obj.BasicSearchBean;
+import java.io.Serializable;
+import org.santfeliu.cases.web.CaseSearchBean;
+import org.santfeliu.cases.web.InterventionSearchBean;
+import org.santfeliu.doc.web.DocumentSearchBean;
 import org.santfeliu.web.obj.ControllerBean;
 import org.santfeliu.web.obj.ExternalEditable;
 import org.santfeliu.web.obj.PageBean;
@@ -49,32 +50,30 @@ public class JumpManager extends ParametersManager
 {
   public static final String NEW_OBJECT_PARAMETER = "new"; 
   public static final String JUMPCOMMAND_PARAMETER = "hiddenjumpcommand";
+  public static final String DEFAULT_ID_PARAMETER = "joid";
+  public static final String DEFAULT_ID_TAB_PARAMETER = "jtoid";
+  public static final String JUMP_MID_PARAMETER = "xmid";
 
   private PageBean pageBean;
   private String idParameterName;
   private String idTabName;
-  private String objectTypeId;  
   
-  public JumpManager(PageBean searchBean)
+  public JumpManager(PageBean pageBean)
   {
-    this(searchBean, null, null, null);
+    this.pageBean = pageBean;
+    
+    //Old legacy ids.
+    if (pageBean instanceof CaseSearchBean)
+      this.idParameterName = "caseid";
+    else if (pageBean instanceof DocumentSearchBean)
+      this.idParameterName = "docid";
+    else if (pageBean instanceof InterventionSearchBean)
+    {
+      this.idParameterName = "caseid";
+      this.idTabName = "intid";
+    }
   }
   
-  public JumpManager(PageBean searchBean, 
-    String idParameterName, String objectTypeId)
-  {
-    this(searchBean, idParameterName, null, objectTypeId);
-  }
-  
-  public JumpManager(PageBean searchBean, 
-    String idParameterName, String idTabName, String objectTypeId)
-  {
-    this.pageBean = searchBean;
-    this.idParameterName = idParameterName;
-    this.idTabName = idTabName;
-    this.objectTypeId = objectTypeId;
-  }
-
   public String getIdParameterName()
   {
     return idParameterName;
@@ -95,76 +94,60 @@ public class JumpManager extends ParametersManager
     this.idTabName = idTabName;
   }
 
-  public String getObjectTypeId()
-  {
-    return objectTypeId;
-  }
-
-  public void setObjectTypeId(String objectTypeId)
-  {
-    this.objectTypeId = objectTypeId;
-  }
-
   @Override
   public String execute(RequestParameters parameters)
-  {
-    //1. GET: jump to object specified in URL
-    if (pageBean instanceof BasicSearchBean)
+  {  
+    if (idParameterName == null)
+      idParameterName = DEFAULT_ID_PARAMETER;
+    
+    JumpData jumpData = getJumpData(parameters);  
+    
+    String objectId = jumpData.getObjectId();
+    if (objectId != null)
     {
-      BasicSearchBean searchBean = (BasicSearchBean)pageBean;
-      if (idParameterName == null)
-        error("ID_PARAMETER_NAME_NOT_FOUND");
-      else if(objectTypeId == null)
-        error("OBJECT_TYPEID_NOT_FOUND");
-      else
+      try
       {
-        String objectId = parameters.getParameterValue(idParameterName);
-        if (objectId != null)
+        if (jumpData.isJumpToTab()) //Jump to tab object
         {
-          try
+          //1. Jump to tab
+          String mid = jumpData.getMid();
+          ControllerBean controllerBean = ControllerBean.getCurrentInstance();        
+          String outcome = controllerBean.show(mid, objectId);
+          //2. Edit object
+          PageBean tabPageBean = controllerBean.getPageBean();
+          if (tabPageBean instanceof ExternalEditable)
           {
-            if (isObjectCreation(objectId))
-              return searchBean.createObject();
-            else if (searchBean.checkJumpSuitability(objectId))            
-              return searchBean.showObject(objectTypeId, objectId);
+            String tabObjectId = jumpData.getTabObjectId();
+            String editObjectId = 
+              isObjectCreation(tabObjectId) ? null : tabObjectId;
+            ((ExternalEditable)tabPageBean).editObject(editObjectId);            
+          }
+        
+          return outcome;          
+        }
+        else if (isObjectCreation(objectId)) //Main object creation
+          return pageBean.createObject();
+        else 
+        {
+          String typeId = jumpData.getTypeId();
+          if (typeId != null)
+          {
+            if (pageBean.checkJumpSuitability(objectId))            
+              return pageBean.showObject(typeId, objectId);
             else
             {
-              error(searchBean.getNotSuitableMessage());
+              error(pageBean.getNotSuitableMessage());
               return null;
-            }
+            }                
           }
-          catch (Exception ex)
-          {
-            return null;
-          }            
-        }          
+        }
       }
-    }
-    
-    //2. POST: jump to object specified in hiddenjumpcommand POST parameter.
-    String jumpCommand = parameters.getParameterValue(JUMPCOMMAND_PARAMETER);
-    if (!StringUtils.isBlank(jumpCommand))
-    {
-      String outcome = null;
-      String[] parts = jumpCommand.split("\\|");
-      if (parts[0].equals("type"))
+      catch (Exception ex)
       {
-        String typeId = parts[1];
-        String objectId = parts[2];
-        outcome = ControllerBean.getCurrentInstance().showObject(typeId, objectId);
-      }
-      else if (parts[0].equals("tab"))
-      {
-        String mid = parts[1];
-        String objectId = parts[2];
-        String subObjectId = parts[3];
-        outcome = ControllerBean.getCurrentInstance().show(mid, objectId);
-        String beanName = getSelectedMenuItem().getProperty("oc.pageBean");
-        ExternalEditable editableBean = (ExternalEditable)getBean(beanName);
-        editableBean.editObject("new".equals(subObjectId) ? null : subObjectId);
-      } 
-      return outcome;
-    }
+        error(ex.getLocalizedMessage());
+        return null;
+      }            
+    }          
     
     return null;
   }
@@ -176,6 +159,136 @@ public class JumpManager extends ParametersManager
     else
       return false;    
   }
+  
+  private String getObjectId(RequestParameters parameters)
+  {
+    String value = null;
 
+    //1. Try with idParameterName
+    if (idParameterName != null)
+      value = (String) parameters.getParameterValue(idParameterName);    
+  
+    //2. Try default idParameterName (joid)
+    if (value == null)
+      value = (String) parameters.getParameterValue(DEFAULT_ID_PARAMETER);
+         
+    return value;
+  } 
+  
+  private String getTabObjectId(RequestParameters parameters)
+  {
+    String value = null;
+
+    //1. Try with idTabName
+    if (idTabName != null)
+      value = (String) parameters.getParameterValue(idTabName);    
+  
+    //2. Try default idTabName (jtoid)
+    if (value == null)
+      value = (String) parameters.getParameterValue(DEFAULT_ID_TAB_PARAMETER);
+         
+    return value;
+  }  
+  
+  private JumpData getJumpData(RequestParameters parameters)
+  {
+    JumpData data = new JumpData();
+    
+    String jumpCommand = 
+      (String) parameters.getParameterValue(JUMPCOMMAND_PARAMETER);
+    if (jumpCommand != null)
+    {
+      String[] parts = jumpCommand.split("\\|");
+      if (parts[0].equals("type"))
+      {
+        data.setTypeId(parts[1]);
+        data.setObjectId(parts[2]);
+      }
+      else if (parts[0].equals("tab"))
+      {
+        data.setMid(parts[1]);
+        data.setObjectId(parts[2]);
+        data.setTabObjectId(parts[3]);
+      }       
+    }
+    else
+    {
+      String objectTypeId = pageBean.getObjectBean().getObjectTypeId(); 
+      data.setTypeId(objectTypeId);
+      data.setObjectId(getObjectId(parameters));
+      data.setTabObjectId(getTabObjectId(parameters));
+      String mid = 
+        (String) parameters.getParameterValue(JUMP_MID_PARAMETER);
+      data.setMid(mid);
+    }
+    
+    return data;
+  }  
+  
+  private class JumpData implements Serializable
+  {
+    private String objectId;
+    private String tabObjectId;
+    private String mid;
+    private String typeId;
+    private boolean objectCreation;
+
+    public String getObjectId()
+    {
+      return objectId;
+    }
+
+    public void setObjectId(String objectId)
+    {
+      this.objectId = objectId;
+      this.objectCreation = (NEW_OBJECT_PARAMETER.equals(objectId));
+        
+    }
+
+    public String getTabObjectId()
+    {
+      return tabObjectId;
+    }
+
+    public void setTabObjectId(String tabObjectId)
+    {
+      this.tabObjectId = tabObjectId;
+    }
+
+    public String getMid()
+    {
+      return mid;
+    }
+
+    public void setMid(String mid)
+    {
+      this.mid = mid;
+    }
+
+    public boolean isObjectCreation()
+    {
+      return objectCreation;
+    }
+
+    public void setObjectCreation(boolean objectCreation)
+    {
+      this.objectCreation = objectCreation;
+    }
+
+    public String getTypeId()
+    {
+      return typeId;
+    }
+
+    public void setTypeId(String typeId)
+    {
+      this.typeId = typeId;
+    }
+    
+    public boolean isJumpToTab()
+    {
+      return this.tabObjectId != null;
+    }    
+  }  
   
 }

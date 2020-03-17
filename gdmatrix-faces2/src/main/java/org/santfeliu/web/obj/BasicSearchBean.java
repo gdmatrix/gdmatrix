@@ -30,12 +30,12 @@
  */
 package org.santfeliu.web.obj;
 
+import java.util.Arrays;
 import java.util.List;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.BigList;
 import org.santfeliu.web.bean.CMSProperty;
-import org.santfeliu.web.obj.util.SetObjectManager;
-import org.santfeliu.web.obj.util.JumpManager;
+import org.santfeliu.web.obj.util.ParametersManager;
 import org.santfeliu.web.obj.util.RequestParameters;
 
 /**
@@ -126,30 +126,20 @@ public abstract class BasicSearchBean extends PageBean
       return CACHE_SIZE;
   }
   
-  protected String executeParametersManagers(
-    JumpManager jumpManager,
-    SetObjectManager setObjectManager)
+  protected String executeParametersManagers(ParametersManager[] managers)
   {
-    RequestParameters reqParameters = getRequestParameters();
-    String outcome = jumpManager.execute(reqParameters); 
-    if (outcome != null)
-      return outcome;
-
-    outcome = setObjectManager.execute(reqParameters);
-    if (outcome != null)
-      return outcome;
-
+    String outcome = null;
+    if (managers != null)
+    {
+      RequestParameters reqParameters = getRequestParameters();
+      for (ParametersManager manager : Arrays.asList(managers))
+      {
+        outcome = manager.execute(reqParameters);
+        if (outcome != null)
+          return outcome;        
+      }
+    }
     return outcome;
-  } 
-
-  public boolean checkJumpSuitability(String objectId)
-  {
-    return true;
-  }
-  
-  public String getNotSuitableMessage()
-  {
-    return "INVALID_OBJECT";
   }
   
   // force new seach

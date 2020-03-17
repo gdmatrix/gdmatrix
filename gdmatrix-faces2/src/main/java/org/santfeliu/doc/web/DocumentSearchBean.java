@@ -74,6 +74,7 @@ import org.santfeliu.web.obj.util.ColumnDefinition;
 import org.santfeliu.web.obj.util.SetObjectManager;
 import org.santfeliu.web.obj.util.JumpManager;
 import org.santfeliu.web.obj.util.CKEditorManager;
+import org.santfeliu.web.obj.util.ParametersManager;
 import org.santfeliu.web.obj.util.RequestParameters;
 
 /**
@@ -166,7 +167,8 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   @CMSProperty
   public static final String RENDER_DYNAMIC_FORM_PROPERTY = "renderDynamicForm";
   @CMSProperty
-  public static final String RENDER_PROPERTY_VALUE_FILTER = "renderPropertyValueFilter";
+  public static final String RENDER_PROPERTY_VALUE_FILTER = 
+    "renderPropertyValueFilter";
   @CMSProperty
   public static final String RENDER_CLEAR_BUTTON = "renderClearButton";
 
@@ -242,9 +244,8 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
 
   public DocumentSearchBean()
   {
-    super("org.santfeliu.doc.web.resources.DocumentBundle", "documentSearch_", "docTypeId");
-    jumpManager = new JumpManager(this, "docid",
-      DictionaryConstants.DOCUMENT_TYPE);
+    super("org.santfeliu.doc.web.resources.DocumentBundle", "documentSearch_", 
+      "docTypeId");
 
     filter = new DocumentFormFilter();
     setObjectManager = new SetObjectManager(filter);
@@ -502,7 +503,10 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
       List<Locale> locales = userSessionBean.getSupportedLocales();
       for (Locale locale : locales)
       {
-        results.add(new SelectItem(locale.getLanguage(), locale.getDisplayLanguage(currentLocale)));
+        String language = locale.getLanguage();
+        String displayLanguage = locale.getDisplayLanguage(currentLocale);
+        SelectItem item = new SelectItem(language, displayLanguage);
+        results.add(item);
       }
     }
     return results;
@@ -552,8 +556,8 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
         Map documentProperties = getDocumentProperties();
         if (documentProperties != null && !documentProperties.isEmpty())
         {
-          Document document = 
-            getClient().loadDocument(docId, DocumentConstants.LAST_VERSION, ContentInfo.ID);
+          Document document = getClient().loadDocument(docId, 
+            DocumentConstants.LAST_VERSION, ContentInfo.ID);
           
           //docTypeId not reset
           documentProperties.remove(DocumentConstants.DOCTYPEID);
@@ -562,7 +566,8 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
             ||documentProperties.containsKey(DocumentConstants.WRITE_ROLE)
             ||documentProperties.containsKey(DocumentConstants.DELETE_ROLE))
           {
-            //Clear ACL before WS call to put roles defined in node configuration.
+            //Clear ACL before WS call to put roles defined in node 
+            //configuration.
             document.getAccessControl().clear();
           }
 
@@ -636,14 +641,17 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   @CMSAction
   public String show()
   {
-    String outcome = 
-      executeJumpManagers(jumpManager, setObjectManager, ckEditorManager);
+    
+    ParametersManager[] managers = 
+      {jumpManager, setObjectManager, ckEditorManager};
+    String outcome = executeParametersManagers(managers);
     if (outcome != null)
       return outcome;
     else
     {
       configureColumns();
-      if (isRenderDynamicForm() && !isRenderType()) refreshForms(); //reset dynamic form
+      if (isRenderDynamicForm() && !isRenderType()) 
+        refreshForms(); //reset dynamic form
       if (!setObjectManager.isObjectModified())
         resetFilterValues();
       
@@ -738,7 +746,8 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
 
   public String searchClass()
   {
-    ClassSearchBean classSearchBean = (ClassSearchBean)getBean("classSearchBean");
+    ClassSearchBean classSearchBean = 
+      (ClassSearchBean)getBean("classSearchBean");
     if (classSearchBean == null)
       classSearchBean = new ClassSearchBean();
 
@@ -762,8 +771,9 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
     {
       String[] objectId = DocumentConfigBean.fromObjectId(docId);
       docId = objectId[0];
-      int version = Integer.valueOf(objectId[1]).intValue();
-      selectedDocument = getClient().loadDocument(docId, version, ContentInfo.ID);
+      int version = Integer.valueOf(objectId[1]);
+      CachedDocumentManagerClient client = getClient();
+      selectedDocument = client.loadDocument(docId, version, ContentInfo.ID);
     }
     catch (Exception ex)
     {
@@ -807,7 +817,9 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
     try
     {
       String docTypeId = getProperty(DEFAULTTYPE_PROPERTY);
-      if (docTypeId != null && !docTypeId.equals(selectedDocument.getDocTypeId()))
+      boolean notMatch = 
+        docTypeId != null && !docTypeId.equals(selectedDocument.getDocTypeId());
+      if (notMatch)
         error("DOCTYPEID_NOT_MATCH");
       else
       {
@@ -820,7 +832,8 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
         {
           String name = propertyNames.get(i);
           String value = propertyValues.get(i);
-          Property property = DictionaryUtils.getProperty(selectedDocument, name);
+          Property property = 
+            DictionaryUtils.getProperty(selectedDocument, name);
           if (property == null)
             DictionaryUtils.setProperty(selectedDocument, name, value);
           else if (!property.getValue().contains(value))
@@ -897,8 +910,9 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
     Document document = (Document)getValue("#{row}");
     if (document != null)
     {
-      String rowObjectId =
-        DocumentConfigBean.toObjectId(document.getDocId(), document.getVersion());
+      String docId = document.getDocId();
+      int version = document.getVersion();
+      String rowObjectId = DocumentConfigBean.toObjectId(docId, version);
       return rowObjectId.equals(objectId);
     }
     else
@@ -1002,7 +1016,8 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
 
   public String getMarkupUrl()
   {
-    String searchExpression = filter.getDocumentFilter().getContentSearchExpression();
+    String searchExpression = 
+      filter.getDocumentFilter().getContentSearchExpression();
     Document document = (Document)getValue("#{row}");
     return DocumentUrlBuilder.getMarkupUrl(document, searchExpression);
   }
@@ -1418,9 +1433,10 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
 
   private void setOrderByProperties()
   {
-    List<String> orderby = getSelectedMenuItem().getMultiValuedProperty(ORDERBY_PROPERTY);
+    MenuItemCursor mic = getSelectedMenuItem(); 
+    List<String> orderby = mic.getMultiValuedProperty(ORDERBY_PROPERTY);
     if (orderby.isEmpty())
-      orderby = getSelectedMenuItem().getMultiValuedProperty(ORDERBY_PROPERTY.toLowerCase());
+      orderby = mic.getMultiValuedProperty(ORDERBY_PROPERTY.toLowerCase());
     Iterator it = orderby.iterator();
     while (it.hasNext())
     {
@@ -1472,7 +1488,8 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
 
     if (isRenderDateColumn())
     {
-      ColumnDefinition changeDateTimeColDef = new ColumnDefinition("changeDateTime");
+      ColumnDefinition changeDateTimeColDef = 
+        new ColumnDefinition("changeDateTime");
       changeDateTimeColDef.setConverter(new DateTimeConverter("dd/MM/yyyy"));
       changeDateTimeColDef.setStyleClass("dateColumn");
       resultsManager.addDefaultColumn(changeDateTimeColDef);
@@ -1532,22 +1549,5 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
   {
     return ckEditorManager.getCallbackReference();
   } 
-  
-  protected String executeJumpManagers(JumpManager jumpManager,
-    SetObjectManager setObjectManager, CKEditorManager ckEditorManager)
-  {
-    RequestParameters reqParameters = getRequestParameters();
     
-    String outcome = jumpManager.execute(reqParameters); 
-    if (outcome != null)
-      return outcome;
-
-    outcome = setObjectManager.execute(reqParameters);
-    if (outcome != null)
-      return outcome;
-
-    outcome = ckEditorManager.execute(reqParameters);
-
-    return outcome;
-  }   
 }

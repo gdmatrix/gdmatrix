@@ -66,7 +66,7 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.DetailBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
 import org.santfeliu.web.obj.util.SetObjectManager;
-import org.santfeliu.web.obj.util.JumpManager;
+import org.santfeliu.web.obj.util.ParametersManager;
 
 /**
  *
@@ -170,8 +170,6 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   public CaseSearchBean()
   {
     super("org.santfeliu.cases.web.resources.CaseBundle", "case_", "caseTypeId");
-    jumpManager = 
-      new JumpManager(this, "caseid", DictionaryConstants.CASE_TYPE);
     typeSelectItems = null;
     filter = new CaseFormFilter();
     setObjectManager = new SetObjectManager(filter);
@@ -481,7 +479,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     setHeaderBrowserUrl(null);
     setFooterBrowserUrl(null);
     
-    String outcome = executeParametersManagers(jumpManager, setObjectManager);
+    ParametersManager[] managers = {jumpManager, setObjectManager};
+    String outcome = executeParametersManagers(managers);
     if (outcome != null)
       return outcome;
 
@@ -519,7 +518,8 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
       }
     }
 
-    String outcome = executeParametersManagers(jumpManager, setObjectManager);
+    ParametersManager[] managers = {jumpManager, setObjectManager};
+    String outcome = executeParametersManagers(managers);
     if (outcome != null)
       return outcome;
 
