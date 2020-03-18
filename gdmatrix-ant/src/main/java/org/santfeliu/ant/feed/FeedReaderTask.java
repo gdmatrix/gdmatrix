@@ -287,11 +287,11 @@ public class FeedReaderTask extends WSTask
         {
           case ACCEPTED:
             acceptedCount++;
-            dbInsertEntry(feed, row);
+            dbInsertEntry(feed, row);  
             break;
           case UPDATED_VISIBLE:
             updatedCount++;
-            dbUpdateEntry(feed, auxEntryId, row, true);
+            dbUpdateEntry(feed, auxEntryId, row, true);            
             break;
           case UPDATED_INVISIBLE:
             updatedCount++;
@@ -306,14 +306,14 @@ public class FeedReaderTask extends WSTask
           case ERROR:
             errorCount++;
             break;
-        }        
+        }          
       }
       log("Created entries: " + acceptedCount);
       log("Updated entries: " + updatedCount);
       log("Existing entries: " + existingCount);
       log("Obsolete entries: " + obsoleteCount);
       log("Error entries: " + errorCount);
-      dbUpdateFeedRefreshDt(feed, now);
+      dbUpdateFeedRefreshDt(feed, now);      
     }
     catch (Exception ex)
     {
@@ -380,8 +380,8 @@ public class FeedReaderTask extends WSTask
       if (row.getHeadLine() != null && 
         row.getHeadLine().length() > MAX_TITLE_LENGTH)
       {
-        throw new Exception("Title field too large: " + row.getHeadLine().length());
-      }      
+        row.setHeadLine(row.getHeadLine().substring(0, MAX_TITLE_LENGTH));
+      }
       
       if (auxMarginDateTime != null)
       {
