@@ -74,7 +74,7 @@ import org.santfeliu.security.web.LoginBean;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.script.ActionsScriptClient;
 import org.santfeliu.web.obj.ControllerBean;
-import org.santfeliu.web.obj.ExternalEditable;
+import org.santfeliu.web.obj.PageBean;
 
 public final class UserSessionBean extends FacesBean implements Serializable
 {
@@ -1535,39 +1535,24 @@ public final class UserSessionBean extends FacesBean implements Serializable
     selectedMid = (String)in.readObject(); // lazy loading
   }
 
+  //Action executed from showObject command in common_script.js 
   public String jumpToObject()
   {
     String outcome = null;
-    String[] parts = jumpCommand.split("\\|");
-    if (parts[0].equals("type"))
-    {
-      String typeId = parts[1];
-      String objectId = parts[2];
-      outcome = ControllerBean.getCurrentInstance().showObject(typeId, objectId);
-    }
-    else if (parts[0].equals("tab"))
-    {
-      String mid = parts[1];
-      String objectId = parts[2];
-      String subObjectId = parts[3];
-      outcome = ControllerBean.getCurrentInstance().show(mid, objectId);
-      String beanName = getSelectedMenuItem().getProperty("oc.pageBean");
-      ExternalEditable editableBean = (ExternalEditable)getBean(beanName);
-      editableBean.editObject("new".equals(subObjectId) ? null : subObjectId);
-    }
+    PageBean pageBean = ControllerBean.getCurrentInstance().getPageBean();
+    if (pageBean != null)
+      outcome = pageBean.jshow();
     return outcome;
   }
 
-  String jumpCommand;
-
   public String getJumpCommand()
   {
-    return jumpCommand;
+    return null;
   }
 
+  //Value set in showObject command in common_script.js 
   public void setJumpCommand(String jumpCommand)
-  {
-    this.jumpCommand = jumpCommand;
+  { 
   }
 
   //Script actions

@@ -48,7 +48,6 @@ import org.santfeliu.dic.web.TypeBean;
 import org.santfeliu.dic.web.TypeSearchBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.bean.CMSProperty;
-import org.santfeliu.web.obj.util.ParametersManager;
 
 public abstract class TypifiedPageBean extends GroupablePageBean
 {
@@ -61,8 +60,6 @@ public abstract class TypifiedPageBean extends GroupablePageBean
   protected boolean allTypesVisible = true;
   protected boolean showTypePath = true;
   protected String adminRole = null;
-
-  protected ParametersManager parametersManager;  
 
   public TypifiedPageBean(String rootTypeId, String adminRole)
   {

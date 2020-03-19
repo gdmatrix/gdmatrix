@@ -30,10 +30,13 @@
  */
 package org.santfeliu.web.obj;
 
+import java.util.Arrays;
 import java.util.List;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.BigList;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.RequestParameters;
 
 /**
  *
@@ -122,17 +125,23 @@ public abstract class BasicSearchBean extends PageBean
     else
       return CACHE_SIZE;
   }
-
-  public String createObject()
+  
+  protected String executeParametersManagers(ParametersManager[] managers)
   {
-    return getObjectBean().create();
+    String outcome = null;
+    if (managers != null)
+    {
+      RequestParameters reqParameters = getRequestParameters();
+      for (ParametersManager manager : Arrays.asList(managers))
+      {
+        outcome = manager.execute(reqParameters);
+        if (outcome != null)
+          return outcome;        
+      }
+    }
+    return outcome;
   }
-
-  public String showObject(String typeId, String objectId)
-  {
-    return getControllerBean().showObject(typeId, objectId);
-  }
-
+  
   // force new seach
   private void initRows()
   {

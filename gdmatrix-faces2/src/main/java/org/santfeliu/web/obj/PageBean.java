@@ -31,6 +31,7 @@
 package org.santfeliu.web.obj;
 
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 
@@ -40,7 +41,8 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.util.DateTimeRowStyleClassGenerator;
-import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.JumpManager;
+import org.santfeliu.web.obj.util.RequestParameters;
 import org.santfeliu.web.obj.util.RowStyleClassGenerator;
 
 public abstract class PageBean extends WebBean implements Savable
@@ -54,8 +56,14 @@ public abstract class PageBean extends WebBean implements Savable
   @CMSProperty
   public static final String PAGE_TITLE_PROPERTY = "oc.pageTitle";
   
-  protected ParametersManager parametersManager;
+  protected JumpManager jumpManager;
   
+  public PageBean()
+  {
+    super();
+    jumpManager = new JumpManager(this);
+  }
+   
   public String getTitle()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -73,6 +81,25 @@ public abstract class PageBean extends WebBean implements Savable
   }
 
   public abstract String show();
+  
+  public String jshow()
+  {
+    String outcome = jumpManager.execute(getRequestParameters());
+    if (outcome != null)
+      return outcome;
+    else
+      return show();
+  } 
+  
+  public boolean checkJumpSuitability(String objectId)
+  {
+    return true;
+  }
+  
+  public String getNotSuitableMessage()
+  {
+    return "INVALID_OBJECT";
+  }    
   
   public String store()
   {
@@ -104,26 +131,15 @@ public abstract class PageBean extends WebBean implements Savable
   protected void executeTypeAction(String actionName, Type selectedType)
     throws Exception
   {
-//    try 
-//    {
-      if (selectedType != null)
+    if (selectedType != null)
+    {
+      if (isActionsScriptEnabled(selectedType))
       {
-        if (isActionsScriptEnabled(selectedType))
-        {
-          String action = UserSessionBean.ACTION_SCRIPT_PREFIX + ":" + 
-            getActionsScriptName(selectedType) + "." + actionName;
-          UserSessionBean.getCurrentInstance().executeScriptAction(action);
-        }
+        String action = UserSessionBean.ACTION_SCRIPT_PREFIX + ":" + 
+          getActionsScriptName(selectedType) + "." + actionName;
+        UserSessionBean.getCurrentInstance().executeScriptAction(action);
       }
-//    }
-//    catch (Exception ex) 
-//    {
-//      error(ex);
-//      throw ex;
-//    }
-//    finally
-//    {
-//    }
+    }
   }
   
 
@@ -158,6 +174,16 @@ public abstract class PageBean extends WebBean implements Savable
   {
     return ControllerBean.getCurrentInstance();
   }
+  
+  public String createObject()
+  {
+    return ControllerBean.getCurrentInstance().getObjectBean().create();
+  }
+
+  public String showObject(String typeId, String objectId)
+  {
+    return ControllerBean.getCurrentInstance().showObject(typeId, objectId);
+  }  
 
   public int getPageSize()
   {
@@ -217,6 +243,25 @@ public abstract class PageBean extends WebBean implements Savable
     RowStyleClassGenerator styleClassGenerator = 
       getRowStyleClassGenerator();
     return styleClassGenerator.getStyleClass(getValue("#{row}"));    
-  }    
+  }
   
+  protected RequestParameters getRequestParameters()
+  {
+    RequestParameters parameters = new RequestParameters();
+    
+    Map requestMap = getExternalContext().getRequestParameterMap();
+    HttpServletRequest request = 
+      (HttpServletRequest)getExternalContext().getRequest();
+    String qs = request.getQueryString();
+
+    for (Object key : requestMap.keySet())
+    {
+      String skey = String.valueOf(key);
+      String svalue = String.valueOf(requestMap.get(key));
+      parameters.add(skey, svalue, qs);
+    }
+  
+    return parameters;    
+  }
+    
 }

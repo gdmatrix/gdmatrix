@@ -30,15 +30,49 @@
  */
 package org.santfeliu.web.obj.util;
 
-import java.io.Serializable;
-import java.util.Map;
-import org.santfeliu.web.WebBean;
 
 /**
+ * This parameters processor manage the parameters in a CKEditor call to custom 
+ * file manager call according to its File Browser API. 
  *
  * @author blanquepa
  */
-public abstract class ParametersProcessor extends WebBean implements Serializable
+public class CKEditorManager extends ParametersManager
 {
-  public abstract String processParameters(Map parameters);
+  public static final String EDITOR_INSTANCE_PARAM = "CKEditor";
+  public static final String LANGUAGE_PARAM = "langCode";
+  public static final String CALLBACK_PARAM = "CKEditorFuncNum";  
+  
+  private String editorInstance;
+  private String callbackReference;
+  private String language;
+
+  @Override
+  public String execute(RequestParameters parameters)
+  {
+    if (parameters != null)
+    {
+      this.editorInstance = parameters.getParameterValue(EDITOR_INSTANCE_PARAM);
+      this.language = parameters.getParameterValue(LANGUAGE_PARAM);
+      this.callbackReference = parameters.getParameterValue(CALLBACK_PARAM);
+    }
+    
+    return null;
+  }
+
+  public String getEditorInstance()
+  {
+    return editorInstance;
+  }
+
+  public String getCallbackReference()
+  {
+    return callbackReference;
+  }
+
+  public String getLanguage()
+  {
+    return language;
+  }
+ 
 }

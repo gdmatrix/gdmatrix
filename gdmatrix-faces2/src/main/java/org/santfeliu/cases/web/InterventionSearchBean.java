@@ -51,9 +51,10 @@ import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
-import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.ObjectActionParametersProcessor;
+import org.santfeliu.web.obj.util.SetObjectManager;
+import org.santfeliu.web.obj.util.JumpManager;
 import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.RequestParameters;
 
 /**
  *
@@ -86,7 +87,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
   @CMSProperty
   public static final String RENDER_DATE_PROPERTY = "renderDate";
   @CMSProperty
-  public static final String RENDER_SEARCH_EXPRESSION_PROPERTY = "renderSearchExpression";
+  public static final String RENDER_SEARCH_EXPRESSION_PROPERTY = 
+    "renderSearchExpression";
   @CMSProperty
   public static final String RENDER_TYPE_PROPERTY = "renderType";
   @CMSProperty
@@ -96,7 +98,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
   @CMSProperty
   public static final String RENDER_FILTER_PANEL = "renderFilterPanel";
   @CMSProperty
-  public static final String RENDER_PROPERTY_VALUE_FILTER = "renderPropertyValueFilter";
+  public static final String RENDER_PROPERTY_VALUE_FILTER = 
+    "renderPropertyValueFilter";
   @CMSProperty
   public static final String RENDER_CLEAR_BUTTON = "renderClearButton";
   @CMSProperty
@@ -113,22 +116,16 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
   private String headerBrowserUrl;
   private String footerBrowserUrl;
 
-  private ParametersManager parametersManager;
-  private ObjectActionParametersProcessor objectActionProcessor;
-  private FillObjectParametersProcessor fillObjectProcessor;
+  private SetObjectManager setObjectManager;
   private InterventionFormFilter filter;
   
 
   public InterventionSearchBean()
   {
-    super("org.santfeliu.cases.web.resources.CaseBundle", "caseInterventions_", "intTypeId");
-    parametersManager = new ParametersManager();
-    objectActionProcessor = 
-      new ObjectActionParametersProcessor(this, "caseid", "intid", DictionaryConstants.INTERVENTION_TYPE);
-    parametersManager.addProcessor(objectActionProcessor);
+    super("org.santfeliu.cases.web.resources.CaseBundle", "caseInterventions_", 
+      "intTypeId");
     
-    fillObjectProcessor = new FillObjectParametersProcessor(this);
-    parametersManager.addProcessor(fillObjectProcessor);
+    setObjectManager = new SetObjectManager(this);
     
     typeSelectItems = null;
     personSelectItems = null;
@@ -185,7 +182,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
 
       //apply node filters
       String intTypeId = getProperty(SEARCH_TYPE_PROPERTY);
-      if (intTypeId != null && (!isRenderIntType() || StringUtils.isBlank(getCurrentTypeId())))
+      if (intTypeId != null && 
+        (!isRenderIntType() || StringUtils.isBlank(getCurrentTypeId())))
         setCurrentTypeId(intTypeId);
 
       setSearchDynamicProperties(filter);
@@ -200,7 +198,10 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
       filter.setIntTypeId(getCurrentTypeId());
 
       if (!filter.isEmpty())
-        return CaseConfigBean.getPort().countInterventions(filter.getInterventionFilter());
+      {
+        InterventionFilter intFilter = filter.getInterventionFilter();
+        return CaseConfigBean.getPort().countInterventions(intFilter);
+      }
       else
         error("FILTER_IS_EMPTY");
     }
@@ -219,7 +220,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
       filter.clearLists();
       //apply node filters
       String intTypeId = getProperty(SEARCH_TYPE_PROPERTY);
-      if (intTypeId != null && (!isRenderIntType() || StringUtils.isBlank(getCurrentTypeId())))
+      if (intTypeId != null && 
+        (!isRenderIntType() || StringUtils.isBlank(getCurrentTypeId())))
         setCurrentTypeId(intTypeId);
 
       setSearchDynamicProperties(filter);
@@ -235,8 +237,9 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
       filter.setMaxResults(maxResults);
       if (!filter.isEmpty())
       {
+        InterventionFilter intFilter = filter.getInterventionFilter();
         List<InterventionView> rows = 
-          CaseConfigBean.getPort().findInterventionViews(filter.getInterventionFilter());
+          CaseConfigBean.getPort().findInterventionViews(intFilter);
         if (rows != null && !rows.isEmpty())
         {
           HashMap<String, List<InterventionView>> caseIds = new HashMap();
@@ -281,15 +284,10 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     setHeaderBrowserUrl(null);
     setFooterBrowserUrl(null);
 
-    String outcome = parametersManager.processParameters(); 
+    ParametersManager[] managers = {jumpManager, setObjectManager};    
+    String outcome = executeParametersManagers(managers);
     if (outcome != null)
-    {
-      if (objectActionProcessor.isObjectCreation() ||
-        checkSuitability(objectActionProcessor.getTabObjectId()))
         return outcome;
-      else
-        error("INVALID_INTERVENTION");
-    }
 
     configureColumns();
 
@@ -326,14 +324,17 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     
     CaseInterventionsBean caseInterventionsBean = 
       (CaseInterventionsBean)getBean("caseInterventionsBean");
-    caseInterventionsBean.editIntervention(objectActionProcessor.getTabObjectId());
+    //TODO: get tab id transparent to bean
+    RequestParameters params = getRequestParameters();
+    caseInterventionsBean.editIntervention(params.getParameterValue("intid"));
     
     return outcome;
   }
   
   public String selectIntervention()
   {
-    InterventionView row = (InterventionView)getExternalContext().getRequestMap().get("row");
+    InterventionView row = 
+      (InterventionView)getExternalContext().getRequestMap().get("row");
     String intId = row.getIntId();
     return getControllerBean().select(intId);
   }  
@@ -391,7 +392,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
         if (StringUtils.isBlank(getProperty(SEARCH_TYPE_PROPERTY)))
         {
           typeSelectItems = typeBean.getSelectItems(
-            DictionaryConstants.INTERVENTION_TYPE, filter.getInterventionFilter().getIntTypeId());
+            DictionaryConstants.INTERVENTION_TYPE, 
+            filter.getInterventionFilter().getIntTypeId());
         }
         else
         {
@@ -439,7 +441,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
       if (caseSelectItems == null)
       {
         CaseBean caseBean = (CaseBean)getBean("caseBean");
-        caseSelectItems = caseBean.getSelectItems(filter.getInterventionFilter().getCaseId());
+        caseSelectItems = 
+          caseBean.getSelectItems(filter.getInterventionFilter().getCaseId());
       }
     }
     catch (Exception ex)
@@ -628,6 +631,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     return render(RENDER_CLEAR_BUTTON, false);
   }  
   
+  @Override
   public String getRowStyleClass()
   {
     String defaultStyleClass = null;
@@ -641,7 +645,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
   /*
    * Checks if the Case satisfy the filter type and filter search properties.
    */
-  private boolean checkSuitability(String intId)
+  @Override
+  public boolean checkJumpSuitability(String intId)
   {
     InterventionFormFilter formFilter = new InterventionFormFilter();
     setSearchDynamicProperties(formFilter);
@@ -663,6 +668,12 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
       return false;
     }
   }  
+  
+  @Override
+  public String getNotSuitableMessage()
+  {
+    return "INVALID_INTERVENTION";
+  }
   
   private void configureColumns()
   {
@@ -697,6 +708,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     return "true".equals(firstLoad);
   }  
 
+  @Override
   public String getAdminRole()
   {
     return CaseConstants.CASE_ADMIN_ROLE;

@@ -31,21 +31,18 @@
 package org.santfeliu.web.obj.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.matrix.dic.Property;
 import org.santfeliu.dic.util.DictionaryUtils;
 
 
 /**
  * This ParametersProcessor is used to inform object properties with the values
- * passed in URL paramters preceeded by @ or _ prefix.
+ * passed in URL querystring parameters preceeded by @ or _ prefix.
  *
  * @author blanquepa
  */
-public class FillObjectParametersProcessor extends ParametersProcessor
+public class SetObjectManager extends ParametersManager
 {
   public static final String PARAMETER_PREFIX = "@"; //Prefix applied to fields
   public static final String PARAMETER_PREFIX2 = "_"; //Prefix applied to fields
@@ -54,7 +51,7 @@ public class FillObjectParametersProcessor extends ParametersProcessor
   private List<Property> processedParameters;  
   private boolean objectModified = false;
   
-  public FillObjectParametersProcessor(Object object)
+  public SetObjectManager(Object object)
   {
     this.object = object;
   }
@@ -70,7 +67,7 @@ public class FillObjectParametersProcessor extends ParametersProcessor
   }
 
   @Override
-  public String processParameters(Map parameters)
+  public String execute(RequestParameters parameters)
   { 
     setParametersToObject(parameters, object);
     return null;
@@ -96,27 +93,32 @@ public class FillObjectParametersProcessor extends ParametersProcessor
     this.processedParameters = processedParameters;
   }
   
-  private void setParametersToObject(Map requestMap, Object object)
+  private void setParametersToObject(RequestParameters parameters, Object object)
   {
     objectModified = false;
     processedParameters = new ArrayList();
-    Set keys = requestMap.keySet();
-    Iterator it = keys.iterator();
-    while (it.hasNext())
+    List<RequestParameters.Item> paramList = parameters.getList();
+    for (RequestParameters.Item param : paramList)
     {
-      String key = (String)it.next();
-      if ((key.startsWith(PARAMETER_PREFIX) || key.startsWith(PARAMETER_PREFIX2)) 
-        && !key.endsWith(PARAMETER_PREFIX2))
+      if (param != null && param.isInURL())
       {
-        Object value = requestMap.get(key);
-        key = key.substring(1);
-        DictionaryUtils.setProperty(object, key, value);
+        String name = param.getName();
+        boolean hasPrefix = (name.startsWith(PARAMETER_PREFIX) 
+          || name.startsWith(PARAMETER_PREFIX2))
+          && !name.endsWith(PARAMETER_PREFIX2);
+        
+        if (hasPrefix)
+        {
+          String value = param.getValue();
+          name = name.substring(1);
+          DictionaryUtils.setProperty(object, name, value);
 
-        if (DictionaryUtils.containsProperty(object, key) ||
-          KeywordsManager.KEYWORDS_PROPERTY.equals(key))
-            DictionaryUtils.addProperty(processedParameters, key, String.valueOf(value));
-
-        objectModified = true;
+          if (DictionaryUtils.containsProperty(object, name) ||
+            KeywordsManager.KEYWORDS_PROPERTY.equals(name))
+            DictionaryUtils.addProperty(processedParameters, name, String.valueOf(value));
+          
+          objectModified = true;
+        }
       }
     }
   }  

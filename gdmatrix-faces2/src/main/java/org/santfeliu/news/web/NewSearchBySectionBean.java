@@ -58,8 +58,7 @@ import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.BasicSearchBean;
-import org.santfeliu.web.obj.util.FillObjectParametersProcessor;
-import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.SetObjectManager;
 
 /**
  *
@@ -207,7 +206,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
   private static final String DOC_SERVLET_PATH = "/documents/";
   
   private List<SectionView> childrenSectionViewList;  
-  private FillObjectParametersProcessor fillObjectProcessor; 
+  private SetObjectManager setObjectManager; 
   private SectionFilter filter;
   private String lastMid = null;
   
@@ -215,11 +214,8 @@ public class NewSearchBySectionBean extends BasicSearchBean
   
   public NewSearchBySectionBean()
   {
-    parametersManager = new ParametersManager();
-
     filter = new SectionFilter();
-    fillObjectProcessor = new FillObjectParametersProcessor(filter);
-    parametersManager.addProcessor(fillObjectProcessor);
+    setObjectManager = new SetObjectManager(filter);
   }
   
   public SectionFilter getFilter()
@@ -460,7 +456,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
         filter.setContent("");
         filter.setUserId(null);
       }
-      parametersManager.processParameters();
+      setObjectManager.execute(getRequestParameters());
       if (filter.getContent() != null)
       {
         setSearchContent(filter.getContent().replace("%", " "));
