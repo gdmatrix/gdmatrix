@@ -75,7 +75,7 @@ body
   vertical-align: middle;
 }
 
-.webtoolbar .button
+.webtoolbar .tb_button
 {
   float:none;
   display:inline-block;
@@ -94,40 +94,40 @@ body
   outline-width: 1px;
 }
 
-.webtoolbar .button.info
+.webtoolbar .tb_button.info
 {
   color: #ff8080;
 }
 
-.webtoolbar .button:hover
+.webtoolbar .tb_button:hover
 {
   color: white;  
 }
 
-.webtoolbar .button.selected
+.webtoolbar .tb_button.selected
 {
   color: white;
-  border-bottom:solid 3px red;
+  border-bottom: solid 3px red;
   background: #800000;
 }
 
-.webtoolbar .imageButton
+.webtoolbar .tb_img_button
 {
   outline-color: #f0f0f0;
   outline-width: 1px;  
 }
 
-.webtoolbar .imageButton img
+.webtoolbar .tb_img_button img
 {
   vertical-align: middle;
-  margin:2px;
-  border:0px;
+  margin: 2px;
+  border: 0px;
   width: 16px;
   height: 16px;
-  opacity:0.8;
+  opacity: 0.7;
 }
 
-.webtoolbar .imageButton img:hover
+.webtoolbar .tb_img_button img:hover
 {
   opacity: 1;
 }

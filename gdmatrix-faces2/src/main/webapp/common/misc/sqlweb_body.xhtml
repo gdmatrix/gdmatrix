@@ -59,7 +59,7 @@
         <p:commandButton value="#{sqlWebBundle.execute}"
                          actionListener="#{sqlWebBean.execute}"
                          update="result_container"
-                         onstart="queryStarted()"
+                         onclick="queryStarted()"
                          oncomplete="queryCompleted()"
                          widgetVar="executeButton" 
                          styleClass="button">

@@ -16,26 +16,26 @@
       <h:graphicImage url="/topframe/images/matrix.gif" alt="MATRIX" styleClass="matrixLogo" />
       <h:commandLink value="#{applicationBean.version}" 
                      disabled="#{userSessionBean.renderDisabled}"
-                     styleClass="button #{userSessionBean.matrixInfoViewSelected ? 'selected' : ''} info"
+                     styleClass="tb_button #{userSessionBean.matrixInfoViewSelected ? 'selected' : ''} info"
                      action="#{userSessionBean.showMatrixInfoView}" immediate="true" />
       <h:commandLink value="Render" disabled="#{userSessionBean.renderDisabled}"
-                     styleClass="button #{userSessionBean.renderViewSelected ? 'selected' : ''}"
+                     styleClass="tb_button #{userSessionBean.renderViewSelected ? 'selected' : ''}"
                      action="#{userSessionBean.showRenderView}" immediate="true" />
       <h:commandLink value="Edit" 
-                     styleClass="button #{userSessionBean.editViewSelected ? 'selected' : ''}"
+                     styleClass="tb_button #{userSessionBean.editViewSelected ? 'selected' : ''}"
                      action="#{userSessionBean.showEditView}" immediate="true" />
       <h:commandLink value="CSS" 
-                     styleClass="button #{userSessionBean.cssViewSelected ? 'selected' : ''}"
+                     styleClass="tb_button #{userSessionBean.cssViewSelected ? 'selected' : ''}"
                      action="#{userSessionBean.showCssView}" immediate="true" />
       <h:commandLink value="Sync" 
-                     styleClass="button #{userSessionBean.syncViewSelected ? 'selected' : ''}"
+                     styleClass="tb_button #{userSessionBean.syncViewSelected ? 'selected' : ''}"
                      action="#{userSessionBean.showSyncView}" immediate="true"
                      rendered="#{userSessionBean.cmsAdministrator}" />
       <h:commandLink value="Search" 
-                     styleClass="button #{userSessionBean.searchViewSelected ? 'selected' : ''}"
+                     styleClass="tb_button #{userSessionBean.searchViewSelected ? 'selected' : ''}"
                      action="#{userSessionBean.showSearchView}" immediate="true" />
       <h:commandLink value="#{applicationBean.serverName}" 
-                     styleClass="button #{userSessionBean.systemInfoViewSelected ? 'selected' : ''} info"
+                     styleClass="tb_button #{userSessionBean.systemInfoViewSelected ? 'selected' : ''} info"
                      action="#{userSessionBean.showSystemInfoView}" immediate="true" />
     </h:panelGroup>
 
@@ -47,34 +47,35 @@
                       styleClass="workspaceSelect">
         <f:selectItems value="#{cmsToolbarBean.workspaceItems}" />
       </sf:commandMenu>
-
       <h:commandLink action="#{cmsToolbarBean.updateSnapshot}" immediate="true"
-        styleClass="imageButton">
+        styleClass="tb_img_button">
         <h:graphicImage url="/topframe/images/update.svg" alt="Update workspace" title="Update workspace" />
       </h:commandLink>
+      
       <h:panelGroup rendered="#{cmsToolbarBean.renderWorkspaceActions}">
         <h:commandLink action="#{cmsToolbarBean.createWorkspace}" immediate="true"
-          styleClass="imageButton">
+          styleClass="tb_img_button">
           <h:graphicImage url="/topframe/images/create.svg" alt="Create workspace" title="Create workspace" />
         </h:commandLink>
         <h:commandLink action="#{cmsToolbarBean.copyWorkspace}" immediate="true"
-          styleClass="imageButton">
+          styleClass="tb_img_button">
           <h:graphicImage title="Copy workspace" url="/topframe/images/copy.svg" 
                           alt="Copy workspace" />
         </h:commandLink>
         <h:commandLink action="#{cmsToolbarBean.editWorkspace}" immediate="true"
-          styleClass="imageButton">
+          styleClass="tb_img_button">
           <h:graphicImage url="/topframe/images/edit.svg" alt="Edit workspace"
                           title="Edit workspace" />
         </h:commandLink>
         <t:commandLink action="#{cmsToolbarBean.removeWorkspace}" immediate="true"
-          styleClass="imageButton" rendered="#{!userSessionBean.defaultWorkspaceSelected}"
+          styleClass="tb_img_button" rendered="#{!userSessionBean.defaultWorkspaceSelected}"
           onclick="if(!confirm('Remove workspace #{userSessionBean.workspaceId}?')) return false;">
           <h:graphicImage url="/topframe/images/remove.svg" alt="Remove workspace" title="Remove workspace" />
         </t:commandLink>
       </h:panelGroup>
+
       <h:commandLink action="#{cmsToolbarBean.clearSnapshot}" immediate="true"
-        styleClass="imageButton">
+        styleClass="tb_img_button">
         <h:graphicImage url="/topframe/images/clear.svg" alt="Clear workspace" title="Clear workspace" />
       </h:commandLink>
     </h:panelGroup>
