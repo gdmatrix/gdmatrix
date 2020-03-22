@@ -70,9 +70,12 @@ body
   padding: 3px;
 }
 
-.webtoolbar img.matrixLogo
+.webtoolbar img.gdmatrix_logo
 {
   vertical-align: middle;
+  height:20px;
+  margin-left: 3px;
+  margin-right:3px;
 }
 
 .webtoolbar .tb_button

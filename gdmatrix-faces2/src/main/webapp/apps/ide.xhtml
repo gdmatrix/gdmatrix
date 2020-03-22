@@ -1,10 +1,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets">
   <ui:composition template="/apps/template.xhtml">
-    <ui:define name="title">GDMatrix IDE</ui:define>
+    <ui:define name="title">IDE</ui:define>
     <ui:define name="body">
       <ul>
-        <li><a class="button" href="gdmatrix-ide.jar">gdmatrix-ide-#{applicationBean.version} (Executable JAR)</a></li>
+        <li>
+          <a class="button" href="gdmatrix-ide.jar">
+            <img src="/images/platforms/java.svg" alt="java" title="java" />
+            gdmatrix-ide-#{applicationBean.version} (JAR executable)
+          </a>
+        </li>
       </ul>
     </ui:define>
   </ui:composition>

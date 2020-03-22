@@ -1052,7 +1052,6 @@
   </mime-mapping>
   <welcome-file-list id="WelcomeFileList">
     <welcome-file>index.html</welcome-file>
-    <welcome-file>index.jws</welcome-file>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
   <resource-ref>

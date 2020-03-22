@@ -5,10 +5,6 @@
   <target name="setup">
     <property environment="env"/>
     <property name="domain" value="www.santfeliu.cat"/>
-    <property name="ks.alias" value="matrix"/>
-    <property name="ks.password" value="matrix"/>
-    <property name="ks.path" value="${basedir}/conf/certificates/matrix.p12"/>
-    <property name="ks.type" value="PKCS12"/>
 
     <tstamp>
       <format property="YEAR" pattern="yyyy" locale="en" />
@@ -80,7 +76,7 @@
              cssUri="resources/style.css">
       <header>
         <div>
-          <img src="resources/matrix.png" alt="" />
+          <img src="resources/gdmatrix/icon_text_color.svg" alt="" />
         </div>
         <br/>
       </header>
