@@ -1,0 +1,56 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sf="http://faces.santfeliu.org"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/frames/#{userSessionBean.frame}/frame.xhtml">
+    <ui:define name="template">
+
+      <h:panelGrid columns="2" cellspacing="0" cellpadding="0" width="100%"
+                   styleClass="header" columnClasses="col1,col2">
+
+        <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.title}"
+                       styleClass="title"
+                       translator="#{userSessionBean.translator}"
+                       translationGroup="#{userSessionBean.translationGroup}" />
+
+        <h:panelGroup rendered="#{userSessionBean.anonymousUser}">
+          <h:outputText value="#{webBundle.outputUsername}:" style="margin-right:4px"
+                        styleClass="loginText" />
+          <h:inputText binding="#{loginBean.usernameInputText}" tabindex="1"
+                       size="10" immediate="true" onkeypress="login(event)"
+                       styleClass="loginBox"/>
+          <h:outputText value="#{webBundle.outputPassword}:"
+                        style="margin-left:4px; margin-right:4px"
+                        styleClass="loginText" />
+          <h:inputSecret binding="#{loginBean.passwordInputSecret}" tabindex="2"
+                         size="10" immediate="true" onkeypress="login(event)"
+                         styleClass="loginBox"/>
+          <sf:secureCommandLink id="loginbutton" style="margin-left:4px"
+                                action="#{loginBean.login}" function="login"
+                                immediate="true" styleClass="loginButton"
+                                port="#{applicationBean.serverSecurePort}"
+                                scheme="https">
+            <h:outputText value="#{webBundle.buttonSignin}" />
+          </sf:secureCommandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{not userSessionBean.anonymousUser}">
+          <h:outputText value="#{webBundle.outputUsername}:" styleClass="loginText" />
+          <h:outputText value="#{userSessionBean.displayName} "
+                        styleClass="displayNameText" style="margin-left:4px"/>
+          <h:commandLink action="#{loginBean.logout}" styleClass="loginButton" 
+                         rendered="#{not userSessionBean.anonymousUser}" immediate="true">
+            <h:outputText value="#{webBundle.buttonSignout}" />
+          </h:commandLink>
+        </h:panelGroup>
+      </h:panelGrid>
+
+      <t:div>
+        <ui:insert name="body"></ui:insert>
+      </t:div>
+    </ui:define>
+  </ui:composition>
+</html>
