@@ -31,6 +31,7 @@
 package org.santfeliu.web.obj.util;
 
 import java.io.Serializable;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.cases.web.CaseSearchBean;
 import org.santfeliu.cases.web.InterventionSearchBean;
 import org.santfeliu.doc.web.DocumentSearchBean;
@@ -196,7 +197,7 @@ public class JumpManager extends ParametersManager
     
     String jumpCommand = 
       (String) parameters.getParameterValue(JUMPCOMMAND_PARAMETER);
-    if (jumpCommand != null)
+    if (!StringUtils.isBlank(jumpCommand))
     {
       String[] parts = jumpCommand.split("\\|");
       if (parts[0].equals("type"))
