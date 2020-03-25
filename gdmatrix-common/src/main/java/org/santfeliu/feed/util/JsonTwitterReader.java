@@ -41,6 +41,7 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.santfeliu.util.MatrixConfig;
 
 /**
  *
@@ -48,42 +49,55 @@ import org.json.simple.parser.JSONParser;
  */
 public class JsonTwitterReader extends JsonFeedReader
 {  
-  private static final String TWITTER_BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAALtjggAAAAAAYk6fFERJObamVGG8enasbCSnlSo%3DuE0A1X6lsAffQfQ5q3Rt8r3LRjH0K5pG4UbQw0oEhOzwTxkjVT";
-  private static final String TWITTER_APP_NAME = "ajsantfeliu feed timeline";
+  private static final String URL_SEARCH_MODE = "twitter.com/search?q=";
+  private static final String URL_TIMELINE_MODE = "twitter.com/";
   
   public JsonTwitterReader(FeedUtils.FeedReading feedReading)
   {
     super(feedReading);
   }
-      
+   
   @Override
   protected String getJsonCode() throws Exception
   {
-    String twitterAccount = null;
     String sourceUrl = feedReading.getSourceUrl();
-    int idx = sourceUrl.indexOf("twitter.com/");
-    if (idx >= 0)
+    String endPointUrl = null;
+    if (sourceUrl.contains(URL_SEARCH_MODE)) //search mode
     {
-      twitterAccount = sourceUrl.substring(idx + 12);
+      int idx = sourceUrl.indexOf(URL_SEARCH_MODE);
+      String searchString = sourceUrl.substring(idx + URL_SEARCH_MODE.length()).
+        trim();
+      if (!searchString.isEmpty())
+      {
+        endPointUrl = "https://api.twitter.com/1.1/search/"
+          + "tweets.json?count=25&q=" + searchString;        
+      }
     }
-    else
+    else if (sourceUrl.contains(URL_TIMELINE_MODE)) //timeline mode
     {
-      throw new Exception("INVALID_TWITTER_URL");
+      int idx = sourceUrl.indexOf(URL_TIMELINE_MODE);
+      String screenName = sourceUrl.substring(idx + URL_TIMELINE_MODE.length()).
+        trim();    
+      if (!screenName.isEmpty())
+      {
+        endPointUrl = "https://api.twitter.com/1.1/statuses/"
+          + "user_timeline.json?count=25&exclude_replies=true&screen_name=" 
+          + screenName;
+      }
     }
+    if (endPointUrl == null) throw new Exception("INVALID_TWITTER_URL");
     HttpsURLConnection connection = null;
     try 
     {
-      String endPointUrl = "https://api.twitter.com/1.1/statuses/"
-        + "user_timeline.json?count=25&exclude_replies=true&screen_name=" 
-        + twitterAccount;
       URL url = new URL(endPointUrl);
       connection = (HttpsURLConnection)url.openConnection();
       connection.setDoOutput(true);
       connection.setDoInput(true); 
       connection.setRequestMethod("GET"); 
       connection.setRequestProperty("Host", "api.twitter.com");
-      connection.setRequestProperty("User-Agent", TWITTER_APP_NAME);
-      connection.setRequestProperty("Authorization", "Bearer " + TWITTER_BEARER_TOKEN);
+      connection.setRequestProperty("User-Agent", getTwitterAppName());
+      connection.setRequestProperty("Authorization", 
+        "Bearer " + getTwitterBearerToken());
       connection.setUseCaches(false);
       return readResponse(connection);
     }
@@ -97,50 +111,68 @@ public class JsonTwitterReader extends JsonFeedReader
       {
         connection.disconnect();
       }
-    }
+    }    
   }  
-  
+
   @Override
   protected List<JsonEntry> getEntries(String json) throws Exception
   {
     List<JsonEntry> result = new ArrayList();    
+    boolean searchMode = false;
     JSONParser parser = new JSONParser();
-    JSONArray dataArray = (JSONArray)parser.parse(json);
-    if (dataArray != null)
+    Object data = parser.parse(json);
+    if (data != null)
     {
-      for (int i = 0; i < dataArray.size(); i++)
+      JSONArray dataArray = null;
+      if (data instanceof JSONArray)
       {
-        JsonTwitterEntry entry = new JsonTwitterEntry();
-        JSONObject entryObj = (JSONObject)dataArray.get(i);
-        entry.setId(String.valueOf(entryObj.get("id")));
-        entry.setText((String)entryObj.get("text"));
-        entry.setCreatedAt((String)entryObj.get("created_at"));
-        //Media url
-        JSONObject entitiesObj = (JSONObject)entryObj.get("entities");
-        if (entitiesObj != null)
+        dataArray = (JSONArray)data;
+      }
+      else if (data instanceof JSONObject)
+      {
+        dataArray = (JSONArray)((JSONObject)data).get("statuses");
+        searchMode = true;
+      }
+      if (dataArray != null)
+      {
+        for (int i = 0; i < dataArray.size(); i++)
         {
-          JSONArray mediaArray = (JSONArray)entitiesObj.get("media");
-          if (mediaArray != null)
+          JsonTwitterEntry entry = new JsonTwitterEntry();
+          JSONObject entryObj = (JSONObject)dataArray.get(i);
+          if (!searchMode || entryObj.get("retweeted_status") == null) 
           {
-            for (int j = 0; j < mediaArray.size() && entry.getMediaUrl() == null; j++)
+            //no RTs if search mode            
+            entry.setId(String.valueOf(entryObj.get("id")));
+            entry.setText((String)entryObj.get("text"));
+            entry.setCreatedAt((String)entryObj.get("created_at"));
+            //Media url
+            JSONObject entitiesObj = (JSONObject)entryObj.get("entities");
+            if (entitiesObj != null)
             {
-              JSONObject mediaObj = (JSONObject)mediaArray.get(j);
-              String type = (String)mediaObj.get("type");
-              if ("photo".equals(type))
-              {          
-                String mediaUrl = (String)mediaObj.get("media_url");
-                entry.setMediaUrl(mediaUrl);
+              JSONArray mediaArray = (JSONArray)entitiesObj.get("media");
+              if (mediaArray != null)
+              {
+                for (int j = 0; j < mediaArray.size() && entry.getMediaUrl() == null; j++)
+                {
+                  JSONObject mediaObj = (JSONObject)mediaArray.get(j);
+                  String type = (String)mediaObj.get("type");
+                  if ("photo".equals(type))
+                  {          
+                    String mediaUrl = (String)mediaObj.get("media_url");
+                    entry.setMediaUrl(mediaUrl);
+                  }
+                }        
               }
-            }        
+            }
+            //Screen name
+            JSONObject userObj = (JSONObject)entryObj.get("user");
+            if (userObj != null)
+            {
+              entry.setScreenName((String)userObj.get("screen_name"));
+            }      
+            result.add(entry);
           }
         }
-        //Screen name
-        JSONObject userObj = (JSONObject)entryObj.get("user");
-        if (userObj != null)
-        {
-          entry.setScreenName((String)userObj.get("screen_name"));
-        }      
-        result.add(entry);
       }
     }
     return result;
@@ -202,6 +234,30 @@ public class JsonTwitterReader extends JsonFeedReader
       return str.toString();
     }
     catch (IOException e) { return new String(); }
+  }
+
+  private String getTwitterBearerToken() throws Exception
+  {
+    String value = MatrixConfig.getProperty("twitterBearerToken");
+    if (value == null)
+    {
+      value = System.getenv("twitterBearerToken");
+      if (value == null) 
+        throw new Exception("Twitter bearer token not specified");
+    }
+    return value;
+  }
+  
+  private String getTwitterAppName() throws Exception
+  {
+    String value = MatrixConfig.getProperty("twitterAppName");
+    if (value == null)
+    {
+      value = System.getenv("twitterAppName");
+      if (value == null) 
+        throw new Exception("Twitter app name not specified");
+    }
+    return value;    
   }  
   
   private class JsonTwitterEntry extends JsonEntry
