@@ -162,17 +162,19 @@ public class OrgTableBuilder
           {
             if ("sf:TreballadorOcupacio".equals(
               caseCaseView2.getCaseCaseTypeId()) && isCurrent(caseCaseView2))
-            {
+            {              
               Person person = getPersonFromCaseCase(caseCaseView2);
               if (person != null)
               {
-                person.setType(PersonType.INT_ESTR);
-                person.setLlocTreball(llocTreball);
                 Placa placa = new Placa();
                 placa.setCaseId(placaCase.getCaseId());
-                person.setPlaca(placa);
-                person.setBoss(llocTreball.isBoss());
-                personMap.put(person.getCaseId(), person);
+                person.setPlaca(placa);                
+                if (person.getType().equals(PersonType.NONE))
+                {
+                  person.setType(PersonType.INT_ESTR);
+                  person.setLlocTreball(llocTreball);
+                  person.setBoss(llocTreball.isBoss());                  
+                }
               }
             }
           }
@@ -184,9 +186,8 @@ public class OrgTableBuilder
           if (person != null)
           {
             person.setType(PersonType.INT_NO_ESTR);
-            person.setLlocTreball(llocTreball);
-            person.setBoss(false);
-            personMap.put(person.getCaseId(), person);
+            person.setLlocTreball(llocTreball);            
+            person.setBoss(llocTreball.isBoss());            
           }
         }
         else if ("sf:TrebExtLlocTreball".equals(
@@ -196,9 +197,8 @@ public class OrgTableBuilder
           if (person != null)
           {
             person.setType(PersonType.EXT);
-            person.setLlocTreball(llocTreball);
-            person.setBoss(false);
-            personMap.put(person.getCaseId(), person);
+            person.setLlocTreball(llocTreball);            
+            person.setBoss(llocTreball.isBoss());            
           }
         }
       }
