@@ -66,7 +66,7 @@ import org.santfeliu.util.MatrixConfig;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ApplicationBean
 {
@@ -279,7 +279,7 @@ public class ApplicationBean
   {
     return MatrixInfo.getFullVersion();
   }
-
+  
   public String getServerName()
   {
     try
@@ -407,12 +407,14 @@ public class ApplicationBean
   public class WebTranslator
     implements org.santfeliu.faces.Translator, Serializable
   {
+    @Override
     public String getDefaultLanguage()
     {
       return TranslatorFactory.getDefaultLanguage();
     }
 
     // binary format translation
+    @Override
     public void translate(InputStream in, OutputStream out, String contentType,
       String language, String group) throws IOException
     {
@@ -431,6 +433,7 @@ public class ApplicationBean
     }
 
     // text stream translation
+    @Override
     public void translate(Reader reader, Writer writer, String contentType,
       String language, String group) throws IOException
     {

@@ -1,13 +1,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+  
   <ui:composition template="/apps/template.xhtml">
     <ui:define name="title">IDE</ui:define>
+    <ui:define name="logo">
+       <h:graphicImage class="logo" value="/images/gdmatrix/icon_text_blue.svg" 
+                       alt="gdmatrix IDE" title="gdmatrix IDE" />
+    </ui:define>
     <ui:define name="body">
       <ul>
         <li>
           <a class="button" href="gdmatrix-ide.jar">
             <img src="/images/platforms/java.svg" alt="java" title="java" />
-            gdmatrix-ide-#{applicationBean.version} (JAR executable)
+            <span>gdmatrix-ide-#{applicationBean.version} (JAR executable)</span>
           </a>
         </li>
       </ul>

@@ -76,7 +76,7 @@
              cssUri="resources/style.css">
       <header>
         <div>
-          <img src="resources/gdmatrix/icon_text_color.svg" alt="" />
+          <img src="resources/gdmatrix/icon_text_black.svg" alt="" />
         </div>
         <br/>
       </header>
