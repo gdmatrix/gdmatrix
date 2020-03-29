@@ -42,7 +42,7 @@ import org.santfeliu.swing.form.ComponentView;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SelectBoxView extends ComponentView
 {
@@ -74,7 +74,7 @@ public class SelectBoxView extends ComponentView
       try
       {
         arrowIcon = new ImageIcon(getClass().getResource(
-          "/org/santfeliu/swing/form/resources/arrow.gif"));
+          "/org/santfeliu/swing/form/resources/images/arrow.gif"));
       }
       catch (Exception ex)
       {

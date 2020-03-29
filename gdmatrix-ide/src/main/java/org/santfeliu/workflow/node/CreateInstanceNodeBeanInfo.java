@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class CreateInstanceNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -53,12 +53,13 @@ public class CreateInstanceNodeBeanInfo extends WorkflowNodeBeanInfo
     addProperty("parameters").setCategory(SPECIFIC_CATEGORY);
   }
   
+  @Override
   public java.awt.Image getIcon(int iconKind)
   {
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
       return loadImage(
-        "/org/santfeliu/workflow/swing/resources/icon/create_instance.gif");
+        "/org/santfeliu/workflow/swing/resources/images/create_instance.gif");
     }
     return null;
   }

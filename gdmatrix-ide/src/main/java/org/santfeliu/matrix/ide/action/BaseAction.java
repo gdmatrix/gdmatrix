@@ -40,7 +40,7 @@ import org.santfeliu.matrix.ide.MatrixIDE;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class BaseAction extends AbstractAction
 {

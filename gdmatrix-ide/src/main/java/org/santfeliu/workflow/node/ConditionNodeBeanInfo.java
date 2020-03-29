@@ -37,7 +37,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ConditionNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -52,11 +52,12 @@ public class ConditionNodeBeanInfo extends WorkflowNodeBeanInfo
     addProperty("condition").setCategory(SPECIFIC_CATEGORY);
   }
   
+  @Override
   public java.awt.Image getIcon(int iconKind)
   {
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
-      return loadImage("/org/santfeliu/workflow/swing/resources/icon/condition.gif");
+      return loadImage("/org/santfeliu/workflow/swing/resources/images/condition.gif");
     }
     return null;
   }

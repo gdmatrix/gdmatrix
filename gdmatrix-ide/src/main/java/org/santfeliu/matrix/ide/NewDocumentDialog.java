@@ -54,9 +54,10 @@ public class NewDocumentDialog extends javax.swing.JDialog
     Object[] elems = documentTypes.toArray();
     documentTypesList.setListData(elems);
     if (elems.length > 0) documentTypesList.setSelectedIndex(0);
-    setSize(220, 280);
+    setSize(220, 300);
     setMinimumSize(getSize());
     setLocationRelativeTo(parent);
+    pack();
     setVisible(true);
     return documentType;
   }

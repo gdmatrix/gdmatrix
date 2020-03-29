@@ -34,13 +34,13 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.ImageIcon;
 
-import org.santfeliu.matrix.swing.MatrixDialog;
+import org.santfeliu.matrix.ide.MatrixIDEDialog;
 import org.santfeliu.swing.Utilities;
 
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class AboutAction extends BaseAction
 {
@@ -51,11 +51,9 @@ public class AboutAction extends BaseAction
   @Override
   public void actionPerformed(ActionEvent event)
   {
-    MatrixDialog dialog = new MatrixDialog(ide, true);
-    dialog.setMainIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/MatrixIDE.png")));
-    dialog.setSize(500, 400);
-    Utilities.centerWindow(ide, dialog);
+    MatrixIDEDialog dialog = new MatrixIDEDialog(ide, true);
+    dialog.setSize(525, 450);
+    dialog.setLocationRelativeTo(ide);
     dialog.setVisible(true);
   }
 }

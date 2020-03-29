@@ -89,7 +89,7 @@ public class ReportDialog extends javax.swing.JDialog
     jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
-    addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/icon/add.gif"))); // NOI18N
+    addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/images/add.gif"))); // NOI18N
     addButton.setText("Add parameter");
     addButton.setFocusable(false);
     addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -102,7 +102,7 @@ public class ReportDialog extends javax.swing.JDialog
     });
     jToolBar1.add(addButton);
 
-    removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/icon/remove.gif"))); // NOI18N
+    removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/images/remove.gif"))); // NOI18N
     removeButton.setText("Remove parameter");
     removeButton.setFocusable(false);
     removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -115,7 +115,7 @@ public class ReportDialog extends javax.swing.JDialog
     });
     jToolBar1.add(removeButton);
 
-    executeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/icon/run.gif"))); // NOI18N
+    executeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/images/run.gif"))); // NOI18N
     executeButton.setText("Execute");
     executeButton.setFocusable(false);
     executeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

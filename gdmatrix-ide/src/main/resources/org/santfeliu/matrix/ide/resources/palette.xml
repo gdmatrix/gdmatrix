@@ -1,182 +1,182 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <palette>
   <category name="workflow" displayName="Workflow nodes">
-    <element name="JavaScript" icon="/org/santfeliu/workflow/swing/resources/icon/javascript.gif">
+    <element name="JavaScript" icon="/org/santfeliu/workflow/swing/resources/images/javascript.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.JavaScriptNode" />
     </element>
-    <element name="Condition" icon="/org/santfeliu/workflow/swing/resources/icon/condition.gif">
+    <element name="Condition" icon="/org/santfeliu/workflow/swing/resources/images/condition.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.ConditionNode" />
     </element>
-    <element name="WaitCondition" icon="/org/santfeliu/workflow/swing/resources/icon/waitcondition.gif">
+    <element name="WaitCondition" icon="/org/santfeliu/workflow/swing/resources/images/waitcondition.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.WaitConditionNode" />
     </element>
-    <element name="Nop" icon="/org/santfeliu/workflow/swing/resources/icon/nop.gif">
+    <element name="Nop" icon="/org/santfeliu/workflow/swing/resources/images/nop.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.NopNode" />
     </element>
-    <element name="Form" icon="/org/santfeliu/workflow/swing/resources/icon/form.gif">
+    <element name="Form" icon="/org/santfeliu/workflow/swing/resources/images/form.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.FormNode" />
     </element>
-    <element name="CreateInstance" icon="/org/santfeliu/workflow/swing/resources/icon/create_instance.gif">
+    <element name="CreateInstance" icon="/org/santfeliu/workflow/swing/resources/images/create_instance.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.CreateInstanceNode" />
     </element>
-    <element name="TerminateInstance" icon="/org/santfeliu/workflow/swing/resources/icon/terminate_instance.gif">
+    <element name="TerminateInstance" icon="/org/santfeliu/workflow/swing/resources/images/terminate_instance.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.TerminateInstanceNode" />
     </element>
-    <element name="Return" icon="/org/santfeliu/workflow/swing/resources/icon/return.gif">
+    <element name="Return" icon="/org/santfeliu/workflow/swing/resources/images/return.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.ReturnNode" />
     </element>
-    <element name="Join" icon="/org/santfeliu/workflow/swing/resources/icon/join.gif">
+    <element name="Join" icon="/org/santfeliu/workflow/swing/resources/images/join.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.JoinNode" />
     </element>
-    <element name="SendMail" icon="/org/santfeliu/workflow/swing/resources/icon/send_mail.gif">
+    <element name="SendMail" icon="/org/santfeliu/workflow/swing/resources/images/send_mail.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.SendMailNode" />
     </element>
-    <element name="SQL" icon="/org/santfeliu/workflow/swing/resources/icon/sql.gif">
+    <element name="SQL" icon="/org/santfeliu/workflow/swing/resources/images/sql.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.SQLNode" />
     </element>
-    <element name="Signature" icon="/org/santfeliu/workflow/swing/resources/icon/signature.gif">
+    <element name="Signature" icon="/org/santfeliu/workflow/swing/resources/images/signature.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.SignatureNode" />
     </element>
-    <element name="Document" icon="/org/santfeliu/workflow/swing/resources/icon/document.gif">
+    <element name="Document" icon="/org/santfeliu/workflow/swing/resources/images/document.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.DocumentNode" />
     </element>
-    <element name="Wait" icon="/org/santfeliu/workflow/swing/resources/icon/wait.gif">
+    <element name="Wait" icon="/org/santfeliu/workflow/swing/resources/images/wait.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.WaitNode" />
     </element>
-    <element name="WebService" icon="/org/santfeliu/workflow/swing/resources/icon/webservice.gif">
+    <element name="WebService" icon="/org/santfeliu/workflow/swing/resources/images/webservice.gif">
       <attribute name="class" value="org.santfeliu.workflow.node.WebServiceNode" />
     </element>
   </category>
 
   <category name="visualform" displayName="Visual form components">
-    <element name="Label" icon="/org/santfeliu/swing/form/resources/label.gif">
+    <element name="Label" icon="/org/santfeliu/swing/form/resources/images/label.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.LabelView" />
     </element>
-    <element name="OutputText" icon="/org/santfeliu/swing/form/resources/output_text.gif">
+    <element name="OutputText" icon="/org/santfeliu/swing/form/resources/images/output_text.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.OutputTextView" />
     </element>
-    <element name="OutputTextArea" icon="/org/santfeliu/swing/form/resources/output_text_area.gif">
+    <element name="OutputTextArea" icon="/org/santfeliu/swing/form/resources/images/output_text_area.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.OutputTextAreaView" />
     </element>
-    <element name="InputText" icon="/org/santfeliu/swing/form/resources/input_text.gif">
+    <element name="InputText" icon="/org/santfeliu/swing/form/resources/images/input_text.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.InputTextView" />
     </element>
-    <element name="InputTextArea" icon="/org/santfeliu/swing/form/resources/input_text_area.gif">
+    <element name="InputTextArea" icon="/org/santfeliu/swing/form/resources/images/input_text_area.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.InputTextAreaView" />
     </element>
-    <element name="SelectBox" icon="/org/santfeliu/swing/form/resources/combobox.gif">
+    <element name="SelectBox" icon="/org/santfeliu/swing/form/resources/images/combobox.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.SelectBoxView" />
     </element>
-    <element name="Image" icon="/org/santfeliu/swing/form/resources/image.gif">
+    <element name="Image" icon="/org/santfeliu/swing/form/resources/images/image.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.ImageView" />
     </element>
-    <element name="RadioButton" icon="/org/santfeliu/matrix/ide/resources/icon/radio.gif">
+    <element name="RadioButton" icon="/org/santfeliu/swing/form/resources/images/radio.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.RadioButtonView" />
     </element>
-    <element name="CheckBox" icon="/org/santfeliu/matrix/ide/resources/icon/checkbox.gif">
+    <element name="CheckBox" icon="/org/santfeliu/swing/form/resources/images/checkbox.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.CheckBoxView" />
     </element>
-    <element name="Button" icon="/org/santfeliu/matrix/ide/resources/icon/button.gif">
+    <element name="Button" icon="/org/santfeliu/swing/form/resources/images/button.gif">
       <attribute name="class" value="org.santfeliu.swing.form.view.ButtonView" />
     </element>
   </category>
 
   <category name="rolesgraph" displayName="Roles graph elements">
-    <element name="Role" icon="/org/santfeliu/matrix/ide/resources/icon/role.gif" />
+    <element name="Role" icon="/org/santfeliu/matrix/ide/resources/images/role.gif" />
   </category>
 
   <category name="xsl" displayName="XSLT elements">
-    <element name="template" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="template" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<template></template>]]></attribute>
     </element>
-    <element name="apply" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="apply" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<apply></apply>]]></attribute>
     </element>
-    <element name="for-each" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="for-each" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<for-each></for-each>]]></attribute>
     </element>
-    <element name="if" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="if" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<if></if>]]></attribute>
     </element>
-    <element name="sort" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="sort" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<sort/>]]></attribute>
     </element>
-    <element name="choose" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="choose" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<choose></choose>]]></attribute>
     </element>
-    <element name="apply-templates" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="apply-templates" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<apply-templates/>]]></attribute>
     </element>
   </category>
 
   <category name="ant" displayName="Ant tasks">
-    <element name="target" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="target" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<target name=""></target>]]></attribute>
     </element>
-    <element name="antcall" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="antcall" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<antcall target=""></antcall>]]></attribute>
     </element>
-    <element name="taskdef" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="taskdef" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<taskdef name="" classname="" loaderref="" />]]></attribute>
     </element>
-    <element name="if" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="if" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<if></if>]]></attribute>
     </element>
-    <element name="while" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="while" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<while></while>]]></attribute>
     </element>
-    <element name="for-each" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="for-each" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<for-each></for-each>]]></attribute>
     </element>
   </category>
 
   <category name="javascript" displayName="Javascript">
-    <element name="blankNull" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="blankNull" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">blankNull(text)</attribute>
     </element>
-    <element name="decimalFormat" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="decimalFormat" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">decimalFormat(value, format)</attribute>
     </element>
-    <element name="wsport" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="wsport" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">wsport(module, userId, password, wsdirURL)</attribute>
     </element>
-    <element name="addDate" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="addDate" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">addDate(date, incr, units)</attribute>
     </element>
-    <element name="htmlEncode" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="htmlEncode" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">htmlEncode(text)</attribute>
     </element>
-    <element name="xmlEncode" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="xmlEncode" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">xmlEncode(text)</attribute>
     </element>
   </category>
   
   <category name="template" displayName="Template">
-    <element name="blankNull" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="blankNull" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">blankNull(text)</attribute>
     </element>
-    <element name="decimalFormat" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="decimalFormat" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">decimalFormat(value, format)</attribute>
     </element>
-    <element name="wsport" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="wsport" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">wsport(module, userId, password, wsdirURL)</attribute>
     </element>
-    <element name="addDate" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="addDate" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">addDate(date, incr, units)</attribute>
     </element>
-    <element name="htmlEncode" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="htmlEncode" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">htmlEncode(text)</attribute>
     </element>
-    <element name="xmlEncode" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="xmlEncode" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">xmlEncode(text)</attribute>
     </element>
-    <element name="credentials" icon="/org/santfeliu/matrix/ide/resources/icon/method.gif">
+    <element name="credentials" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text"><![CDATA[
 var userId = org.santfeliu.util.MatrixConfig.getProperty("adminCredentials.userId");
 var password = org.santfeliu.util.MatrixConfig.getProperty("adminCredentials.password");]]>
       </attribute>
     </element> 
-    <element name="DBResultAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="DBResultAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[
   <ul style="display:table">  
   <%
@@ -199,7 +199,7 @@ var password = org.santfeliu.util.MatrixConfig.getProperty("adminCredentials.pas
       </attribute>
     </element>    
     
-    <element name="DBResultAsHtmlTable" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="DBResultAsHtmlTable" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[
   <table>  
   <%
@@ -218,7 +218,7 @@ var password = org.santfeliu.util.MatrixConfig.getProperty("adminCredentials.pas
       </attribute>
     </element>      
       
-    <element name="findCasesAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="findCasesAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[
  <ul style="display:table">  
   <%
@@ -242,7 +242,7 @@ var password = org.santfeliu.util.MatrixConfig.getProperty("adminCredentials.pas
       </attribute>
     </element>
     
-    <element name="findPersonsAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="findPersonsAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<ul>  
   <%
    for (var i = 0; i < results.size(); i++)
@@ -264,7 +264,7 @@ var password = org.santfeliu.util.MatrixConfig.getProperty("adminCredentials.pas
 </ul>]]>
       </attribute>
     </element>  
-    <element name="findDocumentsAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="findDocumentsAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<ul>  
   <%
    for (var i = 0; i < results.size(); i++)
@@ -286,7 +286,7 @@ var password = org.santfeliu.util.MatrixConfig.getProperty("adminCredentials.pas
 </ul>]]>
       </attribute>
     </element>
-    <element name="findInstancesAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/icon/tag.gif">
+    <element name="findInstancesAsHtmlList" icon="/org/santfeliu/matrix/ide/resources/images/tag.gif">
       <attribute name="text"><![CDATA[<ul>  
   <%
    for (var i = 0; i < results.size(); i++)

@@ -90,7 +90,7 @@ import org.json.simple.parser.JSONParser;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class MainPanel extends JPanel
 {
@@ -258,7 +258,7 @@ public class MainPanel extends JPanel
         {
           ImageIcon imageIcon =
             new ImageIcon(getClass().getResource(
-              "/org/santfeliu/matrix/ide/resources/icon/" + icon));
+              "/org/santfeliu/matrix/ide/resources/images/" + icon));
             docType.setIcon(imageIcon);
         }
         catch (Exception ex)

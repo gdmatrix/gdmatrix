@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -90,7 +90,7 @@ public class DocumentUploaderPanel extends DocumentPanel
   private Unloader unloader;
   private DefaultTableModel documentsTableModel;
   private DefaultTableModel propertiesTableModel;
-  private List<DocumentInfo> documents = new ArrayList<DocumentInfo>();  
+  private List<DocumentInfo> documents = new ArrayList<DocumentInfo>();
 
   /**
    * Creates new form JDocumentUploaderPanel
@@ -100,7 +100,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     initComponents();
     setupComponents();
   }
-  
+
   public List<DocumentInfo> getDocuments()
   {
     return documents;
@@ -110,27 +110,27 @@ public class DocumentUploaderPanel extends DocumentPanel
   {
     return documentsTableModel;
   }
-  
+
   public JProgressBar getProgressBar()
   {
     return progressBar;
   }
-  
+
   public void setStatus(String text)
   {
-    statusLabel.setText(text); 
+    statusLabel.setText(text);
   }
-  
+
   public void showProgressPanel()
   {
-    ((CardLayout)southPanel.getLayout()).show(southPanel, "progress"); 
+    ((CardLayout)southPanel.getLayout()).show(southPanel, "progress");
   }
-  
+
   public void showStatusPanel()
   {
-    ((CardLayout)southPanel.getLayout()).show(southPanel, "status"); 
+    ((CardLayout)southPanel.getLayout()).show(southPanel, "status");
   }
-  
+
   public void showStatusPanel(final long millis)
   {
     Thread thread = new Thread()
@@ -155,9 +155,9 @@ public class DocumentUploaderPanel extends DocumentPanel
         }
       }
     };
-    thread.start();                  
+    thread.start();
   }
-  
+
   public void setButtonsEnabled(boolean enabled)
   {
     scanButton.setEnabled(enabled);
@@ -165,7 +165,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     unloadButton.setEnabled(enabled);
     helpButton.setEnabled(enabled);
   }
- 
+
 
   @Override
   public void open(InputStream is) throws Exception
@@ -178,7 +178,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     filterTextField.setText(properties.getProperty("filter"));
     propertiesEditor.getTextPane().setText(properties.getProperty("properties"));
     propertiesEditor.getTextPane().setCaretPosition(0);
-    
+
     // general options
     removeFilesCheckBox.setSelected(
       "true".equals(properties.get("removeFiles")));
@@ -194,14 +194,14 @@ public class DocumentUploaderPanel extends DocumentPanel
       maxImageSizeSpinner.setValue(value);
     }
     catch (Exception ex)
-    {          
-    }        
+    {
+    }
     // connection
     wsDirectoryTextField.setText(properties.getProperty("wsdir"));
     usernameTextField.setText(properties.getProperty("username"));
-    passwordField.setText(properties.getProperty("password"));    
+    passwordField.setText(properties.getProperty("password"));
   }
-  
+
   @Override
   public void save(OutputStream os) throws Exception
   {
@@ -217,36 +217,39 @@ public class DocumentUploaderPanel extends DocumentPanel
       String.valueOf(removeFilesCheckBox.isSelected()));
 
     // image options
-    properties.put("maxImageSize", 
+    properties.put("maxImageSize",
       String.valueOf(maxImageSizeCheckBox.isSelected()));
-    properties.put("maxImageSizeValue", 
+    properties.put("maxImageSizeValue",
       String.valueOf(maxImageSizeSpinner.getValue()));
 
     // connection
-    properties.put("wsdir", wsDirectoryTextField.getText());      
+    properties.put("wsdir", wsDirectoryTextField.getText());
     properties.put("username", usernameTextField.getText());
     properties.put("password", new String(passwordField.getPassword()));
 
 
-    properties.store(os, "DocumentLoader");    
-  }  
-  
-  @Override 
+    properties.store(os, "DocumentLoader");
+  }
+
+  @Override
   public void setMainPanel(MainPanel panel)
   {
     super.setMainPanel(panel);
-    
+
     if (wsDirectoryTextField.getText().equals("")
-      && usernameTextField.getText().equals("") 
+      && usernameTextField.getText().equals("")
       && passwordField.getText().equals(""))
     {
-      ConnectionParameters connParams = 
+      ConnectionParameters connParams =
         panel.getConnectionPanel().getSelectedConnection();
-      wsDirectoryTextField.setText(connParams.getURL());
-      usernameTextField.setText(connParams.getUsername());
-      passwordField.setText(connParams.getPassword());
-    }    
-  }  
+      if (connParams != null)
+      {
+        wsDirectoryTextField.setText(connParams.getURL());
+        usernameTextField.setText(connParams.getUsername());
+        passwordField.setText(connParams.getPassword());
+      }
+    }
+  }
 
   /**
    * This method is called from within the constructor to initialize the form.
@@ -317,8 +320,9 @@ public class DocumentUploaderPanel extends DocumentPanel
     toolBar.setFloatable(false);
     toolBar.setRollover(true);
 
-    scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/scan.png"))); // NOI18N
-    scanButton.setText("Scan");
+    scanButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/images/scan.png"))); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/santfeliu/doc/uploader/resources/DocumentUploader"); // NOI18N
+    scanButton.setText(bundle.getString("scan")); // NOI18N
     scanButton.setFocusable(false);
     scanButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     scanButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -331,8 +335,8 @@ public class DocumentUploaderPanel extends DocumentPanel
     });
     toolBar.add(scanButton);
 
-    uploadButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/upload.png"))); // NOI18N
-    uploadButton.setText("Upload");
+    uploadButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/images/upload.png"))); // NOI18N
+    uploadButton.setText(bundle.getString("upload")); // NOI18N
     uploadButton.setFocusable(false);
     uploadButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     uploadButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -345,8 +349,8 @@ public class DocumentUploaderPanel extends DocumentPanel
     });
     toolBar.add(uploadButton);
 
-    unloadButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/unload.png"))); // NOI18N
-    unloadButton.setText("Unload");
+    unloadButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/images/unload.png"))); // NOI18N
+    unloadButton.setText(bundle.getString("unload")); // NOI18N
     unloadButton.setFocusable(false);
     unloadButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     unloadButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -359,8 +363,8 @@ public class DocumentUploaderPanel extends DocumentPanel
     });
     toolBar.add(unloadButton);
 
-    helpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/help.png"))); // NOI18N
-    helpButton.setText("Help");
+    helpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/images/help.png"))); // NOI18N
+    helpButton.setText(bundle.getString("help")); // NOI18N
     helpButton.setFocusable(false);
     helpButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     helpButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -375,7 +379,6 @@ public class DocumentUploaderPanel extends DocumentPanel
 
     add(toolBar, java.awt.BorderLayout.NORTH);
 
-    mainSplitPane.setBorder(null);
     mainSplitPane.setDividerLocation(220);
     mainSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
     mainSplitPane.setOneTouchExpandable(true);
@@ -386,7 +389,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     scanPanel.setPreferredSize(new java.awt.Dimension(362, 20));
     scanPanel.setLayout(new java.awt.GridBagLayout());
 
-    pathLabel.setText("Path:");
+    pathLabel.setText(bundle.getString("path")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
@@ -404,8 +407,8 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     scanPanel.add(pathTextField, gridBagConstraints);
 
-    selectPathButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/folder.png"))); // NOI18N
-    selectPathButton.setText("Select path");
+    selectPathButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/images/folder.png"))); // NOI18N
+    selectPathButton.setText(bundle.getString("selectPath")); // NOI18N
     selectPathButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
     selectPathButton.addActionListener(new java.awt.event.ActionListener()
     {
@@ -422,7 +425,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     scanPanel.add(selectPathButton, gridBagConstraints);
 
-    patternLabel.setText("Pattern:");
+    patternLabel.setText(bundle.getString("pattern")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
@@ -440,7 +443,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     scanPanel.add(patternTextField, gridBagConstraints);
 
-    wildcardsLabel.setText("Java regular expression");
+    wildcardsLabel.setText(bundle.getString("regExp")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 1;
@@ -450,7 +453,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     scanPanel.add(wildcardsLabel, gridBagConstraints);
 
-    filterLabel.setText("Filter:");
+    filterLabel.setText(bundle.getString("filter")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
@@ -468,7 +471,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     scanPanel.add(filterTextField, gridBagConstraints);
 
-    propertiesLabel.setText("Properties:");
+    propertiesLabel.setText(bundle.getString("properties")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 3;
@@ -476,7 +479,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     scanPanel.add(propertiesLabel, gridBagConstraints);
 
-    filterInfoLabel.setText("file var expression");
+    filterInfoLabel.setText(bundle.getString("fileVarExp")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 2;
     gridBagConstraints.gridy = 2;
@@ -497,11 +500,11 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     scanPanel.add(propertiesEditor, gridBagConstraints);
 
-    tabbedPane.addTab("Scan options", scanPanel);
+    tabbedPane.addTab(bundle.getString("scanOptions"), scanPanel); // NOI18N
 
     uploadOptionsPanel.setLayout(new java.awt.GridBagLayout());
 
-    removeFilesCheckBox.setText("Remove files after uploading");
+    removeFilesCheckBox.setText(bundle.getString("removeFilesAfterUpload")); // NOI18N
     removeFilesCheckBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -516,7 +519,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     );
     padPanel5Layout.setVerticalGroup(
       padPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 124, Short.MAX_VALUE)
+      .addGap(0, 155, Short.MAX_VALUE)
     );
 
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -527,7 +530,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.weighty = 1.0;
     uploadOptionsPanel.add(padPanel5, gridBagConstraints);
 
-    tabbedPane.addTab("Upload options", uploadOptionsPanel);
+    tabbedPane.addTab(bundle.getString("uploadOptions"), uploadOptionsPanel); // NOI18N
 
     imageOptionsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
     imageOptionsPanel.setLayout(new java.awt.GridBagLayout());
@@ -541,7 +544,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.ipadx = 50;
     imageOptionsPanel.add(maxImageSizeSpinner, gridBagConstraints);
 
-    maxImageSizeCheckBox.setText("Set maximum size:");
+    maxImageSizeCheckBox.setText(bundle.getString("maxImageSize")); // NOI18N
     maxImageSizeCheckBox.addActionListener(new java.awt.event.ActionListener()
     {
       public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -602,15 +605,15 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.weightx = 1.0;
     imageOptionsPanel.add(padPanel4, gridBagConstraints);
 
-    tabbedPane.addTab("Image options", imageOptionsPanel);
+    tabbedPane.addTab(bundle.getString("imageOptions"), imageOptionsPanel); // NOI18N
 
     pdfOptionsPanel.setLayout(new java.awt.GridBagLayout());
-    tabbedPane.addTab("PDF options", pdfOptionsPanel);
+    tabbedPane.addTab(bundle.getString("pdfOptions"), pdfOptionsPanel); // NOI18N
 
     connectionPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
     connectionPanel.setLayout(new java.awt.GridBagLayout());
 
-    wsDirectoryLabel.setText("WS directory URL:");
+    wsDirectoryLabel.setText(bundle.getString("wsDirURL")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 0;
@@ -628,7 +631,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     connectionPanel.add(wsDirectoryTextField, gridBagConstraints);
 
-    usernameLabel.setText("Username:");
+    usernameLabel.setText(bundle.getString("username")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 1;
@@ -653,7 +656,7 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     connectionPanel.add(passwordField, gridBagConstraints);
 
-    passwordLabel.setText("Password:");
+    passwordLabel.setText(bundle.getString("password")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
     gridBagConstraints.gridy = 2;
@@ -673,9 +676,10 @@ public class DocumentUploaderPanel extends DocumentPanel
     gridBagConstraints.weightx = 0.3;
     connectionPanel.add(padLabel2, gridBagConstraints);
 
-    tabbedPane.addTab("Server connection", connectionPanel);
+    tabbedPane.addTab(bundle.getString("serverConnection"), connectionPanel); // NOI18N
 
     mainSplitPane.setLeftComponent(tabbedPane);
+    tabbedPane.getAccessibleContext().setAccessibleName("");
 
     resultSplitPane.setResizeWeight(0.7);
 
@@ -723,7 +727,7 @@ public class DocumentUploaderPanel extends DocumentPanel
 
     statusPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-    statusLabel.setText("Push scan button to start scanning.");
+    statusLabel.setText(bundle.getString("pressToStartScan")); // NOI18N
     statusPanel.add(statusLabel);
 
     southPanel.add(statusPanel, "status");
@@ -735,8 +739,8 @@ public class DocumentUploaderPanel extends DocumentPanel
     progressBar.setStringPainted(true);
     progressPanel.add(progressBar, java.awt.BorderLayout.CENTER);
 
-    cancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/cancel.png"))); // NOI18N
-    cancelButton.setText("Cancel");
+    cancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/doc/uploader/resources/images/cancel.png"))); // NOI18N
+    cancelButton.setText(bundle.getString("cancel")); // NOI18N
     cancelButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
     cancelButton.addActionListener(new java.awt.event.ActionListener()
     {
@@ -751,7 +755,7 @@ public class DocumentUploaderPanel extends DocumentPanel
 
     add(southPanel, java.awt.BorderLayout.SOUTH);
   }// </editor-fold>//GEN-END:initComponents
- 
+
   private void setupComponents()
   {
     documentsTableModel = new DefaultTableModel()
@@ -771,10 +775,15 @@ public class DocumentUploaderPanel extends DocumentPanel
       }
     };
     resultSplitPane.setDividerLocation(0.7);
-    documentsTableModel.addColumn("State");
-    documentsTableModel.addColumn("Position");
-    documentsTableModel.addColumn("Filename");
-    documentsTableModel.addColumn("Size");
+
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle(
+      "org/santfeliu/doc/uploader/resources/DocumentUploader"); // NOI18N
+
+    ;
+    documentsTableModel.addColumn(bundle.getString("state"));
+    documentsTableModel.addColumn(bundle.getString("position"));
+    documentsTableModel.addColumn(bundle.getString("filename"));
+    documentsTableModel.addColumn(bundle.getString("size"));
     documentsTable.setAutoCreateColumnsFromModel(false);
     documentsTable.getTableHeader().setReorderingAllowed(false);
     documentsTable.setModel(documentsTableModel);
@@ -849,31 +858,31 @@ public class DocumentUploaderPanel extends DocumentPanel
         }
       }
     });
-    
+
     propertiesTableModel = new DefaultTableModel()
     {
       @Override
       public boolean isCellEditable(int row, int column)
       {
         return false;
-      }      
+      }
     };
-    propertiesTableModel.addColumn("Property");
-    propertiesTableModel.addColumn("Value");
+    propertiesTableModel.addColumn(bundle.getString("property"));
+    propertiesTableModel.addColumn(bundle.getString("value"));
     propertiesTable.setAutoCreateColumnsFromModel(false);
     propertiesTable.getTableHeader().setReorderingAllowed(false);
     propertiesTable.setModel(propertiesTableModel);
     propertiesTable.addColumn(new TableColumn(0, 100, null, null));
     propertiesTable.addColumn(new TableColumn(1, 100, null, null));
-  
+
     JTextPane propertiesPane = propertiesEditor.getTextPane();
     propertiesPane.setFont(Options.getEditorFont());
     propertiesPane.setEditorKit(new JavaScriptEditorKit());
 
-    SymbolHighlighter symbolHighlighter = 
+    SymbolHighlighter symbolHighlighter =
       new SymbolHighlighter(propertiesPane, "({[", ")}]");
   }
-  
+
   private void scanButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_scanButtonActionPerformed
   {//GEN-HEADEREND:event_scanButtonActionPerformed
     if (scanner == null || scanner.isDone() || scanner.isCancelled())
@@ -1081,13 +1090,13 @@ public class DocumentUploaderPanel extends DocumentPanel
     if (uploader != null)
     {
       uploader.cancel(false);
-    }    
+    }
     if (unloader != null)
     {
       unloader.cancel(false);
-    }    
+    }
   }
-  
+
   private void showDocument()
   {
     int row = documentsTable.getSelectedRow();
@@ -1097,16 +1106,16 @@ public class DocumentUploaderPanel extends DocumentPanel
       FileInfo fileInfo = docInfo.getFile();
       if (fileInfo.isImage())
       {
-        ImageProcessor processor = new ImageProcessor(fileInfo.getFile());                
+        ImageProcessor processor = new ImageProcessor(fileInfo.getFile());
         if (maxImageSizeCheckBox.isSelected())
         {
           processor.setMaxSize((Integer)maxImageSizeSpinner.getValue());
         }
-        ImageViewer imageViewer = new ImageViewer(getMainPanel().getIDE());        
+        ImageViewer imageViewer = new ImageViewer(getMainPanel().getIDE());
         imageViewer.setSize(800, 600);
         imageViewer.setLocationRelativeTo(null);
         imageViewer.processImage(processor);
-        imageViewer.setVisible(true);        
+        imageViewer.setVisible(true);
       }
       else
       {
@@ -1121,7 +1130,7 @@ public class DocumentUploaderPanel extends DocumentPanel
             "ERROR", JOptionPane.ERROR_MESSAGE);
         }
       }
-    }    
+    }
   }
 
   private void showUploadInfo()
@@ -1166,7 +1175,7 @@ public class DocumentUploaderPanel extends DocumentPanel
       return "DocumentUploader setup (*.upl)";
     }
   };
-  
+
   private DocumentManagerClient getDocumentManagerClient() throws Exception
   {
     URL wsDirURL = new URL(wsDirectoryTextField.getText());
@@ -1186,8 +1195,8 @@ public class DocumentUploaderPanel extends DocumentPanel
     WSDirectory wsDir = WSDirectory.createInstance(wsDirURL);
     WSEndpoint endpoint = wsDir.getEndpoint(CaseManagerService.class);
     return endpoint.getPort(CaseManagerPort.class, username, password);
-  }  
-  
+  }
+
 
 
 }

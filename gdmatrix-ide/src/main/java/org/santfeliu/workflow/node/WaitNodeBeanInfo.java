@@ -37,7 +37,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WaitNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -58,7 +58,7 @@ public class WaitNodeBeanInfo extends WorkflowNodeBeanInfo
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
       return loadImage(
-        "/org/santfeliu/workflow/swing/resources/icon/wait.gif");
+        "/org/santfeliu/workflow/swing/resources/images/wait.gif");
     }
     return null;
   }

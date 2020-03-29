@@ -44,14 +44,14 @@ import org.santfeliu.matrix.ide.Options;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SaveAsAction extends BaseAction
 {
   public SaveAsAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/saveas.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/saveas.gif"));
   }
   
   @Override

@@ -139,7 +139,7 @@ public class TabbedPane extends JTabbedPane
       toolBar.setRollover(true);
 
       Icon closeIcon = new ImageIcon(getClass().getResource(
-        "resources/icon/close.png"));
+        "resources/images/close.png"));
       closeButton = new JButton();
       closeButton.setIcon(closeIcon);
       closeButton.setOpaque(false);

@@ -42,14 +42,14 @@ import org.santfeliu.matrix.ide.Options;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class OpenAction extends BaseAction
 {  
   public OpenAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/open.gif"));    
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/open.gif"));    
   }
   
   @Override

@@ -89,7 +89,7 @@ import com.l2fprod.common.propertysheet.Property;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WorkflowPanel extends DocumentPanel
 {

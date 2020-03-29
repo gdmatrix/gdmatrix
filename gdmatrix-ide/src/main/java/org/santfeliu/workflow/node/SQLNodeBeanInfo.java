@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SQLNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -53,11 +53,12 @@ public class SQLNodeBeanInfo extends WorkflowNodeBeanInfo
     addProperty("maxRows").setCategory(SPECIFIC_CATEGORY);
   }
 
+  @Override
   public java.awt.Image getIcon(int iconKind)
   {
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
-      return loadImage("/org/santfeliu/workflow/swing/resources/icon/sql.gif");
+      return loadImage("/org/santfeliu/workflow/swing/resources/images/sql.gif");
     }
     return null;
   }

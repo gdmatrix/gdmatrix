@@ -40,14 +40,14 @@ import org.santfeliu.matrix.ide.ConnectionParameters;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class OpenDMAction extends BaseAction
 {
   public OpenDMAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/opendm.gif"));    
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/opendm.gif"));    
   }
   
   @Override

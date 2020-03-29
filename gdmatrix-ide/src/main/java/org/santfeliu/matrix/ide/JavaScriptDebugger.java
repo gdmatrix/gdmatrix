@@ -67,7 +67,7 @@ import org.santfeliu.util.script.ScriptableBase;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JavaScriptDebugger extends JDialog
 {
@@ -189,29 +189,29 @@ public class JavaScriptDebugger extends JDialog
     textEditor.getTextPane().setSelectionColor(new Color(198, 198, 198));
     numberIcon = 
         new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/number_type.gif"));
+      "/org/santfeliu/matrix/ide/resources/images/number_type.gif"));
 
     textIcon = new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/text_type.gif"));
+      "/org/santfeliu/matrix/ide/resources/images/text_type.gif"));
 
     booleanIcon = new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/boolean_type.gif"));
+      "/org/santfeliu/matrix/ide/resources/images/boolean_type.gif"));
 
     ImageIcon icon;
     icon = new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/run.gif"));
+      "/org/santfeliu/matrix/ide/resources/images/run.gif"));
     runButton.setIcon(icon);
 
     icon = new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/stop.gif"));
+      "/org/santfeliu/matrix/ide/resources/images/stop.gif"));
     stopButton.setIcon(icon);
 
     icon = new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/reset.gif"));
+      "/org/santfeliu/matrix/ide/resources/images/reset.gif"));
     resetButton.setIcon(icon);
 
     icon = new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/clear.gif"));
+      "/org/santfeliu/matrix/ide/resources/images/clear.gif"));
     clearButton.setIcon(icon);
 
     stopButton.setEnabled(false);

@@ -48,7 +48,7 @@ import org.santfeliu.swing.Utilities;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ConnectionPanel extends JPanel
 {
@@ -89,7 +89,7 @@ public class ConnectionPanel extends JPanel
     Dimension dim = new Dimension(24, 24);
 
     editConnButton.setIcon(loadIcon(
-      "/org/santfeliu/matrix/ide/resources/icon/connection.gif"));
+      "/org/santfeliu/matrix/ide/resources/images/connection.gif"));
 
     editConnButton.setMinimumSize(dim);
     editConnButton.setPreferredSize(dim);

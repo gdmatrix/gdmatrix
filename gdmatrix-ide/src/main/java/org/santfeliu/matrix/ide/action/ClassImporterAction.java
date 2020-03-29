@@ -50,7 +50,7 @@ public class ClassImporterAction extends BaseAction
   public ClassImporterAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/clsimporter.png"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/clsimporter.png"));
   }
 
   @Override

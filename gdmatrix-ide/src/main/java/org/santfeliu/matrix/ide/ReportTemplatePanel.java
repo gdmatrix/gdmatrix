@@ -65,7 +65,7 @@ public class ReportTemplatePanel extends TextPanel
 
     executeReportButton.setText("Execute report");
     executeReportButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/run.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/run.gif")));
     executeReportButton.addActionListener(new ActionListener()
     {
       @Override

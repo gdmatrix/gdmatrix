@@ -95,6 +95,11 @@
         <artifactId>xmpcore</artifactId>
         <version>5.1.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>0.28</version>
+    </dependency>
   </dependencies>
   
   <profiles>

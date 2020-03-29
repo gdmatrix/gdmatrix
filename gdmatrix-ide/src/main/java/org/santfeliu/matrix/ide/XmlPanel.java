@@ -35,7 +35,7 @@ import org.santfeliu.swing.text.XMLEditorKit;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class XmlPanel extends TextPanel
 {

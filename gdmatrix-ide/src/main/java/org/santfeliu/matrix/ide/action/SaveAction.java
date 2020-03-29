@@ -41,14 +41,14 @@ import org.santfeliu.matrix.ide.DocumentPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SaveAction extends BaseAction
 {
   public SaveAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/save.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/save.gif"));
   }
   
   @Override

@@ -44,7 +44,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ZoomPanel extends JPanel
 {
@@ -57,7 +57,7 @@ public class ZoomPanel extends JPanel
     public Dimension getPreferredSize()
     {
       Dimension preferred = super.getPreferredSize();      
-      return new Dimension(70, preferred.height);
+      return new Dimension(80, preferred.height);
     }
   };
 

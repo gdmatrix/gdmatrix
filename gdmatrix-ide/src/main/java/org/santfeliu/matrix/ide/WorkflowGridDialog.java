@@ -34,7 +34,7 @@ import javax.swing.SpinnerNumberModel;
 
 /**
  *
- * @author real
+ * @author realor
  */
 public class WorkflowGridDialog extends javax.swing.JDialog
 {

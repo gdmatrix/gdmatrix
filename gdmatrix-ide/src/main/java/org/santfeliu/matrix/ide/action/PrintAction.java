@@ -36,14 +36,14 @@ import org.santfeliu.matrix.ide.DocumentPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class PrintAction extends BaseAction
 {
   public PrintAction()
   {
     this.putValue(Action.SMALL_ICON,
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/print.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/print.gif"));
   }
 
   @Override

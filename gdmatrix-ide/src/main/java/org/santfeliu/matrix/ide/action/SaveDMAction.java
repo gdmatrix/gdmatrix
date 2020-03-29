@@ -45,14 +45,14 @@ import org.santfeliu.matrix.ide.ConnectionParameters;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SaveDMAction extends BaseAction
 {
   public SaveDMAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/savedm.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/savedm.gif"));
   }
     
   @Override

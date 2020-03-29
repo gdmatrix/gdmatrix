@@ -43,7 +43,7 @@ public class FindAction extends BaseAction
   public FindAction()
   {
     this.putValue(Action.SMALL_ICON,
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/find.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/find.gif"));
   }
 
   @Override

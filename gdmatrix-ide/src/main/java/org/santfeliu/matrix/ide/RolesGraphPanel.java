@@ -347,26 +347,26 @@ public class RolesGraphPanel extends DocumentPanel
     add(graph, BorderLayout.CENTER);
     explodeButton.setText("Explode");
     explodeButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/exploderole.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/exploderole.gif")));
     viewAllButton.setText("View all");
     viewAllButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/viewall.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/viewall.gif")));
 
     centerSelectionButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/centerselection.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/centerselection.gif")));
     centerSelectionButton.setText("Center selection");
 
     saveRolesButton.setText("Save roles");
     saveRolesButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/saverole.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/saverole.gif")));
 
     readRolesButton.setText("Read roles");
     readRolesButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/readrole.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/readrole.gif")));
 
     reportButton.setText("Report");
     reportButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/report.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/report.gif")));
 
     paintOnlySelectionCheckBox.setText("Paint only selection");
 

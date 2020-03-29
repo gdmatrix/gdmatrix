@@ -70,7 +70,7 @@ import org.santfeliu.swing.layout.WrapLayout;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DocumentSelectionDialog extends JDialog
 {
@@ -137,7 +137,7 @@ public class DocumentSelectionDialog extends JDialog
     centerPanel.setBorder(
       BorderFactory.createEmptyBorder(4, 6, 4, 6));
 
-    centerPanel.setPreferredSize(new Dimension(640, 400));
+    centerPanel.setPreferredSize(new Dimension(700, 400));
 
     openButton.setText("Open");
     openButton.setEnabled(false);
@@ -161,7 +161,7 @@ public class DocumentSelectionDialog extends JDialog
     searchButton.setText("Search");
     searchButton.setMargin(new Insets(2, 2, 2, 2));
     searchButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/find.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/find.gif")));
     searchButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)

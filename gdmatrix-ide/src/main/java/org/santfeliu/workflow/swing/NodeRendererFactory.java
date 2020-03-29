@@ -47,7 +47,7 @@ import org.santfeliu.workflow.swing.renderer.WaitNodeRenderer;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class NodeRendererFactory
 {

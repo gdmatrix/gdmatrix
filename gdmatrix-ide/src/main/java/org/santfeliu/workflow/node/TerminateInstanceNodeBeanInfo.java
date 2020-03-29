@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class TerminateInstanceNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -57,7 +57,7 @@ public class TerminateInstanceNodeBeanInfo extends WorkflowNodeBeanInfo
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
       return loadImage(
-        "/org/santfeliu/workflow/swing/resources/icon/terminate_instance.gif");
+        "/org/santfeliu/workflow/swing/resources/images/terminate_instance.gif");
     }
     return null;
   }

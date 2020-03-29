@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class FormNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -68,7 +68,7 @@ public class FormNodeBeanInfo extends WorkflowNodeBeanInfo
   {
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
-      return loadImage("/org/santfeliu/workflow/swing/resources/icon/form.gif");
+      return loadImage("/org/santfeliu/workflow/swing/resources/images/form.gif");
     }
     return null;
   }

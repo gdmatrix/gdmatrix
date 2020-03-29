@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNode;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public interface NodeEditor
 {

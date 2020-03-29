@@ -46,7 +46,7 @@ import javax.swing.JLabel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WrapLabel extends JComponent
 {

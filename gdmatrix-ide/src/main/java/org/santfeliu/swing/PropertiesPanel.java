@@ -64,7 +64,7 @@ import javax.swing.table.TableColumn;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class PropertiesPanel extends JPanel
 {
@@ -106,13 +106,13 @@ public class PropertiesPanel extends JPanel
     throws Exception
   {
     addPropertyIcon = loadIcon(
-      "/org/santfeliu/swing/resources/icon/add_property.png");
+      "/org/santfeliu/swing/resources/images/add_property.png");
     removePropertyIcon = loadIcon(
-      "/org/santfeliu/swing/resources/icon/remove_property.png");
+      "/org/santfeliu/swing/resources/images/remove_property.png");
     sortAscIcon = loadIcon(
-      "/org/santfeliu/swing/resources/icon/sort_asc.png");
+      "/org/santfeliu/swing/resources/images/sort_asc.png");
     sortDescIcon = loadIcon(
-      "/org/santfeliu/swing/resources/icon/sort_desc.png");
+      "/org/santfeliu/swing/resources/images/sort_desc.png");
   
     this.setSize(new Dimension(420, 323));
     this.setLayout(borderLayout1);

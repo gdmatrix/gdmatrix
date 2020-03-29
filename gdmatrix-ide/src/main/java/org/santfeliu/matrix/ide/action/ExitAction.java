@@ -35,7 +35,7 @@ import java.awt.event.ActionEvent;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ExitAction extends BaseAction
 {

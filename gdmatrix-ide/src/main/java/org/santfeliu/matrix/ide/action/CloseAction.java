@@ -35,7 +35,7 @@ import org.santfeliu.matrix.ide.DocumentPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class CloseAction extends BaseAction
 {

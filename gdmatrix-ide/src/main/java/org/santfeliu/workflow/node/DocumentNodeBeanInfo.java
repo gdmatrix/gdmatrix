@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DocumentNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -62,7 +62,7 @@ public class DocumentNodeBeanInfo extends WorkflowNodeBeanInfo
   {
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
-      return loadImage("/org/santfeliu/workflow/swing/resources/icon/document.gif");
+      return loadImage("/org/santfeliu/workflow/swing/resources/images/document.gif");
     }
     return null;
   }

@@ -32,7 +32,7 @@ package org.santfeliu.matrix.ide;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class AntPanel extends XmlPanel
 {

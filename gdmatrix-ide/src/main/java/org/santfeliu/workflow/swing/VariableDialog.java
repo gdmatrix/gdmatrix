@@ -51,7 +51,7 @@ import java.awt.event.ActionEvent;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class VariableDialog extends JDialog 
 {

@@ -38,14 +38,14 @@ import org.santfeliu.matrix.ide.DocumentPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class CopyAction extends BaseAction
 {
   public CopyAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/copy.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/copy.gif"));
   }
 
   @Override

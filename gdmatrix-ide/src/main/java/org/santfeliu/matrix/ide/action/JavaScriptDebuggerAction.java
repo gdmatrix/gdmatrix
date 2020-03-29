@@ -41,7 +41,7 @@ import org.santfeliu.matrix.ide.JavaScriptDebugger;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JavaScriptDebuggerAction extends BaseAction
 {
@@ -50,7 +50,7 @@ public class JavaScriptDebuggerAction extends BaseAction
   public JavaScriptDebuggerAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/jsdebug.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/jsdebug.gif"));
   }
 
   @Override

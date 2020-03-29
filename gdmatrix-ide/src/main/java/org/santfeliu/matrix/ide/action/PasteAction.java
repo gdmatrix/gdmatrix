@@ -37,14 +37,14 @@ import org.santfeliu.matrix.ide.DocumentPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class PasteAction extends BaseAction
 {
   public PasteAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/paste.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/paste.gif"));
   }
 
   @Override

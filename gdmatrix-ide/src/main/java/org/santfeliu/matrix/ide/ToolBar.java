@@ -39,7 +39,7 @@ import javax.swing.JToolBar;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ToolBar extends JToolBar
 {

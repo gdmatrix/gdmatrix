@@ -94,7 +94,8 @@ public class FindDialog extends javax.swing.JDialog
    */
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+  private void initComponents()
+  {
     java.awt.GridBagConstraints gridBagConstraints;
 
     southPanel = new javax.swing.JPanel();
@@ -108,32 +109,38 @@ public class FindDialog extends javax.swing.JDialog
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Find");
 
-    previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/icon/previous.gif"))); // NOI18N
+    previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/images/previous.gif"))); // NOI18N
     previousButton.setText("Previous");
     previousButton.setEnabled(false);
     previousButton.setMargin(new java.awt.Insets(2, 8, 2, 8));
-    previousButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    previousButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         previousButtonActionPerformed(evt);
       }
     });
     southPanel.add(previousButton);
 
-    nextButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/icon/next.gif"))); // NOI18N
+    nextButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/ide/resources/images/next.gif"))); // NOI18N
     nextButton.setText("Next");
     nextButton.setEnabled(false);
     nextButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
     nextButton.setMargin(new java.awt.Insets(2, 8, 2, 8));
-    nextButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    nextButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         nextButtonActionPerformed(evt);
       }
     });
     southPanel.add(nextButton);
 
     cancelButton.setText("Cancel");
-    cancelButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    cancelButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         cancelButtonActionPerformed(evt);
       }
     });
@@ -150,8 +157,10 @@ public class FindDialog extends javax.swing.JDialog
     gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
     centerPanel.add(findLabel, gridBagConstraints);
 
-    findTextField.addKeyListener(new java.awt.event.KeyAdapter() {
-      public void keyReleased(java.awt.event.KeyEvent evt) {
+    findTextField.addKeyListener(new java.awt.event.KeyAdapter()
+    {
+      public void keyReleased(java.awt.event.KeyEvent evt)
+      {
         FindDialog.this.keyReleased(evt);
       }
     });

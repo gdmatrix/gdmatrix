@@ -40,7 +40,7 @@ import org.santfeliu.workflow.Workflow;
 
 /**
  *
- * @author real
+ * @author realor
  */
 public class WorkflowGridAction extends BaseAction
 {

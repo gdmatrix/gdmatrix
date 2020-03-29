@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SendMailNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -67,7 +67,7 @@ public class SendMailNodeBeanInfo extends WorkflowNodeBeanInfo
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
       return loadImage(
-        "/org/santfeliu/workflow/swing/resources/icon/send_mail.gif");
+        "/org/santfeliu/workflow/swing/resources/images/send_mail.gif");
     }
     return null;
   }

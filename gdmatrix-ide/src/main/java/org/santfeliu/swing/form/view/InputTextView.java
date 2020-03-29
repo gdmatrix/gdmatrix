@@ -37,7 +37,7 @@ import org.santfeliu.swing.form.ComponentView;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class InputTextView extends ComponentView
 {

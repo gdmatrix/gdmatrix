@@ -38,7 +38,7 @@ import javax.swing.Action;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WrapperAction implements Action
 {

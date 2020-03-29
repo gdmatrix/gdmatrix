@@ -38,7 +38,7 @@ import org.santfeliu.swing.form.ComponentView;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class CheckBoxView extends ComponentView
 {
@@ -58,7 +58,7 @@ public class CheckBoxView extends ComponentView
       try
       {
         selectedIcon = new ImageIcon(getClass().getResource(
-          "/org/santfeliu/swing/form/resources/sel_checkbox.gif"));
+          "/org/santfeliu/swing/form/resources/images/sel_checkbox.gif"));
       }
       catch (Exception ex)
       {
@@ -69,7 +69,7 @@ public class CheckBoxView extends ComponentView
       try
       {
         unselectedIcon = new ImageIcon(getClass().getResource(
-          "/org/santfeliu/swing/form/resources/unsel_checkbox.gif"));
+          "/org/santfeliu/swing/form/resources/images/unsel_checkbox.gif"));
       }
       catch (Exception ex)
       {

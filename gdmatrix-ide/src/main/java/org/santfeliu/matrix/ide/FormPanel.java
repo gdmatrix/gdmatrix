@@ -78,7 +78,7 @@ import org.santfeliu.swing.palette.Palette;
 
 /**
  *
- * @author unknown
+ * @author realor, lopezrj
  */
 public class FormPanel extends DocumentPanel
 {
@@ -224,7 +224,7 @@ public class FormPanel extends DocumentPanel
     toolBar.setMinimumSize(new Dimension(1, 1));
     frontButton.setText("To front");
     frontButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/tofront.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/tofront.gif")));
     frontButton.addActionListener(new ActionListener()
         {
           @Override
@@ -235,7 +235,7 @@ public class FormPanel extends DocumentPanel
         });
     bottomButton.setText("To bottom");
     bottomButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/toback.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/toback.gif")));
     bottomButton.addActionListener(new ActionListener()
         {
           @Override
@@ -246,7 +246,7 @@ public class FormPanel extends DocumentPanel
         });
     sortByPositionButton.setText("Sort by position");
     sortByPositionButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/sort.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/sort.gif")));
     sortByPositionButton.addActionListener(new ActionListener()
         {
           @Override
@@ -257,7 +257,7 @@ public class FormPanel extends DocumentPanel
         });    
     bordersButton.setText("Borders");
     bordersButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/borders.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/borders.gif")));
     bordersButton.addActionListener(new ActionListener()
         {
           @Override
@@ -268,7 +268,7 @@ public class FormPanel extends DocumentPanel
         });
     backgroundButton.setText("Background");
     backgroundButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/background.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/background.gif")));
     backgroundButton.addActionListener(new ActionListener()
         {
           @Override
@@ -279,7 +279,7 @@ public class FormPanel extends DocumentPanel
         });
     scriptButton.setText("Server script");
     scriptButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/javascript.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/javascript.gif")));
     scriptButton.addActionListener(new ActionListener()
     {
       @Override
@@ -290,7 +290,7 @@ public class FormPanel extends DocumentPanel
     });
     gridButton.setText("Snap to grid");
     gridButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/grid.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/grid.gif")));
     gridButton.setSelected(true);
     gridButton.addActionListener(new ActionListener()
     {
@@ -303,7 +303,7 @@ public class FormPanel extends DocumentPanel
 
     accessibilityButton.setText("Accessibility");
     accessibilityButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/accessibility.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/accessibility.gif")));
     accessibilityButton.setSelected(false);
     accessibilityButton.addActionListener(new ActionListener()
     {

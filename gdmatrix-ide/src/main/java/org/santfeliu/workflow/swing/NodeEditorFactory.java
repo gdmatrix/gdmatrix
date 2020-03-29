@@ -63,7 +63,7 @@ import org.santfeliu.workflow.swing.editor.WebServiceNodeEditor;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class NodeEditorFactory
 {

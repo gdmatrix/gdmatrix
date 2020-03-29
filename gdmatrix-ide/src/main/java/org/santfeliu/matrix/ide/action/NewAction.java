@@ -40,14 +40,14 @@ import org.santfeliu.matrix.ide.NewDocumentDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class NewAction extends BaseAction
 {
   public NewAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/new.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/new.gif"));
   }
   
   @Override

@@ -40,14 +40,14 @@ import org.santfeliu.matrix.ide.MainPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class UndoAction extends BaseAction
 {
   public UndoAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/undo.gif"));    
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/undo.gif"));    
   }
   
   @Override

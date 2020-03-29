@@ -50,7 +50,7 @@
         <Component class="javax.swing.JButton" name="addButton">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/org/santfeliu/matrix/ide/resources/icon/add.gif"/>
+              <Image iconType="3" name="/org/santfeliu/matrix/ide/resources/images/add.gif"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Add parameter"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -63,7 +63,7 @@
         <Component class="javax.swing.JButton" name="removeButton">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/org/santfeliu/matrix/ide/resources/icon/remove.gif"/>
+              <Image iconType="3" name="/org/santfeliu/matrix/ide/resources/images/remove.gif"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Remove parameter"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -76,7 +76,7 @@
         <Component class="javax.swing.JButton" name="executeButton">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/org/santfeliu/matrix/ide/resources/icon/run.gif"/>
+              <Image iconType="3" name="/org/santfeliu/matrix/ide/resources/images/run.gif"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Execute"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -118,7 +118,7 @@
               </TableColumnModel>
             </Property>
             <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-              <Color id="Default Cursor"/>
+              <Color id="Cursor Por defecto"/>
             </Property>
             <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
               <ComponentRef name="executeButton"/>

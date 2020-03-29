@@ -40,14 +40,14 @@ import org.santfeliu.matrix.ide.MainPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class RedoAction extends BaseAction
 {
   public RedoAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/redo.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/redo.gif"));
   }
   
   @Override

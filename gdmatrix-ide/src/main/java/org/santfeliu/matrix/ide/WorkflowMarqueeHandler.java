@@ -67,7 +67,7 @@ import org.santfeliu.workflow.swing.graph.WorkflowVertex;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WorkflowMarqueeHandler extends BasicMarqueeHandler
 {

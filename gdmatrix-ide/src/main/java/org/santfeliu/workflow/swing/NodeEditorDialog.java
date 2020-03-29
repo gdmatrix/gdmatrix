@@ -59,7 +59,7 @@ import org.santfeliu.workflow.WorkflowNode;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class NodeEditorDialog extends JDialog
 {
@@ -108,7 +108,7 @@ public class NodeEditorDialog extends JDialog
   private void jbInit()
     throws Exception
   {
-    this.setSize(new Dimension(540, 600));
+    this.setMinimumSize(new Dimension(600, 600));
     this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     this.getContentPane().setLayout(borderLayout);
     this.setModal(true);
@@ -203,6 +203,7 @@ public class NodeEditorDialog extends JDialog
         propertiesPanel.add(editComponent, BorderLayout.CENTER);
       }
     }
+    pack();
     Utilities.centerWindow(panel, this);
     setVisible(true);
     return result;

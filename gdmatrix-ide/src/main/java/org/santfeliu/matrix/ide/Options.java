@@ -38,15 +38,16 @@ import java.io.OutputStream;
 
 import java.util.Enumeration;
 import java.util.Properties;
+import org.santfeliu.matrix.MatrixInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class Options
 {
   private static final Properties properties;
-  private static Font editorFont = new Font("Monospaced", Font.PLAIN, 13);
+  private static Font editorFont = new Font("Monospaced", Font.PLAIN, 14);
   private static File lastDirectory = new File(".");
 
   static
@@ -116,6 +117,8 @@ public class Options
     // write special properties
     if (lastDirectory != null)
       properties.setProperty("dir", lastDirectory.getAbsolutePath());
+    
+    properties.setProperty("revision", MatrixInfo.getRevision());
 
     if (editorFont != null) 
     {

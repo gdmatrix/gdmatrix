@@ -31,6 +31,7 @@
 package org.santfeliu.matrix.ide;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -38,9 +39,17 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.SwingUtilities;
@@ -48,17 +57,19 @@ import javax.swing.UIManager;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class MatrixIDE extends JFrame
 {
-  private static final Logger logger = Logger.getLogger("matrix-ide");
+  private static final Logger LOGGER = Logger.getLogger("MatrixIDE");
   private MainPanel mainPanel = new MainPanel();  
 
   public MatrixIDE()
   {
     try
     {
+      initLogger();
+      log(Level.INFO, "Start MatrixIDE");
       initComponents();
     }
     catch (Exception ex)
@@ -97,15 +108,52 @@ public class MatrixIDE extends JFrame
   }
 
   private static File getOptionsFile()
-  {
-    return new File(
-      System.getProperty("user.home") + "/matrix_ide.properties");
+  {    
+    return new File(getBaseDir(), "ide.properties");
   }
 
+  private static File getBaseDir()
+  {
+    String userHome = System.getProperty("user.home");
+    File baseDir = new File(userHome + "/.matrix");
+    if (!baseDir.exists())
+    {
+      baseDir.mkdirs();
+    }
+    return baseDir;
+  }
+  
+  private void initLogger()
+  {
+    try
+    {
+      File baseDir = getBaseDir();
+      File logDir = new File(baseDir, "logs");
+      if (!logDir.exists())
+        logDir.mkdir();
+      SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+      String today = df.format(new Date());
+      String logFile = 
+        logDir.getAbsolutePath() + "/ide-" + today + ".log";
+      Handler handler = new FileHandler(logFile, true);
+      handler.setFormatter(new SimpleFormatter());
+      Logger logger = Logger.getLogger("");
+      logger.addHandler(handler);
+    }
+    catch (Exception ex)
+    {
+      // ignore
+    }
+  }  
+  
   private void initComponents() throws Exception
-  {  
+  {
     setTitle("Matrix IDE");
     setSize(new Dimension(760, 600));
+    
+    setIconImages(loadIcons(
+      "icon_blue_16.png", "icon_blue_32.png", "icon_blue_64.png", 
+      "icon_blue_128.png", "icon_blue_256.png"));
     
     mainPanel.setIDE(this);
     mainPanel.setupLocale(Locale.getDefault());
@@ -162,6 +210,24 @@ public class MatrixIDE extends JFrame
                 (screenSize.height - frameSize.height) / 2);
   }
 
+  private List<Image> loadIcons(String... names)
+  {
+    List<Image> icons = new ArrayList<>();
+    for (String name : names)
+    {
+      try
+      {
+        String resource = "resources/images/gdmatrix/" + name;
+        icons.add(ImageIO.read(getClass().getResourceAsStream(resource)));
+      }
+      catch (Exception ex)
+      {
+        // ignore
+      }
+    }
+    return icons;
+  }
+  
   public MainPanel getMainPanel()
   {
     return mainPanel;
@@ -171,7 +237,6 @@ public class MatrixIDE extends JFrame
   {
     try
     {
-      System.out.println("Quit application.");
       // save window location
       Rectangle rect = getBounds();
       Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -190,51 +255,63 @@ public class MatrixIDE extends JFrame
       mainPanel.saveConnections();
 
       // save environment
-      MatrixIDE.saveOptions();
+      saveOptions();
+      log(Level.INFO, "Exit MatrixIDE");
     }
     catch (Exception ex)
     {
-      MatrixIDE.log(ex);
+      log(ex);
     }
     System.exit(0);
   }
 
   public static void log(Exception ex)
   {
-    logger.log(Level.SEVERE, ex.toString());
+    LOGGER.log(Level.SEVERE, ex.toString(), ex);
   }
 
   public static void log(Level level, String message)
   {
-    logger.log(level, message);
+    LOGGER.log(level, message);
   }
 
   public static void main(String[] args)
   {
-    // load environment variables
     MatrixIDE.loadOptions();
+
+    // setup LookAndFeel
+    try
+    {
+      UIManager.installLookAndFeel(
+        "FlatLaf light", "com.formdev.flatlaf.FlatLightLaf");
+      UIManager.installLookAndFeel(
+        "FlatLaf dark", "com.formdev.flatlaf.FlatDarkLaf");
+      
+      String lafClassName = Options.get("lafClassName");
+      if (lafClassName == null)
+        lafClassName = "com.formdev.flatlaf.FlatLightLaf";
+      UIManager.setLookAndFeel(lafClassName);
+    }
+    catch (Exception ex)
+    {      
+    }
+    
+    // setup locale
+    String language = Options.get("language");
+    if (language != null)
+    {
+      Locale locale = new Locale(language);
+      Locale.setDefault(locale);
+    }
 
     // start frame
     SwingUtilities.invokeLater(new Runnable()
     {
+      @Override
       public void run()
       {
         try
         {
-          // setup LookAndFeel
-          String lafClassName = Options.get("lafClassName");
-          if (lafClassName == null)
-            lafClassName = UIManager.getSystemLookAndFeelClassName();
-          UIManager.setLookAndFeel(lafClassName);
-
-          // setup locale
-          String language = Options.get("language");
-          if (language != null)
-          {
-            Locale locale = new Locale(language);
-            Locale.setDefault(locale);
-          }
-
           // create IDE instance
           final MatrixIDE ide = new MatrixIDE();
           ide.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -249,6 +326,7 @@ public class MatrixIDE extends JFrame
               }
             }
           });
+          
           ide.setVisible(true);
         }
         catch (Exception ex)

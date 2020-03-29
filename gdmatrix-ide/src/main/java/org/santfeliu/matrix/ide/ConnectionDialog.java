@@ -59,7 +59,7 @@ import javax.swing.JToolBar;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ConnectionDialog extends JDialog
 {
@@ -174,7 +174,7 @@ public class ConnectionDialog extends JDialog
     connComboBox.setModel(model);
     addButton.setToolTipText("Add connection");
     addButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/add.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/add.gif")));
     addButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)
@@ -185,7 +185,7 @@ public class ConnectionDialog extends JDialog
     addButton.setMargin(new Insets(2, 2, 2, 2));
     removeButton.setToolTipText("Remove connection");
     removeButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/icon/remove.gif")));
+      "/org/santfeliu/matrix/ide/resources/images/remove.gif")));
     removeButton.addActionListener(new ActionListener()
         {
           public void actionPerformed(ActionEvent e)

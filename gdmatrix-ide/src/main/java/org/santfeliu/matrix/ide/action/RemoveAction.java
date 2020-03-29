@@ -38,14 +38,14 @@ import org.santfeliu.matrix.ide.DocumentPanel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class RemoveAction extends BaseAction
 {
   public RemoveAction()
   {
     this.putValue(Action.SMALL_ICON, 
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/delete.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/delete.gif"));
   }
   
   @Override

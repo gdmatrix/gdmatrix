@@ -46,7 +46,7 @@ public class WSDocAction extends BaseAction
   public WSDocAction()
   {
     this.putValue(Action.SMALL_ICON,
-      loadIcon("/org/santfeliu/matrix/ide/resources/icon/wsdoc.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/wsdoc.gif"));
   }
 
   @Override

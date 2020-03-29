@@ -36,7 +36,7 @@ import javax.swing.ImageIcon;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class InputTextAreaView extends InputTextView
 {
@@ -54,7 +54,7 @@ public class InputTextAreaView extends InputTextView
       try
       {
         scrollIcon = new ImageIcon(getClass().getResource(
-          "/org/santfeliu/swing/form/resources/scroll.gif"));
+          "/org/santfeliu/swing/form/resources/images/scroll.gif"));
       }
       catch (Exception ex)
       {

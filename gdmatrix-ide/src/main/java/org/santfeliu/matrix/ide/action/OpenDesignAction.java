@@ -44,14 +44,14 @@ import org.santfeliu.matrix.ide.DocumentType;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class OpenDesignAction extends BaseAction
 {
   public OpenDesignAction()
   {
     this.putValue(Action.SMALL_ICON, 
-                  loadIcon("/org/santfeliu/matrix/ide/resources/icon/form.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/form.gif"));
   }
 
   @Override

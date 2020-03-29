@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ReturnNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -51,12 +51,13 @@ public class ReturnNodeBeanInfo extends WorkflowNodeBeanInfo
     addProperty("result").setCategory(SPECIFIC_CATEGORY);
   }
   
+  @Override
   public java.awt.Image getIcon(int iconKind)
   {
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
       return loadImage(
-        "/org/santfeliu/workflow/swing/resources/icon/return.gif");
+        "/org/santfeliu/workflow/swing/resources/images/return.gif");
     }
     return null;
   }

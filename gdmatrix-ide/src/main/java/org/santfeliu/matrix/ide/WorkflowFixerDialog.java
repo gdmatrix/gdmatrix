@@ -87,9 +87,9 @@ public class WorkflowFixerDialog extends javax.swing.JDialog
     issueList.setCellRenderer(new DefaultListCellRenderer()
     {
       ImageIcon warningIcon =
-        new ImageIcon(getClass().getResource("resources/icon/warning.gif"));
+        new ImageIcon(getClass().getResource("resources/images/warning.gif"));
       ImageIcon errorIcon =
-        new ImageIcon(getClass().getResource("resources/icon/error.gif"));
+        new ImageIcon(getClass().getResource("resources/images/error.gif"));
 
       @Override
       public Component getListCellRendererComponent(

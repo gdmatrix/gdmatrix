@@ -36,7 +36,7 @@ import org.santfeliu.workflow.WorkflowNodeBeanInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class NopNodeBeanInfo extends WorkflowNodeBeanInfo
 {
@@ -50,11 +50,12 @@ public class NopNodeBeanInfo extends WorkflowNodeBeanInfo
     super(beanClass);
   }
   
+  @Override
   public java.awt.Image getIcon(int iconKind)
   {
     if (iconKind == BeanInfo.ICON_COLOR_16x16)
     {
-      return loadImage("/org/santfeliu/workflow/swing/resources/icon/nop.gif");
+      return loadImage("/org/santfeliu/workflow/swing/resources/images/nop.gif");
     }
     return null;
   }
