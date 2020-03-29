@@ -55,7 +55,7 @@ import javax.swing.border.LineBorder;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SignaturePanel extends JPanel implements Runnable
 {
@@ -85,7 +85,7 @@ public class SignaturePanel extends JPanel implements Runnable
     setBorder(new LineBorder(Color.gray, 1));    
     URL url;
     url = getClass().getClassLoader().getResource(
-      "org/santfeliu/matrix/client/ui/microsigner/resources/signature.gif");
+      "org/santfeliu/matrix/client/ui/microsigner/resources/images/signature.gif");
     signatureIcon = new ImageIcon(url);
   }
   

@@ -30,6 +30,7 @@
  */
 package org.santfeliu.matrix.client;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Desktop;
 import java.awt.Image;
 import java.io.BufferedReader;
@@ -63,10 +64,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import static org.santfeliu.matrix.client.Command.COMMAND;
+import org.santfeliu.matrix.MatrixInfo;
 import org.santfeliu.matrix.client.ui.util.SelectItem;
 import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.TextUtils;
+import static org.santfeliu.matrix.client.Command.COMMAND;
 
 /**
  *
@@ -84,7 +86,7 @@ public class MatrixClient extends javax.swing.JFrame
   private String servletUrl = "http://localhost/commands";
   private String updateUrl = "http://localhost/matrix-client/update.html";
   private Thread thread;
-  private float version = 0;
+  private int version = 0;
   private long inactionTimeout = 300; //default timeout in seconds
   private boolean end;
   private Properties setupProperties;
@@ -92,10 +94,8 @@ public class MatrixClient extends javax.swing.JFrame
   private long lastCommandTime;
   private boolean setupComplete = false;
   private boolean minimize = false;
-
-  /**
-   * Creates new form MatrixClient
-   */
+  private static final Logger LOGGER = Logger.getLogger("MatrixClient");
+  
   public MatrixClient()
   {
     this(null);
@@ -111,14 +111,15 @@ public class MatrixClient extends javax.swing.JFrame
   private void initLogger()
   {
     try
-    {      
-      File dir = new File(getBaseDir(), "logs");
-      if (!dir.exists())
-        dir.mkdir();
+    {
+      File baseDir = getBaseDir();
+      File logDir = new File(baseDir, "logs");
+      if (!logDir.exists())
+        logDir.mkdir();
       SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
       String today = df.format(new Date());
       String logFile = 
-        getBaseDir().getAbsolutePath() + "/logs/" + today + ".log";
+        logDir.getAbsolutePath() + "/client-" + today + ".log";
       Handler handler = new FileHandler(logFile, true);
       handler.setFormatter(new SimpleFormatter());
       Logger logger = Logger.getLogger("");
@@ -126,14 +127,13 @@ public class MatrixClient extends javax.swing.JFrame
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      // ignore
     }
   }
 
   private void loadSetup(String configURL)
   {
-    Logger.getLogger(getClass().getName()).log(
-      Level.INFO, "Trying setup file {0}", configURL);
+    LOGGER.log(Level.INFO, "Trying setup file {0}", configURL);
     try
     {
       //clientId, version & hosts properties
@@ -252,25 +252,22 @@ public class MatrixClient extends javax.swing.JFrame
             }
           }
         }
-
-        String value = setupProperties.getProperty("version");
-        if (value != null)
-        {
-          version = Float.parseFloat(value);
-          String pattern = bundle.getString("VERSION");
-          versionLabel.setText(MessageFormat.format(pattern, 
-            String.valueOf(version)));
-        }
       }
       
+      version = Integer.parseInt(MatrixInfo.getRevision());
+      
+      String pattern = bundle.getString("VERSION");
+      versionLabel.setText(MessageFormat.format(pattern, 
+        String.valueOf(version)));
+      
       setIconImages(loadIcons(
-        "icon.png", "icon32.png", "icon64.png", "icon128.png", "icon256.png"));
+        "icon_red_16.png", "icon_red_32.png", "icon_red_64.png", 
+        "icon_red_128.png", "icon_red_256.png"));
 
       setupComplete = true;
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
       setupComplete = false;
     }
   }
@@ -282,7 +279,7 @@ public class MatrixClient extends javax.swing.JFrame
     {
       try
       {
-        String resource = "conf/" + name;
+        String resource = "ui/resources/images/gdmatrix/" + name;
         icons.add(ImageIO.read(getClass().getResourceAsStream(resource)));
       }
       catch (Exception ex)
@@ -365,7 +362,7 @@ public class MatrixClient extends javax.swing.JFrame
 
     getContentPane().add(statusPanel, java.awt.BorderLayout.NORTH);
 
-    centerPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+    centerPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 6, 6, 6));
     centerPanel.setLayout(new java.awt.BorderLayout());
 
     clientIdTextField.setEditable(false);
@@ -387,10 +384,10 @@ public class MatrixClient extends javax.swing.JFrame
     clientIdLabel.setText(bundle.getString("CLIENTID")); // NOI18N
     centerPanel.add(clientIdLabel, java.awt.BorderLayout.NORTH);
 
-    buttonsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 0, 10));
-    buttonsPanel.setLayout(new java.awt.GridLayout(1, 0, 10, 10));
+    buttonsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 0, 0, 0));
+    buttonsPanel.setLayout(new java.awt.GridLayout(1, 0, 4, 0));
 
-    copyClientIdButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/resources/copy.png"))); // NOI18N
+    copyClientIdButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/resources/images/copy.png"))); // NOI18N
     copyClientIdButton.setText(bundle.getString("COPY_CLIENTID")); // NOI18N
     copyClientIdButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
     copyClientIdButton.addActionListener(new java.awt.event.ActionListener()
@@ -402,7 +399,7 @@ public class MatrixClient extends javax.swing.JFrame
     });
     buttonsPanel.add(copyClientIdButton);
 
-    updateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/resources/setup.png"))); // NOI18N
+    updateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/resources/images/setup.png"))); // NOI18N
     updateButton.setText(bundle.getString("UPDATE")); // NOI18N
     updateButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
     updateButton.addActionListener(new java.awt.event.ActionListener()
@@ -450,12 +447,13 @@ public class MatrixClient extends javax.swing.JFrame
   {//GEN-HEADEREND:event_hostsComboBoxActionPerformed
     try
     {
-      // TODO add your handling code here:
       if (hostsComboBox.getItemCount() > 1 && !hostsComboBox.isVisible())
         hostsComboBox.setVisible(true);
 
-      if (setupComplete) //Only if client setup is complete to avoid change events in combo first load
+      if (setupComplete)
       {
+        // Only if client setup is complete to avoid change events in 
+        // combo first load        
         String url = ((SelectItem) hostsComboBox.getSelectedItem()).getId();
         if (url != null && !url.equals(servletUrl))
         {
@@ -466,7 +464,7 @@ public class MatrixClient extends javax.swing.JFrame
     }
     catch (Exception ex)
     {
-      Logger.getLogger(MatrixClient.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+      LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
     }
   }//GEN-LAST:event_hostsComboBoxActionPerformed
 
@@ -534,11 +532,11 @@ public class MatrixClient extends javax.swing.JFrame
   public void stop()
   {
     end = true;
-    Logger.getLogger(getClass().getName()).info("Closing client...");
+    LOGGER.info("Closing client...");
     try
     {
       disconnect();
-      Logger.getLogger(getClass().getName()).info("Done.");
+      LOGGER.info("Done.");
     }
     catch (Exception ex)
     {
@@ -573,6 +571,7 @@ public class MatrixClient extends javax.swing.JFrame
     }
     catch (Exception ex)
     {
+      // ignore
     }
   }
 
@@ -601,15 +600,15 @@ public class MatrixClient extends javax.swing.JFrame
 
   public void loop()
   {
-    Logger.getLogger(getClass().getName()).info("Started");
+    LOGGER.info("Started");
     try
     {
       if (clientId == null)
       {
-        Logger.getLogger(getClass().getName()).info("Generating clientId...");
+        LOGGER.info("Generating clientId...");
         clientId = UUID.randomUUID().toString();
         saveClientProperties();
-        Logger.getLogger(getClass().getName()).info("Registering clientId...");
+        LOGGER.info("Registering clientId...");
       };
       updateClientId();
       lastCommandTime = System.currentTimeMillis();
@@ -622,7 +621,7 @@ public class MatrixClient extends javax.swing.JFrame
           {
             updateStatus(bundle.getString("CONNECTING_STATE") +
               (!hostsComboBox.isVisible() ? " " + getHostname(servletUrl) : ""));
-            Logger.getLogger(getClass().getName()).info("connecting " + servletUrl + "...");
+            LOGGER.log(Level.INFO, "connecting {0}...", servletUrl);
             Map properties = connect();
             if (isOldClient(properties))
             {
@@ -635,10 +634,10 @@ public class MatrixClient extends javax.swing.JFrame
             if (minimize) setState(java.awt.Frame.ICONIFIED);
           }
 
-          Logger.getLogger(getClass().getName()).info("readNextCommandParameters "
-            + Thread.currentThread().getId() + "] "
-            + runningCommands.size() + " "
-            + (System.currentTimeMillis() - lastCommandTime));
+          LOGGER.log(Level.INFO, "readNextCommandParameters {0}] {1} {2}", 
+            new Object[]{Thread.currentThread().getId(), 
+              runningCommands.size(), 
+              System.currentTimeMillis() - lastCommandTime});
 
           Map properties = readNextCommandProperties();
           String commandClassName = (String)properties.get(COMMAND);
@@ -656,7 +655,7 @@ public class MatrixClient extends javax.swing.JFrame
               command.getProperties().putAll((Map)jsonParser.parse(commandProperty));
             }
 
-            Logger.getLogger(getClass().getName()).info("Execute " + commandClassName);
+            LOGGER.log(Level.INFO, "Execute {0}", commandClassName);
             command.execute(); // start thread
             runningCommands.put(command.getId(), command);
           }
@@ -664,39 +663,39 @@ public class MatrixClient extends javax.swing.JFrame
         catch (ConnectException ex)
         {
           connected = false;
-          Logger.getLogger(getClass().getName()).info("Disconnected");
+          LOGGER.info("Disconnected");
           updateStatus(bundle.getString("DISCONNECTED_STATE"));
           Thread.sleep(10000);
         }
         catch (Exception ex)
         {
-          Logger.getLogger(getClass().getName()).severe(ex.toString());
+          LOGGER.severe(ex.toString());
           Thread.sleep(10000);
         }
 
-        if (runningCommands.isEmpty() &&
-          (System.currentTimeMillis() - lastCommandTime > (inactionTimeout * 1000)))
+        long ellapsedMillis = System.currentTimeMillis() - lastCommandTime;
+        if (runningCommands.isEmpty() && 
+          (ellapsedMillis > inactionTimeout * 1000))
         {
-          Logger.getLogger(getClass().getName()).info("Closing by inaction timeout");
+          LOGGER.info("Closing by inaction timeout");
           stop();
         } //Inaction timeout
 
         if (Thread.interrupted())
         {
-          Logger.getLogger(getClass().getName()).info(
-            "Closing abandoned thread " + Thread.currentThread().getId());
+          LOGGER.log(Level.INFO, "Closing abandoned thread {0}", 
+            Thread.currentThread().getId());
           end = true;
         }
       }
     }
     catch (InterruptedException iex)
     {
-      Logger.getLogger(getClass().getName()).info(
-        "Sleep interrupted to change connecting host");
+      LOGGER.info("Sleep interrupted to change connecting host");
     }
     catch (Exception ex)
     {
-      Logger.getLogger(getClass().getName()).severe(ex.toString());
+      LOGGER.severe(ex.toString());
     }
   }
 
@@ -709,6 +708,7 @@ public class MatrixClient extends javax.swing.JFrame
     }
     catch (Exception ex)
     {
+      // ignore
     }
   }
 
@@ -716,6 +716,7 @@ public class MatrixClient extends javax.swing.JFrame
   {
     SwingUtilities.invokeLater(new Runnable()
     {
+      @Override
       public void run()
       {
         clientIdTextField.setText(clientId);
@@ -727,6 +728,7 @@ public class MatrixClient extends javax.swing.JFrame
   {
     SwingUtilities.invokeLater(new Runnable()
     {
+      @Override
       public void run()
       {
         statusValueLabel.setText(status);
@@ -746,7 +748,7 @@ public class MatrixClient extends javax.swing.JFrame
 
   public void terminateCommand(Map properties) throws Exception
   {
-    Logger.getLogger(getClass().getName()).info("Terminate command");
+    LOGGER.info("Terminate command");
     String commandId = (String) properties.get("commandId");
     runningCommands.remove(commandId);
     lastCommandTime = System.currentTimeMillis();
@@ -841,12 +843,12 @@ public class MatrixClient extends javax.swing.JFrame
   public File getBaseDir()
   {
     String userHome = System.getProperty("user.home");
-    File dir = new File(userHome + "/.matrix");
-    if (!dir.exists())
+    File baseDir = new File(userHome + "/.matrix");
+    if (!baseDir.exists())
     {
-      dir.mkdirs();
+      baseDir.mkdirs();
     }
-    return dir;
+    return baseDir;
   }
 
   public File getClientFile()
@@ -858,11 +860,17 @@ public class MatrixClient extends javax.swing.JFrame
   {
     String protocol = null;
 
-    if (url != null && (url.indexOf("https://") > 0 || url.startsWith("https://")))
+    if (url != null && 
+        (url.indexOf("https://") > 0 || url.startsWith("https://")))
+    {
       protocol = "https";
-    else if (url != null && (url.indexOf("http://") > 0 || url.startsWith("http://")))
+    }
+    else if (url != null && 
+      (url.indexOf("http://") > 0 || url.startsWith("http://")))
+    {
       protocol = "http";
-
+    }
+    
     String host = url;
     if (protocol != null && url != null)
     {
@@ -883,7 +891,7 @@ public class MatrixClient extends javax.swing.JFrame
   {
     try
     {
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      UIManager.setLookAndFeel(new FlatLightLaf());
     }
     catch (Exception ex)
     {

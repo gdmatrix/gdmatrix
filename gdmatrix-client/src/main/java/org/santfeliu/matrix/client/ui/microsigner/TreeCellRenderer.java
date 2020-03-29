@@ -43,7 +43,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class TreeCellRenderer extends DefaultTreeCellRenderer
 {
@@ -56,10 +56,10 @@ public class TreeCellRenderer extends DefaultTreeCellRenderer
     {
       URL url;
       url = getClass().getClassLoader().getResource(
-        "org/santfeliu/matrix/client/ui/microsigner/resources/keystore.gif");    
+        "org/santfeliu/matrix/client/ui/microsigner/resources/images/keystore.gif");    
       keyStoreIcon = new ImageIcon(url);    
       url = getClass().getClassLoader().getResource(
-        "org/santfeliu/matrix/client/ui/microsigner/resources/certificate.gif");
+        "org/santfeliu/matrix/client/ui/microsigner/resources/images/certificate.gif");
       certificateIcon = new ImageIcon(url);
     }
     catch (Exception ex)

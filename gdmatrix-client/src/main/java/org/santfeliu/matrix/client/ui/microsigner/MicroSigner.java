@@ -65,18 +65,20 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.santfeliu.matrix.MatrixInfo;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class MicroSigner extends JFrame
 {
   public static final String TITLE = "MicroSigner";
-  public static final String VERSION = "1.4";
+  public static final String VERSION = MatrixInfo.getRevision();
   public static final String CREDITS =
-    "Copyright (c) 2017. Ajuntament de Sant Feliu de Llobregat";
+    "Copyright (c) 2020. Ajuntament de Sant Feliu de Llobregat";
 
   public static final String CONFIG_KEY = "CONFIG";
   public static final String KEYSTORE_TAG = "KEYSTORE";
@@ -86,8 +88,10 @@ public class MicroSigner extends JFrame
 
   // must be static to prevent provider reloading
   private static final HashMap providers = new HashMap();
-  static private ResourceBundle bundle;
+  private static ResourceBundle bundle;
 
+  private static final Logger LOGGER = Logger.getLogger("MicroSigner");
+  
   // swing elements
   private BorderLayout borderLayout = new BorderLayout();
   private MainPanel mainPanel;
@@ -157,7 +161,7 @@ public class MicroSigner extends JFrame
         // if no config exists then autoSetup
         autoSetup();
       }
-      Logger.getLogger(getClass().getName()).info("done.");
+      LOGGER.info("done.");
     }
     catch (Throwable t)
     {
@@ -294,15 +298,13 @@ public class MicroSigner extends JFrame
     File file = getConfigFile();
     if (file == null || !file.exists()) return false;
 
-    Logger.getLogger(getClass().getName()).info("loading configuration...");
+    LOGGER.info("loading configuration...");
     InputStream is = new FileInputStream(file);
-    if (is == null) return false;
-
     ObjectInputStream ois = new ObjectInputStream(is);
     String tag = String.valueOf(ois.readObject());
     while (!tag.equals(END_TAG))
     {
-      Logger.getLogger(getClass().getName()).info("tag: " + tag);
+      LOGGER.log(Level.INFO, "tag: {0}", tag);
       if (tag.equals(KEYSTORE_TAG))
       {
         String provClassName = (String)ois.readObject();
@@ -317,7 +319,7 @@ public class MicroSigner extends JFrame
         }
         catch (Throwable t)
         {
-          Logger.getLogger(getClass().getName()).info(t.getMessage());
+          LOGGER.info(t.getMessage());
         }
       }
       else throw new IOException("Invalid tag");
@@ -332,7 +334,7 @@ public class MicroSigner extends JFrame
     File file = getConfigFile();
     if (file == null) return;
 
-    Logger.getLogger(getClass().getName()).info("saving configuration...");
+    LOGGER.info("saving configuration...");
     OutputStream os = new FileOutputStream(file);
     ObjectOutputStream oos = new ObjectOutputStream(os);
     DefaultMutableTreeNode root = mainPanel.getRoot();
@@ -358,16 +360,17 @@ public class MicroSigner extends JFrame
   private void jbInit() throws Exception
   {
     setTitle("MicroSigner");
-    setIconImage(ImageIO.read(getClass().getResource("resources/signature.gif")));
+    setIconImage(ImageIO.read(getClass().getResource("resources/images/signature.gif")));
     setPreferredSize(new Dimension(600, 300));
     setSize(new Dimension(600, 300));
     mainPanel = new MainPanel(this);
+    mainPanel.setBorder(new EmptyBorder(4, 4, 4, 4));
     buttonsPanel = new JPanel();
     signButton = new JButton(bundle.getString("Sign"));
     cancelButton = new JButton(bundle.getString("Cancel"));
     buttonsPanel.add(signButton);
-    signButton.setIcon(new ImageIcon(getClass().getResource("resources/signature.gif")));
-    cancelButton.setIcon(new ImageIcon(getClass().getResource("resources/cancel.gif")));
+    signButton.setIcon(new ImageIcon(getClass().getResource("resources/images/signature.gif")));
+    cancelButton.setIcon(new ImageIcon(getClass().getResource("resources/images/cancel.gif")));
     buttonsPanel.add(cancelButton);
     signButton.addActionListener(new ActionListener()
     {
@@ -403,7 +406,7 @@ public class MicroSigner extends JFrame
 
   private void doSignatureProcess() // WT
   {
-    Logger.getLogger(getClass().getName()).info("Signature process: started.");
+    LOGGER.info("Signature process: started.");
     try
     {
       selectCertificate(); // ET-wait
@@ -424,13 +427,12 @@ public class MicroSigner extends JFrame
     catch (Exception ex)
     {
       signResult = ERROR_PREFIX + ex.getLocalizedMessage();
-      ex.printStackTrace();
     }
     finally
     {
       close(); // ET-later
     }
-    Logger.getLogger(getClass().getName()).info("Signature process: ended.");
+    LOGGER.info("Signature process: ended.");
   }
 
   private void selectCertificate() throws Exception // ET-wait
@@ -535,9 +537,9 @@ public class MicroSigner extends JFrame
 
   private void abortSignature() throws Exception // WT
   {
-    Logger.getLogger(getClass().getName()).info("aborting signature...");
+    LOGGER.info("aborting signature...");
     sigClient.abortSignature(sigId);
-    Logger.getLogger(getClass().getName()).info("done.");
+    LOGGER.info("done.");
   }
 
   private void close() // ET-later
@@ -581,7 +583,7 @@ public class MicroSigner extends JFrame
     if (ksNode == null) ksNode = new KeyStoreNode();
     ksNode.setKeyStore(keyStore);
     ksNode.setKeyStorePath(ksPath);
-    Logger.getLogger(MicroSigner.class.getName()).info("Provider: " + providerName);
+    LOGGER.log(Level.INFO, "Provider: {0}", providerName);
     ksNode.setAskForPIN(
      !(providerName.equals("SunMSCAPI") ||
        providerName.equals("SunPKCS11") ||
@@ -632,10 +634,10 @@ public class MicroSigner extends JFrame
 
     try
     {
-      Logger.getLogger(MicroSigner.class.getName()).log(
+      LOGGER.log(
         Level.INFO, "Loading class {0}", provClassName);
       provider = (Provider)Class.forName(provClassName).newInstance();
-      Logger.getLogger(MicroSigner.class.getName()).info(provider.toString());
+      LOGGER.info(provider.toString());
     }
     finally
     {

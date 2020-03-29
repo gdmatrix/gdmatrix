@@ -111,6 +111,7 @@ public class DocumentFrame extends JFrame
   {
     java.awt.GridBagConstraints gridBagConstraints;
 
+    centerPanel = new javax.swing.JPanel();
     docIdLabel = new javax.swing.JLabel();
     docIdTextField = new javax.swing.JTextField();
     versionLabel = new javax.swing.JLabel();
@@ -133,9 +134,6 @@ public class DocumentFrame extends JFrame
     addPropertyButton = new javax.swing.JButton();
     removePropertyButton = new javax.swing.JButton();
     lockUnlockButton = new javax.swing.JToggleButton();
-    southPanel = new javax.swing.JPanel();
-    okButton = new javax.swing.JButton();
-    cancelButton = new javax.swing.JButton();
     titleScrollPane = new javax.swing.JScrollPane();
     titleTextArea = new javax.swing.JTextArea();
     capturePanel = new javax.swing.JPanel();
@@ -148,9 +146,12 @@ public class DocumentFrame extends JFrame
     changeDateTextField = new javax.swing.JTextField();
     changeUserLabel = new javax.swing.JLabel();
     changeUserTextField = new javax.swing.JTextField();
+    southPanel = new javax.swing.JPanel();
+    okButton = new javax.swing.JButton();
+    cancelButton = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/santfeliu/matrix/client/ui/doc/DocumentFrameBundle"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/santfeliu/matrix/client/ui/doc/resources/DocumentFrameBundle"); // NOI18N
     setTitle(bundle.getString("DocumentFrame.title")); // NOI18N
     setBounds(new java.awt.Rectangle(0, 0, 0, 0));
     setPreferredSize(new java.awt.Dimension(500, 500));
@@ -161,7 +162,9 @@ public class DocumentFrame extends JFrame
         formWindowClosing(evt);
       }
     });
-    getContentPane().setLayout(new java.awt.GridBagLayout());
+
+    centerPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+    centerPanel.setLayout(new java.awt.GridBagLayout());
 
     docIdLabel.setText(bundle.getString("DocumentFrame.docIdLabel.text")); // NOI18N
     docIdLabel.setMinimumSize(new java.awt.Dimension(80, 15));
@@ -170,7 +173,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(docIdLabel, gridBagConstraints);
+    centerPanel.add(docIdLabel, gridBagConstraints);
 
     docIdTextField.setEditable(false);
     docIdTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -190,7 +193,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 0.5;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(docIdTextField, gridBagConstraints);
+    centerPanel.add(docIdTextField, gridBagConstraints);
 
     versionLabel.setText(bundle.getString("DocumentFrame.versionLabel.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -199,7 +202,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(versionLabel, gridBagConstraints);
+    centerPanel.add(versionLabel, gridBagConstraints);
 
     versionTextField.setEditable(false);
     versionTextField.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -219,7 +222,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 0.5;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(versionTextField, gridBagConstraints);
+    centerPanel.add(versionTextField, gridBagConstraints);
 
     fileLabel1.setText(bundle.getString("DocumentFrame.fileLabel1.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -228,7 +231,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(fileLabel1, gridBagConstraints);
+    centerPanel.add(fileLabel1, gridBagConstraints);
 
     filenameField.addMouseListener(new java.awt.event.MouseAdapter()
     {
@@ -252,10 +255,10 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(filenameField, gridBagConstraints);
+    centerPanel.add(filenameField, gridBagConstraints);
 
     exploreButton.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-    exploreButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/explore.png"))); // NOI18N
+    exploreButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/images/explore.png"))); // NOI18N
     exploreButton.setText(bundle.getString("DocumentFrame.exploreButton.text")); // NOI18N
     exploreButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
     exploreButton.addActionListener(new java.awt.event.ActionListener()
@@ -270,7 +273,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(exploreButton, gridBagConstraints);
+    centerPanel.add(exploreButton, gridBagConstraints);
     exploreButton.getAccessibleContext().setAccessibleName(bundle.getString("DocumentFrame.exploreButton.AccessibleContext.accessibleName")); // NOI18N
 
     titleLabel.setText(bundle.getString("DocumentFrame.titleLabel.text")); // NOI18N
@@ -280,7 +283,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(titleLabel, gridBagConstraints);
+    centerPanel.add(titleLabel, gridBagConstraints);
 
     typeLabel.setText(bundle.getString("DocumentFrame.typeLabel.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -289,7 +292,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(typeLabel, gridBagConstraints);
+    centerPanel.add(typeLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 3;
@@ -299,7 +302,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(typeComboBox, gridBagConstraints);
+    centerPanel.add(typeComboBox, gridBagConstraints);
 
     languageLabel.setText(bundle.getString("DocumentFrame.languageLabel.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -308,7 +311,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(languageLabel, gridBagConstraints);
+    centerPanel.add(languageLabel, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -316,7 +319,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridwidth = 5;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(languageComboBox, gridBagConstraints);
+    centerPanel.add(languageComboBox, gridBagConstraints);
 
     stateLabel.setText(bundle.getString("DocumentFrame.stateLabel.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -325,7 +328,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(stateLabel, gridBagConstraints);
+    centerPanel.add(stateLabel, gridBagConstraints);
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
@@ -333,7 +336,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridwidth = 5;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(stateComboBox, gridBagConstraints);
+    centerPanel.add(stateComboBox, gridBagConstraints);
 
     lockedByTextField.setEditable(false);
     lockedByTextField.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -354,7 +357,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(lockedByTextField, gridBagConstraints);
+    centerPanel.add(lockedByTextField, gridBagConstraints);
 
     lockedByLabel.setText(bundle.getString("DocumentFrame.lockedByLabel.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -363,7 +366,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(lockedByLabel, gridBagConstraints);
+    centerPanel.add(lockedByLabel, gridBagConstraints);
 
     propertiesLabel.setText(bundle.getString("DocumentFrame.propertiesLabel.text")); // NOI18N
     gridBagConstraints = new java.awt.GridBagConstraints();
@@ -373,7 +376,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(propertiesLabel, gridBagConstraints);
+    centerPanel.add(propertiesLabel, gridBagConstraints);
 
     propertiesTable.setModel(new PropertyTableModel(Collections.EMPTY_LIST));
     propertiesTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -394,9 +397,9 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(propertiesScrollPane, gridBagConstraints);
+    centerPanel.add(propertiesScrollPane, gridBagConstraints);
 
-    addPropertyButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/insert.png"))); // NOI18N
+    addPropertyButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/images/insert.png"))); // NOI18N
     addPropertyButton.setText(bundle.getString("DocumentFrame.addPropertyButton.text")); // NOI18N
     addPropertyButton.setToolTipText(bundle.getString("DocumentFrame.addPropertyButton.toolTipText")); // NOI18N
     addPropertyButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -411,9 +414,9 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridx = 4;
     gridBagConstraints.gridy = 9;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(addPropertyButton, gridBagConstraints);
+    centerPanel.add(addPropertyButton, gridBagConstraints);
 
-    removePropertyButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/remove.png"))); // NOI18N
+    removePropertyButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/images/remove.png"))); // NOI18N
     removePropertyButton.setText(bundle.getString("DocumentFrame.removePropertyButton.text")); // NOI18N
     removePropertyButton.setToolTipText(bundle.getString("DocumentFrame.removePropertyButton.toolTipText")); // NOI18N
     removePropertyButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -428,9 +431,9 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridx = 5;
     gridBagConstraints.gridy = 9;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(removePropertyButton, gridBagConstraints);
+    centerPanel.add(removePropertyButton, gridBagConstraints);
 
-    lockUnlockButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/lock-open.png"))); // NOI18N
+    lockUnlockButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/images/lock-open.png"))); // NOI18N
     lockUnlockButton.setText(bundle.getString("DocumentFrame.lockUnlockButton.text")); // NOI18N
     lockUnlockButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
     lockUnlockButton.addActionListener(new java.awt.event.ActionListener()
@@ -446,38 +449,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridwidth = 3;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(lockUnlockButton, gridBagConstraints);
-
-    southPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-
-    okButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/ok.png"))); // NOI18N
-    okButton.setText(bundle.getString("DocumentFrame.okButton.text")); // NOI18N
-    okButton.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        okButtonActionPerformed(evt);
-      }
-    });
-    southPanel.add(okButton);
-
-    cancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/cancel.png"))); // NOI18N
-    cancelButton.setText(bundle.getString("DocumentFrame.cancelButton.text")); // NOI18N
-    cancelButton.addActionListener(new java.awt.event.ActionListener()
-    {
-      public void actionPerformed(java.awt.event.ActionEvent evt)
-      {
-        cancelButtonActionPerformed(evt);
-      }
-    });
-    southPanel.add(cancelButton);
-
-    gridBagConstraints = new java.awt.GridBagConstraints();
-    gridBagConstraints.gridx = 0;
-    gridBagConstraints.gridy = 16;
-    gridBagConstraints.gridwidth = 6;
-    gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-    getContentPane().add(southPanel, gridBagConstraints);
+    centerPanel.add(lockUnlockButton, gridBagConstraints);
 
     titleScrollPane.setMinimumSize(new java.awt.Dimension(25, 60));
 
@@ -493,7 +465,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridwidth = 5;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-    getContentPane().add(titleScrollPane, gridBagConstraints);
+    centerPanel.add(titleScrollPane, gridBagConstraints);
 
     capturePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -519,7 +491,7 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridy = 14;
     gridBagConstraints.gridwidth = 6;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    getContentPane().add(capturePanel, gridBagConstraints);
+    centerPanel.add(capturePanel, gridBagConstraints);
 
     changePanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -552,7 +524,35 @@ public class DocumentFrame extends JFrame
     gridBagConstraints.gridy = 15;
     gridBagConstraints.gridwidth = 6;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    getContentPane().add(changePanel, gridBagConstraints);
+    centerPanel.add(changePanel, gridBagConstraints);
+
+    getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
+
+    southPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+    okButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/images/ok.png"))); // NOI18N
+    okButton.setText(bundle.getString("DocumentFrame.okButton.text")); // NOI18N
+    okButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        okButtonActionPerformed(evt);
+      }
+    });
+    southPanel.add(okButton);
+
+    cancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/images/cancel.png"))); // NOI18N
+    cancelButton.setText(bundle.getString("DocumentFrame.cancelButton.text")); // NOI18N
+    cancelButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cancelButtonActionPerformed(evt);
+      }
+    });
+    southPanel.add(cancelButton);
+
+    getContentPane().add(southPanel, java.awt.BorderLayout.SOUTH);
 
     pack();
     setLocationRelativeTo(null);
@@ -561,7 +561,7 @@ public class DocumentFrame extends JFrame
   private void okButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_okButtonActionPerformed
   {//GEN-HEADEREND:event_okButtonActionPerformed
     ResourceBundle bundle = ResourceBundle.getBundle(
-      "org/santfeliu/matrix/client/ui/doc/DocumentFrameBundle");
+      "org/santfeliu/matrix/client/ui/doc/resources/DocumentFrameBundle");
     String filename = filenameField.getText();
     if (filename == null || filename.length() == 0)
     {
@@ -640,19 +640,19 @@ public class DocumentFrame extends JFrame
   private void lockUnlockButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_lockUnlockButtonActionPerformed
   {//GEN-HEADEREND:event_lockUnlockButtonActionPerformed
     // TODO add your handling code here:
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/santfeliu/matrix/client/ui/doc/DocumentFrameBundle"); // NOI18N
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/santfeliu/matrix/client/ui/doc/resources/DocumentFrameBundle"); // NOI18N
     if (!lockUnlockButton.isSelected())
     {
       lockedByTextField.setText(null);
       lockUnlockButton.setText(bundle.getString("DocumentFrame.lockUnlockButton.text"));
-      lockUnlockButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/lock-open.png"))); // NOI18N      
+      lockUnlockButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/images/lock-open.png"))); // NOI18N      
       lockedByLabel.setText(bundle.getString("DocumentFrame.lockUnlockButton.text"));
     }
     else
     {
       lockedByTextField.setText((String)command.getProperties().get("userId"));
       lockUnlockButton.setText(bundle.getString("DocumentFrame.lockUnlockButton.text2"));      
-      lockUnlockButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/lock.png"))); // NOI18N      
+      lockUnlockButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/doc/resources/images/lock.png"))); // NOI18N      
       lockedByLabel.setText(bundle.getString("DocumentFrame.lockedByLabel.text"));      
     }
   }//GEN-LAST:event_lockUnlockButtonActionPerformed
@@ -730,6 +730,7 @@ public class DocumentFrame extends JFrame
   private javax.swing.JPanel capturePanel;
   private javax.swing.JLabel captureUserLabel;
   private javax.swing.JTextField captureUserTextField;
+  private javax.swing.JPanel centerPanel;
   private javax.swing.JLabel changeDateLabel;
   private javax.swing.JTextField changeDateTextField;
   private javax.swing.JPanel changePanel;
@@ -916,7 +917,7 @@ public class DocumentFrame extends JFrame
     public String getColumnName(int columnIndex) 
     {
       java.util.ResourceBundle bundle = 
-        java.util.ResourceBundle.getBundle("org/santfeliu/matrix/client/ui/doc/DocumentFrameBundle"); // NOI18N
+        java.util.ResourceBundle.getBundle("org/santfeliu/matrix/client/ui/doc/resources/DocumentFrameBundle"); // NOI18N
       if (columnIndex == 0)
         return bundle.getString("DocumentFrame.propertiesTable.columnModel.title0_1");
       else

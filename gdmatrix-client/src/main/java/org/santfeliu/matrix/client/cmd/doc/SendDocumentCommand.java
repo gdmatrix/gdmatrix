@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -61,10 +62,9 @@ import org.santfeliu.matrix.client.ui.SaveDialog;
  */
 public class SendDocumentCommand extends DocumentCommand
 {
-  public static final String NO_FILE = "NO_FILE";
-  
+  public static final String NO_FILE = "NO_FILE";  
   private static File exploreDir;
-  
+  private static final Logger LOGGER = Logger.getLogger("SendDocument");
   
   @Override
   public void doWork() throws Exception
@@ -85,15 +85,18 @@ public class SendDocumentCommand extends DocumentCommand
         messageWindow.showWindow("Desant document...");
         try
         {
-          Logger.getLogger(getClass().getName()).info("Saving document");
+          LOGGER.info("Saving document");
           saveDocument();
-          Logger.getLogger(getClass().getName()).info("Done " + document.getContent().getContentId());
+          LOGGER.log(Level.INFO, "Done {0}", 
+            document.getContent().getContentId());
           properties.put(RESULT, document.getDocId());
         }
         catch (Exception ex)
         {
           messageWindow.hideWindow();
-          JOptionPane.showMessageDialog(null, "S'ha produït un error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(null, 
+            "S'ha produït un error: " + ex.getMessage(), "Error", 
+            JOptionPane.ERROR_MESSAGE);
         }        
         finally
         {
@@ -125,7 +128,6 @@ public class SendDocumentCommand extends DocumentCommand
       documentFrame.getDocIdTextField().setText(document.getDocId());
       documentFrame.getVersionTextField().setText(String.valueOf(document.getVersion()));
     }
-
     
     //Title
     String title = getCurrentTitle();
@@ -261,8 +263,8 @@ public class SendDocumentCommand extends DocumentCommand
   
   public void chooseFile(String title)
   {
-    ResourceBundle bundle = 
-      java.util.ResourceBundle.getBundle("org.santfeliu.matrix.client.ui.doc.FileChooserBundle"); // NOI18N
+    ResourceBundle bundle = java.util.ResourceBundle.getBundle(
+      "org.santfeliu.matrix.client.ui.doc.resources.FileChooserBundle");
     
     UIManager.put("FileChooser.openButtonText",
       bundle.getString("FileChooserOpenButtonText"));
@@ -307,8 +309,8 @@ public class SendDocumentCommand extends DocumentCommand
   
   private List<SelectItem> getStateSelectItems()
   {
-    ResourceBundle bundle = 
-      java.util.ResourceBundle.getBundle("org.santfeliu.matrix.client.ui.doc.DocumentFrameBundle"); // NOI18N
+    ResourceBundle bundle = java.util.ResourceBundle.getBundle(
+      "org.santfeliu.matrix.client.ui.doc.resources.DocumentFrameBundle");
     
     List states = new ArrayList();
     State[] statesArray = new State[]

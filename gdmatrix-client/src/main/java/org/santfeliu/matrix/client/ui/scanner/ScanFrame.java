@@ -185,6 +185,7 @@ public class ScanFrame extends javax.swing.JFrame
     toolBar.setFloatable(false);
     toolBar.setRollover(true);
 
+    sourceButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     sourceButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/source.png"))); // NOI18N
     sourceButton.setText(bundle.getString("selectSource")); // NOI18N
     sourceButton.setToolTipText(bundle.getString("selectSource")); // NOI18N
@@ -204,6 +205,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(sourceButton);
 
+    optionsButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     optionsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/options.png"))); // NOI18N
     optionsButton.setText(bundle.getString("options")); // NOI18N
     optionsButton.setToolTipText(bundle.getString("options")); // NOI18N
@@ -223,6 +225,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(optionsButton);
 
+    scanBlackWhiteButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     scanBlackWhiteButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/bw.png"))); // NOI18N
     scanBlackWhiteButton.setText(bundle.getString("scanBW")); // NOI18N
     scanBlackWhiteButton.setToolTipText(bundle.getString("scanBW")); // NOI18N
@@ -242,6 +245,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(scanBlackWhiteButton);
 
+    scanGrayButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     scanGrayButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/gray.png"))); // NOI18N
     scanGrayButton.setText(bundle.getString("scanGray")); // NOI18N
     scanGrayButton.setToolTipText(bundle.getString("scanGray")); // NOI18N
@@ -261,6 +265,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(scanGrayButton);
 
+    scanColorButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     scanColorButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/color.png"))); // NOI18N
     scanColorButton.setText(bundle.getString("scanColor")); // NOI18N
     scanColorButton.setToolTipText(bundle.getString("scanColor")); // NOI18N
@@ -280,6 +285,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(scanColorButton);
 
+    zoomInButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     zoomInButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/zoomin.png"))); // NOI18N
     zoomInButton.setText(bundle.getString("zoomIn")); // NOI18N
     zoomInButton.setToolTipText(bundle.getString("zoomIn")); // NOI18N
@@ -299,6 +305,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(zoomInButton);
 
+    zoomOutButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     zoomOutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/zoomout.png"))); // NOI18N
     zoomOutButton.setText(bundle.getString("zoomOut")); // NOI18N
     zoomOutButton.setToolTipText(bundle.getString("zoomOut")); // NOI18N
@@ -318,6 +325,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(zoomOutButton);
 
+    rotateLeftButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     rotateLeftButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/rotate_left.png"))); // NOI18N
     rotateLeftButton.setText(bundle.getString("rotateLeft")); // NOI18N
     rotateLeftButton.setToolTipText(bundle.getString("rotateLeft")); // NOI18N
@@ -337,6 +345,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(rotateLeftButton);
 
+    rotateRightButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     rotateRightButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/rotate_right.png"))); // NOI18N
     rotateRightButton.setText(bundle.getString("rotateRight")); // NOI18N
     rotateRightButton.setToolTipText(bundle.getString("rotateRight")); // NOI18N
@@ -356,6 +365,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(rotateRightButton);
 
+    moveLeft.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     moveLeft.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/move_left.png"))); // NOI18N
     moveLeft.setText(bundle.getString("moveLeft")); // NOI18N
     moveLeft.setToolTipText(bundle.getString("moveLeft")); // NOI18N
@@ -375,6 +385,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(moveLeft);
 
+    moveRight.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     moveRight.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/move_right.png"))); // NOI18N
     moveRight.setText(bundle.getString("moveRight")); // NOI18N
     moveRight.setToolTipText(bundle.getString("moveRight")); // NOI18N
@@ -394,6 +405,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(moveRight);
 
+    clearAllButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     clearAllButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/clear.png"))); // NOI18N
     clearAllButton.setText(bundle.getString("clearAll")); // NOI18N
     clearAllButton.setToolTipText(bundle.getString("clearAll")); // NOI18N
@@ -413,6 +425,7 @@ public class ScanFrame extends javax.swing.JFrame
     });
     toolBar.add(clearAllButton);
 
+    pdfButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     pdfButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/santfeliu/matrix/client/ui/scanner/resources/images/pdf.png"))); // NOI18N
     pdfButton.setText(bundle.getString("makePdf")); // NOI18N
     pdfButton.setToolTipText(bundle.getString("makePdf")); // NOI18N

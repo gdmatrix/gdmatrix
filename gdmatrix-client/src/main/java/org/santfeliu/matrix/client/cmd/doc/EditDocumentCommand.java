@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import org.matrix.doc.Content;
@@ -53,12 +54,10 @@ import org.santfeliu.util.MimeTypeMap;
 public class EditDocumentCommand extends DocumentCommand
 {
   private String docId;
-//  private Document document;
-//  private File file;
   private long lastModified;
-//  private DocumentManagerClient docClient;
   private boolean editionWithLock;
   private String userId;
+  private static final Logger LOGGER = Logger.getLogger("EditDocument");
   
   public EditDocumentCommand()
   {
@@ -79,11 +78,11 @@ public class EditDocumentCommand extends DocumentCommand
     messageWindow.showWindow("Baixant document " + docId + "...");
     try
     {
-      Logger.getLogger(getClass().getName()).info("loadDocument " + docId);
+      LOGGER.log(Level.INFO, "loadDocument {0}", docId);
       document = docClient.loadDocument(docId, 
         DocumentConstants.LAST_VERSION, ContentInfo.METADATA);
       String lockUserId = document.getLockUserId();
-      Logger.getLogger(getClass().getName()).info("LockUserId: " + lockUserId);
+      LOGGER.log(Level.INFO, "LockUserId: {0}", lockUserId);
       if (lockUserId == null)
       {
         docClient.lockDocument(docId, 0);
@@ -98,7 +97,7 @@ public class EditDocumentCommand extends DocumentCommand
       String extension = 
         MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());
       String fileId = docId + "-" + UUID.randomUUID().toString();
-      file = new File(getClient().getBaseDir(), fileId + "." + extension);
+      file = new File(getDocumentsDir(), fileId + "." + extension);
       IOUtils.writeToFile(content.getData(), file);
       lastModified = file.lastModified();
     }
@@ -122,7 +121,7 @@ public class EditDocumentCommand extends DocumentCommand
       try
       {
         boolean locked = isFileLocked(file);
-        Logger.getLogger(getClass().getName()).info("Locked: " + locked);
+        LOGGER.log(Level.INFO, "Locked: {0}", locked);
 
         if (editionWithLock)
         {
@@ -134,7 +133,7 @@ public class EditDocumentCommand extends DocumentCommand
         else if (locked)
         {
           this.editionWithLock = true;
-          Logger.getLogger(getClass().getName()).info("Edition with lock.");
+          LOGGER.info("Edition with lock.");
         }
         
         if (documentChanged())
@@ -144,7 +143,7 @@ public class EditDocumentCommand extends DocumentCommand
           try
           {
             lastModified = file.lastModified();
-            Logger.getLogger(getClass().getName()).info("Saving " + docId);
+            LOGGER.log(Level.INFO, "Saving {0}", docId);
             Content content = new Content();
             content.setData(new DataHandler(new FileDataSource(file)));
             String contentType =
@@ -154,7 +153,8 @@ public class EditDocumentCommand extends DocumentCommand
             content.setContentType(contentType);
             document.setContent(content);            
             document = docClient.storeDocument(document);
-            Logger.getLogger(getClass().getName()).info("Done " + document.getContent().getContentId());
+            LOGGER.log(Level.INFO, "Done {0}", 
+              document.getContent().getContentId());
           }
           finally
           {
@@ -179,7 +179,7 @@ public class EditDocumentCommand extends DocumentCommand
       }
     }
     docClient.unlockDocument(docId, 0);
-    Logger.getLogger(getClass().getName()).info("Edition terminated.");
+    LOGGER.info("Edition terminated.");
   }
     
   private boolean isFileLocked(File file)

@@ -57,7 +57,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class AboutDialog extends JDialog
 {  
@@ -91,7 +91,7 @@ public class AboutDialog extends JDialog
     this.getContentPane().setLayout(borderLayout1);
     this.setResizable(true);
     this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-    infoLabel.setText(MicroSigner.TITLE + " " + 
+    infoLabel.setText(MicroSigner.TITLE + " v" + 
       MicroSigner.VERSION + " / " + MicroSigner.CREDITS);
     infoLabel.setPreferredSize(new Dimension(428, 32));
     this.getContentPane().add(centerPanel, BorderLayout.CENTER);
@@ -134,7 +134,7 @@ public class AboutDialog extends JDialog
       model.addRow(new Object[]{propArray[i], value});
     }
     URL url = getClass().getClassLoader().getResource(
-      "org/santfeliu/matrix/client/ui/microsigner/resources/signature.gif");
+      "org/santfeliu/matrix/client/ui/microsigner/resources/images/signature.gif");
     ImageIcon signatureIcon = new ImageIcon(url);
     infoLabel.setIcon(signatureIcon);
   }

@@ -86,20 +86,13 @@ public abstract class DocumentCommand extends Command
     this.file = file;
   }
   
-//  protected DocumentManagerClient getDocumentManagerClient(URL wsUrl,
-//    String userId, String password)
-//  {
-//    javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
-//    new javax.net.ssl.HostnameVerifier()
-//    {
-//      public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) 
-//      {
-//        if (hostname.equals("localhost")) 
-//          return true;
-//        else
-//          return false;
-//      }
-//    });
-//    return new DocumentManagerClient(wsUrl, userId, password);
-//  }
+  public File getDocumentsDir()
+  {
+    File docsDir = new File(getClient().getBaseDir(), "docs");
+    if (!docsDir.exists())
+    {
+      docsDir.mkdirs();
+    }
+    return docsDir;
+  }  
 }

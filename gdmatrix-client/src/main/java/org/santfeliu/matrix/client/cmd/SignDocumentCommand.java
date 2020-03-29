@@ -68,7 +68,7 @@ public class SignDocumentCommand extends Command
     microSigner.waitForTermination();
     
     String result = microSigner.getSignResult();
-    if (result.indexOf(ERROR_PREFIX) == -1) // NO ERROR: OK or CANCEL
+    if (!result.contains(ERROR_PREFIX)) // NO ERROR: OK or CANCEL
       properties.put(RESULT, result);    
     else
     {

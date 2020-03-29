@@ -12,7 +12,6 @@
     <client_servlet_url>https://www.santfeliu.cat/commands</client_servlet_url>
     <client_update_url>https://www.santfeliu.cat/reports/matrix_client_update.html</client_update_url>
     <client_inaction_timeout>500</client_inaction_timeout>
-    <client_version>2.0</client_version>
     
     <warp_packer_version>v0.3.0</warp_packer_version>
     <jre_download_url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download</jre_download_url>
@@ -42,6 +41,11 @@
       <artifactId>xmpbox</artifactId>
       <version>2.0.17</version>
     </dependency>
+    <dependency>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>0.28</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -60,7 +64,6 @@
                   <entry key="servletUrl" value="${client_servlet_url}"/>
                   <entry key="updateUrl" value="${client_update_url}"/>
                   <entry key="inactionTimeout" value="${client_inaction_timeout}"/>
-                  <entry key="version" value="${client_version}" />
                   <entry key="trustStoreFile" value="truststore.jks"/>
                   <entry key="trustStorePassword" value="matrix"/>
                 </propertyfile>

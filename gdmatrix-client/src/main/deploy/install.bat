@@ -22,11 +22,18 @@ call "%programdata%"\gdmatrix\client\%app_name%.bat
 goto :end
 
 :error
-echo ==========================================================
-echo   You must run this installer as administrator.            
+echo ==================================================================
+echo   You must run this installer as administrator.
+echo   Right click on this file and select "Run as administrator".
+echo ------------------------------------------------------------------
 echo   Debes ejecutar este instalador como administrador.       
-echo   Has d'executar aquest instal.lador com a administrador.  
-echo ==========================================================
+echo   Pulsa el boton derecho del raton sobre este fichero y selecciona 
+echo   "Ejecutar como administrador"
+echo ------------------------------------------------------------------
+echo   Has d'executar aquest instal.lador com a administrador.
+echo   Prem el buto dret del ratoli sobre aquest fitxer i selecciona
+echo   "Executa com a administrador"
+echo ==================================================================
 pause
 
 :end

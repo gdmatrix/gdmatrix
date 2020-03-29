@@ -276,7 +276,7 @@
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
-            <EmptyBorder bottom="2" left="2" right="2" top="2"/>
+            <EmptyBorder bottom="6" left="6" right="6" top="6"/>
           </Border>
         </Property>
       </Properties>
@@ -330,7 +330,7 @@
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
-                <EmptyBorder bottom="0" left="10" right="10" top="10"/>
+                <EmptyBorder bottom="0" left="0" right="0" top="10"/>
               </Border>
             </Property>
           </Properties>
@@ -342,15 +342,14 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
             <Property name="columns" type="int" value="0"/>
-            <Property name="horizontalGap" type="int" value="10"/>
+            <Property name="horizontalGap" type="int" value="4"/>
             <Property name="rows" type="int" value="1"/>
-            <Property name="verticalGap" type="int" value="10"/>
           </Layout>
           <SubComponents>
             <Component class="javax.swing.JButton" name="copyClientIdButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/org/santfeliu/matrix/client/ui/resources/copy.png"/>
+                  <Image iconType="3" name="/org/santfeliu/matrix/client/ui/resources/images/copy.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="org/santfeliu/matrix/client/ui/resources/MatrixClient.properties" key="COPY_CLIENTID" replaceFormat="bundle.getString(&quot;{key}&quot;)"/>
@@ -366,7 +365,7 @@
             <Component class="javax.swing.JButton" name="updateButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/org/santfeliu/matrix/client/ui/resources/setup.png"/>
+                  <Image iconType="3" name="/org/santfeliu/matrix/client/ui/resources/images/setup.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="org/santfeliu/matrix/client/ui/resources/MatrixClient.properties" key="UPDATE" replaceFormat="bundle.getString(&quot;{key}&quot;)"/>
