@@ -25,9 +25,17 @@
       <directory>src/main/deploy</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
+        <include>einstall.bat</include>
         <include>install.bat</include>
       </includes>
       <lineEnding>dos</lineEnding>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/deploy</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>Elevate64.exe</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>
