@@ -1,12 +1,12 @@
 package org.santfeliu.web;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
