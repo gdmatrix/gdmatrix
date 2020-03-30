@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.santfeliu.util.MatrixConfig;
 
 /**
  *
@@ -56,13 +57,19 @@ public class CommandServlet extends HttpServlet
   HashMap<String, Command> commands = new HashMap<String, Command>();
   HashMap<String, String> info = new HashMap<String, String>();
   private static final long LONG_POLLING_WAIT = 30000;
-  private static final float MIN_CLIENT_VERSION = 1.0f;
+  private static final String MIN_CLIENT_VERSION = "1.0";  
+  private static final String MIN_CLIENT_VERSION_PROPERTY = 
+    "matrixClient.minVersion";
 
   public CommandServlet()
   {
     info.put("servletName", "CommandServlet");
     info.put("version", "1.0");
-    info.put("minClientVersion", String.valueOf(MIN_CLIENT_VERSION));
+    String minClientVersion = 
+      MatrixConfig.getProperty(MIN_CLIENT_VERSION_PROPERTY);
+    if (minClientVersion == null)
+      minClientVersion = MIN_CLIENT_VERSION;
+    info.put("minClientVersion", minClientVersion);
   }
 
   @Override

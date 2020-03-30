@@ -710,6 +710,10 @@
     <param-name>org.santfeliu.web.OpenNewWindowLabel</param-name>
     <param-value>Obre una nova finestra</param-value>
   </context-param>
+   <context-param>
+    <param-name>matrixClient.minVersion</param-name>
+    <param-value>1</param-value>
+  </context-param>
   <!-- listeners -->
   <listener>
     <listener-class>org.santfeliu.web.MatrixServletContextListener</listener-class>
