@@ -891,10 +891,19 @@ public class MatrixClient extends javax.swing.JFrame
   {
     try
     {
-      UIManager.setLookAndFeel(new FlatLightLaf());
+      String os = System.getProperty("os.name").toLowerCase();
+      if (os.contains("win") || os.contains("mac"))
+      {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      }
+      else
+      {
+        UIManager.setLookAndFeel(new FlatLightLaf());
+      }
     }
     catch (Exception ex)
     {
+      // ignore, use default laf
     }
 
     final String configURL = args.length > 0 ? args[0] : null;
