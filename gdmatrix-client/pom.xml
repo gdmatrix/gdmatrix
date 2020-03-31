@@ -182,7 +182,7 @@
                     <move file="${basedir}/target/${project_nv}-windows/gdmatrix-client/${jre_version}-jre"
                           tofile="${basedir}/target/${project_nv}-windows/gdmatrix-client/jre" />
                     <exec executable="${user.home}/gdmatrix_build/${warp_packer}">
-                      <arg line="-a windows-x64 -i ${basedir}/target/${project_nv}-windows/gdmatrix-client -e einstall.bat -o ${basedir}/target/GDMatrixClientWinInstall.exe" />
+                      <arg line="-a windows-x64 -i ${basedir}/target/${project_nv}-windows/gdmatrix-client -e install.bat -o ${basedir}/target/GDMatrixClientWinInstall.exe" />
                     </exec>
                     <delete dir="${basedir}/target/${project_nv}-windows" failonerror="false" />
 

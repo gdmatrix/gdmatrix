@@ -34,7 +34,7 @@
       <directory>src/main/deploy</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>Elevate64.exe</include>
+        <include>elevate.exe</include>
       </includes>
     </fileSet>
   </fileSets>
