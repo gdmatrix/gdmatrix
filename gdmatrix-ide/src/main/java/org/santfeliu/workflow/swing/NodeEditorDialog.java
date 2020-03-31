@@ -53,7 +53,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.santfeliu.swing.Utilities;
 import org.santfeliu.swing.text.RestrictedDocument;
 import org.santfeliu.workflow.WorkflowNode;
 
@@ -204,8 +203,19 @@ public class NodeEditorDialog extends JDialog
       }
     }
     pack();
-    Utilities.centerWindow(panel, this);
+    
+    // resize dialog in its size is greater than parent window
+    Dimension size = getSize();
+    Dimension maxSize = getParent().getSize();
+    
+    if (size.width > maxSize.width) size.width = maxSize.width;
+    if (size.height > maxSize.height) size.height = maxSize.height; 
+    
+    setSize(size);
+    
+    setLocationRelativeTo(getParent());
     setVisible(true);
+    
     return result;
   }
   
