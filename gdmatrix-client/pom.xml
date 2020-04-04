@@ -64,7 +64,7 @@
                   <entry key="servletUrl" value="${client_servlet_url}"/>
                   <entry key="updateUrl" value="${client_update_url}"/>
                   <entry key="inactionTimeout" value="${client_inaction_timeout}"/>
-                  <entry key="trustStoreFile" value="truststore.jks"/>
+                  <entry key="trustStoreFile" value="truststore-2.jks"/>
                   <entry key="trustStorePassword" value="matrix"/>
                 </propertyfile>
               </tasks>
