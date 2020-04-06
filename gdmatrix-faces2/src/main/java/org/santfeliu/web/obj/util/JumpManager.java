@@ -37,6 +37,7 @@ import org.santfeliu.cases.web.InterventionSearchBean;
 import org.santfeliu.doc.web.DocumentSearchBean;
 import org.santfeliu.web.obj.ControllerBean;
 import org.santfeliu.web.obj.ExternalEditable;
+import org.santfeliu.web.obj.ObjectBean;
 import org.santfeliu.web.obj.PageBean;
 
 
@@ -214,8 +215,12 @@ public class JumpManager extends ParametersManager
     }
     else
     {
-      String objectTypeId = pageBean.getObjectBean().getObjectTypeId(); 
-      data.setTypeId(objectTypeId);
+      ObjectBean objectBean = pageBean.getObjectBean();
+      if (objectBean != null)
+      {
+        String objectTypeId = objectBean.getObjectTypeId(); 
+        data.setTypeId(objectTypeId);
+      }
       data.setObjectId(getObjectId(parameters));
       data.setTabObjectId(getTabObjectId(parameters));
       String mid = 
