@@ -159,8 +159,11 @@ public class ReportDetailPanel extends DetailPanel
             !property.getValue().isEmpty())
           {
             buffer.append(buffer.length() == 0 ? "?" : "&");
-            buffer.append(parameter).append("=");
-            buffer.append(URLEncoder.encode(property.getValue().get(0), "UTF-8"));            
+            buffer.append(parameter).append("=");            
+            String propValue = property.getValue().get(0);
+            String urlEncodedValue = 
+              propValue != null ? URLEncoder.encode(propValue, "UTF-8") : null;
+            buffer.append(urlEncodedValue);            
           }
         }
       }
