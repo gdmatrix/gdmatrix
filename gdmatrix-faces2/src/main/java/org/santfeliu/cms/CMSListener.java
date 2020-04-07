@@ -88,7 +88,9 @@ public class CMSListener implements PhaseListener
     "org.santfeliu.web.clientSecurePort";  
   
   public static final String GO_URI = "/go.faces";
-  public static final String LOGIN_URI = "/login.faces";  
+  public static final String LOGIN_URI = "/login.faces"; 
+  
+  public static final String BLANK_VIEWID = "/common/util/blank.faces";
   
   private Application application;  
   
@@ -119,9 +121,6 @@ public class CMSListener implements PhaseListener
       FacesContext context = FacesContext.getCurrentInstance();
       ExternalContext externalContext = context.getExternalContext();
       application = context.getApplication(); 
-  //    ELContext elContext = context.getELContext();
-  //    ViewHandler viewHandler = application.getViewHandler();
-  //    NavigationHandler navHandler = application.getNavigationHandler();
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();  
 
       HttpServletRequest request =
@@ -142,16 +141,20 @@ public class CMSListener implements PhaseListener
         if (mic != null)
         {
           loginFromParameters(context, userSessionBean);
-          if (context.getResponseComplete() || context.getRenderResponse()) return;
+          if (context.getResponseComplete() || context.getRenderResponse()) 
+            return;
 
           loginFromCertificate(context, userSessionBean);
-          if (context.getResponseComplete() || context.getRenderResponse()) return;
+          if (context.getResponseComplete() || context.getRenderResponse()) 
+            return;
 
           redirectSecure(context, userSessionBean, mic);
-          if (context.getResponseComplete() || context.getRenderResponse()) return;        
+          if (context.getResponseComplete() || context.getRenderResponse()) 
+            return;        
 
           requestAuthentication(context, userSessionBean, mic);
-          if (context.getResponseComplete() || context.getRenderResponse()) return;        
+          if (context.getResponseComplete() || context.getRenderResponse()) 
+            return;        
 
           executeRequestedMenuItem(context, userSessionBean, mic);
         }
@@ -355,7 +358,7 @@ public class CMSListener implements PhaseListener
     else if ("POST".equals(method))
     {
       // menuItem execution
-      restoreView(context, userSessionBean); // restore view state
+      restoreView(context); // restore view state
       userSessionBean.executeMenuItem(menuItem);
     }
     else context.responseComplete();
@@ -378,24 +381,17 @@ public class CMSListener implements PhaseListener
     
     // create view
     ViewHandler viewHandler = application.getViewHandler();
-    UIViewRoot viewRoot = viewHandler.createView(context, "blank");    
-    //viewRoot.setLocale(new Locale(language));
+    UIViewRoot viewRoot = viewHandler.createView(context, BLANK_VIEWID);    
     context.setViewRoot(viewRoot);
     userSessionBean.setViewLanguage(language);    
   }
   
-  private void restoreView(FacesContext context, UserSessionBean userSessionBean)
+  private void restoreView(FacesContext context)
   {
     RestoreViewPhase restorePhase = new RestoreViewPhase();
     restorePhase.execute(context);
-    //setViewRootLocale(context, userSessionBean);
   }
   
-//  private String getActionFromMid(String mid)
-//  {
-//    return "#{userSessionBean.executeMenuItem}";
-//  }   
-
   private void loginFromParameters(FacesContext context, 
     UserSessionBean userSessionBean) throws Exception
   {
