@@ -2128,12 +2128,18 @@ overflow:hidden;}
 .cqlAssistant a.mandatory
 {
   font-weight: bold;
-  color: #0000A0;
+  color: black;
 }
 
 .cqlAssistant a.optional
 {
   color: blue;
+}
+
+.cqlAssistant a.geometry_type
+{
+  color: #208020;
+  font-weight: bold;
 }
 
 .cqlAssistant a:hover

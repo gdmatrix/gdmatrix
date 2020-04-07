@@ -1811,10 +1811,10 @@ function getErrorMessage(event)
   var responseText = event.response.priv.responseText;
   var index = responseText.indexOf("ExceptionText>");
   var error = "";
-  if (index != -1)
+  if (index !== -1)
   {
     var index2 = responseText.indexOf("<", index + 14);
-    if (index2 != -1)
+    if (index2 !== -1)
     {
       error = responseText.substring(index + 14, index2);
     }

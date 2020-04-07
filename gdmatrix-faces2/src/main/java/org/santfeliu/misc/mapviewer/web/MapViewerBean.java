@@ -98,7 +98,7 @@ public class MapViewerBean extends WebBean
   public static final String JS_DOCUMENT_TYPE  = "CODE";
   public static final String JS_PROPERTY_NAME  = "workflow.js";
 
-  public static final int SCRIPT_VERSION = 4;
+  public static final int SCRIPT_VERSION = 5;
   private final transient SLDCache sldCache = new SLDCache();
 
   public String getScripts()

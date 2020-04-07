@@ -2061,7 +2061,7 @@ OpenLayers.FeatureTypeInfo =
         while (p < properties.length && featureInfo.geometryName === null)
         {
           var property = properties[p];
-          if (property.localType === 'GeometryPropertyType')
+          if (this.getGeometryType(property.localType) !== null)
           {
             featureInfo.geometryName = property.name;
           }
@@ -2078,6 +2078,16 @@ OpenLayers.FeatureTypeInfo =
       }
     }
     return featureInfo;
+  },
+  
+  getGeometryType: function(type)
+  {
+    type = type.toLowerCase();
+    if (type.indexOf("point") !== -1) return "Point";
+    if (type.indexOf("linestring") !== -1) return "LineString";
+    if (type.indexOf("surface") !== -1) return "Surface";
+    if (type.indexOf("geometry") !== -1) return "Geometry";
+    return null;
   }
 };
 
@@ -2196,6 +2206,7 @@ OpenLayers.CQLAssistant =
 
   show: function(serviceUrl, typeName, element)
   {
+    if (typeName) {} else return;
     if (typeName.indexOf(",") !== -1) return;
 
     if (this.panelElement === null)
@@ -2217,7 +2228,7 @@ OpenLayers.CQLAssistant =
       var listener = function(event)
       {
         if (event.preventDefault) event.preventDefault();
-      }
+      };
       if (this.panelElement.addEventListener)
       {
         this.panelElement.addEventListener("mousedown", listener, false);
@@ -2235,14 +2246,17 @@ OpenLayers.CQLAssistant =
     for (i = 0; i < featureInfo.properties.length; i++)
     {
       var property = featureInfo.properties[i];
+      var geomType = OpenLayers.FeatureTypeInfo.
+         getGeometryType(property.localType);
       var className = (property.minOccurs == 0) ? "optional" : "mandatory";
+      if (geomType) className += " geometry_type";
+      
       html += '<li unselectable="on">';
       html += '<a href="javascript:_insertText(\'' + property.name +
         '\')" unselectable="on" class="' + className + '">' +
         property.name + '</a>';
-      var localType = property.localType;
-      if (localType === 'GeometryPropertyType') localType = "geometry";
-      html += ' : ' + localType;
+
+      html += ' : ' + (geomType || property.localType);
       html += '</li>';
     }
     html += "</ul>";
