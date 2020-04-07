@@ -140,8 +140,9 @@ public class WebAuditor
 
   private boolean isOutputParameter(String parameter)
   {
-    if ("com.sun.faces.VIEW".equals(parameter)) return false;
-    if (parameter.startsWith("mainform")) return false;
+    if ("com.sun.faces.VIEW".equals(parameter) ||
+      "javax.faces.ViewState".equals(parameter) ||
+      parameter.startsWith("mainform")) return false;
     return true;
   }
 }
