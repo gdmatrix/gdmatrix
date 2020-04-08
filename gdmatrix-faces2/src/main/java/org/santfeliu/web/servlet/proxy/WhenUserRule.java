@@ -30,7 +30,7 @@
  */
 package org.santfeliu.web.servlet.proxy;
 
-import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.security.User;
 
@@ -53,10 +53,10 @@ public class WhenUserRule extends ProxyRule
   }
 
   @Override
-  public boolean evaluate(URLConnection conn, HttpServletRequest req, User user)
+  public boolean evaluate(HttpURLConnection conn, HttpServletRequest req, 
+    User user)
   {
-    if (userId != null && userId.equals(user.getUserId())) return true;
-    return false;
+    return userId != null && userId.equals(user.getUserId());
   }
 
   @Override

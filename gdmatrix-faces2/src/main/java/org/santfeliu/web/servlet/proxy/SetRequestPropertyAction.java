@@ -30,7 +30,7 @@
  */
 package org.santfeliu.web.servlet.proxy;
 
-import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.security.User;
 
@@ -64,9 +64,9 @@ public class SetRequestPropertyAction extends ProxyAction
   }
 
   @Override
-  public void execute(URLConnection conn, HttpServletRequest req, User user)
+  public void execute(HttpURLConnection conn, HttpServletRequest req, User user)
   {
-    conn.setRequestProperty(name, value);
+    conn.setRequestProperty(name, value);    
   }
 
   @Override

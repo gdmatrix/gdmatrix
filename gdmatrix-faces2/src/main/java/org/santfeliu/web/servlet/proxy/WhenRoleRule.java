@@ -30,7 +30,7 @@
  */
 package org.santfeliu.web.servlet.proxy;
 
-import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.security.User;
 
@@ -53,10 +53,10 @@ public class WhenRoleRule extends ProxyRule
   }
 
   @Override
-  public boolean evaluate(URLConnection conn, HttpServletRequest req, User user)
+  public boolean evaluate(HttpURLConnection conn, HttpServletRequest req, 
+    User user)
   {
-    if (roleId != null && user.getRoles().contains(roleId)) return true;
-    return false;
+    return roleId != null && user.getRoles().contains(roleId);
   }
 
   @Override

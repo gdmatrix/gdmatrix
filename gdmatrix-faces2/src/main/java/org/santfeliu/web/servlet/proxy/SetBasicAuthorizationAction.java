@@ -30,7 +30,7 @@
  */
 package org.santfeliu.web.servlet.proxy;
 
-import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.security.User;
@@ -66,7 +66,7 @@ public class SetBasicAuthorizationAction extends ProxyAction
   }
 
   @Override
-  public void execute(URLConnection conn, HttpServletRequest req, User user)
+  public void execute(HttpURLConnection conn, HttpServletRequest req, User user)
   {
     BasicAuthorization basic = new BasicAuthorization();
     basic.setUserId(userId == null ? user.getUserId() : userId);

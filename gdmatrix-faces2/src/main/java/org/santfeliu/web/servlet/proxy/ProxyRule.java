@@ -30,7 +30,7 @@
  */
 package org.santfeliu.web.servlet.proxy;
 
-import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +43,7 @@ import org.santfeliu.security.User;
 public abstract class ProxyRule
 {
   protected boolean stop;
-  private ArrayList<ProxyAction> actions = new ArrayList<ProxyAction>();
+  private final ArrayList<ProxyAction> actions = new ArrayList<ProxyAction>();
 
   public boolean isStop()
   {
@@ -55,7 +55,7 @@ public abstract class ProxyRule
     this.stop = stop;
   }
 
-  public abstract boolean evaluate(URLConnection conn, 
+  public abstract boolean evaluate(HttpURLConnection conn, 
     HttpServletRequest req, User user);
 
   public List<ProxyAction> getActions()
