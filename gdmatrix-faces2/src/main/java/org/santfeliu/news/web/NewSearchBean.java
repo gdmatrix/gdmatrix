@@ -45,10 +45,12 @@ import org.matrix.cms.Node;
 import org.matrix.cms.NodeFilter;
 import org.matrix.cms.Property;
 import org.matrix.news.New;
+import org.matrix.news.NewSection;
 import org.matrix.news.NewView;
 import org.matrix.news.NewsFilter;
 import org.santfeliu.cms.web.CMSConfigBean;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.news.client.NewsManagerClient;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.bean.CMSAction;
@@ -442,14 +444,24 @@ public class NewSearchBean extends BasicSearchBean
   {
     try
     {
+      NewsManagerClient client = NewsConfigBean.getPort();      
+      New newObject = client.loadNewFromCache(newId);
       if (newId == null)
       {
         NewView row = (NewView)getFacesContext().getExternalContext().
           getRequestMap().get("row");
         newId = row.getNewId();
       }
-      NewsManagerClient client = NewsConfigBean.getPort();
-      New newObject = client.loadNewFromCache(newId);
+      else
+      {
+        boolean[] check = checkNewSections(client, newId);
+        boolean userCanRead = check[0];
+        boolean userCanEdit = check[1];
+        if (!userCanRead)
+          return "new_inaccessible";
+        if (newObject.isDraft() && !userCanEdit)
+          return "new_inaccessible";
+      }
       NewDetailsBean newDetailsBean = (NewDetailsBean)getBean("newDetailsBean");
       if (newDetailsBean == null) newDetailsBean = new NewDetailsBean();
       newDetailsBean.setNewObject(newObject);
@@ -631,4 +643,37 @@ public class NewSearchBean extends BasicSearchBean
     else 
       return value;    
   }
+
+  private boolean[] checkNewSections(NewsManagerClient client, String newId)
+  {
+    boolean userCanRead = false;
+    boolean userCanEdit = false;
+    List<NewSection> newSections = client.findNewSectionsFromCache(newId);    
+    for (NewSection newSection : newSections)
+    {
+      try
+      {
+        MenuItemCursor mic = UserSessionBean.getCurrentInstance().
+          getMenuModel().getMenuItemByMid(newSection.getSectionId());
+        userCanRead = true;
+        if (isEditorUser(mic))
+          userCanEdit = true;
+        if (userCanRead && userCanEdit) break;
+      }
+      catch (Exception ex)
+      {
+        //Non visible node
+      }
+    }
+    return new boolean[]{userCanRead, userCanEdit};
+  }
+  
+  private boolean isEditorUser(MenuItemCursor mic)
+  {
+    List<String> editRoles =
+      mic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
+    if (editRoles == null || editRoles.isEmpty()) return true;
+    return UserSessionBean.getCurrentInstance().isUserInRole(editRoles);
+  }
+  
 }

@@ -281,7 +281,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
       filter.setFirstResult(firstResult);
       filter.setMaxResults(maxResults);
       List<NewView> list = NewsConfigBean.getPort().findNewsBySectionFromCache(filter).
-        get(0).getNewView();
+        get(0).getNewView(); 
       
       for (NewView nv : list)
       {
@@ -455,6 +455,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
         filter.setEndDateTime(getDefaultEndDateTime(now));
         filter.setContent("");
         filter.setUserId(null);
+        setObjectManager.setObject(filter);        
       }
       setObjectManager.execute(getRequestParameters());
       if (filter.getContent() != null)
@@ -1331,11 +1332,19 @@ public class NewSearchBySectionBean extends BasicSearchBean
     List<NewDocument> newDocumentList, boolean checkVisibility) throws Exception
   {    
     NewsManagerClient client = NewsConfigBean.getPort();
-    
-    if (checkVisibility && !checkNewVisibility(client, newId)) 
-      return "new_inaccessible";
-
     New newObject = client.loadNewFromCache(newId);
+    
+    if (checkVisibility)
+    {
+      boolean[] check = checkNewSections(client, newId);
+      boolean userCanRead = check[0];
+      boolean userCanEdit = check[1];
+      if (!userCanRead)
+        return "new_inaccessible";
+      if (newObject.isDraft() && !userCanEdit)
+        return "new_inaccessible";
+    }
+
     NewDetailsBean newDetailsBean =
       (NewDetailsBean)getBean("newDetailsBean");
     if (newDetailsBean == null) newDetailsBean = new NewDetailsBean();
@@ -1388,24 +1397,29 @@ public class NewSearchBySectionBean extends BasicSearchBean
       throw new Exception("INVALID_MOVE_OPERATION");
     else return (NewView)getRows().get(index + 1);
   }
-
-  private boolean checkNewVisibility(NewsManagerClient client, String newId)
-  {    
+  
+  private boolean[] checkNewSections(NewsManagerClient client, String newId)
+  {
+    boolean userCanRead = false;
+    boolean userCanEdit = false;
     List<NewSection> newSections = client.findNewSectionsFromCache(newId);    
     for (NewSection newSection : newSections)
     {
       try
       {
-        UserSessionBean.getCurrentInstance().getMenuModel().
-          getMenuItemByMid(newSection.getSectionId());
-        return true;
+        MenuItemCursor mic = UserSessionBean.getCurrentInstance().
+          getMenuModel().getMenuItemByMid(newSection.getSectionId());
+        userCanRead = true;
+        if (isEditorUser(mic))
+          userCanEdit = true;
+        if (userCanRead && userCanEdit) break;
       }
       catch (Exception ex)
       {
         //Non visible node
-      }      
+      }
     }
-    return false;
+    return new boolean[]{userCanRead, userCanEdit};
   }
-  
+
 }
