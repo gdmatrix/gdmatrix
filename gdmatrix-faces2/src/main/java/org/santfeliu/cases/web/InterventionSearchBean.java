@@ -51,10 +51,11 @@ import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
+import org.santfeliu.web.obj.util.JumpData;
 import org.santfeliu.web.obj.util.SetObjectManager;
-import org.santfeliu.web.obj.util.JumpManager;
 import org.santfeliu.web.obj.util.ParametersManager;
 import org.santfeliu.web.obj.util.RequestParameters;
+import org.santfeliu.web.obj.util.CheckJumpSuitability;
 
 /**
  *
@@ -62,6 +63,7 @@ import org.santfeliu.web.obj.util.RequestParameters;
  */
 @CMSManagedBean
 public class InterventionSearchBean extends DynamicTypifiedSearchBean
+  implements CheckJumpSuitability
 {
   @CMSProperty
   public static final String SEARCH_TYPE_PROPERTY = "searchType";
@@ -284,7 +286,8 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     setHeaderBrowserUrl(null);
     setFooterBrowserUrl(null);
 
-    ParametersManager[] managers = {jumpManager, setObjectManager};    
+    ParametersManager[] managers = {jumpManager, setObjectManager};
+    jumpManager.setJumpMid(getProperty(INTERVENTION_TAB_MID));
     String outcome = executeParametersManagers(managers);
     if (outcome != null)
         return outcome;
@@ -646,13 +649,13 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
    * Checks if the Case satisfy the filter type and filter search properties.
    */
   @Override
-  public boolean checkJumpSuitability(String intId)
+  public void checkJumpSuitability(JumpData jumpData)
   {
     InterventionFormFilter formFilter = new InterventionFormFilter();
     setSearchDynamicProperties(formFilter);
     
     InterventionFilter intFilter = formFilter.getInterventionFilter();
-    intFilter.getIntId().add(intId);
+    intFilter.getIntId().add(jumpData.getObjectId());
     String intTypeId = getProperty(SEARCH_TYPE_PROPERTY);
     if (intTypeId != null)
       intFilter.setIntTypeId(intTypeId);
@@ -661,11 +664,11 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     {
       int counter =
         CaseConfigBean.getPort().countInterventions(intFilter);
-      return (counter > 0);
+      jumpData.setSuitable(counter > 0);
     }
     catch (Exception ex)
     {
-      return false;
+      jumpData.setSuitable(false);
     }
   }  
   

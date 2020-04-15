@@ -45,6 +45,10 @@ import org.santfeliu.web.obj.util.JumpManager;
 import org.santfeliu.web.obj.util.RequestParameters;
 import org.santfeliu.web.obj.util.RowStyleClassGenerator;
 
+/**
+ *
+ * @author realor
+ */
 public abstract class PageBean extends WebBean implements Savable
 {
   public static final String ACTIONS_SCRIPT_NAME = 
@@ -90,17 +94,7 @@ public abstract class PageBean extends WebBean implements Savable
     else
       return show();
   } 
-  
-  public boolean checkJumpSuitability(String objectId)
-  {
-    return true;
-  }
-  
-  public String getNotSuitableMessage()
-  {
-    return "INVALID_OBJECT";
-  }    
-  
+   
   public String store()
   {
     //preStore();

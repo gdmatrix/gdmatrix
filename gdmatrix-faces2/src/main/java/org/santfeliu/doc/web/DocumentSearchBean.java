@@ -72,7 +72,6 @@ import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
 import org.santfeliu.web.obj.util.SetObjectManager;
-import org.santfeliu.web.obj.util.JumpManager;
 import org.santfeliu.web.obj.util.CKEditorManager;
 import org.santfeliu.web.obj.util.ParametersManager;
 import org.santfeliu.web.obj.util.RequestParameters;

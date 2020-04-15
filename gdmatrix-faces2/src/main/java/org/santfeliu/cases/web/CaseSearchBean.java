@@ -65,15 +65,18 @@ import org.santfeliu.util.FilterUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.DetailBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
+import org.santfeliu.web.obj.util.JumpData;
 import org.santfeliu.web.obj.util.SetObjectManager;
 import org.santfeliu.web.obj.util.ParametersManager;
+import org.santfeliu.web.obj.util.CheckJumpSuitability;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 @CMSManagedBean
-public class CaseSearchBean extends DynamicTypifiedSearchBean
+public class CaseSearchBean extends DynamicTypifiedSearchBean 
+  implements CheckJumpSuitability
 {
   @CMSProperty
   public static final String SEARCH_CASE_TYPE_PROPERTY = "searchCaseType";
@@ -941,27 +944,35 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
 
   /*
    * Checks if the Case satisfy the filter type and filter search properties.
+   * Set objectId to prevent non prefix 
    */
   @Override
-  public boolean checkJumpSuitability(String caseId)
+  public void checkJumpSuitability(JumpData jumpData)
   {
     CaseFormFilter formFilter = new CaseFormFilter();
     setSearchDynamicProperties(formFilter);
     CaseFilter caseFilter = formFilter.getCaseFilter();
-    caseFilter.getCaseId().add(caseId);
+    caseFilter.getCaseId().add(jumpData.getObjectId());
     String caseTypeId = getProperty(SEARCH_CASE_TYPE_PROPERTY);
     if (caseTypeId != null)
       caseFilter.setCaseTypeId(caseTypeId);
 
     try
     {
-      int counter =
-        CaseConfigBean.getPort().countCases(caseFilter);
-      return (counter > 0);
+      List<Case> cases = CaseConfigBean.getPort().findCases(caseFilter);
+      if (cases != null && !cases.isEmpty())
+      {
+        jumpData.setSuitable(true);
+        Case cas = cases.get(0);
+        if (cas != null)
+          jumpData.setObjectId(cas.getCaseId());
+      }
+      else
+        jumpData.setSuitable(false);
     }
     catch (Exception ex)
     {
-      return false;
+      jumpData.setSuitable(false);
     }
   }
   
