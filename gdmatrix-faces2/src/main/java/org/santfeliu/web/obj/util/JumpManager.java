@@ -30,7 +30,6 @@
  */
 package org.santfeliu.web.obj.util;
 
-import java.io.Serializable;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.cases.web.CaseSearchBean;
 import org.santfeliu.cases.web.InterventionSearchBean;
@@ -50,15 +49,15 @@ import org.santfeliu.web.obj.PageBean;
  */
 public class JumpManager extends ParametersManager
 {
-  public static final String NEW_OBJECT_PARAMETER = "new"; 
   public static final String JUMPCOMMAND_PARAMETER = "hiddenjumpcommand";
   public static final String DEFAULT_ID_PARAMETER = "joid";
   public static final String DEFAULT_ID_TAB_PARAMETER = "jtoid";
-  public static final String JUMP_MID_PARAMETER = "xmid";
+  public static final String JUMP_MID_PARAMETER = "jmid";
 
   private PageBean pageBean;
   private String idParameterName;
   private String idTabName;
+  private String jumpMid;
   
   public JumpManager(PageBean pageBean)
   {
@@ -74,6 +73,7 @@ public class JumpManager extends ParametersManager
       this.idParameterName = "caseid";
       this.idTabName = "intid";
     }
+       
   }
   
   public String getIdParameterName()
@@ -96,72 +96,110 @@ public class JumpManager extends ParametersManager
     this.idTabName = idTabName;
   }
 
+  public String getJumpMid()
+  {
+    return jumpMid;
+  }
+
+  public void setJumpMid(String jumpMid)
+  {
+    this.jumpMid = jumpMid;
+  }
+
   @Override
   public String execute(RequestParameters parameters)
   {  
     if (idParameterName == null)
       idParameterName = DEFAULT_ID_PARAMETER;
     
-    JumpData jumpData = getJumpData(parameters);  
+    JumpData jumpData = getJumpData(parameters); 
     
-    String objectId = jumpData.getObjectId();
-    if (objectId != null)
+    if (jumpData.hasToJump())
     {
       try
       {
-        if (jumpData.isJumpToTab()) //Jump to tab object
-        {
-          //1. Jump to tab
-          String mid = jumpData.getMid();
-          ControllerBean controllerBean = ControllerBean.getCurrentInstance();        
-          String outcome = controllerBean.show(mid, objectId);
-          //2. Edit object
-          PageBean tabPageBean = controllerBean.getPageBean();
-          if (tabPageBean instanceof ExternalEditable)
-          {
-            String tabObjectId = jumpData.getTabObjectId();
-            String editObjectId = 
-              isObjectCreation(tabObjectId) ? null : tabObjectId;
-            ((ExternalEditable)tabPageBean).editObject(editObjectId);            
-          }
-        
-          return outcome;          
-        }
-        else if (isObjectCreation(objectId)) //Main object creation
+        if (jumpData.isObjectCreation())
           return pageBean.createObject();
-        else 
-        {
-          String typeId = jumpData.getTypeId();
-          if (typeId != null)
-          {
-            if (pageBean.checkJumpSuitability(objectId))            
-              return pageBean.showObject(typeId, objectId);
-            else
-            {
-              error(pageBean.getNotSuitableMessage());
-              return null;
-            }                
-          }
-        }
+        else if (jumpData.isJumpToTab()) 
+          return jumpToTab(jumpData);
+        else
+          return jumpToMainObject(jumpData);
       }
       catch (Exception ex)
       {
         error(ex.getLocalizedMessage());
         return null;
       }            
-    }          
+    }
     
     return null;
   }
-  
-  private boolean isObjectCreation(String objectId)
-  {
-    if (objectId != null)
-      return objectId.equals(NEW_OBJECT_PARAMETER);
+      
+  private String jumpToMainObject(JumpData jumpData)
+  {  
+    if (checkJumpSuitability(jumpData))
+    {
+      if (jumpData.getJmid() != null)
+      {
+        String jMid = jumpData.getJmid();
+        ControllerBean controllerBean = ControllerBean.getCurrentInstance();        
+        return controllerBean.show(jMid, jumpData.getObjectId());
+      }
+      else
+      {
+        String typeId = jumpData.getTypeId();
+        String objectId = jumpData.getObjectId();
+        if (typeId != null && objectId != null)
+          return pageBean.showObject(typeId, objectId);
+      }
+    }
     else
-      return false;    
+      notSuitable();
+
+    return null;
+  } 
+  
+  private String jumpToTab(JumpData jumpData)
+  {
+    //1. Jump to tab
+    String tabmid = jumpData.getJmid();
+    if (tabmid == null)
+      tabmid = jumpData.getXmid();
+    ControllerBean controllerBean = ControllerBean.getCurrentInstance();        
+    String outcome = controllerBean.show(tabmid, jumpData.getObjectId());
+    
+    //2. Edit object
+    PageBean tabPageBean = controllerBean.getPageBean();
+    if (tabPageBean instanceof ExternalEditable)
+    {
+      String tabObjectId = jumpData.getTabObjectId();
+      String editObjectId = 
+        jumpData.isObjectTabCreation() ? null : tabObjectId;
+      ((ExternalEditable)tabPageBean).editObject(editObjectId);            
+    }
+
+    return outcome;     
   }
   
+  private boolean checkJumpSuitability(JumpData jumpData)
+  {
+    if (pageBean instanceof CheckJumpSuitability)
+    {
+      ((CheckJumpSuitability)pageBean).checkJumpSuitability(jumpData);
+      return jumpData.isSuitable();
+    }
+    else
+      return true;
+  }
+  
+  private void notSuitable()
+  {
+    if (pageBean instanceof CheckJumpSuitability)
+      error(((CheckJumpSuitability)pageBean).getNotSuitableMessage());
+    else
+      error("INVALID_OBJECT");
+  }
+    
   private String getObjectId(RequestParameters parameters)
   {
     String value = null;
@@ -198,7 +236,7 @@ public class JumpManager extends ParametersManager
     
     String jumpCommand = 
       (String) parameters.getParameterValue(JUMPCOMMAND_PARAMETER);
-    if (!StringUtils.isBlank(jumpCommand))
+    if (!StringUtils.isBlank(jumpCommand)) //JS showObject
     {
       String[] parts = jumpCommand.split("\\|");
       if (parts[0].equals("type"))
@@ -208,93 +246,39 @@ public class JumpManager extends ParametersManager
       }
       else if (parts[0].equals("tab"))
       {
-        data.setMid(parts[1]);
+        data.setJmid(parts[1]);
         data.setObjectId(parts[2]);
         data.setTabObjectId(parts[3]);
       }       
     }
-    else
+    else //jump from URL
     {
-      ObjectBean objectBean = pageBean.getObjectBean();
-      if (objectBean != null)
+      if (jumpMid == null) 
       {
-        String objectTypeId = objectBean.getObjectTypeId(); 
-        data.setTypeId(objectTypeId);
+        jumpMid = (String) parameters.getParameterValue(JUMP_MID_PARAMETER);
+        if (jumpMid == null) //Jump by type (needs oc.xBean properties)
+        { 
+          ObjectBean objectBean = pageBean.getObjectBean();
+          if (objectBean != null)
+          {
+            String objectTypeId = objectBean.getObjectTypeId(); 
+            data.setTypeId(objectTypeId);
+          }
+          data.setXmid((String) parameters.getParameterValue("xmid"));
+        }
+        else 
+          data.setJmid(jumpMid);
       }
+      else
+        data.setJmid(jumpMid); 
+      
       data.setObjectId(getObjectId(parameters));
-      data.setTabObjectId(getTabObjectId(parameters));
-      String mid = 
-        (String) parameters.getParameterValue(JUMP_MID_PARAMETER);
-      data.setMid(mid);
+      data.setTabObjectId(getTabObjectId(parameters));       
     }
-    
+       
     return data;
   }  
   
-  private class JumpData implements Serializable
-  {
-    private String objectId;
-    private String tabObjectId;
-    private String mid;
-    private String typeId;
-    private boolean objectCreation;
 
-    public String getObjectId()
-    {
-      return objectId;
-    }
-
-    public void setObjectId(String objectId)
-    {
-      this.objectId = objectId;
-      this.objectCreation = (NEW_OBJECT_PARAMETER.equals(objectId));
-        
-    }
-
-    public String getTabObjectId()
-    {
-      return tabObjectId;
-    }
-
-    public void setTabObjectId(String tabObjectId)
-    {
-      this.tabObjectId = tabObjectId;
-    }
-
-    public String getMid()
-    {
-      return mid;
-    }
-
-    public void setMid(String mid)
-    {
-      this.mid = mid;
-    }
-
-    public boolean isObjectCreation()
-    {
-      return objectCreation;
-    }
-
-    public void setObjectCreation(boolean objectCreation)
-    {
-      this.objectCreation = objectCreation;
-    }
-
-    public String getTypeId()
-    {
-      return typeId;
-    }
-
-    public void setTypeId(String typeId)
-    {
-      this.typeId = typeId;
-    }
-    
-    public boolean isJumpToTab()
-    {
-      return this.tabObjectId != null;
-    }    
-  }  
   
 }
