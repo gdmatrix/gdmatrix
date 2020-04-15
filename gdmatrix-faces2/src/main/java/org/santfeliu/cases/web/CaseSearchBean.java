@@ -400,6 +400,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   }
 
   //User actions
+  @Override
   public int countResults()
   {
     try
@@ -436,6 +437,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     return 0;
   }
 
+  @Override
   public List getResults(int firstResult, int maxResults)
   {
     try
@@ -477,6 +479,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   }
 
   @CMSAction
+  @Override
   public String show()
   {
     setHeaderBrowserUrl(null);
@@ -548,7 +551,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     else
       reset();
 
-      return "case_search";
+    return "case_search";
   }
 
   public String clearFilter()
@@ -631,6 +634,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     return getControllerBean().select(caseId);
   }
 
+  @Override
   public String searchType()
   {
     return searchType(DictionaryConstants.CASE_TYPE ,
@@ -809,6 +813,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
       return "";
   }
 
+  @Override
   public String getRowStyleClass()
   {
     String defaultStyleClass = null;
@@ -849,6 +854,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     return null;
   }
   
+  @Override
   public String getAdminRole()
   {
     return CaseConstants.CASE_ADMIN_ROLE;
@@ -948,7 +954,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
    */
   @Override
   public void checkJumpSuitability(JumpData jumpData)
-  {
+  {   
     CaseFormFilter formFilter = new CaseFormFilter();
     setSearchDynamicProperties(formFilter);
     CaseFilter caseFilter = formFilter.getCaseFilter();

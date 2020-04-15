@@ -342,6 +342,7 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     return getControllerBean().select(intId);
   }  
   
+  @Override
   public String searchType()
   {
     return searchType(DictionaryConstants.INTERVENTION_TYPE,

@@ -49,7 +49,6 @@ import org.santfeliu.web.obj.PageBean;
  */
 public class JumpManager extends ParametersManager
 {
-//  public static final String NEW_OBJECT_PARAMETER = "new"; 
   public static final String JUMPCOMMAND_PARAMETER = "hiddenjumpcommand";
   public static final String DEFAULT_ID_PARAMETER = "joid";
   public static final String DEFAULT_ID_TAB_PARAMETER = "jtoid";
@@ -135,25 +134,7 @@ public class JumpManager extends ParametersManager
     
     return null;
   }
-  
-  private String jump(JumpData jumpData)
-  {
-    if (checkJumpSuitability(jumpData))
-    {
-      String outcome = null;
-      if (jumpData.getJmid() != null)
-      {
-        String jMid = jumpData.getJmid();
-        ControllerBean controllerBean = ControllerBean.getCurrentInstance();        
-        outcome = controllerBean.show(jMid, jumpData.getObjectId());
-      }
-    } 
-    else
-      notSuitable();  
-    
-    return null;
-  }
-    
+      
   private String jumpToMainObject(JumpData jumpData)
   {  
     if (checkJumpSuitability(jumpData))
