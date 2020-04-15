@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.client;
@@ -43,9 +43,6 @@ import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.soap.MTOMFeature;
-//import org.matrix.doc.DocumentPerson;
-//import org.matrix.doc.DocumentPersonFilter;
-//import org.matrix.doc.DocumentPersonView;
 import org.matrix.doc.DocumentManagerMetaData;
 import org.matrix.translation.TranslationConstants;
 import org.matrix.doc.Content;
@@ -64,7 +61,7 @@ import org.santfeliu.ws.WSPortFactory;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DocumentManagerClient implements DocumentManagerPort
 {
@@ -156,15 +153,15 @@ public class DocumentManagerClient implements DocumentManagerPort
     metaData.setSupportVersions(true);
     return metaData;
   }
-  
+
   @Override
   public Document storeDocument(Document document)
   {
     Content content = document.getContent();
-    if (content != null && content.getContentId() != null && 
+    if (content != null && content.getContentId() != null &&
         content.getData() != null)
     {
-      content.setData(null);    
+      content.setData(null);
       document.setContent(content);
     }
     document = port.storeDocument(document);
@@ -196,6 +193,7 @@ public class DocumentManagerClient implements DocumentManagerPort
     }
   }
 
+  @Override
   public Document loadDocument(String docId, int version,
      ContentInfo contentInfo)
   {
@@ -262,36 +260,29 @@ public class DocumentManagerClient implements DocumentManagerPort
     return document;
   }
 
+  @Override
   public boolean removeDocument(String docId, int version)
   {
     return port.removeDocument(docId, version);
   }
 
+  @Override
   public void lockDocument(String docId, int version)
   {
     port.lockDocument(docId, version);
   }
 
+  @Override
   public void unlockDocument(String docId, int version)
   {
     port.unlockDocument(docId, version);
   }
 
+  @Override
   public List<Document> findDocuments(DocumentFilter documentFilter)
   {
     return port.findDocuments(documentFilter);
   }
-
-//  public List<DocumentPersonView> findDocumentPersonViews(
-//    DocumentPersonFilter filter)
-//  {
-//    return port.findDocumentPersonViews(filter);
-//  }
-//
-//  public DocumentPerson loadDocumentPerson(String docPersonId)
-//  {
-//    return port.loadDocumentPerson(docPersonId);
-//  }
 
   public File getContentFile(String contentId)
   {
@@ -309,6 +300,7 @@ public class DocumentManagerClient implements DocumentManagerPort
     return file;
   }
 
+  @Override
   public Content loadContent(String contentId)
   {
     Content content = null;
@@ -318,14 +310,6 @@ public class DocumentManagerClient implements DocumentManagerPort
       if (content == null)
       {
         content = port.loadContent(contentId);
-//        if ("text/xml".equals(content.getContentType()) && 
-//          content.getData() != null)
-//        {
-//          // solve BUG: fix corrupt xml files
-//          XMLFixer fixer = new XMLFixer(content.getData().getInputStream());
-//          content.setData(new DataHandler(fixer.getFixedDataSource()));
-//          content.setSize((long)fixer.getFixedSize());
-//        }
         saveContent(content);
       }
     }
@@ -336,21 +320,25 @@ public class DocumentManagerClient implements DocumentManagerPort
     return content;
   }
 
+  @Override
   public Content storeContent(Content content)
   {
     return port.storeContent(content);
   }
 
+  @Override
   public boolean removeContent(String contentId)
   {
     return port.removeContent(contentId);
   }
 
+  @Override
   public DataHandler markupContent(String docId, String searchExpression)
   {
     return port.markupContent(docId, searchExpression);
   }
 
+  @Override
   public int countDocuments(DocumentFilter documentFilter)
   {
     return port.countDocuments(documentFilter);
@@ -525,7 +513,7 @@ public class DocumentManagerClient implements DocumentManagerPort
     try
     {
       DocumentManagerClient client = new DocumentManagerClient("user", "******");
-      
+
       Document document = new Document();
       document.setTitle("PROVA Fitxet gran");
       document.setDocTypeId("Document");

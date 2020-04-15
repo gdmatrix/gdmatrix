@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.store.cntora;
@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.Clob;
@@ -43,16 +42,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.activation.DataHandler;
-
 import org.matrix.doc.Content;
-
 import org.matrix.doc.ContentInfo;
 import org.santfeliu.doc.store.ContentStoreConnection;
 import org.santfeliu.util.IOUtils;
@@ -61,13 +56,13 @@ import org.santfeliu.util.TemporaryDataSource;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class OracleContentStoreConnection implements ContentStoreConnection
 {
   public static final String INTERNAL = "I";
   public static final String EXTERNAL = "E";
-  
+
   public static final String FMT_TEXT = "TEXT";
   public static final String FMT_BINARY = "BINARY";
   public static final String FMT_IGNORE = "IGNORE";
@@ -87,8 +82,9 @@ public class OracleContentStoreConnection implements ContentStoreConnection
       throw new RuntimeException(ex);
     }
   }
-  
+
   // ** Content operations : access via JDBC
+  @Override
   public Content storeContent(Content content, File file)
     throws Exception
   {
@@ -96,13 +92,6 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     if (internal)
     {
       InputStream is = new FileInputStream(file);
-      // BUG: fix for XML corrupt files (due to web transfer)
-//      if ("text/xml".equals(content.getContentType()))
-//      {
-//        XMLFixer fixer = new XMLFixer(is);
-//        is = fixer.getFixedStream();
-//        content.setSize((long)fixer.getFixedSize());
-//      }
       insertContentMetaData(conn, content);
       insertInternalContent(conn, content, is);
     }
@@ -114,6 +103,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     return content;
   }
 
+  @Override
   public Content copyContent(Content content, String currentContentId)
     throws Exception
   {
@@ -125,7 +115,8 @@ public class OracleContentStoreConnection implements ContentStoreConnection
 
     return content;
   }
-  
+
+  @Override
   public Content loadContent(String contentId, ContentInfo contentInfo)
     throws Exception
   {
@@ -181,6 +172,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     return content;
   }
 
+  @Override
   public boolean removeContent(String contentId)
     throws Exception
   {
@@ -188,7 +180,8 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     deleteExternalContent(conn, contentId);
     return deleteContentMetaData(conn, contentId) > 0;
   }
-  
+
+  @Override
   public List<Content> findContents(Set<String> contentIds)
     throws Exception
   {
@@ -244,9 +237,10 @@ public class OracleContentStoreConnection implements ContentStoreConnection
         prepStmt.close();
       }
     }
-    return contents;    
+    return contents;
   }
 
+  @Override
   public File markupContent(String contentId, String searchExpression)
     throws Exception
   {
@@ -309,24 +303,27 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     return file;
   }
 
+  @Override
   public void rollback()
     throws SQLException
   {
     conn.rollback();
   }
 
+  @Override
   public void commit()
     throws SQLException
   {
     conn.commit();
   }
 
+  @Override
   public void close()
     throws SQLException
   {
     conn.close();
   }
-  
+
   /***** private methods *****/
   private void insertContentMetaData(Connection conn, Content content)
     throws Exception
@@ -340,7 +337,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
       prepStmt.setString(2, fileType);
       prepStmt.setString(3, content.getContentType());
       prepStmt.setString(4, content.getFormatId());
-      prepStmt.setString(5, content.getLanguage());      
+      prepStmt.setString(5, content.getLanguage());
       prepStmt.setString(6, content.getCaptureUserId());
       prepStmt.setString(7, content.getCaptureDateTime());
       prepStmt.setLong(8, content.getSize());
@@ -353,7 +350,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     }
   }
 
-  private void insertInternalContent(Connection conn, Content content, 
+  private void insertInternalContent(Connection conn, Content content,
     InputStream is) throws Exception
   {
     String sql = config.getProperty("insertInternalContentSQL");
@@ -395,7 +392,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
       prepStmt.close();
     }
   }
-  
+
   private void copyContentMetaData(Connection conn, Content content,
     String contentId)
     throws Exception
@@ -498,7 +495,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
       prepStmt.close();
     }
   }
-  
+
   private String getFormat(String mimeType)
   {
     String format;
@@ -636,5 +633,5 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     }
     // commit delete
     conn.commit();
-  }  
+  }
 }
