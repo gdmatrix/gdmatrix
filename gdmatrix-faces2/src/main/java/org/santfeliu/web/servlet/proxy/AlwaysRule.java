@@ -30,7 +30,7 @@
  */
 package org.santfeliu.web.servlet.proxy;
 
-import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.security.User;
 
@@ -41,7 +41,8 @@ import org.santfeliu.security.User;
 public class AlwaysRule extends ProxyRule
 {
   @Override
-  public boolean evaluate(URLConnection conn, HttpServletRequest req, User user)
+  public boolean evaluate(HttpURLConnection conn, HttpServletRequest req, 
+    User user)
   {
     return true;
   }

@@ -30,7 +30,7 @@
  */
 package org.santfeliu.web.servlet.proxy;
 
-import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.security.User;
 
@@ -40,6 +40,6 @@ import org.santfeliu.security.User;
  */
 public abstract class ProxyAction
 {
-  public abstract void execute(URLConnection conn,
+  public abstract void execute(HttpURLConnection conn,
     HttpServletRequest req, User user);
 }

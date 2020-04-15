@@ -35,6 +35,8 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.santfeliu.util.MatrixConfig;
@@ -53,34 +55,54 @@ public class ProxyConfig
   private static final String CLASS_PACKAGE = "org.santfeliu.web.servlet.proxy.";
   private File proxyFile;
   private long lastModified;
-  private HashMap<String, List<ProxyRule>> hosts =
+  private final HashMap<String, String> urlReplacements = 
+    new HashMap<String, String>();  
+  private final HashMap<String, List<ProxyRule>> hosts =
     new HashMap<String, List<ProxyRule>>();
+  private static final Logger LOGGER = Logger.getLogger("ProxyConfig");
 
   public ProxyConfig()
   {
     File matrixDir = MatrixConfig.getDirectory();
     proxyFile = new File(matrixDir, "proxy-config.xml");
   }
+  
+  public String getActualURL(String url)
+  {
+    updateConfig();
+    String actualUrl = urlReplacements.get(url);
+    return actualUrl != null ? actualUrl : url;
+  }
 
   public List<ProxyRule> getRules(String host)
   {
-    if (!proxyFile.exists()) return null;
-    synchronized (this)
-    {
-      if (proxyFile.lastModified() != lastModified)
-      {
-        readConfig(proxyFile);
-        lastModified = proxyFile.lastModified();
-      }
-    }
+    updateConfig();
     return hosts.get(host);
   }
-
-  public void readConfig(File file)
+  
+  public File getProxyFile()
   {
-    System.out.println(">> ProxyConfig: Reading proxy config...");
+    return proxyFile;
+  }
+
+  private synchronized void updateConfig()
+  {
+    if (proxyFile.exists() && proxyFile.lastModified() != lastModified)
+    {
+      readConfig(proxyFile);
+      lastModified = proxyFile.lastModified();
+    }
+  }
+  
+  private void readConfig(File file)
+  {
+    LOGGER.log(Level.INFO, "Reading proxy configuration from {0}", 
+      file.getAbsolutePath());
     try
     {
+      urlReplacements.clear();
+      hosts.clear();
+      
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document document = builder.parse(new FileInputStream(file));
@@ -95,7 +117,18 @@ public class ProxyConfig
         {
           if (node instanceof Element)
           {
-            if ("host".equals(node.getNodeName()))
+            String nodeName = node.getNodeName();
+            if ("replace".equals(nodeName))
+            {
+              Element replaceElem = (Element)node;
+              String url = replaceElem.getAttribute("url");
+              String by = replaceElem.getAttribute("by");
+              if (url != null && by != null)
+              {
+                urlReplacements.put(url, by);
+              }
+            } 
+            else if ("host".equals(nodeName))
             {
               Element hostElem = (Element)node;
               String hostName = hostElem.getAttribute("name");
@@ -113,7 +146,7 @@ public class ProxyConfig
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      LOGGER.log(Level.SEVERE, "Error reading ProxyConfig", ex);
     }
   }
 
@@ -131,7 +164,7 @@ public class ProxyConfig
           String type = ruleElem.getAttribute("type");
           if (type != null)
           {
-            if (type.indexOf(".") == -1)
+            if (!type.contains("."))
               type = CLASS_PACKAGE + type + "Rule";
             Class cls = Class.forName(type);
             ProxyRule rule = (ProxyRule)cls.newInstance();
@@ -161,7 +194,7 @@ public class ProxyConfig
           String type = actionElem.getAttribute("type");
           if (type != null)
           {
-            if (type.indexOf(".") == -1)
+            if (!type.contains("."))
               type = CLASS_PACKAGE + type + "Action";
             Class cls = Class.forName(type);
             ProxyAction action = (ProxyAction)cls.newInstance();
@@ -192,8 +225,9 @@ public class ProxyConfig
     try
     {
       ProxyConfig config = new ProxyConfig();
-      config.proxyFile = new File("c:/matrix/conf/proxy-config.xml");
+      config.proxyFile = new File(MatrixConfig.getDirectory(), "proxy-config.xml");
       List<ProxyRule> rules = config.getRules("localhost");
+      if (rules == null) return;
       for (ProxyRule rule : rules)
       {
         System.out.println("Rule " + rule);

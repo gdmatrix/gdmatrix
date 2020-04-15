@@ -72,6 +72,7 @@ import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.MemoryDataSource;
 import org.santfeliu.misc.mapviewer.Map.Service;
 import org.santfeliu.misc.mapviewer.Map.Layer;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.template.Template;
 
 /**
@@ -305,7 +306,6 @@ public class MapStore
   {
     List<URL> urls = getThumbnailUrls(map, bounds, baseUrl,
       2 * width, 2 * height);
-    System.out.println("Layer URLS: " + urls);
     BufferedImage doubleImage = new BufferedImage(2 * width, 2 * height,
       BufferedImage.TYPE_INT_ARGB);
     Graphics g = doubleImage.getGraphics();
@@ -316,7 +316,6 @@ public class MapStore
 
     for (URL url : urls)
     {
-      System.out.println("\nComposing thumbnail: " + url);
       BufferedImage layerImage = ImageIO.read(url);
       g.drawImage(layerImage, 0, 0, null);
     }
@@ -499,6 +498,9 @@ public class MapStore
     List<URL> urls = new ArrayList<URL>();
     if (bounds == null) bounds = map.getBounds();
 
+    String port = MatrixConfig.getProperty("org.santfeliu.web.defaultPort");
+    String contextPath = MatrixConfig.getProperty("contextPath");
+    
     boolean baseAdded = false;
     for (Layer layer : map.getLayers())
     {
@@ -507,8 +509,9 @@ public class MapStore
         Service service = layer.getService();
         String layersString =
           URLEncoder.encode(layer.getNamesString(), "UTF-8");
-        String url = ServiceCache.getServiceUrl(service.getUrl()) +
-         "?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&LAYERS=" + layersString +
+        String url = "http://localhost:" + port + contextPath + 
+          "/proxy?url=" + service.getUrl() +
+         "&SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&LAYERS=" + layersString +
          "&BBOX=" + bounds.getAdjusted(width, height) +
          "&WIDTH=" + width +
          "&HEIGHT=" + height + "&srs="+ map.getSrs() +
@@ -518,13 +521,17 @@ public class MapStore
         if (!StringUtils.isBlank(stylesString))
         {
           stylesString = URLEncoder.encode(stylesString, "UTF-8");
-          url += "&styles=" + stylesString;
+          url += "&STYLES=" + stylesString;
+        }
+        else
+        {
+          url += "&STYLES=";
         }
         String sld = layer.getSld();
         if (!StringUtils.isBlank(sld))
         {
           String sldUrl = SLDStore.getSldURL(sld);
-          url += "&sld=" + sldUrl;
+          url += "&SLD=" + sldUrl;
         }
         String cqlFilter = layer.getCqlFilter();
         if (!StringUtils.isBlank(cqlFilter))
@@ -532,7 +539,6 @@ public class MapStore
           cqlFilter = URLEncoder.encode(cqlFilter, "UTF-8");
           url += "&CQL_FILTER=" + cqlFilter;
         }
-        System.out.println("\nlayerURL: " + url);
         urls.add(new URL(url));
         if (layer.isBaseLayer()) baseAdded = true;
       }

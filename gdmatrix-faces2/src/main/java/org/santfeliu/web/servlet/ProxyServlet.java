@@ -48,10 +48,11 @@ import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -80,10 +81,11 @@ public class ProxyServlet extends HttpServlet
   public static final String DATA_SUFFIX = ".data";
   public static final String CACHE_DIR = ".proxycache";
   public static File cacheDir;
-  private static int BUFFER_SIZE = 4096;
+  private static final int BUFFER_SIZE = 4096;
   private int cacheRequestCount;
   private int cacheHitCount;
-  private ProxyConfig proxyConfig = new ProxyConfig();
+  private final ProxyConfig proxyConfig = new ProxyConfig();
+  private static final Logger LOGGER = Logger.getLogger("ProxyServlet");
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -92,6 +94,7 @@ public class ProxyServlet extends HttpServlet
     String surl = req.getParameter(URL_PARAM);
     if (surl != null)
     {
+      surl = proxyConfig.getActualURL(surl);
       String cacheGroup = req.getParameter(CACHE_GROUP_PARAM);
       String cacheRefresh = req.getParameter(CACHE_REFRESH_PARAM);
       String cacheFormat = req.getParameter(CACHE_FORMAT_PARAM);
@@ -128,6 +131,7 @@ public class ProxyServlet extends HttpServlet
       // URL encode only whitespaces
       surl = surl.replace(" ", "+");
       surl = surl + parameters.toString();
+      LOGGER.log(Level.FINE, "GET {0}", surl);
 
       if (cacheGroup == null)
       {
@@ -155,20 +159,19 @@ public class ProxyServlet extends HttpServlet
     String surl = req.getParameter(URL_PARAM);
     if (surl != null)
     {
-      System.out.println("\n>>> proxy POST URL: " + surl);
+      surl = proxyConfig.getActualURL(surl);
       URL url = new URL(surl);
+      LOGGER.log(Level.FINE, "POST {0}", surl);
       HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+      prepareConnection(conn, req);
       conn.setDoInput(true);
       conn.setDoOutput(true);
-
-      prepareConnection(conn, req);
       // set request properties
       Enumeration headerNames = req.getHeaderNames();
       while (headerNames.hasMoreElements())
       {
         String name = (String)headerNames.nextElement();
         String value = req.getHeader(name);
-        System.out.println("H>> " + name + "=" + value);
         conn.setRequestProperty(name, value);
       }
       // write request message
@@ -201,9 +204,6 @@ public class ProxyServlet extends HttpServlet
       String contentType = conn.getContentType();
       int contentLength = conn.getContentLength();
       String contentEncoding = conn.getContentEncoding();
-      System.out.println("ContentType: " + contentType);
-      System.out.println("ContentLength: " + contentLength);
-      System.out.println("Content encoding: " + contentEncoding);
 
       resp.setContentType(contentType);
       resp.setContentLength(contentLength);
@@ -275,7 +275,7 @@ public class ProxyServlet extends HttpServlet
 
     long lastModified = 0;
     
-    InputStream dataStream = null;
+    InputStream dataStream;
     File cacheGroupDir = getCacheGroupDir(cacheGroup);
     File mimeFile = new File(cacheGroupDir, hashValue + MIME_SUFFIX);
     File dataFile = new File(cacheGroupDir, hashValue + DATA_SUFFIX);
@@ -346,10 +346,12 @@ public class ProxyServlet extends HttpServlet
     try
     {
       writer.println("<?xml version='1.0' encoding='UTF-8'?>");
-      writer.println("<html>");
-      writer.println("<body>");
-      writer.println("<h3>ProxyServlet 1.0</h3>");
-      writer.println("<p>Time: " + new Date() + "</p>");
+      writer.println("<html><head><title>ProxyServlet</title>");
+      writer.println("<style>body {font-family:Arial; font-size:14px;}</style>");
+      writer.println("</head><body>");
+      writer.println("<h1>ProxyServlet</h1>");
+      writer.println("<p>Config file: " + 
+        proxyConfig.getProxyFile().getAbsolutePath() + "</p>");
       writer.println("<p>Cache groups:</p>");
       writer.println("<ul>");
       File baseDir = getCacheDir();
@@ -360,6 +362,7 @@ public class ProxyServlet extends HttpServlet
         String name = dir.getName();
         int size = dir.listFiles(new FileFilter()
         {
+          @Override
           public boolean accept(File file)
           {
             return file.getName().endsWith(DATA_SUFFIX);
@@ -449,8 +452,8 @@ public class ProxyServlet extends HttpServlet
     return cacheFormat == null || contentType.startsWith(cacheFormat);
   }
 
-  private void prepareConnection(HttpURLConnection conn, HttpServletRequest req)
-    throws IOException
+  private void prepareConnection(HttpURLConnection conn, 
+    HttpServletRequest req) throws IOException
   {
     URL url = conn.getURL();
     String host = url.getHost();

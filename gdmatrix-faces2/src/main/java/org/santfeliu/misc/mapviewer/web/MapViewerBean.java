@@ -62,7 +62,6 @@ import org.santfeliu.misc.mapviewer.MapDocument;
 import org.santfeliu.misc.mapviewer.Map.Layer;
 import org.santfeliu.misc.mapviewer.Map.Service;
 import org.santfeliu.misc.mapviewer.SLDStore;
-import org.santfeliu.misc.mapviewer.ServiceCache;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.enc.HtmlEncoder;
@@ -165,7 +164,7 @@ public class MapViewerBean extends WebBean
     String name = layer.getNames().get(0);
     MapBean mapBean = MapBean.getInstance();
     String baseUrl = mapBean.getBaseUrl();
-    String serviceUrl = ServiceCache.getServiceUrl(layer.getService().getUrl());
+    String serviceUrl = layer.getService().getUrl();
     
     String url = baseUrl + "/proxy?url=" + serviceUrl +
     "&service=WMS&version=1.0.0&request=GetLegendGraphic&layer=" + name +
@@ -491,7 +490,7 @@ public class MapViewerBean extends WebBean
     {
       for (Service service : map.getServices())
       {
-        String url = ServiceCache.getServiceUrl(service.getUrl());
+        String url = service.getUrl();
         buffer.append("wmsUrls.push(\"").append(url).append("\");\n");
       }
       for (Layer layer : map.getLayers())

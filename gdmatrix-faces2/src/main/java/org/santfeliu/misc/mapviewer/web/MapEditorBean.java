@@ -429,7 +429,7 @@ public class MapEditorBean extends WebBean implements Savable
     List<Service> services = map.getServices();
     for (Service service : services)
     {
-      String serviceUrl = ServiceCache.getServiceUrl(service.getUrl());
+      String serviceUrl = service.getUrl();
       buffer.append("serviceArray.push('");
       buffer.append(serviceUrl);
       buffer.append("');\n");
@@ -464,13 +464,16 @@ public class MapEditorBean extends WebBean implements Savable
   {
     try
     {
+      MapBean mapBean = MapBean.getInstance();
+      String baseUrl = mapBean.getBaseUrl();
       Layer layer = (Layer)getValue("#{layer}");
       Map map = layer.getMap();
       String srs = map.getSrs();
       Service service = layer.getService();
       StringBuilder buffer = new StringBuilder();
+      buffer.append(baseUrl);
       buffer.append("/proxy?url=");
-      buffer.append(ServiceCache.getServiceUrl(service.getUrl()));
+      buffer.append(service.getUrl());
       buffer.append("&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap");
       buffer.append("&LAYERS=");
       buffer.append(layer.getNamesString());
@@ -479,6 +482,10 @@ public class MapEditorBean extends WebBean implements Savable
       {
         buffer.append("&STYLES=");
         buffer.append(URLEncoder.encode(styles, "UTF-8"));
+      }
+      else
+      {
+        buffer.append("&STYLES=");
       }
       String cqlFilter = layer.getCqlFilter();
       if (!StringUtils.isBlank(cqlFilter))

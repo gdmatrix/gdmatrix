@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.misc.mapviewer.sld.SLDDebug;
 import org.santfeliu.misc.mapviewer.sld.SLDExternalGraphic;
 import org.santfeliu.misc.mapviewer.sld.SLDFill;
@@ -136,7 +137,7 @@ public class SLDReader
       String attributePrefix = xmlReader.getAttributePrefix(i);
       String attributeLocalName = xmlReader.getAttributeLocalName(i);
       String attributeValue = xmlReader.getAttributeValue(i);
-      String attributeName = (attributePrefix.length() == 0) ?
+      String attributeName = StringUtils.isBlank(attributePrefix) ?
         attributeLocalName : attributePrefix + ":" + attributeLocalName;
       attributes.put(attributeName, attributeValue);
     }

@@ -30,10 +30,6 @@
  */
 package org.santfeliu.misc.mapviewer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -54,64 +50,9 @@ public class ServiceCache
   private static final HashMap<String, ServiceCapabilities> cache =
     new HashMap<String, ServiceCapabilities>();
 
-  private static HashMap<String, String> serviceUrlSubstitution;
-
-
-  /**
-   * Changes the service url according to the rules in the substitution file
-   * located in ${configDir}/svc-url-subs.txt
-   *
-   * The rules in this file follow this syntax:
-   * {url} = {substitution_url}
-   *
-   * @param url, the serviceUrl
-   * @return  the actual serviceUrl to use
-   */
-  public static String getServiceUrl(String url)
-  {
-    if (serviceUrlSubstitution == null)
-    {
-      serviceUrlSubstitution = new HashMap<>();
-      File configDir = MatrixConfig.getDirectory();
-      File substitutionFile = new File(configDir, "svc-url-subs.txt");
-      if (substitutionFile.exists())
-      {
-        try
-        {
-          BufferedReader reader =
-            new BufferedReader(new FileReader(substitutionFile));
-          try
-          {
-            String line = reader.readLine();
-            while (line != null)
-            {
-              String parts[] = line.split("=");
-              if (parts.length == 2)
-              {
-                serviceUrlSubstitution.put(parts[0].trim(), parts[1].trim());
-              }
-              line = reader.readLine();
-            }
-          }
-          finally
-          {
-            reader.close();
-          }
-        }
-        catch (IOException ex)
-        {
-          // ignore
-        }
-      }
-    }
-    String subsUrl = serviceUrlSubstitution.get(url);
-    return subsUrl == null ? url : subsUrl;
-  }
-
   public static ServiceCapabilities getServiceCapabilities(String serviceUrl,
     boolean refresh, Credentials credentials) throws Exception
   {
-    serviceUrl = getServiceUrl(serviceUrl);
     ServiceCapabilities capabilities = cache.get(serviceUrl);
     if (capabilities == null || refresh)
     {
@@ -127,7 +68,6 @@ public class ServiceCache
         requestUrl = urlCredentialsCipher.putCredentials(requestUrl, credentials);
       }
       URL url = new URL(requestUrl);
-      System.out.println("URL: " + url);
       URLConnection conn = url.openConnection();
       conn.setConnectTimeout(10000);
       conn.setReadTimeout(10000);
