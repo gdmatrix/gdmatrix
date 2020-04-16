@@ -31,6 +31,8 @@
 package org.santfeliu.misc.sqlweb.web;
 
 import java.io.Serializable;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -255,6 +257,10 @@ public class SqlWebBean extends WebBean implements Savable
                   {
                     Struct struct = (Struct)value;
                     value = struct.getSQLTypeName();
+                  }
+                  else if (value instanceof Blob || value instanceof Clob)
+                  {
+                    value = "(" + value.getClass().getSimpleName() + ")";
                   }
                   else if (!(value instanceof Serializable))
                   {
