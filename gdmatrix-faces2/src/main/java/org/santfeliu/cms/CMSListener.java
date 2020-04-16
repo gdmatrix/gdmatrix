@@ -53,6 +53,7 @@ import org.matrix.security.SecurityConstants;
 import org.santfeliu.faces.menu.model.MenuException;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
+import org.santfeliu.faces.menu.util.MenuUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.HttpUtils;
 import org.santfeliu.web.UserSessionBean;
@@ -86,15 +87,20 @@ public class CMSListener implements PhaseListener
     "org.santfeliu.web.forcedLanguage";  
   public static final String CLIENT_SECURE_PORT_PROP =
     "org.santfeliu.web.clientSecurePort";  
+  public static final String REDIRECTION_LIMIT_PROP =
+    "org.santfeliu.web.redirectionLimit";
   
   public static final String GO_URI = "/go.faces";
   public static final String LOGIN_URI = "/login.faces"; 
   
   public static final String BLANK_VIEWID = "/common/util/blank.faces";
   
+  private static final String REDIR_COUNT_PARAM = "_redircount";  
+  
   private Application application;  
   
   private String forcedLanguage;
+  private Integer redirectionLimit;
   private int clientSecurePort;  
   private final WebAuditor webAuditor = new WebAuditor();  
   private final HashSet<String> pathExceptions = new HashSet<String>();
@@ -114,6 +120,16 @@ public class CMSListener implements PhaseListener
     {    
       forcedLanguage = MatrixConfig.getProperty(FORCED_LANGUAGE_PROP);
       if (forcedLanguage == null) forcedLanguage = "ca"; 
+
+      try
+      {
+        String value = MatrixConfig.getProperty(REDIRECTION_LIMIT_PROP);
+        redirectionLimit = (value != null ? Integer.valueOf(value) : 2);
+      }
+      catch (NumberFormatException ex)
+      {
+        redirectionLimit = 2; //default value
+      }
 
       String value = MatrixConfig.getProperty(CLIENT_SECURE_PORT_PROP);
       if (value != null) clientSecurePort = Integer.parseInt(value);    
@@ -140,6 +156,10 @@ public class CMSListener implements PhaseListener
         MenuItemCursor mic = getRequestedMenuItem(request, userSessionBean);
         if (mic != null)
         {
+          redirectByUrl(context, userSessionBean, mic);
+          if (context.getResponseComplete() || context.getRenderResponse()) 
+            return;
+
           loginFromParameters(context, userSessionBean);
           if (context.getResponseComplete() || context.getRenderResponse()) 
             return;
@@ -154,8 +174,8 @@ public class CMSListener implements PhaseListener
 
           requestAuthentication(context, userSessionBean, mic);
           if (context.getResponseComplete() || context.getRenderResponse()) 
-            return;        
-
+            return;
+          
           executeRequestedMenuItem(context, userSessionBean, mic);
         }
         else
@@ -167,8 +187,9 @@ public class CMSListener implements PhaseListener
 
       }
       catch (Exception ex)
-      {        
+      {
         //TODO: Manage exceptions
+        userSessionBean.getMenuModel().setAllVisible(false);
       }
       finally
       {
@@ -267,7 +288,7 @@ public class CMSListener implements PhaseListener
   {
     // Do not execute menuItem in forward requests
     if (request.getAttribute(FORWARD_REQUEST_URI) != null) return null;
-        
+
     MenuItemCursor menuItem = null;
 
     if (userSessionBean.getWorkspaceId() == null)
@@ -286,7 +307,7 @@ public class CMSListener implements PhaseListener
     {
       userSessionBean.setBrowserType(browserType);
     }
-    
+
     MenuModel menuModel = userSessionBean.getMenuModel();
     menuModel.setAllVisible(true);
 
@@ -337,7 +358,7 @@ public class CMSListener implements PhaseListener
     menuModel.setAllVisible(false);
 
     return menuItem;
-  }  
+  }
 
   private void executeRequestedMenuItem(FacesContext context,
     UserSessionBean userSessionBean, MenuItemCursor menuItem) throws Exception
@@ -574,6 +595,61 @@ public class CMSListener implements PhaseListener
     return accessRoles.isEmpty() ||
       userSessionBean.isCmsAdministrator() ||
       userSessionBean.isUserInRole(accessRoles);
+  }
+  
+  private void redirectByUrl(FacesContext context, 
+    UserSessionBean userSessionBean, MenuItemCursor menuItem) throws Exception
+  {
+    ExternalContext externalContext = context.getExternalContext();
+    HttpServletRequest request =
+      (HttpServletRequest)externalContext.getRequest();
+        
+    int redirectionCount = getRedirectionCount(request);    
+    if (redirectionCount >= redirectionLimit) return; 
+    //no more redirections allowed
+    
+    userSessionBean.getMenuModel().setAllVisible(true);
+    String action = menuItem.getAction();
+    if (MenuUtils.URL_ACTION.equals(action))
+    {
+      String url = menuItem.getURL();
+      if (url != null && (url.startsWith("/") || url.startsWith("http://") || 
+        url.startsWith("https://")))
+      {
+        url = getRedirectionUrl(url, redirectionCount + 1);
+        HttpServletResponse response =
+          (HttpServletResponse)externalContext.getResponse();        
+        response.sendRedirect(url);
+        context.responseComplete();
+      }
+    }
+    userSessionBean.getMenuModel().setAllVisible(false);
+  }
+
+  private int getRedirectionCount(HttpServletRequest request)
+  {
+    try
+    {
+      String redirectionCount = request.getParameter(REDIR_COUNT_PARAM);
+      return (redirectionCount != null ? 
+        Math.max(0, Integer.valueOf(redirectionCount)) : 0);
+    }
+    catch (NumberFormatException ex)
+    {
+      return 0;
+    }
+  }
+
+  private String getRedirectionUrl(String url, int redirectionCount)
+  {
+    if (url.contains("?"))
+    {
+      return url + "&" + REDIR_COUNT_PARAM + "=" + redirectionCount;
+    }
+    else    
+    {
+      return url + "?" + REDIR_COUNT_PARAM + "=" + redirectionCount;
+    }
   }
   
   private void userChangeDetection(FacesContext context,
