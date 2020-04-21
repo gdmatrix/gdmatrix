@@ -718,6 +718,10 @@
     <param-name>matrixClient.minVersion</param-name>
     <param-value>1</param-value>
   </context-param>
+  <context-param>
+    <param-name>cnt.dataSource</param-name>
+    <param-value>jdbc/cnt</param-value>
+  </context-param>    
   <!-- listeners -->
   <listener>
     <listener-class>org.santfeliu.web.MatrixServletContextListener</listener-class>

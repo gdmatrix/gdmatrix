@@ -38,8 +38,10 @@ import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
 
 import org.santfeliu.doc.store.ContentStore;
+import org.santfeliu.util.MatrixConfig;
 
 
 /**
@@ -80,9 +82,17 @@ public class OracleContentStore implements ContentStore
     {
       Context initContext = new InitialContext();
       Context envContext  = (Context)initContext.lookup("java:/comp/env");
-      String dataSourceName = config.getProperty("dataSource");
-      javax.sql.DataSource ds = 
-        (javax.sql.DataSource)envContext.lookup(dataSourceName);
+      String dataSourceName = MatrixConfig.getProperty("cnt.dataSource");
+      javax.sql.DataSource ds = null;      
+      try
+      {
+        ds = (javax.sql.DataSource)envContext.lookup(dataSourceName);
+      }
+      catch(NameNotFoundException ex)
+      {
+        dataSourceName = MatrixConfig.getProperty("global.dataSource");  
+        ds = (javax.sql.DataSource)envContext.lookup(dataSourceName);        
+      }
       Connection conn = ds.getConnection();
       conn.setAutoCommit(false);
       return new OracleContentStoreConnection(conn, config);
