@@ -839,6 +839,7 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
             DictionaryUtils.setProperty(selectedDocument, name, value, true);
         }
         getClient().storeDocument(selectedDocument);
+        search();
       }
     }
     catch (Exception ex)
