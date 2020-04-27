@@ -9,7 +9,7 @@
   <ui:composition template="/frames/#{userSessionBean.frame}/frame.xhtml">
     <ui:define name="template">
 
-      <script>
+      <script>        
           var showSiblingsMenu = false;
           var showChildrenMenu = false;
 
@@ -32,13 +32,13 @@
             if (divId == 'profileDiv')
             {
               document.getElementById('showProfileLinkBg').className = 'showProfileLinkBg selected';
-              document.getElementsByClassName('showProfileLink')[0].title = '${webBundle.hideProfilePanel}';             
+              document.getElementsByClassName('showProfileLink')[0].title = '#{sf:escapeJS(webBundle.hideProfilePanel)}';             
               hideTopDiv('searchDiv');
             }
             else if (divId == 'searchDiv')
             {
               document.getElementsByClassName('showSearchLink')[0].className = 'showSearchLink selected';
-              document.getElementsByClassName('showSearchLink')[0].title = '${webBundle.hideGlobalSearch}';             
+              document.getElementsByClassName('showSearchLink')[0].title = '#{sf:escapeJS(webBundle.hideGlobalSearch)}';             
               hideTopDiv('profileDiv');
             }
             setCookieValue('mobile2_' + divId, 'true');
@@ -49,17 +49,17 @@
             document.getElementById(divId).style.display='none';
             if (divId == 'profileDiv')
             {
-              document.getElementById('showProfileLinkBg').className='showProfileLinkBg';        
-              document.getElementsByClassName('showProfileLink')[0].title = '${webBundle.showProfilePanel}';             
+              document.getElementById('showProfileLinkBg').className='showProfileLinkBg';              
+              document.getElementsByClassName('showProfileLink')[0].title = '#{sf:escapeJS(webBundle.showProfilePanel)}';             
             }
             else if (divId == 'searchDiv')
             {
               document.getElementsByClassName('showSearchLink')[0].className='showSearchLink';        
-              document.getElementsByClassName('showSearchLink')[0].title = '${webBundle.showGlobalSearch}';             
+              document.getElementsByClassName('showSearchLink')[0].title = '#{sf:escapeJS(webBundle.showGlobalSearch)}';             
             }
             setCookieValue('mobile2_' + divId, 'false');
           }
-
+                    
           function initTopDivs()
           {
             initTopDiv('profileDiv');
@@ -107,7 +107,7 @@
                 length > 0)
               {
                 document.getElementsByClassName('showSiblingsMenuLink')[0].
-                  title = '${webBundle.hideSiblingsMenu}';
+                  title = '#{sf:escapeJS(webBundle.hideSiblingsMenu)}';
               }
             }
             if (document.getElementById('interiorContainerDiv') != null)
@@ -127,7 +127,7 @@
                 length > 0)
               {
                 document.getElementsByClassName('showSiblingsMenuLink')[0].
-                  title = '${webBundle.showSiblingsMenu}';
+                  title = '#{sf:escapeJS(webBundle.showSiblingsMenu)}';
               }
             }
             if (document.getElementById('interiorContainerDiv') != null)
@@ -160,7 +160,7 @@
                 length > 0)
               {            
                 document.getElementsByClassName('showChildrenMenuLink')[0].
-                  title = '${webBundle.hideChildrenMenu}';
+                  title = '#{sf:escapeJS(webBundle.hideChildrenMenu)}';
               }
             }
             if (document.getElementById('interiorContainerDiv') != null)
@@ -184,7 +184,7 @@
                 length > 0)
               {
                 document.getElementsByClassName('showChildrenMenuLink')[0].
-                  title = '${webBundle.showChildrenMenu}';                              
+                  title = '#{sf:escapeJS(webBundle.showChildrenMenu)}';                              
               }
             }
             if (document.getElementById('interiorContainerDiv') != null)
@@ -228,9 +228,7 @@
 
         <t:div id="profileDiv" forceId="true" styleClass="profileDiv" style="display:none;">    
           <sf:heading level="2" styleClass="element-invisible">
-            <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.identificationMessage}"
-                           translator="#{userSessionBean.translator}"
-                           translationGroup="#{userSessionBean.translationGroup}" />
+            <sf:outputText value="#{webBundle.identification}" />
           </sf:heading>      
           <t:div rendered="#{userSessionBean.anonymousUser}" styleClass="loginArea">
 

@@ -2318,4 +2318,10 @@
     </attribute>
   </tag>
   
+  <function>
+    <function-name>escapeJS</function-name>
+    <function-class>org.apache.commons.lang.StringEscapeUtils</function-class>
+    <function-signature>java.lang.String escapeJavaScript(java.lang.String)</function-signature>
+  </function>  
+  
 </facelet-taglib>

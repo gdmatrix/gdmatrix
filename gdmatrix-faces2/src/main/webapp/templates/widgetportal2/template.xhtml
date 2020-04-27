@@ -58,10 +58,8 @@
             </f:verbatim>
             <t:div id="languageSelectorDescription" forceId="true" style="visibility:hidden;">
               <sf:outputLink id="languageSelectorLink" styleClass="selectedLanguage" 
-                onclick="return tooglePanelVisibility('languageSelector','#{webBundle.languageSelectorShowMessage}','#{webBundle.languageSelectorHideMessage}');" 
-                             ariaLabel="#{userSessionBean.viewLanguage == 'es' ? 'castellano' : userSessionBean.currentLocaleDescription}, #{webBundle.languageSelectorShowMessage}"
-                             translator="#{userSessionBean.translator}"
-                             translationGroup="#{userSessionBean.translationGroup}">           
+                             onclick="return togglePanelVisibility('languageSelector');"  
+                             ariaLabel="#{userSessionBean.viewLanguage == 'es' ? 'castellano' : userSessionBean.currentLocaleDescription}, #{webBundle.languageSelectorShowMessage}">           
                 <h:outputText value="#{userSessionBean.viewLanguage == 'es' ? 'castellano' : userSessionBean.currentLocaleDescription}" />
               </sf:outputLink> 
             </t:div>
@@ -77,9 +75,7 @@
           </t:div>
 
           <sf:heading level="2" styleClass="element-invisible">
-            <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.identificationMessage}"
-                           translator="#{userSessionBean.translator}"
-                           translationGroup="#{userSessionBean.translationGroup}" />
+            <sf:outputText value="#{webBundle.identification}" />
           </sf:heading>
           <t:div styleClass="item login"
                  rendered="#{userSessionBean.selectedMenuItem.properties.loginEnabled == null ||
@@ -88,13 +84,9 @@
             <!-- new login/logout buttons -->
 
             <sf:outputLink id="loginPanelLink" value="#{loginBean.loginURL}" 
-              onclick="return tooglePanelVisibility('loginPanel', '#{webBundle.identificationPanelShowMessage}','#{webBundle.identificationPanelHideMessage}');"
-                           ariaLabel="#{userSessionBean.selectedMenuItem.properties.identificationMessage}, #{webBundle.identificationPanelShowMessage}"                       
-                           translator="#{userSessionBean.translator}"
-                           translationGroup="#{userSessionBean.translationGroup}">
-              <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.identificationMessage}"
-                             translator="#{userSessionBean.translator}" rendered="#{userSessionBean.anonymousUser}"
-                             translationGroup="#{userSessionBean.translationGroup}" />
+                           onclick="return togglePanelVisibility('loginPanel');"  
+                           ariaLabel="#{webBundle.identification}, #{webBundle.identificationPanelShowMessage}">
+              <sf:outputText value="#{webBundle.identification}" rendered="#{userSessionBean.anonymousUser}" />
               <h:outputText value="#{userSessionBean.displayName}" rendered="#{not userSessionBean.anonymousUser}" />
             </sf:outputLink>                       
 
@@ -530,19 +522,35 @@
             if (elem)
             {
               if (elem.innerHTML != '')
-                tooglePanelVisibility('loginPanel');
+                togglePanelVisibility('loginPanel');
             }
           }
 
-          function tooglePanelVisibility(panelName, visibleAriaLabel, hiddenAriaLabel)
+          function togglePanelVisibility(panelName)
           {
+            var visibleAriaLabel = null;
+            var hiddenAriaLabel = null;
+            if (panelName == 'languageSelector')
+            {
+              visibleAriaLabel = '#{sf:escapeJS(webBundle.languageSelectorShowMessage)}';
+              hiddenAriaLabel = '#{sf:escapeJS(webBundle.languageSelectorHideMessage)}';
+            }
+            else if (panelName == 'loginPanel')
+            {
+              visibleAriaLabel = '#{sf:escapeJS(webBundle.identificationPanelShowMessage)}';
+              hiddenAriaLabel = '#{sf:escapeJS(webBundle.identificationPanelHideMessage)}';              
+            }
+            else
+            {
+              return false;
+            }
             var panel = document.getElementById(panelName);
             var visible = panel.style.display != 'none';
             panel.style.display = visible ? "none" : "block";
             var panelLink = document.getElementById(panelName + "Link");
             var ariaLabel = panelLink.getAttribute("aria-label");
             ariaLabel = ariaLabel != null ? ariaLabel.substr(0, ariaLabel.indexOf(",") + 1) : ariaLabel;
-            panelLink.setAttribute('aria-label', ariaLabel + " " + (visible ? visibleAriaLabel : hiddenAriaLabel));
+            panelLink.setAttribute('aria-label', ariaLabel + " " + (visible ? visibleAriaLabel : hiddenAriaLabel));            
             return false;
           }
           
