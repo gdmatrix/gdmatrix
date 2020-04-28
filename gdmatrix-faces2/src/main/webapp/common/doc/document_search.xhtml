@@ -288,13 +288,13 @@
                          styleClass="currentButton"
                          image="#{userSessionBean.icons.current}"
                          alt="#{objectBundle.current}" title="#{objectBundle.current}"
-                         rendered="#{documentSearchBean.editorUser}"/>
+                         rendered="#{documentSearchBean.editorUser and not documentSearchBean.renderPickUpButton}"/>
         <h:commandButton value="#{objectBundle.create}"
                          action="#{document2Bean.create}" immediate="true"
                          styleClass="createButton"
                          image="#{userSessionBean.icons['new']}"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
-                         rendered="#{documentSearchBean.editorUser}"/>
+                         rendered="#{documentSearchBean.editorUser and not documentSearchBean.renderPickUpButton}"/>
         <h:commandButton value="#{objectBundle.upload}"
                          styleClass="createButton" onclick="javascript:sendDocument();return false"
                          image="#{userSessionBean.icons.upload}"
@@ -535,13 +535,13 @@
                          styleClass="currentButton"
                          image="#{userSessionBean.icons.current}"
                          alt="#{objectBundle.current}" title="#{objectBundle.current}"
-                         rendered="#{documentSearchBean.editorUser}"/>
+                         rendered="#{documentSearchBean.editorUser and not documentSearchBean.renderPickUpButton}"/>
         <h:commandButton value="#{objectBundle.create}"
                          action="#{document2Bean.create}" immediate="true"
                          styleClass="createButton"
                          image="#{userSessionBean.icons['new']}"
                          alt="#{objectBundle.create}" title="#{objectBundle.create}"
-                         rendered="#{documentSearchBean.editorUser}"/>
+                         rendered="#{documentSearchBean.editorUser and not documentSearchBean.renderPickUpButton}"/>
         <h:commandButton value="#{objectBundle.upload}"
                          styleClass="createButton" onclick="javascript:sendDocument();return false"
                          image="#{userSessionBean.icons.upload}"
