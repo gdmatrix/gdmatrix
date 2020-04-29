@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"      
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"      
+      xmlns:sf="http://faces.santfeliu.org"      
+      lang="#{userSessionBean.viewLanguage}">
+  <f:view locale="#{userSessionBean.viewLocale}">
+    <f:loadBundle basename="org.santfeliu.web.resources.WebBundle" var="webBundle" />
+    <h:head>
+      <title>#{webBundle.error}</title>
+      <meta http-equiv="refresh" content="15;url=#{request.contextPath}/go.faces?xmid=#{userSessionBean.selectedMid != null ? 
+        userSessionBean.selectedMid : 
+        applicationBean.getStartMid(userSessionBean.browserType == 'mobile')}" />        
+      <style>
+        .element-invisible
+        {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          left: -10000px;
+          top: auto;
+          overflow: hidden;
+          display: block;
+          visibility: visible;          
+        }
+      </style>
+    </h:head>
+    <h:body>
+      <sf:heading level="1" styleClass="element-invisible">
+        <h:outputText value="#{webBundle.error}" />   
+      </sf:heading>
+      <h:outputText value="#{webBundle.viewExceptionMessage}: " />
+      <h:outputLink value="#{request.contextPath}/go.faces?xmid=#{userSessionBean.selectedMid != null ? 
+        userSessionBean.selectedMid : 
+        applicationBean.getStartMid(userSessionBean.browserType == 'mobile')}">
+        <h:outputText value="#{webBundle.return}" />
+      </h:outputLink>
+    </h:body>    
+  </f:view>
+</html>
+
