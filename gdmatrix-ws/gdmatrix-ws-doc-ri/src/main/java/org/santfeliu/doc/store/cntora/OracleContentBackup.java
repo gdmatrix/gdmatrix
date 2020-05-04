@@ -128,7 +128,7 @@ public class OracleContentBackup
           try
           {
             PreparedStatement ps4 = conn.prepareStatement(
-              "select 1 from cnt_internal where uuid = ?");
+              "select 1 from cnt_content where uuid = ?");
             try
             {
               File dir = getDirectory();
