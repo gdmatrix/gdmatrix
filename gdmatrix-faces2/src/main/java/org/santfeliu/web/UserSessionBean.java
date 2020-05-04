@@ -316,6 +316,12 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public Locale getViewLocale()
   {
+    if (viewLocale == null)
+    {
+      String language = MatrixConfig.getProperty(
+        "org.santfeliu.translation.defaultLanguage");
+      viewLocale = new Locale(language);      
+    }
     return viewLocale;
   }
 
@@ -686,7 +692,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public String getViewLanguage()
   {
-    return viewLocale.getLanguage();
+    return getViewLocale().getLanguage();
   }
 
   public String getLastPageLanguage()
