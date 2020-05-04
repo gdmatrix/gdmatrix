@@ -1075,4 +1075,5 @@
     <exception-type>javax.faces.application.ViewExpiredException</exception-type>
     <location>/common/util/error_view.xhtml</location>
   </error-page>
+  <distributable />
 </web-app>
