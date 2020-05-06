@@ -5,12 +5,10 @@
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
 
   <lifecycle>
+    <phase-listener>org.santfeliu.faces.beansaver.BeanSaverListener</phase-listener>    
     <phase-listener>org.santfeliu.cms.CMSListener</phase-listener>
-  </lifecycle>
-  
-  <lifecycle>
-    <phase-listener>org.santfeliu.faces.DebugPhaseListener</phase-listener>
-  </lifecycle>    
+    <phase-listener>org.santfeliu.faces.DebugPhaseListener</phase-listener>    
+  </lifecycle>     
   
  <application>
   <locale-config>
