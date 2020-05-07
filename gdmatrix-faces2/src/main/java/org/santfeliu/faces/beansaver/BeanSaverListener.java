@@ -39,8 +39,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
-import org.santfeliu.faces.beansaver.Savable;
-import org.santfeliu.util.MatrixConfig;
 
 /**
  *
@@ -48,9 +46,6 @@ import org.santfeliu.util.MatrixConfig;
  */
 public class BeanSaverListener implements PhaseListener
 {
-  public static final String BEAN_SAVING_METHOD = 
-    "org.matrix.BEAN_SAVING_METHOD";
-  public static final String SESSION_METHOD = "session";
   public static final String SAVABLE_BEANS = "savableBeans";
 
   @Override
@@ -62,7 +57,7 @@ public class BeanSaverListener implements PhaseListener
   public void beforePhase(PhaseEvent event)
   {
     PhaseId phaseId = event.getPhaseId();
-    if (isSessionSavingMethod())
+    if (BeanSaverUtils.isSessionSavingMethod())
     {
       if (PhaseId.RESTORE_VIEW.equals(phaseId))   
         restoreRequestBeans();
@@ -117,9 +112,5 @@ public class BeanSaverListener implements PhaseListener
     }
   }  
   
-  private boolean isSessionSavingMethod()
-  {
-    String savingMethod = MatrixConfig.getProperty(BEAN_SAVING_METHOD);     
-    return (SESSION_METHOD.equalsIgnoreCase(savingMethod));    
-  }  
+
 }

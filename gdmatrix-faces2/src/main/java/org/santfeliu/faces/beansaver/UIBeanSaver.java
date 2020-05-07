@@ -37,7 +37,6 @@ import javax.faces.component.FacesComponent;
 
 import javax.faces.component.UIParameter;
 import javax.faces.context.FacesContext;
-import org.santfeliu.util.MatrixConfig;
 
 /**
  *
@@ -46,9 +45,6 @@ import org.santfeliu.util.MatrixConfig;
 @FacesComponent(value = "UIBeanSaver")
 public class UIBeanSaver extends UIParameter
 {
-  public static final String BEAN_SAVING_METHOD = 
-    "org.matrix.BEAN_SAVING_METHOD";
-  public static final String VIEW_METHOD = "view";  
   public static final String COMPONENT_TYPE = "BeanSaver";
   public static final String COMPONENT_FAMILY = "javax.faces.Parameter";
 
@@ -67,7 +63,7 @@ public class UIBeanSaver extends UIParameter
   {
     Object values[] = new Object[2];
     values[0] = super.saveState(context);    
-    if (isViewSavingMethod())
+    if (BeanSaverUtils.isViewSavingMethod())
     {    
       Map requestMap = context.getExternalContext().getRequestMap();
       values[1] = saveRequestBeans(requestMap);
@@ -81,7 +77,7 @@ public class UIBeanSaver extends UIParameter
   {
     Object values[] = (Object[])state;
     super.restoreState(context, values[0]);
-    if (isViewSavingMethod())
+    if (BeanSaverUtils.isViewSavingMethod())
     {     
       Map requestMap = context.getExternalContext().getRequestMap();
       restoreRequestBeans(requestMap, values[1]);
@@ -115,11 +111,5 @@ public class UIBeanSaver extends UIParameter
       Object bean = beans[i + 1];
       requestMap.put(name, bean);
     }
-  }
-  
-  private boolean isViewSavingMethod()
-  {
-    String savingMethod = MatrixConfig.getProperty(BEAN_SAVING_METHOD);     
-    return (savingMethod == null || VIEW_METHOD.equalsIgnoreCase(savingMethod));    
-  }
+  } 
 }

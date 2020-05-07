@@ -40,10 +40,7 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
-
-import static org.santfeliu.faces.beansaver.BeanSaverListener.
-  BEAN_SAVING_METHOD;
-import static org.santfeliu.faces.beansaver.BeanSaverListener.SESSION_METHOD;
+import org.santfeliu.faces.beansaver.BeanSaverUtils;
 
 /**
  *
@@ -88,7 +85,7 @@ public class MenuUtils
       StringBuilder sb = new StringBuilder();
       sb.append(MatrixConfig.getProperty("contextPath"));
       sb.append("/go.faces");
-      if (isSessionBeanSavingMethod())
+      if (BeanSaverUtils.isSessionSavingMethod())
       {
         ExternalContext extContext = 
           FacesContext.getCurrentInstance().getExternalContext();
@@ -119,7 +116,7 @@ public class MenuUtils
       {
         onclick += "changeTarget('" + target + "');";
       }
-      if (!isSessionBeanSavingMethod())
+      if (!BeanSaverUtils.isSessionSavingMethod())
       {
         onclick += "return goMid('" + menuItem.getMid() + "');";
       }
@@ -146,10 +143,5 @@ public class MenuUtils
     }
   }
 
-  private static boolean isSessionBeanSavingMethod()
-  {
-    String savingMethod = MatrixConfig.getProperty(BEAN_SAVING_METHOD);
-    return (SESSION_METHOD.equalsIgnoreCase(savingMethod));
-  }
 
 }
