@@ -85,8 +85,9 @@ public class MenuUtils
     }
     else
     {
-      url = MatrixConfig.getProperty("contextPath") +
-        "/go.faces?xmid=" + menuItem.getMid();
+      StringBuilder sb = new StringBuilder();
+      sb.append(MatrixConfig.getProperty("contextPath"));
+      sb.append("/go.faces");
       if (isSessionBeanSavingMethod())
       {
         ExternalContext extContext = 
@@ -95,9 +96,13 @@ public class MenuUtils
         if (cookieMap == null || cookieMap.isEmpty())
         {
           String sessionId = extContext.getSessionId(false);
-          url += "&JSESSIONID=" + sessionId;
+          sb.append(";jsessionid=");
+          sb.append(sessionId);          
         }
       }
+      sb.append("?xmid=");
+      sb.append(menuItem.getMid());
+      url = sb.toString();
     }
     return url;
   }
