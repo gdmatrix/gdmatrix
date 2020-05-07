@@ -33,12 +33,17 @@ package org.santfeliu.faces.menu.util;
 import java.io.IOException;
 import java.util.Map;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
+
+import static org.santfeliu.faces.beansaver.BeanSaverListener.
+  BEAN_SAVING_METHOD;
+import static org.santfeliu.faces.beansaver.BeanSaverListener.SESSION_METHOD;
 
 /**
  *
@@ -82,6 +87,17 @@ public class MenuUtils
     {
       url = MatrixConfig.getProperty("contextPath") +
         "/go.faces?xmid=" + menuItem.getMid();
+      if (isSessionBeanSavingMethod())
+      {
+        ExternalContext extContext = 
+          FacesContext.getCurrentInstance().getExternalContext();
+        Map cookieMap = extContext.getRequestCookieMap();
+        if (cookieMap == null || cookieMap.isEmpty())
+        {
+          String sessionId = extContext.getSessionId(false);
+          url += "&JSESSIONID=" + sessionId;
+        }
+      }
     }
     return url;
   }
@@ -98,7 +114,10 @@ public class MenuUtils
       {
         onclick += "changeTarget('" + target + "');";
       }
-      onclick += "return goMid('" + menuItem.getMid() + "');";
+      if (!isSessionBeanSavingMethod())
+      {
+        onclick += "return goMid('" + menuItem.getMid() + "');";
+      }
     }
     return onclick;
   }
@@ -121,4 +140,11 @@ public class MenuUtils
       writer.writeAttribute("target", target, null);
     }
   }
+
+  private static boolean isSessionBeanSavingMethod()
+  {
+    String savingMethod = MatrixConfig.getProperty(BEAN_SAVING_METHOD);
+    return (SESSION_METHOD.equalsIgnoreCase(savingMethod));
+  }
+
 }
