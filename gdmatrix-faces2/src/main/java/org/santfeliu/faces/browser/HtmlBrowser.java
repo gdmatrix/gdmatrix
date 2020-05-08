@@ -246,7 +246,8 @@ public class HtmlBrowser extends UIComponentBase
               String parameter = (String)entry.getKey();
               String value = (String)entry.getValue();
               if (!parameter.startsWith(clientId) && 
-                  !parameter.equals("com.sun.faces.VIEW") &&
+                  !(parameter.equals("com.sun.faces.VIEW") ||
+                    parameter.equals("javax.faces.ViewState")) &&
                   !parameter.startsWith(formId))
               {
                 _submittedUrl += parameter + "=" + value + "&";
