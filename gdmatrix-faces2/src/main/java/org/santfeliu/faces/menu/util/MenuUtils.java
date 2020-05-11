@@ -33,12 +33,14 @@ package org.santfeliu.faces.menu.util;
 import java.io.IOException;
 import java.util.Map;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.faces.beansaver.BeanSaverUtils;
 
 /**
  *
@@ -80,8 +82,24 @@ public class MenuUtils
     }
     else
     {
-      url = MatrixConfig.getProperty("contextPath") +
-        "/go.faces?xmid=" + menuItem.getMid();
+      StringBuilder sb = new StringBuilder();
+      sb.append(MatrixConfig.getProperty("contextPath"));
+      sb.append("/go.faces");
+      if (BeanSaverUtils.isSessionSavingMethod())
+      {
+        ExternalContext extContext = 
+          FacesContext.getCurrentInstance().getExternalContext();
+        Map cookieMap = extContext.getRequestCookieMap();
+        if (cookieMap == null || cookieMap.isEmpty())
+        {
+          String sessionId = extContext.getSessionId(false);
+          sb.append(";jsessionid=");
+          sb.append(sessionId);          
+        }
+      }
+      sb.append("?xmid=");
+      sb.append(menuItem.getMid());
+      url = sb.toString();
     }
     return url;
   }
@@ -98,7 +116,10 @@ public class MenuUtils
       {
         onclick += "changeTarget('" + target + "');";
       }
-      onclick += "return goMid('" + menuItem.getMid() + "');";
+      if (!BeanSaverUtils.isSessionSavingMethod())
+      {
+        onclick += "return goMid('" + menuItem.getMid() + "');";
+      }
     }
     return onclick;
   }
@@ -121,4 +142,6 @@ public class MenuUtils
       writer.writeAttribute("target", target, null);
     }
   }
+
+
 }

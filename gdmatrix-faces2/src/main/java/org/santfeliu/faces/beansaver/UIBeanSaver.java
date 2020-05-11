@@ -40,7 +40,7 @@ import javax.faces.context.FacesContext;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @FacesComponent(value = "UIBeanSaver")
 public class UIBeanSaver extends UIParameter
@@ -52,26 +52,36 @@ public class UIBeanSaver extends UIParameter
   {
   }
 
+  @Override
   public String getFamily()
   {
     return COMPONENT_FAMILY;
   }
 
+  @Override
   public Object saveState(FacesContext context)
   {
     Object values[] = new Object[2];
-    values[0] = super.saveState(context);
-    Map requestMap = context.getExternalContext().getRequestMap();
-    values[1] = saveRequestBeans(requestMap);
+    values[0] = super.saveState(context);    
+    if (BeanSaverUtils.isViewSavingMethod())
+    {    
+      Map requestMap = context.getExternalContext().getRequestMap();
+      values[1] = saveRequestBeans(requestMap);
+    }
+
     return values;
   }
 
+  @Override
   public void restoreState(FacesContext context, Object state)
   {
     Object values[] = (Object[])state;
     super.restoreState(context, values[0]);
-    Map requestMap = context.getExternalContext().getRequestMap();
-    restoreRequestBeans(requestMap, values[1]);
+    if (BeanSaverUtils.isViewSavingMethod())
+    {     
+      Map requestMap = context.getExternalContext().getRequestMap();
+      restoreRequestBeans(requestMap, values[1]);
+    }
   }
 
   private Object saveRequestBeans(Map requestMap)
@@ -101,5 +111,5 @@ public class UIBeanSaver extends UIParameter
       Object bean = beans[i + 1];
       requestMap.put(name, bean);
     }
-  }
+  } 
 }

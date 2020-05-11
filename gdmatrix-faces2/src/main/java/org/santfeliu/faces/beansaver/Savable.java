@@ -34,7 +34,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public interface Savable extends Serializable
 {
