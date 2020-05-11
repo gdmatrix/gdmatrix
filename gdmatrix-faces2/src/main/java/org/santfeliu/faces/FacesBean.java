@@ -47,6 +47,7 @@ import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.web.HttpUtils;
+import org.santfeliu.ws.WSExceptionFactory;
 
 public abstract class FacesBean
 {
@@ -320,7 +321,11 @@ public abstract class FacesBean
 
   protected void error(Exception ex)
   {
-    FacesUtils.addMessage(ex);
+    List<String> details = WSExceptionFactory.getDetails(ex);
+    if (details.size() > 0) 
+      error(details);   
+    else
+      FacesUtils.addMessage(ex);
   }
 
   protected boolean error(List<String> details)

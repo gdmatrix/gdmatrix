@@ -194,8 +194,6 @@ public class ClassMainBean extends DynamicTypifiedPageBean
     catch (Exception ex)
     {
       error(ex);
-      List<String> details = WSExceptionFactory.getDetails(ex);
-      if (details.size() > 0) error(details);
     }
     return null;
   }

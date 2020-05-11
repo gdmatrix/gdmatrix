@@ -394,9 +394,6 @@ public class CaseMainBean extends DynamicTypifiedPageBean
     catch (Exception ex)
     {
       error(ex);
-      List<String> details = WSExceptionFactory.getDetails(ex);
-      if (details.size() > 0) error(details);
-      ex.printStackTrace();
     }
     return show();
   }

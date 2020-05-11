@@ -65,7 +65,7 @@ import org.santfeliu.ws.WSExceptionFactory;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class DocumentMainBean extends DynamicTypifiedPageBean
 {
@@ -271,8 +271,6 @@ public class DocumentMainBean extends DynamicTypifiedPageBean
     catch (Exception ex)
     {
       error(ex);
-      List<String> details = WSExceptionFactory.getDetails(ex);
-      if (details.size() > 0) error(details);
     }
     return show();
   }

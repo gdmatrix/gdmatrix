@@ -99,8 +99,6 @@ public class PolicyMainBean extends DynamicTypifiedPageBean
     catch (Exception ex)
     {
       error(ex);
-      List<String> details = WSExceptionFactory.getDetails(ex);
-      if (details.size() > 0) error(details);
     }
     return "policy_main";
   }
