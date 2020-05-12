@@ -59,7 +59,11 @@ public abstract class PageBean extends WebBean implements Savable
   public static final String PAGE_SIZE_PROPERTY = "pageSize";
   @CMSProperty
   public static final String PAGE_TITLE_PROPERTY = "oc.pageTitle";
-  
+   
+  @CMSProperty
+  public static final String SHOW_MODE = "showMode";
+  public static final String EDIT_MODE = "edit";
+  public static final String DETAIL_MODE = "detail";  
   protected JumpManager jumpManager;
   
   public PageBean()
@@ -94,7 +98,7 @@ public abstract class PageBean extends WebBean implements Savable
     else
       return show();
   } 
-   
+    
   public String store()
   {
     //preStore();
@@ -177,7 +181,42 @@ public abstract class PageBean extends WebBean implements Savable
   public String showObject(String typeId, String objectId)
   {
     return ControllerBean.getCurrentInstance().showObject(typeId, objectId);
+  }
+    
+  /* Detailed view */
+  public boolean isDetailViewConfigured()
+  {
+    String showMode = getProperty(SHOW_MODE);
+    return (DETAIL_MODE.equals(showMode));    
+  }
+    
+  public String showDetail(String objectId)
+  {
+    DetailBean detailBean = getDetailBean();
+    if (detailBean != null)
+    {
+      String className = detailBean.getClass().getSimpleName();
+      if (className != null)
+      {
+        String beanName = className.substring(0, 1).toLowerCase() +
+          className.substring(1);
+        setBean(beanName, detailBean);
+        return detailBean.show(objectId);
+      }    
+    }
+    return null;
   }  
+  
+  public DetailBean getDetailBean()
+  {
+    return new DetailBean(){
+      @Override
+      public String show(String objectId)
+      {
+        return null;
+      }
+    };
+  } 
 
   public int getPageSize()
   {
@@ -257,5 +296,5 @@ public abstract class PageBean extends WebBean implements Savable
   
     return parameters;    
   }
-    
+   
 }

@@ -44,68 +44,62 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.ObjectDumper;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.ControllerBean;
+import org.santfeliu.web.obj.DefaultDetailBean;
 import org.santfeliu.web.obj.DetailBean;
 
 /**
  *
  * @author blanquepa
  */
-public class CaseDetailBean extends DetailBean
+public class CaseDetailBean extends DefaultDetailBean<Case> implements DetailBean
 {
-  private Case cas;
 
   public CaseDetailBean()
   {
+    super("case_detail");
   }
 
   public CaseDetailBean(Case cas)
   {
-    this.cas = cas;
+    super("case_detail");
+    this.mainObject = cas;
   }
+  
+  @Override
+  public Case load(String caseId) throws Exception
+  {
+    return CaseConfigBean.getPort().loadCase(caseId);
+  } 
 
   public Case getCase()
   {
-    return cas;
+    return this.mainObject;
   }
   
   public Map getCaseAsMap()
   {
     ObjectDumper dumper = new ObjectDumper();
-    Type type = TypeCache.getInstance().getType(cas.getCaseTypeId());
+    Type type = TypeCache.getInstance().getType(mainObject.getCaseTypeId());
     if (type != null)
-      return dumper.dumpAsMap(cas, type);
+      return dumper.dumpAsMap(mainObject, type);
     else
       return Collections.EMPTY_MAP;
   }
 
   public void setCase(Case cas)
   {
-    this.cas = cas;
+    this.mainObject = cas;
   }
   
   public String getCaseId()
   {
-    if (cas != null)
-      return cas.getCaseId();
+    if (mainObject != null)
+      return mainObject.getCaseId();
     else
       return null;
   }
-
-  public String show(String caseId)
-  {
-    try
-    {
-      cas = CaseConfigBean.getPort().loadCase(caseId);
-      loadPanels();
-      return "case_detail";
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-      return null;
-    }
-  }
-
+  
+  
   public String editCase()
   {
     ControllerBean controllerBean = getControllerBean();
@@ -113,6 +107,8 @@ public class CaseDetailBean extends DetailBean
       DictionaryConstants.CASE_TYPE, getCaseId(), ControllerBean.EDIT_VIEW);
   }
 
+  @Override
+  @Deprecated
   public String getShortcutURLObjectIdParameter()
   {
     return "caseid=" + getCaseId();
@@ -120,7 +116,7 @@ public class CaseDetailBean extends DetailBean
 
   public boolean isEditable() throws Exception
   {
-    if (cas == null || cas.getCaseId() == null)
+    if (mainObject == null || mainObject.getCaseId() == null)
       return true;
 
     if (UserSessionBean.getCurrentInstance().isUserInRole(
@@ -128,15 +124,15 @@ public class CaseDetailBean extends DetailBean
       return true;
 
     TypeCache typeCache = TypeCache.getInstance();
-    if (cas.getCaseTypeId() != null && cas.getCaseTypeId().length() > 0)
+    if (mainObject.getCaseTypeId() != null && mainObject.getCaseTypeId().length() > 0)
     {
-      Type currentType = typeCache.getType(cas.getCaseTypeId());
+      Type currentType = typeCache.getType(mainObject.getCaseTypeId());
       if (currentType == null)
         return true;
 
       Set<AccessControl> acls = new HashSet();
       acls.addAll(currentType.getAccessControl());
-      acls.addAll(cas.getAccessControl());
+      acls.addAll(mainObject.getAccessControl());
 
       if (acls != null)
       {

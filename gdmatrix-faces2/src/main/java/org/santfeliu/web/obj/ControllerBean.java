@@ -53,7 +53,9 @@ import org.santfeliu.web.UserSessionBean;
  */
 public class ControllerBean extends FacesBean implements Savable
 {
+  @Deprecated
   public static String EDIT_VIEW = "edit";
+  @Deprecated
   public static String DETAIL_VIEW = "detail";
 
   public static String CONTROLLER_BEAN_NAME = "controllerBean";
@@ -480,9 +482,39 @@ public class ControllerBean extends FacesBean implements Savable
 
   public String showObject(String typeId, String objectId)
   {
-    return showObject(typeId, objectId, EDIT_VIEW);
+    MenuItemCursor cursor = getSelectedMenuItem();
+    String searchMid = cursor.getProperty(getTypePropertyName(typeId));
+
+    if (searchMid != null)
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      cursor = userSessionBean.getMenuModel().getMenuItem(searchMid);
+      cursor = getLeafMenuItem(cursor);
+      return show(cursor.getMid(), objectId);
+    }
+    else
+    {
+      //Try compatibility with use of oc.objectBean
+      cursor = getHeadMenuItem(getSelectedMenuItem());
+      if (!cursor.isNull())
+      {
+        ObjectBean objectBean = getObjectBean(cursor);
+        if (objectBean.getObjectTypeId().equals(typeId))
+        {
+          cursor = getLeafMenuItem(cursor);
+          if (getPageBean(cursor) != null)
+          {
+            return show(cursor.getMid(), objectId);
+          }
+        }
+      }
+
+      error(INVALID_NODE_CONFIG);
+      return null;
+    }
   }
 
+  @Deprecated
   public String showObject(String typeId, String objectId, String view)
   {
     MenuItemCursor cursor = getSelectedMenuItem();
@@ -892,9 +924,13 @@ public class ControllerBean extends FacesBean implements Savable
 
   private String getTypePropertyName(String typeId)
   {
-    return getTypePropertyName(typeId, null);
+    // properties format examples: caseSearchMid, personSearchMid, etc..
+    String propertyName = typeId.substring(0, 1).toLowerCase() +
+      typeId.substring(1) + MID_PROPERTY_SUFFIX;
+    return propertyName;
   }
 
+  @Deprecated
   private String getTypePropertyName(String typeId, String view)
   {
     // properties format examples: caseSearchMid, personSearchMid, etc..

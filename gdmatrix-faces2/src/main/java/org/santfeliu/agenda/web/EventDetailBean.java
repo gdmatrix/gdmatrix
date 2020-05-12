@@ -72,18 +72,19 @@ import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.util.TextUtils;
-import org.santfeliu.util.script.WebScriptableBase;
-import org.santfeliu.util.template.Template;
 import org.santfeliu.util.template.WebTemplate;
 import org.santfeliu.web.HttpUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.ShareableWebBean;
+import org.santfeliu.web.obj.DetailBean;
+import org.santfeliu.web.obj.PropertiesFilter;
 
 /**
  *
  * @author blanquepa
  */
-public class EventDetailBean extends ShareableWebBean implements Savable
+public class EventDetailBean extends ShareableWebBean implements Savable,
+  DetailBean
 {
   private static final String DETAILS_ATTENDANTS_RENDER =
     "details.attendants.render";
@@ -116,14 +117,16 @@ public class EventDetailBean extends ShareableWebBean implements Savable
   private String selector;
   private List<SelectItem> formSelectItems;
   private boolean resetSelector = true;
-
+  
   public EventDetailBean()
   {
   }
-
-  public EventDetailBean(String eventId)
+  
+  @Override
+  public String show(String eventId)
   {
     this.eventId = eventId;
+    return show();
   }
 
   public String show()
@@ -136,7 +139,8 @@ public class EventDetailBean extends ShareableWebBean implements Savable
 
       EventPlaceFilter eventPlaceFilter = new EventPlaceFilter();
       eventPlaceFilter.setEventId(eventId);
-      List<EventPlaceView> eventPlaceViews = port.findEventPlaceViewsFromCache(eventPlaceFilter);
+      List<EventPlaceView> eventPlaceViews = 
+        port.findEventPlaceViewsFromCache(eventPlaceFilter);
       if (eventPlaceViews != null)
       {
         places = new ArrayList();
@@ -169,7 +173,8 @@ public class EventDetailBean extends ShareableWebBean implements Savable
 
       EventDocumentFilter eventDocumentFilter = new EventDocumentFilter();
       eventDocumentFilter.setEventId(eventId);
-      eventDocuments = port.findEventDocumentViewsFromCache(eventDocumentFilter);
+      eventDocuments = 
+        port.findEventDocumentViewsFromCache(eventDocumentFilter);
 
       setFormDataFromProperties(event.getProperty());
       data.put("_objectId", eventId);
@@ -305,7 +310,8 @@ public class EventDetailBean extends ShareableWebBean implements Savable
 
   public boolean isTypeUndefined()
   {
-    return event == null || event.getEventTypeId() == null || event.getEventTypeId().length() == 0;
+    return event == null || event.getEventTypeId() == null 
+      || event.getEventTypeId().length() == 0;
   }
 
   public String updateForm()
@@ -317,8 +323,6 @@ public class EventDetailBean extends ShareableWebBean implements Savable
     }
     return show();
   }
-
-
 
   public void setEvent(Event event)
   {
@@ -440,8 +444,9 @@ public class EventDetailBean extends ShareableWebBean implements Savable
     {
       for (EventDocumentView docView : eventDocuments)
       {
-        if (AgendaConfigBean.DETAILS_IMAGE_TYPE.equals(docView.getEventDocTypeId()) ||
-            AgendaConfigBean.LIST_AND_DETAILS_IMAGE_TYPE.equals(docView.getEventDocTypeId()))
+        String typeId = docView.getEventDocTypeId();
+        if (AgendaConfigBean.DETAILS_IMAGE_TYPE.equals(typeId) ||
+            AgendaConfigBean.LIST_AND_DETAILS_IMAGE_TYPE.equals(typeId))
         {
           docId = docView.getDocument().getDocId();
         }
@@ -493,7 +498,8 @@ public class EventDetailBean extends ShareableWebBean implements Savable
     {
       for (EventDocumentView docView : eventDocuments)
       {
-        if (AgendaConfigBean.EXTENDED_INFO_TYPE.equals(docView.getEventDocTypeId()))
+        String typeId = docView.getEventDocTypeId();
+        if (AgendaConfigBean.EXTENDED_INFO_TYPE.equals(typeId))
         {
           result.add(docView.getDocument());
         }
@@ -542,10 +548,12 @@ public class EventDetailBean extends ShareableWebBean implements Savable
               String streetNumber = "";
               if (gisReference == null)
               {
+                String description = addressView.getDescription();
+                String number1 = address.getNumber1();
                 streetName = 
-                  getStreetName(addressView.getDescription(), address.getNumber1());
+                  getStreetName(description, number1);
                 streetNumber = 
-                  address.getNumber1() != null ? address.getNumber1() : "";
+                  number1 != null ? number1 : "";
                 gisReference = "";
               }
               properties.setProperty("reference", gisReference);
@@ -616,31 +624,44 @@ public class EventDetailBean extends ShareableWebBean implements Savable
 
   public String getBaseURL()
   {
-    return "go.faces?xmid=" + UserSessionBean.getCurrentInstance().getSelectedMenuItem().getMid();
+    return "go.faces?xmid=" + 
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem().getMid();
   }
 
   public String getEventFilterParameters(String main)
   {
-    EventSearchBean eventSearchBean = (EventSearchBean)getBean("eventSearchBean");
+    EventSearchBean eventSearchBean = 
+      (EventSearchBean)getBean("eventSearchBean");
     EventFilter eventFilter = eventSearchBean.getEventFilter();
     StringBuilder sb = new StringBuilder();
     EventSearchView eventViewBean = eventSearchBean.getEventViewBean();
-    if (!"datetime".equals(main) && eventViewBean instanceof ScheduleEventSearchView)
+    if (!"datetime".equals(main) 
+      && eventViewBean instanceof ScheduleEventSearchView)
     {
-      ScheduleEventSearchView searchView = (ScheduleEventSearchView)eventViewBean;
+      ScheduleEventSearchView searchView = 
+        (ScheduleEventSearchView)eventViewBean;
       Date selectedDate = searchView.getSelectedDate();
-      String startDateTime = TextUtils.formatDate(selectedDate, "yyyyMMdd000000");
+      String startDateTime = 
+        TextUtils.formatDate(selectedDate, "yyyyMMdd000000");
       sb.append("&startdatetime=").append(startDateTime);
     }
     else
     {
-      if (!StringUtils.isBlank(eventFilter.getStartDateTime()) && !"datetime".equals(main))
+      if (!StringUtils.isBlank(eventFilter.getStartDateTime()) 
+        && !"datetime".equals(main))
+      {
         sb.append("&startdatetime=").append(eventFilter.getStartDateTime());
-      if (!StringUtils.isBlank(eventFilter.getEndDateTime()) && !"datetime".equals(main))
+      }
+      if (!StringUtils.isBlank(eventFilter.getEndDateTime()) 
+        && !"datetime".equals(main))
+      {
         sb.append("&enddatetime=").append(eventFilter.getEndDateTime());
+      }
     }
-    if (!StringUtils.isBlank(eventSearchBean.getPropertiesFilter().getCurrentTypeId()) && !"eventtypeid".equals(main))
-      sb.append("&eventtypeid=").append(eventSearchBean.getPropertiesFilter().getCurrentTypeId());
+    PropertiesFilter propFilter = eventSearchBean.getPropertiesFilter();
+    if (!StringUtils.isBlank(propFilter.getCurrentTypeId()) 
+      && !"eventtypeid".equals(main))
+      sb.append("&eventtypeid=").append(propFilter.getCurrentTypeId());
     if (!StringUtils.isBlank(eventFilter.getRoomId()) && !"roomid".equals(main))
       sb.append("&roomid=").append(eventFilter.getRoomId());
     if (!StringUtils.isBlank(eventFilter.getContent()))
@@ -678,19 +699,19 @@ public class EventDetailBean extends ShareableWebBean implements Savable
     }
     return result;
   }
-  
+
   @Override
   protected String getEmailDefaultSubject()
   {    
     return event.getSummary() != null ? event.getSummary() : "";
   }
-
+  
   @Override
   protected String getEmailDefaultBody()
   {
     return getEventURL();    
   }  
-  
+ 
   private String getEventURL()
   {
     ExternalContext extContext = getFacesContext().getExternalContext();

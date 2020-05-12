@@ -40,14 +40,17 @@ import java.io.Serializable;
 public class JumpData implements Serializable
 {
   public static final String NEW_OBJECT_PARAMETER = "new";
+  public static final String DETAIL_PARAMETER = "detail";
   
   private String objectId;
   private String tabObjectId;
   private String jmid;
   private String xmid;
   private String typeId;
+  private RequestType requestType;
+  private enum RequestType {URL, JS}  
   private boolean suitable = true;
-
+  
   public String getObjectId()
   {
     return objectId;
@@ -102,8 +105,8 @@ public class JumpData implements Serializable
       return tabObjectId.equals(NEW_OBJECT_PARAMETER);
     else
       return false;    
-  }   
-
+  }  
+  
   public String getTypeId()
   {
     return typeId;
@@ -133,6 +136,25 @@ public class JumpData implements Serializable
   {
     return (this.objectId != null && (this.jmid != null || this.typeId != null));
   }
- 
+
+  public void setJSRequestType()
+  {
+    this.requestType = RequestType.JS;
+  }
   
+  public boolean isJSRequestType()
+  {
+    return this.requestType == RequestType.JS;
+  }
+  
+  public void setURLRequestType()
+  {
+    this.requestType = RequestType.URL;
+  }
+  
+  public boolean isURLRequestType()
+  {
+    return this.requestType == RequestType.URL;
+  }
+ 
 }

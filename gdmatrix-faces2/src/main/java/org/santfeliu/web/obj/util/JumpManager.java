@@ -31,6 +31,7 @@
 package org.santfeliu.web.obj.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.santfeliu.agenda.web.EventSearchBean;
 import org.santfeliu.cases.web.CaseSearchBean;
 import org.santfeliu.cases.web.InterventionSearchBean;
 import org.santfeliu.doc.web.DocumentSearchBean;
@@ -68,6 +69,8 @@ public class JumpManager extends ParametersManager
       this.idParameterName = "caseid";
     else if (pageBean instanceof DocumentSearchBean)
       this.idParameterName = "docid";
+    else if (pageBean instanceof EventSearchBean)
+      this.idParameterName = "eventid";
     else if (pageBean instanceof InterventionSearchBean)
     {
       this.idParameterName = "caseid";
@@ -147,8 +150,15 @@ public class JumpManager extends ParametersManager
       }
       else
       {
-        String typeId = jumpData.getTypeId();
         String objectId = jumpData.getObjectId();
+        
+        if (jumpData.isURLRequestType())
+        {
+          if (pageBean.isDetailViewConfigured())
+            return pageBean.showDetail(objectId);        
+        }
+
+        String typeId = jumpData.getTypeId();
         if (typeId != null && objectId != null)
           return pageBean.showObject(typeId, objectId);
       }
@@ -238,6 +248,7 @@ public class JumpManager extends ParametersManager
       (String) parameters.getParameterValue(JUMPCOMMAND_PARAMETER);
     if (!StringUtils.isBlank(jumpCommand)) //JS showObject
     {
+      data.setJSRequestType();
       String[] parts = jumpCommand.split("\\|");
       if (parts[0].equals("type"))
       {
@@ -253,6 +264,7 @@ public class JumpManager extends ParametersManager
     }
     else //jump from URL
     {
+      data.setURLRequestType();
       if (jumpMid == null) 
       {
         jumpMid = (String) parameters.getParameterValue(JUMP_MID_PARAMETER);

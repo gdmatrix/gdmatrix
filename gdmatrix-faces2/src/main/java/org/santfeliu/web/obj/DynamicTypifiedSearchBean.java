@@ -222,7 +222,7 @@ public abstract class DynamicTypifiedSearchBean extends BasicSearchBean
   public boolean isShowParametersOnUrl()
   {
     return (resultsManager.isSubmitColumn() &&
-      getProperty(DetailBean.SHORTCUT_URL_MID) == null);
+      getProperty(DefaultDetailBean.SHORTCUT_URL_MID) == null);
   }
 
   public String getColumnStyle()

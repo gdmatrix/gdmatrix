@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -57,9 +56,8 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.matrix.dic.TypeFilter;
 import org.matrix.doc.Document;
-import org.matrix.kernel.RoomFilter;
-import org.matrix.kernel.RoomView;
 import org.matrix.security.SecurityConstants;
+import org.santfeliu.agenda.client.AgendaManagerClient;
 import org.santfeliu.agenda.web.view.EventSearchView;
 import org.santfeliu.agenda.web.view.ScheduleEventSearchView;
 import org.santfeliu.agenda.web.view.ScheduleEventViewBean;
@@ -73,7 +71,6 @@ import org.santfeliu.doc.web.DocumentUrlBuilder;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.browser.HtmlBrowser;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
-import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.kernel.web.PersonBean;
 import org.santfeliu.kernel.web.PersonSearchBean;
 import org.santfeliu.kernel.web.RoomBean;
@@ -87,13 +84,15 @@ import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.ControllerBean;
+import org.santfeliu.web.obj.DetailBean;
 
 import org.santfeliu.web.obj.PageBean;
 import org.santfeliu.web.obj.PropertiesFilter;
+import org.santfeliu.web.obj.util.RequestParameters;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 @CMSManagedBean
 public class EventSearchBean extends PageBean
@@ -123,11 +122,14 @@ public class EventSearchBean extends PageBean
   @CMSProperty
   public static final String SORT_EVENT_PERSON = "sortEventPerson";
   @CMSProperty  
-  public static final String SEARCH_EVENT_PROPERTY_NAME = "searchEventPropertyName";
+  public static final String SEARCH_EVENT_PROPERTY_NAME = 
+    "searchEventPropertyName";
   @CMSProperty
-  public static final String SEARCH_EVENT_PROPERTY_VALUE = "searchEventPropertyValue";
+  public static final String SEARCH_EVENT_PROPERTY_VALUE = 
+    "searchEventPropertyValue";
   @CMSProperty
-  public static final String PROPERTY_FIRSTLOAD = "resultList.showOnFirstRequest";
+  public static final String PROPERTY_FIRSTLOAD = 
+    "resultList.showOnFirstRequest";
   @CMSProperty
   public static final String ORDERBY = "orderBy";
   @CMSProperty
@@ -183,15 +185,18 @@ public class EventSearchBean extends PageBean
   @CMSProperty
   public static final String RENDER_THEME_FILTER = "renderThemeFilter";
   @CMSProperty
-  public static final String RENDER_INPUT_PROPERTIES_FILTER = "renderInputPropertiesFilter";
+  public static final String RENDER_INPUT_PROPERTIES_FILTER = 
+    "renderInputPropertiesFilter";
   @CMSProperty
-  public static final String RENDER_SELECT_PROPERTIES_FILTER = "renderSelectPropertiesFilter";
+  public static final String RENDER_SELECT_PROPERTIES_FILTER = 
+    "renderSelectPropertiesFilter";
   @CMSProperty
   public static final String RENDER_ACTIONS_BAR = "renderActionsBar";
   @CMSProperty
   public static final String RENDER_PUBLIC_ICON = "renderPublicIcon";
   @CMSProperty
-  public static final String RENDER_ONLY_ATTENDANTS_ICON = "renderOnlyAttendantsIcon";
+  public static final String RENDER_ONLY_ATTENDANTS_ICON = 
+    "renderOnlyAttendantsIcon";
   @CMSProperty
   public static final String RENDER_FILTER_INFO = "renderFilterInfo";
   @CMSProperty
@@ -207,7 +212,6 @@ public class EventSearchBean extends PageBean
   private static final String DEFAULT_EVENT_TEMPLATE_NAME = "minimal";
 
   private static final String EVENT_SECURITY_SOURCE = "event";
-  private static final String NODE_SECURITY_SOURCE = "node";
   private static final String NODE_AND_EVENT_SECURITY_SOURCE = "node_event";
 
   private transient List<SelectItem> typeSelectItems;
@@ -233,7 +237,6 @@ public class EventSearchBean extends PageBean
   private transient HtmlBrowser infoBrowser = new HtmlBrowser();  
   private transient HtmlBrowser footerBrowser = new HtmlBrowser();
 
-  private String eventIdParam = null;
   private String eventTypeIdParam = null;
   private String roomIdParam = null;
   private String startDateTimeParam = null;
@@ -432,7 +435,8 @@ public class EventSearchBean extends PageBean
   {
     try
     {
-      typeSelectItems = createTypeSelectItems(propertiesFilter.getCurrentTypeId());
+      String currentTypId = propertiesFilter.getCurrentTypeId();
+      typeSelectItems = createTypeSelectItems(currentTypId);
       
       if (isRenderPublicIcon())
       {
@@ -472,9 +476,15 @@ public class EventSearchBean extends PageBean
         PersonBean personBean = (PersonBean)getBean("personBean");
         List<String> filteredPersons = getNodePersonIdList();
         if (filteredPersons != null && !filteredPersons.isEmpty())
-          personSelectItems = personBean.getSelectItems(filteredPersons, eventFilter.getPersonId());
+        {
+          personSelectItems = personBean.getSelectItems(filteredPersons, 
+            eventFilter.getPersonId());
+        }
         else
-          personSelectItems = personBean.getSelectItems(eventFilter.getPersonId());
+        {
+          personSelectItems = 
+            personBean.getSelectItems(eventFilter.getPersonId());
+        }
         
         if (!personSelectItems.isEmpty())
         {
@@ -488,7 +498,9 @@ public class EventSearchBean extends PageBean
                 String description = id;
                 if (id.contains("\"") && id.endsWith("\""))
                 {
-                  description = id.substring(id.indexOf("\"") + 1, id.lastIndexOf("\""));
+                  int idx = id.indexOf("\"");
+                  int lastIdx = id.lastIndexOf("\"");
+                  description = id.substring(idx + 1, lastIdx);
                 }
 
                 if (description != null)
@@ -498,7 +510,8 @@ public class EventSearchBean extends PageBean
                 }
               }
             }
-            item.setLabel(item.getLabel().replaceAll("\\((\\d)+;(\\d)+\\)", ""));
+            String label = item.getLabel();
+            item.setLabel(label.replaceAll("\\((\\d)+;(\\d)+\\)", ""));
           }
         }        
         
@@ -655,34 +668,37 @@ public class EventSearchBean extends PageBean
     clearEventFilter();
     initEventFilter();
 
-    Map requestParameters = getExternalContext().getRequestParameterMap();
+    RequestParameters requestParameters = getRequestParameters();
     //Main params
-    eventIdParam = (String)requestParameters.get("eventid");
-    roomIdParam = (String)requestParameters.get("roomid");
-    eventTypeIdParam = (String)requestParameters.get("eventtypeid");
-    startDateTimeParam = (String)requestParameters.get("startdatetime");
-    endDateTimeParam = (String)requestParameters.get("enddatetime");
+    roomIdParam = 
+      (String)requestParameters.getParameterValue("roomid");
+    eventTypeIdParam = 
+      (String)requestParameters.getParameterValue("eventtypeid");
+    startDateTimeParam = 
+      (String)requestParameters.getParameterValue("startdatetime");
+    endDateTimeParam = 
+      (String)requestParameters.getParameterValue("enddatetime");
+    
     //Secondary params
-    String oc = (String)requestParameters.get("oc");
+    String oc = (String)requestParameters.getParameterValue("oc");
     if (oc != null)
       this.onlyCurrentDate = oc;
-    String content = (String)requestParameters.get("content");
+    String content = (String)requestParameters.getParameterValue("content");
     if (content != null)
       eventFilter.setContent(content);
-    String personId = (String)requestParameters.get("personid");
+    String personId = (String)requestParameters.getParameterValue("personid");
     if (personId != null)
       eventFilter.setPersonId(personId);
-    String th = (String)requestParameters.get("themeid");
+    String th = (String)requestParameters.getParameterValue("themeid");
     if (th != null)
     {
       this.themeId = th;
       eventFilter.getThemeId().add(th);
     }
 
-    if (eventIdParam != null)
-    {
-      return showDetail(eventIdParam);
-    }
+    String outcome = jumpManager.execute(requestParameters);
+    if (outcome != null)
+      return outcome;    
     else
     {
       propertiesFilter.createPropDefSelectItems();
@@ -748,9 +764,13 @@ public class EventSearchBean extends PageBean
         setAttendantModeFilter(eventFilter);
         //SecurityMode
         String securityMode = getProperty(SECURITY_MODE);
-        if (securityMode != null && (!StringUtils.isBlank(eventFilter.getRoomId()) ||
+        if (securityMode != null && 
+          (!StringUtils.isBlank(eventFilter.getRoomId()) ||
           !StringUtils.isBlank(eventFilter.getPersonId())))
-          eventFilter.setSecurityMode(SecurityMode.valueOf(securityMode.toUpperCase()));
+        {
+          SecurityMode sm = SecurityMode.valueOf(securityMode.toUpperCase());
+          eventFilter.setSecurityMode(sm);
+        }
         else
           eventFilter.setSecurityMode(SecurityMode.FILTERED);
         //Properties
@@ -784,9 +804,13 @@ public class EventSearchBean extends PageBean
     setRoomIdFilter(eventFilter);
     //SecurityMode
     String securityMode = getProperty(SECURITY_MODE);
-    if (securityMode != null && (!StringUtils.isBlank(eventFilter.getRoomId()) ||
+    if (securityMode != null && 
+      (!StringUtils.isBlank(eventFilter.getRoomId()) ||
       !StringUtils.isBlank(eventFilter.getPersonId())))
-      eventFilter.setSecurityMode(SecurityMode.valueOf(securityMode.toUpperCase()));
+    {
+      SecurityMode sm = SecurityMode.valueOf(securityMode.toUpperCase());
+      eventFilter.setSecurityMode(sm);
+    }
     else
       eventFilter.setSecurityMode(SecurityMode.FILTERED);
 
@@ -829,7 +853,8 @@ public class EventSearchBean extends PageBean
 
   public String searchTheme()
   {
-    ThemeSearchBean themeSearchBean = (ThemeSearchBean)getBean("themeSearchBean");
+    ThemeSearchBean themeSearchBean = 
+      (ThemeSearchBean)getBean("themeSearchBean");
     if (themeSearchBean == null)
       themeSearchBean = new ThemeSearchBean();
 
@@ -840,7 +865,8 @@ public class EventSearchBean extends PageBean
 
   public String searchPerson()
   {
-    PersonSearchBean personSearchBean = (PersonSearchBean)getBean("personSearchBean");
+    PersonSearchBean personSearchBean = 
+      (PersonSearchBean)getBean("personSearchBean");
     if (personSearchBean == null)
       personSearchBean = new PersonSearchBean();
 
@@ -874,8 +900,10 @@ public class EventSearchBean extends PageBean
   {
     if (selectedDate != null)
     {
-      startDateFilter = TextUtils.formatDate(selectedDate, "yyyyMMdd") + "000000";
-      endDateFilter = TextUtils.formatDate(selectedDate, "yyyyMMdd") + "235959";
+      startDateFilter = 
+        TextUtils.formatDate(selectedDate, "yyyyMMdd") + "000000";
+      endDateFilter = 
+        TextUtils.formatDate(selectedDate, "yyyyMMdd") + "235959";
     }
   }
 
@@ -917,7 +945,20 @@ public class EventSearchBean extends PageBean
 
   public String showEvent(String eventId)
   {
-    return getControllerBean().showObject(DictionaryConstants.EVENT_TYPE, eventId);
+    ControllerBean controllerBean = getControllerBean();
+    return controllerBean.showObject(DictionaryConstants.EVENT_TYPE, eventId);
+  }
+  
+  @Override
+  public DetailBean getDetailBean()
+  {
+    return new EventDetailBean();
+  }  
+  
+  @Override
+  public boolean isDetailViewConfigured()
+  {
+    return true;
   }
 
   public String showDetail()
@@ -925,12 +966,13 @@ public class EventSearchBean extends PageBean
     return showDetail((String)getValue("#{row.eventId}"));
   }
 
-  public String showDetail(String eventId)
-  {
-    EventDetailBean eventDetailBean = new EventDetailBean(eventId);
-    setBean("eventDetailBean", eventDetailBean);
-    return eventDetailBean.show();
-  }
+//  @Override
+//  public String showDetail(String eventId)
+//  {
+//    EventDetailBean eventDetailBean = new EventDetailBean();
+//    setBean("eventDetailBean", eventDetailBean);
+//    return eventDetailBean.show(eventId);
+//  }
 
   public String selectEvent()
   {
@@ -1178,7 +1220,8 @@ public class EventSearchBean extends PageBean
 
     // is user in updates roles
     MenuItemCursor mic = userSessionBean.getSelectedMenuItem();
-    List<String> rolesUpdate = mic.getMultiValuedProperty(ROLES_UPDATE_PROPERTY);
+    List<String> rolesUpdate = 
+      mic.getMultiValuedProperty(ROLES_UPDATE_PROPERTY);
     if (rolesUpdate != null && rolesUpdate.size() > 0)
     {
       for (String roleUpdate : rolesUpdate)
@@ -1201,7 +1244,8 @@ public class EventSearchBean extends PageBean
     String securitySource = getProperty(SHOW_EVENT_SECURITY_SOURCE);
     
     Boolean rowEditable = ((Boolean)getValue("#{row.editable}"));
-    boolean isEventEditable = (rowEditable != null ? rowEditable.booleanValue() : false);
+    boolean isEventEditable = 
+      (rowEditable != null ? rowEditable.booleanValue() : false);
 
     if (EVENT_SECURITY_SOURCE.equalsIgnoreCase(securitySource))
       return isEventEditable;
@@ -1433,7 +1477,8 @@ public class EventSearchBean extends PageBean
 
   private void clearInfoBrowser(EventFilter filter)
   {
-    if (infoBrowser != null && (roomIdParam != null || eventTypeIdParam != null))
+    if (infoBrowser != null 
+      && (roomIdParam != null || eventTypeIdParam != null))
     {
       boolean keepTypeId = filter.getEventTypeId() != null
         && !filter.getEventTypeId().isEmpty()
@@ -1516,7 +1561,10 @@ public class EventSearchBean extends PageBean
         Date minDate = cal.getTime();
         Date startDate = TextUtils.parseInternalDate(startDateFilter);
         if (minDate.after(startDate))
-          filter.setStartDateTime(TextUtils.formatDate(minDate, "yyyyMMdd") + "000000");
+        {
+          String startDT = TextUtils.formatDate(minDate, "yyyyMMdd") + "000000";
+          filter.setStartDateTime(startDT);
+        }
         else
           filter.setStartDateTime(startDateFilter);
       }
@@ -1531,7 +1579,10 @@ public class EventSearchBean extends PageBean
 
     //Set end date
     if (isRenderCalendarPanel() && filterOnlyCurrentDate())
-      filter.setEndDateTime(filter.getStartDateTime().substring(0, 8) + "235959");
+    {
+      String endDT = filter.getStartDateTime().substring(0, 8) + "235959";
+      filter.setEndDateTime(endDT);
+    }
     else if (isRenderCalendarPanel() && !filterOnlyCurrentDate())
       filter.setEndDateTime(null);
     else
@@ -1545,7 +1596,8 @@ public class EventSearchBean extends PageBean
     //Schedule sync
     if (eventViewBean instanceof ScheduleEventSearchView)
     {
-      Date selectedDate = TextUtils.parseInternalDate(filter.getStartDateTime());
+      Date selectedDate = 
+        TextUtils.parseInternalDate(filter.getStartDateTime());
       ((ScheduleEventSearchView)eventViewBean).setSelectedDate(selectedDate);
     }
   }
@@ -1564,15 +1616,18 @@ public class EventSearchBean extends PageBean
     {
       for (SelectItem item : result)
       {
-        if (item.getLabel().equals(item.getValue())) //is not a room, is probably an address
-        {
+        if (item.getLabel().equals(item.getValue())) 
+        { 
+          //is not a room, is probably an address
           String id = (String)item.getValue();
           if (!StringUtils.isBlank(id))
           {
             String description = id;
             if (id.contains("\"") && id.endsWith("\""))
             {
-              description = id.substring(id.indexOf("\"") + 1, id.lastIndexOf("\""));
+              int idx = id.indexOf("\"");
+              int lastIdx = id.lastIndexOf("\"");
+              description = id.substring(idx + 1, lastIdx);
             }
             else
             {
@@ -1601,8 +1656,11 @@ public class EventSearchBean extends PageBean
   private String extractRoomId(String description)
   {
     String roomId = description;
-    if (description != null && description.contains("\"") && description.endsWith("\""))
+    if (description != null && description.contains("\"") 
+      && description.endsWith("\""))
+    {
       roomId = description.substring(0, description.indexOf("\"")).trim();
+    }
 
     return roomId;
   }
@@ -1674,8 +1732,11 @@ public class EventSearchBean extends PageBean
 
   private boolean isEmpty(List<String> list)
   {
-    if (list == null || list.isEmpty() || (list.size() == 1 && list.get(0).length() == 0))
+    if (list == null || list.isEmpty() || 
+      (list.size() == 1 && list.get(0).length() == 0))
+    {
       return true;
+    }
     else
       return false;
   }
@@ -1699,7 +1760,7 @@ public class EventSearchBean extends PageBean
     }
   }
   
-  private String getInfoDocumentUrl(String propertyName, String propertyValue)
+  private String getInfoDocumentUrl(String propName, String propValue)
   {
     String url = null;
     Credentials credentials =
@@ -1707,23 +1768,11 @@ public class EventSearchBean extends PageBean
     CachedDocumentManagerClient client = new CachedDocumentManagerClient(
       credentials.getUserId(), credentials.getPassword());
     Document document =
-      client.loadDocumentByName("Document", propertyName, propertyValue, null, 0);
+      client.loadDocumentByName("Document", propName, propValue, null, 0);
     if (document != null)
       url = DocumentUrlBuilder.getDocumentUrl(document);
 
     return url;
-  }
-
-  private RoomView findRoomView(String roomId)
-  {
-    RoomView roomView = null;
-    RoomFilter filter = new RoomFilter();
-    filter.getRoomIdList().add(roomId);
-    List<RoomView> roomViews = KernelConfigBean.getPort().findRoomViews(filter);
-    if (roomViews != null && !roomViews.isEmpty())
-      roomView =  roomViews.get(0);
-
-    return roomView;
   }
 
   private void checkConfiguredFilters(Event event) throws Exception
@@ -1747,8 +1796,9 @@ public class EventSearchBean extends PageBean
     {
       EventThemeFilter eventThemeFilter = new EventThemeFilter();
       eventThemeFilter.setEventId(event.getEventId());
+      AgendaManagerClient client = AgendaConfigBean.getPort();
       List<EventThemeView> eventThemes =
-        AgendaConfigBean.getPort().findEventThemeViewsFromCache(eventThemeFilter);
+        client.findEventThemeViewsFromCache(eventThemeFilter);
       if (eventThemes == null || eventThemes.isEmpty())
         throw new Exception("EVENTTHEME_NOT_MATCH");
 
@@ -1785,5 +1835,7 @@ public class EventSearchBean extends PageBean
   {
     return eventFilter.getRoomId();
   }
+
+
   
 }

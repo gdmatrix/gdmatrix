@@ -41,8 +41,6 @@ import java.util.Properties;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.MailSender;
 import org.santfeliu.util.MatrixConfig;
-import org.santfeliu.util.script.WebScriptableBase;
-import org.santfeliu.util.template.Template;
 import org.santfeliu.util.template.WebTemplate;
 
 /**

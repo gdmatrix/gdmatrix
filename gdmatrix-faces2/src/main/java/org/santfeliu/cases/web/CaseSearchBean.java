@@ -55,7 +55,6 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
-import org.santfeliu.web.obj.ControllerBean;
 import org.santfeliu.web.obj.DynamicTypifiedSearchBean;
 import org.santfeliu.util.keywords.KeywordsManager;
 import org.santfeliu.faces.convert.TypeIdConverter;
@@ -63,6 +62,8 @@ import org.santfeliu.kernel.web.PersonBean;
 import org.santfeliu.kernel.web.PersonSearchBean;
 import org.santfeliu.util.FilterUtils;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.web.obj.ControllerBean;
+import org.santfeliu.web.obj.DefaultDetailBean;
 import org.santfeliu.web.obj.DetailBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
 import org.santfeliu.web.obj.util.JumpData;
@@ -128,8 +129,6 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     "renderPropertyValueFilter";
   @CMSProperty
   public static final String RENDER_CLEAR_BUTTON = "renderClearButton";
-  @CMSProperty
-  public static final String SHOW_MODE = "showMode";
   @CMSProperty
   public static final String LOAD_METADATA_PROPERTY = "loadMetadata";
   @CMSProperty
@@ -523,7 +522,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
         filter.setDefaultDateFilter(now, now, "3");        
       }
     }
-
+    
     ParametersManager[] managers = {jumpManager, setObjectManager};
     String outcome = executeParametersManagers(managers);
     if (outcome != null)
@@ -591,9 +590,7 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
   public String showCase()
   {
     String caseId = (String)getValue("#{row.caseId}");
-    String showMode = getProperty(SHOW_MODE);
-
-    return showCase(caseId, showMode);
+    return showObject(DictionaryConstants.CASE_TYPE, caseId);
   }
 
   public String showCase(String caseId, String showMode)
@@ -601,23 +598,19 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     if (showMode != null && showMode.equals(SHOW_DETAIL_MODE))
     {
       //detail mode
-      if (getProperty(DetailBean.DETAIL_PANELS_MID) == null)
+      if (getProperty(DefaultDetailBean.DETAIL_PANELS_MID) == null)
       {
         return getControllerBean().showObject(
-          DictionaryConstants.CASE_TYPE, caseId, ControllerBean.DETAIL_VIEW);
+          DictionaryConstants.CASE_TYPE, caseId);
       }
       else
-      {
-        CaseDetailBean caseDetailBean = new CaseDetailBean();
-        setBean("caseDetailBean", caseDetailBean);
-        return caseDetailBean.show(caseId);
-      }
+        return showDetail(caseId);
     }
     else
     {
       //edit mode
       return getControllerBean().showObject(
-        DictionaryConstants.CASE_TYPE, caseId, ControllerBean.EDIT_VIEW);
+        DictionaryConstants.CASE_TYPE, caseId);
     }
   }
 
@@ -1085,4 +1078,10 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     }
     return new String(cArray);
   }  
+
+  @Override
+  public DetailBean getDetailBean()
+  {
+    return new CaseDetailBean();
+  }
 }
