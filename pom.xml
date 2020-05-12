@@ -53,9 +53,6 @@
     <module>gdmatrix-common</module>
     <module>gdmatrix-ws</module>
     <module>gdmatrix-ant</module>
-    <!--
-    <module>gdmatrix-faces</module>
-    -->
     <module>gdmatrix-faces2</module>
     <module>gdmatrix-ide</module>
     <module>gdmatrix-elections</module>
