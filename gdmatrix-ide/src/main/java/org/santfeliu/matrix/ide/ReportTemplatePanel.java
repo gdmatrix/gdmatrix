@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -48,49 +48,31 @@ import org.santfeliu.swing.text.ReportTemplateEditorKit;
 import org.santfeliu.swing.text.SymbolHighlighter;
 /**
  *
- * @author blanquepa
+ * @author blanquepa, realor
  */
 public class ReportTemplatePanel extends TextPanel
 {
-  private JToolBar toolBar = new JToolBar();
-  private JButton executeReportButton = new JButton();
-  
+  private final JToolBar toolBar = new JToolBar();
+  private final JButton executeReportButton = new JButton();
+
   public ReportTemplatePanel()
   {
-    super();
-    toolBar.setFloatable(false);
-    toolBar.setRollover(true);
-    toolBar.setLayout(new WrapLayout(WrapLayout.LEFT, 2, 2));
-    toolBar.setMinimumSize(new Dimension(1, 1));
-
-    executeReportButton.setText("Execute report");
-    executeReportButton.setIcon(new ImageIcon(getClass().getResource(
-      "/org/santfeliu/matrix/ide/resources/images/run.gif")));
-    executeReportButton.addActionListener(new ActionListener()
+    try
     {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        execButton_actionPerformed(e);
-      }
-    }); 
-    toolBar.add(executeReportButton, null);
-    
-    Color borderColor = UIManager.getColor("Panel.background").darker();
-    toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, borderColor));
-    this.add(toolBar, BorderLayout.NORTH); 
-    
-    SymbolHighlighter symbolHighlighter = 
-      new SymbolHighlighter(textEditor.getTextPane(), "({[", ")}]");
-    symbolHighlighter.setScriptletTags("<%", "%>");    
+      initComponents();
+    }
+    catch (Exception ex)
+    {
+      MatrixIDE.log(ex);
+    }
   }
-  
+
   @Override
   protected String getCategoryName()
   {
     return "template";
-  }  
-  
+  }
+
   @Override
   protected String getContentType()
   {
@@ -107,13 +89,13 @@ public class ReportTemplatePanel extends TextPanel
   protected String getNewDocument()
   {
     return "<html>\n" +
-    "  <head>\n" + 
-    "    <title>new</title>\n" + 
-    "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n" + 
-    "  </head>\n" + 
-    "  <body>\n" + 
+    "  <head>\n" +
+    "    <title>new</title>\n" +
+    "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n" +
+    "  </head>\n" +
+    "  <body>\n" +
     "   <%  %>\n" +
-    "  </body>\n" + 
+    "  </body>\n" +
     "</html>\n";
   }
 
@@ -122,21 +104,48 @@ public class ReportTemplatePanel extends TextPanel
   {
     return "utf8";
   }
-  
+
+  private void initComponents()
+  {
+    toolBar.setFloatable(false);
+    toolBar.setRollover(true);
+    toolBar.setLayout(new WrapLayout(WrapLayout.LEFT, 2, 2));
+    toolBar.setMinimumSize(new Dimension(1, 1));
+
+    executeReportButton.setText("Execute report");
+    executeReportButton.setIcon(new ImageIcon(getClass().getResource(
+      "/org/santfeliu/matrix/ide/resources/images/run.gif")));
+    executeReportButton.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        execButton_actionPerformed(e);
+      }
+    });
+    toolBar.add(executeReportButton, null);
+
+    Color borderColor = UIManager.getColor("Panel.background").darker();
+    toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, borderColor));
+    this.add(toolBar, BorderLayout.NORTH);
+
+    SymbolHighlighter symbolHighlighter =
+      new SymbolHighlighter(textEditor.getTextPane(), "({[", ")}]");
+    symbolHighlighter.setScriptletTags("<%", "%>");
+  }
+
   private void execButton_actionPerformed(ActionEvent e)
   {
     try
     {
-      Frame frame = (Frame)Utilities.getParentWindow(this);      
+      Frame frame = (Frame)Utilities.getParentWindow(this);
       ReportDialog reportDialog = new ReportDialog(frame, getMainPanel());
       reportDialog.setLocationRelativeTo(null);
       reportDialog.setVisible(true);
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      MatrixIDE.log(ex);
     }
-  }  
- 
-  
+  }
 }

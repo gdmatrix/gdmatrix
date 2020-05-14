@@ -36,12 +36,10 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -60,7 +58,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
 
 /**
  *
@@ -84,6 +81,7 @@ public class PropertiesPanel extends JPanel
   private boolean editable = true;
   private DefaultTableModel tableModel = new DefaultTableModel()
   {
+    @Override
     public boolean isCellEditable(int row, int column)
     {
       return editable;

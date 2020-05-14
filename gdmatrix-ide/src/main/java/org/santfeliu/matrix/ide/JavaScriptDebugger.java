@@ -115,7 +115,7 @@ public class JavaScriptDebugger extends JDialog
     this.setSize(new Dimension(540, 450));
     this.getContentPane().setLayout(borderLayout);
     toolBar.setFloatable(false);
-    resetButton.setText("reset");
+    resetButton.setText("Reset");
     resetButton.addActionListener(new ActionListener()
       {
         @Override
@@ -124,7 +124,7 @@ public class JavaScriptDebugger extends JDialog
           resetButton_actionPerformed(e);
         }
       });
-    runButton.setText("run");
+    runButton.setText("Run");
     runButton.addActionListener(new ActionListener()
       {
         @Override
@@ -133,7 +133,7 @@ public class JavaScriptDebugger extends JDialog
           runButton_actionPerformed(e);
         }
       });
-    stopButton.setText("stop");
+    stopButton.setText("Stop");
     stopButton.addActionListener(new ActionListener()
       {
         @Override
@@ -145,7 +145,7 @@ public class JavaScriptDebugger extends JDialog
     splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
     splitPane.setDividerLocation(200);
     textEditor.getTextPane().setFont(Options.getEditorFont());
-    clearButton.setText("clear");
+    clearButton.setText("Clear");
     clearButton.addActionListener(new ActionListener()
       {
         @Override
@@ -165,8 +165,8 @@ public class JavaScriptDebugger extends JDialog
     splitPane.add(scrollPane, JSplitPane.RIGHT);
     this.getContentPane().add(splitPane, BorderLayout.CENTER);
     varsTable.setAutoCreateColumnsFromModel(false);
-    tableModel.addColumn("variable");
-    tableModel.addColumn("value");
+    tableModel.addColumn("Variable");
+    tableModel.addColumn("Value");
     varsTable.setModel(tableModel);
     varsTable.addColumn(new TableColumn(0, 100, new VariableCellRenderer(), null));
     varsTable.addColumn(new TableColumn(1, 300, null, null));
@@ -337,7 +337,7 @@ public class JavaScriptDebugger extends JDialog
   
   public class Runner extends Thread
   {
-    private String code;
+    private final String code;
     
     public Runner(String code)
     {
@@ -367,6 +367,7 @@ public class JavaScriptDebugger extends JDialog
         runner = null;
         SwingUtilities.invokeLater(new Runnable()
         {
+          @Override
           public void run()
           {
             updateButtons(false);

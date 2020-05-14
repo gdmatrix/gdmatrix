@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -55,11 +55,11 @@ import org.santfeliu.swing.text.XMLEditorKit;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class HtmlPanel extends DocumentPanel
 {
-  private static final String charset = "utf-8";
+  private static final String CHARSET = "utf-8";
   private BorderLayout borderLayout1 = new BorderLayout();
   private JScrollPane scrollPane = new JScrollPane();
   private TextEditor textEditor = new TextEditor();
@@ -88,12 +88,12 @@ public class HtmlPanel extends DocumentPanel
     textEditor.getTextPane().setFont(getEditorFont());
     scrollPane.getViewport().add(viewTextPane, null);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    
+
     splitPane.add(textEditor, JSplitPane.TOP);
     splitPane.add(scrollPane, JSplitPane.BOTTOM);
     splitPane.setDividerLocation(200);
     splitPane.setBorder(BorderFactory.createEmptyBorder());
-    
+
     this.add(splitPane, BorderLayout.CENTER);
     splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
@@ -125,7 +125,7 @@ public class HtmlPanel extends DocumentPanel
 
     viewTextPane.setEditorKitForContentType("text/html", new HTMLEditorKit());
     viewTextPane.setContentType("text/html");
-    viewTextPane.setEditable(false);    
+    viewTextPane.setEditable(false);
   }
 
   @Override
@@ -138,12 +138,12 @@ public class HtmlPanel extends DocumentPanel
   public void create()
   {
     textEditor.getTextPane().setText("<html>\n" +
-    "  <head>\n" + 
-    "    <title>new</title>\n" + 
-    "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n" + 
-    "  </head>\n" + 
-    "  <body>\n" + 
-    "  </body>\n" + 
+    "  <head>\n" +
+    "    <title>new</title>\n" +
+    "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n" +
+    "  </head>\n" +
+    "  <body>\n" +
+    "  </body>\n" +
     "</html>\n");
     undoManager.discardAllEdits();
     textEditor.getTextPane().getDocument().removeUndoableEditListener(undoHandler);
@@ -155,7 +155,7 @@ public class HtmlPanel extends DocumentPanel
   {
     StringBuilder buffer = new StringBuilder();
     BufferedReader reader =
-      new BufferedReader(new InputStreamReader(is, charset));
+      new BufferedReader(new InputStreamReader(is, CHARSET));
     try
     {
       String line = reader.readLine();
@@ -182,7 +182,7 @@ public class HtmlPanel extends DocumentPanel
   public void save(OutputStream os) throws Exception
   {
     String text = textEditor.getTextPane().getText();
-    os.write(text.getBytes(charset));
+    os.write(text.getBytes(CHARSET));
   }
 
   @Override
@@ -198,7 +198,7 @@ public class HtmlPanel extends DocumentPanel
     ActionEvent actionEvent = new ActionEvent(textEditor, 0, "paste", 0);
     TransferHandler.getPasteAction().actionPerformed(actionEvent);
   }
-  
+
   @Override
   public void delete()
   {
@@ -213,7 +213,7 @@ public class HtmlPanel extends DocumentPanel
       ex.printStackTrace();
     }
   }
-  
+
   private void updateView(long time)
   {
     if (updateViewThread == null)
@@ -222,7 +222,7 @@ public class HtmlPanel extends DocumentPanel
       updateViewThread.start();
     }
   }
-  
+
   class UndoHandler implements UndoableEditListener
   {
     public void undoableEditHappened(UndoableEditEvent e)
@@ -231,11 +231,11 @@ public class HtmlPanel extends DocumentPanel
       getMainPanel().updateActions();
     }
   }
-  
+
   class UpdateViewThread extends Thread
   {
     long time;
-    
+
     UpdateViewThread(long time)
     {
       this.time = time;
