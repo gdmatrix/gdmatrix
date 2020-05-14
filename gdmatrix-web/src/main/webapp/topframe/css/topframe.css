@@ -305,3 +305,35 @@ div.skipDiv#templateSkipBottom a
   box-sizing:border-box;
   padding: 4px;
 }
+
+.bannerWrapper
+{  
+  width: 100%;  
+}
+
+.bannerWrapper.webtool
+{
+  min-height: 28px;
+}
+
+.bannerWrapper.warnmsg
+{
+  min-height: 30px;
+}
+
+.bannerFixed
+{
+  position: fixed;
+  z-index: 1000000;
+}
+
+.webWarningMessage
+{
+  min-height: 30px;  
+  width: 100%;
+  line-height: 30px;
+  background-color: red;
+  color: white;
+  font-size: 20px;
+  text-align: center;
+}

@@ -4,7 +4,13 @@ function onLoad()
 {
   pageLoaded = true;
   console.info("page loaded");
+  checkFixedBanners();
   resetForm();
+}
+
+function onResize()
+{
+  checkFixedBanners();
 }
 
 function onUnload()
@@ -16,11 +22,13 @@ if (window.addEventListener)
 {
   window.addEventListener("load", onLoad, false);
   window.addEventListener("unload", onUnload, false);
+  window.addEventListener("resize", onResize, false);
 }
 else // IE8
 {
   window.attachEvent("onload", onLoad);  
   window.attachEvent("onunload", onUnload);  
+  window.attachEvent("onresize", onResize);  
 }
 
 function onSubmit()
@@ -462,4 +470,46 @@ function skipToTop()
   document.documentElement.scrollTop = 0;        
 }      
 
+function checkFixedBanners()
+{
+  var banners = document.getElementsByClassName('bannerWrapper');
+  for (var i = 0; i < banners.length; i++)
+  {
+    var child = banners[i].firstElementChild;
+    if (child && ((' ' + child.className + ' ').indexOf(' bannerFixed ') > -1))
+    {
+      banners[i].style.height = child.offsetHeight + 'px';
+    }
+  }
+}
+
+function checkFirefoxFontSizeChange()
+{
+  window.setInterval(function ()
+  {
+    if (navigator.userAgent.indexOf("Firefox") != -1)
+    {
+      var testDiv = document.getElementById('testFontSizeDiv');
+      if (testDiv)
+      {
+        var stored = parseInt(testDiv.getAttribute("c_height"));
+        if (isNaN(stored))
+        {
+          testDiv.setAttribute("c_height", testDiv.offsetHeight);
+        } 
+        else if (stored != testDiv.offsetHeight)
+        {
+          testDiv.setAttribute("c_height", testDiv.offsetHeight);
+          if (typeof portal_custom_container !== 'undefined')
+          {
+            portal_custom_container._updateColumnsHeight();
+          }
+          checkFixedBanners();
+        }
+      }
+    }
+  }, 4000);          
+}
+
 initKeyCapture();
+checkFirefoxFontSizeChange();

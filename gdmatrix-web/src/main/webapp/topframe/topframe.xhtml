@@ -78,12 +78,29 @@
         </header>
         <ui:include src="/topframe/toolbar.xhtml" />
 
+        <t:div styleClass="bannerWrapper warnmsg" rendered="#{userSessionBean.selectedMenuItem.properties['webWarning.message'] != null}">
+          <t:div styleClass="webWarningMessage#{userSessionBean.selectedMenuItem.properties['webWarning.fixed'] == 'false' ? '' : ' bannerFixed'}">
+            <sf:outputText escape="false" value="#{userSessionBean.selectedMenuItem.properties['webWarning.message']}"
+              translator="#{userSessionBean.translator}"
+              translationGroup="#{userSessionBean.translationGroup}" />          
+          </t:div>          
+        </t:div>
+
+        <script>
+          checkFixedBanners();        
+        </script>
+        
         <div id="frame" class="frame">
           <ui:insert name="frame"></ui:insert>
         </div>
         <div id="page" class="page">            
           <ui:insert name="page"></ui:insert>
         </div>
+
+        <t:div id="testFontSizeDiv" forceId="true" 
+               style="visibility: hidden; position: absolute">
+          <h:outputText value="A B C" />
+        </t:div>
 
         <input type="hidden" name="_userid_" value="${userSessionBean.userId}" />
 

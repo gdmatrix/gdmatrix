@@ -494,11 +494,6 @@
           </t:div>
         </t:div>
 
-        <t:div id="testFontSizeDiv" forceId="true" 
-               style="visibility: hidden; position: absolute">
-          <h:outputText value="A B C" />
-        </t:div>
-
         </footer>
       </t:div>
 
@@ -617,31 +612,6 @@
           }
           );
   
-          //Per controlar que no es solapi el contenidor dinamic amb el menu 
-          //inferior en augmentar a Firefox la mida de la font
-          window.setInterval(function ()
-          {
-            if (navigator.userAgent.indexOf("Firefox") != -1)
-            {
-              var testDiv = document.getElementById('testFontSizeDiv');
-              if (testDiv)
-              {
-                var stored = parseInt(testDiv.getAttribute("c_height"));
-                if (isNaN(stored))
-                {
-                  testDiv.setAttribute("c_height", testDiv.offsetHeight);
-                } else if (stored != testDiv.offsetHeight)
-                {
-                  testDiv.setAttribute("c_height", testDiv.offsetHeight);
-                  if (typeof portal_custom_container !== 'undefined')
-                  {
-                    portal_custom_container._updateColumnsHeight();
-                  }
-                }
-              }
-            }
-          }, 4000);
-
           window.addEventListener('scroll', checkSkipBottomLink);
           window.addEventListener('load', checkSkipBottomLink);
           
