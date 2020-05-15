@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.user.iarxiu.hp.com/2.0/Voc_expedient" targetNamespace="http://schemas.user.iarxiu.hp.com/2.0/Voc_expedient" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="expedient" type="expedientType"/>
+  <xs:complexType name="expedientType">
+    <xs:sequence>
+      <xs:element name="codi_referencia" type="xs:string"/>
+      <xs:element name="numero_expedient" type="xs:string"/>
+      <xs:element name="codi_classificacio" type="xs:string"/>
+      <xs:element name="titol_serie_documental" type="xs:string"/>
+      <xs:element name="nivell_descripcio" type="xs:string" default="Unitat documental composta"/>
+      <xs:element name="titol" type="xs:string"/>
+      <xs:element name="data_obertura" type="xs:dateTime"/>
+      <xs:element name="data_tancament" type="xs:dateTime"/>
+      <xs:element name="nom_productor" type="xs:string"/>
+      <xs:element name="unitat_productora" type="xs:string" minOccurs="0"/>
+      <xs:element name="descripcio" type="xs:string" minOccurs="0"/>
+      <xs:element name="descriptors" type="xs:string" minOccurs="0"/>
+      <xs:element name="documentacio_relacionada" type="xs:string" minOccurs="0"/>
+      <xs:element name="tipus_relacio" type="xs:string" minOccurs="0"/>
+      <xs:element name="classificacio_seguretat_acces">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Accés públic"/>
+            <xs:enumeration value="Accés restringit"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="sensibilitat_dades_LOPD" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Nivell baix"/>
+            <xs:enumeration value="Nivell mig"/>
+            <xs:enumeration value="Nivell alt"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.user.iarxiu.hp.com/2.0/Voc_signatura" targetNamespace="http://schemas.user.iarxiu.hp.com/2.0/Voc_signatura" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="signatura" type="signaturaType"/>
+  <xs:simpleType name="tipus_signaturaType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Embolcallant (enveloping)"/>
+      <xs:enumeration value="Incrustada (enveloped)"/>
+      <xs:enumeration value="Incrustada PDF"/>
+      <xs:enumeration value="Independent (detached)"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="signaturaType">
+    <xs:sequence>
+      <xs:element name="identificador" type="xs:string" minOccurs="0"/>
+      <xs:element name="identificador_document" type="xs:string" minOccurs="0"/>
+      <xs:element name="tipus_signatura" type="tipus_signaturaType" minOccurs="0"/>
+      <xs:element name="format_signatura" type="format_signaturaType" minOccurs="0"/>
+      <xs:element name="data_signatura" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="data_validacio" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="evidencia_validacio" type="xs:string" minOccurs="0"/>
+      <xs:element name="nom_signatari" type="xs:string" minOccurs="0"/>
+      <xs:element name="identificador_signatari" type="xs:string" minOccurs="0"/>
+      <xs:element name="organitzacio" type="xs:string" minOccurs="0"/>
+      <xs:element name="unitat_organica" type="xs:string" minOccurs="0"/>
+      <xs:element name="politica_signatura" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="format_signaturaType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CMS"/>
+      <xs:enumeration value="CAdES-BES"/>
+      <xs:enumeration value="CAdES-EPES"/>
+      <xs:enumeration value="CAdES-T"/>
+      <xs:enumeration value="CAdES-C"/>
+      <xs:enumeration value="CAdES-X"/>
+      <xs:enumeration value="CAdES-X-L"/>
+      <xs:enumeration value="CAdES-A"/>
+      <xs:enumeration value="XMLDsig"/>
+      <xs:enumeration value="XAdES-BES"/>
+      <xs:enumeration value="XAdES-EPES"/>
+      <xs:enumeration value="XAdES-T"/>
+      <xs:enumeration value="XAdES-C"/>
+      <xs:enumeration value="XAdES-X"/>
+      <xs:enumeration value="XAdES-X-L"/>
+      <xs:enumeration value="XAdES-A"/>
+      <xs:enumeration value="Tiquet PSIS"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

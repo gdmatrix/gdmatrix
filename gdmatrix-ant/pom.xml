@@ -60,7 +60,18 @@
       <artifactId>jsch</artifactId>
       <version>0.1.50</version>
       <scope>runtime</scope> 
-    </dependency>          
+    </dependency>      
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+    </dependency>       
+    <dependency>
+        <groupId>org.apache.xmlbeans</groupId>
+        <artifactId>xmlbeans</artifactId>
+        <version>3.1.0</version>
+    </dependency>
+     
   </dependencies>
   <build>
     <plugins>

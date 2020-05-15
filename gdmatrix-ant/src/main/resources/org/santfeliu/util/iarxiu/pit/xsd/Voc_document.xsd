@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.user.iarxiu.hp.com/2.0/Voc_document" targetNamespace="http://schemas.user.iarxiu.hp.com/2.0/Voc_document" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="document" type="documentType"/>
+  <xs:complexType name="documentType">
+    <xs:sequence>
+      <xs:element name="codi_referencia" type="xs:string"/>
+      <xs:element name="codi_classificacio" type="xs:string"/>
+      <xs:element name="titol_serie_documental" type="xs:string"/>
+      <xs:element name="numero_document" type="xs:string" minOccurs="0"/>
+      <xs:element name="titol" type="xs:string"/>
+      <xs:element name="data_creacio" type="xs:dateTime"/>
+      <xs:element name="nivell_descripcio" type="xs:string" default="Unitat documental simple"/>
+      <xs:element name="suport" type="xs:string"/>
+      <xs:element name="nom_productor" type="xs:string" minOccurs="0"/>
+      <xs:element name="unitat_productora" type="xs:string" minOccurs="0"/>
+      <xs:element name="descripcio" type="xs:string" minOccurs="0"/>
+      <xs:element name="descriptors" type="xs:string" minOccurs="0"/>
+      <xs:element name="tipus_document" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Acta"/>
+            <xs:enumeration value="Acord"/>
+            <xs:enumeration value="Acreditació"/>
+            <xs:enumeration value="Albarà"/>
+            <xs:enumeration value="Al·legació"/>
+            <xs:enumeration value="Atestat"/>
+            <xs:enumeration value="Burofax"/>
+            <xs:enumeration value="Carta"/>
+            <xs:enumeration value="Catàleg"/>
+            <xs:enumeration value="Certificat"/>
+            <xs:enumeration value="Circular"/>
+            <xs:enumeration value="Citació"/>
+            <xs:enumeration value="Comunicat"/>
+            <xs:enumeration value="Conveni"/>
+            <xs:enumeration value="Convocatòria"/>
+            <xs:enumeration value="Denúncia"/>
+            <xs:enumeration value="Diligència"/>
+            <xs:enumeration value="Document Administratiu"/>
+            <xs:enumeration value="Enquesta"/>
+            <xs:enumeration value="Estadística"/>
+            <xs:enumeration value="Estudi"/>
+            <xs:enumeration value="Extracte"/>
+            <xs:enumeration value="Factura"/>
+            <xs:enumeration value="Fax"/>
+            <xs:enumeration value="Fitxa"/>
+            <xs:enumeration value="Fotografia"/>
+            <xs:enumeration value="Informe"/>
+            <xs:enumeration value="Instrucció"/>
+            <xs:enumeration value="Inventari"/>
+            <xs:enumeration value="Invitació"/>
+            <xs:enumeration value="Llista/Llistat"/>
+            <xs:enumeration value="Nomenament"/>
+            <xs:enumeration value="Notificació"/>
+            <xs:enumeration value="Ofici"/>
+            <xs:enumeration value="Pacte"/>
+            <xs:enumeration value="Pla"/>
+            <xs:enumeration value="Pressupost"/>
+            <xs:enumeration value="Programa"/>
+            <xs:enumeration value="Projecte"/>
+            <xs:enumeration value="Queixa"/>
+            <xs:enumeration value="Rebut"/>
+            <xs:enumeration value="Reclamació"/>
+            <xs:enumeration value="Recurs"/>
+            <xs:enumeration value="Registre"/>
+            <xs:enumeration value="Reglament"/>
+            <xs:enumeration value="Requeriment"/>
+            <xs:enumeration value="Resolució"/>
+            <xs:enumeration value="Retall De Premsa"/>
+            <xs:enumeration value="Saluda"/>
+            <xs:enumeration value="Sol·licitud"/>
+            <xs:enumeration value="Telegrama"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="classificacio_seguretat_acces" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Accés públic"/>
+            <xs:enumeration value="Accés restringit"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="sensibilitat_dades_LOPD" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Nivell baix"/>
+            <xs:enumeration value="Nivell mig"/>
+            <xs:enumeration value="Nivell alt"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="nivell_classificacio_evidencial" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Sense evidència (identificació al·legada)"/>
+            <xs:enumeration value="Evidència d’entitat"/>
+            <xs:enumeration value="Evidència d’origen de dades"/>
+            <xs:enumeration value="Evidència d’autenticitat"/>
+            <xs:enumeration value="Evidència de signatura electrònica"/>
+            <xs:enumeration value="Evidència completa de signatura electrònica"/>
+            <xs:enumeration value="Evidència de llarga durada de signatura electrònica"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="document_essencial" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Sí"/>
+            <xs:enumeration value="No"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
