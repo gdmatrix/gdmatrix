@@ -229,6 +229,28 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>net.jsign</groupId>
+            <artifactId>jsign-maven-plugin</artifactId>
+            <version>3.1</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <file>${basedir}/target/GDMatrixClientWinInstall.exe</file>
+                  <name>GDMatrixClient - ${client_title}</name>
+                  <url>http://gdmatrix.org</url>
+                  <storetype>PKCS12</storetype>
+                  <keystore>${basedir}/../conf/certificates/matrix.p12</keystore>
+                  <tsaurl>http://timestamp.comodoca.com/authenticode</tsaurl>
+                  <alias>matrix</alias>
+                  <storepass>matrix</storepass>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
