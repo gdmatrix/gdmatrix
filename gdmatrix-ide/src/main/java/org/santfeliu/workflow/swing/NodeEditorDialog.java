@@ -35,9 +35,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -204,16 +206,17 @@ public class NodeEditorDialog extends JDialog
     }
     pack();
     
-    // resize dialog in its size is greater than parent window
+    // resize dialog if its size is greater than max window bounds
     Dimension size = getSize();
-    Dimension maxSize = getParent().getSize();
+    Rectangle maxSize = GraphicsEnvironment.getLocalGraphicsEnvironment().
+      getMaximumWindowBounds();
     
     if (size.width > maxSize.width) size.width = maxSize.width;
     if (size.height > maxSize.height) size.height = maxSize.height; 
     
     setSize(size);
     
-    setLocationRelativeTo(getParent());
+    setLocationRelativeTo(null);
     setVisible(true);
     
     return result;
