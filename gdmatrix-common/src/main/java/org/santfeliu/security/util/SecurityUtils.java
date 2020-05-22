@@ -50,7 +50,7 @@ import org.santfeliu.util.MatrixConfig;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SecurityUtils
 {

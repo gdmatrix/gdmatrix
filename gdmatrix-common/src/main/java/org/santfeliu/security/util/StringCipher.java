@@ -105,7 +105,7 @@ public class StringCipher
     try
     {
       StringCipher cipher = new StringCipher("34fsh256");
-      String s1 = cipher.encrypt("Això és una prova");
+      String s1 = cipher.encrypt("This is a sample");
       String s2 = cipher.decrypt(s1);
       System.out.println(s1);
       System.out.println(s2);

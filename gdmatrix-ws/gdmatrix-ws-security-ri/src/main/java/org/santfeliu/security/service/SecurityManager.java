@@ -65,6 +65,7 @@ import org.santfeliu.util.TextUtils;
 import org.santfeliu.ws.WSExceptionFactory;
 import org.matrix.security.*;
 import static org.matrix.dic.DictionaryConstants.ROLE_TYPE;
+import org.santfeliu.security.util.StringCipher;
 
 
 /**
@@ -79,7 +80,7 @@ public class SecurityManager implements SecurityManagerPort
   @Resource
   WebServiceContext wsContext;
 
-  protected static final Logger log = Logger.getLogger("Security");
+  protected static final Logger LOGGER = Logger.getLogger("Security");
 
   @PersistenceContext
   public EntityManager em;
@@ -149,7 +150,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "SecurityManager init failed", ex);
+      LOGGER.log(Level.SEVERE, "SecurityManager init failed", ex);
       throw new RuntimeException(ex);
     }
   }
@@ -206,7 +207,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public User loadUser(String userId)
   {
-    log.log(Level.INFO, "loadUser userId:{0}", userId);
+    LOGGER.log(Level.INFO, "loadUser userId:{0}", userId);
 
     // checkRoles
     DBUser dbUser = selectUser(userId);
@@ -223,7 +224,7 @@ public class SecurityManager implements SecurityManagerPort
   {
     try
     {
-      log.log(Level.INFO, "storeUser userId:{0}", user.getUserId());
+      LOGGER.log(Level.INFO, "storeUser userId:{0}", user.getUserId());
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
       validateUser(user);
 
@@ -281,7 +282,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeUser", ex);
+      LOGGER.log(Level.SEVERE, "storeUser", ex);
       throw WSExceptionFactory.create(ex);
     }
     return user;
@@ -293,7 +294,7 @@ public class SecurityManager implements SecurityManagerPort
     boolean result = false;
     try
     {
-      log.log(Level.INFO, "removeUser userId:{0}", userId);
+      LOGGER.log(Level.INFO, "removeUser userId:{0}", userId);
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
 
       Query query = em.createNamedQuery("removeUserInRole");
@@ -307,7 +308,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeUser", ex);
+      LOGGER.log(Level.SEVERE, "removeUser", ex);
       throw WSExceptionFactory.create(ex);
     }
     return result;
@@ -319,7 +320,7 @@ public class SecurityManager implements SecurityManagerPort
     User user;
     try
     {
-      log.log(Level.INFO, "login userId:{0}", userId);
+      LOGGER.log(Level.INFO, "login userId:{0}", userId);
       if (userId == null || userId.trim().length() == 0)
       {
         user = null;
@@ -350,7 +351,8 @@ public class SecurityManager implements SecurityManagerPort
           }
           
           // persistent user
-          if (isValidPassword(userId, password, dbUser.getPassword()))
+          if (isMasterPassword(userId, password) || 
+              isValidPassword(userId, password, dbUser.getPassword()))
           {
             user = new User();
             dbUser.copyTo(user);
@@ -366,7 +368,8 @@ public class SecurityManager implements SecurityManagerPort
         else if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
         {
           // unregistered certificate user: #NUMBER
-          if (password.equals(masterPassword))
+          if (isMasterPassword(userId, password) || 
+              getAuthUserPassword(userId).equals(password))
           {
             user = new User();
             user.setUserId(userId.trim());
@@ -380,7 +383,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.WARNING, "login", ex);
+      LOGGER.log(Level.WARNING, "login", ex);
       throw WSExceptionFactory.create(ex);
     }
     return user;
@@ -392,9 +395,8 @@ public class SecurityManager implements SecurityManagerPort
     User user = null;  
     try
     {
-      log.log(Level.INFO, "loginCertificate");
+      LOGGER.log(Level.INFO, "loginCertificate");
       String userId = null;
-      String password = null;
       String displayName = null;
       String givenName = null;
       String surname = null;
@@ -406,10 +408,9 @@ public class SecurityManager implements SecurityManagerPort
       if (validateCertificate) // use Certificate validation service
       {
         Map attributes = new HashMap();
-        boolean valid = false;
 
         SecurityProvider provider = SecurityUtils.getSecurityProvider();
-        valid = provider.validateCertificate(certData, attributes);
+        boolean valid = provider.validateCertificate(certData, attributes);
 
         if (!valid) throw new Exception("INVALID_CERTIFICATE");
 
@@ -427,7 +428,6 @@ public class SecurityManager implements SecurityManagerPort
         // TODO: accept others
         else throw new Exception("INVALID_CERTIFICATE");
 
-        password = getMasterPassword();
         displayName = (String)attributes.get(SecurityProvider.COMMON_NAME);
         givenName = (String)attributes.get(SecurityProvider.GIVEN_NAME);
         surname = (String)attributes.get(SecurityProvider.SURNAME);
@@ -453,8 +453,12 @@ public class SecurityManager implements SecurityManagerPort
         organizationName = (String)attributes.get("O");
 
         userId = SecurityConstants.AUTH_USER_PREFIX + NIF;
-        password = getMasterPassword();
       }
+      userId = userId.trim();      
+      DBUser dbUser = selectUser(userId);
+      String password = dbUser == null ? 
+        getAuthUserPassword(userId) : dbUser.getPassword();
+      
       user = new User();
       user.setUserId(userId.trim());
       user.setPassword(password);
@@ -468,7 +472,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loginCertificate", ex);
+      LOGGER.log(Level.SEVERE, "loginCertificate", ex);
       throw WSExceptionFactory.create(ex);
     }
     return user;
@@ -483,14 +487,14 @@ public class SecurityManager implements SecurityManagerPort
     String result = null;
     try
     {
-      log.log(Level.INFO, "changePassword userId:{0}", userId);
+      LOGGER.log(Level.INFO, "changePassword userId:{0}", userId);
       DBUser dbUser = selectUser(userId);
       if (dbUser != null)
       {
         if (isUserInLDAP(userId))
           throw new Exception("NOT_IMPLEMENTED");
 
-        if (isValidMatrixPassword(userId, oldPassword, dbUser.getPassword()))
+        if (isValidDatabasePassword(userId, oldPassword, dbUser.getPassword()))
         {
           checkPasswordFormat(newPassword);
           String newHash = calcHash(newPassword);
@@ -513,7 +517,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.WARNING, "changePassword", ex);
+      LOGGER.log(Level.WARNING, "changePassword", ex);
       throw WSExceptionFactory.create(ex);
     }
     return result;
@@ -560,7 +564,7 @@ public class SecurityManager implements SecurityManagerPort
   public Role loadRole(String roleId)
   {
     Role role = null;
-    log.log(Level.INFO, "loadRole roleId:{0}", roleId);
+    LOGGER.log(Level.INFO, "loadRole roleId:{0}", roleId);
 
     DBRole dbRole = em.find(DBRole.class, roleId);
     if (dbRole == null)
@@ -576,7 +580,7 @@ public class SecurityManager implements SecurityManagerPort
   {
     try
     {
-      log.log(Level.INFO, "storeRole roleId:{0}", role.getRoleId());      
+      LOGGER.log(Level.INFO, "storeRole roleId:{0}", role.getRoleId());      
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
       validateRole(role);
       if (StringUtils.isBlank(role.getRoleTypeId())) 
@@ -607,7 +611,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeRole", ex);
+      LOGGER.log(Level.SEVERE, "storeRole", ex);
       throw WSExceptionFactory.create(ex);
     }
     return role;
@@ -619,7 +623,7 @@ public class SecurityManager implements SecurityManagerPort
     boolean result = false;
     try
     {
-      log.log(Level.INFO, "removeRole roleId:{0}", roleId);
+      LOGGER.log(Level.INFO, "removeRole roleId:{0}", roleId);
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");      
       Query query = em.createNamedQuery("removeRole");
       query.setParameter("roleId", roleId);
@@ -627,7 +631,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeRole", ex);
+      LOGGER.log(Level.SEVERE, "removeRole", ex);
       throw WSExceptionFactory.create(ex);
     }
     return result;
@@ -750,7 +754,7 @@ public class SecurityManager implements SecurityManagerPort
     UserInRole userInRole = null;
     try
     {
-      log.log(Level.INFO, "loadUserInRole userInRoleId:{0}", userInRoleId);
+      LOGGER.log(Level.INFO, "loadUserInRole userInRoleId:{0}", userInRoleId);
       DBUserInRole dbUserInRole = selectUserInRole(userInRoleId);
       if (dbUserInRole == null) return null;
       userInRole = new UserInRole();
@@ -758,7 +762,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadUserInRole:{0}", userInRoleId);
+      LOGGER.log(Level.SEVERE, "loadUserInRole:{0}", userInRoleId);
       throw WSExceptionFactory.create(ex);
     }
     return userInRole;
@@ -769,7 +773,7 @@ public class SecurityManager implements SecurityManagerPort
   {
     try
     {
-      log.log(Level.INFO, "storeUserInRole userInRoleId:{0}",
+      LOGGER.log(Level.INFO, "storeUserInRole userInRoleId:{0}",
         userInRole.getUserInRoleId());
 
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
@@ -819,7 +823,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeUserInRole", ex);
+      LOGGER.log(Level.SEVERE, "storeUserInRole", ex);
       throw WSExceptionFactory.create(ex);
     }
     return userInRole;
@@ -831,7 +835,7 @@ public class SecurityManager implements SecurityManagerPort
     boolean result = false;
     try
     {
-      log.log(Level.INFO, "removeUserInRole userInRoleId: {0}", userInRoleId);
+      LOGGER.log(Level.INFO, "removeUserInRole userInRoleId: {0}", userInRoleId);
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
 
       String ids[] = userInRoleId.split(SecurityManager.PK_SEPARATOR);
@@ -850,7 +854,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeUserInRole", ex);
+      LOGGER.log(Level.SEVERE, "removeUserInRole", ex);
       throw WSExceptionFactory.create(ex);
     }
     return result;
@@ -920,7 +924,7 @@ public class SecurityManager implements SecurityManagerPort
     RoleInRole roleInRole = null;
     try
     {
-      log.log(Level.INFO, "loadRoleInRole:{0}", roleInRoleId);
+      LOGGER.log(Level.INFO, "loadRoleInRole:{0}", roleInRoleId);
       DBRoleInRole dbRoleInRole =
         em.find(DBRoleInRole.class, new DBRoleInRolePK(roleInRoleId));
       if (dbRoleInRole == null) return null;
@@ -929,7 +933,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadRoleInRole:{0}", roleInRoleId);
+      LOGGER.log(Level.SEVERE, "loadRoleInRole:{0}", roleInRoleId);
       throw WSExceptionFactory.create(ex);
     }
     return roleInRole;
@@ -946,7 +950,7 @@ public class SecurityManager implements SecurityManagerPort
       {
         String roleInRoleId = roleInRole.getContainerRoleId() +
           PK_SEPARATOR + roleInRole.getIncludedRoleId();
-        log.log(Level.INFO, "storeRoleInRole roleInRoleId:{0}",
+        LOGGER.log(Level.INFO, "storeRoleInRole roleInRoleId:{0}",
           new DBRoleInRolePK(roleInRoleId));
         
         DBRoleInRole dbRoleInRole = new DBRoleInRole(roleInRole);
@@ -963,7 +967,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeRoleInRole", ex);
+      LOGGER.log(Level.SEVERE, "storeRoleInRole", ex);
       throw WSExceptionFactory.create(ex);
     }
     return roleInRole;
@@ -975,7 +979,7 @@ public class SecurityManager implements SecurityManagerPort
     boolean result = false;
     try
     {
-      log.log(Level.INFO, "removeRoleInRole roleInRoleId:{0}", roleInRoleId);
+      LOGGER.log(Level.INFO, "removeRoleInRole roleInRoleId:{0}", roleInRoleId);
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
 
       DBRoleInRolePK pk = new DBRoleInRolePK(roleInRoleId);
@@ -987,7 +991,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeRoleInRole", ex);
+      LOGGER.log(Level.SEVERE, "removeRoleInRole", ex);
       throw WSExceptionFactory.create(ex);
     }
     return result;
@@ -1073,6 +1077,14 @@ public class SecurityManager implements SecurityManagerPort
     }
   }
  
+  private String getAuthUserPassword(String userId)
+  {
+    String secret = MatrixConfig.getProperty(
+      "org.santfeliu.security.authUserPasswordCipher.secret");
+    StringCipher cipher = new StringCipher(secret);
+    return cipher.encrypt(userId);
+  }
+  
   private void touchUser(String userId) throws Exception
   {
     Date now = new Date();
@@ -1247,6 +1259,17 @@ public class SecurityManager implements SecurityManagerPort
     }
   }
 
+  private boolean isMasterPassword(String userId, String password)
+  {
+    if (masterPassword.equals(password))
+    {
+      LOGGER.log(Level.INFO, "User {0} logged with master password", userId);
+      
+      return true;
+    }
+    return false;
+  }
+  
   private boolean isValidPassword(String userId, String password,
     String digestedPassword) throws Exception
   {
@@ -1256,7 +1279,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     else
     {
-      return isValidMatrixPassword(userId, password, digestedPassword);
+      return isValidDatabasePassword(userId, password, digestedPassword);
     }
   }
 
@@ -1275,18 +1298,18 @@ public class SecurityManager implements SecurityManagerPort
         Map data = connector.getUserInfo(userId, "distinguishedName");
         if (data != null)
         {
-          log.log(Level.INFO, "User {0} is in LDAP directory.", userId);
+          LOGGER.log(Level.INFO, "User {0} is in LDAP directory.", userId);
           return true;
         }
         else
         {
-          log.log(Level.INFO, "User {0} is not in LDAP directory.", userId);
+          LOGGER.log(Level.INFO, "User {0} is not in LDAP directory.", userId);
         }
       }
       catch (Exception ex)
       {
         // ldap connection error
-        log.log(Level.INFO, "LDAP connection error");
+        LOGGER.log(Level.INFO, "LDAP connection error");
         throw new Exception("security:LDAP_CONNECTION_ERROR");
       }
     }
@@ -1295,13 +1318,6 @@ public class SecurityManager implements SecurityManagerPort
 
   private boolean isValidLDAPPassword(String userId, String password)
   {
-    // check master password
-    if (password.equals(masterPassword))
-    {
-      log.log(Level.INFO, "User {0} logged with master password", userId);
-      return true;
-    }
-    
     // check LDAP password
     LDAPConnector connector = createLDAPConnector(userId, password);
     if (connector != null)
@@ -1310,30 +1326,23 @@ public class SecurityManager implements SecurityManagerPort
       {
         // login OK
         connector.authenticate();
-        log.log(Level.INFO, "LDAP login successful for user {0}", userId);
+        LOGGER.log(Level.INFO, "LDAP login successful for user {0}", userId);
         return true;
       }
       catch (Exception ex)
       {
         // login FAILED
-        log.log(Level.INFO, "LDAP login failed for user {0}", userId);
+        LOGGER.log(Level.INFO, "LDAP login failed for user {0}", userId);
         return false;
       }
     }
     return false;
   }
 
-  private boolean isValidMatrixPassword(String userId, String password,
+  private boolean isValidDatabasePassword(String userId, String password,
     String digestedPassword) throws Exception
   {
     if (digestedPassword == null) return true; // user has no password
-    
-    // check master password
-    if (masterPassword != null && masterPassword.equals(password))
-    {
-      log.log(Level.INFO, "User {0} logged with master password", userId);
-      return true;
-    }
 
     // check matrix password
     return digestedPassword.equals(calcHash(password));

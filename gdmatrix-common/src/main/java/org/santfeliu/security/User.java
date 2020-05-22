@@ -82,13 +82,13 @@ public class User extends org.matrix.security.User implements Serializable
 
   public Set<String> getRoles()
   {
-    if (roles == null) roles = new HashSet<String>();
+    if (roles == null) roles = new HashSet<>();
     return roles;
   }
 
   public List<String> getRolesList()
   {
-    ArrayList<String> rolesList = new ArrayList<String>();
+    ArrayList<String> rolesList = new ArrayList<>();
     rolesList.addAll(getRoles());
     return rolesList;
   }
@@ -113,7 +113,7 @@ public class User extends org.matrix.security.User implements Serializable
   @Override
   public String toString()
   {
-    StringBuffer buffer = new StringBuffer("{");
+    StringBuilder buffer = new StringBuilder("{");
     buffer.append(userId);
     buffer.append(", ");
     buffer.append("displayName");

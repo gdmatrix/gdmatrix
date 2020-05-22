@@ -32,7 +32,7 @@ package org.matrix.security;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SecurityConstants
 {

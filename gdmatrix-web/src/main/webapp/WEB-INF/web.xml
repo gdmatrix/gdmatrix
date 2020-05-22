@@ -298,11 +298,15 @@
   </context-param>
   <context-param>
     <param-name>org.santfeliu.security.urlCredentialsCipher.secret</param-name>
-    <param-value>A275T939</param-value>
+    <param-value>A2b25T939</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.santfeliu.security.authUserPasswordCipher.secret</param-name>
+    <param-value>85aB06921</param-value>
   </context-param>
   <context-param>
     <param-name>org.santfeliu.security.service.SecurityManager.masterPassword</param-name>
-    <param-value>PanzerKampfWagenV</param-value>
+    <param-value>95csk0t29</param-value>
   </context-param>
   <context-param>
     <param-name>org.santfeliu.security.service.SecurityManager.certUserRoles</param-name>
