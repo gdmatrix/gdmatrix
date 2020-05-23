@@ -454,14 +454,9 @@ public class SecurityManager implements SecurityManagerPort
 
         userId = SecurityConstants.AUTH_USER_PREFIX + NIF;
       }
-      userId = userId.trim();      
-      DBUser dbUser = selectUser(userId);
-      String password = dbUser == null ? 
-        getAuthUserPassword(userId) : dbUser.getPassword();
-      
       user = new User();
       user.setUserId(userId.trim());
-      user.setPassword(password);
+      user.setPassword(getAuthUserPassword(userId));
       user.setDisplayName(displayName);
       user.setGivenName(givenName);
       user.setSurname(surname);
@@ -1273,13 +1268,21 @@ public class SecurityManager implements SecurityManagerPort
   private boolean isValidPassword(String userId, String password,
     String digestedPassword) throws Exception
   {
-    if (isUserInLDAP(userId))
+    if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
     {
-      return isValidLDAPPassword(userId, password);
+      return isValidDatabasePassword(userId, password, digestedPassword) ||
+        getAuthUserPassword(userId).equals(password);
     }
-    else
+    else 
     {
-      return isValidDatabasePassword(userId, password, digestedPassword);
+      if (isUserInLDAP(userId))
+      {
+        return isValidLDAPPassword(userId, password);
+      }
+      else
+      {
+        return isValidDatabasePassword(userId, password, digestedPassword);
+      }
     }
   }
 
