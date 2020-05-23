@@ -70,6 +70,7 @@ import org.santfeliu.news.client.NewsManagerClient;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.security.util.Credentials;
+import org.santfeliu.security.util.StringCipher;
 import org.santfeliu.security.web.LoginBean;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.script.ActionsScriptClient;
@@ -1166,8 +1167,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
     String logoutAction) throws Exception
   {
     userId = SecurityConstants.AUTH_USER_PREFIX + idNumber;
-    password = MatrixConfig.getProperty(
-      "org.santfeliu.security.service.SecurityManager.masterPassword");
+    String secret = MatrixConfig.getProperty(
+      "org.santfeliu.security.authUserPasswordCipher.secret");
+    StringCipher cipher = new StringCipher(secret);
+    password = cipher.encrypt(userId);
+    
     User user = UserCache.login(userId, password);
     loadProfile(user);
     getMenuModel().setRoles(roles);
