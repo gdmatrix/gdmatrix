@@ -111,8 +111,9 @@ public class UserCache
 
     SecurityManagerPort port = instance.getSecurityManagerPort();
     User user = new User(port.login(userId, password));
-    instance.users.put(userId, new User(user));
-    instance.loadUserRoles(user);
+    user.setRoles(instance.explodeUserInRoles(userId));
+    instance.users.put(userId, user);
+
     return user;
   }
 
@@ -123,8 +124,10 @@ public class UserCache
 
     SecurityManagerPort port = instance.getSecurityManagerPort();
     User user = new User(port.loginCertificate(certData));
-    instance.users.put(user.getUserId(), new User(user));
-    instance.loadUserRoles(user);
+    String userId = user.getUserId();
+    user.setRoles(instance.explodeUserInRoles(userId));
+    instance.users.put(userId, user);
+
     return user;
   }
 
@@ -140,9 +143,10 @@ public class UserCache
     {
       SecurityManagerPort port = instance.getSecurityManagerPort();
       user = new User(port.login(userId, password));
-      instance.users.put(userId, new User(user));
+      user.setRoles(instance.explodeUserInRoles(userId));
+      instance.users.put(userId, user);
     }
-    instance.loadUserRoles(user);
+
     return user;
   }
 
@@ -154,6 +158,19 @@ public class UserCache
   public static User getUser(WebServiceContext wsContext)
   {
     return getUser(SecurityUtils.getCredentials(wsContext));
+  }
+
+  public static Set<String> getUserInRoles(String userId)
+  {
+    return instance.explodeUserInRoles(userId);
+  }
+
+  public static Set<String> getRoleInRoles(String roleId)
+  {
+    HashSet<String> explodedRoleSet = new HashSet<>();
+    instance.explodeRole(roleId, explodedRoleSet);
+
+    return explodedRoleSet;
   }
 
   public static void clear()
@@ -170,24 +187,23 @@ public class UserCache
     return realPsw == null || realPsw.equals(enteredPsw);
   }
 
-  private void loadUserRoles(User user)
+  private Set<String> explodeUserInRoles(String userId)
   {
-    HashSet userRoles = new HashSet();
-    String userId = user.getUserId();
-    Set<String> roleSet = getUserInRoles(userId);
+    HashSet<String> explodedRoleSet = new HashSet<>();
+    Set<String> roleSet = loadUserInRoles(userId);
     // explode user roles
     Iterator<String> iter = roleSet.iterator();
     while (iter.hasNext())
     {
-      instance.explodeRole(iter.next(), userRoles);
+      instance.explodeRole(iter.next(), explodedRoleSet);
     }
-    user.setRoles(userRoles);
+    return explodedRoleSet;
   }
 
   private void explodeRole(String roleId, Set<String> explodedRoleSet)
   {
     explodedRoleSet.add(roleId);
-    Set<String> roleSet = getRoleInRoles(roleId);
+    Set<String> roleSet = loadRoleInRoles(roleId);
     for (String includedRoleId : roleSet)
     {
       if (!explodedRoleSet.contains(includedRoleId))
@@ -204,7 +220,7 @@ public class UserCache
     }
   }
 
-  private Set<String> getUserInRoles(String userId)
+  private Set<String> loadUserInRoles(String userId)
   {
     Set<String> roleSet = userInRoles.get(userId);
     if (roleSet == null)
@@ -226,7 +242,7 @@ public class UserCache
     return roleSet;
   }
 
-  private Set<String> getRoleInRoles(String roleId)
+  private Set<String> loadRoleInRoles(String roleId)
   {
     Set<String> roleSet = roleInRoles.get(roleId);
     if (roleSet == null)
