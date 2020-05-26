@@ -45,6 +45,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.LineBorder;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.matrix.ide.Options;
 import org.santfeliu.swing.text.SQLEditorKit;
 import org.santfeliu.swing.text.TextEditor;
@@ -55,7 +56,7 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SQLNodeEditor extends JPanel implements NodeEditor
 {
@@ -76,14 +77,15 @@ public class SQLNodeEditor extends JPanel implements NodeEditor
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
   
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -92,7 +94,7 @@ public class SQLNodeEditor extends JPanel implements NodeEditor
     textPane.setText(sqlNode.getStatements());
     textPane.setCaretPosition(0);
     dsnTextField.setText(sqlNode.getDsn());
-    spinnerModel.setValue(new Integer(sqlNode.getMaxRows()));
+    spinnerModel.setValue(sqlNode.getMaxRows());
     return this;
   }
 
@@ -118,8 +120,7 @@ public class SQLNodeEditor extends JPanel implements NodeEditor
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout);
     northPanel.setLayout(gridBagLayout1);
@@ -129,18 +130,18 @@ public class SQLNodeEditor extends JPanel implements NodeEditor
     centerPanel.setBorder(BorderFactory.createTitledBorder("SQL statements"));
     JTextPane textPane = textEditor.getTextPane();
     textPane.setFont(Options.getEditorFont());
-    northPanel.add(dsnLabel, 
-                   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 4, 2, 4), 0, 0));
-    northPanel.add(dsnTextField, 
-                   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 6), 0, 0));
-    northPanel.add(maxRowsLabel, 
-                   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                          new Insets(2, 4, 2, 4), 0, 0));
-    northPanel.add(maxRowsSpinner, 
-                   new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 6), 0, 0));
+    northPanel.add(dsnLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+    northPanel.add(dsnTextField,
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 6), 0, 0));
+    northPanel.add(maxRowsLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+    northPanel.add(maxRowsSpinner,
+      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 6), 0, 0));
     this.add(northPanel, BorderLayout.NORTH);
     textEditor.setBorder(new LineBorder(Color.LIGHT_GRAY));
     centerPanel.add(textEditor, BorderLayout.CENTER);
@@ -150,8 +151,8 @@ public class SQLNodeEditor extends JPanel implements NodeEditor
     textPane.setSelectionColor(new Color(198, 198, 198));
     maxRowsLabel.setText("Max. rows:");
     maxRowsSpinner.setPreferredSize(new Dimension(70, 24));
-    spinnerModel.setStepSize(new Integer(1));
-    spinnerModel.setMinimum(new Integer(1));
+    spinnerModel.setStepSize(1);
+    spinnerModel.setMinimum(1);
     maxRowsSpinner.setModel(spinnerModel);
   }
 }

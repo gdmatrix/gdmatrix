@@ -32,15 +32,11 @@ package org.santfeliu.workflow.swing.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-
 import java.awt.Font;
-
 import javax.swing.JPanel;
-
 import javax.swing.JScrollPane;
-
 import javax.swing.JTextArea;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.FormNode;
@@ -49,10 +45,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class DefaultFormParametersEditor extends JPanel
-  implements NodeEditor
+public class DefaultFormParametersEditor extends JPanel implements NodeEditor
 {
   private FormNode formNode;
   private JScrollPane scrollPane = new JScrollPane();
@@ -63,14 +58,15 @@ public class DefaultFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -80,10 +76,12 @@ public class DefaultFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -92,12 +90,12 @@ public class DefaultFormParametersEditor extends JPanel
     formNode.setParameters(parameters);
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout1);
     scrollPane.getViewport().add(textArea, null);

@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.LineBorder;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.matrix.ide.Options;
 import org.santfeliu.swing.text.JavaScriptEditorKit;
 import org.santfeliu.swing.text.SymbolHighlighter;
@@ -50,7 +51,7 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JavaScriptNodeEditor extends JPanel implements NodeEditor
 {
@@ -63,11 +64,11 @@ public class JavaScriptNodeEditor extends JPanel implements NodeEditor
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
   
@@ -96,12 +97,12 @@ public class JavaScriptNodeEditor extends JPanel implements NodeEditor
     javaScriptNode.setCode(textEditor.getTextPane().getText());
   }
   
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout);
     JTextPane textPane = textEditor.getTextPane();

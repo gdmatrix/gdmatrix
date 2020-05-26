@@ -33,20 +33,15 @@ package org.santfeliu.workflow.swing.editor;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
 import java.awt.Insets;
-
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
 import javax.swing.JTextField;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.swing.text.RestrictedDocument;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
@@ -56,10 +51,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class InputFormParametersEditor extends JPanel
-  implements NodeEditor
+public class InputFormParametersEditor extends JPanel implements NodeEditor
 {
   private FormNode formNode;
   private boolean number;
@@ -77,14 +71,15 @@ public class InputFormParametersEditor extends JPanel
     this.number = number;
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -109,6 +104,7 @@ public class InputFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
     String variable = varTextField.getText();
@@ -116,6 +112,7 @@ public class InputFormParametersEditor extends JPanel
       throw new Exception("Variable is mandatory");
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -145,12 +142,12 @@ public class InputFormParametersEditor extends JPanel
     formNode.setParameters(parameters);
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
     varLabel.setText("Variable:");
@@ -163,24 +160,24 @@ public class InputFormParametersEditor extends JPanel
     messageTextArea.setFont(new Font("Dialog", 0, 14));
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
-    this.add(varLabel, 
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(valueLabel, 
-             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(messageLabel, 
-             new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(varTextField, 
-             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(valueTextField, 
-             new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(scrollPane, 
-             new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
+    this.add(varLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(valueLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(messageLabel,
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(varTextField,
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(valueTextField,
+      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(scrollPane,
+      new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
     scrollPane.getViewport().add(messageTextArea);
     this.varTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
   }

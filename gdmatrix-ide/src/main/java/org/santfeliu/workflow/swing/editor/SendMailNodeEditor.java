@@ -37,16 +37,15 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.matrix.ide.Options;
 import org.santfeliu.swing.text.XMLEditorKit;
-
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.SendMailNode;
 import org.santfeliu.workflow.swing.NodeEditor;
@@ -54,7 +53,7 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SendMailNodeEditor extends JPanel
   implements NodeEditor
@@ -86,9 +85,9 @@ public class SendMailNodeEditor extends JPanel
     {
       initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
@@ -159,42 +158,42 @@ public class SendMailNodeEditor extends JPanel
     centerPanel.setLayout(borderLayout2);
     centerPanel.setBorder(BorderFactory.createTitledBorder("Message"));
 
-    northPanel.add(hostLabel, 
-                   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(hostTextField, 
-                   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
-    northPanel.add(recipientsTOLabel, 
-                   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(recipientsTOTextField, 
-                   new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
-    northPanel.add(recipientsCCLabel, 
-                   new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(recipientsCCTextField, 
-                   new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
-    northPanel.add(recipientsBCCLabel, 
-                   new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(recipientsBCCTextField, 
-                   new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
-    northPanel.add(subjectLabel, 
-                   new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(subjectTextField, 
-                   new GridBagConstraints(1, 5, 1, 1, 1.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
-    northPanel.add(senderLabel, 
-                   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(senderTextField, 
-                   new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(hostLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(hostTextField,
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(recipientsTOLabel,
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(recipientsTOTextField,
+      new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(recipientsCCLabel,
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(recipientsCCTextField,
+      new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(recipientsBCCLabel,
+      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(recipientsBCCTextField,
+      new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(subjectLabel,
+      new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(subjectTextField,
+      new GridBagConstraints(1, 5, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(senderLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(senderTextField,
+      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0, 0));
     this.add(northPanel, BorderLayout.NORTH);
     scrollPane.getViewport().add(textArea, null);
     centerPanel.add(scrollPane, BorderLayout.CENTER);

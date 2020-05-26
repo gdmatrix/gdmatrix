@@ -32,17 +32,13 @@ package org.santfeliu.workflow.swing.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-
 import java.awt.Dimension;
-
 import java.awt.Font;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.TerminateInstanceNode;
 import org.santfeliu.workflow.swing.NodeEditor;
@@ -50,10 +46,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class TerminateInstanceNodeEditor extends JPanel
-  implements NodeEditor
+public class TerminateInstanceNodeEditor extends JPanel implements NodeEditor
 {
   private BorderLayout borderLayout1 = new BorderLayout();
   private JLabel messageLabel = new JLabel();
@@ -65,14 +60,15 @@ public class TerminateInstanceNodeEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
                                        WorkflowNode node)
   {
@@ -81,10 +77,12 @@ public class TerminateInstanceNodeEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     String message = messageTextArea.getText();
@@ -92,11 +90,12 @@ public class TerminateInstanceNodeEditor extends JPanel
     terminateInstanceNode.setTerminationMessage(message);
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout1);
     messageLabel.setText("Termination message:");

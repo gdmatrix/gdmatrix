@@ -35,13 +35,12 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.FormNode;
@@ -50,10 +49,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class MonitorFormParametersEditor extends JPanel
-  implements NodeEditor
+public class MonitorFormParametersEditor extends JPanel implements NodeEditor
 {
   private FormNode formNode;
   private GridBagLayout gridBagLayout1 = new GridBagLayout();
@@ -79,14 +77,15 @@ public class MonitorFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -112,10 +111,12 @@ public class MonitorFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -143,12 +144,12 @@ public class MonitorFormParametersEditor extends JPanel
       parameters.setProperty("refreshTime", refreshTime);
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
     messageLabel.setText("Message:");
@@ -166,35 +167,35 @@ public class MonitorFormParametersEditor extends JPanel
     scrollPane.getViewport().add(messageTextArea);
 
     this.add(messageLabel,
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(scrollPane,
-             new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(endVarLabel,
-             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(endVarTextField,
-             new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(cancelVarLabel,
-             new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(cancelVarTextField,
-             new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(progressVarLabel,
-             new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(progressVarTextField,
-             new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(refreshTimeLabel,
-             new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 0, 4, 0), 0, 0));
     this.add(refreshTimeTextField,
-             new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0, 0));
   }
 }
 

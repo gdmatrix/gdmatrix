@@ -38,14 +38,11 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -57,11 +54,10 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.text.StyledEditorKit;
-
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.security.util.BasicAuthorization;
-
 import org.santfeliu.swing.PropertiesPanel;
 import org.santfeliu.swing.SwingWorker;
 import org.santfeliu.swing.text.XMLEditorKit;
@@ -69,13 +65,12 @@ import org.santfeliu.util.XMLPrinter;
 import org.santfeliu.util.net.HttpClient;
 import org.santfeliu.util.template.Template;
 import org.santfeliu.workflow.node.WebServiceNode;
-
 import org.w3c.dom.Document;
 
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WebServiceNodeTester extends JDialog
 {
@@ -111,8 +106,7 @@ public class WebServiceNodeTester extends JDialog
   private JLabel usernameLabel = new JLabel();
   private JTextField usernameTextField = new JTextField();
   private JLabel passwordLabel = new JLabel();
-  private JPasswordField passwordTextField = new JPasswordField();
-  
+  private JPasswordField passwordTextField = new JPasswordField();  
   private String endpoint;
   private String requestMessage;
   private Map requestProperties;
@@ -121,7 +115,6 @@ public class WebServiceNodeTester extends JDialog
   private int readTimeout;
   private StyledEditorKit textEditorKit = new StyledEditorKit();
   private XMLEditorKit xmlEditorKit = new XMLEditorKit();
-
   private static HashMap testValues = new HashMap();
 
   public WebServiceNodeTester(Dialog parent, String endpoint, 
@@ -137,16 +130,15 @@ public class WebServiceNodeTester extends JDialog
     this.readTimeout = readTimeout;
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setSize(new Dimension(800, 600));
     this.getContentPane().setLayout(borderLayout1);
@@ -216,6 +208,7 @@ public class WebServiceNodeTester extends JDialog
     testButton.setActionCommand("testButton");
     testButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             testButton_actionPerformed(e);
@@ -359,6 +352,7 @@ public class WebServiceNodeTester extends JDialog
       }
     }
     
+    @Override
     protected void doNotify(int code, Object message)
     {
       switch (code)
@@ -388,6 +382,7 @@ public class WebServiceNodeTester extends JDialog
       }
     }
 
+    @Override
     protected void doFinished()
     {
       testButton.setEnabled(true); 

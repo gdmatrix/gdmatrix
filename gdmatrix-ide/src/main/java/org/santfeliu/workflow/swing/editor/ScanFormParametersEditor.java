@@ -42,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.FormNode;
@@ -52,8 +53,7 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
  *
  * @author blanquepa
  */
-public class ScanFormParametersEditor extends JPanel
-  implements NodeEditor
+public class ScanFormParametersEditor extends JPanel implements NodeEditor
 {
   private FormNode formNode;
   private GridBagLayout gridBagLayout = new GridBagLayout();
@@ -85,15 +85,17 @@ public class ScanFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }    
   }
 
-  public Component getEditingComponent(NodeEditorDialog dialog, WorkflowNode node) 
+  @Override
+  public Component getEditingComponent(NodeEditorDialog dialog, 
+    WorkflowNode node) 
   {
     this.formNode = (FormNode)node;
     Properties parameters = formNode.getParameters();
@@ -133,10 +135,12 @@ public class ScanFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception 
   {
   }
 
+  @Override
   public void stopEditing() throws Exception 
   {
     checkValues();
@@ -164,11 +168,12 @@ public class ScanFormParametersEditor extends JPanel
     formNode.setParameters(parameters);
   }
 
+  @Override
   public void cancelEditing() 
   {
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout);
 
@@ -176,15 +181,15 @@ public class ScanFormParametersEditor extends JPanel
     messageTextArea.setFont(new Font("Dialog", 0, 14));
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
-    
+
     resultVarLabel.setText("Result variable:");
     resultVarTextField.setPreferredSize(new Dimension(140, 24));
     resultVarTextField.setMinimumSize(new Dimension(140, 24));
-    
+
     pdfAuthorLabel.setText("PDF Author:");
     pdfAuthorTextField.setPreferredSize(new Dimension(140, 24));
     pdfAuthorTextField.setMinimumSize(new Dimension(140, 24));
-    
+
     pdfSubjectLabel.setText("PDF Subject:");
     pdfSubjectTextField.setPreferredSize(new Dimension(140, 24));
     pdfSubjectTextField.setMinimumSize(new Dimension(140, 24));
@@ -192,51 +197,50 @@ public class ScanFormParametersEditor extends JPanel
     pdfTitleLabel.setText("PDF Title:");
     pdfTitleTextField.setPreferredSize(new Dimension(140, 24));
     pdfTitleTextField.setMinimumSize(new Dimension(140, 24));
-    
+
     propertiesLabel.setText("Doc. properties:");
 
     this.add(messageLabel,
-             new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(messageScrollPane,
-             new GridBagConstraints(1, 3, 2, 1, 1.0, 0.5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(resultVarLabel, 
-             new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(resultVarTextField, 
-             new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(propertiesLabel, 
-             new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(1, 3, 2, 1, 1.0, 0.5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(resultVarLabel,
+      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(resultVarTextField,
+      new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(propertiesLabel,
+      new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(propertiesScrollPane,
-             new GridBagConstraints(1, 5, 2, 1, 0.0, 0.5, GridBagConstraints.CENTER,
-                                    GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(pdfAuthorLabel, 
-             new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(pdfAuthorTextField, 
-             new GridBagConstraints(1, 6, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    
-    this.add(pdfSubjectLabel, 
-             new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(pdfSubjectTextField, 
-             new GridBagConstraints(1, 7, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(1, 5, 2, 1, 0.0, 0.5, GridBagConstraints.CENTER,
+        GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(pdfAuthorLabel,
+      new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(pdfAuthorTextField,
+      new GridBagConstraints(1, 6, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
 
-    this.add(pdfTitleLabel, 
-             new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(pdfTitleTextField, 
-             new GridBagConstraints(1, 8, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));    
-    
+    this.add(pdfSubjectLabel,
+      new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(pdfSubjectTextField,
+      new GridBagConstraints(1, 7, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+
+    this.add(pdfTitleLabel,
+      new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(pdfTitleTextField,
+      new GridBagConstraints(1, 8, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+
     messageScrollPane.getViewport().add(messageTextArea);
     propertiesScrollPane.getViewport().add(propertiesTextArea, null);
   }
-  
 }

@@ -32,11 +32,11 @@ package org.santfeliu.workflow.swing.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import static java.awt.Color.LIGHT_GRAY;
 import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.border.LineBorder;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.matrix.ide.Options;
 import org.santfeliu.swing.text.JavaScriptEditorKit;
 import org.santfeliu.swing.text.SymbolHighlighter;
@@ -45,10 +45,11 @@ import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.WaitConditionNode;
 import org.santfeliu.workflow.swing.NodeEditor;
 import org.santfeliu.workflow.swing.NodeEditorDialog;
+import static java.awt.Color.LIGHT_GRAY;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WaitConditionNodeEditor extends JPanel
   implements NodeEditor
@@ -61,11 +62,11 @@ public class WaitConditionNodeEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
   
@@ -99,8 +100,7 @@ public class WaitConditionNodeEditor extends JPanel
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout);
     JTextPane textPane = textEditor.getTextPane();

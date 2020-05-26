@@ -36,17 +36,14 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 import java.awt.event.KeyAdapter;
-
 import java.awt.event.KeyEvent;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.swing.text.RestrictedDocument;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
@@ -56,30 +53,24 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class UploadFormParametersEditor extends JPanel
-  implements NodeEditor
+public class UploadFormParametersEditor extends JPanel implements NodeEditor
 {
   private FormNode formNode;
   private GridBagLayout gridBagLayout = new GridBagLayout();
-
   private JLabel referenceLabel = new JLabel();
   private JLabel referenceHelpLabel = new JLabel();
   private JTextField referenceTextField = new JTextField();
-
   private JLabel maxFileSizeLabel = new JLabel();
   private JLabel maxFileSizeHelpLabel = new JLabel();
   private JTextField maxFileSizeTextField = new JTextField();
-
   private JLabel validExtensionsLabel = new JLabel();
   private JLabel validExtensionsHelpLabel = new JLabel();
   private JTextField validExtensionsTextField = new JTextField();
-
   private JLabel messageLabel = new JLabel();  
   private JScrollPane messageScrollPane = new JScrollPane();
   private JTextArea messageTextArea = new JTextArea();
-
   private JLabel propertiesLabel = new JLabel();
   private JScrollPane propertiesScrollPane = new JScrollPane();
   private JTextArea propertiesTextArea = new JTextArea();
@@ -88,14 +79,15 @@ public class UploadFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -142,10 +134,12 @@ public class UploadFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -175,11 +169,12 @@ public class UploadFormParametersEditor extends JPanel
     formNode.setParameters(parameters);
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout);
     referenceLabel.setText("Reference:");
@@ -201,82 +196,85 @@ public class UploadFormParametersEditor extends JPanel
     messageTextArea.setFont(new Font("Dialog", 0, 14));
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
-    
+
     propertiesLabel.setText("Properties:");
-    this.add(referenceLabel, 
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
+    this.add(referenceLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(referenceTextField,
-             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(referenceHelpLabel,
-             new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(0, 0, 0, 0), 0, 0));
+      new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 0, 0, 0), 0, 0));
 
     this.add(maxFileSizeLabel,
-             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(maxFileSizeTextField,
-             new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(maxFileSizeHelpLabel,
-             new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(0, 0, 0, 0), 0, 0));
+      new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 0, 0, 0), 0, 0));
 
     this.add(validExtensionsLabel,
-             new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(validExtensionsTextField,
-             new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(validExtensionsHelpLabel,
-             new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(0, 0, 0, 0), 0, 0));
+      new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 0, 0, 0), 0, 0));
 
     this.add(messageLabel,
-             new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(messageScrollPane,
-             new GridBagConstraints(1, 3, 2, 1, 1.0, 0.5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(propertiesLabel, 
-             new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(1, 3, 2, 1, 1.0, 0.5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(propertiesLabel,
+      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(propertiesScrollPane,
-             new GridBagConstraints(1, 4, 2, 1, 0.0, 0.5, GridBagConstraints.CENTER,
-                                    GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    
+      new GridBagConstraints(1, 4, 2, 1, 0.0, 0.5, GridBagConstraints.CENTER,
+        GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+
     messageScrollPane.getViewport().add(messageTextArea);
     propertiesScrollPane.getViewport().add(propertiesTextArea, null);
 
     this.referenceTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
     referenceTextField.addKeyListener(new KeyAdapter()
     {
+      @Override
       public void keyPressed(KeyEvent e)
       {
         updateHelpLabel();
       }
 
+      @Override
       public void keyReleased(KeyEvent e)
       {
         updateHelpLabel();
       }
 
+      @Override
       public void keyTyped(KeyEvent e)
       {
         updateHelpLabel();
       }
     });
   }
-  
+
   private void updateHelpLabel()
   {
     String varPrefix = referenceTextField.getText();
     referenceHelpLabel.setText(
-      "(" + varPrefix + "docid_0, " + 
-      varPrefix + "uuid_0, " + 
-      varPrefix + "desc_0, " + 
-      varPrefix + "count, etc.)");
+      "(" + varPrefix + "docid_0, "
+      + varPrefix + "uuid_0, "
+      + varPrefix + "desc_0, "
+      + varPrefix + "count, etc.)");
   }
 }

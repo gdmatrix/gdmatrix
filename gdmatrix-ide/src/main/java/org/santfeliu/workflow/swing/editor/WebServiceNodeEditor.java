@@ -40,7 +40,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -50,8 +49,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.matrix.ide.Options;
-
 import org.santfeliu.swing.PropertiesPanel;
 import org.santfeliu.swing.Utilities;
 import org.santfeliu.swing.text.XMLEditorKit;
@@ -63,10 +62,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class WebServiceNodeEditor extends JPanel
-  implements NodeEditor
+public class WebServiceNodeEditor extends JPanel implements NodeEditor
 {
   private WebServiceNode webServiceNode;
   private JTabbedPane tabbedPane = new JTabbedPane();
@@ -89,12 +87,10 @@ public class WebServiceNodeEditor extends JPanel
   private GridBagLayout gridBagLayout4 = new GridBagLayout();
   private JLabel responseLabel = new JLabel();
   private JButton testButton = new JButton();
-
   private JLabel usernameLabel = new JLabel();
   private JTextField usernameTextField = new JTextField();
   private JLabel passwordLabel = new JLabel();
   private JTextField passwordTextField = new JTextField();
-
   private JLabel connectTimeoutLabel = new JLabel();
   private JTextField connectTimeoutTextField = new JTextField();
   private JLabel readTimeoutLabel = new JLabel();
@@ -104,14 +100,15 @@ public class WebServiceNodeEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
                                        WorkflowNode node)
   {
@@ -127,10 +124,12 @@ public class WebServiceNodeEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues()
   {
   }
 
+  @Override
   public void stopEditing()
   {
     webServiceNode.setEndpoint(endpointTextField.getText());
@@ -149,6 +148,7 @@ public class WebServiceNodeEditor extends JPanel
     }
     catch (Exception ex)
     {
+      // ignore
     }
     try
     {
@@ -157,15 +157,16 @@ public class WebServiceNodeEditor extends JPanel
     }
     catch (Exception ex)
     {
+      // ignore
     }
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout1);
     requestPanel.setLayout(gridBagLayout2);
@@ -175,71 +176,71 @@ public class WebServiceNodeEditor extends JPanel
     endpointLabel.setText("Endpoint URL:");
     requestMessageLabel.setText("SOAP Message:");
     scrollPane.getViewport().add(requestMessageTextPane, null);
-    requestPanel.add(scrollPane, 
-                     new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                            new Insets(0, 4, 4, 4), 0, 0));
-    requestPanel.add(requestMessageLabel, 
-                     new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                            new Insets(4, 4, 4, 4), 0, 0));
+    requestPanel.add(scrollPane,
+      new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(0, 4, 4, 4), 0, 0));
+    requestPanel.add(requestMessageLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
     tabbedPane.addTab("Request", requestPanel);
-    responsePanel.add(expressionsPanel, 
-                      new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                             new Insets(4, 4, 4, 4), 0, 
-                                             0));
-    responsePanel.add(responseLabel, 
-                      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                             new Insets(4, 4, 4, 4), 0, 
-                                             0));
+    responsePanel.add(expressionsPanel,
+      new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(4, 4, 4, 4), 0,
+        0));
+    responsePanel.add(responseLabel,
+      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0,
+        0));
     tabbedPane.addTab("Response", responsePanel);
-    optionsPanel.add(requestPropertiesPanel, 
-                     new GridBagConstraints(0, 1, 2, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                            new Insets(4, 4, 4, 4), 0, 0));
-    optionsPanel.add(optionsLabel, 
-                     new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                            new Insets(4, 4, 4, 4), 0, 0));
+    optionsPanel.add(requestPropertiesPanel,
+      new GridBagConstraints(0, 1, 2, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(4, 4, 4, 4), 0, 0));
+    optionsPanel.add(optionsLabel,
+      new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
 
     optionsPanel.add(usernameLabel,
-                     new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                            new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
     optionsPanel.add(usernameTextField,
-                     new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                            new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
     optionsPanel.add(passwordLabel,
-                     new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                            new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
     optionsPanel.add(passwordTextField,
-                     new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                            new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
 
     optionsPanel.add(connectTimeoutLabel,
-                     new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                            new Insets(4, 4, 4, 4), 0, 0));
-    optionsPanel.add(connectTimeoutTextField, 
-                     new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                            new Insets(4, 4, 4, 4), 0, 0));
-    optionsPanel.add(readTimeoutLabel, 
-                     new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                            new Insets(4, 4, 4, 4), 0, 0));
-    optionsPanel.add(readTimeoutTextField, 
-                     new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                            new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    optionsPanel.add(connectTimeoutTextField,
+      new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    optionsPanel.add(readTimeoutLabel,
+      new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    optionsPanel.add(readTimeoutTextField,
+      new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
 
     tabbedPane.addTab("Options", optionsPanel);
     this.add(tabbedPane, BorderLayout.CENTER);
-    northPanel.add(endpointLabel, 
-                   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
-                                          GridBagConstraints.WEST, 
-                                          GridBagConstraints.BOTH, 
-                                          new Insets(4, 2, 4, 2), 0, 0));
-    northPanel.add(endpointTextField, 
-                   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, 
-                                          GridBagConstraints.WEST, 
-                                          GridBagConstraints.HORIZONTAL, 
-                                          new Insets(4, 4, 4, 4), 0, 0));
-    northPanel.add(testButton, 
-                   new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, 
-                                          GridBagConstraints.NONE, 
-                                          new Insets(4, 4, 4, 4), 0, 0));
+    northPanel.add(endpointLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.WEST,
+        GridBagConstraints.BOTH,
+        new Insets(4, 2, 4, 2), 0, 0));
+    northPanel.add(endpointTextField,
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
+        GridBagConstraints.WEST,
+        GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    northPanel.add(testButton,
+      new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+        GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(northPanel, BorderLayout.NORTH);
     requestMessageTextPane.setFont(Options.getEditorFont());
     requestMessageTextPane.setEditorKitForContentType(
@@ -247,13 +248,14 @@ public class WebServiceNodeEditor extends JPanel
     requestMessageTextPane.setContentType("text/xml");
     requestMessageTextPane.setSelectionColor(new Color(198, 198, 198));
     expressionsPanel.setPropertyLabel("Variable");
-    expressionsPanel.setValueLabel("XPath expression");    
+    expressionsPanel.setValueLabel("XPath expression");
     requestPropertiesPanel.setPropertyLabel("Variable");
     optionsLabel.setText("Enter HTTP request properties:");
     responseLabel.setText("Enter output variable XPath expressions:");
     testButton.setText("Test");
     testButton.addActionListener(new ActionListener()
     {
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         testButton_actionPerformed(e);
@@ -274,7 +276,7 @@ public class WebServiceNodeEditor extends JPanel
   {
     try
     {
-      Dialog parent = (Dialog)SwingUtilities.getRoot(this);
+      Dialog parent = (Dialog) SwingUtilities.getRoot(this);
       int connectTimeout = 10;
       int readTimeout = 10;
       try
@@ -306,7 +308,7 @@ public class WebServiceNodeEditor extends JPanel
           readTimeout = Integer.parseInt(s);
         }
         catch (NumberFormatException ex)
-        {          
+        {
         }
       }
       WebServiceNodeTester testDialog = new WebServiceNodeTester(
@@ -323,7 +325,7 @@ public class WebServiceNodeEditor extends JPanel
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      MatrixIDE.log(ex);
     }
-  }  
+  }
 }

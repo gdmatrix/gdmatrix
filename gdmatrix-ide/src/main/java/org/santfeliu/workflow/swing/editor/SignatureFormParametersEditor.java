@@ -36,14 +36,13 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.FormNode;
@@ -52,7 +51,7 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SignatureFormParametersEditor extends JPanel
   implements NodeEditor
@@ -73,14 +72,15 @@ public class SignatureFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -111,10 +111,12 @@ public class SignatureFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     Properties parameters = new Properties();
@@ -135,12 +137,12 @@ public class SignatureFormParametersEditor extends JPanel
     formNode.setParameters(parameters);
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
     sigIdLabel.setText("Signature Id.:");
@@ -154,31 +156,31 @@ public class SignatureFormParametersEditor extends JPanel
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
     showIFrameLabel.setText("Show in IFrame:");
-    
-    this.add(sigIdLabel, 
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(urlLabel, 
-             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(messageLabel, 
-             new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(sigIdTextField, 
-             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(urlTextField, 
-             new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(scrollPane, 
-             new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
+
+    this.add(sigIdLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(urlLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(messageLabel,
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(sigIdTextField,
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(urlTextField,
+      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(scrollPane,
+      new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(showIFrameLabel,
-             new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(showIFrameCheckBox,
-             new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
 
     scrollPane.getViewport().add(messageTextArea);
   }

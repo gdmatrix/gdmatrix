@@ -31,17 +31,13 @@
 package org.santfeliu.workflow.swing.editor;
 
 import java.awt.Component;
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
 import java.awt.Insets;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import javax.swing.JTextField;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.WaitNode;
 import org.santfeliu.workflow.swing.NodeEditor;
@@ -49,10 +45,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class WaitNodeEditor extends JPanel
-  implements NodeEditor
+public class WaitNodeEditor extends JPanel implements NodeEditor
 {
   private WaitNode waitNode;
   private GridBagLayout gridBagLayout1 = new GridBagLayout();
@@ -67,14 +62,15 @@ public class WaitNodeEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
                                        WorkflowNode node)
   {
@@ -84,47 +80,47 @@ public class WaitNodeEditor extends JPanel
     return this;
   }
 
-  public void checkValues()
-    throws Exception
+  @Override
+  public void checkValues() throws Exception
   {
   }
 
-  public void stopEditing()
-    throws Exception
+  @Override
+  public void stopEditing() throws Exception
   {
     waitNode.setDuration(durationTextField.getText());
     waitNode.setDateTime(dateTimeTextField.getText());
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
     durationLabel.setText("Duration:");
     dateTimeLabel.setText("Date/Time:");
     exampleLabel2.setText("(yyyyMMddHHmmss)");
     exampleLabel1.setText("(examples: 2w, 20d, 45m)");
-    this.add(durationLabel, 
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(durationTextField, 
-             new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(dateTimeLabel, 
-             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(dateTimeTextField, 
-             new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(exampleLabel2, 
-             new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(exampleLabel1, 
-             new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
+    this.add(durationLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(durationTextField,
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(dateTimeLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(dateTimeTextField,
+      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(exampleLabel2,
+      new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(exampleLabel1,
+      new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
   }
 }

@@ -34,26 +34,24 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.FormNode;
 import org.santfeliu.workflow.swing.NodeEditor;
 import org.santfeliu.workflow.swing.NodeEditorDialog;
 
-
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class CustomFormParametersEditor extends JPanel
-  implements NodeEditor
+public class CustomFormParametersEditor extends JPanel implements NodeEditor
 {
+
   private FormNode formNode;
   private GridBagLayout gridBagLayout1 = new GridBagLayout();
   private JLabel typeLabel = new JLabel();
@@ -65,22 +63,23 @@ public class CustomFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
-  public Component getEditingComponent(NodeEditorDialog dialog, 
+  @Override
+  public Component getEditingComponent(NodeEditorDialog dialog,
     WorkflowNode node)
   {
     this.formNode = (FormNode)node;
     Properties parameters = formNode.getParameters();
     String type = (String)parameters.getProperty("type");
     String ref = (String)parameters.getProperty("ref");
-    
+
     if ("form".equals(type))
     {
       typeComboBox.setSelectedIndex(0);
@@ -89,7 +88,7 @@ public class CustomFormParametersEditor extends JPanel
     {
       typeComboBox.setSelectedIndex(1);
     }
-    else  if ("url".equals(type))
+    else if ("url".equals(type))
     {
       typeComboBox.setSelectedIndex(2);
     }
@@ -101,10 +100,12 @@ public class CustomFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -129,32 +130,31 @@ public class CustomFormParametersEditor extends JPanel
     parameters.setProperty("ref", value);
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
     typeLabel.setText("Type:");
     valueLabel.setText("Value:");
-    this.add(typeLabel, 
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                    new Insets(4, 4, 4, 4), 0, 0));
-    this.add(typeComboBox, 
-             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(4, 0, 4, 0), 0, 0));
-    this.add(valueLabel, 
-             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                    new Insets(4, 4, 4, 4), 0, 0));
-    this.add(valueTextField, 
-             new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(4, 0, 4, 4), 0, 0));
+    this.add(typeLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    this.add(typeComboBox,
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0, 0));
+    this.add(valueLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    this.add(valueTextField,
+      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 0, 4, 4), 0, 0));
 
     typeComboBox.addItem("HTML visual form");
     typeComboBox.addItem("HTML document");
     typeComboBox.addItem("URL");
   }
 }
-

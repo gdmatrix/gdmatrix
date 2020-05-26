@@ -31,27 +31,31 @@
 package org.santfeliu.workflow.swing.editor;
 
 import java.awt.Component;
-
 import javax.swing.JPanel;
-
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.swing.NodeEditor;
 import org.santfeliu.workflow.swing.NodeEditorDialog;
 
-
+/**
+ *
+ * @author realor
+ */
 public abstract class AbstractNodeEditor extends JPanel
   implements NodeEditor
 {
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
     return this;
   }
 
+  @Override
   public void stopEditing()
   {    
   }
 
+  @Override
   public void cancelEditing()
   {
   }

@@ -31,18 +31,13 @@
 package org.santfeliu.workflow.swing.editor;
 
 import java.awt.BorderLayout;
-
 import java.awt.Color;
 import java.awt.Component;
-
 import java.awt.Font;
-
 import javax.swing.JPanel;
-
 import javax.swing.JScrollPane;
-
 import javax.swing.JTextPane;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.swing.text.JavaScriptEditorKit;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.JavaNode;
@@ -51,10 +46,10 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class JavaNodeEditor extends JPanel
-  implements NodeEditor
+@Deprecated
+public class JavaNodeEditor extends JPanel implements NodeEditor
 {
   private JavaNode javaNode;
   private BorderLayout borderLayout = new BorderLayout();
@@ -65,14 +60,15 @@ public class JavaNodeEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
   
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -82,6 +78,7 @@ public class JavaNodeEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
     String text = textPane.getText();
@@ -89,17 +86,19 @@ public class JavaNodeEditor extends JPanel
       throw new Exception("Code is empty");
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
     javaNode.setCode(textPane.getText());
   }
   
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
+  private void initComponents()
     throws Exception
   {
     this.setLayout(borderLayout);

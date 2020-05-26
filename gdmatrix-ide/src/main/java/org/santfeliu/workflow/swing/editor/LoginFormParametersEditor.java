@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.FormNode;
@@ -51,8 +52,7 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
  *
  * @author realor
  */
-public class LoginFormParametersEditor extends JPanel
-        implements NodeEditor
+public class LoginFormParametersEditor extends JPanel implements NodeEditor
 {
   private FormNode formNode;
   private GridBagLayout gridBagLayout1 = new GridBagLayout();
@@ -70,11 +70,11 @@ public class LoginFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
@@ -133,7 +133,7 @@ public class LoginFormParametersEditor extends JPanel
   {
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
     messageLabel.setText("Message:");

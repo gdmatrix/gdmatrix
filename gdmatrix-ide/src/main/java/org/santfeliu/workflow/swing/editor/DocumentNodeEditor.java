@@ -32,27 +32,22 @@ package org.santfeliu.workflow.swing.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.DocumentNode;
 import org.santfeliu.workflow.swing.NodeEditor;
@@ -60,10 +55,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class DocumentNodeEditor extends JPanel
-  implements NodeEditor 
+public class DocumentNodeEditor extends JPanel implements NodeEditor 
 {
   public static ArrayList operations = new ArrayList();
 
@@ -96,14 +90,15 @@ public class DocumentNodeEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
   
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -126,6 +121,7 @@ public class DocumentNodeEditor extends JPanel
 
     operationComboBox.addActionListener(new ActionListener()
     {
+      @Override
       public void actionPerformed(ActionEvent event)
       {
         updateControls();
@@ -142,10 +138,12 @@ public class DocumentNodeEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -161,6 +159,7 @@ public class DocumentNodeEditor extends JPanel
     documentNode.getProperties().loadFromString(sprops);
   }
   
+  @Override
   public void cancelEditing()
   {
   }
@@ -212,8 +211,7 @@ public class DocumentNodeEditor extends JPanel
     }
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout);
     northPanel.setLayout(gridBagLayout1);
@@ -226,57 +224,57 @@ public class DocumentNodeEditor extends JPanel
     documentVarLabel.setText("docId variable:");
     fileVarLabel.setText("contentId variable:");
     filePathLabel.setText("File path:");
-    fileURLLabel.setText("File URL:");    
+    fileURLLabel.setText("File URL:");
     propertiesLabel.setText("Document properties:");
     referenceLabel.setText("Reference:");
-    northPanel.add(serviceLabel, 
-                   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 4, 2, 4), 0, 0));
-    northPanel.add(serviceTextField, 
-                   new GridBagConstraints(1, 0, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(serviceLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    northPanel.add(serviceTextField,
+      new GridBagConstraints(1, 0, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
     northPanel.add(operationLabel,
-                   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 4, 2, 4), 0, 0));
-    northPanel.add(operationComboBox, 
-                   new GridBagConstraints(1, 1, 1, 1, 0.4, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 0, 2, 4), 0, 0));    
-    northPanel.add(emptyLabel, 
-                   new GridBagConstraints(2, 1, 1, 1, 0.6, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(0, 0, 0, 0), 0, 0));
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    northPanel.add(operationComboBox,
+      new GridBagConstraints(1, 1, 1, 1, 0.4, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(emptyLabel,
+      new GridBagConstraints(2, 1, 1, 1, 0.6, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 0, 0, 0), 0, 0));
     northPanel.add(documentVarLabel,
-                   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                          new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
     northPanel.add(documentVarTextField,
-                   new GridBagConstraints(1, 2, 1, 1, 0.4, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 0, 2, 4), 0, 0));
+      new GridBagConstraints(1, 2, 1, 1, 0.4, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
     northPanel.add(fileVarLabel,
-                   new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 4, 2, 4), 0, 0));
-    northPanel.add(fileVarTextField, 
-                   new GridBagConstraints(1, 3, 1, 1, 0.4, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(referenceLabel, 
-                   new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 4, 2, 4), 0, 0));
-    northPanel.add(referenceTextField, 
-                   new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 0, 2, 4), 0, 0));
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    northPanel.add(fileVarTextField,
+      new GridBagConstraints(1, 3, 1, 1, 0.4, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(referenceLabel,
+      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    northPanel.add(referenceTextField,
+      new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
     northPanel.add(filePathLabel,
-                   new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 4, 2, 4), 0, 0));
-    northPanel.add(filePathTextField, 
-                   new GridBagConstraints(1, 5, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 0, 2, 4), 0, 0));
+      new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+    northPanel.add(filePathTextField,
+      new GridBagConstraints(1, 5, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
     northPanel.add(fileURLLabel,
-                   new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                          new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
     northPanel.add(fileURLTextField,
-                   new GridBagConstraints(1, 6, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 0, 2, 4), 0, 0));
+      new GridBagConstraints(1, 6, 3, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 4), 0, 0));
     northPanel.add(propertiesLabel,
-                   new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                                          new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 7, 3, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
     this.add(northPanel, BorderLayout.NORTH);
     scrollPane.getViewport().add(textArea, null);
     centerPanel.add(scrollPane, BorderLayout.CENTER);

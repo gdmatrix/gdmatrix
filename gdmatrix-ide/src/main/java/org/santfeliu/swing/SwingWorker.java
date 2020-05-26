@@ -34,7 +34,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SwingWorker
 {
@@ -42,6 +42,7 @@ public class SwingWorker
   {
     Thread thread = new Thread(new Runnable()
     {
+      @Override
       public void run()
       {
         try
@@ -67,6 +68,7 @@ public class SwingWorker
     {
       SwingUtilities.invokeLater(new Runnable()
       {
+        @Override
         public void run()
         {
           doNotify(code, data);
@@ -79,6 +81,7 @@ public class SwingWorker
   {
     SwingUtilities.invokeLater(new Runnable()
     {
+      @Override
       public void run()
       {
         doFinished();

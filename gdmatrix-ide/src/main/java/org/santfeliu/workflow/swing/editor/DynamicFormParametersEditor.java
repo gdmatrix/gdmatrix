@@ -35,11 +35,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.JCheckBox;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.FormNode;
@@ -49,10 +48,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class DynamicFormParametersEditor extends JPanel
-  implements NodeEditor
+public class DynamicFormParametersEditor extends JPanel implements NodeEditor
 {
   private FormNode formNode;
   private GridBagLayout gridBagLayout1 = new GridBagLayout();
@@ -65,14 +63,15 @@ public class DynamicFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -89,10 +88,12 @@ public class DynamicFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -102,12 +103,12 @@ public class DynamicFormParametersEditor extends JPanel
     parameters.setProperty("useCache", useCacheCheckBox.isSelected());
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
     useCacheCheckBox.setText("Manual form refresh:");
@@ -115,17 +116,17 @@ public class DynamicFormParametersEditor extends JPanel
     selectorLabel.setText("Selector:");
     selectorInfoLabel.setText("<prefix>:<value>");
     this.add(selectorLabel,
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(selectorTextField,
-             new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(4, 0, 4, 4), 0, 0));
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 0, 4, 4), 0, 0));
     this.add(selectorInfoLabel,
-             new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 0, 4, 4), 0, 0));
+      new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 0, 4, 4), 0, 0));
     this.add(useCacheCheckBox,
-             new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 0, 4, 0), 0, 0));
+      new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0, 0));
   }
 }
 

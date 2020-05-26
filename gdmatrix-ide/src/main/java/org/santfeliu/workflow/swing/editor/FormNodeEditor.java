@@ -62,10 +62,11 @@ import org.santfeliu.workflow.node.FormNode;
 import org.santfeliu.workflow.swing.NodeEditor;
 import org.santfeliu.workflow.swing.NodeEditorDialog;
 import static java.awt.Color.LIGHT_GRAY;
+import org.santfeliu.matrix.ide.MatrixIDE;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class FormNodeEditor extends JPanel implements NodeEditor
 {
@@ -142,11 +143,11 @@ public class FormNodeEditor extends JPanel implements NodeEditor
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
@@ -225,8 +226,7 @@ public class FormNodeEditor extends JPanel implements NodeEditor
       parametersEditor.cancelEditing();
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout);
     northPanel.setLayout(gridBagLayout1);
@@ -248,23 +248,23 @@ public class FormNodeEditor extends JPanel implements NodeEditor
     readVarsLabel.setText("Enter read variables separated by semi-colon:");
     writeVarsLabel.setText("Enter write variables separated by semi-colon:");
     northPanel.add(formTypeLabel,
-                   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     northPanel.add(formTypeComboBox,
-                   new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                          new Insets(2, 0, 2, 4), 0, 0));
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 4), 0, 0));
     northPanel.add(groupLabel,
-                   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     northPanel.add(groupTextField,
-                   new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                          new Insets(2, 0, 2, 0), 0, 0));
+      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 0), 0, 0));
     northPanel.add(buttonsLabel,
-                   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(2, 4, 2, 4), 0, 0));
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
     northPanel.add(buttonsPanel,
-                   new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                          new Insets(0, 0, 0, 0), 0, 0));
+      new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 0, 0, 0), 0, 0));
 
     flowLayout.setAlignment(FlowLayout.LEFT);
     cancelPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -281,31 +281,31 @@ public class FormNodeEditor extends JPanel implements NodeEditor
     this.add(tabbedPane, BorderLayout.CENTER);
 
     variablesPanel.add(readVarsLabel,
-                       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                                              GridBagConstraints.WEST,
-                                              GridBagConstraints.NONE,
-                                              new Insets(4, 0, 4, 0), 0,
-                                              0));
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.WEST,
+        GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0,
+        0));
     readVarsScrollPane.getViewport().add(readVarsTextArea, null);
     variablesPanel.add(readVarsScrollPane,
-                       new GridBagConstraints(0, 1, 1, 1, 1.0, 0.5,
-                                              GridBagConstraints.CENTER,
-                                              GridBagConstraints.BOTH,
-                                              new Insets(0, 0, 0, 0), 0,
-                                              0));
+      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.5,
+        GridBagConstraints.CENTER,
+        GridBagConstraints.BOTH,
+        new Insets(0, 0, 0, 0), 0,
+        0));
     variablesPanel.add(writeVarsLabel,
-                       new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
-                                              GridBagConstraints.WEST,
-                                              GridBagConstraints.NONE,
-                                              new Insets(4, 0, 4, 0), 0,
-                                              0));
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
+        GridBagConstraints.WEST,
+        GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0,
+        0));
     writeVarsScrollPane.getViewport().add(writeVarsTextArea, null);
     variablesPanel.add(writeVarsScrollPane,
-                       new GridBagConstraints(0, 3, 1, 1, 1.0, 0.5,
-                                              GridBagConstraints.CENTER,
-                                              GridBagConstraints.BOTH,
-                                              new Insets(0, 0, 0, 0), 0,
-                                              0));
+      new GridBagConstraints(0, 3, 1, 1, 1.0, 0.5,
+        GridBagConstraints.CENTER,
+        GridBagConstraints.BOTH,
+        new Insets(0, 0, 0, 0), 0,
+        0));
     cancelTextEditor.setBorder(new LineBorder(LIGHT_GRAY));
     cancelPanel.add(cancelTextEditor, BorderLayout.CENTER);
     cancelPanel.add(cancelLabel, BorderLayout.NORTH);
@@ -315,8 +315,8 @@ public class FormNodeEditor extends JPanel implements NodeEditor
       "text/javascript", new JavaScriptEditorKit());
     cancelTextEditor.getTextPane().setContentType("text/javascript");
 
-    SymbolHighlighter cancelMatcher =
-      new SymbolHighlighter(cancelTextEditor.getTextPane(), "({[", ")}]");
+    SymbolHighlighter cancelMatcher
+      = new SymbolHighlighter(cancelTextEditor.getTextPane(), "({[", ")}]");
 
     viewRolesLabel.setText("Enter roles separated by semi-colon or CR: (role1;role2;...)");
     viewRolesLabel.setBorder(new EmptyBorder(4, 0, 4, 0));
@@ -348,8 +348,8 @@ public class FormNodeEditor extends JPanel implements NodeEditor
       "text/javascript", new JavaScriptEditorKit());
     checkTextEditor.getTextPane().setContentType("text/javascript");
 
-    SymbolHighlighter checkMatcher =
-      new SymbolHighlighter(checkTextEditor.getTextPane(), "({[", ")}]");
+    SymbolHighlighter checkMatcher
+      = new SymbolHighlighter(checkTextEditor.getTextPane(), "({[", ")}]");
 
     outcomePanel.setLayout(borderLayout4);
     outcomePanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -361,8 +361,8 @@ public class FormNodeEditor extends JPanel implements NodeEditor
       "text/javascript", new JavaScriptEditorKit());
     outcomeTextEditor.getTextPane().setContentType("text/javascript");
 
-    SymbolHighlighter outcomeMatcher =
-      new SymbolHighlighter(outcomeTextEditor.getTextPane(), "({[", ")}]");
+    SymbolHighlighter outcomeMatcher
+      = new SymbolHighlighter(outcomeTextEditor.getTextPane(), "({[", ")}]");
 
     tabbedPane.addTab("Parameters", parametersPanel);
     tabbedPane.addTab("Variables", variablesPanel);
@@ -371,14 +371,14 @@ public class FormNodeEditor extends JPanel implements NodeEditor
     tabbedPane.addTab("Check", checkPanel);
     tabbedPane.addTab("Cancel", cancelPanel);
 
-    outcomeTextEditor.setBorder(new LineBorder(LIGHT_GRAY));    
+    outcomeTextEditor.setBorder(new LineBorder(LIGHT_GRAY));
     outcomePanel.add(outcomeTextEditor, BorderLayout.CENTER);
     outcomePanel.add(outcomeLabel, BorderLayout.NORTH);
     tabbedPane.addTab("Outcome", outcomePanel);
     Iterator iter = formTypes.iterator();
     while (iter.hasNext())
     {
-      String type = (String) iter.next();
+      String type = (String)iter.next();
       formTypeComboBox.addItem(type);
     }
     this.formTypeComboBox.addActionListener(new ActionListener()

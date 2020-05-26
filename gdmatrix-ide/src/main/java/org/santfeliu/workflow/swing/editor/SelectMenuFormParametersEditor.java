@@ -38,7 +38,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -52,7 +51,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.swing.text.RestrictedDocument;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
@@ -63,7 +62,7 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SelectMenuFormParametersEditor extends JPanel
   implements NodeEditor
@@ -94,14 +93,15 @@ public class SelectMenuFormParametersEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -158,10 +158,12 @@ public class SelectMenuFormParametersEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -214,12 +216,12 @@ public class SelectMenuFormParametersEditor extends JPanel
     formNode.setParameters(parameters);
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
     varLabel.setText("Variable:");
@@ -236,84 +238,87 @@ public class SelectMenuFormParametersEditor extends JPanel
     cssCustomTextArea.setLineWrap(true);
     cssCustomTextArea.setWrapStyleWord(true);
     optionsLabel.setText("Options:");
-    this.add(varLabel, 
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(messageLabel, 
-             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(varTextField, 
-             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(scrollPane, 
-             new GridBagConstraints(1, 1, 1, 1, 1.0, 0.2, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(optionsLabel, 
-             new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 4, 2), 0, 0));
+    this.add(varLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(messageLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(varTextField,
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(scrollPane,
+      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.2, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(optionsLabel,
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 4, 2), 0, 0));
     scrollPane2.getViewport().add(optionsTable, null);
-    this.add(scrollPane2, 
-             new GridBagConstraints(1, 2, 1, 4, 0.0, 0.8, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(addButton, 
-             new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(insertButton, 
-             new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(deleteButton, 
-             new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(layoutLabel, 
-             new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(layoutComboBox, 
-             new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(cssFileUrlLabel, 
-             new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(cssFileUrlTextField, 
-             new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(cssCustomLabel, 
-             new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(scrollPane3, 
-             new GridBagConstraints(1, 8, 1, 1, 1.0, 0.2, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
+    this.add(scrollPane2,
+      new GridBagConstraints(1, 2, 1, 4, 0.0, 0.8, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(addButton,
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(insertButton,
+      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(deleteButton,
+      new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(layoutLabel,
+      new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(layoutComboBox,
+      new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(cssFileUrlLabel,
+      new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(cssFileUrlTextField,
+      new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(cssCustomLabel,
+      new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(scrollPane3,
+      new GridBagConstraints(1, 8, 1, 1, 1.0, 0.2, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
     scrollPane.getViewport().add(messageTextArea);
     scrollPane3.getViewport().add(cssCustomTextArea);
-    
+
     this.varTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
-    optionsTable.setAutoCreateColumnsFromModel(false);    
+    optionsTable.setAutoCreateColumnsFromModel(false);
     tableModel.addColumn("Label");
     tableModel.addColumn("Value");
     optionsTable.setModel(tableModel);
     addButton.setText("Add");
     addButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-            addButton_actionPerformed(e);
-          }
-        });
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        addButton_actionPerformed(e);
+      }
+    });
     insertButton.setText("Insert");
     insertButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-            insertButton_actionPerformed(e);
-          }
-        });
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        insertButton_actionPerformed(e);
+      }
+    });
     deleteButton.setText("Delete");
     deleteButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-            deleteButton_actionPerformed(e);
-          }
-        });
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        deleteButton_actionPerformed(e);
+      }
+    });
     DefaultCellEditor editor = new DefaultCellEditor(new JTextField());
     editor.setClickCountToStart(2);
 
@@ -323,8 +328,8 @@ public class SelectMenuFormParametersEditor extends JPanel
     optionsTable.setRowHeight(20);
 
     layoutComboBox.addItem("List");
-    layoutComboBox.addItem("Assistant");    
-    layoutComboBox.addItem("From CSS file");    
+    layoutComboBox.addItem("Assistant");
+    layoutComboBox.addItem("From CSS file");
   }
 
   private void addButton_actionPerformed(ActionEvent e)

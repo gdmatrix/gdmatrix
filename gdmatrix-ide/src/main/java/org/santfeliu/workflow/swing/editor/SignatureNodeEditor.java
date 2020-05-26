@@ -40,7 +40,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -49,12 +48,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 import javax.swing.JTextPane;
-
-
 import javax.swing.text.StyledEditorKit;
-
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.swing.text.XMLEditorKit;
 import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.node.SignatureNode;
@@ -64,10 +60,9 @@ import org.santfeliu.workflow.swing.NodeEditorDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class SignatureNodeEditor extends JPanel
-  implements NodeEditor
+public class SignatureNodeEditor extends JPanel implements NodeEditor
 {
   private SignatureNode signatureNode;
   private BorderLayout borderLayout1 = new BorderLayout();
@@ -118,14 +113,15 @@ public class SignatureNodeEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
   
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog, 
     WorkflowNode node)
   {
@@ -142,6 +138,7 @@ public class SignatureNodeEditor extends JPanel
     operationComboBox.addItem("abortDocument");
     operationComboBox.addActionListener(new ActionListener()
     {
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         String operation = (String)operationComboBox.getSelectedItem();
@@ -209,6 +206,7 @@ public class SignatureNodeEditor extends JPanel
     return this;
   }
 
+  @Override
   public void checkValues() throws Exception
   {
     String variable = docVarTextField.getText();
@@ -220,6 +218,7 @@ public class SignatureNodeEditor extends JPanel
       throw new Exception("Undefined operation");
   }
 
+  @Override
   public void stopEditing() throws Exception
   {
     checkValues();
@@ -252,12 +251,12 @@ public class SignatureNodeEditor extends JPanel
     }
   }
 
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setLayout(borderLayout1);
     northPanel.setLayout(gridBagLayout1);
@@ -274,105 +273,107 @@ public class SignatureNodeEditor extends JPanel
     dataTypeLabel.setText("Data type:");
     dataTypeComboBox.setPreferredSize(new Dimension(140, 24));
     dataTypeComboBox.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-            dataTypeComboBox_actionPerformed(e);
-          }
-        });
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        dataTypeComboBox_actionPerformed(e);
+      }
+    });
     contentPanel.setLayout(gridBagLayout5);
     contentTextPane.setFont(new Font("Monospaced", 0, 16));
-    
+
     dataPropertiesPanel.setLayout(gridBagLayout4);
     systemSignaturePanel.setLayout(gridBagLayout6);
     keyAliasLabel.setText("KeyAlias:");
     propertiesLabel.setText("Document properties:");
     propertiesLabel2.setText("Document Properties:");
-    northPanel.add(serviceLabel, 
-                   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(serviceTextField, 
-                   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
-    northPanel.add(docVarLabel, 
-                   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 4), 0, 0));
-    northPanel.add(docVarTextField, 
-                   new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
-    northPanel.add(operationLabel, 
-                   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
-    northPanel.add(operationComboBox, 
-                   new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                          new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(serviceLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(serviceTextField,
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(docVarLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 4), 0, 0));
+    northPanel.add(docVarTextField,
+      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(operationLabel,
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 0), 0, 0));
+    northPanel.add(operationComboBox,
+      new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 0), 0, 0));
     this.add(northPanel, BorderLayout.NORTH);
-    createPanel.add(typeLabel, 
-                    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                           new Insets(2, 0, 2, 6), 0, 0));
-    createPanel.add(typeTextField, 
-                    new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(2, 0, 2, 0), 0, 0));
-    createPanel.add(propertiesLabel, 
-                    new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(2, 0, 2, 0), 0, 0));
+    createPanel.add(typeLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 0, 2, 6), 0, 0));
+    createPanel.add(typeTextField,
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0, 0));
+    createPanel.add(propertiesLabel,
+      new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0, 0));
     createPropsScrollPane.getViewport().add(createPropsTextArea, null);
-    createPanel.add(createPropsScrollPane, 
-                    new GridBagConstraints(0, 2, 2, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                           new Insets(2, 0, 2, 0), 0, 0));
+    createPanel.add(createPropsScrollPane,
+      new GridBagConstraints(0, 2, 2, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 0, 2, 0), 0, 0));
     centerPanel.add(createPanel, "createDocument");
-    addDataPanel.add(dataTypeLabel, 
-                     new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
-                                            GridBagConstraints.WEST, 
-                                            GridBagConstraints.NONE, 
-                                            new Insets(10, 0, 2, 6), 0, 
-                                            0));
-    addDataPanel.add(dataTypeComboBox, 
-                     new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
-                                            GridBagConstraints.WEST, 
-                                            GridBagConstraints.NONE, 
-                                            new Insets(10, 0, 0, 0), 0, 
-                                            0));
+    addDataPanel.add(dataTypeLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.WEST,
+        GridBagConstraints.NONE,
+        new Insets(10, 0, 2, 6), 0,
+        0));
+    addDataPanel.add(dataTypeComboBox,
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.WEST,
+        GridBagConstraints.NONE,
+        new Insets(10, 0, 0, 0), 0,
+        0));
     scrollPane1.getViewport().add(contentTextPane, null);
-    contentPanel.add(scrollPane1, 
-                     new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, 
-                                            GridBagConstraints.CENTER, 
-                                            GridBagConstraints.BOTH, 
-                                            new Insets(4, 4, 4, 4), 0, 0));
+    contentPanel.add(scrollPane1,
+      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
+        GridBagConstraints.CENTER,
+        GridBagConstraints.BOTH,
+        new Insets(4, 4, 4, 4), 0, 0));
     tabbedPanel.addTab("Content", contentPanel);
     scrollPane2.getViewport().add(addDataPropsTextArea, null);
-    dataPropertiesPanel.add(scrollPane2, 
-                new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, 
-                                       GridBagConstraints.BOTH, 
-                                       new Insets(4, 4, 4, 4), 0, 0));
+    dataPropertiesPanel.add(scrollPane2,
+      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER,
+        GridBagConstraints.BOTH,
+        new Insets(4, 4, 4, 4), 0, 0));
     tabbedPanel.addTab("Content properties", dataPropertiesPanel);
-    addDataPanel.add(tabbedPanel, 
-                     new GridBagConstraints(0, 1, 2, 1, 1.0, 1.0, 
-                                            GridBagConstraints.CENTER, 
-                                            GridBagConstraints.BOTH, 
-                                            new Insets(6, 0, 0, 0), 0, 0));
+    addDataPanel.add(tabbedPanel,
+      new GridBagConstraints(0, 1, 2, 1, 1.0, 1.0,
+        GridBagConstraints.CENTER,
+        GridBagConstraints.BOTH,
+        new Insets(6, 0, 0, 0), 0, 0));
     centerPanel.add(addDataPanel, "addData");
-    propertiesPanel.add(propertiesLabel2, 
-                        new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                               new Insets(2, 0, 2, 0), 0, 
-                                               0));propsScrollPane.getViewport().add(propsTextArea, null);
-    propertiesPanel.add(propsScrollPane, 
-                        new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                               new Insets(2, 0, 2, 0), 0, 
-                                               0));
+    propertiesPanel.add(propertiesLabel2,
+      new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 0), 0,
+        0));
+    propsScrollPane.getViewport().add(propsTextArea, null);
+    propertiesPanel.add(propsScrollPane,
+      new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 0, 2, 0), 0,
+        0));
     centerPanel.add(propertiesPanel, "properties");
-    systemSignaturePanel.add(keyAliasLabel, 
-                             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
-                                                    GridBagConstraints.CENTER, 
-                                                    GridBagConstraints.NONE, 
-                                                    new Insets(2, 6, 2, 6), 
-                                                    0, 0));
-    systemSignaturePanel.add(keyAliasTextField, 
-                             new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0, 
-                                                    GridBagConstraints.CENTER, 
-                                                    GridBagConstraints.HORIZONTAL, 
-                                                    new Insets(2, 0, 2, 6), 
-                                                    0, 0));
+    systemSignaturePanel.add(keyAliasLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+        GridBagConstraints.CENTER,
+        GridBagConstraints.NONE,
+        new Insets(2, 6, 2, 6),
+        0, 0));
+    systemSignaturePanel.add(keyAliasTextField,
+      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
+        GridBagConstraints.CENTER,
+        GridBagConstraints.HORIZONTAL,
+        new Insets(2, 0, 2, 6),
+        0, 0));
     centerPanel.add(systemSignaturePanel, "addSystemSignature");
     centerPanel.add(emptyPanel, "empty");
     this.add(centerPanel, BorderLayout.CENTER);
@@ -381,7 +382,7 @@ public class SignatureNodeEditor extends JPanel
   private void dataTypeComboBox_actionPerformed(ActionEvent e)
   {
     String text = contentTextPane.getText();
-    String dataType = (String)dataTypeComboBox.getSelectedItem();
+    String dataType = (String) dataTypeComboBox.getSelectedItem();
     if ("xml".equals(dataType))
     {
       contentTextPane.setContentType("text/xml");
