@@ -65,5 +65,5 @@
             </build>
         </profile>
     </profiles>
-  
+    <description>Elections monitor application</description>
 </project>

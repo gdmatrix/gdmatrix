@@ -15,5 +15,5 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-
+    <description>GDMatrix workflow module web services reference implementation</description>
 </project>

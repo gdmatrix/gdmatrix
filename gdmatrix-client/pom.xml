@@ -255,4 +255,5 @@
       </build>
     </profile>
   </profiles>
+    <description>GDMatrix client application</description>
 </project>

@@ -113,4 +113,5 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <description>GDMatrix stubs generation submodule</description>
 </project>

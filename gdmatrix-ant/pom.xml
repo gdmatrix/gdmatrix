@@ -71,7 +71,48 @@
         <artifactId>xmlbeans</artifactId>
         <version>3.1.0</version>
     </dependency>
-     
+    <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=C:\gdmatrix\lib\ingest-service.jar -DgroupId=org.santfeliu -DartifactId=iarxiu-ingest-service -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=C:\gdmatrix\m2 -->
+    <dependency>
+      <groupId>org.santfeliu</groupId>
+      <artifactId>iarxiu-ingest-service</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=C:\gdmatrix\lib\xmltypes.jar -DgroupId=org.santfeliu -DartifactId=iarxiu-xmltypes -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=C:\gdmatrix\m2 -->
+    <dependency>
+      <groupId>org.santfeliu</groupId>
+      <artifactId>iarxiu-xmltypes</artifactId>
+      <version>1.0</version>
+    </dependency>     
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>2.5.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ws</groupId>
+      <artifactId>spring-ws</artifactId>
+      <version>1.5.5</version>
+      <classifier>all</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>2.1.7</version>
+      <scope>runtime</scope>
+    </dependency> 
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>runtime</scope>
+    </dependency>     
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>fop</artifactId>
+      <version>2.4</version>
+      <scope>runtime</scope>
+    </dependency>
+               
   </dependencies>
   <build>
     <plugins>
@@ -99,4 +140,5 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <description>Classes needed to execute ANT tasks. Generates a zip package to optionally execute those tasks separeted from GDMatrix installation.</description>
 </project>

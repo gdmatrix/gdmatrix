@@ -42,7 +42,13 @@
       <artifactId>javase</artifactId>
       <version>3.2.1</version>
       <type>jar</type>
-    </dependency>                   
+    </dependency>   
+    <!-- Transient dependencies declared direct to avoid conflicts -->
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+    </dependency>                    
   </dependencies>
-
+    <description>GDMatrix report module web services reference implementation</description>
 </project>

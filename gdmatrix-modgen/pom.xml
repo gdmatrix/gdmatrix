@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion> 
     <parent>
       <artifactId>gdmatrix</artifactId>
       <groupId>org.matrix</groupId>
@@ -8,8 +8,10 @@
     </parent>    
     <groupId>org.matrix</groupId>
     <artifactId>gdmatrix-modgen</artifactId>
+    <name>gdmatrix-modgen</name>        
     <version>3.0</version>
     <packaging>jar</packaging>
+    <description>Module generation utility needed to generate stubs.</description>      
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -25,5 +27,5 @@
         <type>jar</type>
       </dependency>      
     </dependencies>
-    <name>gdmatrix-modgen</name>
+
 </project>

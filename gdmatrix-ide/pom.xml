@@ -135,5 +135,5 @@
       </build>
     </profile>
   </profiles>
-  
+    <description>GDMatrix integrated development environment (IDE) application.</description>
 </project>

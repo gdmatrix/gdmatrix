@@ -41,6 +41,21 @@
         <module>gdmatrix-ws-workflow-ri</module> 
         <module>gdmatrix-ws-audifilm</module>
   </modules>
+  
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>2.1.7</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.1.0</version>
+        <scope>provided</scope>
+    </dependency>    
+  </dependencies>
     
     <dependencyManagement>
       <dependencies>
@@ -50,7 +65,6 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </dependencyManagement>    
-    
-    
+    </dependencyManagement>
+    <description>GDMatrix web services</description>
 </project>

@@ -20,4 +20,5 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <name>gdmatrix-ws-dic-ri</name>
+    <description>GDMatrix dictionary modules web services reference implementation</description>
 </project>

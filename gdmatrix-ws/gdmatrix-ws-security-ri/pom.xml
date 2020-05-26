@@ -50,4 +50,5 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+    <description>GDMatrix security module web services reference implementation</description>
 </project>
