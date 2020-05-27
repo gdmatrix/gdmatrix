@@ -41,6 +41,7 @@ import java.util.HashMap;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,6 +52,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
+import org.santfeliu.util.MatrixConfig;
 
 /**
  *
@@ -86,7 +88,11 @@ public class JPAUtils
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(new JPAClassLoader(cl));
 
-      factory = Persistence.createEntityManagerFactory(unitName);
+      Map properties = createPersistenceUnitPropertiesMap(unitName);
+      if (properties != null && !properties.isEmpty())
+        factory = Persistence.createEntityManagerFactory(unitName, properties);
+      else
+        factory = Persistence.createEntityManagerFactory(unitName);
       logger.log(Level.INFO, ">>>>>>>>>>>>>> factory created {0}", factory);
       factories.put(unitName, factory);
     }
@@ -259,6 +265,21 @@ public class JPAUtils
     if (cls == byte[].class) return true;
     if (Enum.class.isAssignableFrom(cls)) return true;
     return false;
+  }
+  
+  private static Map createPersistenceUnitPropertiesMap(String unitName)
+  {
+    HashMap map = new HashMap();
+    String nonJtaDataSource = 
+      MatrixConfig.getProperty(unitName + ".nonJtaDataSource");
+    String jtaDataSource = 
+      MatrixConfig.getProperty(unitName + ".jtaDataSource");      
+    if (nonJtaDataSource != null)
+      map.put("javax.persistence.nonJtaDataSource", nonJtaDataSource);
+    else if (jtaDataSource != null)
+      map.put("javax.persistence.jtaDataSource", jtaDataSource);
+    
+    return map;
   }
 
 }

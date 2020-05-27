@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd">
-<!--
-  <persistence-unit name="kernel" transaction-type="RESOURCE_LOCAL">
-      <provider>oracle.toplink.essentials.PersistenceProvider</provider>
-      <non-jta-data-source>
-         java:comp/env/jdbc/matrix
-      </non-jta-data-source>
-      <mapping-file>org/santfeliu/kernel/service/orm.xml</mapping-file>
-      <properties>
-        <property name="toplink.session.customizer"
-          value="org.santfeliu.jpa.TopLinkSessionCustomizer" />
-        <property name="toplink.logging.level" value="FINE" />
-        <property name="toplink.cache.shared.default" value="false"/>
-      </properties>
-  </persistence-unit>
--->
+  <!--
+    <persistence-unit name="kernel" transaction-type="RESOURCE_LOCAL">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <non-jta-data-source>
+           java:comp/env/jdbc/matrix
+        </non-jta-data-source>
+        <mapping-file>org/santfeliu/kernel/service/orm.xml</mapping-file>
+        <properties>
+          <property name="toplink.session.customizer"
+            value="org.santfeliu.jpa.TopLinkSessionCustomizer" />
+          <property name="toplink.logging.level" value="FINE" />
+          <property name="toplink.cache.shared.default" value="false"/>
+        </properties>
+    </persistence-unit>
+  -->
   <persistence-unit name="security" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/security/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -31,8 +31,8 @@
   <persistence-unit name="elections" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/elections/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -44,8 +44,8 @@
   <persistence-unit name="cases_sf" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/cases/service/orm.xml</mapping-file>
     <mapping-file>org/santfeliu/dic/service/orm.xml</mapping-file>
     <properties>
@@ -58,8 +58,8 @@
   <persistence-unit name="dic_sf" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/dic/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -71,8 +71,8 @@
   <persistence-unit name="survey" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/survey/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -84,8 +84,8 @@
   <persistence-unit name="translation" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/translation/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -97,8 +97,8 @@
   <persistence-unit name="forum" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/forum/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -110,8 +110,8 @@
   <persistence-unit name="news" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/news/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -123,8 +123,8 @@
   <persistence-unit name="edu" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/edu/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -143,8 +143,8 @@
   <persistence-unit name="Document" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/doc/store/docjpa/orm.xml</mapping-file>
     <mapping-file>org/santfeliu/dic/service/orm.xml</mapping-file>
     <properties>
@@ -157,8 +157,8 @@
   <persistence-unit name="classif" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/classif/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -170,8 +170,8 @@
   <persistence-unit name="policy" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/policy/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -183,8 +183,8 @@
   <persistence-unit name="cms" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/cms/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -196,8 +196,8 @@
   <persistence-unit name="feed" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
-        </non-jta-data-source>
+      java:comp/env/jdbc/matrix
+    </non-jta-data-source>
     <mapping-file>org/santfeliu/feed/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
@@ -221,7 +221,7 @@
   <persistence-unit name="presence" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <non-jta-data-source>
-           java:comp/env/jdbc/matrix
+      java:comp/env/jdbc/matrix
     </non-jta-data-source>
     <mapping-file>org/santfeliu/presence/service/orm.xml</mapping-file>
     <properties>
