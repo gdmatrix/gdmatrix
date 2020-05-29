@@ -59,6 +59,7 @@ public class JPAClassLoader extends ClassLoader
   public Enumeration<URL> getResources(String name) throws IOException
   {
     logger.log(Level.INFO, "JPAClassLoader.getResources from " + name);
+    Enumeration<URL> urls;
     if (name.equals("META-INF/persistence.xml"))
     {
       File dir = new File(MatrixConfig.getDirectory(), "jpa");
@@ -66,9 +67,17 @@ public class JPAClassLoader extends ClassLoader
       findPersistenceFiles(dir, persistenceFiles);
       logger.log(Level.INFO,
         "JPAClassLoader.getResources return " + persistenceFiles);
-      return Collections.enumeration(persistenceFiles);
+      urls = Collections.enumeration(persistenceFiles);
     }
-    else return super.getResources(name);
+    else 
+      urls = super.getResources(name);
+      
+      while(urls.hasMoreElements())
+      {
+        logger.log(Level.INFO, urls.nextElement().toString()); 
+      }
+      
+      return urls;
   }
   
   private void findPersistenceFiles(File dir, List<URL> persistenceFiles)
