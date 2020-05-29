@@ -190,10 +190,6 @@
         rendered="#{userSessionBean.themeSelectionEnabled}">
         <f:selectItems value="#{userSessionBean.themes}" />
       </sf:commandMenu>
-<!--
-      <h:outputText value="#{webBundle.language}:" />
-      <sf:languageSelector locales="#{userSessionBean.supportedLocales}" />
--->
     </h:panelGrid>
 
     <h:panelGrid id="contCol" styleClass="contTable" width="100%"
@@ -346,9 +342,6 @@
                 translationGroup="#{userSessionBean.translationGroup}" />
             </h:panelGroup>
 
-<!--             <h:graphicImage value="/templates/generic4/images/item.gif"
-               styleClass="icon" />
-             <h:outputText value="#{item.label}" styleClass="text" /> -->
           </sf:navigationMenu>
           <sf:browser rendered="#{userSessionBean.selectedMenuItem.properties.rightFooterDocId != null
             and userSessionBean.selectedMenuItem.properties.rightFooterDocId != 'disabled'}"

@@ -71,18 +71,6 @@
         </h:dataTable>
       </h:panelGrid>
 
-    <!--
-      <f:facet name="footer">
-       <h:commandLink value=" #{webBundle.commandLinkReturn}"
-        action="#{agendaBean.nextEvents}" styleClass="buttonLink"/>
-
-        <h:outputLink value="javascript:history.go(-1);" styleClass="buttonLink"
-                      style="text-decoration:none;">
-          <h:outputText value="#{webBundle.commandLinkReturn}" />
-       </h:outputLink>
-      </f:facet>
-    -->
-
      <t:saveState value="#{agendaBean.filter}" />
      <t:saveState value="#{agendaBean.selectedDay}" />
      <t:saveState value="#{agendaBean.currentFirstPage}" />

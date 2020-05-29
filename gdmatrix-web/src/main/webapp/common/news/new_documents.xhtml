@@ -31,17 +31,6 @@
             <h:outputText value="#{row.documentId}"
                           rendered="#{row.newDocumentId != null}" />
           </t:column>
-          <!--
-          <t:column style="width: 3%">
-            <h:graphicImage url="#{newDocumentsBean.languageFlag}" width="16"
-                            style="vertical-align:middle" alt="#{newDocumentsBean.language}"
-                            title="#{newDocumentsBean.language}"
-                            rendered="#{newDocumentsBean.languageFlag != null}"/>
-            <h:graphicImage url="/common/doc/images/pixel.gif" height="16" width="16"
-                            style="vertical-align:middle"
-                            rendered="#{newDocumentsBean.languageFlag == null}"/>
-          </t:column>
-          -->
           <t:column style="width:40%">
             <f:facet name="header">
               <h:outputText id="docRowsTableCol2Header"

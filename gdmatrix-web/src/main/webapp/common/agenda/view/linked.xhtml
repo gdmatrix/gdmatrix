@@ -91,19 +91,6 @@
           />
       </t:div>
     </t:column>
-<!--
-    <t:column>
-      <f:facet name="header">
-        <h:outputText value="#{agendaBundle.event_type}" />
-      </f:facet>
-      <h:outputLink
-        value="#{linkedEventViewBean.typeIdParameters}">
-        <sf:outputText value="#{row.eventTypeName}"
-                    translator="#{userSessionBean.translator}"
-                    translationGroup="event:#{row.eventId}"/>
-      </h:outputLink>
-    </t:column>
--->
     <t:column style="text-align:center" 
       rendered="#{(eventSearchBean.renderPublicIcon and row.isPublic()) 
         or (eventSearchBean.renderOnlyAttendantsIcon and row.onlyAttendants)}">

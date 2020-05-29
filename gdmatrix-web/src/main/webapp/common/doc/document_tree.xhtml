@@ -27,21 +27,6 @@
             var="node" varNodeToggler="t" clientSideToggle="true" 
             preserveToggle="false" showRootNode="false">
 
-      <!--
-              <f:facet name="folder">
-                <t:panelGrid columns="2" cellpadding="4" cellspacing="0" summary=""
-                 styleClass="node" columnClasses="icon, text">
-                  <t:graphicImage value="/common/doc/images/yellow-folder-open.png" 
-                    alt="" border="0" />
-                  <h:panelGroup>
-                    <h:outputText value="#{node.description}" styleClass="nodeFolder"/>
-                    <h:outputText value=" (#{node.childCount})" styleClass="childCount"
-                      rendered="#{!empty node.children}"/>
-                  </h:panelGroup>
-               </t:panelGrid>
-              </f:facet>
-      -->
-
             <f:facet name="folder">
               <t:panelGroup styleClass="nodeFolder">
                 <f:facet name="expand">

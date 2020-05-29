@@ -117,20 +117,6 @@
                 </t:dataTable>
 
               </t:buffer>
-            <!--
-              <t:div styleClass="resultBar" rendered="#{eventRecurrencesBean.rowCount > 0}">
-                <t:dataScroller for="data"
-                                firstRowIndexVar="firstRow"
-                                lastRowIndexVar="lastRow"
-                                rowsCountVar="rowCount">
-                  <h:outputFormat value="#{objectBundle.resultRange}">
-                    <f:param value="#{firstRow}" />
-                    <f:param value="#{lastRow}" />
-                    <f:param value="#{rowCount}" />
-                  </h:outputFormat>
-                </t:dataScroller>
-              </t:div>
-            -->
               <h:outputText value="#{table}" escape="false"/>
 
             </t:div>

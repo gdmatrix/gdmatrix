@@ -57,11 +57,6 @@
                             styleClass="searchButton" renderBox="true">
           </sf:commandButton>
 
-    <!--
-          <h:commandButton action="#{agendaBean.searchEvents}" value="#{webBundle.buttonFind}"
-                           styleClass="button">
-          </h:commandButton>
-    -->
         </h:panelGrid>
 
 
@@ -97,14 +92,6 @@
                     <f:convertDateTime pattern="HH:mm"/>
                   </h:outputText>
                 </h:panelGroup>
-    <!--
-                <h:outputLink id="infoLinkText"
-                  value="/go.faces?xmid=#{userSessionBean.selectedMid}&amp;eventid=#{row.eventId}">
-                  <sf:outputText value="#{agendaBean.moreInfoLabel}" styleClass="selectLink"
-                    translator="#{userSessionBean.translator}"
-                    translationGroup="#{userSessionBean.translationGroup}" />
-                </h:outputLink>
-    -->
                 </h:panelGrid>
                 <h:outputLink value="/go.faces?xmid=#{userSessionBean.selectedMid}&amp;eventid=#{row.eventId}">
                   <sf:outputText id="eventName" value="#{row.summary}"
