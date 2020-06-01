@@ -31,12 +31,11 @@
 package org.santfeliu.swing.text;
 
 import java.awt.Color;
-
 import javax.swing.text.Document;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SQLEditorKit extends HighlightedEditorKit
 {

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.form.ie;
@@ -62,7 +62,7 @@ import org.w3c.tidy.Tidy;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class HtmlFormImporter
 {
@@ -127,7 +127,7 @@ public class HtmlFormImporter
             String text = textElem.getData();
             if (text != null)
             {
-              // &nbsp; (Java char: 160)            
+              // &nbsp; (Java char: 160)
               if (text.charAt(0) == 160) text = null;
             }
             view.setText(text);
@@ -140,12 +140,12 @@ public class HtmlFormImporter
           view.setBounds(new Rectangle(100, 100, 100, 50));
           applyStyles(view, styles);
           view.setId(element.getAttribute("id"));
-          view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));          
+          view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
           view.setStyleClass(element.getAttribute("class"));
           view.setRenderer(element.getAttribute("renderer"));
           panel.addComponentView(view);
           String text = getNodeContent(element, 0);
-          if (text != null) 
+          if (text != null)
           {
             // &nbsp; (Java char: 160)
             if (text.length() == 0) text = null;
@@ -161,7 +161,7 @@ public class HtmlFormImporter
         view.setBounds(new Rectangle(100, 100, 100, 50));
         applyStyles(view, getStyles(element.getAttribute("style")));
         view.setId(element.getAttribute("id"));
-        view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));        
+        view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
         view.setStyleClass(element.getAttribute("class"));
         view.setRenderer(element.getAttribute("renderer"));
         view.setForElement(element.getAttribute("for"));
@@ -173,7 +173,7 @@ public class HtmlFormImporter
           String text = textElem.getData();
           if (text != null)
           {
-            // &nbsp; (Java char: 160)            
+            // &nbsp; (Java char: 160)
             if (text.charAt(0) == 160) text = null;
           }
           view.setText(text);
@@ -189,7 +189,7 @@ public class HtmlFormImporter
           view.setBounds(new Rectangle(200, 200, 100, 50));
           applyStyles(view, getStyles(element.getAttribute("style")));
           view.setId(element.getAttribute("id"));
-          view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));          
+          view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
           view.setStyleClass(element.getAttribute("class"));
           view.setRenderer(element.getAttribute("renderer"));
           view.setVariable(element.getAttribute("name"));
@@ -207,13 +207,13 @@ public class HtmlFormImporter
            view.setBounds(new Rectangle(200, 200, 16, 16));
            applyStyles(view, getStyles(element.getAttribute("style")));
            view.setId(element.getAttribute("id"));
-           view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));           
+           view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
            view.setStyleClass(element.getAttribute("class"));
            view.setRenderer(element.getAttribute("renderer"));
            view.setVariable(element.getAttribute("name"));
            view.setValue(element.getAttribute("value"));
            view.setFormat(element.getAttribute("format"));
-           view.setTabindex(getInteger(element.getAttribute("tabindex")));          
+           view.setTabindex(getInteger(element.getAttribute("tabindex")));
            view.setChecked(element.getAttribute("checked").length() > 0);
            view.setOnChange(element.getAttribute("onchange"));
            panel.addComponentView(view);
@@ -224,7 +224,7 @@ public class HtmlFormImporter
           CheckBoxView view = new CheckBoxView();
           view.setBounds(new Rectangle(200, 200, 16, 16));
           view.setId(element.getAttribute("id"));
-          view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));          
+          view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
           view.setStyleClass(element.getAttribute("class"));
           view.setRenderer(element.getAttribute("renderer"));
           applyStyles(view, getStyles(element.getAttribute("style")));
@@ -240,7 +240,7 @@ public class HtmlFormImporter
           ButtonView view = new ButtonView();
           view.setBounds(new Rectangle(200, 200, 16, 16));
           view.setId(element.getAttribute("id"));
-          view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));          
+          view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
           view.setStyleClass(element.getAttribute("class"));
           view.setRenderer(element.getAttribute("renderer"));
           applyStyles(view, getStyles(element.getAttribute("style")));
@@ -282,7 +282,7 @@ public class HtmlFormImporter
         view.setTabindex(getInteger(element.getAttribute("tabindex")));
         view.setDisabled(element.getAttribute("disabled"));
         view.setId(element.getAttribute("id"));
-        view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));        
+        view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
         view.setStyleClass(element.getAttribute("class"));
         view.setRenderer(element.getAttribute("renderer"));
         view.setVariable(element.getAttribute("name"));
@@ -293,7 +293,7 @@ public class HtmlFormImporter
         view.setDataref(element.getAttribute("dataref"));
         view.setOnChange(element.getAttribute("onchange"));
         view.setMultiple(getBoolean(element.getAttribute("multiple")));
-        
+
         panel.addComponentView(view);
         Node child = element.getFirstChild();
         while (child != null)
@@ -326,7 +326,7 @@ public class HtmlFormImporter
         view.setBounds(new Rectangle(300, 200, 200, 50));
         applyStyles(view, getStyles(element.getAttribute("style")));
         view.setId(element.getAttribute("id"));
-        view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));        
+        view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
         view.setStyleClass(element.getAttribute("class"));
         view.setRenderer(element.getAttribute("renderer"));
         view.setVariable(element.getAttribute("name"));
@@ -344,7 +344,7 @@ public class HtmlFormImporter
         view.setBounds(new Rectangle(300, 200, 200, 50));
         applyStyles(view, getStyles(element.getAttribute("style")));
         view.setId(element.getAttribute("id"));
-        view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));        
+        view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
         view.setStyleClass(element.getAttribute("class"));
         view.setRenderer(element.getAttribute("renderer"));
         view.setUrl(element.getAttribute("src"));
@@ -405,7 +405,7 @@ public class HtmlFormImporter
         Element element = (Element)child;
         String tag = element.getNodeName();
         String searchTag = " " + tag.toLowerCase() + " ";
-        boolean inlineTag = 
+        boolean inlineTag =
           " br b u i span a label strong ".indexOf(searchTag) != -1;
         NamedNodeMap attributes = element.getAttributes();
         if (!inlineTag)
@@ -502,7 +502,7 @@ public class HtmlFormImporter
       }
       else if (name.equals("left"))
       {
-        view.setX(getPixels(value));          
+        view.setX(getPixels(value));
       }
       else if (name.equals("text-align"))
       {
@@ -539,7 +539,7 @@ public class HtmlFormImporter
       else if (name.equals("border-right-width"))
       {
         view.setBorderRightWidth(value);
-      }        
+      }
       else if (name.equals("border-top-color"))
       {
         view.setBorderTopColor(getColor(value));
@@ -601,7 +601,7 @@ public class HtmlFormImporter
     }
     return pixels;
   }
-  
+
   private Integer getInteger(String value)
   {
     if (value == null) return null;

@@ -61,7 +61,7 @@ import org.santfeliu.swing.form.event.FormSelectionListener;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class FormDesigner extends JPanel
 {

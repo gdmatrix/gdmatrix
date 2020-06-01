@@ -1,38 +1,37 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.swing.editor;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -44,6 +43,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import org.santfeliu.matrix.ide.MatrixIDE;
+import org.santfeliu.matrix.ide.Options;
 import org.santfeliu.swing.text.RestrictedDocument;
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
@@ -61,14 +61,28 @@ public class UploadFormParametersEditor extends JPanel implements NodeEditor
   private GridBagLayout gridBagLayout = new GridBagLayout();
   private JLabel referenceLabel = new JLabel();
   private JLabel referenceHelpLabel = new JLabel();
-  private JTextField referenceTextField = new JTextField();
+  private JTextField referenceTextField = new JTextField()
+  {
+    @Override
+    public Dimension getPreferredSize()
+    {
+      Dimension size = super.getPreferredSize();
+      return new Dimension(3 * size.height, size.height);
+    }
+
+    @Override
+    public Dimension getMinimumSize()
+    {
+      return getPreferredSize();
+    }
+  };
   private JLabel maxFileSizeLabel = new JLabel();
   private JLabel maxFileSizeHelpLabel = new JLabel();
   private JTextField maxFileSizeTextField = new JTextField();
   private JLabel validExtensionsLabel = new JLabel();
   private JLabel validExtensionsHelpLabel = new JLabel();
   private JTextField validExtensionsTextField = new JTextField();
-  private JLabel messageLabel = new JLabel();  
+  private JLabel messageLabel = new JLabel();
   private JScrollPane messageScrollPane = new JScrollPane();
   private JTextArea messageTextArea = new JTextArea();
   private JLabel propertiesLabel = new JLabel();
@@ -88,7 +102,7 @@ public class UploadFormParametersEditor extends JPanel implements NodeEditor
   }
 
   @Override
-  public Component getEditingComponent(NodeEditorDialog dialog, 
+  public Component getEditingComponent(NodeEditorDialog dialog,
     WorkflowNode node)
   {
     this.formNode = (FormNode)node;
@@ -129,7 +143,7 @@ public class UploadFormParametersEditor extends JPanel implements NodeEditor
     properties.remove("maxFileSize");
     properties.remove("validExtensions");
     propertiesTextArea.setText(properties.saveToString());
-    
+
     updateHelpLabel();
     return this;
   }
@@ -145,7 +159,7 @@ public class UploadFormParametersEditor extends JPanel implements NodeEditor
     checkValues();
     Properties parameters = new Properties();
     parameters.loadFromString(propertiesTextArea.getText());
-    
+
     String prefix = referenceTextField.getText();
     if (prefix != null && prefix.trim().length() > 0)
     {
@@ -178,22 +192,15 @@ public class UploadFormParametersEditor extends JPanel implements NodeEditor
   {
     this.setLayout(gridBagLayout);
     referenceLabel.setText("Reference:");
-    referenceTextField.setPreferredSize(new Dimension(120, 24));
-    referenceTextField.setMinimumSize(new Dimension(120, 24));
     referenceHelpLabel.setText("()");
 
     maxFileSizeLabel.setText("Max. file size:");
-    maxFileSizeTextField.setPreferredSize(new Dimension(120, 24));
-    maxFileSizeTextField.setMinimumSize(new Dimension(120, 24));
     maxFileSizeHelpLabel.setText("(ex: 512, 50kb, 4Mb)");
 
     validExtensionsLabel.setText("Valid extensions:");
-    validExtensionsTextField.setPreferredSize(new Dimension(120, 24));
-    validExtensionsTextField.setMinimumSize(new Dimension(120, 24));
     validExtensionsHelpLabel.setText("(ex: doc, pdf, xls)");
 
     messageLabel.setText("Message:");
-    messageTextArea.setFont(new Font("Dialog", 0, 14));
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
 
@@ -203,30 +210,30 @@ public class UploadFormParametersEditor extends JPanel implements NodeEditor
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(referenceTextField,
       new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-        new Insets(2, 4, 2, 4), 0, 0));
+        new Insets(2, 4, 2, 4), 100, 0));
     this.add(referenceHelpLabel,
       new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-        new Insets(0, 0, 0, 0), 0, 0));
+        new Insets(2, 0, 2, 0), 0, 0));
 
     this.add(maxFileSizeLabel,
       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(maxFileSizeTextField,
-      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(maxFileSizeHelpLabel,
       new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-        new Insets(0, 0, 0, 0), 0, 0));
+        new Insets(2, 0, 2, 0), 0, 0));
 
     this.add(validExtensionsLabel,
       new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(validExtensionsTextField,
-      new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+      new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(validExtensionsHelpLabel,
       new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-        new Insets(0, 0, 0, 0), 0, 0));
+        new Insets(2, 0, 2, 0), 0, 0));
 
     this.add(messageLabel,
       new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
@@ -234,16 +241,17 @@ public class UploadFormParametersEditor extends JPanel implements NodeEditor
     this.add(messageScrollPane,
       new GridBagConstraints(1, 3, 2, 1, 1.0, 0.5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(2, 4, 2, 4), 0, 0));
+
     this.add(propertiesLabel,
       new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(propertiesScrollPane,
-      new GridBagConstraints(1, 4, 2, 1, 0.0, 0.5, GridBagConstraints.CENTER,
-        GridBagConstraints.BOTH,
+      new GridBagConstraints(1, 4, 2, 1, 0.0, 0.5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(2, 4, 2, 4), 0, 0));
 
     messageScrollPane.getViewport().add(messageTextArea);
     propertiesScrollPane.getViewport().add(propertiesTextArea, null);
+    propertiesTextArea.setFont(Options.getEditorFont());
 
     this.referenceTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
     referenceTextField.addKeyListener(new KeyAdapter()

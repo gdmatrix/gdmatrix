@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -110,7 +110,8 @@ public class WorkflowGridDialog extends javax.swing.JDialog
    */
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+  private void initComponents()
+  {
     java.awt.GridBagConstraints gridBagConstraints;
 
     centerPanel = new javax.swing.JPanel();
@@ -147,11 +148,9 @@ public class WorkflowGridDialog extends javax.swing.JDialog
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
     optionsPanel.add(gridSizeLabel, gridBagConstraints);
 
-    gridSizeSpinner.setModel(new SpinnerNumberModel(8, 4, 50, 1) 
+    gridSizeSpinner.setModel(new SpinnerNumberModel(8, 4, 50, 1)
     );
     gridSizeSpinner.setEditor(new javax.swing.JSpinner.NumberEditor(gridSizeSpinner, "####"));
-    gridSizeSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
-    gridSizeSpinner.setPreferredSize(new java.awt.Dimension(50, 22));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
@@ -197,8 +196,6 @@ public class WorkflowGridDialog extends javax.swing.JDialog
 
     nodeWidthSpinner.setModel(new SpinnerNumberModel(100, 10, 500, 1));
     nodeWidthSpinner.setEditor(new javax.swing.JSpinner.NumberEditor(nodeWidthSpinner, "####"));
-    nodeWidthSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
-    nodeWidthSpinner.setPreferredSize(new java.awt.Dimension(50, 22));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 1;
@@ -216,8 +213,6 @@ public class WorkflowGridDialog extends javax.swing.JDialog
 
     nodeHeightSpinner.setModel(new SpinnerNumberModel(50, 10, 500, 1));
     nodeHeightSpinner.setEditor(new javax.swing.JSpinner.NumberEditor(nodeHeightSpinner, "####"));
-    nodeHeightSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
-    nodeHeightSpinner.setPreferredSize(new java.awt.Dimension(50, 22));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
     gridBagConstraints.gridy = 2;
@@ -255,16 +250,20 @@ public class WorkflowGridDialog extends javax.swing.JDialog
     getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
     acceptButton.setText("Accept");
-    acceptButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    acceptButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         acceptButtonActionPerformed(evt);
       }
     });
     southPanel.add(acceptButton);
 
     cancelButton.setText("Cancel");
-    cancelButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    cancelButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         cancelButtonActionPerformed(evt);
       }
     });

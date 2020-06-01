@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.form;
@@ -44,31 +44,31 @@ import java.awt.image.ImageObserver;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ComponentView implements ImageObserver, Cloneable
 {
   public static final String LEFT_TEXT_ALIGN = "left";
   public static final String CENTER_TEXT_ALIGN = "center";
   public static final String RIGHT_TEXT_ALIGN = "right";
-  
+
   public static final int DEFAULT_WIDTH = 0;
   public static final int DEFAULT_FONT_SIZE = 12;
 
   public static final int NORTH_WEST = 0;
   public static final int NORTH = 1;
-  public static final int NORTH_EAST = 2;  
+  public static final int NORTH_EAST = 2;
   public static final int WEST = 3;
   public static final int EAST = 4;
   public static final int SOUTH_WEST = 5;
   public static final int SOUTH = 6;
-  public static final int SOUTH_EAST = 7;  
+  public static final int SOUTH_EAST = 7;
   public static final int INTERNAL = 8;
-  
-  public static final BasicStroke selectionStroke = 
-    new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 
+
+  public static final BasicStroke selectionStroke =
+    new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER,
     1f, new float[]{4f, 4f}, 0.0f);
-  
+
   private int x;
   private int y;
   private int width;
@@ -78,16 +78,16 @@ public class ComponentView implements ImageObserver, Cloneable
   private String textAlign = LEFT_TEXT_ALIGN;
   private String fontFamily;
   private int fontSize;
-  
+
   private String id;
   private Color foreground;
   private Color background;
-  
+
   private String borderTopWidth;
   private String borderBottomWidth;
   private String borderLeftWidth;
   private String borderRightWidth;
-  
+
   private Color borderTopColor;
   private Color borderBottomColor;
   private Color borderLeftColor;
@@ -97,12 +97,12 @@ public class ComponentView implements ImageObserver, Cloneable
   private String borderBottomStyle;
   private String borderLeftStyle;
   private String borderRightStyle;
-  
+
   private String styleClass;
   private String renderer;
-  
+
   private Integer outputOrder;
-  
+
   public ComponentView()
   {
     for (int i = 0; i < points.length; i++)
@@ -128,7 +128,7 @@ public class ComponentView implements ImageObserver, Cloneable
     this.y = y;
     this.width = width;
     this.height = height;
-    updatePoints();    
+    updatePoints();
   }
 
   public void setBounds(Rectangle rect)
@@ -139,7 +139,7 @@ public class ComponentView implements ImageObserver, Cloneable
     this.height = rect.height;
     updatePoints();
   }
-  
+
   public Rectangle getBounds()
   {
     return new Rectangle(x, y, width, height);
@@ -154,7 +154,7 @@ public class ComponentView implements ImageObserver, Cloneable
   {
     this.id = nullWhenEmpty(id);
   }
-  
+
   public int getX()
   {
     return x;
@@ -201,22 +201,22 @@ public class ComponentView implements ImageObserver, Cloneable
 
   public int getContentWidth()
   {
-    int bordersWidth = 
+    int bordersWidth =
       parseWidth(borderLeftWidth) + parseWidth(borderRightWidth);
     int contentWidth = width - bordersWidth;
     return contentWidth > 0 ? contentWidth : 0;
   }
-  
+
   public void setContentWidth(int contentWidth)
   {
-    int bordersWidth = 
+    int bordersWidth =
       parseWidth(borderLeftWidth) + parseWidth(borderRightWidth);
     setWidth(contentWidth + bordersWidth);
   }
-  
+
   public int getContentHeight()
   {
-    int bordersHeight = 
+    int bordersHeight =
       parseWidth(borderTopWidth) + parseWidth(borderBottomWidth);
     int contentHeight = height - bordersHeight;
     return contentHeight > 0 ? contentHeight : 0;
@@ -224,11 +224,11 @@ public class ComponentView implements ImageObserver, Cloneable
 
   public void setContentHeight(int contentHeight)
   {
-    int bordersHeight = 
+    int bordersHeight =
       parseWidth(borderTopWidth) + parseWidth(borderBottomWidth);
     setHeight(contentHeight + bordersHeight);
   }
-  
+
   public void setTextAlign(String textAlign)
   {
     this.textAlign = textAlign;
@@ -258,7 +258,7 @@ public class ComponentView implements ImageObserver, Cloneable
   {
     return background;
   }
-  
+
   public void setFontFamily(String fontFamily)
   {
     this.fontFamily = nullWhenEmpty(fontFamily);
@@ -281,7 +281,7 @@ public class ComponentView implements ImageObserver, Cloneable
 
   public Font getFont()
   {
-    String family = (fontFamily == null || fontFamily.trim().length() == 0) ? 
+    String family = (fontFamily == null || fontFamily.trim().length() == 0) ?
       "Arial" : fontFamily;
     int size = (fontSize == 0) ? DEFAULT_FONT_SIZE : fontSize;
     Font font = new Font(family, Font.PLAIN, size);
@@ -407,7 +407,7 @@ public class ComponentView implements ImageObserver, Cloneable
   {
     return borderRightStyle;
   }
-  
+
   public void setStyleClass(String styleClass)
   {
     this.styleClass = nullWhenEmpty(styleClass);
@@ -442,7 +442,7 @@ public class ComponentView implements ImageObserver, Cloneable
   {
     return points[position];
   }
-  
+
   public int getDragPosition(Point point)
   {
     boolean found = false;
@@ -468,16 +468,16 @@ public class ComponentView implements ImageObserver, Cloneable
   {
     paint(g, false, false, false, false, false);
   }
-  
-  public final void paint(Graphics g, boolean accessibility, 
-    boolean showIds, boolean showTabIndexes, boolean showCoordinates, 
+
+  public final void paint(Graphics g, boolean accessibility,
+    boolean showIds, boolean showTabIndexes, boolean showCoordinates,
     boolean showOutputOrder)
   {
     g.translate(x, y);
     paintBackground(g);
     if (accessibility)
     {
-      paintAccessibility(g, showIds, showTabIndexes, showCoordinates, 
+      paintAccessibility(g, showIds, showTabIndexes, showCoordinates,
         showOutputOrder);
     }
     else
@@ -487,7 +487,7 @@ public class ComponentView implements ImageObserver, Cloneable
     paintBorder(g);
     g.translate(-x, -y);
   }
-  
+
   protected void paintBackground(Graphics g)
   {
     if (background != null)
@@ -496,21 +496,21 @@ public class ComponentView implements ImageObserver, Cloneable
       g.fillRect(0, 0, width, height);
     }
   }
-  
+
   protected void paintView(Graphics g)
   {
   }
-  
-  protected void paintAccessibility(Graphics g, boolean showIds, 
+
+  protected void paintAccessibility(Graphics g, boolean showIds,
     boolean showTabIndexes, boolean showCoordinates, boolean showOutputOrder)
   {
-    String acc = getAccessibilityInfo(showIds, showTabIndexes, showCoordinates, 
+    String acc = getAccessibilityInfo(showIds, showTabIndexes, showCoordinates,
       showOutputOrder);
     g.setColor(Color.BLUE);
     g.drawString(acc, 6, 16);
   }
-  
-  protected String getAccessibilityInfo(boolean showIds, boolean showTabIndexes, 
+
+  protected String getAccessibilityInfo(boolean showIds, boolean showTabIndexes,
     boolean showCoordinates, boolean showOutputOrder)
   {
     StringBuilder sb = new StringBuilder();
@@ -518,13 +518,13 @@ public class ComponentView implements ImageObserver, Cloneable
     {
       sb.append(id == null ? "?" : id);
     }
-    if (showCoordinates) 
+    if (showCoordinates)
     {
       sb.append(" (").append(getX()).append(", ").append(getY()).append(")");
     }
-    if (showOutputOrder) 
+    if (showOutputOrder)
     {
-      sb.append(" o[").append(getOutputOrder() == null ? "?" : 
+      sb.append(" o[").append(getOutputOrder() == null ? "?" :
         getOutputOrder().toString()).append("]");
     }
     if (showTabIndexes && getTabindex() != null)
@@ -533,12 +533,12 @@ public class ComponentView implements ImageObserver, Cloneable
     }
     return sb.toString();
   }
-  
+
   public Integer getTabindex()
   {
     return null;
   }
-  
+
   public int getDefaultBorderWidth()
   {
     return DEFAULT_WIDTH;
@@ -573,18 +573,18 @@ public class ComponentView implements ImageObserver, Cloneable
     {
       if (borderRightColor == null) g.setColor(Color.black);
       else g.setColor(borderRightColor);
-      g.fillRect(width - nBorderRightWidth + 1, 0, 
+      g.fillRect(width - nBorderRightWidth + 1, 0,
         nBorderRightWidth, height + 1);
     }
   }
-  
+
   protected String nullWhenEmpty(String s)
   {
     if (s == null) return null;
     if (s.trim().length() == 0) return null;
     return s;
   }
-  
+
   public void paintSelection(Graphics g)
   {
     Graphics2D g2 = (Graphics2D)g;
@@ -595,11 +595,11 @@ public class ComponentView implements ImageObserver, Cloneable
     for (int i = 0; i < 8; i++)
     {
       Point point = points[i];
-      g.fillRect(point.x - 2, point.y - 2, 5, 5);  
+      g.fillRect(point.x - 2, point.y - 2, 5, 5);
     }
     g2.setStroke(new BasicStroke());
   }
-  
+
   public boolean contains(Point point)
   {
     return point.x >= x &&
@@ -607,14 +607,14 @@ public class ComponentView implements ImageObserver, Cloneable
            point.y >= y &&
            point.y < y + height;
   }
-    
+
   public void move(int deltax, int deltay)
   {
     x += deltax;
     y += deltay;
     updatePoints();
   }
-  
+
   public Rectangle getResizedBounds(int position, int deltax, int deltay)
   {
     Rectangle rect = getBounds();
@@ -633,13 +633,13 @@ public class ComponentView implements ImageObserver, Cloneable
       case NORTH_EAST:
         rect.y += deltay;
         rect.width += deltax;
-        rect.height -= deltay;        
+        rect.height -= deltay;
         break;
       case WEST:
         rect.x += deltax;
         rect.width -= deltax;
         break;
-      case EAST:        
+      case EAST:
         rect.width += deltax;
         break;
       case SOUTH_WEST:
@@ -653,7 +653,7 @@ public class ComponentView implements ImageObserver, Cloneable
       case SOUTH_EAST:
         rect.width += deltax;
         rect.height += deltay;
-        break;     
+        break;
       case INTERNAL:
         rect.x += deltax;
         rect.y += deltay;
@@ -661,7 +661,7 @@ public class ComponentView implements ImageObserver, Cloneable
     }
     return rect;
   }
-  
+
   private void updatePoints()
   {
     // 1st. line
@@ -691,10 +691,10 @@ public class ComponentView implements ImageObserver, Cloneable
     points[SOUTH_EAST].x = x + width;
     points[SOUTH_EAST].y = y + height;
   }
-  
+
   private boolean areOverlaped(Point p1, Point p2)
   {
-    return Math.abs(p1.x - p2.x) < 3 && 
+    return Math.abs(p1.x - p2.x) < 3 &&
            Math.abs(p1.y - p2.y) < 3;
   }
 
@@ -703,7 +703,7 @@ public class ComponentView implements ImageObserver, Cloneable
   {
     return true;
   }
-  
+
   public int parseWidth(String text)
   {
     return parseWidth(text, getDefaultBorderWidth());
@@ -742,7 +742,7 @@ public class ComponentView implements ImageObserver, Cloneable
     textAlign = other.textAlign;
     fontFamily = other.fontFamily;
     fontSize = other.fontSize;
-    
+
     id = other.id;
     foreground = other.foreground;
     background = other.background;
@@ -764,9 +764,9 @@ public class ComponentView implements ImageObserver, Cloneable
 
     styleClass = other.styleClass;
     renderer = other.renderer;
-    
+
     outputOrder = other.outputOrder;
-    
+
     updatePoints();
   }
 

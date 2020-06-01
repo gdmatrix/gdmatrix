@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.swing;
@@ -48,12 +48,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import org.santfeliu.matrix.ide.MatrixIDE;
 
 /**
  *
  * @author realor
  */
-public class VariableDialog extends JDialog 
+public class VariableDialog extends JDialog
 {
   private BorderLayout borderLayout1 = new BorderLayout();
   private JPanel southPanel = new JPanel();
@@ -73,15 +74,15 @@ public class VariableDialog extends JDialog
     super(parent, title, modal);
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch(Exception e)
+    catch(Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     this.setSize(new Dimension(341, 382));
     this.getContentPane().setLayout(borderLayout1);
@@ -94,6 +95,7 @@ public class VariableDialog extends JDialog
     tableModel = new DefaultTableModel();
     acceptButton.addActionListener(new ActionListener()
       {
+        @Override
         public void actionPerformed(ActionEvent e)
         {
           acceptButton_actionPerformed(e);
@@ -113,11 +115,11 @@ public class VariableDialog extends JDialog
     JTextField textField = new JTextField();
     textField.setEditable(false);
     DefaultCellEditor editorNoEdit = new DefaultCellEditor(textField);
-    
+
     variableTable.addColumn(new TableColumn(0, 100, renderer, editorNoEdit));
     variableTable.addColumn(new TableColumn(1, 100, renderer, editor));
   }
-    
+
   public Map getValueMap()
   {
     return map;
@@ -132,8 +134,8 @@ public class VariableDialog extends JDialog
       Dimension frameDim = owner.getSize();
       Dimension dialogDim = this.getSize();
       int width = (frameDim.width - dialogDim.width) / 2;
-      int height = (frameDim.height - dialogDim.height) / 2;      
-      this.setLocation((int)(location.x + width), 
+      int height = (frameDim.height - dialogDim.height) / 2;
+      this.setLocation((int)(location.x + width),
                        (int)(location.y + height));
     }
   }

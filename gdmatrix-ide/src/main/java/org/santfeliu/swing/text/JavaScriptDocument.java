@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.text;
@@ -35,7 +35,7 @@ import java.util.Set;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JavaScriptDocument extends HighlightedDocument
 {
@@ -46,9 +46,9 @@ public class JavaScriptDocument extends HighlightedDocument
   public static final int STRING = 4;
   public static final int OPERATOR = 5;
   public static final int COMMENT = 6;
-  
+
   public static final Set keywordsSet = new HashSet();
-  
+
   static
   {
     keywordsSet.add("boolean");
@@ -58,7 +58,7 @@ public class JavaScriptDocument extends HighlightedDocument
     keywordsSet.add("catch");
     keywordsSet.add("char");
     keywordsSet.add("class");
-    keywordsSet.add("const");    
+    keywordsSet.add("const");
     keywordsSet.add("continue");
     keywordsSet.add("default");
     keywordsSet.add("do");
@@ -105,11 +105,11 @@ public class JavaScriptDocument extends HighlightedDocument
     keywordsSet.add("while");
     keywordsSet.add("with");
   }
-    
+
   public JavaScriptDocument()
   {
   }
-  
+
   @Override
   protected void parse()
   {
@@ -146,7 +146,7 @@ public class JavaScriptDocument extends HighlightedDocument
             {
               state = 3;
               token = newToken(index++, STRING);
-            }            
+            }
             else if (ch == '\"')
             {
               state = 4;
@@ -168,7 +168,7 @@ public class JavaScriptDocument extends HighlightedDocument
             if (isSeparator(ch))
             {
               state = 0;
-              index++;              
+              index++;
             }
             else if (isLetterOrDigit(ch))
             {
@@ -182,7 +182,7 @@ public class JavaScriptDocument extends HighlightedDocument
             if (keywordsSet.contains(token.getValue())) token.type = KEYWORD;
             else token.type = IDENTIFIER;
             break;
-            
+
           case 2: // process number
             if (isSeparator(ch))
             {
@@ -197,7 +197,7 @@ public class JavaScriptDocument extends HighlightedDocument
             else
             {
               state = 6;
-              token = newToken(index++, OPERATOR, ch);              
+              token = newToken(index++, OPERATOR, ch);
             }
             break;
 
@@ -226,7 +226,7 @@ public class JavaScriptDocument extends HighlightedDocument
               index++;
             }
             break;
-            
+
           case 5: // process possible comments
             if (ch == '/')
             {
@@ -238,7 +238,7 @@ public class JavaScriptDocument extends HighlightedDocument
             {
               state = 8;
               token.type = COMMENT;
-              index++;              
+              index++;
             }
             else
             {
@@ -247,7 +247,7 @@ public class JavaScriptDocument extends HighlightedDocument
               state = 0;
             }
             break;
-            
+
           case 6: // process operators
             if (isSeparator(ch))
             {
@@ -268,7 +268,7 @@ public class JavaScriptDocument extends HighlightedDocument
               index++;
             }
             break;
-            
+
           case 7:
             if (ch == '\n')
             {
@@ -281,7 +281,7 @@ public class JavaScriptDocument extends HighlightedDocument
               index++;
             }
             break;
-            
+
           case 8:
             if (ch == '*')
             {
@@ -291,10 +291,10 @@ public class JavaScriptDocument extends HighlightedDocument
             else
             {
               token.append(ch);
-              index++;              
+              index++;
             }
             break;
-            
+
           case 9:
             if (ch == '/')
             {
@@ -310,7 +310,7 @@ public class JavaScriptDocument extends HighlightedDocument
               state = 8;
               index++;
             }
-            break;          
+            break;
         }
       }
       newToken(getLength(), UNKNOW);
@@ -319,7 +319,7 @@ public class JavaScriptDocument extends HighlightedDocument
     {
     }
   }
-    
+
   private boolean isSeparator(char ch)
   {
     return ch == ' ' || ch == '\n' || ch == '\t';
@@ -327,6 +327,6 @@ public class JavaScriptDocument extends HighlightedDocument
 
   private boolean isLetterOrDigit(char ch)
   {
-    return Character.isLetter(ch) || Character.isDigit(ch) || ch == '_';    
+    return Character.isLetter(ch) || Character.isDigit(ch) || ch == '_';
   }
 }

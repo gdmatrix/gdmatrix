@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -75,7 +75,7 @@ public class ConnectionDialog extends JDialog
   private JPanel centerPanel = new JPanel();
   private JPanel comboPanel = new JPanel();
   private JButton acceptButton = new JButton();
-  private JButton cancelButton = new JButton();  
+  private JButton cancelButton = new JButton();
   private JLabel urlLabel = new JLabel();
   private JToolBar toolBar = new JToolBar();
   private JTextField urlTextField = new JTextField();
@@ -98,7 +98,7 @@ public class ConnectionDialog extends JDialog
     super(owner, true);
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception ex)
     {
@@ -108,6 +108,8 @@ public class ConnectionDialog extends JDialog
 
   public int showDialog()
   {
+    pack();
+    setLocationRelativeTo(getParent());
     setVisible(true);
     return option;
   }
@@ -118,7 +120,7 @@ public class ConnectionDialog extends JDialog
     if (connections.isEmpty()) counter = 0;
     for (int i = 0; i < connections.size(); i++)
     {
-      ConnectionParameters connParams = 
+      ConnectionParameters connParams =
         (ConnectionParameters)connections.get(i);
       ConnectionParameters connParams2 = new ConnectionParameters();
       connParams2.setName(connParams.getName());
@@ -128,7 +130,7 @@ public class ConnectionDialog extends JDialog
       model.addElement(connParams2);
     }
   }
-  
+
   public List getConnections()
   {
     List list = new ArrayList();
@@ -139,92 +141,101 @@ public class ConnectionDialog extends JDialog
     return list;
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.getContentPane().setLayout(borderLayout1);
-    this.setSize(new Dimension(435, 272));
     this.setTitle("Connections");
     this.setModal(true);
     centerPanel.setLayout(gridBagLayout);
     centerPanel.setBorder(BorderFactory.createTitledBorder(""));
     acceptButton.setText("Accept");
     acceptButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-            acceptButton_actionPerformed(e);
-          }
-        });
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        acceptButton_actionPerformed(e);
+      }
+    });
     cancelButton.setText("Cancel");
     cancelButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-            cancelButton_actionPerformed(e);
-          }
-        });
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        cancelButton_actionPerformed(e);
+      }
+    });
     urlLabel.setText("URL:");
     usernameLabel.setText("Username:");
-    usernameTextField.setPreferredSize(new Dimension(120, 24));
-    usernameTextField.setMinimumSize(new Dimension(120, 24));
     passwordLabel.setText("Password:");
-    passwordTextField.setPreferredSize(new Dimension(120, 24));
-    passwordTextField.setMinimumSize(new Dimension(120, 24));
     connComboBox.setModel(model);
     addButton.setToolTipText("Add connection");
     addButton.setIcon(new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/add.gif")));
     addButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-            newButton_actionPerformed(e);
-          }
-        });
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        newButton_actionPerformed(e);
+      }
+    });
     addButton.setMargin(new Insets(2, 2, 2, 2));
     removeButton.setToolTipText("Remove connection");
     removeButton.setIcon(new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/remove.gif")));
     removeButton.addActionListener(new ActionListener()
-        {
-          public void actionPerformed(ActionEvent e)
-          {
-            removeButton_actionPerformed(e);
-          }
-        });
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        removeButton_actionPerformed(e);
+      }
+    });
     removeButton.setMargin(new Insets(2, 2, 2, 2));
-    nameTextField.setPreferredSize(new Dimension(120, 24));
-    nameTextField.setMinimumSize(new Dimension(120, 24));
     nameLabel.setText("Name:");
     connLabel.setText("Connection:");
     southPanel.add(acceptButton, null);
     southPanel.add(cancelButton, null);
-    
-    centerPanel.add(urlLabel, 
-                    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(0, 0, 0, 0), 0, 0));
-    centerPanel.add(urlTextField, 
-                    new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(2, 6, 2, 0), 0, 0));
-    centerPanel.add(usernameLabel, 
-                    new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(0, 0, 0, 0), 0, 0));
-    centerPanel.add(usernameTextField, 
-                    new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                           new Insets(2, 6, 2, 0), 0, 0));
-    centerPanel.add(passwordLabel, 
-                    new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(0, 0, 0, 0), 0, 0));
-    centerPanel.add(passwordTextField, 
-                    new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                           new Insets(2, 6, 2, 0), 0, 0));
-    centerPanel.add(nameTextField, 
-                    new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                           new Insets(2, 6, 2, 0), 0, 0));
-    centerPanel.add(nameLabel, 
-                    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(0, 0, 0, 0), 0, 0));    
+
+    Dimension dim = nameTextField.getPreferredSize();
+    dim.width = 5 * dim.height;
+    nameTextField.setPreferredSize(dim);
+    nameTextField.setMinimumSize(dim);
+    usernameTextField.setPreferredSize(dim);
+    usernameTextField.setMinimumSize(dim);
+    passwordTextField.setPreferredSize(dim);
+    passwordTextField.setMinimumSize(dim);
+
+    centerPanel.add(nameLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 3, 2, 3), 0, 0));
+    centerPanel.add(nameTextField,
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 6, 2, 3), 0, 0));
+
+    centerPanel.add(urlLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 3, 2, 3), 0, 0));
+    centerPanel.add(urlTextField,
+      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 6, 2, 3), 0, 0));
+
+    centerPanel.add(usernameLabel,
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 3, 2, 3), 0, 0));
+    centerPanel.add(usernameTextField,
+      new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 6, 2, 3), 0, 0));
+
+    centerPanel.add(passwordLabel,
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 3, 2, 3), 0, 0));
+    centerPanel.add(passwordTextField,
+      new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 6, 2, 3), 0, 0));
+
     northPanel.setLayout(borderLayout2);
     comboPanel.setLayout(borderLayout3);
     comboPanel.add(connComboBox, BorderLayout.CENTER);
@@ -249,46 +260,51 @@ public class ConnectionDialog extends JDialog
     showConnectionParameters(null);
     connComboBox.addActionListener(new ActionListener()
     {
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         showConnectionParameters(
-          (ConnectionParameters)model.getSelectedItem());
+          (ConnectionParameters) model.getSelectedItem());
       }
     });
     this.nameTextField.addKeyListener(new KeyAdapter()
     {
+      @Override
       public void keyReleased(KeyEvent e)
       {
-        ConnectionParameters connParams = 
-          (ConnectionParameters)model.getSelectedItem();
+        ConnectionParameters connParams
+          = (ConnectionParameters) model.getSelectedItem();
         connParams.setName(nameTextField.getText());
         connComboBox.repaint();
       }
     });
     this.urlTextField.addFocusListener(new FocusAdapter()
     {
+      @Override
       public void focusLost(FocusEvent e)
       {
-        ConnectionParameters connParams = 
-          (ConnectionParameters)model.getSelectedItem();
+        ConnectionParameters connParams
+          = (ConnectionParameters) model.getSelectedItem();
         connParams.setURL(urlTextField.getText());
       }
     });
     this.usernameTextField.addFocusListener(new FocusAdapter()
     {
+      @Override
       public void focusLost(FocusEvent e)
       {
-        ConnectionParameters connParams = 
-          (ConnectionParameters)model.getSelectedItem();
+        ConnectionParameters connParams
+          = (ConnectionParameters) model.getSelectedItem();
         connParams.setUsername(usernameTextField.getText());
       }
     });
     this.passwordTextField.addFocusListener(new FocusAdapter()
     {
+      @Override
       public void focusLost(FocusEvent e)
       {
-        ConnectionParameters connParams = 
-          (ConnectionParameters)model.getSelectedItem();
+        ConnectionParameters connParams
+          = (ConnectionParameters) model.getSelectedItem();
         connParams.setPassword(new String(passwordTextField.getPassword()));
       }
     });
@@ -337,10 +353,10 @@ public class ConnectionDialog extends JDialog
     int index = connComboBox.getSelectedIndex();
     if (index >= 0)
     {
-      ConnectionParameters connParams = 
+      ConnectionParameters connParams =
         (ConnectionParameters)model.getSelectedItem();
-      int result = JOptionPane.showConfirmDialog(this, 
-        "Delete connection " + connParams.getName() + "?", 
+      int result = JOptionPane.showConfirmDialog(this,
+        "Delete connection " + connParams.getName() + "?",
         "Delete connection", JOptionPane.YES_NO_OPTION);
       if (result == JOptionPane.YES_OPTION)
       {

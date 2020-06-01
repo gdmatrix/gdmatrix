@@ -31,8 +31,6 @@
 package org.santfeliu.workflow.swing.editor;
 
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -129,8 +127,6 @@ public class CreateInstanceNodeEditor extends JPanel implements NodeEditor
     wfNameLabel.setText("Workflow name:");
     valueLabel.setText("Wait for result:");
     parametersLabel.setText("Parameters:");
-    wfNameTextField.setPreferredSize(new Dimension(140, 24));
-    wfNameTextField.setMinimumSize(new Dimension(140, 24));
     parametersTextArea.setFont(Options.getEditorFont());
     this.add(wfNameLabel,
       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
@@ -142,7 +138,7 @@ public class CreateInstanceNodeEditor extends JPanel implements NodeEditor
       new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(wfNameTextField,
-      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(scrollPane,
       new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,

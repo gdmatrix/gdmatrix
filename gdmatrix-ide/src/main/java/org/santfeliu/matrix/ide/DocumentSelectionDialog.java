@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -88,7 +88,7 @@ public class DocumentSelectionDialog extends JDialog
   private JTable documentsTable = new JTable();
   private JLabel docTypeLabel = new JLabel();
   private JComboBox docTypesComboBox = new JComboBox();
-  private JLabel nameLabel = new JLabel();  
+  private JLabel nameLabel = new JLabel();
   private JButton searchButton = new JButton();
   private JCheckBox versionsCheckBox = new JCheckBox();
   private MainPanel mainPanel;
@@ -127,7 +127,7 @@ public class DocumentSelectionDialog extends JDialog
   private void initComponents() throws Exception
   {
     this.setTitle("Open from Document Manager...");
-    this.setLayout(borderLayout1);    
+    this.setLayout(borderLayout1);
     this.add(centerPanel, BorderLayout.CENTER);
     this.add(southPanel, BorderLayout.SOUTH);
 
@@ -135,14 +135,13 @@ public class DocumentSelectionDialog extends JDialog
     centerPanel.add(filterPanel, BorderLayout.NORTH);
     centerPanel.add(scrollPane, BorderLayout.CENTER);
     centerPanel.setBorder(
-      BorderFactory.createEmptyBorder(4, 6, 4, 6));
-
-    centerPanel.setPreferredSize(new Dimension(700, 400));
+      BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
     openButton.setText("Open");
     openButton.setEnabled(false);
     openButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             acceptButton_actionPerformed(e);
@@ -151,6 +150,7 @@ public class DocumentSelectionDialog extends JDialog
     cancelButton.setText("Cancel");
     cancelButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             cancelButton_actionPerformed(e);
@@ -181,7 +181,7 @@ public class DocumentSelectionDialog extends JDialog
     filterPanel.add(versionsCheckBox, null);
     filterPanel.add(searchButton, null);
     scrollPane.getViewport().add(documentsTable, null);
-    
+
     docTypesComboBox.setRenderer(new DocumentTypeCellRenderer());
     setDocumentTypes();
 
@@ -206,6 +206,7 @@ public class DocumentSelectionDialog extends JDialog
     documentsTable.getSelectionModel().addListSelectionListener(
       new ListSelectionListener()
     {
+      @Override
       public void valueChanged(ListSelectionEvent e)
       {
         openButton.setEnabled(documentsTable.getSelectedRow() != -1);
@@ -253,7 +254,7 @@ public class DocumentSelectionDialog extends JDialog
           DocumentManagerClient client = mainPanel.getDocumentManagerClient();
           DocumentFilter filter = new DocumentFilter();
           filter.setDocTypeId(documentType.getDocTypeId());
-          String name = nameTextField.getText();          
+          String name = nameTextField.getText();
           if (name == null) name = "";
           Property property = new Property();
           property.setName(documentType.getPropertyName());
@@ -267,7 +268,7 @@ public class DocumentSelectionDialog extends JDialog
             filter.setVersion(0);
           }
           else filter.setVersion(-1);
-          
+
           OrderByProperty order1 = new OrderByProperty();
           order1.setName("title");
           filter.getOrderByProperty().add(order1);
@@ -288,7 +289,7 @@ public class DocumentSelectionDialog extends JDialog
       protected void doFinished()
       {
         searchButton.setEnabled(true);
-        setCursor(Cursor.getDefaultCursor());        
+        setCursor(Cursor.getDefaultCursor());
         if (error != null)
         {
           JOptionPane.showMessageDialog(DocumentSelectionDialog.this,
@@ -341,7 +342,7 @@ public class DocumentSelectionDialog extends JDialog
         selectedVersion = (Integer)tableModel.getValueAt(index, 3);
         selectedLanguage = (String)tableModel.getValueAt(index, 4);
         selectedDocumentType = (DocumentType)docTypesComboBox.getSelectedItem();
-      
+
         setVisible(false);
         dispose();
       }
@@ -357,7 +358,7 @@ public class DocumentSelectionDialog extends JDialog
     setVisible(false);
     dispose();
   }
-  
+
   public String getSelectedDocId()
   {
     return selectedDocId;

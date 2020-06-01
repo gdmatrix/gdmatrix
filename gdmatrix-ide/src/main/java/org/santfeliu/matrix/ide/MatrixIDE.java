@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -62,7 +62,7 @@ import javax.swing.UIManager;
 public class MatrixIDE extends JFrame
 {
   private static final Logger LOGGER = Logger.getLogger("MatrixIDE");
-  private MainPanel mainPanel = new MainPanel();  
+  private MainPanel mainPanel = new MainPanel();
 
   public MatrixIDE()
   {
@@ -77,7 +77,7 @@ public class MatrixIDE extends JFrame
       log(ex);
     }
   }
-  
+
   public static void loadOptions()
   {
     try
@@ -93,7 +93,7 @@ public class MatrixIDE extends JFrame
       log(ex);
     }
   }
-  
+
   public static void saveOptions()
   {
     try
@@ -108,7 +108,7 @@ public class MatrixIDE extends JFrame
   }
 
   private static File getOptionsFile()
-  {    
+  {
     return new File(getBaseDir(), "ide.properties");
   }
 
@@ -122,7 +122,7 @@ public class MatrixIDE extends JFrame
     }
     return baseDir;
   }
-  
+
   private void initLogger()
   {
     try
@@ -133,7 +133,7 @@ public class MatrixIDE extends JFrame
         logDir.mkdir();
       SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
       String today = df.format(new Date());
-      String logFile = 
+      String logFile =
         logDir.getAbsolutePath() + "/ide-" + today + ".log";
       Handler handler = new FileHandler(logFile, true);
       handler.setFormatter(new SimpleFormatter());
@@ -144,17 +144,17 @@ public class MatrixIDE extends JFrame
     {
       // ignore
     }
-  }  
-  
+  }
+
   private void initComponents() throws Exception
   {
     setTitle("Matrix IDE");
     setSize(new Dimension(760, 600));
-    
+
     setIconImages(loadIcons(
-      "icon_blue_16.png", "icon_blue_32.png", "icon_blue_64.png", 
+      "icon_blue_16.png", "icon_blue_32.png", "icon_blue_64.png",
       "icon_blue_128.png", "icon_blue_256.png"));
-    
+
     mainPanel.setIDE(this);
     mainPanel.setupLocale(Locale.getDefault());
     mainPanel.setupDocumentTypes();
@@ -165,7 +165,7 @@ public class MatrixIDE extends JFrame
 
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
-    mainPanel.setupMenu(menuBar);    
+    mainPanel.setupMenu(menuBar);
 
     getContentPane().add(mainPanel);
 
@@ -175,7 +175,7 @@ public class MatrixIDE extends JFrame
     String widthString = Options.get("width");
     String heightString = Options.get("height");
     String dividers = Options.get("dividers");
-    
+
     if (xString != null && yString != null &&
         widthString != null && heightString != null && dividers != null)
     {
@@ -206,7 +206,7 @@ public class MatrixIDE extends JFrame
     {
       frameSize.width = screenSize.width;
     }
-    setLocation((screenSize.width - frameSize.width) / 2, 
+    setLocation((screenSize.width - frameSize.width) / 2,
                 (screenSize.height - frameSize.height) / 2);
   }
 
@@ -227,12 +227,12 @@ public class MatrixIDE extends JFrame
     }
     return icons;
   }
-  
+
   public MainPanel getMainPanel()
   {
     return mainPanel;
   }
- 
+
   public void exit()
   {
     try
@@ -282,20 +282,21 @@ public class MatrixIDE extends JFrame
     // setup LookAndFeel
     try
     {
+      UIManager.put("Popup.dropShadowPainted", false);
       UIManager.installLookAndFeel(
         "FlatLaf light", "com.formdev.flatlaf.FlatLightLaf");
       UIManager.installLookAndFeel(
         "FlatLaf dark", "com.formdev.flatlaf.FlatDarkLaf");
-      
+
       String lafClassName = Options.get("lafClassName");
       if (lafClassName == null)
         lafClassName = "com.formdev.flatlaf.FlatLightLaf";
       UIManager.setLookAndFeel(lafClassName);
     }
     catch (Exception ex)
-    {      
+    {
     }
-    
+
     // setup locale
     String language = Options.get("language");
     if (language != null)
@@ -326,7 +327,7 @@ public class MatrixIDE extends JFrame
               }
             }
           });
-          
+
           ide.setVisible(true);
         }
         catch (Exception ex)

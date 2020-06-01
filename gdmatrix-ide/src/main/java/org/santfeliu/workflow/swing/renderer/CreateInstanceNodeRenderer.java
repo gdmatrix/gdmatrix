@@ -31,22 +31,27 @@
 package org.santfeliu.workflow.swing.renderer;
 
 import java.awt.Color;
+import java.awt.Component;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
+import org.jgraph.JGraph;
+import org.jgraph.graph.CellView;
 import org.santfeliu.workflow.WorkflowNode;
-import org.santfeliu.workflow.node.DocumentNode;
+import org.santfeliu.workflow.node.CreateInstanceNode;
+import static org.santfeliu.workflow.swing.renderer.AbstractNodeRenderer.SELECTION_COLOR;
+
 
 /**
  *
  * @author realor
  */
-public class DocumentNodeRenderer
-  extends AbstractNodeRenderer
+public class CreateInstanceNodeRenderer extends AbstractNodeRenderer
 {
+  private static final Color BACKGROUND = new Color(240, 240, 255);
   private static final Border BORDER =
-    BorderFactory.createLineBorder(Color.black, 2);
+    BorderFactory.createLineBorder(new Color(30, 30, 100), 2);
 
-  public DocumentNodeRenderer()
+  public CreateInstanceNodeRenderer()
   {
   }
 
@@ -59,7 +64,24 @@ public class DocumentNodeRenderer
   @Override
   protected String getNodeText(WorkflowNode node)
   {
-    DocumentNode documentNode = (DocumentNode)node;
-    return documentNode.getOperation();
+    CreateInstanceNode createInstanceNode = (CreateInstanceNode)node;
+    String workflowName = createInstanceNode.getWorkflowName();
+    StringBuilder buffer = new StringBuilder("CreateInstance");
+    if (workflowName != null)
+    {
+      buffer.append(" ").append(workflowName);
+    }
+    return buffer.toString();
+  }
+
+  @Override
+  public Component getRendererComponent(JGraph graph, CellView view,
+                                        boolean selected, boolean focus,
+                                        boolean preview)
+  {
+    Component comp =
+      super.getRendererComponent(graph, view, selected, focus, preview);
+    comp.setBackground(selected ? SELECTION_COLOR : BACKGROUND);
+    return comp;
   }
 }

@@ -1,38 +1,37 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.swing.editor;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -80,7 +79,7 @@ public class InputFormParametersEditor extends JPanel implements NodeEditor
   }
 
   @Override
-  public Component getEditingComponent(NodeEditorDialog dialog, 
+  public Component getEditingComponent(NodeEditorDialog dialog,
     WorkflowNode node)
   {
     this.formNode = (FormNode)node;
@@ -153,31 +152,37 @@ public class InputFormParametersEditor extends JPanel implements NodeEditor
     varLabel.setText("Variable:");
     valueLabel.setText("Initial value:");
     messageLabel.setText("Message:");
-    varTextField.setPreferredSize(new Dimension(140, 24));
-    varTextField.setMinimumSize(new Dimension(140, 24));
-    valueTextField.setPreferredSize(new Dimension(140, 24));
-    valueTextField.setMinimumSize(new Dimension(140, 24));
-    messageTextArea.setFont(new Font("Dialog", 0, 14));
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
+
+    Dimension dim = varTextField.getPreferredSize();
+    dim.width = 5 * dim.height;
+    varTextField.setPreferredSize(dim);
+    varTextField.setMinimumSize(dim);
+    valueTextField.setPreferredSize(dim);
+    valueTextField.setMinimumSize(dim);
+
     this.add(varLabel,
       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
+    this.add(varTextField,
+      new GridBagConstraints(1, 0, 1, 1, 0.5, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+
     this.add(valueLabel,
       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
+    this.add(valueTextField,
+      new GridBagConstraints(1, 1, 1, 1, 0.5, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 4, 2, 4), 0, 0));
+
     this.add(messageLabel,
       new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-        new Insets(2, 4, 2, 4), 0, 0));
-    this.add(varTextField,
-      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-        new Insets(2, 4, 2, 4), 0, 0));
-    this.add(valueTextField,
-      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(scrollPane,
       new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(2, 4, 2, 4), 0, 0));
+
     scrollPane.getViewport().add(messageTextArea);
     this.varTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
   }

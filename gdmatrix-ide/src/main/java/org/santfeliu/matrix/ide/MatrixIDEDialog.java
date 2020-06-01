@@ -33,21 +33,16 @@ package org.santfeliu.matrix.ide;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-
 import java.awt.Font;
 import java.awt.Frame;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -58,7 +53,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
-
 import org.santfeliu.matrix.MatrixInfo;
 
 /**
@@ -113,15 +107,15 @@ public class MatrixIDEDialog extends JDialog
     super(parent, modal);
     try
     {
-      jbInit();
+      initComponents();
     }
-    catch(Exception e)
+    catch(Exception ex)
     {
-      e.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
-  private void jbInit()
+  private void initComponents()
     throws Exception
   {
     this.setTitle("About");

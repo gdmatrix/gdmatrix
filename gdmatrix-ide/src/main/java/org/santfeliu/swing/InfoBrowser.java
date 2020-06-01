@@ -32,10 +32,7 @@ package org.santfeliu.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
-
 import java.net.URL;
-
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -46,7 +43,7 @@ import javax.swing.event.HyperlinkListener;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class InfoBrowser extends JDialog
 {
@@ -59,7 +56,7 @@ public class InfoBrowser extends JDialog
   {
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -67,7 +64,7 @@ public class InfoBrowser extends JDialog
     }
   }
 
-  private void jbInit()
+  private void initComponents()
     throws Exception
   {
     this.setSize(new Dimension(435, 423));

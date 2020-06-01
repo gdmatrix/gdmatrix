@@ -31,22 +31,26 @@
 package org.santfeliu.workflow.swing.renderer;
 
 import java.awt.Color;
+import java.awt.Component;
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
+import org.jgraph.JGraph;
+import org.jgraph.graph.CellView;
 import org.santfeliu.workflow.WorkflowNode;
-import org.santfeliu.workflow.node.DocumentNode;
+import org.santfeliu.workflow.node.SendMailNode;
+
 
 /**
  *
  * @author realor
  */
-public class DocumentNodeRenderer
-  extends AbstractNodeRenderer
+public class SendMailNodeRenderer extends AbstractNodeRenderer
 {
+  private static final Color BACKGROUND = new Color(255, 230, 180);
   private static final Border BORDER =
-    BorderFactory.createLineBorder(Color.black, 2);
+    BorderFactory.createLineBorder(new Color(50, 70, 30), 2);
 
-  public DocumentNodeRenderer()
+  public SendMailNodeRenderer()
   {
   }
 
@@ -59,7 +63,24 @@ public class DocumentNodeRenderer
   @Override
   protected String getNodeText(WorkflowNode node)
   {
-    DocumentNode documentNode = (DocumentNode)node;
-    return documentNode.getOperation();
+    SendMailNode sendMailNode = (SendMailNode) node;
+    StringBuilder buffer = new StringBuilder("SendMail");
+    String subject = sendMailNode.getSubject();
+    if (subject != null)
+    {
+      buffer.append(": ").append(subject);
+    }
+    return buffer.toString();
+  }
+
+  @Override
+  public Component getRendererComponent(JGraph graph, CellView view,
+                                        boolean selected, boolean focus,
+                                        boolean preview)
+  {
+    Component comp =
+      super.getRendererComponent(graph, view, selected, focus, preview);
+    comp.setBackground(selected ? SELECTION_COLOR : BACKGROUND);
+    return comp;
   }
 }

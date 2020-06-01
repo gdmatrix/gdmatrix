@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.form.editor;
@@ -44,11 +44,14 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
@@ -65,7 +68,7 @@ import org.santfeliu.swing.text.TextEditor;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SelectBoxEditor extends JPanel
   implements ComponentEditor
@@ -165,8 +168,8 @@ public class SelectBoxEditor extends JPanel
     throws Exception
   {
     this.setLayout(gridBagLayout2);
-    this.setSize(new Dimension(400, 340));
     this.setMinimumSize(new Dimension(400, 340));
+    this.setBorder(new EmptyBorder(10, 10, 10, 10));
     addButton.setText("Add");
     addButton.addActionListener(new ActionListener()
         {
@@ -205,97 +208,95 @@ public class SelectBoxEditor extends JPanel
     sqlEditor.setPreferredSize(new Dimension(300, 100));
     sqlEditor.setMinimumSize(new Dimension(300, 100));
     sqlEditor.setBorder(new LineBorder(Color.LIGHT_GRAY));
-    
-    SymbolHighlighter symbolHighlighter = 
+
+    SymbolHighlighter symbolHighlighter =
       new SymbolHighlighter(sqlEditor.getTextPane(), "({[", ")}]");
-    
+
     datarefLabel.setText("Dataref:");
 
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
     this.add(scrollPane,
-             new GridBagConstraints(1, 2, 2, 3, 1.0, 0.5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 2, 2, 3, 1.0, 0.5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(addButton,
-             new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(insertButton,
-             new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(deleteButton,
-             new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
 
     this.add(variableLabel,
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(variableTextField,
-             new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 0, 1, 1, 0.4, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(sqlEditor,
-             new GridBagConstraints(1, 7, 2, 1, 0.0, 0.5, GridBagConstraints.WEST, GridBagConstraints.BOTH,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 7, 2, 1, 0.0, 0.5, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(staticLabel,
-             new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(dynamicLabel,
-             new GridBagConstraints(0, 5, 4, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 5, 4, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(sqlLabel,
-             new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(connLabel,
-             new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(connTextField,
-             new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 6, 1, 1, 0.4, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(connInfoLabel,
-             new GridBagConstraints(2, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(2, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(usernameLabel,
-             new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(usernameTextField,
-             new GridBagConstraints(1, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 8, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(passwordLabel,
-             new GridBagConstraints(0, 9, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 9, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(passwordField,
-             new GridBagConstraints(1, 9, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 9, 1, 1, 0.4, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(datarefLabel,
-             new GridBagConstraints(0, 10, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(0, 10, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(datarefTextField,
-             new GridBagConstraints(1, 10, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-                                    new Insets(4, 4, 4, 4), 0, 0));
+      new GridBagConstraints(1, 10, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
 
 
     optionsTable.setAutoCreateColumnsFromModel(false);
     tableModel.addColumn("Label");
     tableModel.addColumn("Value");
     optionsTable.setModel(tableModel);
-    DefaultCellEditor editor = new DefaultCellEditor(new JTextField());
-    editor.setClickCountToStart(2);
 
-    passwordField.setMinimumSize(new Dimension(150, 24));
-    passwordField.setPreferredSize(new Dimension(150, 24));
     passwordLabel.setText("Password:");
-    usernameTextField.setMinimumSize(new Dimension(150, 24));
-    usernameTextField.setPreferredSize(new Dimension(150, 24));
     usernameLabel.setText("Username:");
     connLabel.setText("Connection:");
     connInfoLabel.setText("DSN or alias");
-    connTextField.setMinimumSize(new Dimension(150, 24));
-    connTextField.setPreferredSize(new Dimension(150, 24));
     sqlLabel.setText("SQL (id, label):");
     dynamicLabel.setText("Dynamic options:");
     staticLabel.setText("Static options:");
     variableLabel.setText("Variable:");
+
+    JTextField editorTextField = new JTextField();
+    editorTextField.setBorder(null);
+    DefaultCellEditor editor = new DefaultCellEditor(editorTextField);
+    editor.setClickCountToStart(2);
     optionsTable.addColumn(new TableColumn(0, 300, null, editor));
     optionsTable.addColumn(new TableColumn(1, 100, null, editor));
     optionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    optionsTable.setRowHeight(20);
     optionsTable.getTableHeader().setReorderingAllowed(false);
   }
 
@@ -305,8 +306,17 @@ public class SelectBoxEditor extends JPanel
     tableModel.addRow(new Object[]{"", ""});
     int row = tableModel.getRowCount() - 1;
     optionsTable.setRowSelectionInterval(row, row);
-    optionsTable.requestFocus();
     optionsTable.editCellAt(row, 0);
+    optionsTable.getEditorComponent().requestFocus();
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        JScrollBar vertical = scrollPane.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
+      }
+    });
   }
 
   private void insertButton_actionPerformed(ActionEvent e)
@@ -317,8 +327,8 @@ public class SelectBoxEditor extends JPanel
     {
       tableModel.insertRow(row, new Object[]{"", ""});
       optionsTable.setRowSelectionInterval(row, row);
-      optionsTable.requestFocus();
       optionsTable.editCellAt(row, 0);
+      optionsTable.getEditorComponent().requestFocus();
     }
   }
 

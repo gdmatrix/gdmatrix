@@ -33,24 +33,20 @@ package org.santfeliu.matrix.ide;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.io.InputStreamReader;
-
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-
 import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-
 import org.santfeliu.matrix.ide.action.WrapperAction;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class MenuLoader 
 {
@@ -64,60 +60,75 @@ public class MenuLoader
     this.resources = resources;
   }
  
-  public JMenuBar loadMenuBar(JMenuBar menuBar, InputStream is) 
-  throws IOException
+  public JMenuBar loadMenuBar(JMenuBar menuBar, InputStream is)
+    throws IOException
   {
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-    line = reader.readLine();
-    while (line != null)
+    try
     {
-      line = line.trim();
-      System.out.println(line);
-      if (line.length() > 0)
-      {
-        if (line.charAt(0) == '#')
-        {
-          // comment
-        }
-        else if (line.startsWith("MENU"))
-        {
-          JMenu menu = loadMenu(reader);
-          menuBar.add(menu);
-        }
-        else throw new IOException("invalid menu file");
-      }
       line = reader.readLine();
+      while (line != null)
+      {
+        line = line.trim();
+        if (line.length() > 0)
+        {
+          if (line.charAt(0) == '#')
+          {
+            // comment
+          }
+          else if (line.startsWith("MENU"))
+          {
+            JMenu menu = loadMenu(reader);
+            menuBar.add(menu);
+          }
+          else
+          {
+            throw new IOException("invalid menu file");
+          }
+        }
+        line = reader.readLine();
+      }
     }
-    reader.close();
+    finally
+    {
+      reader.close();
+    }
     return menuBar;
   }
 
-  public JMenu loadMenu(InputStream is)
-  throws IOException
+  public JMenu loadMenu(InputStream is) throws IOException
   {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
     JMenu menu = null;
-    line = reader.readLine();
-    while (line != null && menu == null)
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    try
     {
-      line = line.trim();
-      if (line.length() > 0)
-      {
-        if (line.charAt(0) == '#')
-        {
-          // comment
-        }
-        else if (line.startsWith("MENU"))
-        {
-          menu = loadMenu(reader);
-        }
-        else throw new IOException("invalid menu file");
-      }
       line = reader.readLine();
+      while (line != null && menu == null)
+      {
+        line = line.trim();
+        if (line.length() > 0)
+        {
+          if (line.charAt(0) == '#')
+          {
+            // comment
+          }
+          else if (line.startsWith("MENU"))
+          {
+            menu = loadMenu(reader);
+          }
+          else
+          {
+            throw new IOException("invalid menu file");
+          }
+        }
+        line = reader.readLine();
+      }
     }
-    reader.close();
+    finally
+    {
+      reader.close();
+    }
     return menu;
   }
   
@@ -152,7 +163,6 @@ public class MenuLoader
         {
           tokenizer = new StringTokenizer(line);
           String type = tokenizer.nextToken();
-          System.out.println(">>" + type);
 
           if (type.equals("MENUITEM"))
           {
@@ -161,7 +171,6 @@ public class MenuLoader
               try
               {
                 String actionId = tokenizer.nextToken();
-                System.out.println(">" + actionId);
                 JMenuItem item = new JMenuItem(
                   new WrapperAction((Action)actions.get(actionId), true, false));
 
@@ -170,14 +179,13 @@ public class MenuLoader
                   String accelerator = tokenizer.nextToken();
                   accelerator = accelerator.replace("+", " ");
                   KeyStroke keyStroke = KeyStroke.getKeyStroke(accelerator);
-                  System.out.println("->" + accelerator + " " + keyStroke);
                   item.setAccelerator(keyStroke);
                 }
                 menu.add(item);
               }
-              catch (Exception e)
+              catch (Exception ex)
               {
-                System.out.println(e);
+                MatrixIDE.log(ex);
               }
             }
           }

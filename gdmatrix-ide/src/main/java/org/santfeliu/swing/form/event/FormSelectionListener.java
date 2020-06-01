@@ -34,7 +34,7 @@ import javax.swing.event.ChangeEvent;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public interface FormSelectionListener
 {

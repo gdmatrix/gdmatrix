@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing;
@@ -92,7 +92,7 @@ public class PropertiesPanel extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -100,7 +100,7 @@ public class PropertiesPanel extends JPanel
     }
   }
 
-  private void jbInit()
+  private void initComponents()
     throws Exception
   {
     addPropertyIcon = loadIcon(
@@ -111,11 +111,11 @@ public class PropertiesPanel extends JPanel
       "/org/santfeliu/swing/resources/images/sort_asc.png");
     sortDescIcon = loadIcon(
       "/org/santfeliu/swing/resources/images/sort_desc.png");
-  
+
     this.setSize(new Dimension(420, 323));
     this.setLayout(borderLayout1);
     toolBar.setFloatable(false);
-    
+
     addButton.setToolTipText("Add");
     addButton.setIcon(addPropertyIcon);
     addButton.addActionListener(new ActionListener()
@@ -165,8 +165,8 @@ public class PropertiesPanel extends JPanel
     propertiesTable.setAutoCreateColumnsFromModel(false);
     tableModel.addColumn("Property");
     tableModel.addColumn("Value");
-    propertiesTable.setModel(tableModel);    
-    UIManager.put("Table.focusCellHighlightBorder", 
+    propertiesTable.setModel(tableModel);
+    UIManager.put("Table.focusCellHighlightBorder",
       new LineBorder(Color.gray, 1));
     propertiesTable.setSelectionBackground(propertiesTable.getBackground());
     propertiesTable.setSelectionForeground(propertiesTable.getForeground());
@@ -176,7 +176,7 @@ public class PropertiesPanel extends JPanel
 
     JTextField textField = new JTextField();
     textField.setHorizontalAlignment(JTextField.LEFT);
-    textField.setMargin(new Insets(0, 0, 0, 0));      
+    textField.setMargin(new Insets(0, 0, 0, 0));
     DefaultCellEditor editor = new DefaultCellEditor(textField);
     editor.setClickCountToStart(1);
 
@@ -206,7 +206,7 @@ public class PropertiesPanel extends JPanel
     addButton.setVisible(editable);
     removeButton.setVisible(editable);
   }
-  
+
   public void setEnabled(boolean enabled)
   {
     super.setEnabled(enabled);
@@ -224,11 +224,11 @@ public class PropertiesPanel extends JPanel
     properties.put("color.name", "RICARD");
     properties.put("set.name", "RICARD");
     properties.put("name.nodeid", null);
-  
+
     PropertiesPanel panel = new PropertiesPanel();
     panel.setProperties(properties);
 
-    
+
     JFrame frame = new JFrame();
     frame.setSize(500, 500);
     frame.getContentPane().add(panel);
@@ -266,7 +266,7 @@ public class PropertiesPanel extends JPanel
     }
     return newProperties;
   }
-  
+
   public Map getChangedProperties(Object deleteValue)
   {
     Map newProperties = new HashMap();
@@ -282,7 +282,7 @@ public class PropertiesPanel extends JPanel
         if ("".equals(newPropertyValue)) newPropertyValue = null;
         boolean existsOldProperty = properties.containsKey(propertyName);
         Object oldPropertyValue = properties.get(propertyName);
-      
+
         newProperties.put(propertyName, newPropertyValue);
         if (newPropertyValue == null)
         {
@@ -310,7 +310,7 @@ public class PropertiesPanel extends JPanel
     }
     return changedProperties;
   }
-  
+
   private void putProperties(Map properties, int sort)
   {
     tableModel.setRowCount(0);
@@ -366,7 +366,7 @@ public class PropertiesPanel extends JPanel
     int lastRow = tableModel.getRowCount() - 1;
     propertiesTable.requestFocus();
     propertiesTable.getSelectionModel().setSelectionInterval(lastRow, lastRow);
-    propertiesTable.editCellAt(lastRow, 0);      
+    propertiesTable.editCellAt(lastRow, 0);
   }
 
   private void removeButton_actionPerformed(ActionEvent e)
@@ -381,7 +381,7 @@ public class PropertiesPanel extends JPanel
       tableModel.removeRow(selRow);
     }
   }
-  
+
   private void sortAscButton_actionPerformed(ActionEvent e)
   {
     putProperties(getProperties(), 1);

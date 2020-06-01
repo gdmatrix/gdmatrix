@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.swing.renderer;
@@ -41,6 +41,7 @@ import java.io.Serializable;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
+import org.apache.commons.lang.StringUtils;
 import org.jgraph.JGraph;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.CellViewRenderer;
@@ -50,33 +51,36 @@ import org.santfeliu.workflow.WorkflowNode;
 import org.santfeliu.workflow.swing.WrapLabel;
 import org.santfeliu.swing.border.SouthBorder;
 
-
+/**
+ *
+ * @author realor
+ */
 public abstract class AbstractNodeRenderer extends JPanel
   implements CellViewRenderer, Serializable
 {
-  protected static Color selectionColor = new Color(255, 255, 200);
-  protected static Font headerFont = new Font("Dialog", Font.PLAIN, 12);
-  protected static Font defaultFont = new Font("Dialog", Font.PLAIN, 12);
-
-  private Border defaultBorder = 
+  protected static final Color SELECTION_COLOR = new Color(255, 255, 200);
+  protected static final Font HEADER_FONT = new Font("Dialog", Font.PLAIN, 12);
+  protected static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12);
+  protected static final Border DEFAULT_BORDER =
     BorderFactory.createLineBorder(Color.black, 2);
-  
-  private WrapLabel defaultComponent = new WrapLabel();
-  private Component centerComponent;
-  
-  private SouthBorder headerBorder = new SouthBorder(Color.gray, false);
-  private BorderLayout borderLayout = new BorderLayout();
-  private WrapLabel headerLabel = new WrapLabel();
+  protected static final SouthBorder HEADER_BORDER =
+    new SouthBorder(Color.GRAY, false);
+
+  protected Component centerComponent;
+  protected BorderLayout borderLayout = new BorderLayout();
+  protected WrapLabel headerLabel = new WrapLabel();
+  protected WrapLabel defaultComponent = new WrapLabel();
 
   public AbstractNodeRenderer()
   {
   }
 
-  public Component getRendererComponent(JGraph graph, CellView view, 
-                                        boolean selected, boolean focus, 
+  @Override
+  public Component getRendererComponent(JGraph graph, CellView view,
+                                        boolean selected, boolean focus,
                                         boolean preview)
   {
-    setBackground(selected ? selectionColor : graph.getBackground());
+    setBackground(selected ? SELECTION_COLOR : graph.getBackground());
     setOpaque(true);
     this.setLayout(borderLayout);
     this.removeAll();
@@ -92,19 +96,19 @@ public abstract class AbstractNodeRenderer extends JPanel
         WorkflowNode node = (WorkflowNode)userObject;
         String text = node.getId();
         String description = node.getDescription();
-        if (description != null && description.trim().length() > 0)
+        if (StringUtils.isBlank(description))
+        {
+          text += ": " + node.getType();
+        }
+        else
         {
           description = description.replaceAll("\n", " ").trim();
           text += ": " + description;
         }
-        else
-        {
-          text += ": " + node.getType();
-        }
         headerLabel.setAlignment(WrapLabel.LEFT);
-        headerLabel.setFont(headerFont);
+        headerLabel.setFont(HEADER_FONT);
         headerLabel.setText(text);
-        headerLabel.setBorder(headerBorder);
+        headerLabel.setBorder(HEADER_BORDER);
         setBorder(getNodeBorder(node));
 
         centerComponent = getNodeComponent(node);
@@ -123,7 +127,7 @@ public abstract class AbstractNodeRenderer extends JPanel
 
   protected Font getNodeFont(WorkflowNode node)
   {
-    return defaultFont;
+    return DEFAULT_FONT;
   }
 
   protected String getNodeText(WorkflowNode node)
@@ -133,10 +137,10 @@ public abstract class AbstractNodeRenderer extends JPanel
 
   protected Border getNodeBorder(WorkflowNode node)
   {
-    return defaultBorder;
+    return DEFAULT_BORDER;
   }
 
-  public Point2D getPerimeterPoint(VertexView view, Point2D source, 
+  public Point2D getPerimeterPoint(VertexView view, Point2D source,
                                    Point2D p)
   {
     Rectangle2D bounds = view.getBounds();
@@ -177,14 +181,17 @@ public abstract class AbstractNodeRenderer extends JPanel
     return new Point2D.Double(xout, yout);
   }
 
+  @Override
   public void revalidate()
   {
   }
 
+  @Override
   public void repaint(long tm, int x, int y, int width, int height)
   {
   }
 
+  @Override
   public void repaint(Rectangle r)
   {
   }

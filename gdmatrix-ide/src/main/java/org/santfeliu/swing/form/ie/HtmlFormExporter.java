@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.form.ie;
@@ -58,17 +58,17 @@ import org.santfeliu.util.enc.HtmlEncoder;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class HtmlFormExporter
 {
   public static final String CHARSET = "utf-8";
   public static final String TITLE = "Visual Form";
-  
+
   public HtmlFormExporter()
   {
   }
-  
+
   public void exportPanel(OutputStream os, FormDesigner panel) throws Exception
   {
     OutputStreamWriter writer = new OutputStreamWriter(os, CHARSET);
@@ -81,9 +81,9 @@ public class HtmlFormExporter
         "<html><head><meta http-equiv=\"Content-Type\" " +
         "content=\"text/html; charset=" + CHARSET + "\">" +
         "<title>" + TITLE + "</title></head>\n" +
-        "<body><div id=\"panel\" style=\"position:relative;width:" + 
+        "<body><div id=\"panel\" style=\"position:relative;width:" +
         dim.width + "px;height:" + (dim.height + 10) + "px\">\n");
-      List<ComponentView> componentViewList = 
+      List<ComponentView> componentViewList =
         AccessibilityUtils.getSortedComponentListByOutputOrder(panel.getComponentViews());
       for (ComponentView componentView : componentViewList)
       {
@@ -96,14 +96,14 @@ public class HtmlFormExporter
       writer.close();
     }
   }
-  
+
   private void exportComponent(Writer writer, ComponentView componentView)
     throws IOException
   {
     if (componentView instanceof LabelView)
     {
       LabelView view = (LabelView)componentView;
-      writer.write("<label style=\"" + getStyle(view) + 
+      writer.write("<label style=\"" + getStyle(view) +
         ";line-height:" + view.getContentHeight() + "px;overflow:hidden\"");
       writeCommonAttributes(writer, view);
       String forElement = view.getForElement();
@@ -119,7 +119,7 @@ public class HtmlFormExporter
     else if (componentView instanceof OutputTextView)
     {
       OutputTextView view = (OutputTextView)componentView;
-      writer.write("<div style=\"" + getStyle(view) + 
+      writer.write("<div style=\"" + getStyle(view) +
         ";line-height:" + view.getContentHeight() + "px;overflow:hidden\"");
       writeCommonAttributes(writer, view);
       String text = view.getText();
@@ -204,7 +204,7 @@ public class HtmlFormExporter
       style += ";left:" + view.getX() + "px";
       style += ";width:" + view.getContentWidth() + "px";
 
-      writer.write("<select name=\"" + view.getVariable() + 
+      writer.write("<select name=\"" + view.getVariable() +
         "\" style=\"" + style + "\" offset=\"" + offset + "\"");
       writeCommonAttributes(writer, view);
       if (view.getTabindex() != null)
@@ -223,7 +223,7 @@ public class HtmlFormExporter
       {
         writer.write(" multiple=\"true\"");
       }
-      
+
       // dynamic options
       if (view.getConnection() != null)
       {
@@ -250,13 +250,13 @@ public class HtmlFormExporter
         writer.write(" onchange=\"" + view.getOnChange() + "\"");
       }
       writer.write(">");
-      
+
       // static options
       Vector options = view.getOptions();
       for (int i = 0; i < options.size(); i++)
       {
         String[] option = (String[])options.elementAt(i);
-        writer.write("<option value=\"" + option[1] + "\">" + 
+        writer.write("<option value=\"" + option[1] + "\">" +
           HtmlEncoder.encode(option[0]) + "</option>");
       }
       writer.write("</select>\n");
@@ -264,8 +264,8 @@ public class HtmlFormExporter
     else if (componentView instanceof ImageView)
     {
       ImageView view = (ImageView)componentView;
-      writer.write("<img src=\"" + view.getUrl() + 
-        "\" alt=\"" + view.getAlt() + 
+      writer.write("<img src=\"" + view.getUrl() +
+        "\" alt=\"" + view.getAlt() +
         "\" style=\"" + getStyle(view) + "\"");
       writeCommonAttributes(writer, view);
       writer.write(">\n");
@@ -274,7 +274,7 @@ public class HtmlFormExporter
     {
       RadioButtonView view = (RadioButtonView)componentView;
       writer.write("<input type=\"radio\" name=\"" +
-        view.getVariable() + "\" value=\"" + view.getValue() + 
+        view.getVariable() + "\" value=\"" + view.getValue() +
         "\"" + (view.isChecked() ? " checked=\"true\"" : ""));
       String format = view.getFormat();
       if (format != null)
@@ -296,7 +296,7 @@ public class HtmlFormExporter
     {
       CheckBoxView view = (CheckBoxView)componentView;
       writer.write("<input type=\"checkbox\" name=\"" +
-        view.getVariable() + "\"" + 
+        view.getVariable() + "\"" +
         (view.isChecked() ? " checked=\"true\"" : ""));
       writer.write(" style=\"" + getStyle(view) + "\"");
       writeCommonAttributes(writer, view);
@@ -344,7 +344,7 @@ public class HtmlFormExporter
   {
     return getStyle(view, true);
   }
-  
+
   private String getStyle(ComponentView view, boolean setBounds)
   {
     StringBuilder buffer = new StringBuilder();
@@ -382,7 +382,7 @@ public class HtmlFormExporter
     String rightWidth = getWidthString(view.getBorderRightWidth());
     if (rightWidth != null)
       buffer.append(";border-right-width:").append(rightWidth);
-    
+
     if (view.getBorderTopColor() != null)
       buffer.append(";border-top-color:").append(getRGBColor(view.getBorderTopColor()));
     if (view.getBorderBottomColor() != null)
@@ -411,7 +411,7 @@ public class HtmlFormExporter
     code = code.substring(code.length() - 6);
     return "#" + code;
   }
-  
+
   private String getWidthString(String text)
   {
     if (text != null)

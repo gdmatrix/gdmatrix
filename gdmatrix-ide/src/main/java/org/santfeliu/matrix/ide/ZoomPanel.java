@@ -1,38 +1,37 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
 
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -49,15 +48,14 @@ import javax.swing.JPanel;
 public class ZoomPanel extends JPanel
 {
   protected MatrixIDE ide;
-  private FlowLayout flowLayout = new FlowLayout();
   private JLabel zoomLabel = new JLabel();
   private JComboBox zoomComboBox = new JComboBox()
   {
     @Override
     public Dimension getPreferredSize()
     {
-      Dimension preferred = super.getPreferredSize();      
-      return new Dimension(80, preferred.height);
+      Dimension preferred = super.getPreferredSize();
+      return new Dimension(preferred.height * 4, preferred.height);
     }
   };
 
@@ -65,7 +63,7 @@ public class ZoomPanel extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception ex)
     {
@@ -73,11 +71,8 @@ public class ZoomPanel extends JPanel
     }
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
-    this.setLayout(flowLayout);
-    this.add(zoomLabel, null);
-    this.add(zoomComboBox, null);
     zoomLabel.setText("Zoom:");
     zoomComboBox.setEditable(true);
     zoomComboBox.addItem("400%");
@@ -97,6 +92,7 @@ public class ZoomPanel extends JPanel
     zoomComboBox.setSelectedItem("100%");
     zoomComboBox.addActionListener(new ActionListener()
     {
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         String value = (String)zoomComboBox.getSelectedItem();
@@ -117,28 +113,30 @@ public class ZoomPanel extends JPanel
         }
       }
     });
+    this.add(zoomLabel, null);
+    this.add(zoomComboBox, null);
   }
 
   public void setIDE(MatrixIDE ide)
   {
     this.ide = ide;
   }
-  
+
   public MatrixIDE getIDE()
   {
     return ide;
   }
-  
+
   public void updateZoomValue()
   {
     DocumentPanel panel = ide.getMainPanel().getActivePanel();
     if (panel != null)
     {
       double size = panel.getZoom();
-      DecimalFormat df = new DecimalFormat("0", 
+      DecimalFormat df = new DecimalFormat("0",
         new DecimalFormatSymbols(new Locale("en")));
       String value = df.format(size) + "%";
       zoomComboBox.setSelectedItem(value);
     }
-  }  
+  }
 }

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.form;
@@ -51,6 +51,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -58,14 +59,13 @@ import javax.swing.plaf.basic.BasicButtonUI;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class BordersDialog
-  extends JDialog
+public class BordersDialog extends JDialog
 {
   public static final int OK = 1;
   public static final int CANCEL = 2;
-  
+
   private int result = CANCEL;
   private Color borderTopColor = Color.black;
   private Color borderBottomColor = Color.black;
@@ -125,7 +125,7 @@ public class BordersDialog
     super(parent, title, modal);
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -133,7 +133,7 @@ public class BordersDialog
     }
   }
 
-  private void jbInit()
+  private void initComponents()
     throws Exception
   {
     this.setSize(new Dimension(421, 301));
@@ -141,6 +141,7 @@ public class BordersDialog
     acceptButton.setText("Accept");
     acceptButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             acceptButton_actionPerformed(e);
@@ -149,16 +150,16 @@ public class BordersDialog
     cancelButton.setText("Cancel");
     cancelButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             cancelButton_actionPerformed(e);
           }
         });
     centerPanel.setLayout(gridBagLayout2);
-    topWidthSpinner.setPreferredSize(new Dimension(50, 24));
-    topWidthSpinner.setMinimumSize(new Dimension(50, 24));
     topWidthSpinner.addChangeListener(new ChangeListener()
         {
+          @Override
           public void stateChanged(ChangeEvent e)
           {
             topWidthSpinner_stateChanged(e);
@@ -166,6 +167,7 @@ public class BordersDialog
         });
     bottomWidthSpinner.addChangeListener(new ChangeListener()
         {
+          @Override
           public void stateChanged(ChangeEvent e)
           {
             bottomWidthSpinner_stateChanged(e);
@@ -173,6 +175,7 @@ public class BordersDialog
         });
     leftWidthSpinner.addChangeListener(new ChangeListener()
         {
+          @Override
           public void stateChanged(ChangeEvent e)
           {
             leftWidthSpinner_stateChanged(e);
@@ -180,6 +183,7 @@ public class BordersDialog
         });
     rightWidthSpinner.addChangeListener(new ChangeListener()
         {
+          @Override
           public void stateChanged(ChangeEvent e)
           {
             rightWidthSpinner_stateChanged(e);
@@ -190,36 +194,34 @@ public class BordersDialog
     topColorButton.setText("...");
     topColorButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             topColorButton_actionPerformed(e);
           }
         });
-    bottomWidthSpinner.setPreferredSize(new Dimension(50, 24));
-    bottomWidthSpinner.setMinimumSize(new Dimension(50, 24));
     bottomColorButton.setText("...");
     bottomColorButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             bottomColorButton_actionPerformed(e);
           }
         });
-    leftWidthSpinner.setPreferredSize(new Dimension(50, 24));
-    leftWidthSpinner.setMinimumSize(new Dimension(50, 24));
     leftColorButton.setText("...");
     leftColorButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             leftColorButton_actionPerformed(e);
           }
         });
-    rightWidthSpinner.setPreferredSize(new Dimension(50, 24));
-    rightWidthSpinner.setMinimumSize(new Dimension(50, 24));
     rightColorButton.setText("...");
     rightColorButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             rightColorButton_actionPerformed(e);
@@ -238,6 +240,7 @@ public class BordersDialog
     bottomCheckBox.setSelected(true);
     bottomCheckBox.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             bottomCheckBox_actionPerformed(e);
@@ -246,6 +249,7 @@ public class BordersDialog
     leftCheckBox.setSelected(true);
     leftCheckBox.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             leftCheckBox_actionPerformed(e);
@@ -254,6 +258,7 @@ public class BordersDialog
     rightCheckBox.setSelected(true);
     rightCheckBox.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             rightCheckBox_actionPerformed(e);
@@ -261,6 +266,7 @@ public class BordersDialog
         });
     topComboBox.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             topComboBox_actionPerformed(e);
@@ -268,6 +274,7 @@ public class BordersDialog
         });
     bottomComboBox.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             bottomComboBox_actionPerformed(e);
@@ -275,6 +282,7 @@ public class BordersDialog
         });
     leftComboBox.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             leftComboBox_actionPerformed(e);
@@ -282,6 +290,7 @@ public class BordersDialog
         });
     rightComboBox.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             rightComboBox_actionPerformed(e);
@@ -298,91 +307,93 @@ public class BordersDialog
     southPanel.add(acceptButton, null);
     southPanel.add(cancelButton, null);
     this.getContentPane().add(southPanel, BorderLayout.SOUTH);
-    centerPanel.add(topWidthSpinner, 
-                    new GridBagConstraints(6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(topColorButton, 
-                    new GridBagConstraints(5, 1, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(bottomWidthSpinner, 
-                    new GridBagConstraints(6, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(bottomColorButton, 
-                    new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(leftWidthSpinner, 
-                    new GridBagConstraints(6, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(leftColorButton, 
-                    new GridBagConstraints(5, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(rightWidthSpinner, 
-                    new GridBagConstraints(6, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(rightColorButton, 
-                    new GridBagConstraints(5, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(sampleView, 
-                    new GridBagConstraints(0, 1, 1, 4, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, 
-                                           new Insets(0, 0, 0, 0), 0, 0));
-    centerPanel.add(colorLabel, 
-                    new GridBagConstraints(5, 0, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(sampleLabel, 
-                    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(topCheckBox, 
-                    new GridBagConstraints(4, 1, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(bottomCheckBox, 
-                    new GridBagConstraints(4, 2, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(2, 2, 2, 2), 0, 0));
-    centerPanel.add(leftCheckBox, 
-                    new GridBagConstraints(4, 3, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(2, 2, 2, 2), 0, 0));
-    centerPanel.add(rightCheckBox, 
-                    new GridBagConstraints(4, 4, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(2, 2, 2, 2), 0, 0));
-    centerPanel.add(topComboBox, 
-                    new GridBagConstraints(7, 1, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(bottomComboBox, 
-                    new GridBagConstraints(7, 2, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(leftComboBox, 
-                    new GridBagConstraints(7, 3, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(rightComboBox, 
-                    new GridBagConstraints(7, 4, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(applyLabel, 
-                    new GridBagConstraints(4, 0, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(widthLabel, 
-                    new GridBagConstraints(6, 0, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(styleLabel, 
-                    new GridBagConstraints(7, 0, 1, 1, 0.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                           new Insets(4, 4, 4, 4), 0, 0));
-    centerPanel.add(topLabel, 
-                    new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                           new Insets(4, 8, 4, 4), 0, 0));
-    centerPanel.add(bottomLabel, 
-                    new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                           new Insets(4, 8, 4, 4), 0, 0));
-    centerPanel.add(leftLabel, 
-                    new GridBagConstraints(3, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                           new Insets(4, 8, 4, 4), 0, 0));
-    centerPanel.add(rightLabel, 
-                    new GridBagConstraints(3, 4, 1, 1, 0.0, 0.0,GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                           new Insets(4, 8, 4, 4), 0, 0));
+    centerPanel.add(topWidthSpinner,
+      new GridBagConstraints(6, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(topColorButton,
+      new GridBagConstraints(5, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(bottomWidthSpinner,
+      new GridBagConstraints(6, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(bottomColorButton,
+      new GridBagConstraints(5, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(leftWidthSpinner,
+      new GridBagConstraints(6, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(leftColorButton,
+      new GridBagConstraints(5, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(rightWidthSpinner,
+      new GridBagConstraints(6, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(rightColorButton,
+      new GridBagConstraints(5, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(sampleView,
+      new GridBagConstraints(0, 1, 1, 4, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(0, 0, 0, 0), 0, 0));
+    centerPanel.add(colorLabel,
+      new GridBagConstraints(5, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(sampleLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(topCheckBox,
+      new GridBagConstraints(4, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(bottomCheckBox,
+      new GridBagConstraints(4, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
+    centerPanel.add(leftCheckBox,
+      new GridBagConstraints(4, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
+    centerPanel.add(rightCheckBox,
+      new GridBagConstraints(4, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
+    centerPanel.add(topComboBox,
+      new GridBagConstraints(7, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(bottomComboBox,
+      new GridBagConstraints(7, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(leftComboBox,
+      new GridBagConstraints(7, 3, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(rightComboBox,
+      new GridBagConstraints(7, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(applyLabel,
+      new GridBagConstraints(4, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(widthLabel,
+      new GridBagConstraints(6, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(styleLabel,
+      new GridBagConstraints(7, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
+    centerPanel.add(topLabel,
+      new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 8, 4, 4), 0, 0));
+    centerPanel.add(bottomLabel,
+      new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 8, 4, 4), 0, 0));
+    centerPanel.add(leftLabel,
+      new GridBagConstraints(3, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 8, 4, 4), 0, 0));
+    centerPanel.add(rightLabel,
+      new GridBagConstraints(3, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 8, 4, 4), 0, 0));
+
+    centerPanel.setBorder(new EmptyBorder(6, 6, 6, 6));
     this.getContentPane().add(centerPanel, BorderLayout.CENTER);
     topWidthSpinner.setModel(new SpinnerNumberModel(0, 0, 1000, 1));
     bottomWidthSpinner.setModel(new SpinnerNumberModel(0, 0, 1000, 1));
     leftWidthSpinner.setModel(new SpinnerNumberModel(0, 0, 1000, 1));
     rightWidthSpinner.setModel(new SpinnerNumberModel(0, 0, 1000, 1));
-  
-    String[] styles = 
+
+    String[] styles =
       new String[]{"", "none", "solid", "dashed", "dotted", "groove", "doble"};
 
     for (int i = 0; i < styles.length; i++)
@@ -393,7 +404,7 @@ public class BordersDialog
       rightComboBox.addItem(styles[i]);
     }
   }
-  
+
   public boolean isApplyTop()
   {
     return topCheckBox.isSelected();
@@ -420,16 +431,19 @@ public class BordersDialog
     bottomColorButton.setBackground(borderBottomColor);
     leftColorButton.setBackground(borderLeftColor);
     rightColorButton.setBackground(borderRightColor);
-    
-    topWidthSpinner.setValue(new Integer(borderTopWidth));
-    bottomWidthSpinner.setValue(new Integer(borderBottomWidth));
-    leftWidthSpinner.setValue(new Integer(borderLeftWidth));
-    rightWidthSpinner.setValue(new Integer(borderRightWidth));
+
+    topWidthSpinner.setValue(borderTopWidth);
+    bottomWidthSpinner.setValue(borderBottomWidth);
+    leftWidthSpinner.setValue(borderLeftWidth);
+    rightWidthSpinner.setValue(borderRightWidth);
 
     topComboBox.setSelectedItem(borderTopStyle);
     bottomComboBox.setSelectedItem(borderBottomStyle);
     leftComboBox.setSelectedItem(borderLeftStyle);
     rightComboBox.setSelectedItem(borderRightStyle);
+
+    pack();
+    setLocationRelativeTo(getParent());
 
     setVisible(true);
     return result;
@@ -595,7 +609,7 @@ public class BordersDialog
 
   private void topColorButton_actionPerformed(ActionEvent e)
   {
-    Color color = 
+    Color color =
       JColorChooser.showDialog(this, "Select color", borderTopColor);
     if (color != null)
     {
@@ -607,19 +621,19 @@ public class BordersDialog
 
   private void bottomColorButton_actionPerformed(ActionEvent e)
   {
-    Color color = 
+    Color color =
       JColorChooser.showDialog(this, "Select color", borderBottomColor);
     if (color != null)
     {
       borderBottomColor = color;
-      bottomColorButton.setBackground(color);      
+      bottomColorButton.setBackground(color);
       sampleView.repaint();
     }
   }
 
   private void leftColorButton_actionPerformed(ActionEvent e)
   {
-    Color color = 
+    Color color =
       JColorChooser.showDialog(this, "Select color", borderLeftColor);
     if (color != null)
     {
@@ -631,7 +645,7 @@ public class BordersDialog
 
   private void rightColorButton_actionPerformed(ActionEvent e)
   {
-    Color color = 
+    Color color =
       JColorChooser.showDialog(this, "Select color", borderRightColor);
     if (color != null)
     {
@@ -738,7 +752,7 @@ public class BordersDialog
     {
       this.setBorder(new BevelBorder(BevelBorder.RAISED));
     }
-  
+
     public void updateUI()
     {
       setUI(new BasicButtonUI());

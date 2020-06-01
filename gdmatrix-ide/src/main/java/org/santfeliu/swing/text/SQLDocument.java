@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.swing.text;
@@ -35,7 +35,7 @@ import java.util.Set;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SQLDocument extends HighlightedDocument
 {
@@ -50,7 +50,7 @@ public class SQLDocument extends HighlightedDocument
   public static final int VARIABLE = 8;
 
   public static final Set keywordsSet = new HashSet();
-  
+
   static
   {
     keywordsSet.add("select");
@@ -61,7 +61,7 @@ public class SQLDocument extends HighlightedDocument
     keywordsSet.add("not");
     keywordsSet.add("in");
     keywordsSet.add("into");
-    keywordsSet.add("insert");    
+    keywordsSet.add("insert");
     keywordsSet.add("update");
     keywordsSet.add("delete");
     keywordsSet.add("between");
@@ -81,13 +81,13 @@ public class SQLDocument extends HighlightedDocument
     keywordsSet.add("order");
     keywordsSet.add("asc");
     keywordsSet.add("desc");
-    keywordsSet.add("set");    
+    keywordsSet.add("set");
   }
-  
+
   public SQLDocument()
   {
   }
-  
+
   @Override
   protected void parse()
   {
@@ -124,7 +124,7 @@ public class SQLDocument extends HighlightedDocument
             {
               state = 3;
               token = newToken(index++, STRING);
-            }            
+            }
             else if (ch == '\"')
             {
               state = 4;
@@ -151,7 +151,7 @@ public class SQLDocument extends HighlightedDocument
             if (isSeparator(ch))
             {
               state = 0;
-              index++;              
+              index++;
             }
             else if (isLetterOrDigit(ch))
             {
@@ -166,7 +166,7 @@ public class SQLDocument extends HighlightedDocument
               token.type = KEYWORD;
             else token.type = IDENTIFIER;
             break;
-            
+
           case 2: // process number
             if (isSeparator(ch))
             {
@@ -181,7 +181,7 @@ public class SQLDocument extends HighlightedDocument
             else
             {
               state = 6;
-              token = newToken(index++, OPERATOR, ch);              
+              token = newToken(index++, OPERATOR, ch);
             }
             break;
 
@@ -210,7 +210,7 @@ public class SQLDocument extends HighlightedDocument
               index++;
             }
             break;
-            
+
           case 5: // process possible comments
             if (ch == '/')
             {
@@ -222,7 +222,7 @@ public class SQLDocument extends HighlightedDocument
             {
               state = 8;
               token.type = COMMENT;
-              index++;              
+              index++;
             }
             else
             {
@@ -231,7 +231,7 @@ public class SQLDocument extends HighlightedDocument
               state = 0;
             }
             break;
-            
+
           case 6: // process operators
             if (isSeparator(ch))
             {
@@ -256,7 +256,7 @@ public class SQLDocument extends HighlightedDocument
               index++;
             }
             break;
-            
+
           case 7:
             if (ch == '\n')
             {
@@ -269,7 +269,7 @@ public class SQLDocument extends HighlightedDocument
               index++;
             }
             break;
-            
+
           case 8:
             if (ch == '*')
             {
@@ -279,10 +279,10 @@ public class SQLDocument extends HighlightedDocument
             else
             {
               token.append(ch);
-              index++;              
+              index++;
             }
             break;
-            
+
           case 9:
             if (ch == '/')
             {
@@ -299,7 +299,7 @@ public class SQLDocument extends HighlightedDocument
               index++;
             }
             break;
-            
+
           case 10:
             if (ch == '}')
             {
@@ -327,6 +327,6 @@ public class SQLDocument extends HighlightedDocument
 
   private boolean isLetterOrDigit(char ch)
   {
-    return Character.isLetter(ch) || Character.isDigit(ch) || ch == '_'; 
+    return Character.isLetter(ch) || Character.isDigit(ch) || ch == '_';
   }
 }

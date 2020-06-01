@@ -1,38 +1,37 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.swing.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -62,6 +61,7 @@ import org.santfeliu.workflow.node.FormNode;
 import org.santfeliu.workflow.swing.NodeEditor;
 import org.santfeliu.workflow.swing.NodeEditorDialog;
 import static java.awt.Color.LIGHT_GRAY;
+import java.awt.Dimension;
 import org.santfeliu.matrix.ide.MatrixIDE;
 
 /**
@@ -152,6 +152,22 @@ public class FormNodeEditor extends JPanel implements NodeEditor
   }
 
   @Override
+  public Dimension getPreferredSize()
+  {
+    JLabel tabLabel = new JLabel();
+    Dimension dim = super.getPreferredSize();
+    dim.width = 0;
+    for (int i = 0; i < tabbedPane.getTabCount(); i++)
+    {
+      String title = tabbedPane.getTitleAt(i);
+      tabLabel.setText(title);
+      Dimension tabDim = tabLabel.getPreferredSize();
+      dim.width += (1.5 * tabDim.width);
+    }
+    return dim;
+  }
+
+  @Override
   public Component getEditingComponent(NodeEditorDialog dialog,
     WorkflowNode node)
   {
@@ -232,14 +248,10 @@ public class FormNodeEditor extends JPanel implements NodeEditor
     northPanel.setLayout(gridBagLayout1);
     formTypeLabel.setText("Type:");
     formTypeComboBox.setEditable(true);
-    formTypeComboBox.setMinimumSize(new Dimension(150, 24));
-    formTypeComboBox.setPreferredSize(new Dimension(150, 24));
     groupLabel.setText("Group:");
-    groupTextField.setPreferredSize(new Dimension(150, 24));
-    groupTextField.setMinimumSize(new Dimension(150, 24));
     parametersPanel.setLayout(borderLayout1);
-
     parametersPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
     buttonsLabel.setText("Buttons:");
     backwardCheckBox.setText("<< backward");
     forwardCheckBox.setText("forward >>");
@@ -253,17 +265,19 @@ public class FormNodeEditor extends JPanel implements NodeEditor
     northPanel.add(formTypeComboBox,
       new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
         new Insets(2, 0, 2, 4), 0, 0));
+
     northPanel.add(groupLabel,
       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     northPanel.add(groupTextField,
-      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 0, 2, 0), 0, 0));
+
     northPanel.add(buttonsLabel,
       new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     northPanel.add(buttonsPanel,
-      new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+      new GridBagConstraints(1, 2, 2, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(0, 0, 0, 0), 0, 0));
 
     flowLayout.setAlignment(FlowLayout.LEFT);
@@ -370,11 +384,11 @@ public class FormNodeEditor extends JPanel implements NodeEditor
     tabbedPane.addTab("Edit roles", editRolesPanel);
     tabbedPane.addTab("Check", checkPanel);
     tabbedPane.addTab("Cancel", cancelPanel);
+    tabbedPane.addTab("Outcome", outcomePanel);
 
     outcomeTextEditor.setBorder(new LineBorder(LIGHT_GRAY));
     outcomePanel.add(outcomeTextEditor, BorderLayout.CENTER);
     outcomePanel.add(outcomeLabel, BorderLayout.NORTH);
-    tabbedPane.addTab("Outcome", outcomePanel);
     Iterator iter = formTypes.iterator();
     while (iter.hasNext())
     {
@@ -473,7 +487,7 @@ public class FormNodeEditor extends JPanel implements NodeEditor
       Component comp = parametersEditor.getEditingComponent(dialog, formNode);
       parametersPanel.add(comp, BorderLayout.CENTER);
     }
-    dialog.validate();
+    dialog.adjustSizeAndPosition();
     dialog.repaint();
   }
 }

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.swing.graph;
@@ -52,13 +52,13 @@ import org.santfeliu.workflow.WorkflowNode;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WorkflowModel extends DefaultGraphModel implements Serializable
 {
-  private Workflow workflow;
+  private final Workflow workflow;
   private boolean updatingModel;
-  
+
   public WorkflowModel(Workflow workflow)
   {
     this.workflow = workflow;
@@ -69,14 +69,14 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
   {
     return workflow;
   }
-  
+
   private void updateGraph()
   {
     updatingModel = true;
-    
+
     Rectangle2D defaultRect = new Rectangle2D.Double(10, 10, 100, 40);
     Map cellsMap = new HashMap();
-  
+
     Map attributeMap = new HashMap();
     ConnectionSet cs = new ConnectionSet();
 
@@ -94,7 +94,7 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
       {
         if (points.length >= 2)
         {
-          double x = points[0].getX();        
+          double x = points[0].getX();
           double y = points[0].getY();
           double width = points[1].getX() - x;
           double height = points[1].getY() - y;
@@ -121,10 +121,10 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
         WorkflowNode.Transition transition = transitions[t];
         WorkflowNode nextNode = transition.getNextNode();
         DefaultGraphCell targetCell = (DefaultGraphCell)cellsMap.get(nextNode);
-        
+
         WorkflowEdge edge = new WorkflowEdge(transition);
-        cs.connect(edge, 
-          (Port)sourceCell.getFirstChild(), 
+        cs.connect(edge,
+          (Port)sourceCell.getFirstChild(),
           (Port)targetCell.getFirstChild());
 
         cellsMap.put(edge, edge);
@@ -134,7 +134,7 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
         GraphConstants.setLabelAlongEdge(emap, false);
         GraphConstants.setEditable(emap, true);
         GraphConstants.setLineStyle(emap, GraphConstants.STYLE_ORTHOGONAL);
-        GraphConstants.setBendable(emap, true);       
+        GraphConstants.setBendable(emap, true);
         Point2D[] points = transition.getPoints();
         if (points != null && points.length > 1)
         {
@@ -181,7 +181,7 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
             List list = GraphConstants.getPoints(map);
             if (list != null)
             {
-              Point2D[] points = 
+              Point2D[] points =
                 (Point2D[])list.toArray(new Point2D[list.size()]);
               transition.setPoints(points);
             }
@@ -202,7 +202,7 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
               {
                 Point2D[] points = new Point2D[2];
                 points[0] = new Point2D.Double(rect.getX(), rect.getY());
-                points[1] = new Point2D.Double(rect.getX() + rect.getWidth(), 
+                points[1] = new Point2D.Double(rect.getX() + rect.getWidth(),
                                                rect.getY() + rect.getHeight());
                 node.setPoints(points);
               }
@@ -245,7 +245,7 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
             }
             catch (Exception ex)
             {
-              ex.printStackTrace(); 
+              ex.printStackTrace();
             }
           }
         }
@@ -253,7 +253,7 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
     }
     return super.handleInsert(objs);
   }
-  
+
   @Override
   protected Object[] handleRemove(Object[] objs)
   {
@@ -298,15 +298,15 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
             DefaultPort targetPort = (DefaultPort)edge.getTarget();
             if (sourcePort != null && targetPort != null)
             {
-              DefaultGraphCell sourceCell = 
+              DefaultGraphCell sourceCell =
                 (DefaultGraphCell)sourcePort.getParent();
-              DefaultGraphCell targetCell = 
+              DefaultGraphCell targetCell =
                 (DefaultGraphCell)targetPort.getParent();
               WorkflowNode sourceNode = (WorkflowNode)sourceCell.getUserObject();
               WorkflowNode targetNode = (WorkflowNode)targetCell.getUserObject();
               if (!sourceNode.hasTransitionTo(targetNode))
               {
-                WorkflowNode.Transition transition = 
+                WorkflowNode.Transition transition =
                   sourceNode.addTransition(targetNode);
                 ArrayList list = (ArrayList)edge.getAttributes().get(
                   GraphConstants.POINTS);
@@ -336,7 +336,7 @@ public class WorkflowModel extends DefaultGraphModel implements Serializable
       if (cell instanceof WorkflowVertex)
       {
         WorkflowVertex vertex = (WorkflowVertex)cell;
-        WorkflowNode node = vertex.getNode();        
+        WorkflowNode node = vertex.getNode();
         WorkflowVertex newVertex = new WorkflowVertex();
         WorkflowNode newNode = (WorkflowNode)node.clone();
         newNode.setId(null); // force new id generation

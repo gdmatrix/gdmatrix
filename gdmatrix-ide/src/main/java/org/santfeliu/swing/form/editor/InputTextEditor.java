@@ -31,7 +31,6 @@
 package org.santfeliu.swing.form.editor;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -50,7 +49,7 @@ import org.santfeliu.swing.form.view.InputTextView;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class InputTextEditor extends JPanel
   implements ComponentEditor
@@ -71,7 +70,7 @@ public class InputTextEditor extends JPanel
   {
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -79,6 +78,7 @@ public class InputTextEditor extends JPanel
     }
   }
 
+  @Override
   public Component getEditingComponent(ComponentView view)
   {
     this.textFieldView = (InputTextView)view;
@@ -96,6 +96,7 @@ public class InputTextEditor extends JPanel
     return this;
   }
   
+  @Override
   public void stopEditing() throws Exception
   {
     String variable = variableTextField.getText();
@@ -110,11 +111,12 @@ public class InputTextEditor extends JPanel
     textFieldView.setRequired(requiredCheckBox.isSelected());
   }
   
+  @Override
   public void cancelEditing()
   {
   }
 
-  private void jbInit()
+  private void initComponents()
     throws Exception
   {
     this.setLayout(gridBagLayout1);
@@ -122,36 +124,34 @@ public class InputTextEditor extends JPanel
     variableLabel.setText("Variable:");
     formatLabel.setText("Format:");
     maxLengthLabel.setText("Max length:");
-    maxLengthSpinner.setMinimumSize(new Dimension(80, 24));
-    maxLengthSpinner.setPreferredSize(new Dimension(80, 24));
-    this.add(variableLabel, 
-             new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 6), 0, 0));
-    this.add(variableTextField, 
-             new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(formatLabel, 
-             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 6), 0, 0));
-    this.add(maxLengthLabel, 
-             new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 6), 0, 0));
-    this.add(maxLengthSpinner, 
-             new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
+    this.add(variableLabel,
+      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 6), 0, 0));
+    this.add(variableTextField,
+      new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(formatLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 6), 0, 0));
+    this.add(maxLengthLabel,
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 6), 0, 0));
+    this.add(maxLengthSpinner,
+      new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
 
-    this.add(requiredLabel, 
-             new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 6), 0, 0));
-    this.add(requiredCheckBox, 
-             new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(helpLabel, 
-             new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
-    this.add(formatComboBox, 
-             new GridBagConstraints(1, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, 
-                                    new Insets(2, 2, 2, 2), 0, 0));
+    this.add(requiredLabel,
+      new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 6), 0, 0));
+    this.add(requiredCheckBox,
+      new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(helpLabel,
+      new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
+    this.add(formatComboBox,
+      new GridBagConstraints(1, 1, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
     maxLengthSpinner.setModel(new SpinnerNumberModel(0, 0, 1000, 1));
     requiredLabel.setText("Required:");
     helpLabel.setText("(0: any length)");

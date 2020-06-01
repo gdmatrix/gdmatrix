@@ -32,7 +32,6 @@ package org.santfeliu.workflow.swing.editor;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -62,7 +61,21 @@ public class IdentificationFormParametersEditor extends JPanel
   private GridBagLayout gridBagLayout1 = new GridBagLayout();
   private JLabel prefixLabel = new JLabel();
   private JLabel messageLabel = new JLabel();
-  private JTextField varPrefixTextField = new JTextField();
+  private JTextField varPrefixTextField = new JTextField()
+  {
+    @Override
+    public Dimension getPreferredSize()
+    {
+      Dimension size = super.getPreferredSize();
+      return new Dimension(3 * size.height, size.height);
+    }
+
+    @Override
+    public Dimension getMinimumSize()
+    {
+      return getPreferredSize();
+    }    
+  };
   private JTextArea messageTextArea = new JTextArea();
   private JScrollPane scrollPane = new JScrollPane();
   private JLabel helpLabel = new JLabel();
@@ -133,9 +146,6 @@ public class IdentificationFormParametersEditor extends JPanel
     this.setLayout(gridBagLayout1);
     prefixLabel.setText("Variable prefix:");
     messageLabel.setText("Message:");
-    varPrefixTextField.setPreferredSize(new Dimension(100, 24));
-    varPrefixTextField.setMinimumSize(new Dimension(100, 24));
-    messageTextArea.setFont(new Font("Dialog", 0, 14));
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
 
@@ -143,18 +153,21 @@ public class IdentificationFormParametersEditor extends JPanel
     this.add(prefixLabel,
       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
-    this.add(messageLabel,
-      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
-        new Insets(2, 4, 2, 4), 0, 0));
     this.add(varPrefixTextField,
       new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-        new Insets(2, 4, 2, 4), 0, 0));
-    this.add(scrollPane,
-      new GridBagConstraints(1, 1, 2, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(helpLabel,
       new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(0, 0, 0, 0), 0, 0));
+
+    this.add(messageLabel,
+      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 4, 2, 4), 0, 0));
+    this.add(scrollPane,
+      new GridBagConstraints(1, 1, 2, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(2, 4, 2, 4), 0, 0));
+
+
     scrollPane.getViewport().add(messageTextArea);
     this.varPrefixTextField.setDocument(new RestrictedDocument("[a-zA-Z_][a-zA-Z0-9_]*"));
     varPrefixTextField.addKeyListener(new KeyAdapter()

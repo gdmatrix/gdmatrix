@@ -44,7 +44,7 @@ import javax.swing.text.Utilities;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class HighlightView extends PlainView
 {

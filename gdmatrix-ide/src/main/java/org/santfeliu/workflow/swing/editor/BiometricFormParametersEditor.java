@@ -1,38 +1,37 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.swing.editor;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -64,13 +63,13 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
   private JLabel pdfLabel = new JLabel();
   private JLabel sigIdLabel = new JLabel();
   private JLabel pdfDocIdLabel = new JLabel();
-  private JLabel xslLabel = new JLabel();  
+  private JLabel xslLabel = new JLabel();
   private JLabel commonFieldsLabel = new JLabel();
   private JLabel messageLabel = new JLabel();
   private JLabel deviceNameLabel = new JLabel();
   private JLabel signerNameLabel = new JLabel();
-  private JLabel signerIdentLabel = new JLabel();  
-  private JLabel signerIdentTypeLabel = new JLabel(); 
+  private JLabel signerIdentLabel = new JLabel();
+  private JLabel signerIdentTypeLabel = new JLabel();
   private JLabel apiSubscriptionLabel = new JLabel();
   private JLabel apiBaseUrlLabel = new JLabel();
   private JLabel apiUsernameLabel = new JLabel();
@@ -84,25 +83,25 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
   private JLabel signPosYLabel = new JLabel();
   private JLabel signPosPageLabel = new JLabel();
   private JLabel signPosAnchorLabel = new JLabel();
-  
+
   private JTextField sigIdTextField = new JTextField();
-  private JTextField pdfDocIdTextField = new JTextField();  
-  private JTextField xslTextField = new JTextField();  
+  private JTextField pdfDocIdTextField = new JTextField();
+  private JTextField xslTextField = new JTextField();
   private JTextArea messageTextArea = new JTextArea();
   private JTextField deviceNameTextField = new JTextField();
   private JTextField signerNameTextField = new JTextField();
-  private JTextField signerIdentTextField = new JTextField();  
-  private JTextField signerIdentTypeTextField = new JTextField(); 
-  private JTextField apiBaseUrlTextField = new JTextField();   
-  private JTextField apiUsernameTextField = new JTextField();   
-  private JTextField apiPasswordTextField = new JTextField(); 
+  private JTextField signerIdentTextField = new JTextField();
+  private JTextField signerIdentTypeTextField = new JTextField();
+  private JTextField apiBaseUrlTextField = new JTextField();
+  private JTextField apiUsernameTextField = new JTextField();
+  private JTextField apiPasswordTextField = new JTextField();
   private JTextField signSizeXTextField = new JTextField();
   private JTextField signSizeYTextField = new JTextField();
   private JTextField signPosXTextField = new JTextField();
   private JTextField signPosYTextField = new JTextField();
   private JTextField signPosPageTextField = new JTextField();
-  private JTextField signPosAnchorTextField = new JTextField();  
-  
+  private JTextField signPosAnchorTextField = new JTextField();
+
   private JScrollPane scrollPane = new JScrollPane();
 
   public BiometricFormParametersEditor()
@@ -118,7 +117,7 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
   }
 
   @Override
-  public Component getEditingComponent(NodeEditorDialog dialog, 
+  public Component getEditingComponent(NodeEditorDialog dialog,
     WorkflowNode node)
   {
     this.formNode = (FormNode)node;
@@ -128,7 +127,7 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
     if (sigId != null && sigId.toString().trim().length() > 0)
     {
       sigIdTextField.setText(sigId.toString());
-    }      
+    }
     Object xsl = parameters.get("xsl");
     if (xsl != null && xsl.toString().trim().length() > 0)
     {
@@ -138,17 +137,17 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
     if (deviceName != null && deviceName.toString().trim().length() > 0)
     {
       deviceNameTextField.setText(deviceName.toString());
-    }      
+    }
     Object signerName = parameters.get("signerName");
     if (signerName != null && signerName.toString().trim().length() > 0)
     {
       signerNameTextField.setText(signerName.toString());
-    }      
+    }
     Object signerIdent = parameters.get("signerIdent");
     if (signerIdent != null && signerIdent.toString().trim().length() > 0)
     {
       signerIdentTextField.setText(signerIdent.toString());
-    }      
+    }
     Object signerIdentType = parameters.get("signerIdentType");
     if (signerIdentType != null && signerIdentType.toString().trim().length() > 0)
     {
@@ -306,7 +305,7 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
     if (signPosAnchor != null && signPosAnchor.trim().length() > 0)
     {
       parameters.setProperty("signPosAnchor", signPosAnchor);
-    }    
+    }
     formNode.setParameters(parameters);
   }
 
@@ -353,35 +352,8 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
     signPosPageLabel.setText("Position Page:");
     signPosAnchorLabel.setText("Position Anchor:");
 
-    sigIdTextField.setPreferredSize(new Dimension(140, 24));
-    sigIdTextField.setMinimumSize(new Dimension(140, 24));
-    xslTextField.setPreferredSize(new Dimension(140, 24));
-    xslTextField.setMinimumSize(new Dimension(140, 24));
-    pdfDocIdTextField.setPreferredSize(new Dimension(140, 24));
-    pdfDocIdTextField.setMinimumSize(new Dimension(140, 24));
-    messageTextArea.setFont(new Font("Dialog", 0, 14));
     messageTextArea.setLineWrap(true);
     messageTextArea.setWrapStyleWord(true);
-    deviceNameTextField.setPreferredSize(new Dimension(140, 24));
-    deviceNameTextField.setMinimumSize(new Dimension(140, 24));
-    signerNameTextField.setPreferredSize(new Dimension(140, 24));
-    signerNameTextField.setMinimumSize(new Dimension(140, 24));
-    signerIdentTextField.setPreferredSize(new Dimension(140, 24));
-    signerIdentTextField.setMinimumSize(new Dimension(140, 24));
-    signerIdentTypeTextField.setPreferredSize(new Dimension(140, 24));
-    signerIdentTypeTextField.setMinimumSize(new Dimension(140, 24));
-    signSizeXTextField.setPreferredSize(new Dimension(140, 24));
-    signSizeXTextField.setMinimumSize(new Dimension(140, 24));
-    signSizeYTextField.setPreferredSize(new Dimension(140, 24));
-    signSizeYTextField.setMinimumSize(new Dimension(140, 24));
-    signPosXTextField.setPreferredSize(new Dimension(140, 24));
-    signPosXTextField.setMinimumSize(new Dimension(140, 24));
-    signPosYTextField.setPreferredSize(new Dimension(140, 24));
-    signPosYTextField.setMinimumSize(new Dimension(140, 24));
-    signPosPageTextField.setPreferredSize(new Dimension(140, 24));
-    signPosPageTextField.setMinimumSize(new Dimension(140, 24));
-    signPosAnchorTextField.setPreferredSize(new Dimension(140, 24));
-    signPosAnchorTextField.setMinimumSize(new Dimension(140, 24));
 
     this.add(selectModeLabel,
       new GridBagConstraints(0, 0, 4, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
@@ -398,13 +370,13 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
       new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(sigIdTextField,
-      new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+      new GridBagConstraints(1, 2, 1, 1, 0.5, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(pdfDocIdLabel,
       new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(pdfDocIdTextField,
-      new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+      new GridBagConstraints(3, 2, 1, 1, 0.5, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
 
     this.add(xslLabel,
@@ -419,7 +391,7 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
         new Insets(6, 0, 2, 4), 0, 0));
 
     this.add(messageLabel,
-      new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+      new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(scrollPane,
       new GridBagConstraints(1, 5, 3, 1, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
@@ -430,14 +402,13 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
       new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(deviceNameTextField,
-      new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+      new GridBagConstraints(1, 6, 1, 1, 0.5, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
-
     this.add(signerNameLabel,
       new GridBagConstraints(2, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
     this.add(signerNameTextField,
-      new GridBagConstraints(3, 6, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+      new GridBagConstraints(3, 6, 1, 1, 0.5, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
 
     this.add(signerIdentLabel,
@@ -446,7 +417,6 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
     this.add(signerIdentTextField,
       new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
-
     this.add(signerIdentTypeLabel,
       new GridBagConstraints(2, 7, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
@@ -464,6 +434,7 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
     this.add(apiBaseUrlTextField,
       new GridBagConstraints(1, 9, 3, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
+
     this.add(apiUsernameLabel,
       new GridBagConstraints(0, 10, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
@@ -481,14 +452,6 @@ public class BiometricFormParametersEditor extends JPanel implements NodeEditor
       new GridBagConstraints(0, 11, 4, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(4, 0, 2, 4), 0, 0));
 
-    /*    
-    this.add(signPosLabel, 
-             new GridBagConstraints(0, 12, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-    this.add(signSizeLabel, 
-             new GridBagConstraints(2, 12, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, 
-                                    new Insets(2, 4, 2, 4), 0, 0));
-     */
     this.add(signPosXLabel,
       new GridBagConstraints(0, 12, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(2, 4, 2, 4), 0, 0));
