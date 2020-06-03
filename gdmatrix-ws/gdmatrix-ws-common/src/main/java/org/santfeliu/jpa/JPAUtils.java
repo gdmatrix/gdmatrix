@@ -56,7 +56,7 @@ import org.santfeliu.util.MatrixConfig;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JPAUtils
 {
@@ -84,12 +84,17 @@ public class JPAUtils
     if (factory == null)
     {
       logger.log(Level.INFO, ">>>>>>>>>>>>>> Creating {0}", unitName);
+      Map properties = getPersistenceUnitPropertiesMap(unitName);
+      
+      //If it's first execution and persistence unit has extended properties 
+      //defined then does a previous fake call to create factory method without 
+      //map, allowing to initialize all persitence units with properties defined
+      //on persistence.xml files as default properties. 
+      if (factories.isEmpty() && !properties.isEmpty())
+        Persistence.createEntityManagerFactory(unitName);
+      
+      factory = Persistence.createEntityManagerFactory(unitName, properties);
 
-      Map properties = createPersistenceUnitPropertiesMap(unitName);
-      if (properties != null && !properties.isEmpty())
-        factory = Persistence.createEntityManagerFactory(unitName, properties);
-      else
-        factory = Persistence.createEntityManagerFactory(unitName);
       logger.log(Level.INFO, ">>>>>>>>>>>>>> factory created {0}", factory);
       factories.put(unitName, factory);
     }
@@ -264,7 +269,7 @@ public class JPAUtils
     return false;
   }
   
-  private static Map createPersistenceUnitPropertiesMap(String unitName)
+  private static Map getPersistenceUnitPropertiesMap(String unitName)
   {
     HashMap map = new HashMap();
     String nonJtaDataSource = 
