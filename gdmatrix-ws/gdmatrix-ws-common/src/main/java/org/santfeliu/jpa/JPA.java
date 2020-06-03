@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
