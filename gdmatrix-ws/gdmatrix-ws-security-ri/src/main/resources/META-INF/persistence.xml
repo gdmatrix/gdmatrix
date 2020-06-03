@@ -3,7 +3,7 @@
  <persistence-unit name="security" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <non-jta-data-source>java:comp/env/jdbc/matrix</non-jta-data-source>
-    <mapping-file>orm.xml</mapping-file>
+    <mapping-file>org/santfeliu/security/service/orm.xml</mapping-file>
     <properties>
       <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
       <property name="toplink.logging.level" value="FINE"/>

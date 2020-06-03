@@ -85,9 +85,6 @@ public class JPAUtils
     {
       logger.log(Level.INFO, ">>>>>>>>>>>>>> Creating {0}", unitName);
 
-      ClassLoader cl = Thread.currentThread().getContextClassLoader();
-      Thread.currentThread().setContextClassLoader(new JPAClassLoader(cl));
-
       Map properties = createPersistenceUnitPropertiesMap(unitName);
       if (properties != null && !properties.isEmpty())
         factory = Persistence.createEntityManagerFactory(unitName, properties);

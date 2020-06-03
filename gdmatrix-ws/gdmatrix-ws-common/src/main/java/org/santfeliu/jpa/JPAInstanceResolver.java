@@ -53,7 +53,7 @@ import org.santfeliu.ws.WSUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JPAInstanceResolver<T> 
   extends AbstractMultiInstanceResolver<T>
