@@ -63,6 +63,8 @@ import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.signature.PropertyListConverter;
 import org.santfeliu.signature.SignedDocument;
 import org.santfeliu.signature.SignedDocumentStore;
+import org.santfeliu.signature.certificate.CertificateStore;
+import org.santfeliu.signature.certificate.MatrixConfigCertificateStore;
 import org.santfeliu.signature.xmldsig.ByteArrayOutputStream;
 import org.santfeliu.util.MatrixConfig;
 
@@ -94,11 +96,7 @@ public class SignatureManager implements SignatureManagerPort
   public static final String SYSTEM_SIGN_OID = "systemSignOID";
   public static final String SYSTEM_SIGN_HASH = "systemSignHash";
 
-  public static final String KEY_STORE_PATH = "keyStorePath";
-  public static final String KEY_STORE_TYPE = "keyStoreType";
-  public static final String KEY_STORE_PASSWORD = "keyStorePassword";
-  public static final String KEY_ALIAS = "keyAlias";
-  public static final String KEY_PASSWORD = "keyPassword";
+
   
   // document properties
   public static final String SIGNED_DOCUMENT_TYPE = "type";
@@ -443,29 +441,14 @@ public class SignatureManager implements SignatureManagerPort
         document.removeSignature();
         document.getProperties().remove(SIGNING_REQUEST_TIME);
       }
-      String keyStorePath = MatrixConfig.getPathProperty(
-         "org.santfeliu.signature.certificate." + name + "." + KEY_STORE_PATH);
-      String keyStoreType = MatrixConfig.getProperty(
-         "org.santfeliu.signature.certificate." + name + "." + KEY_STORE_TYPE);
-      String keyStorePassword = MatrixConfig.getProperty(
-         "org.santfeliu.signature.certificate." + name + "." + KEY_STORE_PASSWORD);
-      String keyAlias = MatrixConfig.getProperty(
-         "org.santfeliu.signature.certificate." + name + "." + KEY_ALIAS);
-      String keyPassword = MatrixConfig.getProperty(
-         "org.santfeliu.signature.certificate." + name + "." + KEY_PASSWORD);
 
-      KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-      keyStore.load(new FileInputStream(keyStorePath),
-        keyStorePassword.toCharArray());
-
-      X509Certificate certificate =
-        (X509Certificate)keyStore.getCertificate(keyAlias);
-  
+      CertificateStore certStore = CertificateStore.getInstance(name);
+      
+      X509Certificate certificate = certStore.getCertificate();
       byte[] dataToSign = document.addSignature(certificate, 
         systemSignOID, systemSignHash);
       Signature signature = Signature.getInstance("SHA1withRSA");
-      signature.initSign(
-        (PrivateKey)keyStore.getKey(keyAlias, keyPassword.toCharArray()));
+      signature.initSign(certStore.getPrivateKey());
       signature.update(dataToSign);
       byte[] signatureData = signature.sign();
       document.setSignatureValue(signatureData);

@@ -52,7 +52,7 @@ import org.santfeliu.util.MemoryDataSource;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DocumentManagerStore implements SignedDocumentStore
 {
@@ -65,12 +65,14 @@ public class DocumentManagerStore implements SignedDocumentStore
   {
   }
 
+  @Override
   public void init(Properties properties)
   {
     this.userId = properties.getProperty("adminCredentials.userId");
     this.password = properties.getProperty("adminCredentials.password");
   }
 
+  @Override
   public String createSignedDocument(SignedDocument signedDocument)
     throws Exception
   {
@@ -110,6 +112,7 @@ public class DocumentManagerStore implements SignedDocumentStore
     return docIdToSigId(newDocument.getDocId());
   }
 
+  @Override
   public void updateSignedDocument(String sigId, SignedDocument signedDocument)
     throws Exception
   {
@@ -150,6 +153,7 @@ public class DocumentManagerStore implements SignedDocumentStore
     client.storeDocument(newDocument);  
   }
 
+  @Override
   public SignedDocument loadSignedDocument(String sigId)
     throws Exception
   {
@@ -209,6 +213,7 @@ public class DocumentManagerStore implements SignedDocumentStore
     return signedDocument;
   }
 
+  @Override
   public void closeSignedDocument(String sigId)
     throws Exception
   {
@@ -221,6 +226,7 @@ public class DocumentManagerStore implements SignedDocumentStore
     client.unlockDocument(docId, document.getVersion());
   }
 
+  @Override
   public void deleteSignedDocument(String sigId)
     throws Exception
   {

@@ -40,7 +40,7 @@ import org.santfeliu.signature.SignedDocumentStore;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class MemoryStore implements SignedDocumentStore
 {
@@ -50,10 +50,12 @@ public class MemoryStore implements SignedDocumentStore
   {
   }
 
+  @Override
   public void init(Properties properties) throws Exception
   {
   }
 
+  @Override
   public SignedDocument loadSignedDocument(String sigId)
     throws Exception
   {
@@ -63,6 +65,7 @@ public class MemoryStore implements SignedDocumentStore
     return (SignedDocument)documents.get(sigId);
   }
   
+  @Override
   public String createSignedDocument(SignedDocument document)
     throws Exception
   {
@@ -71,6 +74,7 @@ public class MemoryStore implements SignedDocumentStore
     return sigId;
   }
 
+  @Override
   public void updateSignedDocument(String sigId, SignedDocument document)
     throws Exception
   {
@@ -80,12 +84,14 @@ public class MemoryStore implements SignedDocumentStore
     documents.put(sigId, document);
   }
 
+  @Override
   public void deleteSignedDocument(String sigId)
     throws Exception
   {
     documents.remove(sigId);
   }
   
+  @Override
   public void closeSignedDocument(String sigId)
   {
   }

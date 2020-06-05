@@ -380,6 +380,17 @@
     <param-name>org.santfeliu.signature.service.SignatureManager.validateCertificate</param-name>
     <param-value>true</param-value>
   </context-param>
+  <!-- DocumentManagerCertificateStore configuration 
+  <context-param>
+    <param-name>org.santfeliu.signature.certificate.storeClass</param-name>
+    <param-value>org.santfeliu.signature.certificate.DocumentManagerCertificateStore</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.santfeliu.signature.certificate.DocumentManagerCertificateStore.docTypeId</param-name>
+    <param-value>sf:CertificatDigital</param-value>
+  </context-param>
+  -->
+  <!-- MatrixConfigCertificateStore configuration -->
   <context-param>
     <param-name>org.santfeliu.signature.certificate.tramitacio.keyStorePath</param-name>
     <param-value>certificates/tramitacio.p12</param-value>
@@ -460,6 +471,7 @@
     <param-name>org.santfeliu.signature.certificate.padro.keyPassword</param-name>
     <param-value>tomcat</param-value>
   </context-param>
+  <!-- END MatrixConfigCertificateStore configuration -->  
   <context-param>
     <param-name>mobileId.keyStore.filename</param-name>
     <param-value>mobileid-int.p12</param-value>
