@@ -85,6 +85,7 @@ public class ButtonView extends ComponentView
     this.tabindex = tabindex;
   }
 
+  @Override
   public void paintView(Graphics g)
   {
     button.setForeground(getForeground() == null ?

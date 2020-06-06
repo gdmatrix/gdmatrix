@@ -583,7 +583,7 @@ public class FormPanel extends DocumentPanel
         } while (view != null);
         setModified(true);
         getMainPanel().updateEditObject();
-        designer.repaint();
+        designer.formChanged();
       }
     }
   }
@@ -607,7 +607,7 @@ public class FormPanel extends DocumentPanel
         } while (view != null);
         setModified(true);
         getMainPanel().updateEditObject();
-        designer.repaint();
+        designer.formChanged();
       }
     }
   }
@@ -646,30 +646,27 @@ public class FormPanel extends DocumentPanel
   {
     if (AccessibilityUtils.repairOutputOrder(designer.getComponentViews()))
     {
-      designer.fireAccessibilityChangeEvent();
+      designer.formChanged();
       setModified(true);
     }
-    designer.repaint();
   }
   
   private void repairTabIndexesButton_actionPerformed(ActionEvent e)
   {        
     if (AccessibilityUtils.repairTabIndexes(designer.getComponentViews()))
     {
-      designer.fireAccessibilityChangeEvent();
+      designer.formChanged();
       setModified(true);
     }
-    designer.repaint();
   }
 
   private void repairLabelsButton_actionPerformed(ActionEvent e)
   {
     if (AccessibilityUtils.repairLabels(designer.getComponentViews()))
     {
-      designer.fireAccessibilityChangeEvent();
+      designer.formChanged();
       setModified(true);
     }
-    designer.repaint();
   }
   
   private void showIdsCheckBox_actionPerformed(ActionEvent e)

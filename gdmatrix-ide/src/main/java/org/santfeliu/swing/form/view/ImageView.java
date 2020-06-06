@@ -32,11 +32,11 @@ package org.santfeliu.swing.form.view;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.net.URL;
-import javax.swing.JLabel;
+import javax.imageio.ImageIO;
 import org.santfeliu.swing.form.ComponentView;
 
 /**
@@ -47,7 +47,10 @@ public class ImageView extends ComponentView
 {
   private String url;
   private String alt = "";
-
+  private BufferedImage image;
+  private boolean loaded;
+  private static final Color BACKGROUND = new Color(230, 230, 230);
+  
   public ImageView()
   {
     setWidth(128);
@@ -57,31 +60,48 @@ public class ImageView extends ComponentView
   @Override
   public void paintView(Graphics g)
   {
-    Image image = null;
     int x = parseWidth(getBorderLeftWidth());
     int y = parseWidth(getBorderTopWidth());
     int width = getWidth() - parseWidth(getBorderLeftWidth()) - 
       parseWidth(getBorderRightWidth()) + 1;
     int height = getHeight() - parseWidth(getBorderTopWidth()) - 
       parseWidth(getBorderBottomWidth()) + 1;
-    try
+
+    if (image == null && url != null && !loaded)
     {
-      image = Toolkit.getDefaultToolkit().getImage(new URL(url));
-      MediaTracker tracker = new MediaTracker(new JLabel());
-      tracker.addImage(image, 0);
-      tracker.waitForAll();
-      g.drawImage(image, x, y, width, height, this);
+      try
+      {
+        image = ImageIO.read(new URL(url));
+      }
+      catch (Exception ex)
+      {
+        // ignore
+      }
+      finally
+      {
+        loaded = true;
+      }
     }
-    catch (Throwable ex)
+    
+    if (image == null)
     {
-      g.setColor(Color.lightGray);
-      g.fillRect(x, y, width, height);
+      g.setColor(BACKGROUND);
+      g.fillRect(x, y, width, height);      
+    }
+    else
+    {
+      Graphics2D g2d = (Graphics2D)g;
+      g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
+        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+      g2d.drawImage(image, x, y, width, height, this);      
     }
   }
 
   public void setUrl(String url)
   {
     this.url = url;
+    loaded = false;
+    image = null;
   }
 
   public String getUrl()
@@ -105,6 +125,8 @@ public class ImageView extends ComponentView
     ImageView clone = (ImageView)super.clone();
     clone.url = url;
     clone.alt = alt;
+    clone.image = image;
+    clone.loaded = loaded;
     return clone;
   }
 }

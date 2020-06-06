@@ -104,7 +104,7 @@ public class SelectBoxView extends ComponentView
     int bbw = 1;
 
     int x = rect.width - brw - BAR_WIDTH;
-    int y = rect.y + btw;
+    int y;
     int width = BAR_WIDTH;
     int height = rect.height - btw - bbw;
 

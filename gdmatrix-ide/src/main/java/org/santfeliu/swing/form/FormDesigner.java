@@ -65,23 +65,21 @@ import org.santfeliu.swing.form.event.FormSelectionListener;
  */
 public class FormDesigner extends JPanel
 {
-  private ArrayList<ComponentView> components =
+  private ArrayList<ComponentView> components = new ArrayList<>();
+  private ArrayList<ComponentView> componentsBackup = new ArrayList<>();
+  private HashSet<ComponentView> selection = new HashSet<>();
+  private static final ArrayList<ComponentView> copy = 
     new ArrayList<ComponentView>();
-  private ArrayList<ComponentView> componentsBackup =
-    new ArrayList<ComponentView>();
-  private HashSet<ComponentView> selection = new HashSet<ComponentView>();
-  private static ArrayList<ComponentView> copy = new ArrayList<ComponentView>();
   private ArrayList<FormSelectionListener> selectionListeners =
-    new ArrayList<FormSelectionListener>();
-  private ArrayList<FormChangeListener> changeListeners =
-    new ArrayList<FormChangeListener>();
+    new ArrayList<>();
+  private ArrayList<FormChangeListener> changeListeners = new ArrayList<>();
   private UndoableEditListener undoableEditListener;
 
   private boolean dragging = false;
   private Drag drag;
+  private Point dragPoint = new Point();
   private Point windowStart = null;
   private Rectangle selectionWindow = null;
-  private ArrayList rubberbands = new ArrayList();
   private int gridSize = 8;
   private boolean snapToGrid = true;
   private Color gridColor = new Color(240, 240, 240);
@@ -194,7 +192,7 @@ public class FormDesigner extends JPanel
     g.setColor(getBackground());
     g.fillRect(0, 0, getWidth(), getHeight());
     paintGrid(g);
-    g.setColor(Color.black);
+    g.setColor(Color.BLACK);
     for (ComponentView view : components)
     {
       view.paint(g, showAccessibility, showIds, showTabIndexes,
@@ -203,6 +201,12 @@ public class FormDesigner extends JPanel
     for (ComponentView view : selection)
     {
       view.paintSelection(g);
+    }
+    if (selectionWindow != null)
+    {
+      g.setColor(Color.RED);
+      g.drawRect(selectionWindow.x, selectionWindow.y, 
+        selectionWindow.width, selectionWindow.height);
     }
   }
 
@@ -303,10 +307,16 @@ public class FormDesigner extends JPanel
     fireFormChangeEvent(new ChangeEvent(this));
     repaint();
   }
+  
+  public void formChanged()
+  {
+    fireFormChangeEvent(new ChangeEvent(this));
+    repaint();    
+  }
 
   public void toFront()
   {
-    ArrayList<ComponentView> v = new ArrayList<ComponentView>();
+    ArrayList<ComponentView> v = new ArrayList<>();
     Iterator<ComponentView> iter = components.iterator();
     while (iter.hasNext())
     {
@@ -327,7 +337,7 @@ public class FormDesigner extends JPanel
 
   public void toBottom()
   {
-    ArrayList<ComponentView> v = new ArrayList<ComponentView>();
+    ArrayList<ComponentView> v = new ArrayList<>();
     Iterator<ComponentView> iter = components.iterator();
     while (iter.hasNext())
     {
@@ -350,6 +360,7 @@ public class FormDesigner extends JPanel
   {
     Collections.sort(components, new Comparator<ComponentView>()
     {
+      @Override
       public int compare(ComponentView o1, ComponentView o2)
       {
         if (o1.getY() != o2.getY()) return o1.getY() - o2.getY();
@@ -495,12 +506,7 @@ public class FormDesigner extends JPanel
     else result = point;
     return result;
   }
-
-  public void fireAccessibilityChangeEvent()
-  {
-    fireFormChangeEvent(new ChangeEvent(this));
-  }
-
+  
   protected void fireSelectionChangeEvent(ChangeEvent event)
   {
     Iterator iter = selectionListeners.iterator();
@@ -529,7 +535,7 @@ public class FormDesigner extends JPanel
   private void initComponents() throws Exception
   {
     this.setSize(new Dimension(397, 314));
-    this.setBackground(Color.white);
+    this.setBackground(Color.WHITE);
     this.setOpaque(true);
     addMouseListener(new MouseAdapter()
     {
@@ -563,7 +569,7 @@ public class FormDesigner extends JPanel
               {
                 fireFormChangeEvent(new ChangeEvent(this));
               }
-              FormDesigner.this.repaint();
+              repaint();
             }
           }
         }
@@ -594,27 +600,9 @@ public class FormDesigner extends JPanel
         }
         else // dragging
         {
-          Point endPoint = roundPoint(point);
-          Point dragPoint =
-            (drag.getPosition() == ComponentView.INTERNAL) ?
-             roundPoint(drag.getDragPoint()) : drag.getDragPoint();
-          int deltax = endPoint.x - dragPoint.x;
-          int deltay = endPoint.y - dragPoint.y;
-          Iterator iter = components.iterator();
-          while (iter.hasNext())
-          {
-            ComponentView view = (ComponentView)iter.next();
-            if (selection.contains(view))
-            {
-              Rectangle rect =
-                view.getResizedBounds(drag.getPosition(), deltax, deltay);
-              view.setBounds(rect);
-              fireFormChangeEvent(new ChangeEvent(this));
-            }
-          }
+          fireFormChangeEvent(new ChangeEvent(this));
           dragging = false;
           drag = null;
-          rubberbands.clear();
         }
         revalidate();
         repaint();
@@ -686,46 +674,28 @@ public class FormDesigner extends JPanel
               windowStart = event.getPoint();
               selectionWindow =
                 new Rectangle(windowStart.x, windowStart.y, 1, 1);
-              paintWindow();
               setCursor(Cursor.getDefaultCursor());
             }
             else
             {
-              paintWindow();
               Point windowEnd = event.getPoint();
               selectionWindow.x = Math.min(windowStart.x, windowEnd.x);
               selectionWindow.y = Math.min(windowStart.y, windowEnd.y);
               selectionWindow.width = Math.abs(windowStart.x - windowEnd.x);
               selectionWindow.height = Math.abs(windowStart.y - windowEnd.y);
-              paintWindow();
             }
+            repaint();
           }
           else // cursor over drag point
           {
-            // start dragging
-            rubberbands.clear();
-            Iterator iter = components.iterator();
-            while (iter.hasNext())
-            {
-              ComponentView view = (ComponentView)iter.next();
-              if (selection.contains(view))
-              {
-                Rectangle rubberband = view.getBounds();
-                rubberbands.add(rubberband);
-              }
-            }
-            paintRubberbands();
             dragging = true;
+            dragPoint.setLocation(drag.getPosition() == ComponentView.INTERNAL ?
+              roundPoint(drag.getDragPoint()) : drag.getDragPoint());
           }
         }
         else
         {
-          paintRubberbands(); // remove previous
-          rubberbands.clear();
           Point endPoint = roundPoint(event.getPoint());
-          Point dragPoint =
-            (drag.getPosition() == ComponentView.INTERNAL) ?
-             roundPoint(drag.getDragPoint()) : drag.getDragPoint();
           int deltax = endPoint.x - dragPoint.x;
           int deltay = endPoint.y - dragPoint.y;
           Iterator iter = components.iterator();
@@ -734,12 +704,13 @@ public class FormDesigner extends JPanel
             ComponentView view = (ComponentView)iter.next();
             if (selection.contains(view))
             {
-              Rectangle rubberband =
+              Rectangle bounds =
                 view.getResizedBounds(drag.getPosition(), deltax, deltay);
-              rubberbands.add(rubberband);
+              view.setBounds(bounds);
             }
           }
-          paintRubberbands(); // paint next
+          dragPoint.setLocation(endPoint);
+          repaint();
         }
       }
     });
@@ -776,32 +747,6 @@ public class FormDesigner extends JPanel
       i--;
     }
     return view;
-  }
-
-  private void paintRubberbands()
-  {
-    Graphics g = getGraphics();
-    for (int i = 0; i < rubberbands.size(); i++)
-    {
-      Rectangle rubberband = (Rectangle)rubberbands.get(i);
-      g.setXORMode(Color.cyan);
-      g.drawRect(rubberband.x - 1, rubberband.y - 1,
-        rubberband.width + 2, rubberband.height + 2);
-      g.drawRect(rubberband.x, rubberband.y,
-        rubberband.width, rubberband.height);
-      g.drawRect(rubberband.x + 1, rubberband.y + 1,
-        rubberband.width - 2, rubberband.height - 2);
-    }
-    g.dispose();
-  }
-
-  private void paintWindow()
-  {
-    Graphics g = getGraphics();
-    g.setXORMode(Color.cyan);
-    g.drawRect(selectionWindow.x, selectionWindow.y,
-      selectionWindow.width, selectionWindow.height);
-    g.dispose();
   }
 
   private void paintGrid(Graphics g)

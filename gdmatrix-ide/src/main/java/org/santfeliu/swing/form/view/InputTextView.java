@@ -32,7 +32,6 @@ package org.santfeliu.swing.form.view;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
 import org.santfeliu.swing.form.ComponentView;
 
 /**

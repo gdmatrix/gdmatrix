@@ -34,9 +34,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
-
 import javax.swing.JEditorPane;
-
 import org.santfeliu.swing.form.ComponentView;
 
 /**

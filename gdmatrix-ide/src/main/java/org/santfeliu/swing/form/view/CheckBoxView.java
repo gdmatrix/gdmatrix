@@ -31,9 +31,7 @@
 package org.santfeliu.swing.form.view;
 
 import java.awt.Graphics;
-
 import javax.swing.ImageIcon;
-
 import org.santfeliu.swing.form.ComponentView;
 
 /**

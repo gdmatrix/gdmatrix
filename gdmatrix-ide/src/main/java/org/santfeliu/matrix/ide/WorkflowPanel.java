@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -133,7 +133,7 @@ public class WorkflowPanel extends DocumentPanel
       public void graphChanged(org.jgraph.event.GraphModelEvent event)
       {
         setModified(true);
-      }    
+      }
     });
   }
 
@@ -141,7 +141,7 @@ public class WorkflowPanel extends DocumentPanel
   {
     return workflowModel.getWorkflow();
   }
-    
+
   public JGraph getGraph()
   {
     return graph;
@@ -191,7 +191,7 @@ public class WorkflowPanel extends DocumentPanel
   {
     WorkflowReader reader = new WorkflowReader();
     Workflow workflow = reader.read(os);
-    
+
     setDisplayName(workflow.getName());
     setDescription(workflow.getDescription());
     setWorkflow(workflow);
@@ -227,7 +227,7 @@ public class WorkflowPanel extends DocumentPanel
       }
     }
   }
-  
+
   @Override
   public void save(OutputStream os) throws Exception
   {
@@ -294,7 +294,7 @@ public class WorkflowPanel extends DocumentPanel
       HashSet cellsToRemove = new HashSet();
       Object[] cells = graph.getSelectionCells();
       cells = graph.getDescendants(cells);
-      
+
       for (int i = 0; i < cells.length; i++)
       {
         cellsToRemove.add(cells[i]);
@@ -339,7 +339,7 @@ public class WorkflowPanel extends DocumentPanel
           textToFind = text;
           findIndex = -1;
         }
-        int oldFindIndex = findIndex;                
+        int oldFindIndex = findIndex;
         List roots = model.getRoots();
         Object root = null;
         findIndex++;
@@ -359,7 +359,7 @@ public class WorkflowPanel extends DocumentPanel
         return found;
       }
 
-      @Override      
+      @Override
       protected boolean previous(String text)
       {
         boolean found = false;
@@ -369,7 +369,7 @@ public class WorkflowPanel extends DocumentPanel
           textToFind = text;
           findIndex = model.getRoots().size() - 1;
         }
-        int oldFindIndex = findIndex;        
+        int oldFindIndex = findIndex;
         List roots = model.getRoots();
         Object root = null;
         findIndex--;
@@ -414,7 +414,7 @@ public class WorkflowPanel extends DocumentPanel
   {
     graph.setScale(size / 100.0);
   }
-  
+
   @Override
   public double getZoom()
   {
@@ -554,7 +554,7 @@ public class WorkflowPanel extends DocumentPanel
         Workflow workflow = workflowModel.getWorkflow();
         int nodeWidth = workflow.getNodeWidth();
         int nodeHeight = workflow.getNodeHeight();
-        GraphConstants.setBounds(map, 
+        GraphConstants.setBounds(map,
           getNodeBounds(point, nodeWidth, nodeHeight));
         GraphConstants.setResize(map, false);
         GraphConstants.setEditable(map, false);
@@ -601,11 +601,13 @@ public class WorkflowPanel extends DocumentPanel
     graph.setGridColor(new Color(240, 240, 240));
     graph.setBackground(Color.WHITE);
     graph.setAntiAliased(true);
-    graph.setDoubleBuffered(false);
+    graph.setMarqueeColor(Color.RED);
+    graph.setDoubleBuffered(true);
     graph.getGraphLayoutCache().setFactory(new WorkflowCellViewFactory());
     graph.setMarqueeHandler(new WorkflowMarqueeHandler(this));
     graph.addGraphSelectionListener(new GraphSelectionListener()
     {
+      @Override
       public void valueChanged(GraphSelectionEvent e)
       {
         JGraph graph = (JGraph)e.getSource();

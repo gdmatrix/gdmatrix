@@ -30,15 +30,23 @@
  */
 package org.santfeliu.swing.form;
 
+import org.santfeliu.swing.form.editor.ButtonEditor;
+import org.santfeliu.swing.form.editor.CheckBoxEditor;
+import org.santfeliu.swing.form.editor.ImageEditor;
 import org.santfeliu.swing.form.editor.InputTextEditor;
 import org.santfeliu.swing.form.editor.LabelEditor;
 import org.santfeliu.swing.form.editor.OutputTextAreaEditor;
 import org.santfeliu.swing.form.editor.OutputTextEditor;
+import org.santfeliu.swing.form.editor.RadioButtonEditor;
 import org.santfeliu.swing.form.editor.SelectBoxEditor;
+import org.santfeliu.swing.form.view.ButtonView;
+import org.santfeliu.swing.form.view.CheckBoxView;
+import org.santfeliu.swing.form.view.ImageView;
 import org.santfeliu.swing.form.view.InputTextView;
 import org.santfeliu.swing.form.view.LabelView;
 import org.santfeliu.swing.form.view.OutputTextAreaView;
 import org.santfeliu.swing.form.view.OutputTextView;
+import org.santfeliu.swing.form.view.RadioButtonView;
 import org.santfeliu.swing.form.view.SelectBoxView;
 
 /**
@@ -69,6 +77,22 @@ public class ComponentEditorFactory
     else if (view instanceof SelectBoxView)
     {
       editor = new SelectBoxEditor();
+    }
+    else if (view instanceof ImageView)
+    {
+      editor = new ImageEditor();
+    }
+    else if (view instanceof CheckBoxView)
+    {
+      editor = new CheckBoxEditor();
+    }
+    else if (view instanceof RadioButtonView)
+    {
+      editor = new RadioButtonEditor();
+    }
+    else if (view instanceof ButtonView)
+    {
+      editor = new ButtonEditor();
     }
     return editor;
   }

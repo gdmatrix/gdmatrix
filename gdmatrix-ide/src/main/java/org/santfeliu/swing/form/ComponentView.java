@@ -73,7 +73,7 @@ public class ComponentView implements ImageObserver, Cloneable
   private int y;
   private int width;
   private int height;
-  private Point points[] = new Point[8];
+  private final Point points[] = new Point[8];
 
   private String textAlign = LEFT_TEXT_ALIGN;
   private String fontFamily;
@@ -698,6 +698,7 @@ public class ComponentView implements ImageObserver, Cloneable
            Math.abs(p1.y - p2.y) < 3;
   }
 
+  @Override
   public boolean imageUpdate(Image img, int infoflags,
                              int x, int y, int width, int height)
   {

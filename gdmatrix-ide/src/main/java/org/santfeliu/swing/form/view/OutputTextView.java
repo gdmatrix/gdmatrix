@@ -33,14 +33,9 @@ package org.santfeliu.swing.form.view;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-
 import java.awt.Graphics2D;
-
 import java.awt.RenderingHints;
-
-
 import javax.swing.JLabel;
-
 import org.santfeliu.swing.form.ComponentView;
 
 
@@ -59,6 +54,7 @@ public class OutputTextView extends ComponentView
     setHeight(24);
   }
 
+  @Override
   public void paintView(Graphics g)
   {
     Graphics2D g2 = (Graphics2D)g;

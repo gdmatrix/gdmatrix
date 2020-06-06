@@ -55,6 +55,7 @@ public class RadioButtonView extends ComponentView
     setHeight(24);
   }
 
+  @Override
   public void paintView(Graphics g)
   {
     int x = parseWidth(getBorderLeftWidth());
@@ -63,13 +64,13 @@ public class RadioButtonView extends ComponentView
       parseWidth(getBorderRightWidth());
     int height = getHeight() - parseWidth(getBorderTopWidth()) - 
       parseWidth(getBorderBottomWidth());
-    Graphics2D g2 = (Graphics2D)g;
-    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+    Graphics2D g2d = (Graphics2D)g;
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
       RenderingHints.VALUE_ANTIALIAS_ON);
     
-    g.setColor(Color.white);
+    g.setColor(Color.WHITE);
     g.fillOval(x, y, width, height);
-    g.setColor(Color.black);
+    g.setColor(Color.BLACK);
     g.drawOval(x, y, width, height);
     if (checked)
     {
@@ -79,6 +80,8 @@ public class RadioButtonView extends ComponentView
         1 + width / 3, 
         1 + height / 3);
     }
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+      RenderingHints.VALUE_ANTIALIAS_OFF);
   }
   
   public void setVariable(String variable)
