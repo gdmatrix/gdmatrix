@@ -146,8 +146,9 @@ public class ConnectionDialog extends JDialog
     this.getContentPane().setLayout(borderLayout1);
     this.setTitle("Connections");
     this.setModal(true);
+    northPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     centerPanel.setLayout(gridBagLayout);
-    centerPanel.setBorder(BorderFactory.createTitledBorder(""));
+    centerPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     acceptButton.setText("Accept");
     acceptButton.addActionListener(new ActionListener()
     {
@@ -207,6 +208,9 @@ public class ConnectionDialog extends JDialog
     usernameTextField.setMinimumSize(dim);
     passwordTextField.setPreferredSize(dim);
     passwordTextField.setMinimumSize(dim);
+    dim = urlTextField.getPreferredSize();
+    dim.width = 12 * dim.height;
+    urlTextField.setPreferredSize(dim);
 
     centerPanel.add(nameLabel,
       new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
@@ -331,6 +335,7 @@ public class ConnectionDialog extends JDialog
       passwordTextField.setEditable(true);
       nameTextField.setText(parameters.getName());
       urlTextField.setText(parameters.getURL());
+      urlTextField.setCaretPosition(0);
       usernameTextField.setText(parameters.getUsername());
       passwordTextField.setText(parameters.getPassword());
     }

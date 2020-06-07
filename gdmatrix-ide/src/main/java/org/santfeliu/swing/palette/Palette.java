@@ -99,6 +99,7 @@ public class Palette extends JPanel
     categoriesMap.put(EMPTY, emptyPane);
   }
 
+  @Override
   public void actionPerformed(ActionEvent e)
   {
     ElementLabel elementLabel = (ElementLabel)e.getSource();

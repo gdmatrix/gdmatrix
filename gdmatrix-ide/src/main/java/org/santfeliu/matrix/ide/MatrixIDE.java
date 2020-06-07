@@ -31,14 +31,15 @@
 package org.santfeliu.matrix.ide;
 
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,7 +89,7 @@ public class MatrixIDE extends JFrame
         Options.load(new FileInputStream(optionsFile));
       }
     }
-    catch (Exception ex)
+    catch (IOException ex)
     {
       log(ex);
     }
@@ -149,7 +150,6 @@ public class MatrixIDE extends JFrame
   private void initComponents() throws Exception
   {
     setTitle("Matrix IDE");
-    setSize(new Dimension(760, 600));
 
     setIconImages(loadIcons(
       "icon_blue_16.png", "icon_blue_32.png", "icon_blue_64.png",
@@ -189,25 +189,19 @@ public class MatrixIDE extends JFrame
         mainPanel.setDividersLocation(dividers);
         return;
       }
-      catch (Exception ex)
+      catch (NumberFormatException ex)
       {
         MatrixIDE.log(ex);
       }
     }
 
-    // center screen
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    Dimension frameSize = getSize();
-    if (frameSize.height > screenSize.height)
-    {
-      frameSize.height = screenSize.height;
-    }
-    if (frameSize.width > screenSize.width)
-    {
-      frameSize.width = screenSize.width;
-    }
-    setLocation((screenSize.width - frameSize.width) / 2,
-                (screenSize.height - frameSize.height) / 2);
+    // first time, full size window
+    Rectangle maxSize = GraphicsEnvironment.getLocalGraphicsEnvironment().
+      getMaximumWindowBounds();
+    Dimension size = new Dimension(maxSize.width, maxSize.height);
+    setSize(size);
+    mainPanel.adjustDividersLocation(size);
+    setLocationRelativeTo(null);
   }
 
   private List<Image> loadIcons(String... names)
@@ -239,14 +233,16 @@ public class MatrixIDE extends JFrame
     {
       // save window location
       Rectangle rect = getBounds();
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      Rectangle maxSize = GraphicsEnvironment.getLocalGraphicsEnvironment().
+        getMaximumWindowBounds();
+      Dimension size = new Dimension(maxSize.width, maxSize.height);
 
       Options.set("x", String.valueOf(Math.max(rect.x, 0)));
       Options.set("y", String.valueOf(Math.max(rect.y, 0)));
       Options.set("width",
-        String.valueOf(Math.min(rect.width, screenSize.width)));
+        String.valueOf(Math.min(rect.width, size.width)));
       Options.set("height",
-        String.valueOf(Math.min(rect.height, screenSize.height)));
+        String.valueOf(Math.min(rect.height, size.height)));
 
       // save window state
       Options.set("dividers", mainPanel.getDividersLocation());

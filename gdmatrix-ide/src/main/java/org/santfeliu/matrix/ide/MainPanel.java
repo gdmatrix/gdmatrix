@@ -84,6 +84,7 @@ import org.santfeliu.swing.layout.WrapLayout;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel;
+import java.awt.Dimension;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
@@ -157,10 +158,17 @@ public class MainPanel extends JPanel
         rightSplitPane.setDividerLocation(d2);
       }
     }
-    catch (Exception ex)
+    catch (NumberFormatException ex)
     {
       MatrixIDE.log(ex);
     }
+  }
+
+  public void adjustDividersLocation(Dimension size)
+  {
+    int rightWidth = 5 * palette.getPreferredSize().width / 3;
+    splitPane.setDividerLocation(size.width - rightWidth);
+    rightSplitPane.setDividerLocation(size.height / 2);
   }
 
   public void setEditObject(Object object)
