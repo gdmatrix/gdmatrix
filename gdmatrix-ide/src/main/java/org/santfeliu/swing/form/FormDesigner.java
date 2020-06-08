@@ -250,7 +250,7 @@ public class FormDesigner extends JPanel
     return gridColor;
   }
 
-  public Collection getComponentViews()
+  public Collection<ComponentView> getComponentViews()
   {
     return components;
   }

@@ -37,6 +37,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import javax.imageio.ImageIO;
+import org.apache.commons.codec.binary.StringUtils;
 import org.santfeliu.swing.form.ComponentView;
 
 /**
@@ -99,9 +100,12 @@ public class ImageView extends ComponentView
 
   public void setUrl(String url)
   {
-    this.url = url;
-    loaded = false;
-    image = null;
+    if (!StringUtils.equals(this.url, url))
+    {
+      this.url = url;
+      loaded = false;
+      image = null;
+    }
   }
 
   public String getUrl()

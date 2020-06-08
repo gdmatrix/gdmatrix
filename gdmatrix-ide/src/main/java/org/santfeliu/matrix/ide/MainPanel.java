@@ -767,6 +767,7 @@ public class MainPanel extends JPanel
 
     PropertyChangeListener listener = new PropertyChangeListener()
     {
+      @Override
       public void propertyChange(PropertyChangeEvent evt)
       {
         DocumentPanel panel = getActivePanel();

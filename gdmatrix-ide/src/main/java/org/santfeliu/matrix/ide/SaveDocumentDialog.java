@@ -423,34 +423,38 @@ public class SaveDocumentDialog extends javax.swing.JDialog
         property.getValue().add(name);
       }
       filter.getProperty().add(property);
-      // count documents with that name
-      int count = client.countDocuments(filter);
+      // find documents with that name
+      List<Document> docList = client.findDocuments(filter);
+      int count = docList.size();
 
       Document document = new Document();
-      boolean save = true;
 
       if (count == 1) // document already exists with that name
       {
-        List<Document> docList = client.findDocuments(filter);
-        document.setDocId(docList.get(0).getDocId());
-
         if (panel.getDocId() == null || !panel.getDisplayName().equals(name))
         {
           // new name but that name already exists
           int option = JOptionPane.showConfirmDialog(this,
             "A document with that name already exists. Save anyway?", "Warning",
             JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-          save = option == JOptionPane.YES_OPTION;
-          document.setVersion(-1); // new version
+          if (option == JOptionPane.NO_OPTION)
+          {
+            panel.setName(oldName);
+            panel.setDescription(oldDescription);            
+            return;
+          }
         }
-        else if (newVersionCheckBox.isSelected())
+        Document prevDocument = docList.get(0);
+        document.setDocId(prevDocument.getDocId());
+
+        if (newVersionCheckBox.isSelected())
         {
           document.setVersion(-1); // same name, new version
         }
         else
         {
           // same name & version
-          document.setVersion(docList.get(0).getVersion());
+         document.setVersion(prevDocument.getVersion());
         }
       }
       else if (count > 1)
@@ -458,88 +462,85 @@ public class SaveDocumentDialog extends javax.swing.JDialog
         throw new Exception("Several documents with that name already exist.");
       }
 
-      if (save)
+      panel.setDisplayName(name);
+      panel.setDescription(description);
+
+      // fill Document object
+      document.setTitle(name + ": " + description);
+      document.setDocTypeId(docTypeId);
+      document.setLanguage(language);
+      document.setState(State.COMPLETE);
+
+      // add propertyName to document
+      property = new Property();
+      property.setName(propertyName);
+      property.getValue().add(name);
+      document.getProperty().add(property);
+
+      // read metadata from textArea
+      Map<String, Object> metadata = new HashMap<>();
+      MapEditor mapEditor = new MapEditor(metadata);
+      mapEditor.parse(metadataTextArea.getText());
+      // remove doc propertyName from metadata
+      metadata.remove(propertyName);
+
+      // add fixed properties
+      if (fixedProperties != null)
       {
-        panel.setDisplayName(name);
-        panel.setDescription(description);
+        // remove fixed properties from metadata
+        metadata.keySet().removeAll(fixedProperties.keySet());
 
-        // fill Document object
-        document.setTitle(name + ": " + description);
-        document.setDocTypeId(docTypeId);
-        document.setLanguage(language);
-        document.setState(State.COMPLETE);
-
-        // add propertyName to document
-        property = new Property();
-        property.setName(propertyName);
-        property.getValue().add(name);
-        document.getProperty().add(property);
-
-        // read metadata from textArea
-        Map<String, Object> metadata = new HashMap<>();
-        MapEditor mapEditor = new MapEditor(metadata);
-        mapEditor.parse(metadataTextArea.getText());
-        // remove doc propertyName from metadata
-        metadata.remove(propertyName);
-
-        // add fixed properties
-        if (fixedProperties != null)
-        {
-          // remove fixed properties from metadata
-          metadata.keySet().removeAll(fixedProperties.keySet());
-
-          // add fixed properties to document
-          List<Property> props =
-            DictionaryUtils.getPropertiesFromMap(fixedProperties);
-          document.getProperty().addAll(props);
-        }
-
-        // add metatada properties to document
+        // add fixed properties to document
         List<Property> props =
-          DictionaryUtils.getPropertiesFromMap(metadata);
-        if (props != null)
-        {
-          document.getProperty().addAll(props);
-        }
-
-        // add read & update roles to document
-        Collection<String> readRoles = TextUtils.splitWords(readRolesString);
-        Collection<String> updateRoles = TextUtils.splitWords(updateRolesString);
-        for (String readRole : readRoles)
-        {
-          AccessControl ac = new AccessControl();
-          ac.setRoleId(readRole);
-          ac.setAction(DictionaryConstants.READ_ACTION);
-          document.getAccessControl().add(ac);
-        }
-        for (String updateRole : updateRoles)
-        {
-          AccessControl ac = new AccessControl();
-          ac.setRoleId(updateRole);
-          ac.setAction(DictionaryConstants.WRITE_ACTION);
-          document.getAccessControl().add(ac);
-        }
-
-        // save document source into DataHandler
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        panel.save(bos);
-        panel.setConnectionUrl(mainPanel.getConnectionPanel().
-          getSelectedConnection().getURL());
-        MemoryDataSource dataSource = new MemoryDataSource(
-          bos.toByteArray(), "data", documentType.getMimeType());
-        DataHandler dh = new DataHandler(dataSource);
-        Content content = new Content();
-        content.setData(dh);
-        content.setContentType(dh.getContentType());
-        document.setContent(content);
-
-        document = client.storeDocument(document);
-
-        panel.setDocId(document.getDocId());
-        panel.setVersion(document.getVersion());
-        panel.setModified(false);
-        mainPanel.updateActions();
+          DictionaryUtils.getPropertiesFromMap(fixedProperties);
+        document.getProperty().addAll(props);
       }
+
+      // add metatada properties to document
+      List<Property> props =
+        DictionaryUtils.getPropertiesFromMap(metadata);
+      if (props != null)
+      {
+        document.getProperty().addAll(props);
+      }
+
+      // add read & update roles to document
+      Collection<String> readRoles = TextUtils.splitWords(readRolesString);
+      Collection<String> updateRoles = TextUtils.splitWords(updateRolesString);
+      for (String readRole : readRoles)
+      {
+        AccessControl ac = new AccessControl();
+        ac.setRoleId(readRole);
+        ac.setAction(DictionaryConstants.READ_ACTION);
+        document.getAccessControl().add(ac);
+      }
+      for (String updateRole : updateRoles)
+      {
+        AccessControl ac = new AccessControl();
+        ac.setRoleId(updateRole);
+        ac.setAction(DictionaryConstants.WRITE_ACTION);
+        document.getAccessControl().add(ac);
+      }
+
+      // save document source into DataHandler
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      panel.save(bos);
+      panel.setConnectionUrl(mainPanel.getConnectionPanel().
+        getSelectedConnection().getURL());
+      MemoryDataSource dataSource = new MemoryDataSource(
+        bos.toByteArray(), "data", documentType.getMimeType());
+      DataHandler dh = new DataHandler(dataSource);
+      Content content = new Content();
+      content.setData(dh);
+      content.setContentType(dh.getContentType());
+      document.setContent(content);
+
+      document = client.storeDocument(document);
+
+      panel.setDocId(document.getDocId());
+      panel.setVersion(document.getVersion());
+      panel.setModified(false);
+      mainPanel.updateActions();
     }
     catch (Exception ex)
     {
@@ -548,8 +549,11 @@ public class SaveDocumentDialog extends javax.swing.JDialog
       JOptionPane.showMessageDialog(this, ex.getMessage(), "ERROR",
         JOptionPane.ERROR_MESSAGE);
     }
-    setVisible(false);
-    dispose();
+    finally
+    {
+      setVisible(false);
+      dispose();
+    }
   }//GEN-LAST:event_saveButtonActionPerformed
 
   private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cancelButtonActionPerformed

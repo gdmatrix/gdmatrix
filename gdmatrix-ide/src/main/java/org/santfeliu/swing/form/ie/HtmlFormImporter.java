@@ -33,6 +33,7 @@ package org.santfeliu.swing.form.ie;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -72,6 +73,9 @@ public class HtmlFormImporter
 
   public void importPanel(InputStream is, FormDesigner panel)
   {
+    Collection<ComponentView> componentViews = panel.getComponentViews();
+    componentViews.clear();
+
     Tidy tidy = new Tidy();
     tidy.setOnlyErrors(true);
     tidy.setInputEncoding(HtmlFormExporter.CHARSET);
@@ -92,7 +96,11 @@ public class HtmlFormImporter
           node = node.getFirstChild();
           while (node != null)
           {
-            importComponent(node, panel);
+            ComponentView componentView = importComponent(node);
+            if (componentView != null)
+            {
+              componentViews.add(componentView);
+            }
             node = node.getNextSibling();
           }
         }
@@ -100,8 +108,10 @@ public class HtmlFormImporter
     }
   }
 
-  private void importComponent(Node node, FormDesigner panel)
+  private ComponentView importComponent(Node node)
   {
+    ComponentView componentView = null;
+    
     if (node instanceof Element)
     {
       Element element = (Element)node;
@@ -119,7 +129,7 @@ public class HtmlFormImporter
           view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
           view.setStyleClass(element.getAttribute("class"));
           view.setRenderer(element.getAttribute("renderer"));
-          panel.addComponentView(view);
+          componentView = view;
           Node child = element.getFirstChild();
           if (child instanceof Text)
           {
@@ -143,7 +153,7 @@ public class HtmlFormImporter
           view.setOutputOrder(getInteger(element.getAttribute("data-outputorder")));
           view.setStyleClass(element.getAttribute("class"));
           view.setRenderer(element.getAttribute("renderer"));
-          panel.addComponentView(view);
+          componentView = view;
           String text = getNodeContent(element, 0);
           if (text != null)
           {
@@ -165,7 +175,7 @@ public class HtmlFormImporter
         view.setStyleClass(element.getAttribute("class"));
         view.setRenderer(element.getAttribute("renderer"));
         view.setForElement(element.getAttribute("for"));
-        panel.addComponentView(view);
+        componentView = view;
         Node child = element.getFirstChild();
         if (child instanceof Text)
         {
@@ -198,7 +208,7 @@ public class HtmlFormImporter
           view.setTabindex(getInteger(element.getAttribute("tabindex")));
           view.setRequired("true".equals(element.getAttribute("required")));
           view.setDisabled(element.getAttribute("disabled"));
-          panel.addComponentView(view);
+          componentView = view;
         }
         else if ("radio".equalsIgnoreCase(type))
         {
@@ -216,7 +226,7 @@ public class HtmlFormImporter
            view.setTabindex(getInteger(element.getAttribute("tabindex")));
            view.setChecked(element.getAttribute("checked").length() > 0);
            view.setOnChange(element.getAttribute("onchange"));
-           panel.addComponentView(view);
+           componentView = view;
         }
         else if ("checkbox".equalsIgnoreCase(type))
         {
@@ -232,7 +242,7 @@ public class HtmlFormImporter
           view.setChecked(element.getAttribute("checked").length() > 0);
           view.setTabindex(getInteger(element.getAttribute("tabindex")));
           view.setOnChange(element.getAttribute("onchange"));
-          panel.addComponentView(view);
+          componentView = view;
         }
         else if ("submit".equalsIgnoreCase(type))
         {
@@ -247,7 +257,7 @@ public class HtmlFormImporter
           view.setVariable(element.getAttribute("name"));
           view.setText(element.getAttribute("value"));
           view.setTabindex(getInteger(element.getAttribute("tabindex")));
-          panel.addComponentView(view);
+          componentView = view;
         }
       }
       else if (name.equalsIgnoreCase("select"))
@@ -294,7 +304,7 @@ public class HtmlFormImporter
         view.setOnChange(element.getAttribute("onchange"));
         view.setMultiple(getBoolean(element.getAttribute("multiple")));
 
-        panel.addComponentView(view);
+        componentView = view;
         Node child = element.getFirstChild();
         while (child != null)
         {
@@ -335,7 +345,7 @@ public class HtmlFormImporter
         view.setRequired("true".equals(element.getAttribute("required")));
         view.setDisabled(element.getAttribute("disabled"));
         view.setTabindex(getInteger(element.getAttribute("tabindex")));
-        panel.addComponentView(view);
+        componentView = view;
       }
       else if (name.equalsIgnoreCase("img"))
       {
@@ -349,7 +359,7 @@ public class HtmlFormImporter
         view.setRenderer(element.getAttribute("renderer"));
         view.setUrl(element.getAttribute("src"));
         view.setAlt(element.getAttribute("alt"));
-        panel.addComponentView(view);
+        componentView = view;
       }
       else if (name.equals("script"))
       {
@@ -367,7 +377,7 @@ public class HtmlFormImporter
           }
           view.setCode(text);
         }
-        panel.addComponentView(view);
+        componentView = view;
       }
     }
     else if (node instanceof Comment)
@@ -383,10 +393,11 @@ public class HtmlFormImporter
           ScriptView view = new ScriptView();
           view.setType("serverscript");
           view.setCode(text);
-          panel.addComponentView(view);
+          componentView = view;
         }
       }
     }
+    return componentView;
   }
 
   private String getNodeContent(Node node, int indent)
@@ -406,7 +417,7 @@ public class HtmlFormImporter
         String tag = element.getNodeName();
         String searchTag = " " + tag.toLowerCase() + " ";
         boolean inlineTag =
-          " br b u i span a label strong ".indexOf(searchTag) != -1;
+          " br b u i span a label strong ".contains(searchTag);
         NamedNodeMap attributes = element.getAttributes();
         if (!inlineTag)
         {
@@ -445,7 +456,7 @@ public class HtmlFormImporter
           else
           {
             buffer.append(nodeContent);
-            if (nodeContent.indexOf("\n") != -1) // contains \n
+            if (nodeContent.contains("\n")) // contains \n
             {
               if (!nodeContent.endsWith("\n")) buffer.append("\n");
               indent(buffer, indent);
@@ -514,7 +525,7 @@ public class HtmlFormImporter
       }
       else if (name.equals("font-size"))
       {
-        view.setFontSize(new Integer(getPixels(value)));
+        view.setFontSize(getPixels(value));
       }
       else if (name.equals("background"))
       {
