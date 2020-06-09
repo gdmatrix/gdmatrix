@@ -49,6 +49,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Calendar;
 import javax.xml.transform.TransformerException;
+import org.apache.pdfbox.examples.signature.CreateSignedTimeStamp;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.examples.signature.ValidationTimeStamp;
 import org.apache.pdfbox.examples.signature.validation.AddValidationInformation;
@@ -82,14 +83,38 @@ import org.apache.xmpbox.xml.XmpSerializer;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class PDFSigner extends AbstractPDFSigner
 {
+  public void timestamp(InputStream is, OutputStream os, String tsaUrl) 
+    throws Exception
+  {
+    this.tsaUrl = tsaUrl;
+    timestamp(is, os);
+  }
+  
+  public void timestamp(InputStream is, OutputStream os) throws Exception
+  {
+    if (tsaUrl == null)
+      throw new Exception("No TSA defined");
+    
+    signDetached(is, os);
+  }
+  
+  protected void signDetached(InputStream is, OutputStream os) 
+    throws IOException
+  {
+    CreateSignedTimeStamp creator = new CreateSignedTimeStamp(tsaUrl);
+    try (PDDocument doc = PDDocument.load(is))
+    {
+      creator.signDetached(doc, os);
+    }    
+  }
 
   @Override
-  protected void doSign(InputStream is, OutputStream os, SignatureLevel sigLevel,
-    DigestAlgorithm digAlg, EncryptionAlgorithm encAlg, 
+  protected void doSign(InputStream is, OutputStream os, 
+    SignatureLevel sigLevel, DigestAlgorithm digAlg, EncryptionAlgorithm encAlg, 
     SignatureInfo sigInfo, DocumentInfo docInfo)
       throws Exception
   {
@@ -355,5 +380,23 @@ public class PDFSigner extends AbstractPDFSigner
       return contentType;
     }
   }
+  
+  public static void main(String[] args)
+  {
+    try
+    {
+      PDFSigner pdfSigner = new PDFSigner();
+      pdfSigner.setTsaUrl("http://psis.catcert.net/psis/catcert/tsp");
+      try (FileInputStream fis = new FileInputStream("test.pdf");
+      FileOutputStream fos = new FileOutputStream("test-out.pdf"))
+      {
+        pdfSigner.timestamp(fis, fos);
+      }
+    }
+    catch(Exception ex)
+    {
+      ex.printStackTrace();
+    }
+  }  
 
 }
