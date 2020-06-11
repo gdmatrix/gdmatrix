@@ -77,6 +77,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.WSTypeValidator;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.jpa.JPA;
+import org.santfeliu.kernel.util.KernelUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.security.util.Credentials;
@@ -124,12 +125,13 @@ public class KernelManager implements KernelManagerPort
     return metaData;
   }
 
+  @Override
   public Person loadPerson(String globalPersonId)
   {
     Person person = new Person();
 
     VersionIdentifier versionPersonId =
-            new VersionIdentifier(getEndpoint().getEntity(Person.class), globalPersonId);
+      new VersionIdentifier(getEndpoint().getEntity(Person.class), globalPersonId);
 
     if (!versionPersonId.hasVersion())
     {
@@ -212,20 +214,22 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(Person.class, person);
   }
 
+  @Override
   public Person storePerson(Person globalPerson)
   {
     Person person = getEndpoint().toLocal(Person.class, globalPerson);
-    person.setNationalityId(getEndpoint().toLocalId(Country.class,globalPerson.getNationalityId()));
+    person.setNationalityId(getEndpoint().
+      toLocalId(Country.class, globalPerson.getNationalityId()));
 
     validatePerson(person);
     checkStorePerson(person, KernelConstants.KERNEL_ADMIN_ROLE);
-    
+
     DBPerson dbPerson = null;
 
     if (person.getPersonId() == null) // insert new person
     {
       checkDuplicatedNif(person);
-      
+
       dbPerson = new DBPerson();
       dbPerson.copyFrom(getEndpoint(),person);
       String personId = String.valueOf(getNextCounterValue(
@@ -239,10 +243,11 @@ public class KernelManager implements KernelManagerPort
     }
     else // update person
     {
-      VersionIdentifier personIdVersion = new VersionIdentifier(getEndpoint().getEntity(Person.class), person.getPersonId());
+      VersionIdentifier personIdVersion = new VersionIdentifier(getEndpoint().
+        getEntity(Person.class), person.getPersonId());
       if (personIdVersion.hasVersion())
       {
-        //No es pot modificar una versió.
+        // can not modify a version
         return null;
       }
 
@@ -306,9 +311,11 @@ public class KernelManager implements KernelManagerPort
    * @param personId
    * @return
    */
+  @Override
   public boolean removePerson(String personId)
   {
-    VersionIdentifier versionPersonId = new VersionIdentifier(getEndpoint().getEntity(Person.class), personId);
+    VersionIdentifier versionPersonId = new VersionIdentifier(
+      getEndpoint().getEntity(Person.class), personId);
     if (versionPersonId.hasVersion())
     {
       return false;
@@ -328,11 +335,12 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<Person> findPersons(PersonFilter globalFilter)
   {
     PersonFilter filter = getEndpoint().toLocal( PersonFilter.class  , globalFilter);
-    
-    validatePersonFilter(filter);    
+
+    validatePersonFilter(filter);
 
     Query query = entityManager.createNamedQuery("findPersons");
     setPersonFilterParameters(query, filter);
@@ -356,11 +364,12 @@ public class KernelManager implements KernelManagerPort
     return persons;
   }
 
+  @Override
   public List<PersonView> findPersonViews(PersonFilter globalfilter)
   {
     PersonFilter filter = getEndpoint().toLocal(PersonFilter.class, globalfilter);
-    
-    validatePersonFilter(filter);    
+
+    validatePersonFilter(filter);
 
     Query query = entityManager.createNamedQuery("findPersons");
     setPersonFilterParameters(query, filter);
@@ -378,6 +387,7 @@ public class KernelManager implements KernelManagerPort
     return personViews;
   }
 
+  @Override
   public int countPersons(PersonFilter globalFilter)
   {
     PersonFilter filter = getEndpoint().toLocal(PersonFilter.class, globalFilter);
@@ -393,6 +403,7 @@ public class KernelManager implements KernelManagerPort
 
   /* Contact */
   //TODO: TELECO2
+  @Override
   public Contact loadContact(String globalContactId)
   {
     String contactId = getEndpoint().toLocalId(Contact.class, globalContactId);
@@ -415,6 +426,7 @@ public class KernelManager implements KernelManagerPort
     }
   }
 
+  @Override
   public Contact storeContact(Contact globalContact)
   {
     Contact contact = getEndpoint().toLocal(Contact.class, globalContact);
@@ -464,6 +476,7 @@ public class KernelManager implements KernelManagerPort
     return endpoint.toGlobal(Contact.class, contact);
   }
 
+  @Override
   public boolean removeContact(String globalContactId)
   {
     String contactId = getEndpoint().toLocalId(Contact.class, globalContactId);
@@ -482,6 +495,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<ContactView> findContactViews(ContactFilter globalFilter)
   {
     ContactFilter filter = getEndpoint().toLocal(ContactFilter.class, globalFilter);
@@ -537,11 +551,12 @@ public class KernelManager implements KernelManagerPort
     return contactViews;
   }
 
+  @Override
   public int countContacts(ContactFilter globalFilter)
   {
     ContactFilter filter = getEndpoint().toLocal(ContactFilter.class, globalFilter);
     int count = 0;
-    
+
     VersionIdentifier vPersonId = new VersionIdentifier(filter.getPersonId());
 
     String personId = vPersonId.getId();
@@ -560,7 +575,7 @@ public class KernelManager implements KernelManagerPort
 
       query.setFirstResult(1);
       query.setMaxResults(1);
-      
+
       Number number = (Number)query.getSingleResult();
       count = number.intValue();
     }
@@ -573,9 +588,11 @@ public class KernelManager implements KernelManagerPort
 
 
   /* Address */
+  @Override
   public Address loadAddress(String globalAddressId)
   {
-    VersionIdentifier vAddressId = new VersionIdentifier(getEndpoint().getEntity(Address.class), globalAddressId);
+    VersionIdentifier vAddressId = new VersionIdentifier(
+      getEndpoint().getEntity(Address.class), globalAddressId);
     if (!vAddressId.hasVersion())
     {
       DBAddress dbAddress = entityManager.find(DBAddress.class, vAddressId.getId());
@@ -654,13 +671,14 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(Address.class, address);
   }
 
+  @Override
   public Address storeAddress(Address globalAddress)
   {
     User user = UserCache.getUser(wsContext);
-    checkCity(globalAddress.getStreetId(), user);    
+    checkCity(globalAddress.getStreetId(), user);
 
     Address address = getEndpoint().toLocal(Address.class, globalAddress);
-    
+
     VersionIdentifier vId = new VersionIdentifier(address.getAddressId());
     if (vId.hasVersion())
     {
@@ -693,6 +711,7 @@ public class KernelManager implements KernelManagerPort
     return endpoint.toGlobal(Address.class,address);
   }
 
+  @Override
   public boolean removeAddress(String globalAddressId)
   {
     VersionIdentifier vId =
@@ -709,13 +728,15 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<Address> findAddresses(AddressFilter filter)
   {
     return null;
   }
 
+  @Override
   public List<AddressView> findAddressViews(AddressFilter globalFilter)
-  {  
+  {
     if (globalFilter.getAddressIdList().isEmpty() &&
       StringUtils.isBlank(globalFilter.getAddressTypeId()) &&
       StringUtils.isBlank(globalFilter.getStreetTypeId())&&
@@ -726,9 +747,9 @@ public class KernelManager implements KernelManagerPort
       StringUtils.isBlank(globalFilter.getNumber()) &&
       StringUtils.isBlank(globalFilter.getGisReference()) &&
       globalFilter.getMaxResults() == 0)
-      throw new WebServiceException("FILTER_NOT_ALLOWED"); 
-    
-    AddressFilter filter = getEndpoint().toLocal(AddressFilter.class, globalFilter);   
+      throw new WebServiceException("FILTER_NOT_ALLOWED");
+
+    AddressFilter filter = getEndpoint().toLocal(AddressFilter.class, globalFilter);
 
     List<AddressView> addressViews = new ArrayList<AddressView>();
     List<String> simpleAddressIdList = new ArrayList<String>();
@@ -815,6 +836,7 @@ public class KernelManager implements KernelManagerPort
     return addressViews;
   }
 
+  @Override
   public int countAddresses(AddressFilter globalFilter)
   {
     AddressFilter filter = getEndpoint().toLocal(AddressFilter.class, globalFilter);
@@ -831,6 +853,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* PersonAddress */
+  @Override
   public PersonAddress loadPersonAddress(String globalPersonAddressId)
   {
     VersionIdentifier vPersonAddressId =
@@ -848,6 +871,7 @@ public class KernelManager implements KernelManagerPort
     return personAddress;
   }
 
+  @Override
   public PersonAddress storePersonAddress(PersonAddress globalPersonAddress)
   {
     Credentials credentials = SecurityUtils.getCredentials(wsContext);
@@ -884,6 +908,7 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(PersonAddress.class, personAddress);
   }
 
+  @Override
   public boolean removePersonAddress(String globalPersonAddressId)
   {
     VersionIdentifier vPersonAddressId =
@@ -902,6 +927,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<PersonAddressView> findPersonAddressViews(
           PersonAddressFilter globalFilter)
   {
@@ -910,10 +936,10 @@ public class KernelManager implements KernelManagerPort
 
     String personId = filter.getPersonId();
     String addressId = filter.getAddressId();
-    
+
     if (StringUtils.isBlank(filter.getAddressId()) &&
         StringUtils.isBlank(filter.getPersonId()))
-      throw new WebServiceException("FILTER_NOT_ALLOWED");    
+      throw new WebServiceException("FILTER_NOT_ALLOWED");
 
     VersionIdentifier vPersonId = (personId != null) ? new VersionIdentifier(personId) : null;
     VersionIdentifier vAddressId = (addressId != null) ? new VersionIdentifier(addressId) : null;
@@ -933,7 +959,7 @@ public class KernelManager implements KernelManagerPort
       for (Object[] row : resultList)
       {
         //DBPersonAddress dbPersonAddress = (DBPersonAddress) row[0];
-        
+
         DBPersonAddress dbPersonAddress = (DBPersonAddress)row[0];
         DBPerson dbPerson = (DBPerson) row[1];
         DBAddress dbAddress = (DBAddress) row[2];
@@ -943,7 +969,8 @@ public class KernelManager implements KernelManagerPort
         DBCountry dbCountry = (DBCountry) row[6];
 
         PersonAddressView personAddressView = new PersonAddressView();
-        personAddressView.setPersonAddressId(getEndpoint().toGlobalId(PersonAddress.class, dbPersonAddress.getPersonAddressId()));
+        personAddressView.setPersonAddressId(getEndpoint().toGlobalId(
+          PersonAddress.class, dbPersonAddress.getPersonAddressId()));
 
         PersonView personView = new PersonView();
         personView.setPersonId(getEndpoint().toGlobalId(PersonView.class, personId));
@@ -953,7 +980,8 @@ public class KernelManager implements KernelManagerPort
         personAddressView.setPerson(personView);
 
         AddressView addressView = new AddressView();
-        addressView.setAddressId(getEndpoint().toGlobalId(AddressView.class, dbAddress.getAddressId()));
+        addressView.setAddressId(getEndpoint().toGlobalId(
+          AddressView.class, dbAddress.getAddressId()));
         addressView.setDescription(descripcio);
         addressView.setCity(dbCity.getName());
         addressView.setProvince(dbProvince.getName());
@@ -962,9 +990,6 @@ public class KernelManager implements KernelManagerPort
 
         personAddressViews.add(personAddressView);
       }
-
-
-
     }
     else
     {
@@ -985,10 +1010,12 @@ public class KernelManager implements KernelManagerPort
         DBPerson dbPerson = dbPersonAddress.getPerson();
         DBAddress dbAddress = dbPersonAddress.getAddress();
         PersonAddressView personAddressView = new PersonAddressView();
-        personAddressView.setPersonAddressId(getEndpoint().toGlobalId(PersonAddress.class, dbPersonAddress.getPersonAddressId()));
+        personAddressView.setPersonAddressId(getEndpoint().toGlobalId(
+          PersonAddress.class, dbPersonAddress.getPersonAddressId()));
 
         PersonView personView = new PersonView();
-        personView.setPersonId(getEndpoint().toGlobalId(PersonView.class, dbPerson.getPersonId()));
+        personView.setPersonId(getEndpoint().toGlobalId(PersonView.class,
+          dbPerson.getPersonId()));
         personView.setFullName(dbPerson.getFullName());
         personView.setNif(dbPerson.getNif());
         personView.setPassport(dbPerson.getPassport());
@@ -997,13 +1024,14 @@ public class KernelManager implements KernelManagerPort
         AddressView addressView = new AddressView();
         DBStreet dbStreet = dbAddress.getStreet();
         String description = describeAddress(dbAddress, dbStreet);
-        addressView.setAddressId(getEndpoint().toGlobalId(AddressView.class, dbAddress.getAddressId()));
+        addressView.setAddressId(getEndpoint().toGlobalId(AddressView.class,
+          dbAddress.getAddressId()));
         addressView.setDescription(description);
         if (dbStreet != null)
         {
           DBCity dbCity = dbStreet.getCity();
           DBProvince dbProvince = dbCity.getProvince();
-          DBCountry dbCountry = dbProvince.getCountry();            
+          DBCountry dbCountry = dbProvince.getCountry();
           addressView.setCity(dbCity.getName());
           addressView.setProvince(dbProvince.getName());
           addressView.setCountry(dbCountry.getName());
@@ -1025,6 +1053,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* PersonRepresentant */
+  @Override
   public PersonRepresentant loadPersonRepresentant(
           String globalPersonRepresentantId)
   {
@@ -1043,10 +1072,12 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(PersonRepresentant.class, personRepresentant);
   }
 
+  @Override
   public PersonRepresentant storePersonRepresentant(
           PersonRepresentant globalPersonRepresentant)
   {
-    PersonRepresentant personRepresentant = getEndpoint().toLocal(PersonRepresentant.class, globalPersonRepresentant);
+    PersonRepresentant personRepresentant = getEndpoint().toLocal(
+      PersonRepresentant.class, globalPersonRepresentant);
     validatePersonRepresentant(personRepresentant);
     String personRepresentantId = personRepresentant.getPersonRepresentantId();
     DBPersonRepresentant dbPersonRepresentant = null;
@@ -1089,9 +1120,11 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(PersonRepresentant.class, personRepresentant);
   }
 
+  @Override
   public boolean removePersonRepresentant(String globalPersonRepresentantId)
   {
-    String personRepresentantId = getEndpoint().toLocalId(PersonRepresentant.class, globalPersonRepresentantId);
+    String personRepresentantId = getEndpoint().toLocalId(
+      PersonRepresentant.class, globalPersonRepresentantId);
 
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
     DBPersonRepresentantPK pk =
@@ -1103,10 +1136,12 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<PersonRepresentantView> findPersonRepresentantViews(
           PersonRepresentantFilter globalFilter)
   {
-    PersonRepresentantFilter filter = getEndpoint().toLocal(PersonRepresentantFilter.class, globalFilter);
+    PersonRepresentantFilter filter = getEndpoint().toLocal(
+      PersonRepresentantFilter.class, globalFilter);
 
     List<PersonRepresentantView> personRepresentantViews =
             new ArrayList<PersonRepresentantView>();
@@ -1157,6 +1192,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* Room */
+  @Override
   public Room loadRoom(String globalRoomId)
   {
     String roomId = getEndpoint().toLocalId(Room.class, globalRoomId);
@@ -1171,6 +1207,7 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(Room.class, room);
   }
 
+  @Override
   public Room storeRoom(Room globalRoom)
   {
     Room room = getEndpoint().toLocal(Room.class, globalRoom);
@@ -1213,6 +1250,7 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(Room.class, room);
   }
 
+  @Override
   public boolean removeRoom(String globalRoomId)
   {
     String roomId = getEndpoint().toLocalId(Room.class, globalRoomId);
@@ -1224,6 +1262,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public int countRooms(RoomFilter globalFilter)
   {
     RoomFilter filter = getEndpoint().toLocal(RoomFilter.class, globalFilter);
@@ -1237,6 +1276,7 @@ public class KernelManager implements KernelManagerPort
     return count.intValue();
   }
 
+  @Override
   public List<Room> findRooms(RoomFilter globalFilter)
   {
     RoomFilter filter = getEndpoint().toLocal(RoomFilter.class, globalFilter);
@@ -1257,6 +1297,7 @@ public class KernelManager implements KernelManagerPort
     return rooms;
   }
 
+  @Override
   public List<RoomView> findRoomViews(RoomFilter globalFilter)
   {
     RoomFilter filter = getEndpoint().toLocal(RoomFilter.class, globalFilter);
@@ -1303,6 +1344,7 @@ public class KernelManager implements KernelManagerPort
   }
 
   /* Country */
+  @Override
   public Country loadCountry(String globalCountryId)
   {
     String countryId = getEndpoint().toLocalId(Country.class, globalCountryId);
@@ -1316,6 +1358,7 @@ public class KernelManager implements KernelManagerPort
     return country;
   }
 
+  @Override
   public Country storeCountry(Country globalCountry)
   {
     Country country = getEndpoint().toLocal(Country.class, globalCountry);
@@ -1334,6 +1377,7 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(Country.class, country);
   }
 
+  @Override
   public boolean removeCountry(String globalCountryId)
   {
     String countryId = getEndpoint().toLocalId(Country.class, globalCountryId);
@@ -1347,6 +1391,7 @@ public class KernelManager implements KernelManagerPort
   }
 
 
+  @Override
   public int countCountries(CountryFilter globalFilter)
   {
     CountryFilter filter = getEndpoint().toLocal(CountryFilter.class, globalFilter);
@@ -1371,6 +1416,7 @@ public class KernelManager implements KernelManagerPort
     return total.intValue();
   }
 
+  @Override
   public List<Country> findCountries(CountryFilter globalFilter)
   {
     CountryFilter filter = getEndpoint().toLocal(CountryFilter.class, globalFilter);
@@ -1403,6 +1449,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* Provinces */
+  @Override
   public Province loadProvince(String globalProvinceId)
   {
     String provinceId = getEndpoint().toLocalId(Province.class, globalProvinceId);
@@ -1418,15 +1465,16 @@ public class KernelManager implements KernelManagerPort
     return province;
   }
 
+  @Override
   public Province storeProvince(Province globalProvince)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
-    
+
     Province province = getEndpoint().toGlobal(Province.class, globalProvince);
 
     String provinceId = province.getProvinceId();
     if (provinceId == null) // new province
-    {      
+    {
       String countryId = province.getCountryId();
       Query query = entityManager.createNamedQuery("incrementProvinceCounter");
       query.setParameter("countryId", countryId);
@@ -1454,6 +1502,7 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(Province.class, province);
   }
 
+  @Override
   public boolean removeProvince(String globalProvinceId)
   {
     String provinceId = getEndpoint().toLocalId(Province.class, globalProvinceId);
@@ -1465,6 +1514,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<Province> findProvinces(ProvinceFilter globalFilter)
   {
     ProvinceFilter filter = getEndpoint().toLocal(
@@ -1497,6 +1547,7 @@ public class KernelManager implements KernelManagerPort
     return provinces;
   }
 
+  @Override
   public int countProvinces(ProvinceFilter globalFilter)
   {
     ProvinceFilter filter = getEndpoint().toLocal(
@@ -1519,6 +1570,7 @@ public class KernelManager implements KernelManagerPort
 
 
   /* City */
+  @Override
   public City loadCity(String globalCityId)
   {
     String cityId = getEndpoint().toLocalId(City.class, globalCityId);
@@ -1535,12 +1587,13 @@ public class KernelManager implements KernelManagerPort
     return city;
   }
 
+  @Override
   public City storeCity(City globalCity)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
 
     City city = getEndpoint().toLocal(City.class, globalCity);
-    
+
     String cityId = city.getCityId();
     if (cityId == null) // new city
     {
@@ -1576,10 +1629,11 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(City.class, city);
   }
 
+  @Override
   public boolean removeCity(String globalCityId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
-    
+
     String cityId = getEndpoint().toLocalId(City.class, globalCityId);
 
     DBCity dbCity = entityManager.getReference(DBCity.class,
@@ -1588,6 +1642,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<City> findCities(CityFilter globalFilter)
   {
     CityFilter filter = getEndpoint().toLocal(CityFilter.class, globalFilter);
@@ -1610,7 +1665,7 @@ public class KernelManager implements KernelManagerPort
     query.setParameter("countryId", countryId);
     query.setParameter("provinceId", provinceId);
     query.setParameter("name", cityName);
-    
+
     List<DBCity> dbCities = query.getResultList();
     for (DBCity dbCity : dbCities)
     {
@@ -1621,6 +1676,7 @@ public class KernelManager implements KernelManagerPort
     return cities;
   }
 
+  @Override
   public int countCities(CityFilter globalFilter)
   {
     CityFilter filter = getEndpoint().toLocal(CityFilter.class, globalFilter);
@@ -1648,10 +1704,11 @@ public class KernelManager implements KernelManagerPort
 
     Number result = (Number)query.getSingleResult();
     return result.intValue();
-  }  
+  }
 
 
   /* Street */
+  @Override
   public Street loadStreet(String globalStreetId)
   {
     String streetId = getEndpoint().toLocalId(Street.class, globalStreetId);
@@ -1667,10 +1724,11 @@ public class KernelManager implements KernelManagerPort
     return street;
   }
 
+  @Override
   public Street storeStreet(Street globalStreet)
   {
     User user = UserCache.getUser(wsContext);
-    checkCity(globalStreet.getCityId(), user);  
+    checkCity(globalStreet.getCityId(), user);
 
     Street street = getEndpoint().toLocal(Street.class, globalStreet);
 
@@ -1706,7 +1764,7 @@ public class KernelManager implements KernelManagerPort
         {
           munivnum = 1;
         }
-        else 
+        else
         {
           munivnum = ((Number)query.getSingleResult()).intValue() + 1;
         }
@@ -1735,6 +1793,7 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(Street.class, street);
   }
 
+  @Override
   public boolean removeStreet(String globalStreetId)
   {
     String streetId = getEndpoint().toLocalId(Street.class, globalStreetId);
@@ -1746,6 +1805,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<Street> findStreets(StreetFilter globalFilter)
   {
     StreetFilter filter = getEndpoint().toLocal(StreetFilter.class, globalFilter);
@@ -1795,6 +1855,7 @@ public class KernelManager implements KernelManagerPort
     return streets;
   }
 
+  @Override
   public int countStreets(StreetFilter globalFilter)
   {
     StreetFilter filter = getEndpoint().toLocal(StreetFilter.class, globalFilter);
@@ -1833,8 +1894,9 @@ public class KernelManager implements KernelManagerPort
     Number result = (Number)query.getSingleResult();
     return result.intValue();
   }
-  
+
   /* KernelList */
+  @Override
   public KernelListItem loadKernelListItem(KernelList list,
           String globalItemId)
   {
@@ -1852,6 +1914,7 @@ public class KernelManager implements KernelManagerPort
     return kernelListItem;
   }
 
+  @Override
   public KernelListItem storeKernelListItem(KernelList list,
           KernelListItem kernelListItem)
   {
@@ -1871,6 +1934,7 @@ public class KernelManager implements KernelManagerPort
     return kernelListItem;
   }
 
+  @Override
   public boolean removeKernelListItem(KernelList list, String globalItemId)
   {
     String itemId = getEndpoint().toLocalId(KernelListItem.class, globalItemId);
@@ -1882,6 +1946,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<KernelListItem> listKernelListItems(KernelList list)
   {
     List<KernelListItem> kernelListItems = new ArrayList<KernelListItem>();
@@ -1923,14 +1988,15 @@ public class KernelManager implements KernelManagerPort
     return kernelListItems;
   }
 
+  @Override
   public List<PersonDocumentView> findPersonDocumentViews(PersonDocumentFilter globalFilter)
   {
     PersonDocumentFilter filter =
       getEndpoint().toLocal(PersonDocumentFilter.class, globalFilter);
-    
+
     if (StringUtils.isBlank(filter.getDocId()) &&
         StringUtils.isBlank(filter.getPersonId()))
-      throw new WebServiceException("FILTER_NOT_ALLOWED");    
+      throw new WebServiceException("FILTER_NOT_ALLOWED");
 
     Query query = entityManager.createNamedQuery("findPersonDocumentViews");
     query.setFirstResult(filter.getFirstResult());
@@ -2016,6 +2082,7 @@ public class KernelManager implements KernelManagerPort
     return documentViewList;
   }
 
+  @Override
   public PersonDocument loadPersonDocument(String globalPersonDocId)
   {
     String personDocId =
@@ -2036,6 +2103,7 @@ public class KernelManager implements KernelManagerPort
     return personDocument;
   }
 
+  @Override
   public boolean removePersonDocument(String globalPersonDocId)
   {
     String personDocId =
@@ -2058,6 +2126,7 @@ public class KernelManager implements KernelManagerPort
   }
 
 
+  @Override
   public PersonDocument storePersonDocument(PersonDocument globalPersonDocument)
   {
     PersonDocument personDocument =
@@ -2148,7 +2217,7 @@ public class KernelManager implements KernelManagerPort
         //Cannot change docId
         if (docId != null && !docId.equals(dbPersonDocument.getDocId()))
           throw new WebServiceException("NOT_IMPLEMENTED");
-        
+
         dbPersonDocument.setObservacions(personDocument.getComments());
         dbPersonDocument.setAuditoriaModificacio(user.getUserId());
         entityManager.merge(dbPersonDocument);
@@ -2159,26 +2228,31 @@ public class KernelManager implements KernelManagerPort
     return personDocument;
   }
 
+  @Override
   public List<AddressDocumentView> findAddressDocumentViews(AddressDocumentFilter filter)
   {
     throw new UnsupportedOperationException("NOT_SUPPORTED_YET");
   }
 
+  @Override
   public AddressDocument loadAddressDocument(String addressDocId)
   {
     throw new UnsupportedOperationException("NOT_SUPPORTED_YET");
   }
 
+  @Override
   public boolean removeAddressDocument(String addressDocId)
   {
     throw new UnsupportedOperationException("NOT_SUPPORTED_YET");
   }
 
+  @Override
   public AddressDocument storeAddressDocument(AddressDocument addressDocument)
   {
     throw new UnsupportedOperationException("NOT_SUPPORTED_YET");
   }
 
+  @Override
   public PersonPerson loadPersonPerson(String globalPersonPersonId)
   {
     String personPersonId =
@@ -2204,6 +2278,7 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(PersonPerson.class, personPerson);
   }
 
+  @Override
   public PersonPerson storePersonPerson(PersonPerson globalPersonPerson)
   {
 //    PersonPerson personPerson =
@@ -2229,11 +2304,12 @@ public class KernelManager implements KernelManagerPort
     return getEndpoint().toGlobal(PersonPerson.class, dbPersonPerson);
   }
 
+  @Override
   public boolean removePersonPerson(String globalPersonPersonId)
   {
     String personPersonId =
       getEndpoint().toLocalId(PersonPerson.class, globalPersonPersonId);
-    
+
     DBPersonPerson dbPersonPerson =
       entityManager.find(DBPersonPerson.class, personPersonId);
 
@@ -2244,6 +2320,7 @@ public class KernelManager implements KernelManagerPort
     return true;
   }
 
+  @Override
   public List<PersonPersonView> findPersonPersonViews(PersonPersonFilter filter)
   {
     List<PersonPersonView> personPersonViewList = new ArrayList<PersonPersonView>();
@@ -2291,7 +2368,7 @@ public class KernelManager implements KernelManagerPort
   {
     if (filter.getPersonId() == null && filter.getRelPersonId() == null)
       return 0;
-    
+
     Query query = entityManager.createNamedQuery("countPersonPersons");
     query.setParameter("personId", filter.getPersonId());
     query.setParameter("relPersonId", filter.getRelPersonId());
@@ -2401,7 +2478,7 @@ public class KernelManager implements KernelManagerPort
       String personId = person.getPersonId();
       if (personId != null) // is an update
       {
-        String queryString = 
+        String queryString =
           MatrixConfig.getProperty("KernelManager.checkStorePersonQuery");
         if (queryString != null)
         {
@@ -2415,7 +2492,7 @@ public class KernelManager implements KernelManagerPort
       }
     }
   }
-  
+
   private void checkDuplicatedNif(Person person)
   {
     String nif = person.getNif();
@@ -2429,7 +2506,7 @@ public class KernelManager implements KernelManagerPort
       if (count > 0) throw new WebServiceException("kernel:DUPLICATED_NIF");
     }
   }
-  
+
   private void checkUserInRole(String role)
   {
     Set roles = UserCache.getUser(wsContext).getRoles();
@@ -2477,7 +2554,7 @@ public class KernelManager implements KernelManagerPort
     {
       return null;
     }
-    StringBuffer buffer = new StringBuffer("% ");
+    StringBuilder buffer = new StringBuilder("% ");
     if (pattern.startsWith("\"") && pattern.endsWith("\""))
     {
       pattern = pattern.substring(1);
@@ -2533,9 +2610,11 @@ public class KernelManager implements KernelManagerPort
 
   private String describeAddress(DBAddress dbAddress, DBStreet dbStreet)
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
-    if (dbAddress.getPostOfficeBox() != null && !"0".equals(dbAddress.getPostOfficeBox().trim()) && !"".equals(dbAddress.getPostOfficeBox().trim()))
+    if (dbAddress.getPostOfficeBox() != null && !"0".equals(
+      dbAddress.getPostOfficeBox().trim()) &&
+      !"".equals(dbAddress.getPostOfficeBox().trim()))
     {
       buffer.append(" APARTAT DE CORREUS " + dbAddress.getPostOfficeBox());
     }
@@ -2686,7 +2765,7 @@ public class KernelManager implements KernelManagerPort
   private void setAddressFilterParameters(Query query, AddressFilter filter)
   {
     List<String> addressIdList = filter.getAddressIdList();
-    
+
 
     query.setParameter("idList", getStringFromIdList(Address.class, addressIdList));
 
@@ -2729,15 +2808,15 @@ public class KernelManager implements KernelManagerPort
       comments = likePattern(comments);
     }
     query.setParameter("comments", comments);
-    
+
     String addressTypeId = filter.getAddressTypeId();
     if (addressTypeId != null)
     {
       addressTypeId = DicTypeAdmin.getInstance(AddressType.class)
-              .toLocalId(endpoint, addressTypeId); 
+              .toLocalId(endpoint, addressTypeId);
     }
     query.setParameter("addressTypeId", addressTypeId);
-    
+
     String streetTypeId = filter.getStreetTypeId();
     if (streetTypeId != null)
     {
@@ -2759,7 +2838,7 @@ public class KernelManager implements KernelManagerPort
     query.setParameter("roomTypeId", filter.getRoomTypeId());     //TODO: convert to DB value
     query.setParameter("capacity", filter.getCapacity());
     query.setParameter("comments" , addPercent(filter.getComments()));
-    query.setParameter("spaceId", filter.getSpaceId());    
+    query.setParameter("spaceId", filter.getSpaceId());
     query.setFirstResult(filter.getFirstResult());
     int maxResults = filter.getMaxResults();
     if (maxResults > 0) query.setMaxResults(maxResults);
@@ -2771,6 +2850,25 @@ public class KernelManager implements KernelManagerPort
     String personTypeId = person.getPersonTypeId();
     if (personTypeId == null || personTypeId.trim().length() == 0)
       throw new WebServiceException("kernel:TYPEID_IS_MANDATORY");
+
+    String nif = person.getNif();
+    if (!StringUtils.isBlank(nif))
+    {
+      nif = nif.trim();
+      if (nif.length() == 8)
+      {
+        // calculate control digit
+        char control = KernelUtils.calculateNIFControl(nif);
+        if (control == KernelUtils.CONTROL_ERROR)
+          throw new WebServiceException("kernel:INVALID_NIF");
+        person.setNif(nif + control);
+      }
+      else
+      {
+        if (!KernelUtils.isValidNIF(nif))
+          throw new WebServiceException("kernel:INVALID_NIF");
+      }
+    }
 
     personTypeId = getEndpoint().toGlobalId(Type.class, personTypeId);
     Type type = TypeCache.getInstance().getType(personTypeId);
@@ -3089,17 +3187,17 @@ public class KernelManager implements KernelManagerPort
   private void checkCity(String id, User user) throws WebServiceException
   {
     // id can be a cityId or streetId
-    if (id == null) return;    
+    if (id == null) return;
     if (user.getRoles().contains(KernelConstants.KERNEL_ADMIN_ROLE)) return;
-      
-    String blockedCityId = 
+
+    String blockedCityId =
       MatrixConfig.getProperty("KernelManager.blockedCityId");
     if (blockedCityId == null) return;
-      
+
     if (id.startsWith(blockedCityId))
       throw new WebServiceException("NOT_AUTHORIZED");
   }
-  
+
   private void validatePersonFilter(PersonFilter filter)
   {
     if (filter.getPersonId().isEmpty() &&
@@ -3111,5 +3209,5 @@ public class KernelManager implements KernelManagerPort
         StringUtils.isBlank(filter.getPassport()) &&
         filter.getMaxResults() == 0)
       throw new WebServiceException("FILTER_NOT_ALLOWED");
-  }  
+  }
 }

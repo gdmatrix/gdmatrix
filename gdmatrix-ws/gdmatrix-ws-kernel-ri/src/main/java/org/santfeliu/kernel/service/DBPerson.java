@@ -38,7 +38,7 @@ import org.santfeliu.dic.util.InternalValueConverter;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBPerson extends DBEntityBase
 {
@@ -318,22 +318,22 @@ public class DBPerson extends DBEntityBase
   public String getFullName()
   {
     if (name == null) return null;
-    StringBuffer buffer = new StringBuffer(name);
+    StringBuilder buffer = new StringBuilder(name);
     if (firstParticle != null)
-      buffer.append(" " + firstParticle);
+      buffer.append(" ").append(firstParticle);
     if (firstSurname != null)
-      buffer.append(" " + firstSurname);
+      buffer.append(" ").append(firstSurname);
     if (secondParticle != null)
-      buffer.append(" " + secondParticle);
+      buffer.append(" ").append(secondParticle);
     if (secondSurname != null)
-      buffer.append(" " + secondSurname);
+      buffer.append(" ").append(secondSurname);
     return buffer.toString();
   }
   
   public String getNif()
   {
     if (nifnum == null) return null;
-    StringBuffer buffer = new StringBuffer(nifnum);
+    StringBuilder buffer = new StringBuilder(nifnum);
     if (nifdc != null)
       buffer.append(nifdc);
     return buffer.toString();
@@ -375,31 +375,12 @@ public class DBPerson extends DBEntityBase
     String nif = person.getNif();
     if (nif != null)
     {
-      nif = nif.replaceAll("\\-", "");
-      nif = nif.replaceAll("\\.", "");
       if (nif.length() >= 8)
       {
         this.nifnum = nif.substring(0, 8);
         if (nif.length() >= 9)
         {
           this.nifdc = nif.substring(8, 9);
-        }
-        else if (Character.isDigit(nifnum.charAt(0))) // NIF
-        {
-          String chunck = "TRWAGMYFPDXBNJZSQVHLCKET";
-          try
-          {
-            int num = Integer.parseInt(nifnum);
-            char dc = chunck.charAt(num % 23);
-            this.nifdc = "" + dc;
-          }
-          catch (Exception ex)
-          {
-            this.nifdc = null;
-          }
-        }
-        else // CIF
-        {
         }
       }
     }

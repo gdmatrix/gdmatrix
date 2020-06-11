@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.kernel.service;
@@ -94,6 +94,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.InternalValueConverter;
 import org.santfeliu.dic.util.WSTypeValidator;
 import org.santfeliu.jpa.JPA;
+import org.santfeliu.kernel.util.KernelUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.MatrixConfig;
@@ -123,10 +124,10 @@ public class KernelManager implements KernelManagerPort
   private static final String PERSON_CLAUCOD = "PERS    ";
   private static final String PERSON_CLAUORIGEN = "NCL ";
   private static final String PERSON_CLAUDESC = "CONTADOR DE PERSONAS";
-  
+
   private static final String ADDRESS_CLAUPREF = "DOM     ";
   private static final String ADDRESS_CLAUCOD = "DOM     ";
-  private static final String ADDRESS_CLAUORIGEN = "NCL "; 
+  private static final String ADDRESS_CLAUORIGEN = "NCL ";
   private static final String ADDRESS_CLAUDESC = "CONTADOR DE DIRECCIONES";
 
   static final String PK_SEPARATOR = ";";
@@ -164,7 +165,7 @@ public class KernelManager implements KernelManagerPort
       String personId = String.valueOf(getNextCounterValue(
         PERSON_CLAUPREF,
         PERSON_CLAUCOD,
-        PERSON_CLAUORIGEN, 
+        PERSON_CLAUORIGEN,
         PERSON_CLAUDESC));
       dbPerson.setPersonId(personId);
       auditCreation(dbPerson);
@@ -195,9 +196,9 @@ public class KernelManager implements KernelManagerPort
   public List<Person> findPersons(PersonFilter filter)
   {
     validatePersonFilter(filter);
-    
+
     Query query = entityManager.createNamedQuery("findPersons");
-    setPersonFilterParameters(query, filter);    
+    setPersonFilterParameters(query, filter);
     List<DBPerson> dbPersons = query.getResultList();
     List<Person> persons = new ArrayList<Person>();
     for (DBPerson dbPerson : dbPersons)
@@ -220,7 +221,7 @@ public class KernelManager implements KernelManagerPort
   public List<PersonView> findPersonViews(PersonFilter filter)
   {
     validatePersonFilter(filter);
-    
+
     Query query = entityManager.createNamedQuery("findPersons");
     setPersonFilterParameters(query, filter);
     List<DBPerson> dbPersons = query.getResultList();
@@ -285,13 +286,13 @@ public class KernelManager implements KernelManagerPort
         query = entityManager.createNamedQuery("readPersonContactCounter");
         query.setParameter("personId", personId);
         int contvnum = ((Number)query.getSingleResult()).intValue();
-        
+
         DBTeleco dbTeleco = new DBTeleco();
         dbTeleco.copyFrom(contact);
         dbTeleco.setContactNumber(contvnum);
         auditCreation(dbTeleco);
         entityManager.persist(dbTeleco);
-        contact.setContactId("1" + PK_SEPARATOR + personId + 
+        contact.setContactId("1" + PK_SEPARATOR + personId +
           PK_SEPARATOR + contvnum);
       }
       else
@@ -362,7 +363,7 @@ public class KernelManager implements KernelManagerPort
       for (DBTeleco dbTeleco : resultList)
       {
         ContactView contactView = new ContactView();
-        contactView.setContactId("1" + PK_SEPARATOR + dbTeleco.getPersonId() + 
+        contactView.setContactId("1" + PK_SEPARATOR + dbTeleco.getPersonId() +
           PK_SEPARATOR + dbTeleco.getContactNumber());
         InternalValueConverter typeIdConverter =
           new InternalValueConverter(DictionaryConstants.CONTACT_TYPE);
@@ -410,7 +411,7 @@ public class KernelManager implements KernelManagerPort
       String addressId = String.valueOf(getNextCounterValue(
         ADDRESS_CLAUPREF,
         ADDRESS_CLAUCOD,
-        ADDRESS_CLAUORIGEN, 
+        ADDRESS_CLAUORIGEN,
         ADDRESS_CLAUDESC));
       dbAddress.setAddressId(addressId);
       auditCreation(dbAddress);
@@ -425,14 +426,14 @@ public class KernelManager implements KernelManagerPort
     }
     dbAddress.copyTo(address);
 //    return address;
-    return getWSEndpoint().toGlobal(Address.class, address);    
+    return getWSEndpoint().toGlobal(Address.class, address);
   }
 
   @Override
   public boolean removeAddress(String addressId)
   {
-    checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);  
-    DBAddress dbAddress = 
+    checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
+    DBAddress dbAddress =
       entityManager.getReference(DBAddress.class, addressId);
     entityManager.remove(dbAddress);
     return true;
@@ -458,19 +459,19 @@ public class KernelManager implements KernelManagerPort
       StringUtils.isBlank(filter.getGisReference()) &&
       filter.getMaxResults() == 0)
       throw new WebServiceException("FILTER_NOT_ALLOWED");
-    
+
     List<AddressView> addressViews = new ArrayList<AddressView>();
     Query query = entityManager.createNamedQuery("findAddresses");
 
     setAddressFilterParameters(query, filter);
-    
+
     List<DBAddress> resultList = query.getResultList();
     for (DBAddress dbAddress : resultList)
     {
       AddressView addressView = new AddressView();
       addressView.setAddressId(dbAddress.getAddressId());
-      DBStreet dbStreet = dbAddress.getStreet();      
-      String description = describeAddress(dbAddress, dbStreet); 
+      DBStreet dbStreet = dbAddress.getStreet();
+      String description = describeAddress(dbAddress, dbStreet);
       addressView.setDescription(description);
       if (dbStreet != null)
       {
@@ -511,7 +512,7 @@ public class KernelManager implements KernelManagerPort
   public PersonAddress loadPersonAddress(String personAddressId)
   {
     DBPersonAddressPK pk = new DBPersonAddressPK(personAddressId);
-    DBPersonAddress dbPersonAddress = 
+    DBPersonAddress dbPersonAddress =
       entityManager.find(DBPersonAddress.class, pk);
     if (dbPersonAddress == null)
       throw new WebServiceException("kernel:PERSON_ADDRESS_NOT_FOUND");
@@ -527,7 +528,7 @@ public class KernelManager implements KernelManagerPort
     if (personAddress.getPersonAddressId() == null) // insert new
     {
       String personId = personAddress.getPersonId();
-      Query query = 
+      Query query =
         entityManager.createNamedQuery("incrementPersonAddressCounter");
       query.setParameter("personId", personId);
       query.executeUpdate();
@@ -540,7 +541,7 @@ public class KernelManager implements KernelManagerPort
       dbPersonAddress.setPersnd(persvnum);
       auditCreation(dbPersonAddress);
       entityManager.persist(dbPersonAddress);
-      String personAddressId = personId + KernelManager.PK_SEPARATOR + 
+      String personAddressId = personId + KernelManager.PK_SEPARATOR +
         personAddress.getAddressId();
       personAddress.setPersonAddressId(personAddressId);
     }
@@ -557,7 +558,7 @@ public class KernelManager implements KernelManagerPort
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
     DBPersonAddressPK pk = new DBPersonAddressPK(personAddressId);
-    DBPersonAddress dbPersonAddress = 
+    DBPersonAddress dbPersonAddress =
       entityManager.getReference(DBPersonAddress.class, pk);
     entityManager.remove(dbPersonAddress);
     return true;
@@ -580,8 +581,8 @@ public class KernelManager implements KernelManagerPort
     if (StringUtils.isBlank(filter.getAddressId()) &&
         StringUtils.isBlank(filter.getPersonId()))
       throw new WebServiceException("FILTER_NOT_ALLOWED");
-    
-    List<PersonAddressView> personAddressViews = 
+
+    List<PersonAddressView> personAddressViews =
       new ArrayList<PersonAddressView>();
     String personId = filter.getPersonId();
     if (personId != null)
@@ -592,7 +593,7 @@ public class KernelManager implements KernelManagerPort
       query.setFirstResult(filter.getFirstResult());
       int maxResults = filter.getMaxResults();
       if (maxResults > 0) query.setMaxResults(maxResults);
-      
+
       List<DBPersonAddress> resultList = query.getResultList();
       for (DBPersonAddress dbPersonAddress : resultList)
       {
@@ -654,9 +655,9 @@ public class KernelManager implements KernelManagerPort
   public PersonRepresentant loadPersonRepresentant(
     String personRepresentantId)
   {
-    DBPersonRepresentantPK pk = 
+    DBPersonRepresentantPK pk =
       new DBPersonRepresentantPK(personRepresentantId);
-    DBPersonRepresentant dbPersonRepresentant = 
+    DBPersonRepresentant dbPersonRepresentant =
       entityManager.find(DBPersonRepresentant.class, pk);
     if (dbPersonRepresentant == null)
       throw new WebServiceException("kernel:REPRESENTANT_NOT_FOUND");
@@ -684,7 +685,7 @@ public class KernelManager implements KernelManagerPort
     }
     else // update
     {
-      dbPersonRepresentant = entityManager.find(DBPersonRepresentant.class, 
+      dbPersonRepresentant = entityManager.find(DBPersonRepresentant.class,
         new DBPersonRepresentantPK(personRepresentantId));
 
       String ids[] = personRepresentantId.split(KernelManager.PK_SEPARATOR);
@@ -709,9 +710,9 @@ public class KernelManager implements KernelManagerPort
       }
     }
     personRepresentant.setPersonRepresentantId(
-      personRepresentant.getPersonId() + KernelManager.PK_SEPARATOR + 
+      personRepresentant.getPersonId() + KernelManager.PK_SEPARATOR +
       personRepresentant.getRepresentantId());
-    
+
     return getWSEndpoint()
       .toGlobal(PersonRepresentant.class, personRepresentant);
   }
@@ -719,10 +720,10 @@ public class KernelManager implements KernelManagerPort
   @Override
   public boolean removePersonRepresentant(String personRepresentantId)
   {
-    checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);  
-    DBPersonRepresentantPK pk = 
+    checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
+    DBPersonRepresentantPK pk =
       new DBPersonRepresentantPK(personRepresentantId);
-    DBPersonRepresentant dbPersonRepresentant = 
+    DBPersonRepresentant dbPersonRepresentant =
       entityManager.getReference(DBPersonRepresentant.class, pk);
     entityManager.remove(dbPersonRepresentant);
     return true;
@@ -732,7 +733,7 @@ public class KernelManager implements KernelManagerPort
   public List<PersonRepresentantView> findPersonRepresentantViews(
     PersonRepresentantFilter filter)
   {
-    List<PersonRepresentantView> personRepresentantViews = 
+    List<PersonRepresentantView> personRepresentantViews =
       new ArrayList<PersonRepresentantView>();
     String personId = filter.getPersonId();
     if (personId != null)
@@ -747,7 +748,7 @@ public class KernelManager implements KernelManagerPort
       List<Object[]> results = query.getResultList();
       for (Object[] row : results)
       {
-        DBPersonRepresentant dbPersonRepresentant = 
+        DBPersonRepresentant dbPersonRepresentant =
           (DBPersonRepresentant)row[0];
         DBPerson dbPerson = (DBPerson)row[1];
         String representantId = dbPersonRepresentant.getRepresentantId();
@@ -878,7 +879,7 @@ public class KernelManager implements KernelManagerPort
   {
     if (filter.getPersonId() == null && filter.getRelPersonId() == null)
       return 0;
-      
+
     Query query = entityManager.createNamedQuery("countPersonPersons");
     query.setParameter("personId", filter.getPersonId());
     query.setParameter("relPersonId", filter.getRelPersonId());
@@ -935,7 +936,7 @@ public class KernelManager implements KernelManagerPort
       dbRoom.setRoomId(String.valueOf(roomId));
       entityManager.persist(dbRoom);
     }
-    else // update room 
+    else // update room
     {
       DBRoomPK roomPK = new DBRoomPK(room.getRoomId());
       if (!roomPK.getAddressId().equals(room.getAddressId()))
@@ -966,7 +967,7 @@ public class KernelManager implements KernelManagerPort
   public int countRooms(RoomFilter globalFilter)
   {
     RoomFilter filter = getWSEndpoint().toLocal(RoomFilter.class, globalFilter);
-    
+
     Query query = entityManager.createNamedQuery("countRooms");
     setRoomFilterParameters(query, filter);
 
@@ -1004,7 +1005,7 @@ public class KernelManager implements KernelManagerPort
   public List<RoomView> findRoomViews(RoomFilter globalFilter)
   {
     RoomFilter filter = getWSEndpoint().toLocal(RoomFilter.class, globalFilter);
-    
+
     List<RoomView> roomViews = new ArrayList();
     Query query = entityManager.createNamedQuery("findRooms");
     setRoomFilterParameters(query, filter);
@@ -1096,7 +1097,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public Province loadProvince(String provinceId)
   {
-    DBProvince dbProvince = entityManager.find(DBProvince.class, 
+    DBProvince dbProvince = entityManager.find(DBProvince.class,
       new DBProvincePK(provinceId));
     if (dbProvince == null)
       throw new WebServiceException("kernel:PROVINCE_NOT_FOUND");
@@ -1118,8 +1119,8 @@ public class KernelManager implements KernelManagerPort
       query = entityManager.createNamedQuery("readProvinceCounter");
       query.setParameter("countryId", countryId);
       int paisvnum = ((Number)query.getSingleResult()).intValue();
-      
-      provinceId = province.getCountryId() + KernelManager.PK_SEPARATOR + 
+
+      provinceId = province.getCountryId() + KernelManager.PK_SEPARATOR +
         paisvnum;
       province.setProvinceId(provinceId);
       DBProvince dbProvince = new DBProvince();
@@ -1129,7 +1130,7 @@ public class KernelManager implements KernelManagerPort
     }
     else // update
     {
-      DBProvince dbProvince = entityManager.find(DBProvince.class, 
+      DBProvince dbProvince = entityManager.find(DBProvince.class,
         new DBProvincePK(provinceId));
       dbProvince.copyFrom(province);
       auditUpdate(dbProvince);
@@ -1142,7 +1143,7 @@ public class KernelManager implements KernelManagerPort
   public boolean removeProvince(String provinceId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
-    DBProvince dbProvince = entityManager.getReference(DBProvince.class, 
+    DBProvince dbProvince = entityManager.getReference(DBProvince.class,
       new DBProvincePK(provinceId));
     entityManager.remove(dbProvince);
     return true;
@@ -1186,7 +1187,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public City loadCity(String cityId)
   {
-    DBCity dbCity = entityManager.find(DBCity.class, 
+    DBCity dbCity = entityManager.find(DBCity.class,
       new DBCityPK(cityId));
     if (dbCity == null)
       throw new WebServiceException("kernel:CITY_NOT_FOUND");
@@ -1207,14 +1208,14 @@ public class KernelManager implements KernelManagerPort
       Query query = entityManager.createNamedQuery("incrementCityCounter");
       query.setParameter("countryId", provincePK.getCountryId());
       query.setParameter("provinceId", provincePK.getProvinceId());
-      query.executeUpdate();      
+      query.executeUpdate();
       query = entityManager.createNamedQuery("readCityCounter");
       query.setParameter("countryId", provincePK.getCountryId());
       query.setParameter("provinceId", provincePK.getProvinceId());
       int provvnum = ((Number)query.getSingleResult()).intValue();
-      
-      cityId = provincePK.getCountryId() + KernelManager.PK_SEPARATOR + 
-        provincePK.getProvinceId() + KernelManager.PK_SEPARATOR + 
+
+      cityId = provincePK.getCountryId() + KernelManager.PK_SEPARATOR +
+        provincePK.getProvinceId() + KernelManager.PK_SEPARATOR +
         provvnum;
       city.setCityId(cityId);
       DBCity dbCity = new DBCity();
@@ -1224,7 +1225,7 @@ public class KernelManager implements KernelManagerPort
     }
     else // update
     {
-      DBCity dbCity = entityManager.find(DBCity.class, 
+      DBCity dbCity = entityManager.find(DBCity.class,
         new DBCityPK(cityId));
       dbCity.copyFrom(city);
       auditUpdate(dbCity);
@@ -1237,7 +1238,7 @@ public class KernelManager implements KernelManagerPort
   public boolean removeCity(String cityId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
-    DBCity dbCity = entityManager.getReference(DBCity.class, 
+    DBCity dbCity = entityManager.getReference(DBCity.class,
       new DBCityPK(cityId));
     entityManager.remove(dbCity);
     return true;
@@ -1285,7 +1286,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public Street loadStreet(String streetId)
   {
-    DBStreet dbStreet = entityManager.find(DBStreet.class, 
+    DBStreet dbStreet = entityManager.find(DBStreet.class,
       new DBStreetPK(streetId));
     if (dbStreet == null)
       throw new WebServiceException("kernel:STREET_NOT_FOUND");
@@ -1306,15 +1307,15 @@ public class KernelManager implements KernelManagerPort
       query.setParameter("countryId", cityPK.getCountryId());
       query.setParameter("provinceId", cityPK.getProvinceId());
       query.setParameter("cityId", cityPK.getCityId());
-      query.executeUpdate();      
+      query.executeUpdate();
       query = entityManager.createNamedQuery("readStreetCounter");
       query.setParameter("countryId", cityPK.getCountryId());
       query.setParameter("provinceId", cityPK.getProvinceId());
       query.setParameter("cityId", cityPK.getCityId());
       int munivnum = ((Number)query.getSingleResult()).intValue();
-      
-      streetId = cityPK.getCountryId() + KernelManager.PK_SEPARATOR + 
-        cityPK.getProvinceId() + KernelManager.PK_SEPARATOR + 
+
+      streetId = cityPK.getCountryId() + KernelManager.PK_SEPARATOR +
+        cityPK.getProvinceId() + KernelManager.PK_SEPARATOR +
         cityPK.getCityId() + KernelManager.PK_SEPARATOR + munivnum;
       street.setStreetId(streetId);
       DBStreet dbStreet = new DBStreet();
@@ -1324,7 +1325,7 @@ public class KernelManager implements KernelManagerPort
     }
     else // update
     {
-      DBStreet dbStreet = entityManager.find(DBStreet.class, 
+      DBStreet dbStreet = entityManager.find(DBStreet.class,
         new DBStreetPK(streetId));
       dbStreet.copyFrom(street);
       auditUpdate(dbStreet);
@@ -1337,7 +1338,7 @@ public class KernelManager implements KernelManagerPort
   public boolean removeStreet(String streetId)
   {
     checkUserInRole(KernelConstants.KERNEL_ADMIN_ROLE);
-    DBStreet dbStreet = entityManager.getReference(DBStreet.class, 
+    DBStreet dbStreet = entityManager.getReference(DBStreet.class,
       new DBStreetPK(streetId));
     entityManager.remove(dbStreet);
     return true;
@@ -1397,7 +1398,7 @@ public class KernelManager implements KernelManagerPort
 
   /* KernelList */
   @Override
-  public KernelListItem loadKernelListItem(KernelList list, 
+  public KernelListItem loadKernelListItem(KernelList list,
                                            String itemId)
   {
     String listId = getKernelListId(list);
@@ -1414,7 +1415,7 @@ public class KernelManager implements KernelManagerPort
                                             KernelListItem kernelListItem)
   {
     if (kernelListItem.getItemId() == null) // new item
-    {      
+    {
     }
     else // update
     {
@@ -1518,7 +1519,7 @@ public class KernelManager implements KernelManagerPort
     if (StringUtils.isBlank(filter.getDocId()) &&
         StringUtils.isBlank(filter.getPersonId()))
       throw new WebServiceException("FILTER_NOT_ALLOWED");
-    
+
     List<PersonDocumentView> personDocViewList = new ArrayList();
     Query query = entityManager.createNamedQuery("findPersonDocuments");
     query.setFirstResult(filter.getFirstResult());
@@ -1624,7 +1625,7 @@ public class KernelManager implements KernelManagerPort
     }
     return size;
   }
-  
+
   private String getUserId()
   {
     try
@@ -1643,13 +1644,13 @@ public class KernelManager implements KernelManagerPort
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
     return sdf.format(date);
   }
-  
+
   private String getTimeString(Date date)
   {
     SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
     return sdf.format(date);
   }
-  
+
   private void checkStorePerson(Person person, String role)
   {
     Set roles = UserCache.getUser(wsContext).getRoles();
@@ -1686,7 +1687,7 @@ public class KernelManager implements KernelManagerPort
       if (count > 0) throw new WebServiceException("kernel:DUPLICATED_NIF");
     }
   }
-  
+
   private void checkUserInRole(String role)
   {
     Set roles = UserCache.getUser(wsContext).getRoles();
@@ -1697,7 +1698,7 @@ public class KernelManager implements KernelManagerPort
   }
 
   private PersonDocument createPersonDocument(PersonDocument personDocument,
-    String userId) 
+    String userId)
   {
     DBPersonDocument dbPersonDocument = new DBPersonDocument(personDocument);
     Auditor.auditCreation(dbPersonDocument, userId);
@@ -1705,7 +1706,7 @@ public class KernelManager implements KernelManagerPort
 
     return dbPersonDocument;
   }
-  
+
   private void checkUserInRoleOrAuthor(String role, DBEntityBase entity)
   {
     User user = UserCache.getUser(wsContext);
@@ -1721,7 +1722,7 @@ public class KernelManager implements KernelManagerPort
       }
     }
   }
-  
+
   private String addPercent(String text)
   {
     if (text == null) return null;
@@ -1745,11 +1746,11 @@ public class KernelManager implements KernelManagerPort
       for (int i = 0; i < carray.length; i++)
       {
         char c = Character.toLowerCase(carray[i]);
-        if (c == 'a' || c == 'à' || c == 'á' || 
-          c == 'e' || c == 'è' || c == 'é' || 
-          c == 'i' || c == 'ì' || c == 'í' || 
+        if (c == 'a' || c == 'à' || c == 'á' ||
+          c == 'e' || c == 'è' || c == 'é' ||
+          c == 'i' || c == 'ì' || c == 'í' ||
           c == 'o' || c == 'ò' || c == 'ó' ||
-          c == 'u' || c == 'ù' || c == 'ú' || 
+          c == 'u' || c == 'ù' || c == 'ú' ||
           c == 'ü' || c == 'ï' || c == 'ç')
           {
             c = '_';
@@ -1771,7 +1772,7 @@ public class KernelManager implements KernelManagerPort
     Date now = new Date();
     String nowDate = getDateString(now);
     String nowTime = getTimeString(now);
-    
+
     base.setStddgr(nowDate);
     base.setStdhgr(nowTime);
     base.setStddmod(nowDate);
@@ -1785,7 +1786,7 @@ public class KernelManager implements KernelManagerPort
     base.setStddmod(getDateString(now));
     base.setStdhmod(getTimeString(now));
   }
-  
+
   private String describeAddress(DBAddress dbAddress, DBStreet dbStreet)
   {
     StringBuffer buffer = new StringBuffer();
@@ -1827,12 +1828,12 @@ public class KernelManager implements KernelManagerPort
     }
     return buffer.toString();
   }
-  
+
   private String getStringFromList(List<String> idList)
   {
     if (idList == null) return null;
     if (idList.isEmpty()) return null;
-    StringBuffer buffer = new StringBuffer(" ");
+    StringBuilder buffer = new StringBuilder(" ");
     for (String id : idList)
     {
       buffer.append(id);
@@ -1841,7 +1842,7 @@ public class KernelManager implements KernelManagerPort
     return buffer.toString();
   }
 
-  private int getNextCounterValue(String claupref, String claucod, 
+  private int getNextCounterValue(String claupref, String claucod,
     String clauorigen, String claudesc)
   {
     int counter;
@@ -1856,7 +1857,7 @@ public class KernelManager implements KernelManagerPort
     query.setParameter("day", getDateString(now));
     query.setParameter("hour", getTimeString(now));
     int numUpdated = query.executeUpdate();
-    
+
     if (numUpdated == 1)
     {
       query = entityManager.createNamedQuery("readGenericCounter");
@@ -1890,7 +1891,7 @@ public class KernelManager implements KernelManagerPort
     query.setParameter("secondSurname", addPercent(filter.getSecondSurname()));
     query.setParameter("fullName" , addPercent(filter.getFullName()));
     query.setParameter("nif", addPercent(filter.getNif()));
-    query.setParameter("passport", filter.getPassport() != null ? 
+    query.setParameter("passport", filter.getPassport() != null ?
       filter.getPassport().toLowerCase().trim() : null);
     query.setFirstResult(filter.getFirstResult());
     int maxResults = filter.getMaxResults();
@@ -1914,10 +1915,10 @@ public class KernelManager implements KernelManagerPort
     if (streetName != null) streetName = likePattern(streetName);
     query.setParameter("streetName", streetName);
 
-    query.setParameter("number", 
+    query.setParameter("number",
       TextUtils.lowerLeftPadding(filter.getNumber(), "0000"));
 
-    query.setParameter("floor", 
+    query.setParameter("floor",
       TextUtils.lowerLeftPadding(filter.getFloor(), "00"));
 
     query.setParameter("door",
@@ -1929,22 +1930,22 @@ public class KernelManager implements KernelManagerPort
     String comments = filter.getComments();
     if (comments != null) comments = likePattern(comments);
     query.setParameter("comments", comments);
-    
+
     String addressTypeId = filter.getAddressTypeId();
     if (addressTypeId != null)
     {
-      InternalValueConverter typeIdConverter = 
+      InternalValueConverter typeIdConverter =
         new InternalValueConverter(DictionaryConstants.ADDRESS_TYPE);
       addressTypeId = typeIdConverter.fromTypeId(addressTypeId);
     }
-    query.setParameter("addressTypeId", addressTypeId); 
-    
+    query.setParameter("addressTypeId", addressTypeId);
+
     String streetTypeId = filter.getStreetTypeId();
     if (streetTypeId != null)
     {
       streetTypeId = streetTypeId.toLowerCase().trim();
     }
-    query.setParameter("streetTypeId", streetTypeId);    
+    query.setParameter("streetTypeId", streetTypeId);
 
     query.setFirstResult(filter.getFirstResult());
     int maxResults = filter.getMaxResults();
@@ -1958,7 +1959,7 @@ public class KernelManager implements KernelManagerPort
 
     query.setParameter("addressId", filter.getAddressId());
     query.setParameter("roomName", addPercent(filter.getRoomName()));
-    String roomTypeId = 
+    String roomTypeId =
       (filter.getRoomTypeId() == null || filter.getRoomTypeId().trim().length() == 0) ?
         DictionaryConstants.ROOM_TYPE : filter.getRoomTypeId();
     String internalValue = typeIdConverter.fromTypeId(roomTypeId);
@@ -1978,6 +1979,26 @@ public class KernelManager implements KernelManagerPort
     String personTypeId = person.getPersonTypeId();
     if (personTypeId == null || personTypeId.trim().length() == 0)
       throw new WebServiceException("kernel:TYPEID_IS_MANDATORY");
+
+    String nif = person.getNif();
+    if (!StringUtils.isBlank(nif))
+    {
+      nif = nif.trim();
+      if (nif.length() == 8)
+      {
+        // calculate control digit
+        char control = KernelUtils.calculateNIFControl(nif);
+        if (control == KernelUtils.CONTROL_ERROR)
+          throw new WebServiceException("kernel:INVALID_NIF");
+        person.setNif(nif + control);
+      }
+      else
+      {
+        if (!KernelUtils.isValidNIF(nif))
+          throw new WebServiceException("kernel:INVALID_NIF");
+      }
+    }
+
     personTypeId = getWSEndpoint().toGlobalId(Type.class, personTypeId);
     Type type = TypeCache.getInstance().getType(personTypeId);
 
@@ -2046,7 +2067,7 @@ public class KernelManager implements KernelManagerPort
     }
 
     String repTypeId =
-      getWSEndpoint().toGlobalId(Type.class, 
+      getWSEndpoint().toGlobalId(Type.class,
       personRepresentant.getRepresentationTypeId());
 
     org.santfeliu.dic.Type type = TypeCache.getInstance().getType(repTypeId);
@@ -2092,7 +2113,7 @@ public class KernelManager implements KernelManagerPort
       catch (NumberFormatException ex)
       {
         throw new WebServiceException("VALUE_MUST_BE_NUMBER");
-      }      
+      }
     }
     if (address.getPostOfficeBox() != null &&
       address.getPostOfficeBox().length() > 0)
