@@ -162,15 +162,38 @@ public class UserCache
 
   public static Set<String> getUserInRoles(String userId)
   {
-    return instance.explodeUserInRoles(userId);
+    return getUserInRoles(userId, true);
+  }
+
+  public static Set<String> getUserInRoles(String userId, boolean explode)
+  {
+    if (explode)
+    {
+      return instance.explodeUserInRoles(userId);
+    }
+    else
+    {
+      return new HashSet(instance.loadUserInRoles(userId));
+    }
   }
 
   public static Set<String> getRoleInRoles(String roleId)
   {
-    HashSet<String> explodedRoleSet = new HashSet<>();
-    instance.explodeRole(roleId, explodedRoleSet);
-
-    return explodedRoleSet;
+    return getRoleInRoles(roleId, true);
+  }
+  
+  public static Set<String> getRoleInRoles(String roleId, boolean explode)
+  {
+    if (explode)
+    {
+      HashSet<String> explodedRoleSet = new HashSet<>();
+      instance.explodeRole(roleId, explodedRoleSet);      
+      return explodedRoleSet;
+    }
+    else
+    {
+      return new HashSet(instance.loadRoleInRoles(roleId));
+    }
   }
 
   public static void clear()
