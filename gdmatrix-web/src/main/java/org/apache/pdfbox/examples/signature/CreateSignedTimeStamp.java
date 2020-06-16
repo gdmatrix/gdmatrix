@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 
 /**
- * An example for timestamp-signing a PDF for PADeS-Specification. The document
+ * Based on example for timestamp-signing a PDF for PADeS-Specification. The document
  * will be extended by a signed TimeStamp (another kind of signature) (Signed
  * TimeStamp and Hash-Value of the document are signed by a Time Stamp Authority
  * (TSA)).
@@ -89,11 +89,14 @@ public class CreateSignedTimeStamp implements SignatureInterface
       FileOutputStream fos = new FileOutputStream(outFile))
     {
       signDetached(doc, fos);
+      // write incremental (only for signing purpose)
+      doc.saveIncremental(fos);
     }
   }
 
   /**
    * Prepares the TimeStamp-Signature and starts the saving-process.
+   * Document has to be saved externally.
    *
    * @param document given Pdf
    * @param output Where the file will be written
@@ -120,9 +123,6 @@ public class CreateSignedTimeStamp implements SignatureInterface
     // http://www.etsi.org/deliver/etsi_ts/102700_102799/10277804/01.01.01_60/ts_10277804v010101p.pdf
     // register signature dictionary and sign interface
     document.addSignature(signature, this);
-
-    // write incremental (only for signing purpose)
-    document.saveIncremental(output);
   }
 
   @Override

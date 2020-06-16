@@ -104,6 +104,17 @@ public class OcspHelper
         this.additionalCerts = additionalCerts;
         this.ocspUrl = ocspUrl;
     }
+    
+    /**
+    * Get the certificate to be OCSP-checked.
+    * 
+    * @return The certificate to be OCSP-checked.
+    */
+    X509Certificate getCertificateToCheck()
+    {
+        return certificateToCheck;
+    }
+    
 
     /**
      * Performs and verifies the OCSP-Request
@@ -446,13 +457,13 @@ public class OcspHelper
         {
             httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");
             httpConnection.setRequestProperty("Accept", "application/ocsp-response");
-            httpConnection.setRequestProperty("Connection", "close");            
-            httpConnection.setDoOutput(true);           
+            httpConnection.setRequestProperty("Connection", "close");   
+            httpConnection.setDoOutput(true); 
             try (OutputStream out = httpConnection.getOutputStream())
             {
                 out.write(request.getEncoded());
             }
-            if (httpConnection.getResponseCode() != 200)
+            if (httpConnection.getResponseCode() / 100 != 2)
             {
                 throw new IOException("OCSP: Could not access url, ResponseCode: "
                         + httpConnection.getResponseCode());
@@ -562,7 +573,7 @@ public class OcspHelper
         builder.addRequest(certId);
         return builder.build();
     }
-
+       
     /**
      * Class to create SHA-1 Digest, used for creation of CertificateID.
      */

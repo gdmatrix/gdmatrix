@@ -72,8 +72,8 @@ import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.security.util.StringCipher;
 
 import org.santfeliu.util.MatrixConfig;
-import org.santfeliu.util.pdf.signature.DocumentInfo;
 import org.santfeliu.util.pdf.signature.PDFSigner;
+import org.santfeliu.util.pdf.signature.DocumentInfo;
 import org.santfeliu.util.pdf.signature.SignatureInfo;
 import org.santfeliu.util.pdf.signature.SignatureLevel;
 
@@ -268,7 +268,7 @@ public class ScannerServlet extends HttpServlet
     // sign
     try (FileOutputStream fos = new FileOutputStream(file))
     {
-      PDFSigner signer = new PDFSigner();
+      PDFSigner signer = PDFSigner.getInstance();
       DocumentInfo documentInfo = new DocumentInfo();
       documentInfo.setTitle(pdfTitle);
       documentInfo.setSubject(pdfSubject);

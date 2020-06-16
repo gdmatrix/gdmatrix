@@ -114,32 +114,32 @@ public class CertInformationHelper
      */
     protected static String getCrlUrlFromExtensionValue(byte[] extensionValue) throws IOException
     {
-        ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(extensionValue);
-        Enumeration<?> objects = asn1Seq.getObjects();
+      ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(extensionValue);
+      Enumeration<?> objects = asn1Seq.getObjects();
 
-        while (objects.hasMoreElements())
+      while (objects.hasMoreElements())
+      {
+        DLSequence obj = (DLSequence) objects.nextElement();
+
+        ASN1TaggedObject taggedObject = (ASN1TaggedObject) obj.getObjectAt(0);
+        taggedObject = (ASN1TaggedObject) taggedObject.getObject();
+        if (taggedObject.getObject() instanceof ASN1TaggedObject)
+          taggedObject = (ASN1TaggedObject) taggedObject.getObject(); // yes stmt is twice    
+        while (taggedObject.getObject() instanceof ASN1Sequence)
         {
-            DLSequence obj = (DLSequence) objects.nextElement();
+           taggedObject = 
+            (ASN1TaggedObject)((ASN1Sequence)taggedObject.getObject()).getObjectAt(0);
+        }            
 
-            ASN1TaggedObject taggedObject = (ASN1TaggedObject) obj.getObjectAt(0);
-            taggedObject = (ASN1TaggedObject) taggedObject.getObject();
-            if (taggedObject.getObject() instanceof ASN1TaggedObject)
-              taggedObject = (ASN1TaggedObject) taggedObject.getObject(); // yes stmt is twice
-            if (!(taggedObject.getObject() instanceof ASN1OctetString))
-            {
-                // happens with http://blogs.adobe.com/security/SampleSignedPDFDocument.pdf
-                continue;
-            }
-            ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
-            String url = new String(uri.getOctets());
-            // TODO Check for: DistributionPoint ::= SEQUENCE (see RFC 2459), multiples can be possible.
+        ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
+        String url = new String(uri.getOctets());
 
-            // return first http(s)-Url for crl
-            if (url.startsWith("http"))
-            {
-                return url;
-            }
+        // return first http(s)-Url for crl
+        if (url.startsWith("http"))
+        {
+            return url;
         }
-        return null;
+      }
+      return null;
     }
 }

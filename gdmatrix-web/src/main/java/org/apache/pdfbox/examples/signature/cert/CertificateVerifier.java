@@ -25,6 +25,7 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
@@ -233,6 +234,7 @@ public final class CertificateVerifier
         try
         {
             // Try to verify certificate signature with its own public key
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
             PublicKey key = cert.getPublicKey();
             cert.verify(key, SecurityProvider.getProvider().getName());
             return true;
@@ -446,6 +448,12 @@ public final class CertificateVerifier
             LOG.info("Revocation check of OCSP responder certificate skipped (id-pkix-ocsp-nocheck is set)");
             return;
         }
+        
+        if (ocspHelper.getCertificateToCheck().equals(ocspResponderCertificate))
+        {
+            LOG.info("OCSP responder certificate is identical to certificate to check");
+            return;
+        }        
 
         LOG.info("Check of OCSP responder certificate");
         Set<X509Certificate> additionalCerts2 = new HashSet<>(additionalCerts);

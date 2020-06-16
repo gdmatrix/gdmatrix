@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore.PrivateKeyEntry;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
@@ -84,7 +85,11 @@ public class AddValidationInformation
   private PDDocument document;
   private final Set<BigInteger> foundRevocationInformation = new HashSet<>();
   private Calendar signDate;
-
+  
+  public AddValidationInformation()
+  {
+  }
+  
   /**
    * Signs the given PDF file.
    *
@@ -327,7 +332,7 @@ public class AddValidationInformation
     catch (RevokedCertificateException e)
     {
       throw new IOException(e);
-    }
+    } 
   }
 
   /**
@@ -359,17 +364,21 @@ public class AddValidationInformation
    * @throws CertificateProccessingException
    * @throws RevokedCertificateException
    */
-  private void addOcspData(CertSignatureInformation certInfo) throws IOException, OCSPException,
-    CertificateProccessingException, RevokedCertificateException
+  private void addOcspData(CertSignatureInformation certInfo) throws 
+    IOException, OCSPException, CertificateProccessingException, 
+    RevokedCertificateException
   {
     OcspHelper ocspHelper = new OcspHelper(
       certInfo.getCertificate(),
-      signDate.getTime(),
+      (signDate != null ? signDate.getTime() : null),
       certInfo.getIssuerCertificate(),
       new HashSet<>(certInformationHelper.getCertificateSet()),
       certInfo.getOcspUrl());
     OCSPResp ocspResp = ocspHelper.getResponseOcsp();
     BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
+    if (basicResponse == null)
+      throw new OCSPException("Can not process OCSP Response");
+    
     X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
     certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
     byte[] signatureHash;
@@ -435,7 +444,7 @@ public class AddValidationInformation
       }
     }
     crl.verify(issuerCertificate.getPublicKey(), SecurityProvider.getProvider().getName());
-    CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), signDate.getTime(), certInfo.getCrlUrl());
+    CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), (signDate != null ? signDate.getTime() : null), certInfo.getCrlUrl());
     COSStream crlStream = writeDataToStream(crl.getEncoded());
     crls.add(crlStream);
     if (correspondingCRLs != null)
