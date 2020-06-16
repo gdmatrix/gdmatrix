@@ -1,0 +1,45 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:t="http://myfaces.apache.org/tomahawk">
+
+  <ui:composition template="/common/obj/object.xhtml">
+    <ui:param name="css" value="/common/security/css/security.css" />
+    <ui:define name="tab">
+
+      <f:loadBundle 
+        basename="org.santfeliu.security.web.resources.SecurityBundle"
+        var="securityBundle" />
+
+      <t:div rendered="#{!userRolesTreeBean.isNew()}">
+        <t:div>
+          <h:commandButton value="#{securityBundle.expandAll}" 
+                           action="#{userRolesTreeBean.expandAll}" 
+                           styleClass="showButton" />
+          <h:commandButton value="#{securityBundle.collapseAll}" 
+                           action="#{userRolesTreeBean.collapseAll}" 
+                           styleClass="showButton" />
+        </t:div>
+        <t:div styleClass="inputBox rolesTree">
+          <t:tree2 value="#{userRolesTreeBean.treeModel}" var="node"
+                   binding="#{userRolesTreeBean.tree}">
+            <f:facet name="User">
+              <h:outputText value="#{node.description}"
+                            styleClass="textBox" />
+            </f:facet>
+            <f:facet name="Role">
+              <h:outputLink styleClass="roleLink#{node.cycle ? ' cycle' : ''}" 
+                onclick="return showObject('type|Role|#{node.roleId}')"
+                value="#">
+                <h:outputText value="#{node.description}"
+                              styleClass="textBox" />
+              </h:outputLink>
+            </f:facet>
+          </t:tree2>
+        </t:div>
+      </t:div>
+      
+    </ui:define>
+  </ui:composition>
+</html>

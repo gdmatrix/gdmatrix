@@ -278,3 +278,21 @@ h6.element-invisible
   display: block;
   visibility: visible;
 }
+
+/* Roles tree */
+
+.rolesTree
+{
+  margin-top: 10px;
+}
+
+.rolesTree .roleLink
+{
+  text-decoration: none;
+  color: black;
+}
+
+.rolesTree .roleLink.cycle
+{
+  color: red;
+}

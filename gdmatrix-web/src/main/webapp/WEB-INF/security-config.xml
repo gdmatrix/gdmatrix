@@ -40,6 +40,11 @@
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  <managed-bean>
+  <managed-bean-name>userRolesTreeBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.UserRolesTreeBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
   <managed-bean-name>roleBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RoleBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
@@ -62,6 +67,11 @@
  <managed-bean>
   <managed-bean-name>roleRolesBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RoleRolesBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>roleRolesTreeBean</managed-bean-name>
+  <managed-bean-class>org.santfeliu.security.web.RoleRolesTreeBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  <managed-bean>
@@ -121,6 +131,11 @@
   </navigation-case>
 
   <navigation-case>
+   <from-outcome>user_roles_tree</from-outcome>
+   <to-view-id>/common/security/user_roles_tree.xhtml</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
    <from-outcome>role_search</from-outcome>
    <to-view-id>/common/security/role_search.xhtml</to-view-id>
   </navigation-case>
@@ -138,6 +153,11 @@
   <navigation-case>
    <from-outcome>role_roles</from-outcome>
    <to-view-id>/common/security/role_roles.xhtml</to-view-id>
+  </navigation-case>
+
+  <navigation-case>
+   <from-outcome>role_roles_tree</from-outcome>
+   <to-view-id>/common/security/role_roles_tree.xhtml</to-view-id>
   </navigation-case>
 
   <navigation-case>
