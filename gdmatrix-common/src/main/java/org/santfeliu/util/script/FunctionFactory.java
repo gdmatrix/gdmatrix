@@ -39,28 +39,28 @@ import org.santfeliu.util.script.function.*;
  */
 public class FunctionFactory
 {
-  private static BlankNullFunction blankNullFunction = new BlankNullFunction();
-  private static DecimalFormatFunction decimalFormatFunction = new DecimalFormatFunction();
-  private static HtmlEncodeFunction htmlEncodeFunction = new HtmlEncodeFunction();
-  private static TrimFunction trimFunction = new TrimFunction();
-  private static XmlEncodeFunction xmlEncodeFunction = new XmlEncodeFunction();
-  private static ParseDateFunction parseDateFunction = new ParseDateFunction();
-  private static FormatDateFunction formatDateFunction = new FormatDateFunction();
-  private static AddDateFunction addDateFunction = new AddDateFunction();
-  private static SamplingFunction samplingFunction = new SamplingFunction();
-  private static ToLocalIdFunction toLocalIdFunction = new ToLocalIdFunction();
-  private static SqlExecuteQueryFunction sqlExecuteQueryFunction = new SqlExecuteQueryFunction();
-  private static UrlEncodeFunction urlEncodeFunction = new UrlEncodeFunction();
-  private static DBConnectionFunction dbConnectionFunction = new DBConnectionFunction();
-  private static InputMultipleFunction inputMultipleFunction = new InputMultipleFunction();
-  private static TodayFunction todayFunction = new TodayFunction();
-  private static WebCounterFunction webCounterFunction = new WebCounterFunction();
-  private static JSONFunction jsonFunction = new JSONFunction();
-  private static IncludeFunction includeFunction = new IncludeFunction();
-  private static WSPortFunction wsCallFunction = new WSPortFunction();
-  private static LinkDocumentsFunction linkDocumentsFunction = new LinkDocumentsFunction();
-  private static SequenceNextValFunction sequenceNextValFunction = new SequenceNextValFunction();
-  private static IncludeScriptFunction includeScriptFunction = new IncludeScriptFunction();   
+  private static final BlankNullFunction blankNullFunction = new BlankNullFunction();
+  private static final DecimalFormatFunction decimalFormatFunction = new DecimalFormatFunction();
+  private static final HtmlEncodeFunction htmlEncodeFunction = new HtmlEncodeFunction();
+  private static final TrimFunction trimFunction = new TrimFunction();
+  private static final XmlEncodeFunction xmlEncodeFunction = new XmlEncodeFunction();
+  private static final ParseDateFunction parseDateFunction = new ParseDateFunction();
+  private static final FormatDateFunction formatDateFunction = new FormatDateFunction();
+  private static final AddDateFunction addDateFunction = new AddDateFunction();
+  private static final SamplingFunction samplingFunction = new SamplingFunction();
+  private static final ToLocalIdFunction toLocalIdFunction = new ToLocalIdFunction();
+  private static final SqlExecuteQueryFunction sqlExecuteQueryFunction = new SqlExecuteQueryFunction();
+  private static final UrlEncodeFunction urlEncodeFunction = new UrlEncodeFunction();
+  private static final DBConnectionFunction dbConnectionFunction = new DBConnectionFunction();
+  private static final InputMultipleFunction inputMultipleFunction = new InputMultipleFunction();
+  private static final TodayFunction todayFunction = new TodayFunction();
+  private static final WebCounterFunction webCounterFunction = new WebCounterFunction();
+  private static final JSONFunction jsonFunction = new JSONFunction();
+  private static final IncludeFunction includeFunction = new IncludeFunction();
+  private static final WSPortFunction wsCallFunction = new WSPortFunction();
+  private static final LinkDocumentsFunction linkDocumentsFunction = new LinkDocumentsFunction();
+  private static final SequenceNextValFunction sequenceNextValFunction = new SequenceNextValFunction();
+  private static final IncludeScriptFunction includeScriptFunction = new IncludeScriptFunction();   
   
   public static void initFunctions(Scriptable scriptable)
   {

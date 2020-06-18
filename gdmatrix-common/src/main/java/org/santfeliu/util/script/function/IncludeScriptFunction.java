@@ -38,27 +38,29 @@ import org.santfeliu.util.script.ScriptClient;
 
 /**
  *
- * @author blanquepa
+ * @author blanquepa, realor
  */
 
 /*
- * Usage: include(String reference [, String language])
+ * Usage: includeScript(String reference)
  *
- * returns: a String that contains the data of document referenced by
-     reference and language.
+ * Executes the given script in the current scope. 
+ *
+ * returns: ""
  *
  *   reference format can be:
- *     js:<name>
+ *     <name>
+ *     js:<name> (deprecated)
  *
  * Examples:
  *
- *   ${include("js:math")}
+ *   includeScript("math");
+ *
  */
 
 public class IncludeScriptFunction extends BaseFunction
 {
   private static final String JS_PREFIX = "js:";
-  private static final String JS_PROPERTY = "workflow.js";
 
   public IncludeScriptFunction()
   {
@@ -74,14 +76,19 @@ public class IncludeScriptFunction extends BaseFunction
       if (args.length > 0)
       {
         String reference = Context.toString(args[0]);
+        String jsName;
         if (reference.startsWith(JS_PREFIX))
         {
-          String jsName = reference.substring(JS_PREFIX.length());
-          String userId = MatrixConfig.getProperty("adminCredentials.userId");
-          String password = MatrixConfig.getProperty("adminCredentials.password");          
-          ScriptClient client = new ScriptClient(userId, password);
-          client.executeScript(jsName, scope);
+          jsName = reference.substring(JS_PREFIX.length());
         }
+        else
+        {
+          jsName = reference;
+        }
+        String userId = MatrixConfig.getProperty("adminCredentials.userId");
+        String password = MatrixConfig.getProperty("adminCredentials.password");          
+        ScriptClient client = new ScriptClient(userId, password);
+        client.executeScript(jsName, scope);
       }
     }
     catch (Exception ex)
