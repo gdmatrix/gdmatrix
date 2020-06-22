@@ -224,7 +224,7 @@ public class WebServiceNodeEditor extends JPanel implements NodeEditor
     optionsPanel.add(readTimeoutTextField,
       new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
         new Insets(4, 4, 4, 4), 0, 0));
-
+    
     tabbedPane.addTab("Options", optionsPanel);
     this.add(tabbedPane, BorderLayout.CENTER);
     northPanel.add(endpointLabel,
@@ -262,14 +262,26 @@ public class WebServiceNodeEditor extends JPanel implements NodeEditor
       }
     });
     usernameLabel.setText("Username:");
-    usernameTextField.setMinimumSize(new Dimension(200, 24));
     passwordLabel.setText("Password:");
-    passwordTextField.setMinimumSize(new Dimension(200, 24));
-
     connectTimeoutLabel.setText("Connect timeout (sec.):");
-    connectTimeoutTextField.setMinimumSize(new Dimension(60, 24));
     readTimeoutLabel.setText("Read timeout (sec.):");
-    readTimeoutTextField.setMinimumSize(new Dimension(60, 24));
+
+    Dimension dim = usernameTextField.getPreferredSize();
+    dim.width = 5 * dim.height;
+    usernameTextField.setPreferredSize(dim);
+    usernameTextField.setMinimumSize(dim);
+
+    passwordTextField.setPreferredSize(dim);
+    passwordTextField.setMinimumSize(dim);
+
+    dim = connectTimeoutTextField.getPreferredSize();
+    dim.width = 3 * dim.height;
+
+    connectTimeoutTextField.setPreferredSize(dim);
+    connectTimeoutTextField.setMinimumSize(dim);
+
+    readTimeoutTextField.setPreferredSize(dim);
+    readTimeoutTextField.setMinimumSize(dim);
   }
 
   private void testButton_actionPerformed(ActionEvent e)

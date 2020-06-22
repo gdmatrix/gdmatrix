@@ -33,6 +33,7 @@ package org.santfeliu.workflow.swing.editor;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -283,6 +284,11 @@ public class SignatureNodeEditor extends JPanel implements NodeEditor
     addDataPropsTextArea.setFont(Options.getEditorFont());
     propsTextArea.setFont(Options.getEditorFont());
 
+    Dimension dim = docVarTextField.getPreferredSize();
+    dim.width = 5 * dim.height;
+    docVarTextField.setPreferredSize(dim);
+    docVarTextField.setMinimumSize(dim);
+    
     dataPropertiesPanel.setLayout(gridBagLayout4);
     systemSignaturePanel.setLayout(gridBagLayout6);
     keyAliasLabel.setText("KeyAlias:");

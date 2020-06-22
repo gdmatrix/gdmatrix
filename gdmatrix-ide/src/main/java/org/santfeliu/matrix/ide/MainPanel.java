@@ -740,7 +740,7 @@ public class MainPanel extends JPanel
     splitPane.add(rightSplitPane, JSplitPane.RIGHT);
     splitPane.setContinuousLayout(true);
     splitPane.setDividerLocation(540);
-    splitPane.setResizeWeight(0.8);
+    splitPane.setResizeWeight(1.0);
     splitPane.setDividerSize(2);
     splitPane.setVisible(false);
     splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,

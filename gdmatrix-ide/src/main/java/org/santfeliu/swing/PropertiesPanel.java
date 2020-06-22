@@ -46,12 +46,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
@@ -120,6 +122,7 @@ public class PropertiesPanel extends JPanel
     addButton.setIcon(addPropertyIcon);
     addButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             addButton_actionPerformed(e);
@@ -129,6 +132,7 @@ public class PropertiesPanel extends JPanel
     removeButton.setIcon(removePropertyIcon);
     removeButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             removeButton_actionPerformed(e);
@@ -138,6 +142,7 @@ public class PropertiesPanel extends JPanel
     sortAscButton.setIcon(sortAscIcon);
     sortAscButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             sortAscButton_actionPerformed(e);
@@ -147,6 +152,7 @@ public class PropertiesPanel extends JPanel
     sortDescButton.setIcon(sortDescIcon);
     sortDescButton.addActionListener(new ActionListener()
         {
+          @Override
           public void actionPerformed(ActionEvent e)
           {
             sortDescButton_actionPerformed(e);
@@ -160,6 +166,8 @@ public class PropertiesPanel extends JPanel
     scrollPane.getViewport().add(propertiesTable, null);
     scrollPane.getViewport().setBackground(propertiesTable.getBackground());
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    int preferredHeight = propertiesTable.getRowHeight() * 10;
+    scrollPane.setPreferredSize(new Dimension(400, preferredHeight));
     this.add(scrollPane, BorderLayout.CENTER);
 
     propertiesTable.setAutoCreateColumnsFromModel(false);
@@ -177,6 +185,7 @@ public class PropertiesPanel extends JPanel
     JTextField textField = new JTextField();
     textField.setHorizontalAlignment(JTextField.LEFT);
     textField.setMargin(new Insets(0, 0, 0, 0));
+    textField.setBorder(null);
     DefaultCellEditor editor = new DefaultCellEditor(textField);
     editor.setClickCountToStart(1);
 
@@ -184,7 +193,6 @@ public class PropertiesPanel extends JPanel
     propertiesTable.addColumn(new TableColumn(1, 300, renderer, editor));
 
     propertiesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    propertiesTable.setRowHeight(24);
     propertiesTable.getTableHeader().setReorderingAllowed(false);
   }
 
@@ -207,6 +215,7 @@ public class PropertiesPanel extends JPanel
     removeButton.setVisible(editable);
   }
 
+  @Override
   public void setEnabled(boolean enabled)
   {
     super.setEnabled(enabled);
@@ -364,9 +373,18 @@ public class PropertiesPanel extends JPanel
   {
     tableModel.addRow(new Object[]{null, null});
     int lastRow = tableModel.getRowCount() - 1;
-    propertiesTable.requestFocus();
     propertiesTable.getSelectionModel().setSelectionInterval(lastRow, lastRow);
     propertiesTable.editCellAt(lastRow, 0);
+    propertiesTable.getEditorComponent().requestFocus();
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        JScrollBar vertical = scrollPane.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
+      }
+    });
   }
 
   private void removeButton_actionPerformed(ActionEvent e)
