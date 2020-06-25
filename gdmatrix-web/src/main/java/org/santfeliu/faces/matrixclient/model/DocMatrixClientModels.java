@@ -33,6 +33,7 @@ package org.santfeliu.faces.matrixclient.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.DocumentConstants;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -81,7 +82,7 @@ public class DocMatrixClientModels implements Serializable
       sendModel.putParameter(MAXFILESIZE_PARAMETER, maxFileSize);
 
     //DocTypeId
-    if (docTypeId != null)
+    if (!StringUtils.isBlank(docTypeId))
     {
       Type auxType = TypeCache.getInstance().getType(docTypeId);
       if (auxType != null)
