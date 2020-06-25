@@ -61,6 +61,10 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
     StringBuilder selectBuffer = new StringBuilder();
     StringBuilder fromBuffer = new StringBuilder();
     StringBuilder whereBuffer = new StringBuilder();
+    
+    int maxResults = filter.getMaxResults();    
+    if (!isCounterQuery() && maxResults > 0)
+      selectBuffer.append("SELECT * FROM (SELECT rn.*, ROWNUM rnum FROM (");   
 
     appendMainStatement(selectBuffer, fromBuffer);
     appendRolesFilter(whereBuffer);
@@ -90,22 +94,23 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
       buffer.append(fromBuffer);
       buffer.append(whereBuffer);
     }
-
-    //    System.out.println(buffer);
+    
+    if (!isCounterQuery() && maxResults > 0)
+    {
+      int firstResult = filter.getFirstResult();
+      int rowNum = firstResult + maxResults;
+      buffer.append(") rn WHERE ROWNUM <= ?rowNum) WHERE rnum > ?firstResult ");
+      parameters.put("rowNum", rowNum);
+      parameters.put("firstResult", firstResult);
+    }  
     
     Query query = em.createNativeQuery(buffer.toString());
     setParameters(query);
 
-    if (!isCounterQuery())
-    {
-      query.setFirstResult(filter.getFirstResult());
-      int maxResults = filter.getMaxResults();
-      if (maxResults > 0) query.setMaxResults(maxResults);
-    }
-    else
+    if (isCounterQuery())
     {
       query.setFirstResult(0);
-      query.setMaxResults(1);
+      query.setMaxResults(1);      
     }
 
     return query;

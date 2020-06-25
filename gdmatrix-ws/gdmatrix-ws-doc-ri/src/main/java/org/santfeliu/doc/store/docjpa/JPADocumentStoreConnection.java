@@ -331,6 +331,12 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
         {
           Vector dbDocument = (Vector)doc;
           document = new Document();
+          document = copyTo(document, dbDocument.toArray(), endpoint);
+        }
+        else if (doc instanceof Object[])
+        {
+          Object[] dbDocument = (Object[])doc;
+          document = new Document();
           document = copyTo(document, dbDocument, endpoint);
         }
         else //JPQL query
@@ -858,32 +864,32 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     }
     document.getProperty().removeAll(removeProperties);
   }
-
+  
   private Document copyTo(Document document,
-    Vector docVector, WSEndpoint endpoint)
+    Object[] docVector, WSEndpoint endpoint)
   {
-    document.setDocId(String.valueOf(docVector.get(0)));
-    document.setVersion(((Number)docVector.get(1)).intValue());
-    document.setTitle((String)docVector.get(2));
-    String docTypeId = (String)docVector.get(3);
+    document.setDocId(String.valueOf(docVector[0]));
+    document.setVersion(((Number)docVector[1]).intValue());
+    document.setTitle((String)docVector[2]);
+    String docTypeId = (String)docVector[3];
     document.setDocTypeId(
       endpoint.getExternalEntity("Type").toGlobalId(docTypeId));
-    document.setState(State.valueOf((String)docVector.get(4)));
-    document.setLanguage((String)docVector.get(5));
-    document.setCaptureDateTime((String)docVector.get(6));
-    document.setCaptureUserId((String)docVector.get(7));
-    document.setChangeDateTime((String)docVector.get(8));
-    document.setChangeUserId((String)docVector.get(9));
-    document.setLockUserId((String)docVector.get(10));
-    document.setCreationDate((String)docVector.get(13));
+    document.setState(State.valueOf((String)docVector[4]));
+    document.setLanguage((String)docVector[5]);
+    document.setCaptureDateTime((String)docVector[6]);
+    document.setCaptureUserId((String)docVector[7]);
+    document.setChangeDateTime((String)docVector[8]);
+    document.setChangeUserId((String)docVector[9]);
+    document.setLockUserId((String)docVector[10]);
+    document.setCreationDate((String)docVector[13]);
 
     Content content = new Content();
-    content.setContentId((String)docVector.get(12));
+    content.setContentId((String)docVector[12]);
 
     document.setContent(content);
 
     return document;
-  }
+  }  
   
   private void setOutputProperties(
     Map<DBDocumentPK, Document> documentsMap, List<Object[]> docProps,
