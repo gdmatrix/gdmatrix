@@ -579,6 +579,7 @@ public class EventCopyBean extends PageBean implements Serializable
   }
 
   //GUI actions
+  @Override
   public String show()
   {
     buildPreview();
@@ -648,8 +649,8 @@ public class EventCopyBean extends PageBean implements Serializable
    *
    * @param timeOffset offset in minutes from event startDate.
    * @param duration in minutes of the event to be created.
-   * @param addMasterEventId determine if "masterEventId" is set to the copy to be created.
    * @return The created event
+   * @throws java.lang.Exception
    */
   public EventRow duplicate(long timeOffset, long duration) throws Exception
   {
@@ -1240,13 +1241,7 @@ public class EventCopyBean extends PageBean implements Serializable
 
     public void setFormattedEndHour(String endHour)
     {
-      if (endHour != null && endHour.length() == 5 && endHour.contains(":"))
-      {
-        String[] parts = endHour.split(":");
-        this.endHour = parts[0] + parts[1];
-      }
-      else
-        this.endHour = "0000";
+      this.endHour = formatTime(endHour);
     }
 
     public String getFormattedStartHour()
@@ -1259,14 +1254,10 @@ public class EventCopyBean extends PageBean implements Serializable
 
     public void setFormattedStartHour(String startHour)
     {
-      if (startHour != null && startHour.length() == 5 && startHour.contains(":"))
-      {
-        String[] parts = startHour.split(":");
-        this.startHour = parts[0] + parts[1];
-      }
-      else
-        this.startHour = "0000";
+      this.startHour = formatTime(startHour);
     }
+    
+
 
     public boolean includeChangeOfDay()
     {
@@ -1308,6 +1299,26 @@ public class EventCopyBean extends PageBean implements Serializable
       else 
         return (1440 - start) + end;
     }
+    
+    private String formatTime(String time)
+    {
+      String result = "0000";
+      
+      if (time != null && time.contains(":"))
+      {
+        String[] parts = time.split(":");
+        String hour = StringUtils.leftPad(parts[0], 2, '0');
+        String minutes = StringUtils.leftPad(parts[1], 2, '0');
+        result = hour + minutes;
+      }
+      else if (time != null && !time.contains(":") && time.length() <= 2)
+      {
+        String hour = StringUtils.leftPad(time, 2, '0');
+        result = hour + "00";
+      }
+      
+      return result;
+    }    
   }
 
   private abstract class PreviewListBuilder
@@ -1423,7 +1434,8 @@ public class EventCopyBean extends PageBean implements Serializable
             hourPattern.getDurationInMillis());
         else
           ecal.setTimeInMillis(scal.getTimeInMillis() +
-            TimeUnit.MILLISECONDS.convert(hourPattern.getTimeBetweenHours(), TimeUnit.MINUTES));
+            TimeUnit.MILLISECONDS.convert(hourPattern.getTimeBetweenHours(), 
+              TimeUnit.MINUTES));
 
         boolean inRange =
           scal.getTimeInMillis() + hourPattern.getDurationInMillis() <= ecal.getTimeInMillis();
@@ -1643,7 +1655,7 @@ public class EventCopyBean extends PageBean implements Serializable
 
         cal.set(Calendar.DAY_OF_MONTH, 1);
 
-        int month = Integer.valueOf(month1).intValue();
+        int month = Integer.parseInt(month1);
         int day = 1;
         int position = Integer.valueOf(weekPosition);
         int counter = position;
