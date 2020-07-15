@@ -252,11 +252,14 @@ public class CaseManager implements CaseManagerPort
       else //UPDATE
       {
         dbCase = em.find(DBCase.class, caseId);
-
+        
+        //Load ACL
+        List<DBAccessControl> dbCurrentACL = loadAccessControlList(caseId);
+        dbCase.getAccessControl().addAll(dbCurrentACL);
+        
         if (!canUserModifyCase(user, dbCase))
           throw new Exception("cases:NOT_AUTHORIZED_TO_MODIFY_CASE");
         
-        List<DBAccessControl> dbCurrentACL = loadAccessControlList(caseId);
         dbCase.copyFrom(caseObject);
         Auditor.auditChange(dbCase, user.getUserId());
         em.merge(dbCase);
@@ -306,6 +309,11 @@ public class CaseManager implements CaseManagerPort
       if (caseId == null) return false;
 
       DBCase dbCase = em.find(DBCase.class, caseId);
+      
+      //Load ACL
+      List<DBAccessControl> dbCurrentACL = loadAccessControlList(caseId);
+      dbCase.getAccessControl().addAll(dbCurrentACL); 
+      
       if (!canUserDeleteCase(user, dbCase))
         throw new Exception("cases:NOT_AUTHORIZED_TO_DELETE_CASE");
 
