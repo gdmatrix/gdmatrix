@@ -31,165 +31,61 @@
 package org.santfeliu.security.web;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.myfaces.custom.tree2.HtmlTree;
-import org.apache.myfaces.custom.tree2.TreeModelBase;
-import org.apache.myfaces.custom.tree2.TreeNodeChecked;
 import org.matrix.security.SecurityConstants;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.santfeliu.security.UserCache;
-import org.santfeliu.web.obj.PageBean;
 
 /**
  *
  * @author lopezrj
  */
-public class UserRolesTreeBean extends PageBean
-{
-  private static final String ROOT_NODE_ID = "-1";
-  
-  private TreeModelBase treeModel;
-  private transient HtmlTree tree;
-  
-  public UserRolesTreeBean()
-  {    
-    load();
-  }
-
-  public void setTreeModel(TreeModelBase treeModel)
-  {
-    this.treeModel = treeModel;
-  }
-
-  public TreeModelBase getTreeModel()
-  {
-    return treeModel;
-  }
-
-  public void setTree(HtmlTree tree)
-  {
-    this.tree = tree;
-  }
-
-  public HtmlTree getTree()
-  {
-    return tree;
-  }
-  
+public class UserRolesTreeBean extends RolesTreeBean
+{  
+  @Override
   public String show()
   {
     return "user_roles_tree";
   }
   
-  public String load()
+  @Override
+  protected TreeNode getMainTreeNode()
   {
-    try
-    {
-      UserRolesTreeNode rootNode = new UserRolesTreeNode();
-      rootNode.setType("User");
-      rootNode.setIdentifier(ROOT_NODE_ID);      
-      if (!isNew())
-      {
-        String userId = getObjectId();        
-        rootNode.setDescription(userId);
-        loadRoles(rootNode);
-      }
-      else
-      {
-        rootNode.setDescription("");
-      }
-      treeModel = new TreeModelBase(rootNode);
-      tree = new HtmlTree();
-      tree.setModel(treeModel);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return show();
+    String userId = getObjectId(); 
+    TreeNode mainNode = new DefaultTreeNode("User", new UserInfo(userId), 
+      getRoot());
+    return mainNode;
   }
+                
+  public class UserInfo extends NodeInfo
+  {
+    public UserInfo(String userId) 
+    {
+      super(userId);
+    }
+    
+    public String getUserId() 
+    {
+      return getNodeId();
+    }
 
-  public String expandAll()
-  {
-    tree.expandAll();
-    return null;
-  }
-  
-  public String collapseAll()
-  {
-    tree.collapseAll();
-    return null;
-  }
-  
-  private void loadRoles(UserRolesTreeNode nodeRoot) throws Exception
-  {
-    addNodes(nodeRoot, new HashSet<String>());
-  }
-  
-  private void addNodes(UserRolesTreeNode node, Set<String> addedRoles)
-  {
-    List<String> roles = node.getRoles();    
-    for (String role : roles)
+    @Override
+    protected List<String> getChildrenRoles() 
     {
-      if (!role.startsWith(SecurityConstants.SELF_ROLE_PREFIX))
+      List<String> auxList = new ArrayList<>();
+      Set<String> userRoles = UserCache.getUserInRoles(getUserId(), false);
+      for (String role : userRoles)
       {
-        UserRolesTreeNode t = new UserRolesTreeNode();
-        t.setDescription(role);
-        t.setType("Role");
-        t.setIdentifier(role);
-        t.setCycle(addedRoles.contains(role));
-        node.getChildren().add(t);
-        if (!t.isCycle())
+        if (!role.startsWith(SecurityConstants.SELF_ROLE_PREFIX) && 
+          !role.equals(SecurityConstants.EVERYONE_ROLE))
         {
-          Set<String> auxAddedRoles = new HashSet<String>();
-          auxAddedRoles.addAll(addedRoles);
-          auxAddedRoles.add(role);
-          addNodes(t, auxAddedRoles);
+          auxList.add(role);
         }        
       }
-    }
-  }
-  
-  public class UserRolesTreeNode extends TreeNodeChecked
-  {
-    private boolean cycle;
-
-    public String getRoleId()
-    {
-      return getIdentifier();
-    }
-
-    public String getUserId()
-    {
-      return getObjectId();
-    }
-    
-    public List<String> getRoles()
-    {
-      List<String> auxList = new ArrayList<String>();      
-      if ("User".equals(getType()))
-      {
-        auxList.addAll(UserCache.getUserInRoles(getUserId(), false));
-      }
-      else //Role
-      {
-        auxList.addAll(UserCache.getRoleInRoles(getRoleId(), false));
-      }
-      Collections.sort(auxList);
       return auxList;
-    }    
-    
-    public boolean isCycle() 
-    {
-      return cycle;
     }
-
-    public void setCycle(boolean cycle) 
-    {
-      this.cycle = cycle;
-    }        
-  }
+  }  
 
 }

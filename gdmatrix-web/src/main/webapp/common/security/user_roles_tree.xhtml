@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:t="http://myfaces.apache.org/tomahawk">
 
@@ -12,31 +13,45 @@
         basename="org.santfeliu.security.web.resources.SecurityBundle"
         var="securityBundle" />
 
-      <t:div rendered="#{!userRolesTreeBean.isNew()}">
-        <t:div>
+      <t:div styleClass="rolesTreeSearch" 
+             rendered="#{!userRolesTreeBean.isNew()}">
+        
+        <h:panelGrid columns="3" styleClass="filterPanel" summary=""
+                     columnClasses="column1,column2,column3"
+                     headerClass="header" footerClass="footer">
+          <h:outputText value="#{securityBundle.role_role}:" />
+          <h:inputText value="#{userRolesTreeBean.inputSearchText}"
+                       styleClass="inputBox" />
+          <h:commandButton id="default_button" 
+                           action="#{userRolesTreeBean.search}"
+                           value="#{objectBundle.search}" 
+                           styleClass="searchButton"
+                           onclick="showOverlay()" />
+        </h:panelGrid>          
+        
+        <t:div styleClass="treeButtons">        
           <h:commandButton value="#{securityBundle.expandAll}" 
                            action="#{userRolesTreeBean.expandAll}" 
                            styleClass="showButton" />
           <h:commandButton value="#{securityBundle.collapseAll}" 
                            action="#{userRolesTreeBean.collapseAll}" 
                            styleClass="showButton" />
-        </t:div>
+        </t:div>        
         <t:div styleClass="inputBox rolesTree">
-          <t:tree2 value="#{userRolesTreeBean.treeModel}" var="node"
-                   binding="#{userRolesTreeBean.tree}">
-            <f:facet name="User">
-              <h:outputText value="#{node.description}"
-                            styleClass="textBox" />
-            </f:facet>
-            <f:facet name="Role">
-              <h:outputLink styleClass="roleLink#{node.cycle ? ' cycle' : ''}" 
+          <p:tree value="#{userRolesTreeBean.root}" var="node">
+            <p:treeNode type="User">
+              <h:outputText value="#{node.userId}" styleClass="textBox" />
+            </p:treeNode>
+            <p:treeNode type="Role">
+              <h:outputLink 
+                styleClass="roleLink#{node.cycle ? ' cycle' : ''}
+                  #{node.found ? ' found' : ''}" 
                 onclick="return showObject('type|Role|#{node.roleId}')"
                 value="#">
-                <h:outputText value="#{node.description}"
-                              styleClass="textBox" />
+                <h:outputText value="#{node.roleId}" styleClass="textBox" />
               </h:outputLink>
-            </f:facet>
-          </t:tree2>
+            </p:treeNode>
+          </p:tree>
         </t:div>
       </t:div>
       

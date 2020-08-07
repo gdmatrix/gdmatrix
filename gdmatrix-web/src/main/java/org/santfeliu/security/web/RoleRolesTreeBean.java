@@ -30,153 +30,28 @@
  */
 package org.santfeliu.security.web;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.apache.myfaces.custom.tree2.HtmlTree;
-import org.apache.myfaces.custom.tree2.TreeModelBase;
-import org.apache.myfaces.custom.tree2.TreeNodeChecked;
-import org.santfeliu.security.UserCache;
-import org.santfeliu.web.obj.PageBean;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 
 /**
  *
  * @author lopezrj
  */
-public class RoleRolesTreeBean extends PageBean
-{
-  private static final String ROOT_NODE_ID = "-1";
-  
-  private TreeModelBase treeModel;
-  private transient HtmlTree tree;
-  
-  public RoleRolesTreeBean()
-  {
-    load();
-  }
-
-  public void setTreeModel(TreeModelBase treeModel)
-  {
-    this.treeModel = treeModel;
-  }
-
-  public TreeModelBase getTreeModel()
-  {
-    return treeModel;
-  }
-
-  public void setTree(HtmlTree tree)
-  {
-    this.tree = tree;
-  }
-
-  public HtmlTree getTree()
-  {
-    return tree;
-  }
-  
+public class RoleRolesTreeBean extends RolesTreeBean
+{  
+  @Override
   public String show()
   {
     return "role_roles_tree";
   }
-  
-  public String load()
-  {
-    try
-    {
-      RoleRolesTreeNode rootNode = new RoleRolesTreeNode();
-      rootNode.setType("RootRole");
-      rootNode.setIdentifier(ROOT_NODE_ID);      
-      if (!isNew())
-      {
-        String roleId = getObjectId();        
-        rootNode.setDescription(roleId);
-        loadRoles(rootNode);
-      }
-      else
-      {
-        rootNode.setDescription("");
-      }
-      treeModel = new TreeModelBase(rootNode);
-      tree = new HtmlTree();
-      tree.setModel(treeModel);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return show();
-  }
-  
-  public String expandAll()
-  {
-    tree.expandAll();
-    return null;
-  }
-  
-  public String collapseAll()
-  {
-    tree.collapseAll();
-    return null;
-  }
-  
-  private void loadRoles(RoleRolesTreeNode nodeRoot) throws Exception
-  {
-    Set<String> addedRoles = new HashSet<String>();
-    addedRoles.add(nodeRoot.getRoleId());
-    addNodes(nodeRoot, addedRoles);
-  }
-  
-  private void addNodes(RoleRolesTreeNode node, Set<String> addedRoles)
-  {
-    List<String> roles = node.getRoles();
-    for (String role : roles)
-    {
-      RoleRolesTreeNode t = new RoleRolesTreeNode();
-      t.setDescription(role);
-      t.setType("InnerRole");
-      t.setIdentifier(role);
-      t.setCycle(addedRoles.contains(role));
-      node.getChildren().add(t);
-      if (!t.isCycle())
-      {
-        Set<String> auxAddedRoles = new HashSet<String>();
-        auxAddedRoles.addAll(addedRoles);
-        auxAddedRoles.add(role);
-        addNodes(t, auxAddedRoles);
-      }
-    }
-  }
-  
-  public class RoleRolesTreeNode extends TreeNodeChecked
-  {
-    private boolean cycle;
-
-    public String getRoleId()
-    {
-      return (ROOT_NODE_ID.equals(getIdentifier()) ? 
-        getObjectId() : getIdentifier());      
-    }
     
-    public List<String> getRoles()
-    {
-      List<String> auxList = 
-        new ArrayList(UserCache.getRoleInRoles(getRoleId(), false));
-      Collections.sort(auxList);
-      return auxList;
-    }
-
-    public boolean isCycle() 
-    {
-      return cycle;
-    }
-
-    public void setCycle(boolean cycle) 
-    {
-      this.cycle = cycle;
-    }        
+  @Override
+  protected TreeNode getMainTreeNode()
+  {
+    String roleId = getObjectId();        
+    TreeNode mainNode = new DefaultTreeNode("Role", new RoleInfo(roleId, false), 
+      getRoot());    
+    return mainNode;
   }
 
 }

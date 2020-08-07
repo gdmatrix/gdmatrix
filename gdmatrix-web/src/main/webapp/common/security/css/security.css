@@ -281,18 +281,83 @@ h6.element-invisible
 
 /* Roles tree */
 
-.rolesTree
+.rolesTreeSearch .filterPanel .column1
+{ 
+}
+
+.rolesTreeSearch .filterPanel .column2
+{ 
+}
+
+.rolesTreeSearch .filterPanel .column3
+{
+}
+
+.rolesTreeSearch .filterPanel .inputBox
+{
+  width: 200px;  
+}
+
+.rolesTreeSearch .filterPanel .searchButton
+{
+  margin: 0;
+  height: 20px;
+}
+
+.rolesTreeSearch .treeButtons
 {
   margin-top: 10px;
 }
 
-.rolesTree .roleLink
+.rolesTreeSearch .rolesTree
+{
+  margin-top: 10px;
+}
+
+.rolesTreeSearch .rolesTree .roleLink
 {
   text-decoration: none;
   color: black;
 }
 
-.rolesTree .roleLink.cycle
+.rolesTreeSearch .rolesTree .roleLink.cycle
 {
   color: red;
+}
+
+.rolesTreeSearch .rolesTree .roleLink.found
+{
+  background-color: yellow;
+}
+
+.rolesTreeSearch .ui-tree 
+{
+  width: 100%;  
+}
+
+.rolesTreeSearch .ui-tree .ui-tree-toggler
+{
+  width: 16px;
+  height: 16px;  
+}
+
+.rolesTreeSearch .ui-tree .ui-tree-toggler.ui-icon-triangle-1-e
+{
+  background-image: url('/common/security/images/expand.png');
+}
+
+.rolesTreeSearch .ui-tree .ui-tree-toggler.ui-icon-triangle-1-s
+{
+  background-image: url('/common/security/images/collapse.png');
+}
+
+.rolesTreeSearch .ui-tree .ui-treenode-leaf-icon 
+{
+  vertical-align: middle;
+}
+
+.rolesTreeSearch .ui-tree .ui-treenode-label 
+{
+  height: 20px;
+  line-height: 20px;
 }
