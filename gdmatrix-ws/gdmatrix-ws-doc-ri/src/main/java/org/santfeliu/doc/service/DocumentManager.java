@@ -1053,7 +1053,15 @@ public class DocumentManager implements DocumentManagerPort
         document.getRelatedDocument());
 
       //Store AccessControl
-      addNominalRole(user, document);
+      String userId = user.getUserId().trim();
+      String autoLoginUserId =
+        MatrixConfig.getProperty("org.santfeliu.web.autoLogin.userId");
+      if (!userId.equals(SecurityConstants.ANONYMOUS) && 
+        !userId.equals(autoLoginUserId))
+      {
+        addNominalRole(user, document);
+      }
+      
       docConn.storeAccessControlList(document);
 
       conConn.commit();
