@@ -144,7 +144,7 @@
     </query>
   </named-query>
 
-  <entity class="DBCaseType" name="CaseType">
+  <entity class="DBCaseType" name="CaseType" access="PROPERTY">
     <table name="WKF_EXPEDIENT" />
     <attributes>
       <id name="typeId">
@@ -162,7 +162,7 @@
     </attributes>
   </entity>
 
-  <entity name="TaulaConfig" class="DBTaulaConfig" >
+  <entity name="TaulaConfig" class="DBTaulaConfig" access="PROPERTY" >
     <table name="NCL_TAULA" />
     <id-class class="DBTaulaConfigPK" />
     <attributes>
@@ -209,7 +209,7 @@
   </entity>
 
   <!-- Table: WKF_VARIABLE-->
-  <entity name="Variable" class="DBVariableDefinition" >
+  <entity name="Variable" class="DBVariableDefinition" access="PROPERTY" >
     <table name="WKF_VARIABLE" />
     <id-class class="DBVariableDefinitionPK" />
     <attributes>

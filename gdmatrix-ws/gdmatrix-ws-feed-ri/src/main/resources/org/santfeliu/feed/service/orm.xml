@@ -147,7 +147,8 @@
     </query>
   </named-query>
 
-  <entity class="org.santfeliu.feed.service.DBFolder" name="Folder">
+  <entity class="org.santfeliu.feed.service.DBFolder" name="Folder" 
+          access="PROPERTY">
     <table name="FED_FOLDER"  />
     <attributes>
       <id name="folderId">
@@ -179,7 +180,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.feed.service.DBFeed" name="Feed">
+  <entity class="org.santfeliu.feed.service.DBFeed" name="Feed" 
+          access="PROPERTY">
     <table name="FED_FEED"  />
     <attributes>
       <id name="feedId">
@@ -218,7 +220,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.feed.service.DBEntry" name="Entry">
+  <entity class="org.santfeliu.feed.service.DBEntry" name="Entry" 
+          access="PROPERTY">
     <table name="FED_ENTRY" />
     <attributes>
       <id name="entryId">
@@ -257,7 +260,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.feed.service.DBFeedFolder" name="FeedFolder">
+  <entity class="org.santfeliu.feed.service.DBFeedFolder" name="FeedFolder" 
+          access="PROPERTY">
     <table name="FED_FEEDFOLDER" />
     <id-class class="org.santfeliu.feed.service.DBFeedFolderPK" />
     <attributes>

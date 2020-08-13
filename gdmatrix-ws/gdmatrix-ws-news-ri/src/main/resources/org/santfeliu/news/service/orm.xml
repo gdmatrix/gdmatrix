@@ -375,7 +375,7 @@
       </query>
     </named-query>
 
-    <entity class="org.santfeliu.news.service.DBNew" name="New">
+    <entity class="org.santfeliu.news.service.DBNew" name="New" access="PROPERTY">
       <table name="INF_NEW" />
       <attributes>
         <id name="newId">
@@ -433,7 +433,8 @@
       </attributes>      
     </entity>
 
-    <entity class="org.santfeliu.news.service.DBNewSection" name="NewSection">
+    <entity class="org.santfeliu.news.service.DBNewSection" name="NewSection"
+            access="PROPERTY">
       <table name="INF_NEWSECTION" />
       <id-class class="org.santfeliu.news.service.DBNewSectionPK" />      
       <attributes>
@@ -459,7 +460,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.news.service.DBNewDocument" name="NewDocument">
+    <entity class="org.santfeliu.news.service.DBNewDocument" name="NewDocument"
+            access="PROPERTY">
       <table name="INF_NEWDOC" />
       <id-class class="org.santfeliu.news.service.DBNewDocumentPK" />      
       <attributes>
@@ -484,7 +486,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.news.service.DBSource" name="Source">
+    <entity class="org.santfeliu.news.service.DBSource" name="Source"
+            access="PROPERTY">
       <table name="INF_SOURCE" />
       <attributes>
         <id name="id">

@@ -179,7 +179,8 @@
     </query>
   </named-query>
 
-  <entity class="org.santfeliu.dic.service.DBType" name="Type">
+  <entity class="org.santfeliu.dic.service.DBType" 
+    name="Type" access="PROPERTY">
     <table name="DIC_TYPE" />
     <attributes>
       <id name="typeId">
@@ -226,7 +227,7 @@
   </entity>
 
   <entity class="org.santfeliu.dic.service.DBPropertyDefinition"
-    name="PropertyDefinition">
+    name="PropertyDefinition" access="PROPERTY"  >
     <table name="DIC_PROPDEF" />
     <id-class class="org.santfeliu.dic.service.DBPropertyDefinitionPK" />
     <attributes>
@@ -270,7 +271,7 @@
   </entity>
 
   <entity class="org.santfeliu.dic.service.DBAccessControl"
-    name="AccessControl">
+    name="AccessControl" access="PROPERTY"  >
     <table name="DIC_ACL" />
     <id-class class="org.santfeliu.dic.service.DBAccessControlPK" />
     <attributes>
@@ -286,7 +287,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.dic.service.DBEnumType" name="EnumType">
+  <entity class="org.santfeliu.dic.service.DBEnumType" name="EnumType"
+    access="PROPERTY">
     <table name="DIC_ENUMTYPE" />
     <attributes>
       <id name="enumTypeId">
@@ -320,7 +322,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.dic.service.DBEnumTypeItem" name="EnumTypeItem">
+  <entity class="org.santfeliu.dic.service.DBEnumTypeItem" name="EnumTypeItem"
+    access="PROPERTY">
     <table name="DIC_ENUMTYPEITEM" />    
     <attributes>
       <id name="enumTypeItemId">

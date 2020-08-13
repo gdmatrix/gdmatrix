@@ -771,7 +771,7 @@
   </named-query>
 
     <!-- ****** Entities ****** -->
-  <entity class="DBCounter" name="Counter">
+  <entity class="DBCounter" name="Counter" access="PROPERTY">
     <table name="NCL_CLAU" />
     <id-class class="DBCounterPK" />    
     <attributes>
@@ -799,7 +799,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBPerson" name="DBPerson">
+  <entity class="DBPerson" name="DBPerson" access="PROPERTY">
     <table name="NCL_PERSONA" />
     <attributes>
       <id name="personId">
@@ -885,7 +885,7 @@
 
 
 
-  <entity name="PersonHistoric" class="DBPersonHistoric" >
+  <entity name="PersonHistoric" class="DBPersonHistoric" access="PROPERTY" >
     <table name="NCL_PERSONA_HIST" />
     <id-class class="DBPersonHistoricPK" />
     <attributes>
@@ -1020,7 +1020,7 @@
 
 
   <entity name="DBPersonAddress"
-      class="DBPersonAddress">
+      class="DBPersonAddress" access="PROPERTY">
     <table name="NCL_PERSDOM" />
     <id-class class="DBPersonAddressPK" />
     <attributes>
@@ -1058,7 +1058,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBTeleco" name="DBTeleco">
+  <entity class="DBTeleco" name="DBTeleco" access="PROPERTY">
     <table name="NCL_TELECO" />
     <id-class class="DBTelecoPK"/>
     <attributes>
@@ -1087,7 +1087,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBStreetType" name="DBStreetType">
+  <entity class="DBStreetType" name="DBStreetType" access="PROPERTY">
     <table name="NCL_SIGLASCARRER" />
     <attributes>
       <id name="streetTypeId">
@@ -1110,7 +1110,7 @@
     </attributes>
   </entity>
     
-  <entity class="DBCountry" name="DBCountry">
+  <entity class="DBCountry" name="DBCountry" access="PROPERTY">
     <table name="NCL_PAIS"  />
     <attributes>
       <id name="countryId">
@@ -1133,7 +1133,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBProvince" name="DBProvince">
+  <entity class="DBProvince" name="DBProvince" access="PROPERTY">
     <table name="NCL_PROVINCIA" />
     <id-class class="DBProvincePK"/>
     <attributes>
@@ -1164,7 +1164,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBCity" name="DBCity">
+  <entity class="DBCity" name="DBCity" access="PROPERTY">
     <table name="NCL_MUNICIPI" />
     <id-class class="DBCityPK"/>
     <attributes>
@@ -1207,7 +1207,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBStreet" name="DBStreet">
+  <entity class="DBStreet" name="DBStreet" access="PROPERTY">
     <table name="NCL_CARRER"  />
     <id-class class="DBStreetPK"/>
     <attributes>
@@ -1260,7 +1260,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBAddress" name="DBAddress">
+  <entity class="DBAddress" name="DBAddress" access="PROPERTY">
     <table name="NCL_DOMICILI"  />
     <attributes>
       <id name="addressId">
@@ -1355,7 +1355,7 @@
   </entity>
 
   <entity class="DBPersonRepresentant"
-      name="DBPersonRepresentant">
+      name="DBPersonRepresentant" access="PROPERTY">
     <table name="NCL_REPRESENTANT" />
     <id-class class="DBPersonRepresentantPK" />
     <attributes>
@@ -1392,7 +1392,7 @@
   </entity>
 
   <entity class="DBKernelListItem"
-      name="DBKernelListItem">
+      name="DBKernelListItem" access="PROPERTY">
     <table name="NCL_TAULA" />
     <id-class class="DBKernelListItemPK" />
     <attributes>
@@ -1423,7 +1423,7 @@
   </entity>
 
 
-  <entity class="DBFotoPersona" name="FotoPersona" >
+  <entity class="DBFotoPersona" name="FotoPersona" access="PROPERTY" >
     <attributes>
       <id name="personId" />
       <basic name="name" />
@@ -1438,7 +1438,7 @@
 
 
 
-  <entity name="Interessat" class="com.audifilm.matrix.cases.service.DBInteressat" >
+  <entity name="Interessat" class="com.audifilm.matrix.cases.service.DBInteressat" access="PROPERTY" >
     <table name="SDE_INTERESSAT"  />
     <id-class class="com.audifilm.matrix.cases.service.DBInteressatPK" />
     <attributes>
@@ -1541,7 +1541,7 @@
     </attributes>
   </entity>
     
-<entity class="com.audifilm.matrix.cases.service.DBCase" name="Case">
+<entity class="com.audifilm.matrix.cases.service.DBCase" name="Case" access="PROPERTY">
     <table name="SDE_EXPEDIENT" />
     <attributes>
       <id name="caseId">
@@ -1712,7 +1712,7 @@
   </entity>
 
   <entity class="com.audifilm.matrix.kernel.service.DBPersonDocument"
-    name="DBPersonDocument">
+    name="DBPersonDocument" access="PROPERTY">
     <table name="APL_DOCSAPL"  />
     <id-class class="DBPersonDocumentPK" />
     <attributes>

@@ -51,7 +51,8 @@
       </query>
     </named-query>
         
-    <entity class="org.santfeliu.survey.service.DBSurvey" name="Survey">
+    <entity class="org.santfeliu.survey.service.DBSurvey" name="Survey"
+            access="PROPERTY">
       <table name="SUR_SURVEY" />
       <attributes>
         <id name="surveyId">
@@ -76,7 +77,8 @@
       </attributes>
     </entity>
     
-    <entity class="org.santfeliu.survey.service.DBAnswer" name="Answer">
+    <entity class="org.santfeliu.survey.service.DBAnswer" name="Answer"
+            access="PROPERTY">
       <table name="SUR_ANSWER" />
       <attributes>
         <id name="surveyId">

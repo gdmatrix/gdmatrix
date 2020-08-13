@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd">  
   <persistence-unit name="survey" transaction-type="RESOURCE_LOCAL">
-    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <non-jta-data-source>
       java:comp/env/jdbc/matrix
     </non-jta-data-source>
     <mapping-file>org/santfeliu/survey/service/orm.xml</mapping-file>
     <properties>
-      <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
-      <property name="toplink.logging.level" value="FINE"/>
-      <property name="toplink.cache.shared.default" value="false"/>
+      <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>
 </persistence>

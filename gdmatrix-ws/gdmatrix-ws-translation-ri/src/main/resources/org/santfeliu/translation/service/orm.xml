@@ -48,7 +48,7 @@
   </named-query>
 
   <entity class="org.santfeliu.translation.service.DBTranslation" 
-    name="Translation">
+    name="Translation" access="PROPERTY">
     <table name="TRN_TRANSLATION" />
     <attributes>
       <id name="transId">
@@ -88,7 +88,7 @@
   </entity>
 
   <entity class="org.santfeliu.translation.service.DBTranslationGroup" 
-    name="TranslationGroup">
+    name="TranslationGroup" access="PROPERTY">
     <table name="TRN_TRANSLATIONGROUP" />
     <id-class class="DBTranslationGroupPK" />
     <attributes>

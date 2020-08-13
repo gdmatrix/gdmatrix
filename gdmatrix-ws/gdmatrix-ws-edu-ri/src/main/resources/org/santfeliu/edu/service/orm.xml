@@ -96,7 +96,7 @@
     </named-query>
 
     <entity class="org.santfeliu.edu.service.DBInscription" 
-      name="DBInscription">
+      name="DBInscription" access="PROPERTY">
       <table name="EDU_MATRICULA" />
       <attributes>
         <id name="inscriptionId">
@@ -126,7 +126,7 @@
     </entity>
 
     <entity class="org.santfeliu.edu.service.DBInscriptionProperty" 
-      name="DBInscriptionProperty">
+      name="DBInscriptionProperty" access="PROPERTY">
       <table name="EDU_MATPROP" />
       <id-class class="org.santfeliu.edu.service.DBInscriptionPropertyPK" />
       <attributes>
@@ -143,7 +143,7 @@
     </entity>
 
     <entity class="org.santfeliu.edu.service.DBCourse" 
-      name="DBCourse">
+      name="DBCourse" access="PROPERTY">
       <table name="EDU_CURS" />
       <attributes>
         <id name="courseId">
@@ -166,7 +166,7 @@
     </entity>
 
     <entity class="org.santfeliu.edu.service.DBSchool" 
-      name="DBSchool">
+      name="DBSchool" access="PROPERTY">
       <table name="EDU_CENTRE" />
       <attributes>
         <id name="schoolId">

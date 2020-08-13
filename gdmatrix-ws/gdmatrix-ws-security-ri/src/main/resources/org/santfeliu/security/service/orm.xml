@@ -24,7 +24,7 @@
             u.stddgr = :stddgr, 
             u.stdhgr = :stdhgr,
             u.changeUserId = :changeUserId, 
-            stddmod = :stddmod, 
+            u.stddmod = :stddmod, 
             u.stdhmod = :stdhmod
         WHERE trim(u.userId) = trim(:userId)
       </query>
@@ -314,7 +314,8 @@
       </query>
     </named-query>
 
-    <entity class="org.santfeliu.security.service.DBUser" name="User">
+    <entity class="org.santfeliu.security.service.DBUser" name="User"
+            access="PROPERTY">
       <!-- Synonym of GENESYS5.ORG_USUARI -->
       <table name="ORG_USUARI"  />
       <attributes>
@@ -354,7 +355,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.security.service.DBRole" name="Role">
+    <entity class="org.santfeliu.security.service.DBRole" name="Role"
+            access="PROPERTY">
       <table name="APL_ROL" />
       <attributes>
         <id name="roleId">
@@ -384,7 +386,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.security.service.DBUserInRole" name="UserInRole">
+    <entity class="org.santfeliu.security.service.DBUserInRole"
+            name="UserInRole" access="PROPERTY">
       <table name="APL_ROLUSR" />
       <attributes>
         <id name="userId">
@@ -405,7 +408,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.security.service.DBRoleInRole" name="RoleInRole">
+    <entity class="org.santfeliu.security.service.DBRoleInRole" 
+            name="RoleInRole" access="PROPERTY">
       <table name="APL_ROLROL" />
       <id-class class="org.santfeliu.security.service.DBRoleInRolePK" />
       <attributes>

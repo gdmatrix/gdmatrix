@@ -407,7 +407,7 @@
   </named-native-query>
 -->
 
-  <entity class="DBCase" name="Case">
+  <entity class="DBCase" name="Case" access="PROPERTY">
     <table name="SDE_EXPEDIENT" />
     <attributes>
       <id name="caseId">
@@ -578,7 +578,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBCaseState" name="CaseState">
+  <entity class="DBCaseState" name="CaseState" access="PROPERTY">
     <table name="SDE_ESTAT"  />
     <secondary-table name="WKF_ESTAT"  >
       <primary-key-join-column name="TEXPCOD" referenced-column-name="TEXPCOD" />
@@ -654,7 +654,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBStateDefinition" name="StateDefinition" >
+  <entity class="DBStateDefinition" name="StateDefinition" access="PROPERTY" >
     <table name="WKF_ESTAT"  />
     <id-class class="DBStateDefinitionPK" />
     <attributes>
@@ -686,7 +686,7 @@
     </attributes>
   </entity >
 
-  <entity class="DBCaseType" name="CaseType">
+  <entity class="DBCaseType" name="CaseType" access="PROPERTY">
     <table name="WKF_EXPEDIENT"  />
     <attributes>
       <id name="typeId">
@@ -759,7 +759,7 @@
     </attributes>
   </entity>
 
-  <entity name="Variable" class="DBVariable" >
+  <entity name="Variable" class="DBVariable" access="PROPERTY" >
     <table name="WKF_VARIABLE" />
     <id-class class="DBVariablePK" />
     <attributes>
@@ -818,7 +818,7 @@
     </attributes>
   </entity>
 
-  <entity name="CaseCase" class="DBCaseCase" >
+  <entity name="CaseCase" class="DBCaseCase" access="PROPERTY" >
     <table name="SDE_EXPRELEXP" />
     <id-class class="DBCaseCasePK" />
     <attributes>
@@ -857,7 +857,7 @@
     </attributes>
   </entity>
 
-  <entity name="Interessat" class="DBInteressat" >
+  <entity name="Interessat" class="DBInteressat" access="PROPERTY" >
     <table name="SDE_INTERESSAT" />
     <id-class class="DBInteressatPK" />
     <attributes>
@@ -965,7 +965,7 @@
     </attributes>
   </entity>
   
-  <entity name="CaseAddress" class="DBCaseAddress" >
+  <entity name="CaseAddress" class="DBCaseAddress" access="PROPERTY" >
     <table name="SDE_EXPEDIENTDOM" />
     <id-class class="DBCaseAddressPK" />
     <attributes>
@@ -1001,7 +1001,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBSituacio" name="Situacio">
+  <entity class="DBSituacio" name="Situacio" access="PROPERTY">
     <table name="SDE_SITUACIO" />
     <attributes>
       <id name="caseId" >
@@ -1092,7 +1092,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBCounter" name="Counter">
+  <entity class="DBCounter" name="Counter" access="PROPERTY">
     <table name="NCL_CLAU" />
     <attributes>
       <id name="claupref">
@@ -1120,7 +1120,7 @@
   </entity>
 
   <!-- Table: APL_DOCSAPL-->
-  <entity name="CaseDocument" class="DBCaseDocument" >
+  <entity name="CaseDocument" class="DBCaseDocument" access="PROPERTY" >
     <table name="APL_DOCSAPL" />
     <id-class class="DBCaseDocumentPK" />
     <attributes>
@@ -1248,7 +1248,7 @@
 
   </entity>
 
-  <entity name="CaseVariable" class="DBCaseVariable" >
+  <entity name="CaseVariable" class="DBCaseVariable" access="PROPERTY" >
     <table name="SDE_VARIABLE" />
     <id-class class="DBCaseVariablePK" />
     <attributes>
@@ -1286,7 +1286,7 @@
   </entity>
 
   <!-- Table: SDE_ESTAT_RESP-->
-  <entity name="CaseStateResponsible" class="DBCaseStateResponsible" >
+  <entity name="CaseStateResponsible" class="DBCaseStateResponsible" access="PROPERTY" >
     <table name="SDE_ESTAT" />
     <attributes>
       <id name="caseId" >
@@ -1352,7 +1352,7 @@
     </attributes>
   </entity>
 
-  <entity class="DBKernelListItem" name="KernelListItem">
+  <entity class="DBKernelListItem" name="KernelListItem" access="PROPERTY">
     <table name="NCL_TAULA" />
     <id-class class="DBKernelListItemPK" />
     <attributes>
@@ -1382,7 +1382,7 @@
     </attributes>
   </entity>
 
-  <entity name="AplDocument" class="DBAplDocument" >
+  <entity name="AplDocument" class="DBAplDocument" access="PROPERTY" >
     <table name="APL_DOCUMENT" />
     <id-class class="DBAplDocumentPK" />
     <attributes>

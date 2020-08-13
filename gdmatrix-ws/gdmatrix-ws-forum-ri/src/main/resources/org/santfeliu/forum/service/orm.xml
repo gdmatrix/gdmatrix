@@ -84,7 +84,8 @@
     </query>
   </named-query>
 
-  <entity class="org.santfeliu.forum.service.DBForum" name="Forum">
+  <entity class="org.santfeliu.forum.service.DBForum" name="Forum"
+          access="PROPERTY">
     <table name="FRU_FORUM"  />
     <attributes>
       <id name="forumId">
@@ -146,7 +147,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.forum.service.DBQuestion" name="Question">
+  <entity class="org.santfeliu.forum.service.DBQuestion" name="Question"
+    access="PROPERTY">
     <table name="FRU_QUESTION"  />
     <attributes>
       <id name="questionId">
@@ -200,7 +202,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.forum.service.DBAnswer" name="Answer">
+  <entity class="org.santfeliu.forum.service.DBAnswer" name="Answer"
+          access="PROPERTY">
     <table name="FRU_ANSWER"  />
     <attributes>
       <id name="answerId">

@@ -309,7 +309,6 @@ public class ElectionsManager implements ElectionsManagerPort
       query.setParameter("townId", townId);
       query.setParameter("dateFilter", sdate);
       query.setParameter("callTypeId", callId);
-      query.setHint("toplink.refresh", "true");
       return query;
     }
   }

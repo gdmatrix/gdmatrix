@@ -216,7 +216,7 @@
   </named-query>
 
   <!-- Table: APL_ACCESMENUITEM-->
-  <entity name="AccessItem" class="DBAccessMenuItem" >
+  <entity name="AccessItem" class="DBAccessMenuItem" access="PROPERTY" >
     <table name="APL_ACCESMENUITEM" />
     <attributes>
       <id name="aplId" >
@@ -256,7 +256,7 @@
   </entity>
 
     <!-- Table: APL_ACCESCONTROL-->
-  <entity name="AccessControl" class="DBAccessControl" >
+  <entity name="AccessControl" class="DBAccessControl" access="PROPERTY" >
     <table name="APL_ACCESCONTROL" />
     <attributes>
       <id name="aplId" >
@@ -296,7 +296,7 @@
   </entity>
 
   <!-- Table: APL_NIVUSRAPL-->
-  <entity name="NivellUsuari" class="DBNivellUsuari" >
+  <entity name="NivellUsuari" class="DBNivellUsuari" access="PROPERTY" >
     <table name="APL_NIVUSRAPL" />
     <attributes>
       <id name="userId" >
@@ -329,7 +329,7 @@
     </attributes>
   </entity>
 
-  <entity name="NivellArea" class="DBNivellArea" >
+  <entity name="NivellArea" class="DBNivellArea" access="PROPERTY" >
     <table name="APL_NIVAREAPL" />
     <attributes>
       <id name="areaId" >
@@ -363,7 +363,7 @@
   </entity>
 
   <!-- Table: APL_NIVDEPAPL-->
-  <entity name="NivellDepartament" class="DBNivellDepartament" >
+  <entity name="NivellDepartament" class="DBNivellDepartament" access="PROPERTY" >
     <table name="APL_NIVDEPAPL" />
     <attributes>
       <id name="areaId" >
@@ -399,7 +399,7 @@
     </attributes>
   </entity>
 
-  <entity name="NivellGrup" class="DBNivellGrup" >
+  <entity name="NivellGrup" class="DBNivellGrup" access="PROPERTY" >
     <table name="APL_NIVGRUPAPL" />
     <attributes>
       <id name="areaId" >
@@ -440,7 +440,7 @@
 
 
   <!-- Table: ORG_GRUPUSR-->
-  <entity name="GrupUsuari" class="DBGrupUsuari" >
+  <entity name="GrupUsuari" class="DBGrupUsuari" access="PROPERTY" >
     <table name="ORG_GRUPUSR" />
     <attributes>
       <id name="areaId" >
@@ -475,7 +475,7 @@
       </basic>
     </attributes>
   </entity>
-  <entity name="Area" class="DBArea" >
+  <entity name="Area" class="DBArea" access="PROPERTY" >
     <table name="ORG_AREA" />
     <attributes>
       <id name="areaId" >
@@ -505,7 +505,7 @@
     </attributes>
   </entity>
 
-  <entity name="Departament" class="DBDepartament" >
+  <entity name="Departament" class="DBDepartament" access="PROPERTY" >
     <table name="ORG_DEPARTAMENT" />
     <attributes>
       <id name="areaId" >
@@ -537,7 +537,7 @@
       </basic>
     </attributes>
   </entity>
-  <entity name="Grup" class="DBGrup" >
+  <entity name="Grup" class="DBGrup" access="PROPERTY" >
     <table name="ORG_GRUPTREBALL" />
     <attributes>
       <id name="areaId" >

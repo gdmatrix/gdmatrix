@@ -187,7 +187,8 @@
     </query>
   </named-query>
 
-  <entity class="org.santfeliu.policy.service.DBPolicy" name="Policy">
+  <entity class="org.santfeliu.policy.service.DBPolicy" name="Policy" 
+          access="PROPERTY">
     <table name="POL_POLICY" />
     <attributes>
       <id name="policyId">
@@ -237,7 +238,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.policy.service.DBDisposalHold" name="DisposalHold">
+  <entity class="org.santfeliu.policy.service.DBDisposalHold" 
+          name="DisposalHold" access="PROPERTY">
     <table name="POL_DISPHOLD" />
     <attributes>
       <id name="dispHoldId">
@@ -262,7 +264,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.policy.service.DBClassPolicy" name="ClassPolicy">
+  <entity class="org.santfeliu.policy.service.DBClassPolicy" 
+          name="ClassPolicy" access="PROPERTY">
     <table name="POL_CLASSPOLICY" />
     <attributes>
       <id name="classPolicyId">
@@ -305,7 +308,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.policy.service.DBCasePolicy" name="CasePolicy">
+  <entity class="org.santfeliu.policy.service.DBCasePolicy" 
+          name="CasePolicy" access="PROPERTY">
     <table name="POL_CASEPOLICY" />
     <attributes>
       <id name="casePolicyId">
@@ -358,7 +362,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.policy.service.DBDocumentPolicy" name="DocumentPolicy">
+  <entity class="org.santfeliu.policy.service.DBDocumentPolicy" 
+          name="DocumentPolicy" access="PROPERTY">
     <table name="POL_DOCPOLICY" />
     <attributes>
       <id name="docPolicyId">
@@ -411,7 +416,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.policy.service.DBPolicyProperty" name="PolicyProperty">
+  <entity class="org.santfeliu.policy.service.DBPolicyProperty" 
+          name="PolicyProperty" access="PROPERTY">
     <table name="POL_POLICYPROP" />
     <attributes>
       <id name="policyId">

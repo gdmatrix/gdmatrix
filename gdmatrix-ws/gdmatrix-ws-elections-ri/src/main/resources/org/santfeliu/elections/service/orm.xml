@@ -69,7 +69,7 @@
     </named-query>      
 
     <entity class="org.santfeliu.elections.service.DBCouncillor" 
-      name="Councillor">
+      name="Councillor" access="PROPERTY">
       <table name="ELE_REGIDOR" />
       <attributes>
         <id name="provinceId">
@@ -100,7 +100,7 @@
     </entity>
     
     <entity class="org.santfeliu.elections.service.DBPoliticalParty" 
-      name="PoliticalParty">
+      name="PoliticalParty" access="PROPERTY">
       <table name="ELE_PARTI" />
       <attributes>
         <id name="partyId">
@@ -121,7 +121,8 @@
       </attributes>
     </entity>    
     
-    <entity class="org.santfeliu.elections.service.DBCall" name="Call">
+    <entity class="org.santfeliu.elections.service.DBCall" name="Call" 
+            access="PROPERTY">
       <table name="ELE_CONVOCATORIA" />
       <attributes>
         <id name="provinceId">
@@ -145,7 +146,8 @@
       </attributes>
     </entity>    
     
-    <entity class="org.santfeliu.elections.service.DBCallType" name="CallType">
+    <entity class="org.santfeliu.elections.service.DBCallType" name="CallType"
+     access="PROPERTY">
       <table name="ELE_TCONV" />
       <attributes>
         <id name="typeId">
@@ -158,7 +160,7 @@
     </entity>     
 
     <entity class="org.santfeliu.elections.service.DBPoliticalPartyCall" 
-      name="PoliticalPartyCall">
+      name="PoliticalPartyCall" access="PROPERTY">
       <table name="ELE_PARTCONV" />
       <attributes>
         <id name="provinceId">
@@ -186,7 +188,7 @@
     </entity>  
     
     <entity class="org.santfeliu.elections.service.DBBoard" 
-      name="Board">
+      name="Board" access="PROPERTY">
       <table name="ELE_MESA" />
       <attributes>
         <id name="provinceId">
@@ -229,7 +231,7 @@
     </entity> 
     
     <entity class="org.santfeliu.elections.service.DBElectionsResult" 
-      name="ElectionsResult">
+      name="ElectionsResult" access="PROPERTY">
       <table name="ELE_RESUL" />
       <attributes>
         <id name="provinceId">
@@ -267,7 +269,7 @@
     </entity>  
     
     <entity class="org.santfeliu.elections.service.DBDistrict" 
-      name="District">
+      name="District" access="PROPERTY">
       <table name="ELE_DISTRICTE" />
       <attributes>
         <id name="provinceId">

@@ -14,35 +14,35 @@
   </persistence-unit>
 
   <persistence-unit name="cases_g5" transaction-type="RESOURCE_LOCAL">
-    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <non-jta-data-source>java:comp/env/jdbc/genesys5</non-jta-data-source>
     <mapping-file>com/audifilm/matrix/cases/bpm/service/orm.xml</mapping-file>
     <properties>
-      <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
-      <property name="toplink.logging.level" value="FINE"/>
-      <property name="toplink.cache.shared.default" value="false"/>
+      <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>
 
   <persistence-unit name="security_g5" transaction-type="RESOURCE_LOCAL">
-    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <non-jta-data-source>java:comp/env/jdbc/genesys5</non-jta-data-source>
     <mapping-file>com/audifilm/matrix/security/service/orm.xml</mapping-file>
     <properties>
-      <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
-      <property name="toplink.logging.level" value="FINE"/>
-      <property name="toplink.cache.shared.default" value="false"/>
+      <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>
   
   <persistence-unit name="dic_g5" transaction-type="RESOURCE_LOCAL">
-    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <non-jta-data-source>java:comp/env/jdbc/genesys5</non-jta-data-source>
     <mapping-file>com/audifilm/matrix/dic/service/orm.xml</mapping-file>
     <properties>
-      <property name="toplink.session.customizer" value="org.santfeliu.jpa.TopLinkSessionCustomizer"/>
-      <property name="toplink.logging.level" value="FINE"/>
-      <property name="toplink.cache.shared.default" value="false"/>
+      <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>
   

@@ -144,7 +144,7 @@
     </query>
   </named-query>
 
-  <entity class="org.santfeliu.classif.service.DBClass" name="Class">
+  <entity class="org.santfeliu.classif.service.DBClass" name="Class" access="PROPERTY">
     <table name="CLS_CLASS" />
     <attributes>
       <id name="classId">
@@ -162,7 +162,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.classif.service.DBClassPeriod" name="ClassPeriod">
+  <entity class="org.santfeliu.classif.service.DBClassPeriod" 
+          name="ClassPeriod" access="PROPERTY">
     <table name="CLS_CLASSHISTORY" />
     <id-class class="org.santfeliu.classif.service.DBClassPeriodPK" />
     <attributes>
@@ -212,7 +213,7 @@
   </entity>
 
   <entity class="org.santfeliu.classif.service.DBClassPeriodPropertyValue"
-    name="ClassPeriodPropertyValue">
+    name="ClassPeriodPropertyValue" access="PROPERTY">
     <table name="CLS_CLASSHISTORYPROP" />
     <id-class class="org.santfeliu.classif.service.DBClassPeriodPropertyValuePK" />
     <attributes>
@@ -231,7 +232,8 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.classif.service.DBCounter" name="Counter">
+  <entity class="org.santfeliu.classif.service.DBCounter" name="Counter" 
+          access="PROPERTY">
     <table name="TABLESEQ" />
     <attributes>
       <id name="name">

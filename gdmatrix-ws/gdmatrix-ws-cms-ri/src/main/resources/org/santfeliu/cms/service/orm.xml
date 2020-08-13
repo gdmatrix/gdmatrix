@@ -232,7 +232,7 @@
     </query>
   </named-query>
 
-  <entity class="org.santfeliu.cms.service.DBWorkspace" name="Workspace">
+  <entity class="org.santfeliu.cms.service.DBWorkspace" name="Workspace" access="PROPERTY">
     <table name="CMS_WORKSPACE"  />
     <attributes>
       <id name="workspaceId">
@@ -260,7 +260,7 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.cms.service.DBNode" name="Node">
+  <entity class="org.santfeliu.cms.service.DBNode" name="Node" access="PROPERTY">
     <table name="CMS_NODE"  />
     <id-class class="org.santfeliu.cms.service.DBNodePK"/>
     <attributes>
@@ -303,7 +303,7 @@
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.cms.service.DBProperty" name="Property">
+  <entity class="org.santfeliu.cms.service.DBProperty" name="Property" access="PROPERTY">
     <table name="CMS_PROPERTY"  />
     <attributes>
       <id name="workspaceId">
