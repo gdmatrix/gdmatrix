@@ -16,7 +16,7 @@ html
   border-top: solid 1px gray;
   border-bottom: solid 1px gray;
   position: relative;
-  height: 25px;
+  min-height: 25px;
 }
 
 .cmsCurrentPathPanel .currentPath
@@ -535,44 +535,42 @@ input.foundProperty
   position: relative;
 }
 
-.cmsCurrentPathPanel .infoMessage
+.cmsCurrentPathPanel ul
 {
-  color: green;
+  float: right;
+  padding: 0;
+  margin: 0;
+  margin-right: 10px;
+}
+
+.cmsCurrentPathPanel .infoMessage,
+.cmsCurrentPathPanel .warnMessage,
+.cmsCurrentPathPanel .errorMessage,
+.cmsCurrentPathPanel .fatalMessage
+{
   font-weight: bold;
   display:block;
   line-height: 25px;
-  position: absolute;
-  right: 10px;
+}
+
+.cmsCurrentPathPanel .infoMessage
+{
+  color: green;
 }
 
 .cmsCurrentPathPanel .warnMessage
 {
   color: #FF9900;
-  font-weight: bold;
-  display:block;
-  line-height: 25px;
-  position: absolute;
-  right: 10px;
 }
 
 .cmsCurrentPathPanel .errorMessage
 {
   color: red;
-  font-weight: bold;
-  display:block;
-  line-height: 25px;
-  position: absolute;
-  right: 10px;
 }
 
 .cmsCurrentPathPanel .fatalMessage
 {
   color: red;
-  font-weight: bold;
-  display:block;
-  line-height: 25px;
-  position: absolute;
-  right: 10px;
 }
 
 .cmsEditPanel .rootSelection

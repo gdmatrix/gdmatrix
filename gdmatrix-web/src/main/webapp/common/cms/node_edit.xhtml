@@ -429,11 +429,26 @@
               viewportwidth = document.body.clientWidth;
               viewportheight = document.body.clientHeight;
             }
-            document.getElementById('mainform:cmsEditSeparator').style.height = (viewportheight - 80) + 'px';
-            document.getElementById('mainform:treeLayer').style.height = (viewportheight - 150) + 'px';
+            
+            var msgHeight = 25;
             try
             {
-              document.getElementById('mainform:propertiesLayer').style.height = (viewportheight - 120) + 'px';
+              msgHeight = document.getElementsByClassName('cmsCurrentPathPanel')
+                [0].offsetHeight;
+            }
+            catch(err)
+            {
+
+            }
+            
+            document.getElementById('mainform:cmsEditSeparator').style.height = 
+              (viewportheight - 55 - msgHeight) + 'px';
+            document.getElementById('mainform:treeLayer').style.height = 
+              (viewportheight - 125 - msgHeight) + 'px';
+            try
+            {
+              document.getElementById('mainform:propertiesLayer').style.height = 
+                (viewportheight - 95 - msgHeight) + 'px';
             }
             catch(err)
             {
@@ -441,7 +456,8 @@
             }
             try
             {
-              document.getElementById('mainform:cssTextArea').style.height = (viewportheight - 125) + 'px';
+              document.getElementById('mainform:cssTextArea').style.height = 
+                (viewportheight - 100 - msgHeight) + 'px';
             }
             catch(err)
             {
@@ -449,7 +465,8 @@
             }
             try
             {
-              document.getElementById('mainform:syncLayer').style.height = (viewportheight - 120) + 'px';
+              document.getElementById('mainform:syncLayer').style.height = 
+                (viewportheight - 95 - msgHeight) + 'px';
             }
             catch(err)
             {
@@ -457,7 +474,8 @@
             }
             try
             {
-              document.getElementsByClassName('nodeSearchPanel')[0].style.height = (viewportheight - 80) + 'px';
+              document.getElementsByClassName('nodeSearchPanel')[0].style.
+                height = (viewportheight - 55 - msgHeight) + 'px';
             }
             catch(err)
             {

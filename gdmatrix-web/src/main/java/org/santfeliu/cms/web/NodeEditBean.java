@@ -612,7 +612,8 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     MenuItemCursor cursor = (MenuItemCursor)getValue("#{item}");
     if (cursor == null) cursor = getCursor();
-    String docId = (String)cursor.getDirectProperties().get("nodeCSS");
+    String docId = (String)cursor.getDirectProperties().
+      get(UserSessionBean.NODE_CSS);
     return docId != null;
   }
 
@@ -621,7 +622,8 @@ public class NodeEditBean extends FacesBean implements Serializable
     try
     {
       MenuItemCursor cursor = getCursor().getRoot();
-      String docId = (String)cursor.getDirectProperties().get("nodeCSS");
+      String docId = (String)cursor.getDirectProperties().
+        get(UserSessionBean.NODE_CSS);
       return docId != null;
     }
     catch (Exception ex)
@@ -1689,8 +1691,11 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     try
     {
-      saveCSS(currentWorkspaceId, getSelectedNodeId());
-      info("CSS_SAVED");
+      Integer cssCount = saveCSS(currentWorkspaceId, getSelectedNodeId());
+      String message = cssCount + 
+        (cssCount == 1 ? " node actualitzat" : " nodes actualitzats");
+      message = UserSessionBean.getCurrentInstance().translate(message, "cms");      
+      info("CSS_SAVED", new Object[]{message});
     }
     catch (Exception ex)
     {
@@ -1719,8 +1724,11 @@ public class NodeEditBean extends FacesBean implements Serializable
     {
       String defaultWorkspaceId = 
         ApplicationBean.getCurrentInstance().getDefaultWorkspaceId();
-      saveCSS(defaultWorkspaceId, getSelectedNodeId());
-      info("CSS_SYNCHRONIZED");
+      Integer cssCount = saveCSS(defaultWorkspaceId, getSelectedNodeId());
+      String message = cssCount + 
+        (cssCount == 1 ? " node actualitzat" : " nodes actualitzats"); 
+      message = UserSessionBean.getCurrentInstance().translate(message, "cms");
+      info("CSS_SYNCHRONIZED", new Object[]{message});
     }
     catch (Exception ex)
     {
@@ -1982,32 +1990,50 @@ public class NodeEditBean extends FacesBean implements Serializable
   
   // ********* Private methods ********
 
-  private void saveCSS(String workspaceId, String nodeId) throws Exception
+  private int saveCSS(String workspaceId, String nodeId) throws Exception
   {
+    int cssCount = 0;
     if (cssText != null)
     {
+      List<Node> nodeList = new ArrayList();
       CNode cNode = ApplicationBean.getCurrentInstance().
         getCmsCache().getWorkspace(workspaceId).getNode(nodeId);
-      Document document = new Document();
-      MemoryDataSource ds = new MemoryDataSource(cssText.getBytes(),
-        "data", "text/css");
-      Content content = new Content();
-      content.setContentType("text/css");
-      content.setData(new DataHandler(ds));
-      document.setContent(content);
+      Document document;
       CachedDocumentManagerClient docClient = DocumentConfigBean.getClient();
-      String docId = cNode.getSinglePropertyValue("nodeCSS");
+      String docId = cNode.getSinglePropertyValue(UserSessionBean.NODE_CSS);
       if (docId != null) // existing CSS
       {
-        if (docId.indexOf("?") > 0)
-          docId = docId.substring(0, docId.indexOf("?"));  
+        if (docId.contains("?"))
+        {
+          docId = docId.substring(0, docId.indexOf("?"));
+        }
+        Integer.parseInt(docId); //Check if node value is an integer
+        document = prepareCSSDocument();
         document.setDocId(docId);
         document.setIncremental(true);
         document.setVersion(DocumentConstants.NEW_VERSION);
         document = docClient.storeDocument(document);
+        NodeFilter filter = new NodeFilter();
+        Property property = new Property();
+        property.setName(UserSessionBean.NODE_CSS);
+        property.getValue().add(docId + "%");
+        filter.getProperty().add(property);
+        List<Node> auxNodeList = getCMSManagerPort().findNodes(filter);
+        for (Node auxNode : auxNodeList)
+        {
+          Property p = getNodeCSSProperty(auxNode);
+          String nodeCSSValue = p.getValue().get(0);
+          if (nodeCSSValue.equals(docId) || 
+            nodeCSSValue.startsWith(docId + "?"))
+          {
+            removeNodeCSSProperty(auxNode);
+            nodeList.add(auxNode);
+          }
+        }
       }
       else // new CSS
       {
+        document = prepareCSSDocument();        
         document.setDocTypeId("Document");
         document.setTitle("CSS node " + nodeId);
         document.setIncremental(false);
@@ -2022,26 +2048,69 @@ public class NodeEditBean extends FacesBean implements Serializable
         document.getAccessControl().add(accessControl);
         document = docClient.storeDocument(document);
         docId = document.getDocId();
+        Node auxNode = cNode.getNode();
+        nodeList.add(auxNode);
       }
-      // link CSS document to this node
-      Node node = cNode.getNode();
-      for (int i = 0; i < node.getProperty().size(); i++)
+      // update nodeCSS property
+      for (Node node : nodeList)
       {
-        Property property = node.getProperty().get(i);
-        if ("nodeCSS".equals(property.getName()))
-        {
-          node.getProperty().remove(i);
-          break;
-        }
+        Property nodeCssProperty = new Property();
+        nodeCssProperty.setName(UserSessionBean.NODE_CSS);
+        nodeCssProperty.getValue().add(docId + "?v=" + document.getVersion());
+        node.getProperty().add(nodeCssProperty);
+        getCMSManagerPort().storeNode(node);
+        cssCount++;
       }
-      Property nodeCssProperty = new Property();
-      nodeCssProperty.setName("nodeCSS");
-      nodeCssProperty.getValue().add(docId + "?v=" + document.getVersion());
-      node.getProperty().add(nodeCssProperty);
-      CMSConfigBean.getPort().storeNode(node);
       resetProperties();
       updateCache();
-    }      
+    }
+    return cssCount;
+  }
+  
+  private Property getNodeCSSProperty(Node node)
+  {
+    Integer idx = getNodeCSSPropertyIndex(node);
+    if (idx != null)
+    {
+      return node.getProperty().get(idx);
+    }
+    return null;
+  }
+
+  private boolean removeNodeCSSProperty(Node node)
+  {
+    Integer idx = getNodeCSSPropertyIndex(node);
+    if (idx != null)
+    {
+      node.getProperty().remove(idx.intValue());
+      return true;
+    }
+    return false;
+  }
+
+  private Integer getNodeCSSPropertyIndex(Node node)
+  {
+    for (int i = 0; i < node.getProperty().size(); i++)
+    {
+      Property p = node.getProperty().get(i);
+      if (UserSessionBean.NODE_CSS.equals(p.getName()))
+      {
+        return i;        
+      }
+    }
+    return null;
+  }
+  
+  private Document prepareCSSDocument()
+  {
+    Document document = new Document();
+    MemoryDataSource ds = new MemoryDataSource(cssText.getBytes(),
+      "data", "text/css");
+    Content content = new Content();
+    content.setContentType("text/css");
+    content.setData(new DataHandler(ds));
+    document.setContent(content);
+    return document;
   }
   
   //Returns the property value indexes, if the property matches 
@@ -2198,7 +2267,7 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     CMSCache cmsCache = ApplicationBean.getCurrentInstance().getCmsCache();    
     CNode cNode = cmsCache.getWorkspace(workspaceId).getNode(nodeId);
-    return cNode.getSinglePropertyValue("nodeCSS");    
+    return cNode.getSinglePropertyValue(UserSessionBean.NODE_CSS);    
   }
   
   private String getNodeLabel(Node node)
@@ -2295,7 +2364,8 @@ public class NodeEditBean extends FacesBean implements Serializable
   private String loadCSS() throws Exception
   {
     MenuItemCursor cursor = getCursor();
-    String docId = (String)cursor.getDirectProperties().get("nodeCSS");
+    String docId = (String)cursor.getDirectProperties().
+      get(UserSessionBean.NODE_CSS);
     if (docId != null) //css found
     {
       if (docId.indexOf("?") > 0)
