@@ -101,6 +101,9 @@ public class WSPortFunction extends BaseFunction
 
     services.put("kernel", org.matrix.kernel.KernelManagerService.class);
     ports.put("kernel", org.matrix.kernel.KernelManagerPort.class);
+    
+    services.put("job", org.matrix.job.JobManagerService.class);
+    ports.put("job", org.matrix.job.JobManagerPort.class);    
 
     services.put("news", org.matrix.news.NewsManagerService.class);
     ports.put("news", org.matrix.news.NewsManagerPort.class);

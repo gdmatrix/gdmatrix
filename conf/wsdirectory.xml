@@ -363,5 +363,14 @@
     <internal-entity name="WeekType" />
     <internal-entity name="DayType" />
   </endpoint>
+  
+  <!-- JobManagerService -->
+  <endpoint name="job"
+    service="{http://job.matrix.org/}JobManagerService"
+    url="${base}/services/job"
+    wsdl="${base}/services/job?wsdl">
+    <description>Job</description>
+    <internal-entity name="Job" />
+  </endpoint>  
 
 </directory>

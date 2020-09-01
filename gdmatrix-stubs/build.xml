@@ -173,6 +173,13 @@
       <param name="modulename" value="forum" />
     </antcall>
   </target>
+  
+  <target name="gen_job"
+          depends="gen_cases">
+    <antcall target="gen_module">
+      <param name="modulename" value="job" />
+    </antcall>
+  </target>  
 
   <target name="gen_news"
           depends="gen_doc">
@@ -258,7 +265,7 @@
   <target name="gen_all_modules"
           depends="setup, gen_security, gen_dic, gen_classif, gen_kernel, 
           gen_doc, gen_cases, gen_cms, gen_feed, gen_agenda, gen_edu, gen_elections,
-          gen_forum, gen_news, gen_policy, gen_presence, gen_report,
+          gen_forum, gen_job, gen_news, gen_policy, gen_presence, gen_report,
           gen_search, gen_sign, gen_signature, gen_sql, gen_survey,
           gen_translation, gen_workflow" />
 

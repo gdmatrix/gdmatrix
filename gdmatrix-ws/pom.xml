@@ -15,7 +15,8 @@
       </repository>
     </repositories>             
     <modules>
-        <module>gdmatrix-ws-common</module>      
+        <module>gdmatrix-ws-common</module>   
+        <module>gdmatrix-ws-job-ri</module>           
         <module>gdmatrix-ws-agenda-ri</module> 
         <module>gdmatrix-ws-cases-ri</module>
         <module>gdmatrix-ws-classif-ri</module>          
@@ -40,7 +41,7 @@
         <module>gdmatrix-ws-translation-ri</module>
         <module>gdmatrix-ws-workflow-ri</module> 
         <module>gdmatrix-ws-audifilm</module>
-  </modules>
+    </modules>
   
   <dependencies>
     <dependency>

@@ -64,6 +64,7 @@
                 <wsdlFile>edu.wsdl</wsdlFile>
                 <wsdlFile>elections.wsdl</wsdlFile>
                 <wsdlFile>forum.wsdl</wsdlFile>
+                <wsdlFile>job.wsdl</wsdlFile>
                 <wsdlFile>news.wsdl</wsdlFile>
                 <wsdlFile>policy.wsdl</wsdlFile>
                 <wsdlFile>presence.wsdl</wsdlFile>

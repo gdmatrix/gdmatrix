@@ -45,4 +45,5 @@
   <endpoint implementation="org.santfeliu.presence.service.PresenceManager" name="presence" service="{http://presence.matrix.org/}PresenceManagerService" url-pattern="/services/presence"/>
   <endpoint implementation="org.santfeliu.kernel.service.KernelManager" name="KernelManagerService" url-pattern="/KernelManagerService"/>
   <endpoint implementation="com.audifilm.matrix.cases.service.CaseManager" name="CaseManagerService" url-pattern="/CaseManagerService"/>
+  <endpoint implementation="org.santfeliu.job.service.JobManager" name="JobManagerService" url-pattern="/JobManagerService"/>
 </endpoints>

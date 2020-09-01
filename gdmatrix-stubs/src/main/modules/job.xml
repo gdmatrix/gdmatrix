@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="job"
+  namespace="http://job.matrix.org/"
+  title="Gestor de tasques programades"
+  wsdlLocation="../services/job?wsdl"
+  service="JobManagerService"
+  port="JobManagerPort"
+  version="1.0"
+  status="DRAFT"
+  authors="Abel Blanque">
+
+  <imports>
+    <import prefix="mx"
+      namespace="http://base.matrix.org/"
+      location="matrix.xsd" />
+    <import module="dic"/>    
+  </imports>
+
+  <types>
+    <entity name="Job">
+      <identifier name="jobId" type="xs:string" minOccurs="0">
+      </identifier>
+      <property name="name" type="xs:string" minOccurs="0">
+      </property>
+      <property name="description" type="xs:string" minOccurs="0">
+      </property>
+      <property name="startDateTime" type="mx:dateTime" minOccurs="0">
+      </property>   
+      <property name="endDateTime" type="mx:dateTime" minOccurs="0">
+      </property> 
+      <property name="jobType" type="xs:string" minOccurs="0">
+      </property>     
+      <property name="interval" type="xs:int" minOccurs="0">
+      </property>  
+      <property name="unitOfTime" type="xs:string" minOccurs="0">
+      </property>    
+      <property name="repetitions" type="xs:int" minOccurs="0">
+      </property>  
+      <property name="dayOfWeek" type="xs:string" minOccurs="0">
+      </property>  
+      <property name="dayOfMonth" type="xs:string" minOccurs="0">
+      </property> 
+      <property name="audit" type="xs:boolean" minOccurs="0">
+      </property>           
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>                                                 
+    </entity>
+
+    <struct name="JobFilter">
+      <property name="jobId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true" references="job:Job">
+      </property>
+      <property name="fromDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="toDate" type="mx:date" minOccurs="0">
+      </property>
+      <property name="jobTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>
+      <property name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+           
+  </types>
+  
+  <operations>
+    
+    <operation name="storeJob">
+      <parameter name="job" type="job:Job">
+      </parameter>
+      <response name="storedJob" type="job:Job">
+      </response>
+    </operation>
+
+    <operation name="loadJob">
+      <parameter name="jobId" type="xs:string">
+      </parameter>
+      <response name="job" type="job:Job">
+      </response>
+    </operation>
+
+    <operation name="removeJob">
+      <parameter name="jobId" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">
+      </response>
+    </operation>
+    
+    <operation name="findJobs">
+      <parameter name="filter" type="job:JobFilter">
+      </parameter>
+      <response name="jobs" type="job:Job"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>    
+    
+    <operation name="scheduleJob">
+      <parameter name="job" type="job:Job">
+      </parameter>
+    </operation> 
+    
+    <operation name="unscheduleJob">
+      <parameter name="jobId" type="xs:string">
+      </parameter>
+    </operation>             
+
+    <operation name="executeJob">
+      <parameter name="job" type="job:Job">
+      </parameter>
+    </operation>
+    
+    <operation name="nextFiring">
+      <parameter name="jobId" type="xs:string">
+      </parameter>
+      <response name="nextDate" type="xs:string">
+      </response>      
+    </operation>    
+    
+  </operations>
+</module>

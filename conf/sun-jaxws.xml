@@ -195,4 +195,10 @@
         service="{http://presence.matrix.org/}PresenceManagerService"
         url-pattern="/services/presence" />
     
+    <endpoint
+        name="job"
+        implementation="org.santfeliu.job.service.JobManager"
+        service="{http://job.matrix.org/}JobManagerService"
+        url-pattern="/services/job" />    
+    
 </endpoints>
