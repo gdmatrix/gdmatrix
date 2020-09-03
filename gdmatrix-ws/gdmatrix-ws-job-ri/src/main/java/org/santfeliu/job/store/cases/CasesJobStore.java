@@ -59,6 +59,7 @@ import org.santfeliu.util.TextUtils;
 public class CasesJobStore implements JobStore
 {
   public static final String JOB_TYPE = "JobCase";
+  private static final int MESSAGES_MAX_LENGTH = 2000;
   
   @Override
   public Job storeJob(Job job) throws JobException
@@ -192,8 +193,17 @@ public class CasesJobStore implements JobStore
         TextUtils.formatInternalDate(endDateTime, "yyyyMMdd"));
       intervention.setEndTime(
         TextUtils.formatInternalDate(endDateTime, "HHmmss"));
-      intervention.setComments(jobResponse.getMessage());      
       
+      String message = jobResponse.getMessage();
+      int length = message.length();
+      if (message.length() > MESSAGES_MAX_LENGTH)
+      {
+        int first = length - MESSAGES_MAX_LENGTH;
+        int last = length - 1;
+        message = message.substring(first, last);
+      }
+      intervention.setComments(message); 
+         
       getPort().storeIntervention(intervention);
     }
     catch (Exception ex)

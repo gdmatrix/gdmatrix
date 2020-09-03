@@ -43,10 +43,10 @@
     
     <!-- JSP & JSTL API -->
     <dependency>
-        <groupId>javax.servlet.jsp</groupId>
-        <artifactId>javax.servlet.jsp-api</artifactId>
-        <version>2.3.3</version>
-        <scope>provided</scope>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+      <version>2.3.3</version>
+      <scope>provided</scope>
     </dependency>
         
     <!-- Faces API -->  
@@ -451,34 +451,34 @@
           <groupId>${project.groupId}</groupId>
           <artifactId>gdmatrix-elections</artifactId>
           <version>${project.version}</version>  
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>           
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>           
         </dependency>    
         <dependency>
           <groupId>${project.groupId}</groupId>
           <artifactId>gdmatrix-ide</artifactId>
           <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>             
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>             
         </dependency> 
         <dependency>
           <groupId>${project.groupId}</groupId>
           <artifactId>gdmatrix-client</artifactId>
           <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>             
+          <exclusions>
+            <exclusion>
+              <groupId>*</groupId>
+              <artifactId>*</artifactId>
+            </exclusion>
+          </exclusions>             
         </dependency>                
       </dependencies>
       
@@ -557,9 +557,9 @@
               <useCache>true</useCache>
               <attachClasses>true</attachClasses>
               <packagingExcludes>
-                  WEB-INF/lib/gdmatrix-elections-*.jar,
-                  WEB-INF/lib/gdmatrix-ide-*.jar,
-                  WEB-INF/lib/gdmatrix-client-*.jar
+                WEB-INF/lib/gdmatrix-elections-*.jar,
+                WEB-INF/lib/gdmatrix-ide-*.jar,
+                WEB-INF/lib/gdmatrix-client-*.jar
               </packagingExcludes>
             </configuration>
           </plugin>                      

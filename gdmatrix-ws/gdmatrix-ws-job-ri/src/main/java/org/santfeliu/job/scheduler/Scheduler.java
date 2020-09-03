@@ -33,6 +33,7 @@ package org.santfeliu.job.scheduler;
 import java.util.Date;
 import org.matrix.job.Job;
 import org.santfeliu.job.service.JobException;
+import org.santfeliu.job.store.JobStore;
 
 /**
  *
@@ -48,7 +49,7 @@ public interface Scheduler
   public static final String WEEKS = "w";
   public static final String MONTHS = "M";
   public static final String YEARS = "y";
-   
+    
   
   public void start() throws JobException;
   

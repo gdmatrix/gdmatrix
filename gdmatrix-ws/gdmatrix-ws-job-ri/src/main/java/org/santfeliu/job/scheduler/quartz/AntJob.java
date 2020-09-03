@@ -33,6 +33,7 @@ package org.santfeliu.job.scheduler.quartz;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import org.apache.tools.ant.Project;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -57,7 +58,7 @@ public class AntJob implements org.quartz.Job
       String filename = (String)params.get("filename");
       String target = (String)params.get("target");
       String wsURL = (String)params.get("wsURL");
-      String[] filenames = {filename};
+      String[] filenames = filename.split(",");
       
       if (wsURL == null)
       {
@@ -82,7 +83,28 @@ public class AntJob implements org.quartz.Job
         MatrixConfig.getProperty("adminCredentials.userId"),
         MatrixConfig.getProperty("adminCredentials.password"), antDir);
       
-      context.setResult(messages);
+      StringBuilder sb = new StringBuilder();      
+      for (Message message : messages)
+      {
+        String level = "";
+        switch(message.getLevel())
+        {
+          case Project.MSG_INFO:
+            level = "INFO"; break;
+          case Project.MSG_WARN:
+            level = "WARN"; break;
+          case Project.MSG_ERR:
+            level = "ERROR"; break;
+          case Project.MSG_DEBUG:
+            level = "DEBUG"; break;
+          case Project.MSG_VERBOSE:
+            level = "VERBOSE"; break;
+        }
+        sb.append("[").append(level).append("] ");
+        sb.append(message.getMessage()).append(";");
+      }
+      
+      context.setResult(sb.toString());
       
     } 
     catch (Exception ex)
