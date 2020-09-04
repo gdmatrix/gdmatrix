@@ -33,32 +33,27 @@ package org.santfeliu.job.scheduler.quartz;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.job.Job;
 import org.quartz.CalendarIntervalScheduleBuilder;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.JobListener;
 import org.quartz.ScheduleBuilder;
-//import org.quartz.JobException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
+import org.quartz.TriggerListener;
 import org.quartz.impl.matchers.EverythingMatcher;
 import org.santfeliu.dic.util.DictionaryUtils;
-import org.santfeliu.job.service.JobResponse;
 import org.santfeliu.job.store.JobStore;
 import org.santfeliu.job.scheduler.Scheduler;
 import org.santfeliu.job.service.JobException;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 
 /**
@@ -71,8 +66,11 @@ public class QuartzScheduler implements Scheduler
   public static final String CALENDAR_TRIGGER = "Calendar";
   public static final String CRON_TRIGGER = "Cron";
   
+  public static final String LOCK_ENABLED = "lockEnabled";
+  
   private static final String TRIGGER_NAME_SUFFIX = "_trigger";
   private static final String DEFAULT_GROUP = "default";
+  
 
   static org.quartz.Scheduler scheduler;
   private final JobStore jobStore;
@@ -157,10 +155,24 @@ public class QuartzScheduler implements Scheduler
       scheduler = schedFact.getScheduler();
       scheduler.start();
 
+      //Init listeners
       JobListener jobListener = new QuartzJobListener(jobStore);
       scheduler.getListenerManager().addJobListener(jobListener,
         EverythingMatcher.allJobs());
-
+      
+      String lockEnabledProp = 
+        MatrixConfig.getClassProperty(QuartzScheduler.class, LOCK_ENABLED);      
+      if (lockEnabledProp != null && lockEnabledProp.equalsIgnoreCase("true"))
+      {
+        TriggerListener lockListener = new LockTriggerListener(jobStore);
+        scheduler.getListenerManager().addTriggerListener(lockListener,
+          EverythingMatcher.allTriggers());
+        
+        JobListener unlockListener = new UnlockJobListener(jobStore);
+        scheduler.getListenerManager().addJobListener(unlockListener,
+          EverythingMatcher.allJobs());        
+      }
+      
       //Schedule initializer job
       scheduleJob(createInitJob());
     }
@@ -257,20 +269,17 @@ public class QuartzScheduler implements Scheduler
 
       //Trigger type resolver
       String triggerType = null;
-//      if (job.getTriggerType() == null)
-//      {
-        if (!StringUtils.isBlank(job.getDayOfMonth()) || 
-          !StringUtils.isBlank(job.getDayOfWeek()))
-          triggerType = CRON_TRIGGER;
-        else if (job.getUnitOfTime() != null && 
-          (job.getUnitOfTime().equals(Scheduler.DAYS)
-          || job.getUnitOfTime().equals(Scheduler.WEEKS)
-          || job.getUnitOfTime().equals(Scheduler.MONTHS)
-          || job.getUnitOfTime().equals(Scheduler.YEARS)))
-          triggerType = CALENDAR_TRIGGER;
-        else 
-          triggerType = SIMPLE_TRIGGER;
-//      }  
+      if (!StringUtils.isBlank(job.getDayOfMonth()) || 
+        !StringUtils.isBlank(job.getDayOfWeek()))
+        triggerType = CRON_TRIGGER;
+      else if (job.getUnitOfTime() != null && 
+        (job.getUnitOfTime().equals(Scheduler.DAYS)
+        || job.getUnitOfTime().equals(Scheduler.WEEKS)
+        || job.getUnitOfTime().equals(Scheduler.MONTHS)
+        || job.getUnitOfTime().equals(Scheduler.YEARS)))
+        triggerType = CALENDAR_TRIGGER;
+      else 
+        triggerType = SIMPLE_TRIGGER;
       
       //Firing once time doesn't need schedule
       if (job.getRepetitions() == null
@@ -440,7 +449,7 @@ public class QuartzScheduler implements Scheduler
 
   private Class getJobClass(Job job) throws Exception
   {
-    Class jobClass = HelloJob.class;
+    Class jobClass = TestJob.class;
     if (job != null)
     {
       String jobClassName = 

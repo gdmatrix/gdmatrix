@@ -33,7 +33,6 @@ package org.santfeliu.job.scheduler;
 import java.util.Date;
 import org.matrix.job.Job;
 import org.santfeliu.job.service.JobException;
-import org.santfeliu.job.store.JobStore;
 
 /**
  *
@@ -41,7 +40,7 @@ import org.santfeliu.job.store.JobStore;
 
  */
 public interface Scheduler
-{  
+{   
   public static final String SECONDS = "s";
   public static final String MINUTES = "m";
   public static final String HOURS = "h";

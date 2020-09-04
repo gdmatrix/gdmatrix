@@ -71,6 +71,7 @@ public class JobCaseConverter
       setProperty(cas, "repetitions", job.getRepetitions());
       setProperty(cas, "unitOfTime", job.getUnitOfTime());
       setProperty(cas, "audit", String.valueOf(job.isAudit()));
+      setProperty(cas, "locked", String.valueOf(job.isLocked()));
       List<Property> jobProperties = job.getProperty();
       removeSystemProperties(jobProperties);
       cas.getProperty().addAll(jobProperties);
@@ -114,6 +115,8 @@ public class JobCaseConverter
       job.setUnitOfTime(getPropertyValue(properties, "unitOfTime"));
       String audit = getPropertyValue(properties, "audit");
       job.setAudit((audit != null && audit.equalsIgnoreCase("true")));
+      String locked = getPropertyValue(properties, "locked");
+      job.setLocked((locked != null && locked.equalsIgnoreCase("true")));
       removeSystemProperties(properties);
       job.getProperty().addAll(properties);
     }

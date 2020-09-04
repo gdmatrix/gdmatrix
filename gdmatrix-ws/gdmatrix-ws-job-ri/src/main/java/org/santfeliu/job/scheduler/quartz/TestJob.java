@@ -38,16 +38,16 @@ import org.quartz.JobExecutionException;
  *
  * @author blanquepa
  */
-public class HelloJob implements org.quartz.Job
+public class TestJob implements org.quartz.Job
 {
 
   @Override
   public void execute(JobExecutionContext context) 
     throws JobExecutionException
   {
-    JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-    System.out.println(dataMap.get("description"));
-    context.setResult("Done!");
+      JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+      System.out.println(dataMap.get("description"));
+      context.setResult("Done!");
   }
   
 }

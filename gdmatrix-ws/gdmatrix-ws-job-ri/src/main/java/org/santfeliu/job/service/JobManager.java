@@ -67,23 +67,24 @@ public class JobManager
   WebServiceContext wsContext;
 
   private static final String WS_ENABLED = "enabled";
+  
   protected static final Logger log = Logger.getLogger("Job");
 
-  private boolean enabled;
+  private boolean wsEnabled;
   private Scheduler scheduler;
   private JobStore jobStore;
 
   public JobManager()
   {
-    String wsEnabled = 
+    String enabledProp = 
       MatrixConfig.getClassProperty(getClass(), WS_ENABLED);
-    enabled = wsEnabled != null && wsEnabled.equalsIgnoreCase("true");
-    if (enabled)
+    this.wsEnabled = enabledProp != null && enabledProp.equalsIgnoreCase("true");
+    if (this.wsEnabled)
     {
       jobStore = JobStoreFactory.newJobStore();
 
       if (scheduler == null)
-      {
+      {      
         scheduler = SchedulerFactory.newScheduler(jobStore);
         try
         {
@@ -100,7 +101,7 @@ public class JobManager
 
   public void scheduleJob(Job job)
   {
-    if (!enabled)
+    if (!wsEnabled)
       throw WSExceptionFactory.create("MODULE_DISABLED");  
     
     try
@@ -124,7 +125,7 @@ public class JobManager
 
   public void unscheduleJob(String jobId)
   {
-    if (!enabled)
+    if (!wsEnabled)
       throw WSExceptionFactory.create("MODULE_DISABLED");  
     
     try
@@ -145,7 +146,7 @@ public class JobManager
 
   public void executeJob(Job job)
   {
-    if (!enabled)
+    if (!wsEnabled)
       throw WSExceptionFactory.create("MODULE_DISABLED");  
     
     try
@@ -172,7 +173,7 @@ public class JobManager
   
   public Job storeJob(Job job)
   {
-    if (!enabled)
+    if (!wsEnabled)
       throw WSExceptionFactory.create("MODULE_DISABLED");  
     
     Job result = null;
@@ -204,7 +205,7 @@ public class JobManager
 
   public Job loadJob(String jobId)
   {
-    if (!enabled)
+    if (!wsEnabled)
       throw WSExceptionFactory.create("MODULE_DISABLED");  
     
     Job result = null;
@@ -227,7 +228,7 @@ public class JobManager
 
   public boolean removeJob(String jobId)
   {
-    if (!enabled)
+    if (!wsEnabled)
       throw WSExceptionFactory.create("MODULE_DISABLED");  
     
     boolean result = false;
@@ -254,7 +255,7 @@ public class JobManager
   
   public List<Job> findJobs(JobFilter filter)
   {
-    if (!enabled)
+    if (!wsEnabled)
       throw WSExceptionFactory.create("MODULE_DISABLED");  
     
     List<Job> result = new ArrayList();
@@ -277,7 +278,7 @@ public class JobManager
   
   public String nextFiring(String jobId)
   {
-    if (!enabled)
+    if (!wsEnabled)
       throw WSExceptionFactory.create("MODULE_DISABLED");  
     
     String result = null;    

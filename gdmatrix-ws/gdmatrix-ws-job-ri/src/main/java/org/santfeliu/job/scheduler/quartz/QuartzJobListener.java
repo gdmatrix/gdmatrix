@@ -66,19 +66,17 @@ import org.santfeliu.util.TextUtils;
     @Override
     public void jobToBeExecuted(JobExecutionContext context)
     {
-      this.startDate = new Date();
+      this.startDate = new Date();           
     }
 
     @Override
     public void jobExecutionVetoed(JobExecutionContext context)
     {
-    }
-
-    @Override
-    public void jobWasExecuted(JobExecutionContext context,
-      JobExecutionException jobException)
-    {
       JobDataMap params = context.getJobDetail().getJobDataMap();
+      String jobId = params.getString("jobId");
+      Logger.getLogger(QuartzJobListener.class.getName()).log(
+        Level.INFO, "{0} job execution locked", jobId);
+      
       Boolean audit = params.getBoolean("audit");
       if (audit)
       {
@@ -86,22 +84,11 @@ import org.santfeliu.util.TextUtils;
           = TextUtils.formatDate(this.startDate, "yyyyMMddHHmmss");
         String endDateTime
           = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-        String jobId = params.getString("jobId");
         JobResponse jobResponse = new JobResponse();
         jobResponse.setJobId(jobId);
         jobResponse.setStartDateTime(startDateTime);
-        jobResponse.setEndDateTime(endDateTime);
-        if (jobException != null)
-        {
-          jobResponse.setMessage("JOB_EXECUTION_FAILED: "
-            + jobException.getMessage());
-        }
-        else
-        {
-          jobResponse.setMessage("SUCCESSFUL_JOB_EXECUTION: " 
-            + context.getResult());
-        }
-
+        jobResponse.setEndDateTime(endDateTime);  
+        jobResponse.setMessage("JOB_EXECUTION_LOCKED");
         try
         {
           jobStore.storeJobResponse(jobResponse);
@@ -109,16 +96,64 @@ import org.santfeliu.util.TextUtils;
         catch (JobException ex)
         {
           Logger.getLogger(
-            QuartzScheduler.class.getName()).log(Level.SEVERE, null, ex);
+            QuartzJobListener.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
-      else
-      {
-        if (jobException != null)
-          Logger.getLogger(QuartzScheduler.class.getName()).log(
-            Level.SEVERE, null, jobException);  
-      }
-
     }
 
+    @Override
+    public void jobWasExecuted(JobExecutionContext context,
+      JobExecutionException jobException)
+    {
+      
+      if (jobException != null)
+        Logger.getLogger(QuartzJobListener.class.getName()).log(
+          Level.SEVERE, null, jobException);  
+      else
+        Logger.getLogger(QuartzJobListener.class.getName()).log(
+          Level.INFO, "Successful job execution");
+        
+      JobDataMap params = context.getJobDetail().getJobDataMap();
+      Boolean audit = params.getBoolean("audit");
+      
+      try
+      {
+        if (audit)
+        {
+          String startDateTime
+            = TextUtils.formatDate(this.startDate, "yyyyMMddHHmmss");
+          String endDateTime
+            = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
+          String jobId = params.getString("jobId");
+          JobResponse jobResponse = new JobResponse();
+          jobResponse.setJobId(jobId);
+          jobResponse.setStartDateTime(startDateTime);
+          jobResponse.setEndDateTime(endDateTime);
+          if (jobException != null)
+          {
+            jobResponse.setMessage("JOB_EXECUTION_FAILED: "
+              + jobException.getMessage());
+          }
+          else
+          {
+            jobResponse.setMessage("SUCCESSFUL_JOB_EXECUTION: " 
+              + context.getResult());
+          }
+
+          jobStore.storeJobResponse(jobResponse);
+        }
+        
+  
+      }
+      catch (JobException ex)
+      {
+        Logger.getLogger(
+          QuartzJobListener.class.getName()).log(Level.SEVERE, null, ex);
+      }        
+      
+
+    }
+    
+
+    
   }
