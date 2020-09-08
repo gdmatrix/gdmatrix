@@ -413,14 +413,14 @@ public class QuartzScheduler implements Scheduler
       }
       else if (unitOfTime.equals(Scheduler.MINUTES))
       {
-        seconds = "*";
+        seconds = "0";
         minutes = minutes + "/" + interval;
         hours = "*";        
       }
       else if (unitOfTime.equals(Scheduler.HOURS))
       {
-        seconds = "*";
-        minutes = "*";
+        seconds = "0";
+        minutes = "0";
         hours = hours + "/" + interval;        
       }
     }
