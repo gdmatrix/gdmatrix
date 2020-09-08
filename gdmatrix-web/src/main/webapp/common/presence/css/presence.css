@@ -1754,6 +1754,7 @@ input::-moz-focus-inner
   padding: 0px; 
   border: none;
   color: #000000;
+  overflow: visible;  
 }
 
 .input_text
