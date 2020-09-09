@@ -36,7 +36,8 @@
       </property>    
       <property name="repetitions" type="xs:int" minOccurs="0">
       </property>  
-      <property name="dayOfWeek" type="xs:string" minOccurs="0">
+      <property name="dayOfWeek" type="xs:string" minOccurs="0" 
+                maxOccurs="unbounded">
       </property>  
       <property name="dayOfMonth" type="xs:string" minOccurs="0">
       </property> 

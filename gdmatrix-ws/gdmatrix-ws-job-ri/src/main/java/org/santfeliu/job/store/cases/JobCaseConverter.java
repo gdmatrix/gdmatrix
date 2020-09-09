@@ -31,6 +31,7 @@
 package org.santfeliu.job.store.cases;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
@@ -66,7 +67,8 @@ public class JobCaseConverter
         cas.setEndTime(endDateTime.substring(8));
       }
       setProperty(cas, "dayOfMonth", job.getDayOfMonth());
-      setCaseDayOfWeek(cas, job.getDayOfWeek());
+      setProperty(cas, "dayOfWeek", job.getDayOfWeek());
+//      setCaseDayOfWeek(cas, job.getDayOfWeek());
       setProperty(cas, "interval", job.getInterval());
       setProperty(cas, "repetitions", job.getRepetitions());
       setProperty(cas, "unitOfTime", job.getUnitOfTime());
@@ -103,9 +105,15 @@ public class JobCaseConverter
       String dayOfMonth = getPropertyValue(properties, "dayOfMonth");
       if (dayOfMonth != null)
         job.setDayOfMonth(dayOfMonth);
-      String dayOfWeek = getCaseDayOfWeek(properties);
-      if (dayOfWeek != null)
-        job.setDayOfWeek(dayOfWeek);
+//      String dayOfWeek = getCaseDayOfWeek(properties);
+//      if (dayOfWeek != null)
+//        job.setDayOfWeek(dayOfWeek);
+      Property dayOfWeekProp = getProperty(cas, "dayOfWeek");
+      if (dayOfWeekProp != null)
+      {
+        job.getDayOfWeek().retainAll(Collections.EMPTY_LIST);
+        job.getDayOfWeek().addAll(dayOfWeekProp.getValue());
+      }
       String interval = getPropertyValue(properties, "interval");
       if (interval != null)
         job.setInterval(Integer.valueOf(interval));

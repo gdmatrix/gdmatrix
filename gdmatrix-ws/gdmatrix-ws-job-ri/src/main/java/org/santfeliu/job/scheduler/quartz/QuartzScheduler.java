@@ -270,7 +270,7 @@ public class QuartzScheduler implements Scheduler
       //Trigger type resolver
       String triggerType = null;
       if (!StringUtils.isBlank(job.getDayOfMonth()) || 
-        !StringUtils.isBlank(job.getDayOfWeek()))
+        (job.getDayOfWeek() != null && !job.getDayOfWeek().isEmpty()))
         triggerType = CRON_TRIGGER;
       else if (job.getUnitOfTime() != null && 
         (job.getUnitOfTime().equals(Scheduler.DAYS)
@@ -405,23 +405,25 @@ public class QuartzScheduler implements Scheduler
     
     if (interval != null && unitOfTime != null)
     {
-      if (unitOfTime.equals(Scheduler.SECONDS))
+      switch (unitOfTime)
       {
-        seconds = seconds + "/" + interval;
-        minutes = "*";
-        hours = "*";        
-      }
-      else if (unitOfTime.equals(Scheduler.MINUTES))
-      {
-        seconds = "0";
-        minutes = minutes + "/" + interval;
-        hours = "*";        
-      }
-      else if (unitOfTime.equals(Scheduler.HOURS))
-      {
-        seconds = "0";
-        minutes = "0";
-        hours = hours + "/" + interval;        
+        case Scheduler.SECONDS:
+          seconds = "0/" + interval;
+          minutes = "*";
+          hours = "*";
+          break;
+        case Scheduler.MINUTES:
+          //seconds = "0";
+          minutes = "0/" + interval;
+          hours = "*";
+          break;
+        case Scheduler.HOURS:
+          //seconds = "0";
+          //minutes = "0";
+          hours = "0/" + interval;
+          break;        
+        default:
+          break;
       }
     }
     
@@ -436,15 +438,31 @@ public class QuartzScheduler implements Scheduler
     
     String month = "*";
     exp.append(" ").append(month);
-    
-    String dayOfWeek = job.getDayOfWeek();
-    if (StringUtils.isBlank(dayOfWeek))
-      dayOfWeek = "?";
-    
-    exp.append(" ").append(dayOfWeek);
+      
+    appendDayOfWeek(exp, job.getDayOfWeek());
    
     return CronScheduleBuilder.cronSchedule(exp.toString())
       .withMisfireHandlingInstructionDoNothing();
+  }
+  
+  private void appendDayOfWeek(StringBuilder expression, List<String> dayOfWeek)
+  {
+    if (dayOfWeek == null || dayOfWeek.isEmpty())
+      expression.append(" ").append("?");
+    else
+    {
+      expression.append(" ");
+      boolean first = true;
+      for (String day : dayOfWeek)
+      {
+        if (!first)
+          expression.append(",");
+        else
+          first = false;
+    
+        expression.append(day);
+      }
+    }    
   }
 
   private Class getJobClass(Job job) throws Exception
@@ -485,6 +503,8 @@ public class QuartzScheduler implements Scheduler
       Trigger trigger = scheduler.getTrigger(tk);
       if (trigger != null)
         nextDate = trigger.getNextFireTime();
+      else
+        throw new JobException("UNSCHEDULED_JOB");
     }
     catch (Exception ex)
     {

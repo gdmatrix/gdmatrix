@@ -287,11 +287,18 @@ public class JobManager
       Date nextDate = scheduler.getNextFiring(jobId);
       if (nextDate != null)
         result = TextUtils.formatDate(nextDate, "yyyyMMddHHmmss");
+      else
+        result = "JOB_FINISHED";
     }
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "nextFiring");
-      throw WSExceptionFactory.create(ex);
+      if (ex.getMessage().contains("UNSCHEDULED_JOB"))
+        result = "UNSCHEDULED_JOB";
+      else
+      {
+        log.log(Level.SEVERE, "nextFiring");
+        throw WSExceptionFactory.create(ex);
+      }
     }
     return result;    
   }
