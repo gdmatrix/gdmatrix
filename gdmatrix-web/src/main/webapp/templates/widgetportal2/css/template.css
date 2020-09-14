@@ -2541,6 +2541,7 @@ li:focus,
 button:focus
 {
   outline: rgb(211,107,115) solid 2px;
+  outline-offset: 2px;
 }
 
 #main_container .widget_content,
