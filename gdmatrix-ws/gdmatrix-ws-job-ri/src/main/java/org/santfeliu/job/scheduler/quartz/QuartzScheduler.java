@@ -326,9 +326,10 @@ public class QuartzScheduler implements Scheduler
     }
     else
     {
-      if (job.getRepetitions() != null && job.getRepetitions() > 0)
+      if (job.getRepetitions() != null && job.getRepetitions() > 1)
       {
-        scheduleBuilder.withRepeatCount(job.getRepetitions());
+        //Additional firings (totalFirings = withRepeatCount + 1); 
+        scheduleBuilder.withRepeatCount(job.getRepetitions() - 1);
       }
     }
 
