@@ -30,9 +30,11 @@
  */
 package org.santfeliu.job.scheduler.quartz;
 
+import com.mchange.v2.cfg.DelayedLogItem;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.tools.ant.Project;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -45,11 +47,11 @@ import org.santfeliu.util.MatrixConfig;
  *
  * @author blanquepa
  */
-public class AntJob implements org.quartz.Job
+public class AntJob extends AbstractJob
 {
 
   @Override
-  public void execute(JobExecutionContext context) 
+  public void doExecute(JobExecutionContext context) 
     throws JobExecutionException
   {
     try
@@ -82,29 +84,26 @@ public class AntJob implements org.quartz.Job
         params, wsDirectory, 
         MatrixConfig.getProperty("adminCredentials.userId"),
         MatrixConfig.getProperty("adminCredentials.password"), antDir);
-      
-      StringBuilder sb = new StringBuilder();      
+           
       for (Message message : messages)
       {
-        String level = "";
+        Level level = Level.ALL;
         switch(message.getLevel())
         {
           case Project.MSG_INFO:
-            level = "INFO"; break;
+            level = Level.INFO; break;
           case Project.MSG_WARN:
-            level = "WARN"; break;
+            level = Level.WARNING; break;
           case Project.MSG_ERR:
-            level = "ERROR"; break;
+            level = Level.SEVERE; break;
           case Project.MSG_DEBUG:
-            level = "DEBUG"; break;
+            level = Level.FINE; break;
           case Project.MSG_VERBOSE:
-            level = "VERBOSE"; break;
+            level = Level.FINEST; break;
         }
-        sb.append("[").append(level).append("] ");
-        sb.append(message.getMessage()).append(";");
+
+        log(level, message.getMessage());
       }
-      
-      context.setResult(sb.toString());
       
     } 
     catch (Exception ex)

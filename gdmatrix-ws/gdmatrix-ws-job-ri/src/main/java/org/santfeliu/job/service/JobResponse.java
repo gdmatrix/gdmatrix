@@ -30,6 +30,8 @@
  */
 package org.santfeliu.job.service;
 
+import java.io.File;
+
 /**
  *
  * @author blanquepa
@@ -40,6 +42,10 @@ public class JobResponse
   private String startDateTime;
   private String endDateTime;
   private String message;
+  private File logFile;
+  private ResponseType type;
+  
+  public enum ResponseType {ERROR, SUCCESS}
 
   public String getJobId()
   {
@@ -79,6 +85,26 @@ public class JobResponse
   public void setMessage(String message)
   {
     this.message = message;
+  }
+
+  public File getLogFile()
+  {
+    return logFile;
+  }
+
+  public void setLogFile(File logFile)
+  {
+    this.logFile = logFile;
+  }
+
+  public ResponseType getType()
+  {
+    return type;
+  }
+
+  public void setType(ResponseType type)
+  {
+    this.type = type;
   }
   
   

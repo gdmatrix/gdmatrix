@@ -162,8 +162,9 @@ public class AntLauncher
     for (Map.Entry entry : entries)
     {
       String key = (String)entry.getKey();
-      String value = (String)entry.getValue();
-      p.setUserProperty(key, value);
+      Object value = entry.getValue();
+      if (value instanceof String)
+        p.setUserProperty(key, (String)value);
     }
 
     p.init();

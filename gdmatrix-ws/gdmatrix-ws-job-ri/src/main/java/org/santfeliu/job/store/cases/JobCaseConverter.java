@@ -33,7 +33,6 @@ package org.santfeliu.job.store.cases;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.dic.Property;
 import org.matrix.job.Job;
@@ -68,7 +67,6 @@ public class JobCaseConverter
       }
       setProperty(cas, "dayOfMonth", job.getDayOfMonth());
       setProperty(cas, "dayOfWeek", job.getDayOfWeek());
-//      setCaseDayOfWeek(cas, job.getDayOfWeek());
       setProperty(cas, "interval", job.getInterval());
       setProperty(cas, "repetitions", job.getRepetitions());
       setProperty(cas, "unitOfTime", job.getUnitOfTime());
@@ -105,9 +103,6 @@ public class JobCaseConverter
       String dayOfMonth = getPropertyValue(properties, "dayOfMonth");
       if (dayOfMonth != null)
         job.setDayOfMonth(dayOfMonth);
-//      String dayOfWeek = getCaseDayOfWeek(properties);
-//      if (dayOfWeek != null)
-//        job.setDayOfWeek(dayOfWeek);
       Property dayOfWeekProp = getProperty(cas, "dayOfWeek");
       if (dayOfWeekProp != null)
       {
@@ -137,55 +132,7 @@ public class JobCaseConverter
     Field[] fields = Job.class.getDeclaredFields();
     for (Field field : fields)
     {
-      if (field.getName().equals("dayOfWeek"))
-      {
-        for (int i = 1; i <= 7; i++)
-        {
-          properties.remove(
-            getPropertyByName(properties, field.getName() + "_" + i));
-        }
-      }
       properties.remove(getPropertyByName(properties, field.getName()));
     }    
-  }
-  
-  private static String getCaseDayOfWeek(List<Property> properties)
-  {
-    String dayOfWeek = getPropertyValue(properties, "dayOfWeek");
-    if (!StringUtils.isBlank(dayOfWeek))
-      return dayOfWeek;
-    else
-    {
-      StringBuilder sb = new StringBuilder();
-      for (int i = 1; i <= 7; i++)
-      {
-        String propName = "dayOfWeek_" + i;
-        String value = getPropertyValue(properties, propName);
-        if (value != null && value.equalsIgnoreCase("true"))
-        {
-          if (sb.length() > 0) sb.append(",");
-          sb.append(i);
-          properties.remove(getPropertyByName(properties, propName));
-        }
-      }
-      dayOfWeek = sb.toString();
-    }
-    
-    return dayOfWeek;
-  }
-  
-  private static void setCaseDayOfWeek(Case cas, String dayOfWeek)
-  {
-    if (!StringUtils.isBlank(dayOfWeek))
-    {
-      String[] days = dayOfWeek.split(",");
-      if (days != null)
-      {
-        for (String day : days)
-        {
-          setProperty(cas, "dayOfWeek_" + day, "true");
-        }
-      }
-    }
   }
 }

@@ -219,10 +219,10 @@ public class QuartzScheduler implements Scheduler
       .withIdentity(job.getJobId(), DEFAULT_GROUP);
 
     //Map
+    jobBuilder.usingJobData("jobId", job.getJobId());    
     jobBuilder.usingJobData("name", job.getName());
     jobBuilder.usingJobData("description", job.getDescription());
-    jobBuilder.usingJobData("jobId", job.getJobId());
-    jobBuilder.usingJobData("audit", String.valueOf(job.isAudit()));
+    jobBuilder.usingJobData("audit", job.isAudit());
 
     List<Property> jobProperties = job.getProperty();
     if (jobProperties != null && !jobProperties.isEmpty())

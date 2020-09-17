@@ -30,45 +30,80 @@
  */
 package org.santfeliu.job.scheduler.quartz;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.santfeliu.util.script.ScriptClient;
 
 /**
  *
  * @author blanquepa
  */
-public class JavascriptJob extends AbstractJob
+public abstract class AbstractJob implements org.quartz.Job
 {
-
+  protected Logger logger; 
+  protected File logFile;
+  protected Boolean audit;
+  
+  public AbstractJob()
+  {
+  }
+  
+  public abstract void doExecute(JobExecutionContext context)
+    throws JobExecutionException;   
+  
   @Override
-  public void doExecute(JobExecutionContext context) throws JobExecutionException
+  public void execute(JobExecutionContext context)
+    throws JobExecutionException
   {
     try
     {
       JobDataMap params = context.getJobDetail().getJobDataMap();
-      String filename = (String)params.get("filename");
-      
-      ScriptClient client = new ScriptClient();
-      client.put("logger", logger);
-      for (String key : params.keySet())
+      audit = params.getBoolean("audit");
+      if (audit)
       {
-        client.put(key, params.get(key));
-      }      
-
-      log(Level.INFO, 
-        "Executing " + filename + " script with parameters: " + params);
-      Object result = client.executeScript(filename);
-      log(Level.INFO, (String) result);
+        logFile = File.createTempFile("Job", ".log");
+        logger = Logger.getLogger(logFile.getName()); 
+        logger.setLevel(Level.ALL);
+        FileHandler fh = new FileHandler(logFile.getAbsolutePath()); 
+        SimpleFormatter formatter = new SimpleFormatter();  
+        fh.setFormatter(formatter);        
+        logger.addHandler(fh); 
+      }
       
-      context.setResult(result);
-    } 
-    catch (Exception ex)
+      doExecute(context);
+      
+      if (audit)
+        context.getJobDetail().getJobDataMap().put("logFile", logFile);
+      
+    }
+    catch (IOException ex)
     {
       throw new JobExecutionException(ex);
-    }
+    }      
   }
   
+  protected void log(Level level, String msg)
+  {
+    if (audit && logger != null)
+      logger.log(level, msg);
+  }
+  
+  protected void log(Level level, String msg, Object[] params)
+  {
+    if (audit && logger != null)
+    logger.log(level, msg, params);
+  }
+  
+  protected boolean isAuditEnabled()
+  {
+    return audit;
+  }
+
+
 }

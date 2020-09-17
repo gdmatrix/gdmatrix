@@ -30,25 +30,34 @@
  */
 package org.santfeliu.job.store.cases;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import javax.activation.DataHandler;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseConstants;
+import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseFilter;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CaseManagerService;
 import org.matrix.cases.Intervention;
+import org.matrix.doc.Document;
 import org.matrix.job.Job;
 import org.matrix.job.JobFilter;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.doc.client.DocumentManagerClient;
+import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.job.service.JobResponse;
 import org.santfeliu.job.store.JobStore;
 import org.santfeliu.job.service.JobException;
+import org.santfeliu.job.service.JobResponse.ResponseType;
+import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 
@@ -59,7 +68,8 @@ import org.santfeliu.util.TextUtils;
 public class CasesJobStore implements JobStore
 {
   public static final String JOB_TYPE = "JobCase";
-  private static final int MESSAGES_MAX_LENGTH = 2000;
+  public static final String SUCCESS_INTERVENTION = "SuccessJobIntervention";
+  public static final String ERROR_INTERVENTION = "ErrorJobIntervention";
   
   @Override
   public Job storeJob(Job job) throws JobException
@@ -76,7 +86,7 @@ public class CasesJobStore implements JobStore
         Type type = TypeCache.getInstance().getType(typeId);
         if (type != null && type.isDerivedFrom(prefix + JOB_TYPE))
         {
-          cas = getPort().storeCase(cas);
+          cas = getCaseManagerPort().storeCase(cas);
           if (job.getJobId() == null)
           {
             job.setJobId(cas.getCaseId());
@@ -98,7 +108,7 @@ public class CasesJobStore implements JobStore
   {
     try
     {    
-      Case cas = getPort().loadCase(jobId);
+      Case cas = getCaseManagerPort().loadCase(jobId);
       String typeId = cas.getCaseTypeId();
       String prefix = "";
       if (typeId.contains(":"))
@@ -130,7 +140,7 @@ public class CasesJobStore implements JobStore
         Job job = loadJob(jobId);
         if (job != null)
         {
-          return getPort().removeCase(jobId);
+          return getCaseManagerPort().removeCase(jobId);
         }
       }
       return false;
@@ -158,12 +168,11 @@ public class CasesJobStore implements JobStore
       caseFilter.setFirstResult(jobFilter.getFirstResult());
       caseFilter.setMaxResults(jobFilter.getMaxResults());
       
-      List<Case> cases = getPort().findCases(caseFilter);
+      List<Case> cases = getCaseManagerPort().findCases(caseFilter);
       for (Case cas : cases)
       {
-
-          cas = getPort().loadCase(cas.getCaseId());
-          results.add(JobCaseConverter.caseToJob(cas));
+        cas = getCaseManagerPort().loadCase(cas.getCaseId());
+        results.add(JobCaseConverter.caseToJob(cas));
       }
       
       return results;        
@@ -181,7 +190,13 @@ public class CasesJobStore implements JobStore
     try
     {
       Intervention intervention = new Intervention();
-      intervention.setIntTypeId("Intervention"); //TODO: Specific type
+      
+      ResponseType type = jobResponse.getType();
+      if (type == ResponseType.ERROR)
+        intervention.setIntTypeId(ERROR_INTERVENTION);
+      else
+        intervention.setIntTypeId(SUCCESS_INTERVENTION);
+      
       intervention.setCaseId(jobResponse.getJobId());
       String startDateTime = jobResponse.getStartDateTime();
       intervention.setStartDate(
@@ -193,18 +208,44 @@ public class CasesJobStore implements JobStore
         TextUtils.formatInternalDate(endDateTime, "yyyyMMdd"));
       intervention.setEndTime(
         TextUtils.formatInternalDate(endDateTime, "HHmmss"));
+             
+      Document document = null;      
+      CaseManagerPort port = getCaseManagerPort();
+      File logFile = jobResponse.getLogFile();
+      if (logFile != null)
+      {
+        document = new Document();
+        document.setDocTypeId("Document");
+        String title = "Job " + jobResponse.getJobId() + "_" 
+          + startDateTime + " log";
+        document.setTitle(title);
+        
+        FileDataSource fds = new FileDataSource(logFile, "text/plain");
+        
+        DocumentUtils.setContentData(document, new DataHandler(fds));
+        document = getDocumentManagerClient().storeDocument(document);
+                
+        CaseDocument caseDocument = new CaseDocument();
+        caseDocument.setCaseId(jobResponse.getJobId());
+        caseDocument.setDocId(document.getDocId());
+        caseDocument.setCaseDocTypeId("CaseDocument"); //TODO: 
+        port.storeCaseDocument(caseDocument);
+      }
       
       String message = jobResponse.getMessage();
-      int length = message.length();
-      if (message.length() > MESSAGES_MAX_LENGTH)
+      if (message != null)
       {
-        int first = length - MESSAGES_MAX_LENGTH;
-        int last = length - 1;
-        message = message.substring(first, last);
-      }
-      intervention.setComments(message); 
-         
-      getPort().storeIntervention(intervention);
+        intervention.setComments(message);
+        
+        if (document != null)
+        {
+          DictionaryUtils.setProperty(intervention, "logDocId", 
+            document.getDocId());
+          DictionaryUtils.setProperty(intervention, "logTitle",
+            document.getTitle());
+        }
+        port.storeIntervention(intervention);
+      }      
     }
     catch (Exception ex)
     {
@@ -212,7 +253,28 @@ public class CasesJobStore implements JobStore
     }
   }
   
-  private CaseManagerPort getPort() throws MalformedURLException
+  private DocumentManagerClient getDocumentManagerClient() 
+    throws MalformedURLException
+  {
+    DocumentManagerClient client = null;
+
+    String wsDirectoryURL =
+      MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
+
+    if (wsDirectoryURL == null)
+    {
+      String contextPath = MatrixConfig.getProperty("contextPath");
+      wsDirectoryURL = "http://localhost" + contextPath + "/wsdirectory";
+    }    
+
+    client = new DocumentManagerClient(new URL(wsDirectoryURL), 
+      MatrixConfig.getProperty("adminCredentials.userId"), 
+      MatrixConfig.getProperty("adminCredentials.password"));
+    
+    return client;    
+  }
+  
+  private CaseManagerPort getCaseManagerPort() throws MalformedURLException
   {
     CaseManagerPort port = null;
 

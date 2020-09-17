@@ -30,6 +30,7 @@
  */
 package org.santfeliu.job.scheduler.quartz;
 
+import java.io.File;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +40,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.santfeliu.job.service.JobException;
 import org.santfeliu.job.service.JobResponse;
+import org.santfeliu.job.service.JobResponse.ResponseType;
 import org.santfeliu.job.store.JobStore;
 import org.santfeliu.util.TextUtils;
 
@@ -91,7 +93,13 @@ import org.santfeliu.util.TextUtils;
         jobResponse.setMessage("JOB_EXECUTION_LOCKED");
         try
         {
+          jobResponse.setType(ResponseType.ERROR);
+          File logFile = (File) params.get("logFile");
+          if (logFile != null)
+            jobResponse.setLogFile(logFile);
           jobStore.storeJobResponse(jobResponse);
+          if (logFile != null)
+            logFile.delete();          
         }
         catch (JobException ex)
         {
@@ -131,19 +139,28 @@ import org.santfeliu.util.TextUtils;
           jobResponse.setEndDateTime(endDateTime);
           if (jobException != null)
           {
-            jobResponse.setMessage("JOB_EXECUTION_FAILED: "
-              + jobException.getMessage());
+            jobResponse.setMessage("JOB_EXECUTION_FAILED"
+              + ":" + jobException.getMessage());
+            jobResponse.setType(ResponseType.ERROR);
           }
           else
           {
-            jobResponse.setMessage("SUCCESSFUL_JOB_EXECUTION: " 
-              + context.getResult());
+            String message = context.getResult() != null ? 
+              ":" + context.getResult() : "";
+            jobResponse.setMessage("SUCCESSFUL_JOB_EXECUTION" 
+              + message);
+            jobResponse.setType(ResponseType.SUCCESS);
           }
-
+          
+          File logFile = (File) params.get("logFile");
+          if (logFile != null)
+            jobResponse.setLogFile(logFile);
+          
           jobStore.storeJobResponse(jobResponse);
+          
+          if (logFile != null)
+            logFile.delete();
         }
-        
-  
       }
       catch (JobException ex)
       {
@@ -151,7 +168,6 @@ import org.santfeliu.util.TextUtils;
           QuartzJobListener.class.getName()).log(Level.SEVERE, null, ex);
       }        
       
-
     }
     
 

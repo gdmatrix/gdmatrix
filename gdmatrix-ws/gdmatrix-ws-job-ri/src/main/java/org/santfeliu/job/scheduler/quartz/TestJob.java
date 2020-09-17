@@ -30,6 +30,7 @@
  */
 package org.santfeliu.job.scheduler.quartz;
 
+import java.util.logging.Level;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -38,16 +39,18 @@ import org.quartz.JobExecutionException;
  *
  * @author blanquepa
  */
-public class TestJob implements org.quartz.Job
+public class TestJob extends AbstractJob
 {
-
   @Override
-  public void execute(JobExecutionContext context) 
+  public void doExecute(JobExecutionContext context) 
     throws JobExecutionException
-  {
-      JobDataMap dataMap = context.getJobDetail().getJobDataMap();
-      System.out.println(dataMap.get("description"));
-      context.setResult("Done!");
+  {      
+    JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+    String description = (String) dataMap.get("description");
+    System.out.println(description);
+    log(Level.INFO, description);
+    System.out.println("Done!");
+    log(Level.INFO, "Done!");
   }
   
 }
