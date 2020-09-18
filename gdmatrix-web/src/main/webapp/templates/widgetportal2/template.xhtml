@@ -588,6 +588,48 @@
               }
             });
           }
+          
+          function checkEscapeKey()
+          {
+            document.addEventListener('keydown', function(e) 
+            {
+              if ((e.keyCode || e.which) === 27)
+              {                
+                var mainMenuElem = 
+                  document.querySelector('#wp2_header .mainMenu');
+                hidePopupMenus(mainMenuElem);
+                setTimeout(function()
+                  {
+                    resetPopupMenus(mainMenuElem);
+                  }, 500
+                );      
+              }    
+            });  
+          }
+
+          function hidePopupMenus(mainMenuElem)
+          {
+            var elements = mainMenuElem.querySelectorAll('li ul');
+            for (var i = 0; i &lt; elements.length; i++)
+            {
+              elements[i].style.display = "none";
+            }
+
+            elements = mainMenuElem.querySelectorAll('li.has-children.open');
+            for (var i = 0; i &lt; elements.length; i++)
+            {
+              elements[i].className = "has-children";
+            }  
+          }
+
+          function resetPopupMenus(mainMenuElem)
+          {
+            var elements = mainMenuElem.querySelectorAll('li ul');
+            for (var i = 0; i &lt; elements.length; i++)
+            {
+              elements[i].style.display = "";
+            }  
+          }          
 
           renderDropDownButtons();
           
@@ -615,6 +657,7 @@
           window.addEventListener('scroll', checkSkipBottomLink);
           window.addEventListener('load', checkSkipBottomLink);
           
+          checkEscapeKey();
       </script>
     </ui:define>
   </ui:composition>
