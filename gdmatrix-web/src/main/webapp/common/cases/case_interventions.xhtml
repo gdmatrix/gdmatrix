@@ -393,7 +393,9 @@
             form="#{caseInterventionsBean.form}"
             rendererTypes="#{caseBean.editable ? 'HtmlFormRenderer,GenericFormRenderer' : 'DisabledHtmlFormRenderer'}"
             value="#{caseInterventionsBean.data}" 
-            rendered="#{not caseInterventionsBean.propertyEditorVisible}" />
+            rendered="#{not caseInterventionsBean.propertyEditorVisible}" 
+            translator="#{userSessionBean.translator}"
+            translationGroup="#{userSessionBean.translationGroup}" />            
           <h:inputTextarea value="#{caseInterventionsBean.propertyEditorString}"
                            rendered="#{caseInterventionsBean.propertyEditorVisible}"
                            validator="#{caseInterventionsBean.validatePropertyEditorString}"

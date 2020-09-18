@@ -148,12 +148,16 @@
                 <sf:dynamicForm
                   form="#{interventionSearchBean.form}"
                   rendererTypes="HtmlFormRenderer"
-                  value="#{interventionSearchBean.data}" />
+                  value="#{interventionSearchBean.data}"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}"/>
               </t:collapsiblePanel>
               <sf:dynamicForm rendered="#{not interventionSearchBean.renderCollapsiblePanel}"
                 form="#{interventionSearchBean.form}"
                 rendererTypes="HtmlFormRenderer"
-                value="#{interventionSearchBean.data}" />
+                value="#{interventionSearchBean.data}" 
+                translator="#{userSessionBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}"/>                
             </t:div>
             <h:commandButton value="#{objectBundle.clear}"
                            styleClass="searchButton"

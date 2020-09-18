@@ -125,7 +125,9 @@
               <sf:dynamicForm
                 form="#{eventDetailBean.form}"
                 rendererTypes="DisabledHtmlFormRenderer"
-                value="#{eventDetailBean.data}"/>
+                value="#{eventDetailBean.data}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="event:#{eventDetailBean.event.eventId}"  />
             </t:div>
 
           </h:panelGroup>

@@ -195,7 +195,9 @@
               <sf:dynamicForm
                 form="#{caseSearchBean.form}"
                 rendererTypes="HtmlFormRenderer"
-                value="#{caseSearchBean.data}" />
+                value="#{caseSearchBean.data}" 
+                translator="#{userSessionBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}" />
             </t:collapsiblePanel>
             <sf:dynamicForm rendered="#{not caseSearchBean.renderCollapsiblePanel}"
                             form="#{caseSearchBean.form}"

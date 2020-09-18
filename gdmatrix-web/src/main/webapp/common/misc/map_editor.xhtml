@@ -118,7 +118,9 @@
           <sf:dynamicForm form="#{mapEditorBean.metadataForm}"
           value="#{mapBean.map.metadata}"
           rendererTypes="HtmlFormRenderer,GenericFormRenderer" 
-          rendered="#{mapEditorBean.metadataFormRendered}" />
+          rendered="#{mapEditorBean.metadataFormRendered}" 
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}"/>          
           <t:div>
             <h:outputLabel for="mapDocId" value="DocId: " />
             <t:inputText id="mapDocId" value="#{mapBean.map.docId}" readonly="true" />

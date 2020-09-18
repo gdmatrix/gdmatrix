@@ -201,9 +201,11 @@
 
       <t:div rendered="#{documentMainBean.renderForm}">
         <sf:dynamicForm form="#{documentMainBean.form}"
-           value="#{documentMainBean.data}"
-           rendererTypes="#{document2Bean.editable ? 'HtmlFormRenderer,GenericFormRenderer' : 'DisabledHtmlFormRenderer'}"
-           rendered="#{not documentMainBean.propertyEditorVisible}" />
+          value="#{documentMainBean.data}"
+          rendererTypes="#{document2Bean.editable ? 'HtmlFormRenderer,GenericFormRenderer' : 'DisabledHtmlFormRenderer'}"
+          rendered="#{not documentMainBean.propertyEditorVisible}" 
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}"/>           
         <h:inputTextarea value="#{documentMainBean.propertyEditorString}"
           rendered="#{documentMainBean.propertyEditorVisible}"
           validator="#{documentMainBean.validatePropertyEditorString}"

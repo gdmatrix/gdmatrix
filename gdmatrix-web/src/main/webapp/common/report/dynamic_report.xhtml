@@ -36,7 +36,9 @@
       <t:div rendered="#{dynamicReportBean.formSelector != null}">
         <sf:dynamicForm form="#{dynamicReportBean.form}"
          rendererTypes="HtmlFormRenderer,GenericFormRenderer"
-         value="#{dynamicReportBean.parameters}" />
+         value="#{dynamicReportBean.parameters}" 
+         translator="#{userSessionBean.translator}"
+         translationGroup="#{userSessionBean.translationGroup}" />
         <sf:commandButton id="default_button" value="#{dynamicReportBean.executeButtonLabel}"
          translator="#{userSessionBean.translator}"
          translationGroup="#{userSessionBean.translationGroup}" />

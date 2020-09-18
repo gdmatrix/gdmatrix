@@ -64,7 +64,9 @@
           <sf:dynamicForm
             form="#{instanceBean.headerForm}"
             rendererTypes="HtmlFormRenderer,GenericFormRenderer"
-            value="#{instanceBean.variablesUnmodificable}" />
+            value="#{instanceBean.variablesUnmodificable}" 
+            translator="#{applicationBean.translator}"
+            translationGroup="wf:instanceList" />
         </t:div>
 
         <t:div styleClass="workflowForms" rendered="#{instanceBean.showPendentForms}">

@@ -157,7 +157,9 @@
     <sf:dynamicForm form="#{policyMainBean.form}"
       value="#{policyMainBean.data}"
       rendererTypes="HtmlFormRenderer,GenericFormRenderer"
-      rendered="#{not policyMainBean.propertyEditorVisible}" />
+      rendered="#{not policyMainBean.propertyEditorVisible}" 
+      translator="#{userSessionBean.translator}"
+      translationGroup="#{userSessionBean.translationGroup}"/>
     <h:inputTextarea value="#{policyMainBean.propertyEditorString}"
       rendered="#{policyMainBean.propertyEditorVisible}"
       validator="#{policyMainBean.validatePropertyEditorString}"

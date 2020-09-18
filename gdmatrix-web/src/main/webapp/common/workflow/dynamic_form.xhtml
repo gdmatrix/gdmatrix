@@ -15,8 +15,10 @@
         form="#{dynamicFormBean.form}"
         rendererTypes="HtmlFormRenderer,GenericFormRenderer"
         value="#{dynamicFormBean.data}"
-        action="#{dynamicFormBean.buttonPressed}" />
-
+        action="#{dynamicFormBean.buttonPressed}" 
+        translator="#{instanceBean.translationEnabled ? 
+          applicationBean.translator : null}"
+        translationGroup="wf:#{instanceBean.workflowName}" />
     </ui:define>
   </ui:composition>
 </html>

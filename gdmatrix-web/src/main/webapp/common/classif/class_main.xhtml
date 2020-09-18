@@ -172,7 +172,9 @@
         <sf:dynamicForm form="#{classMainBean.form}"
          value="#{classMainBean.data}" 
          rendererTypes="HtmlFormRenderer,GenericFormRenderer"
-         rendered="#{not classMainBean.propertyEditorVisible}" />
+         rendered="#{not classMainBean.propertyEditorVisible}" 
+         translator="#{userSessionBean.translator}"
+         translationGroup="#{userSessionBean.translationGroup}"/>         
         <h:inputTextarea value="#{classMainBean.propertyEditorString}"
           rendered="#{classMainBean.propertyEditorVisible}"
           validator="#{classMainBean.validatePropertyEditorString}"

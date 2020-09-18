@@ -186,7 +186,9 @@
           form="#{eventMainBean.form}"
           rendererTypes="#{eventBean.editable ? 'HtmlFormRenderer,GenericFormRenderer' : 'DisabledHtmlFormRenderer'}"
           value="#{eventMainBean.data}"
-          rendered="#{not eventMainBean.propertyEditorVisible}" />
+          rendered="#{not eventMainBean.propertyEditorVisible}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="event:#{eventMainBean.event.eventId}"/>
         <h:inputTextarea value="#{eventMainBean.propertyEditorString}"
           rendered="#{eventMainBean.propertyEditorVisible}"
           validator="#{eventMainBean.validatePropertyEditorString}"
