@@ -38,6 +38,7 @@ import javax.faces.component.FacesComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.HtmlRenderUtils;
 import org.santfeliu.faces.Translator;
@@ -172,7 +173,7 @@ public class HtmlOutputLink
     {
       writer.writeAttribute("tabindex", getTabindex(), null);
     }    
-    if (getTarget() != null)
+    if (!StringUtils.isBlank(getTarget()))
     {
       writer.writeAttribute("target", getTarget(), null);
     }
