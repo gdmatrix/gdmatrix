@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+ 
+  <t:div rendered="#{panel.headerBrowserUrl!=null}"
+         styleClass="headerDocument">
+    <sf:browser url="#{panel.headerBrowserUrl}"
+                port="#{applicationBean.defaultPort}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}" />
+  </t:div>
+
+  <t:div styleClass="content">
+    <t:panelGroup rendered="#{panel.type == 'main' }">
+      <ui:include src="/common/cases/panels/main.xhtml" />
+    </t:panelGroup>   
+    <t:panelGroup rendered="#{panel.type == 'browser'}">
+      <ui:include src="/common/cases/panels/browser.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'documents' and panel.getProperty('resultsLayout') == 'list'}">
+      <ui:include src="/common/cases/panels/documents_list.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'documents' and panel.getProperty('resultsLayout') != 'list'}">
+      <ui:include src="/common/cases/panels/documents_table.xhtml" />
+    </t:panelGroup>               
+    <t:panelGroup rendered="#{panel.type == 'cases' and panel.getProperty('resultsLayout') == 'list'}">
+      <ui:include src="/common/cases/panels/cases_list.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'cases' and panel.getProperty('resultsLayout') != 'list'}">
+      <ui:include src="/common/cases/panels/cases_table.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'gallery'}">
+      <ui:include src="/common/cases/panels/gallery.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'dynamicform'}">
+      <ui:include src="/common/cases/panels/dynamicform.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'workflows'}">
+      <ui:include src="/common/cases/panels/workflows.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'persons' and panel.getProperty('resultsLayout') != 'list'}">
+      <ui:include src="/common/cases/panels/persons_table.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'persons' and panel.getProperty('resultsLayout') == 'list'}">
+      <ui:include src="/common/cases/panels/persons_list.xhtml" />
+    </t:panelGroup>                
+    <t:panelGroup rendered="#{panel.type == 'addresses' and panel.getProperty('resultsLayout') != 'list'}">
+      <ui:include src="/common/cases/panels/addresses_table.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'addresses' and panel.getProperty('resultsLayout') == 'list'}">
+      <ui:include src="/common/cases/panels/addresses_list.xhtml" />
+    </t:panelGroup>                
+    <t:panelGroup rendered="#{panel.type == 'contacts'}">
+      <ui:include src="/common/cases/panels/contacts.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'property_values'}">
+      <ui:include src="/common/cases/panels/property_values.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'addresses_agenda'}">
+      <ui:include src="/common/cases/panels/addresses_agenda.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'persons_agenda'}">
+      <ui:include src="/common/cases/panels/persons_agenda.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'agenda'}">
+      <ui:include src="/common/cases/panels/agenda.xhtml" />
+    </t:panelGroup>
+    <t:panelGroup rendered="#{panel.type == 'report'}">
+      <ui:include src="/common/cases/panels/report.xhtml" />
+    </t:panelGroup>          
+  </t:div>
+
+  <t:div rendered="#{panel.footerBrowserUrl!=null}"
+         styleClass="headerDocument">
+    <sf:browser url="#{panel.footerBrowserUrl}"
+                port="#{applicationBean.defaultPort}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}" />
+  </t:div>
+
+  <t:div styleClass="footer">
+  </t:div>
+
+</ui:composition>
