@@ -77,6 +77,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.w3c.tidy.Tidy;
 
@@ -110,6 +111,7 @@ public class CustomForm extends UIComponentBase
   private Map _submittedValues = new HashMap(); // contains submitted fields
   private Map _convertedValues = new HashMap(); // contains converted fields
   private Map _fieldFormats = new HashMap(); // contains all fields in form
+  private Map _fieldLabels = new HashMap();
   private HashSet _requiredFields = new HashSet();
   private HashSet _multivaluedFields = new HashSet();
   private Translator _translator;
@@ -286,6 +288,7 @@ public class CustomForm extends UIComponentBase
     try
     {
       _fieldFormats.clear();
+      _fieldLabels.clear();
       _requiredFields.clear();
       _multivaluedFields.clear();
 
@@ -330,10 +333,15 @@ public class CustomForm extends UIComponentBase
 
       // parse document with Tidy
       Document document = tidy.parseDOM(input, null);
+      // build labels map
+      buildFieldLabelsMap(document);
       // write to output
       encodeDocument(document, writer, values);
+      
       System.out.println("----CustomForm------------------------------------");
       System.out.println("fieldFormats:" + _fieldFormats);
+      System.out.println();
+      System.out.println("fieldLabels:" + _fieldLabels);
       System.out.println();
       System.out.println("requiredFields:" + _requiredFields);
       System.out.println();
@@ -745,6 +753,8 @@ public class CustomForm extends UIComponentBase
   {
     // get field properties
     String format = (String)_fieldFormats.get(fieldName);
+    String label = (String)_fieldLabels.get(fieldName);
+    if (label == null) label = fieldName;
     boolean required = _requiredFields.contains(fieldName);
     boolean multivalued = _multivaluedFields.contains(fieldName);
 
@@ -753,7 +763,7 @@ public class CustomForm extends UIComponentBase
     if (value.length() == 0 && required) // check when required
     {
       _valid = false;
-      FacesUtils.addMessage(REQUIRED_VALUE, new Object[]{fieldName},
+      FacesUtils.addMessage(REQUIRED_VALUE, new Object[]{label},
         FacesMessage.SEVERITY_ERROR);
     }
     else // convert
@@ -767,7 +777,7 @@ public class CustomForm extends UIComponentBase
       catch (Exception ex)
       {
         _valid = false;
-        FacesUtils.addMessage(INVALID_VALUE, new Object[]{fieldName},
+        FacesUtils.addMessage(INVALID_VALUE, new Object[]{label},
           FacesMessage.SEVERITY_ERROR);
       }
     }
@@ -969,7 +979,7 @@ public class CustomForm extends UIComponentBase
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[9];
+    Object values[] = new Object[10];
     values[0] = super.saveState(context);
     values[1] = _url;
     values[2] = _values;
@@ -979,6 +989,7 @@ public class CustomForm extends UIComponentBase
     values[6] = _requiredFields;
     values[7] = _multivaluedFields;
     values[8] = _translationGroup;
+    values[9] = _fieldLabels;    
     return values;
   }
 
@@ -995,5 +1006,86 @@ public class CustomForm extends UIComponentBase
     _requiredFields = (HashSet)values[6];
     _multivaluedFields = (HashSet)values[7];
     _translationGroup = (String)values[8];
+    _fieldLabels = (Map)values[9];    
+  }  
+  
+  private void buildFieldLabelsMap(Document document)
+  {
+    NodeList auxNodeList = document.getElementsByTagName("body");
+    if (auxNodeList.getLength() > 0)
+    {
+      Node bodyNode = auxNodeList.item(0);
+      Map idMap = new HashMap();
+      buildIdMap(bodyNode, idMap);
+      buildFieldLabelsMap(bodyNode, idMap);
+    }
+  }
+  
+  private void buildIdMap(Node node, Map idMap)
+  {
+    if (node instanceof Element)// normal tag
+    {
+      Element element = (Element)node;
+      String id = element.getAttribute("id");
+      if (id != null && !id.trim().isEmpty())
+      {
+        idMap.put(id, element);
+      }
+    }
+    Node auxNode = node.getFirstChild();
+    while (auxNode != null)
+    {
+      buildIdMap(auxNode, idMap);
+      auxNode = auxNode.getNextSibling();
+    }
+  }
+
+  private void buildFieldLabelsMap(Node node, Map idMap)
+  {
+    if (node instanceof Element)// normal tag
+    {
+      Element element = (Element)node;
+      String tag = element.getNodeName().toLowerCase();
+      if (tag.equals("label"))
+      {
+        String forElementId = element.getAttribute("for");
+        if (forElementId != null && !forElementId.trim().isEmpty())
+        {
+          Element forElement = (Element)idMap.get(forElementId);
+          if (forElement != null)
+          {
+            String name = forElement.getAttribute("name");
+            if (name != null && !name.trim().isEmpty())
+            {
+              String label = element.getFirstChild().getNodeValue();
+              if (label != null && !label.trim().isEmpty())
+              {
+                label = cleanLabel(label);
+                _fieldLabels.put(name, label);
+              }
+            }
+          }
+        }
+      }
+    }
+    Node auxNode = node.getFirstChild();
+    while (auxNode != null)
+    {
+      buildFieldLabelsMap(auxNode, idMap);
+      auxNode = auxNode.getNextSibling();
+    }
+  }
+  
+  private String cleanLabel(String label)
+  {
+    String result = label;
+    if (result != null)
+    {
+      result = result.replace("(*)", "");
+      result = result.replace("*", "");
+      result = result.replace(":", "");
+      result = result.trim();
+    }
+    return result;
   }
 }

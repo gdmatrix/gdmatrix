@@ -210,7 +210,8 @@ public class HtmlForm implements Form
     Locale locale)
   {
     boolean valid = true;
-    Field field = getField(reference);    
+    Field field = getField(reference); 
+    String label = cleanLabel(field.getLabel());
     if (field != null && !field.isReadOnly())
     {
       System.out.print("Validating " + field);
@@ -224,8 +225,7 @@ public class HtmlForm implements Form
       if (field.getMinOccurs() > 0 && cardinality == 0)
       {
         valid = false;
-        String message = field.getLabel() + " is mandatory";
-        // TODO: Localize message
+        String message = "El camp " + label + " és obligatori.";
         System.out.println(" [" + message + "] ");
         errors.add(message);
       }
@@ -235,8 +235,8 @@ public class HtmlForm implements Form
       {
         // multi valued property
         valid = false;
-        String message = field.getLabel() + " has incorrect cardinality";
-        // TODO: Localize message
+        String message = "El camp " + label + 
+          " té una cardinalitat incorrecta.";        
         System.out.println(" [" + message + "] ");
         errors.add(message);
       }
@@ -298,8 +298,7 @@ public class HtmlForm implements Form
         }
         if (!valid)
         {
-          String message = "Invalid value for " + field.getLabel();
-          // TODO: Localize message
+          String message = "El valor de " + label + " és incorrecte.";
           System.out.println(" [" + message + "] ");
           errors.add(message);
         }
@@ -469,5 +468,18 @@ public class HtmlForm implements Form
         }
       }
     }
+  }
+  
+  private String cleanLabel(String label)
+  {
+    String result = label;
+    if (result != null)
+    {
+      result = result.replace("(*)", "");
+      result = result.replace("*", "");
+      result = result.replace(":", "");
+      result = result.trim();
+    }
+    return result;
   }
 }
