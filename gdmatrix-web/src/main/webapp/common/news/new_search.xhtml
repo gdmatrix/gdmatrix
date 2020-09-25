@@ -145,13 +145,15 @@
                           alt="#{row.draft ? 'draft' : 'final'}"
                           style="vertical-align:middle;margin-right:3px;"
                           rendered="#{newSearchBean.editMode}" />
-          <sf:outputText value="#{row.headline}" rendered="#{newSearchBean.editMode}"
+          <sf:outputText value="#{newSearchBean.newHeadline}" 
+                         rendered="#{newSearchBean.editMode}"
                          translator="#{userSessionBean.translator}"
                          translationGroup="#{newSearchBean.translationGroup}" />            
           <h:outputLink id="headlineLink" styleClass="headlineLink"
                         value="#{newSearchBean.newLink}"
                         rendered="#{!newSearchBean.editMode}">
-            <sf:outputText value="#{row.headline}" styleClass="headlineText"
+            <sf:outputText value="#{newSearchBean.newHeadline}" 
+                           styleClass="headlineText"
                            translator="#{userSessionBean.translator}"
                            translationGroup="#{newSearchBean.translationGroup}" />
           </h:outputLink>

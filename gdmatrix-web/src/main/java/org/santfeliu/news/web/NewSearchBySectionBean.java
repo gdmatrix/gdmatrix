@@ -198,6 +198,8 @@ public class NewSearchBySectionBean extends BasicSearchBean
   @CMSProperty
   public static final String DEFAULT_END_DATE_TIME_PROPERTY =
     "newSearch.defaultEndDateTime";
+  @CMSProperty
+  public static final String URL_SEPARATOR_PROPERTY = "newsURLSeparator";
 
   @Deprecated
   private static final String SECTION_ID_PROPERTY =
@@ -479,15 +481,39 @@ public class NewSearchBySectionBean extends BasicSearchBean
 
   public String getNewLink()
   {
-    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
-      getMenuModel().getSelectedMenuItem();
     NewView row = (NewView)getFacesContext().getExternalContext().
       getRequestMap().get("row");
-    String newId = row.getNewId();
-    return getContextPath() + "/go.faces?xmid=" + menuItem.getMid() +
-      "&newid=" + newId;
+    if (isExternalUrlMode(row))
+    {
+      String headline = row.getHeadline();
+      int idx = headline.lastIndexOf(getUrlSeparator());
+      return headline.substring(idx + getUrlSeparator().length());      
+    }
+    else
+    {
+      MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+        getMenuModel().getSelectedMenuItem();      
+      return getContextPath() + "/go.faces?xmid=" + menuItem.getMid() +
+        "&newid=" + row.getNewId();
+    }
   }
-
+  
+  public String getNewHeadline()
+  {
+    NewView row = (NewView)getFacesContext().getExternalContext().
+      getRequestMap().get("row");
+    if (isExternalUrlMode(row))
+    {
+      String headline = row.getHeadline();
+      int idx = headline.lastIndexOf(getUrlSeparator());      
+      return headline.substring(0, idx);      
+    }
+    else
+    {
+      return row.getHeadline();
+    }
+  }  
+  
   @Override
   public String search()
   {
@@ -1039,6 +1065,14 @@ public class NewSearchBySectionBean extends BasicSearchBean
     }
   }
 
+  public String getUrlSeparator()
+  {
+    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+      getMenuModel().getSelectedMenuItem();
+    String urlSeparator = menuItem.getProperty(URL_SEPARATOR_PROPERTY);
+    return (urlSeparator == null ? "###" : urlSeparator);
+  }
+
   public String getTranslationGroup()
   {
     String newId = (String)getValue("#{row.newId}");
@@ -1421,5 +1455,10 @@ public class NewSearchBySectionBean extends BasicSearchBean
     }
     return new boolean[]{userCanRead, userCanEdit};
   }
-
+  
+  private boolean isExternalUrlMode(NewView newView)
+  {
+    String headline = newView.getHeadline();
+    return (headline != null && headline.contains(getUrlSeparator()));
+  }
 }

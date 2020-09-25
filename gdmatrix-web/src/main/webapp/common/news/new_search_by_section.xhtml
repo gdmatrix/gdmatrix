@@ -153,7 +153,8 @@
               <h:outputLink value="#{newSearchBySectionBean.newLink}"
                             styleClass="headlineLink"
                             id="headlineLink">
-                <sf:outputText id="headlineText" value="#{row.headline}"
+                <sf:outputText id="headlineText" 
+                               value="#{newSearchBySectionBean.newHeadline}"
                                styleClass="headlineText"
                                translator="#{userSessionBean.translator}"
                                translationGroup="#{newSearchBySectionBean.translationGroup}" />
@@ -168,7 +169,8 @@
               <h:outputLink value="#{newSearchBySectionBean.newLink}"
                             styleClass="headlineLink"
                             id="headlineLink_dh">
-                <sf:outputText id="headlineText_dh" value="#{row.headline}"
+                <sf:outputText id="headlineText_dh" 
+                               value="#{newSearchBySectionBean.newHeadline}"
                                styleClass="headlineText"
                                translator="#{userSessionBean.translator}"
                                translationGroup="#{newSearchBySectionBean.translationGroup}" />
@@ -261,7 +263,7 @@
                                   rendered="#{newSearchBySectionBean.rootReadLinkRender}"
                                   translator="#{userSessionBean.translator}"
                                   translationGroup="#{userSessionBean.translationGroup}" 
-                                  ariaLabel="#{newSearchBySectionBean.rootReadLinkText}: #{row.headline}"/>
+                                  ariaLabel="#{newSearchBySectionBean.rootReadLinkText}: #{newSearchBySectionBean.newHeadline}"/>
                 <h:commandButton value="#{newsBundle.new_search_moveUp}"
                                  image="#{userSessionBean.icons.up}"
                                  alt="#{newsBundle.new_search_moveUp}"
@@ -374,7 +376,8 @@
                                 styleClass="headlineLink"
                                 id="sectionNewHeadlineLink"
                                 rendered="#{newSearchBySectionBean.childrenHeadlineRender}">
-                    <sf:outputText id="sectionNewHeadlineText" value="#{row.headline}"
+                    <sf:outputText id="sectionNewHeadlineText" 
+                                   value="#{newSearchBySectionBean.newHeadline}"
                                    styleClass="headlineText"
                                    translator="#{userSessionBean.translator}"
                                    translationGroup="#{newSearchBySectionBean.translationGroup}" />
@@ -470,7 +473,7 @@
                                       rendered="#{newSearchBySectionBean.childrenReadLinkRender}"
                                       translator="#{userSessionBean.translator}"
                                       translationGroup="#{userSessionBean.translationGroup}"
-                                      ariaLabel="#{newSearchBySectionBean.childrenReadLinkText}: #{row.headline}"/>
+                                      ariaLabel="#{newSearchBySectionBean.childrenReadLinkText}: #{newSearchBySectionBean.newHeadline}"/>
                     <h:commandButton id="sectionNewShowButton"
                                      style="vertical-align:middle"
                                      immediate="true"

@@ -103,6 +103,8 @@ public class NewSearchBean extends BasicSearchBean
   @CMSProperty
   public static final String DEFAULT_END_DATE_TIME_PROPERTY =
     "newSearch.defaultEndDateTime";
+  @CMSProperty
+  public static final String URL_SEPARATOR_PROPERTY = "newsURLSeparator";
   
   private static final String DOC_SERVLET_PATH = "/documents/";
   
@@ -221,7 +223,7 @@ public class NewSearchBean extends BasicSearchBean
           }          
         }
       }
-      List<NewView> list = NewsConfigBean.getPort().findNewViewsFromCache(filter);
+      List<NewView> list = NewsConfigBean.getPort().findNewViewsFromCache(filter);      
       return list;
     }
     catch (Exception ex)
@@ -429,6 +431,14 @@ public class NewSearchBean extends BasicSearchBean
     return getDocumentServletURL() + footerDocId;
   }
 
+  public String getUrlSeparator()
+  {
+    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+      getMenuModel().getSelectedMenuItem();
+    String urlSeparator = menuItem.getProperty(URL_SEPARATOR_PROPERTY);
+    return (urlSeparator == null ? "###" : urlSeparator);
+  }
+
   public String getTranslationGroup()
   {
     String newId = (String)getValue("#{row.newId}");
@@ -485,15 +495,39 @@ public class NewSearchBean extends BasicSearchBean
 
   public String getNewLink()
   {
-    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
-      getMenuModel().getSelectedMenuItem();
     NewView row = (NewView)getFacesContext().getExternalContext().
       getRequestMap().get("row");
-    String newId = row.getNewId();
-    return getContextPath() + "/go.faces?xmid=" + menuItem.getMid() +
-      "&newid=" + newId;
-  }  
+    if (isExternalUrlMode(row))
+    {
+      String headline = row.getHeadline();
+      int idx = headline.lastIndexOf(getUrlSeparator());
+      return headline.substring(idx + getUrlSeparator().length());      
+    }
+    else
+    {
+      MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+        getMenuModel().getSelectedMenuItem();
+      return getContextPath() + "/go.faces?xmid=" + menuItem.getMid() +
+        "&newid=" + row.getNewId();
+    }
+  }
   
+  public String getNewHeadline()
+  {
+    NewView row = (NewView)getFacesContext().getExternalContext().
+      getRequestMap().get("row");
+    if (isExternalUrlMode(row))
+    {
+      String headline = row.getHeadline();
+      int idx = headline.lastIndexOf(getUrlSeparator());
+      return headline.substring(0, idx);
+    }
+    else
+    {
+      return row.getHeadline();
+    }
+  }
+
   private Set<String> getEditableSections() throws Exception
   {
     Set<String> result = new HashSet<String>();
@@ -675,5 +709,10 @@ public class NewSearchBean extends BasicSearchBean
     if (editRoles == null || editRoles.isEmpty()) return true;
     return UserSessionBean.getCurrentInstance().isUserInRole(editRoles);
   }
-  
+
+  private boolean isExternalUrlMode(NewView newView)
+  {
+    String headline = newView.getHeadline();
+    return (headline != null && headline.contains(getUrlSeparator()));
+  }
 }
