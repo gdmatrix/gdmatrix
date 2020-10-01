@@ -30,7 +30,11 @@
  */
 package org.santfeliu.news.web;
 
+import java.util.List;
+import javax.faces.application.FacesMessage;
 import org.matrix.news.New;
+import org.matrix.news.NewSection;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.news.client.NewsManagerClient;
 import org.santfeliu.web.obj.ObjectBean;
 
@@ -41,9 +45,21 @@ import org.santfeliu.web.obj.ObjectBean;
 public class NewBean extends ObjectBean
 {
   private static final int HEADLINE_MAX_LENGTH = 40;
+  
+  private String autoSectionId = null;
 
   public NewBean()
   {
+  }
+
+  public String getAutoSectionId() 
+  {
+    return autoSectionId;
+  }
+
+  public void setAutoSectionId(String autoSectionId) 
+  {
+    this.autoSectionId = autoSectionId;
   }
 
   public String getObjectTypeId()
@@ -127,4 +143,32 @@ public class NewBean extends ObjectBean
     return getControllerBean().show();
   }
   
+  @Override
+  public void postStore()
+  {
+    if (autoSectionId != null)
+    {
+      try
+      {
+        String newId = getObjectId();      
+        List<NewSection> newSectionList = 
+          NewsConfigBean.getPort().findNewSectionsFromCache(newId);
+        if (newSectionList.isEmpty())
+        {
+          NewSection newSection = new NewSection();
+          newSection.setNewId(newId);
+          newSection.setSectionId(autoSectionId);
+          NewsConfigBean.getPort().storeNewSection(newSection); 
+          message("org.santfeliu.news.web.resources.NewsBundle",
+            "new_sections_published", new Object[]{autoSectionId},
+            FacesMessage.SEVERITY_INFO);          
+        }
+      }
+      catch (Exception ex) 
+      {
+        error(ex);        
+      }
+      autoSectionId = null;
+    }
+  }  
 }

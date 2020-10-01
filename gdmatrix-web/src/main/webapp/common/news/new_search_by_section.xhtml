@@ -30,6 +30,21 @@
           <h:outputText />
         </t:div>
 
+        <t:div styleClass="column1" 
+               rendered="#{newSearchBySectionBean.filterIdRender}">
+          <h:outputLabel for="newIdInputText" 
+                         id="newIdLabel" 
+                         styleClass="textBox" 
+                         value="#{newsBundle.new_search_id}:"/>
+        </t:div>
+        <t:div styleClass="column2" 
+               rendered="#{newSearchBySectionBean.filterIdRender}">
+          <h:inputText id="newIdInputText" 
+                       value="#{newSearchBySectionBean.searchNewId}"
+                       styleClass="inputBox"
+                       style="width:20%" /> 
+        </t:div>
+
         <t:div styleClass="column1" rendered="#{newSearchBySectionBean.filterContentRender}">
           <h:outputLabel for="contentInputText" id="contentLabel" styleClass="textBox"
                          value="#{newsBundle.new_search_content}:" />
@@ -495,7 +510,8 @@
                          alt="#{objectBundle.create}" 
                          title="#{objectBundle.create}" 
                          styleClass="createButton"
-                         action="#{newBean.create}" immediate="true"
+                         action="#{newSearchBySectionBean.createNew}" 
+                         immediate="true"
                          id="createButton"
                          rendered="#{newSearchBySectionBean.rootEditLinkRender and userSessionBean.menuModel.browserType == 'desktop'}"/>
       </t:div>

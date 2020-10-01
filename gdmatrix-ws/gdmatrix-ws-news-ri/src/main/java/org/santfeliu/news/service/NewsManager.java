@@ -507,6 +507,16 @@ public class NewsManager implements NewsManagerPort
 
   private void setNewsFilterParameters(Query query, NewsFilter filter)
   {
+    String newIds = null;
+    if (!filter.getNewId().isEmpty())
+    {
+      newIds = " ";
+      for (String newId : filter.getNewId())
+      {
+        newIds += (newId + " ");
+      }
+    }
+    query.setParameter("newIds", newIds);
     query.setParameter("content", "%" + (filter.getContent() == null ? "" : 
       filter.getContent().toLowerCase()) + "%");    
     query.setParameter("minDate", filter.getStartDateTime());
@@ -528,6 +538,16 @@ public class NewsManager implements NewsManagerPort
   private void setSectionFilterParameters(Query query, SectionFilter filter, 
     String sectionId, boolean excludeDrafts)
   {
+    String newIds = null;
+    if (!filter.getNewId().isEmpty())
+    {
+      newIds = " ";
+      for (String newId : filter.getNewId())
+      {
+        newIds += (newId + " ");
+      }
+    }
+    query.setParameter("newIds", newIds);
     query.setParameter("content", "%" + (filter.getContent() == null ? "" : 
       filter.getContent().toLowerCase()) + "%");
 

@@ -75,6 +75,9 @@ public class NewSearchBean extends BasicSearchBean
   @CMSProperty
   public static final String FILTER_RENDER_PROPERTY = "filter.render";
   @CMSProperty
+  public static final String FILTER_ID_RENDER_PROPERTY =
+    "filter.id.render";  
+  @CMSProperty
   public static final String FILTER_USER_RENDER_PROPERTY =
     "filter.user.render";  
   @CMSProperty
@@ -116,6 +119,7 @@ public class NewSearchBean extends BasicSearchBean
   private Set<String> editableSections = new HashSet<String>();
 
   private String lastMid = null;
+  private String searchNewId;
   private String searchContent;
 
   public NewSearchBean()
@@ -132,6 +136,16 @@ public class NewSearchBean extends BasicSearchBean
   public void setFilter(NewsFilter filter)
   {
     this.filter = filter;
+  }
+
+  public String getSearchNewId() 
+  {
+    return searchNewId;
+  }
+
+  public void setSearchNewId(String searchNewId) 
+  {
+    this.searchNewId = searchNewId;
   }
 
   public String getSearchContent()
@@ -278,13 +292,15 @@ public class NewSearchBean extends BasicSearchBean
       return null;
     }
     else
-    {    
+    {
+      ((NewBean)getObjectBean()).setAutoSectionId(null);
       boolean nodeChange = 
         !UserSessionBean.getCurrentInstance().getSelectedMid().equals(lastMid);
       boolean reloadDefaults = 
-        (nodeChange || (!nodeChange && !isFilterRender()));      
+        (nodeChange || (!nodeChange && !isFilterRender()));
       if (reloadDefaults)
       {
+        searchNewId = null;
         filter = new NewsFilter();
         Date now = new Date();
         filter.setStartDateTime(getDefaultStartDateTime(now));
@@ -297,6 +313,10 @@ public class NewSearchBean extends BasicSearchBean
       if (filter.getContent() != null)
       {
         setSearchContent(filter.getContent().replace("%", " "));
+      }
+      if (!filter.getNewId().isEmpty())
+      {
+        searchNewId = filter.getNewId().get(0);        
       }
       lastMid = UserSessionBean.getCurrentInstance().getSelectedMid();
       search();
@@ -368,6 +388,15 @@ public class NewSearchBean extends BasicSearchBean
     boolean enabledInNode = 
       (value == null ? defaultValue : value.equalsIgnoreCase("true")); 
     return enabledInNode;
+  }
+  
+  public boolean isFilterIdRender()
+  {
+    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+      getMenuModel().getSelectedMenuItem();
+    String value = menuItem.getProperty(FILTER_ID_RENDER_PROPERTY);
+    if (value == null) return false;
+    else return value.equalsIgnoreCase("true");    
   }
   
   public boolean isResultBarRender()
@@ -620,6 +649,14 @@ public class NewSearchBean extends BasicSearchBean
 
   private void putNewsFilterData(NewsFilter filter) throws Exception
   {
+    filter.getNewId().clear();
+    if (searchNewId != null && !searchNewId.trim().isEmpty())
+    {
+      for (String newId : searchNewId.split(";"))
+      {
+        if (!newId.trim().isEmpty()) filter.getNewId().add(newId.trim());
+      }
+    }
     if ((filter.getStartDateTime() == null) ||
       (filter.getStartDateTime().trim().isEmpty()))
     {

@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.faces.application.FacesMessage;
 import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeModelBase;
 import org.matrix.cms.CMSManagerPort;
@@ -119,6 +120,17 @@ public class NewSectionsBean extends TypifiedPageBean
           {
             markSections(rootNode, newSection, "0");
           }          
+        }
+      }
+      else
+      {
+        String autoSectionId = ((NewBean)getObjectBean()).getAutoSectionId();
+        if (autoSectionId != null)
+        {
+          NewSection autoNewSection = new NewSection();
+          autoNewSection.setNewId(null);
+          autoNewSection.setSectionId(autoSectionId);
+          markSections(rootNode, autoNewSection, "0");
         }
       }
     }
@@ -259,6 +271,10 @@ public class NewSectionsBean extends TypifiedPageBean
             {
               t.setUpdateRoles(new HashSet<String>(editRoles));
             }            
+            if (nodeId.equals(((NewBean)getObjectBean()).getAutoSectionId()))
+            {
+              t.setChecked(true);
+            }
           }
         }
         else // Node is an intermediate node
@@ -337,6 +353,9 @@ public class NewSectionsBean extends TypifiedPageBean
         }        
         ns.setSticky(node.isSticky());
         NewsConfigBean.getPort().storeNewSection(ns);
+        message("org.santfeliu.news.web.resources.NewsBundle",
+          "new_sections_published", new Object[]{ns.getSectionId()},
+          FacesMessage.SEVERITY_INFO);
       }
       else // not selected item
       {

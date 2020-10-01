@@ -65,7 +65,17 @@
           n.registerTime,n.startDate,n.startTime,n.endDate,
           n.endTime,n.strDraft,n.source,n.userId,n.keywords
         FROM New n LEFT JOIN n.newSections ns 
-        WHERE
+        WHERE          
+          (
+            (
+              (:newIds IS NOT NULL)
+              AND
+              (locate(concat(' ', concat(n.newId, ' ')), :newIds) > 0)
+            )
+            OR
+            (:newIds IS NULL)
+          )
+          AND        
           (
             (:content IS NULL) OR
             (lower(n.summary) LIKE :content) OR 
@@ -159,6 +169,16 @@
         FROM New n LEFT JOIN n.newSections ns 
         WHERE
           (
+            (
+              (:newIds IS NOT NULL)
+              AND
+              (locate(concat(' ', concat(n.newId, ' ')), :newIds) > 0)
+            )
+            OR
+            (:newIds IS NULL)
+          )
+          AND        
+          (
             (:content IS NULL) OR
             (lower(n.summary) LIKE :content) OR 
             (lower(n.headline) LIKE :content) OR
@@ -248,7 +268,17 @@
       <query>
         SELECT COUNT(n.newId)
         FROM New n LEFT JOIN n.newSections ns 
-        WHERE 
+        WHERE
+          (
+            (
+              (:newIds IS NOT NULL)
+              AND
+              (locate(concat(' ', concat(n.newId, ' ')), :newIds) > 0)
+            )
+            OR
+            (:newIds IS NULL)
+          )
+          AND         
           (
             (:content IS NULL) OR 
             (lower(n.headline) LIKE :content) OR 
@@ -311,6 +341,16 @@
           ns.readingCount,n.keywords,ns.strSticky
         FROM New n LEFT JOIN n.newSections ns 
         WHERE 
+          (
+            (
+              (:newIds IS NOT NULL)
+              AND
+              (locate(concat(' ', concat(n.newId, ' ')), :newIds) > 0)
+            )
+            OR
+            (:newIds IS NULL)
+          )
+          AND        
           (
             (:content IS NULL) OR 
             (lower(n.headline) LIKE :content) OR 

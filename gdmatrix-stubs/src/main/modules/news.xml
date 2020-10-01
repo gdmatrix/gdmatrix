@@ -310,6 +310,12 @@
       <documentation language="ca">
         Filtre per cercar notícies agrupades en seccions a través de les operacions <a href="#oper-countNewsBySection">countNewsBySection</a> i <a href="#oper-findNewsBySection">findNewsBySection</a>.
       </documentation>
+      <property name="newId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de codis de notícies a cercar.
+        </documentation>
+      </property>
       <property name="content" type="xs:string" minOccurs="0">
         <documentation language="ca">
           Text que ha de contenir el titular o el resum de la notícia, sense
@@ -468,6 +474,12 @@
       <documentation language="ca">
         Filtre per cercar notícies a través de les operacions <a href="#oper-countNews">countNews</a>, <a href="#oper-findNews">findNews</a> i <a href="#oper-findNewViews">findNewViews</a>.
       </documentation>
+      <property name="newId" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+        <documentation language="ca">
+          Llista de codis de notícies a cercar.
+        </documentation>
+      </property>
       <property name="content" type="xs:string" minOccurs="0">
         <documentation language="ca">
           Text que han de contenir les notícies al titular o al resum, sense distingir entre

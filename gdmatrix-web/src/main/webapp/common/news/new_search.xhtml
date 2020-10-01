@@ -26,6 +26,16 @@
           <h:outputText />
         </t:div>
 
+        <t:div styleClass="column1" 
+               rendered="#{newSearchBean.filterIdRender}">
+          <h:outputLabel for="idInputText" id="idLabel" styleClass="textBox"
+                         value="#{newsBundle.new_search_id}:" />
+        </t:div>
+        <t:div styleClass="column2"
+               rendered="#{newSearchBean.filterIdRender}">
+          <h:inputText id="idInputText" value="#{newSearchBean.searchNewId}"
+                       styleClass="inputBox" style="width:80%" />
+        </t:div>
 
         <t:div styleClass="column1">
           <h:outputLabel for="contentInputText" id="contentLabel" styleClass="textBox"

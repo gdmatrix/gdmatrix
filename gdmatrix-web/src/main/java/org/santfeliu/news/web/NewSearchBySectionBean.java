@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.matrix.news.New;
@@ -73,6 +74,9 @@ public class NewSearchBySectionBean extends BasicSearchBean
   @CMSProperty
   public static final String FILTER_RENDER_PROPERTY =
     "filter.render";
+  @CMSProperty
+  public static final String FILTER_ID_RENDER_PROPERTY =
+    "filter.id.render";
   @CMSProperty
   public static final String FILTER_CONTENT_RENDER_PROPERTY =
     "filter.content.render";
@@ -200,6 +204,9 @@ public class NewSearchBySectionBean extends BasicSearchBean
     "newSearch.defaultEndDateTime";
   @CMSProperty
   public static final String URL_SEPARATOR_PROPERTY = "newsURLSeparator";
+  @CMSProperty
+  public static final String AUTO_SECTION_ENABLED_PROPERTY = 
+    "newsAutoSectionEnabled";
 
   @Deprecated
   private static final String SECTION_ID_PROPERTY =
@@ -212,6 +219,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
   private SectionFilter filter;
   private String lastMid = null;
   
+  private String searchNewId;  
   private String searchContent;
   
   public NewSearchBySectionBean()
@@ -229,6 +237,16 @@ public class NewSearchBySectionBean extends BasicSearchBean
   {
     this.filter = filter;
   }    
+
+  public String getSearchNewId() 
+  {
+    return searchNewId;
+  }
+
+  public void setSearchNewId(String searchNewId) 
+  {
+    this.searchNewId = searchNewId;
+  }
 
   public String getSearchContent()
   {
@@ -445,12 +463,14 @@ public class NewSearchBySectionBean extends BasicSearchBean
     }
     else //search news
     {
+      ((NewBean)getObjectBean()).setAutoSectionId(null);
       boolean nodeChange = 
         !UserSessionBean.getCurrentInstance().getSelectedMid().equals(lastMid);
       boolean reloadDefaults = 
         (nodeChange || (!nodeChange && !isFilterRender()));      
       if (reloadDefaults)
       {
+        searchNewId = null;
         filter = new SectionFilter();
         Date now = new Date();
         filter.setStartDateTime(getDefaultStartDateTime(now));
@@ -463,7 +483,11 @@ public class NewSearchBySectionBean extends BasicSearchBean
       if (filter.getContent() != null)
       {
         setSearchContent(filter.getContent().replace("%", " "));
-      }      
+      }
+      if (!filter.getNewId().isEmpty())
+      {
+        searchNewId = filter.getNewId().get(0);
+      }
       lastMid = UserSessionBean.getCurrentInstance().getSelectedMid();
       search();
       return "new_search_by_section";
@@ -530,6 +554,21 @@ public class NewSearchBySectionBean extends BasicSearchBean
     return null;
   }
 
+  public String createNew()
+  {
+    if (isAutoSectionEnabled())
+    {
+      MenuItemCursor mic = UserSessionBean.getCurrentInstance().
+        getMenuModel().getSelectedMenuItem();
+      String autoSectionId = getSectionId(mic);
+      ((NewBean)getObjectBean()).setAutoSectionId(autoSectionId);
+      message("org.santfeliu.news.web.resources.NewsBundle",
+        "new_search_publish", new Object[]{autoSectionId},
+        FacesMessage.SEVERITY_INFO);
+    }
+    return getObjectBean().create();
+  }
+  
   //Public format methods
 
   @Override
@@ -736,6 +775,15 @@ public class NewSearchBySectionBean extends BasicSearchBean
     else return value.equalsIgnoreCase("true");    
   }
 
+  public boolean isFilterIdRender()
+  {
+    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+      getMenuModel().getSelectedMenuItem();
+    String value = menuItem.getProperty(FILTER_ID_RENDER_PROPERTY);
+    if (value == null) return false;
+    else return value.equalsIgnoreCase("true");    
+  }
+  
   public boolean isFilterContentRender()
   {
     MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
@@ -770,6 +818,15 @@ public class NewSearchBySectionBean extends BasicSearchBean
     if (value == null) return true;
     else return value.equalsIgnoreCase("true");    
   }
+  
+  public boolean isAutoSectionEnabled()
+  {
+    MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+      getMenuModel().getSelectedMenuItem();
+    String value = menuItem.getProperty(AUTO_SECTION_ENABLED_PROPERTY);
+    if (value == null) return false;
+    else return value.equalsIgnoreCase("true");
+  }  
   
   public String getNewImageURL()
   {
@@ -1326,6 +1383,15 @@ public class NewSearchBySectionBean extends BasicSearchBean
 
   private void putSectionFilterData(SectionFilter filter)
   {
+    //New Id
+    filter.getNewId().clear();
+    if (searchNewId != null && !searchNewId.trim().isEmpty())
+    {
+      for (String newId : searchNewId.split(";"))
+      {
+        if (!newId.trim().isEmpty()) filter.getNewId().add(newId.trim());
+      }
+    }
     //Start date
     if ((filter.getStartDateTime() == null) ||
       (filter.getStartDateTime().trim().isEmpty()))

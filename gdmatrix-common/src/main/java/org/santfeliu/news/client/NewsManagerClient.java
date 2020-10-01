@@ -319,6 +319,7 @@ public class NewsManagerClient implements NewsManagerPort
     auxFilter.setExcludeDrafts(filter.isExcludeDrafts());
     auxFilter.setExcludeNotPublished(filter.isExcludeNotPublished());
     auxFilter.setUserId(filter.getUserId());    
+    auxFilter.getNewId().addAll(filter.getNewId());
     return auxFilter;
   }
   
@@ -337,7 +338,8 @@ public class NewsManagerClient implements NewsManagerPort
     auxFilter.getSectionId().addAll(filter.getSectionId());
     auxFilter.getExcludeDrafts().addAll(filter.getExcludeDrafts());
     auxFilter.setUserId(filter.getUserId());
-    return auxFilter;    
+    auxFilter.getNewId().addAll(filter.getNewId());
+    return auxFilter;
   }
   
 }
