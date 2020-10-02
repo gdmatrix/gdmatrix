@@ -663,8 +663,10 @@ public class InstanceBean extends FacesBean implements Serializable
           FormBean formBean = (FormBean)bean;
           String error = selectedForm.getError();
           if (error.length() > 0) // show error
-          {
-            error("INVALID_INPUT_DATA", new Object[]{error});
+          {            
+            String trnError = 
+              UserSessionBean.getCurrentInstance().translate(error);
+            error("INVALID_INPUT_DATA", new Object[]{trnError});
           }
           return formBean.show(selectedForm);
         }

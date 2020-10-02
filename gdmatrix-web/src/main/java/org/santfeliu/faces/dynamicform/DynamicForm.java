@@ -30,6 +30,9 @@
  */
 package org.santfeliu.faces.dynamicform;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
@@ -47,9 +50,11 @@ import javax.faces.event.FacesEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.render.RenderKit;
 import javax.faces.render.Renderer;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
 import org.santfeliu.form.Form;
 import org.santfeliu.faces.dynamicform.render.FormRenderer;
+import org.santfeliu.web.UserSessionBean;
 
 /**
  *
@@ -324,7 +329,7 @@ public class DynamicForm extends UIInput implements ActionSource
       setValid(false);
       for (Object error : errors)
       {
-        String errorMessage = error.toString();
+        String errorMessage = getTranslation(error.toString());
         FacesMessage message = 
           new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMessage, null);
         context.addMessage(getClientId(context), message);
@@ -340,4 +345,41 @@ public class DynamicForm extends UIInput implements ActionSource
     // TODO:
     return (map1 == null && map2 != null) || !map1.equals(map2);
   }
+  
+  private String getTranslation(String text) 
+  {
+    if (text != null)
+    {
+      Translator translator = getTranslator();
+      if (translator == null)
+      {
+        translator = UserSessionBean.getCurrentInstance().getTranslator();
+      }
+      if (translator != null)
+      {
+        try
+        {
+          String userLanguage = FacesUtils.getViewLanguage();
+          String translationGroup = getTranslationGroup();
+          StringWriter sw = new StringWriter();
+          translator.translate(new StringReader(text), sw, "text/plain",
+            userLanguage, translationGroup);
+          return sw.toString();
+        }
+        catch (IOException ex)
+        {
+          return text;
+        }
+      }
+      else
+      {
+        return text;
+      }
+    }
+    else
+    {
+      return "";
+    }    
+  }
+  
 }
