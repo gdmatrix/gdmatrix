@@ -9,6 +9,8 @@
   <ui:composition template="/frames/#{userSessionBean.frame}/frame.xhtml">
     <ui:define name="template">
 
+      <f:loadBundle basename="org.santfeliu.faces.menu.resources.TreeMenuBundle" 
+                    var="treeMenuBundle"/>      
       <!-- TOP BAR -->
 
       <header id="wp2_header" aria-label="#{webBundle.mainHeader}">  
@@ -576,11 +578,17 @@
                     this.parentNode.className = "has-children open";
                     this.parentNode.querySelector('a').setAttribute('aria-expanded', "true");
                     this.parentNode.querySelector('button').setAttribute('aria-expanded', "true");
+                    this.parentNode.querySelector('span.visuallyhidden').innerHTML = 
+                      "#{sf:escapeJS(treeMenuBundle.hideSubmenuFor)}" + 
+                      " '" + this.parentNode.querySelector('a').innerHTML + "'";
                   } else
                   {
                     this.parentNode.className = "has-children";
                     this.parentNode.querySelector('a').setAttribute('aria-expanded', "false");
                     this.parentNode.querySelector('button').setAttribute('aria-expanded', "false");
+                    this.parentNode.querySelector('span.visuallyhidden').innerHTML = 
+                      "#{sf:escapeJS(treeMenuBundle.showSubmenuFor)}" + 
+                      " '" + this.parentNode.querySelector('a').innerHTML + "'";
                   }
 
                   event.preventDefault();
