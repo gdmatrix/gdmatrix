@@ -67,6 +67,7 @@ public class HtmlNewsCarousel2Tag extends UIComponentTag
   private String maxSummaryChars;
   private String renderDate;  
   private String newsPerBlock;
+  private String urlSeparator;
 
   public String getRows()
   {
@@ -318,6 +319,16 @@ public class HtmlNewsCarousel2Tag extends UIComponentTag
     this.nextBlockIconURL = nextBlockIconURL;
   }
 
+  public String getUrlSeparator() 
+  {
+    return urlSeparator;
+  }
+
+  public void setUrlSeparator(String urlSeparator) 
+  {
+    this.urlSeparator = urlSeparator;
+  }
+
   @Override
   protected void setProperties(UIComponent component)
   {
@@ -392,6 +403,8 @@ public class HtmlNewsCarousel2Tag extends UIComponentTag
         context, component, "renderDate", renderDate); 
       UIComponentTagUtils.setIntegerProperty(
         context, component, "newsPerBlock", newsPerBlock);      
+      UIComponentTagUtils.setStringProperty(
+        context, component, "urlSeparator", urlSeparator);
     }
     catch (Exception ex)
     {
@@ -424,6 +437,7 @@ public class HtmlNewsCarousel2Tag extends UIComponentTag
     imageCrop = null;
     renderDate = null;
     newsPerBlock = null;
+    urlSeparator = null;
   }
 
   @Override

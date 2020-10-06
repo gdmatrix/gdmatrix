@@ -102,6 +102,7 @@ public class DBNew extends New
     newObject.setHeadline(this.getHeadline());
     newObject.setSummary(this.getSummary());
     newObject.setKeywords(this.getKeywords());
+    newObject.setCustomUrl(this.getCustomUrl());
     if ((baText != null) && (baText.length > 0))
     {
       newObject.setText(new String(baText));  
@@ -132,6 +133,7 @@ public class DBNew extends New
     this.setHeadline(newObject.getHeadline());
     this.setSummary(newObject.getSummary());
     this.setKeywords(newObject.getKeywords());
+    this.setCustomUrl(newObject.getCustomUrl());
     if (newObject.getText() != null) 
       this.baText = newObject.getText().getBytes();    
     this.setText(newObject.getText());

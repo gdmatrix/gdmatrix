@@ -41,7 +41,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import javax.faces.el.ValueBinding;
 import org.apache.myfaces.shared_tomahawk.renderkit.JSFAttr;
 import org.matrix.news.NewView;
 import org.matrix.news.SectionFilter;
@@ -182,7 +181,8 @@ public class HtmlNews extends UIComponentBase
   {
     if (_urlSeparator != null) return _urlSeparator;
     ValueExpression ve = getValueExpression("urlSeparator");
-    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : 
+      "###";
   }
 
   public void setUrlSeparator(String _urlSeparator)
@@ -673,18 +673,23 @@ public class HtmlNews extends UIComponentBase
     
     String headline = newView.getHeadline();
     String url;
-    boolean externalURLMode = 
-      (headline != null && headline.contains(getUrlSeparator()));
-    if (externalURLMode)
+    if (isCustomUrlHeadline(newView))
     {
       int idx = headline.lastIndexOf(getUrlSeparator());
-      url = headline.substring(idx + 3);
+      url = headline.substring(idx + getUrlSeparator().length());
       headline = headline.substring(0, idx);
     }
     else
     {
-      url = getUrl();
-    }    
+      if (newView.getCustomUrl() != null)
+      {
+        url = newView.getCustomUrl();
+      }
+      else
+      {
+        url = getUrl();
+      }
+    }
 
     if (url != null)
     {
@@ -886,4 +891,9 @@ public class HtmlNews extends UIComponentBase
     return (result != null ? result : mid);
   }
   
+  private boolean isCustomUrlHeadline(NewView newView)
+  {
+    String headline = newView.getHeadline();
+    return (headline != null && headline.contains(getUrlSeparator()));
+  }
 }

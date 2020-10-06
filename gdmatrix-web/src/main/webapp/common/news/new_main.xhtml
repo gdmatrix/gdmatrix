@@ -62,6 +62,14 @@
                      styleClass="inputBox"/>
       </t:div>
       <t:div>
+        <h:outputText id="customUrlLabel" value="#{newsBundle.new_main_customUrl}:"
+                      styleClass="textBox" style="width:16%"/>
+        <h:inputText id="customUrlInput" value="#{newMainBean.newObject.customUrl}"
+                     size="70"
+                     onkeypress="checkMaxLength(this, #{newMainBean.propertySize.customUrl})"
+                     styleClass="inputBox"/>
+      </t:div>
+      <t:div>
         <h:outputText id="userLabel" value="#{newsBundle.new_main_user}:"
                       styleClass="textBox" style="width:16%" />
         <h:outputText id="userText" value="#{newMainBean.newObject.userId}"

@@ -41,7 +41,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import javax.faces.el.ValueBinding;
 import org.apache.myfaces.shared_tomahawk.renderkit.JSFAttr;
 import org.matrix.news.NewView;
 import org.matrix.news.SectionFilter;
@@ -87,6 +86,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
   private Integer _maxSummaryChars;
   private Boolean _renderDate;  
   private Integer _newsPerBlock;
+  private String _urlSeparator;
 
   public HtmlNewsCarousel2()
   {
@@ -423,6 +423,19 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     this._renderDate = _renderDate;
   }  
   
+  public String getUrlSeparator()
+  {
+    if (_urlSeparator != null) return _urlSeparator;
+    ValueExpression ve = getValueExpression("urlSeparator");
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : 
+      "###";
+  }
+
+  public void setUrlSeparator(String _urlSeparator)
+  {
+    this._urlSeparator = _urlSeparator;
+  }  
+  
   @Override
   public void processValidators(FacesContext context)
   {
@@ -528,7 +541,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[27];
+    Object values[] = new Object[28];
     values[0] = super.saveState(context);
     values[1] = _section;
     values[2] = _rows;
@@ -556,6 +569,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     values[24] = _moreNewsAriaLabel;
     values[25] = _prevBlockIconURL;
     values[26] = _nextBlockIconURL;
+    values[27] = _urlSeparator;
     return values;
   }
 
@@ -589,7 +603,8 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     _nextBlockLabel = (String)values[23];
     _moreNewsAriaLabel = (String)values[24];
     _prevBlockIconURL = (String)values[25];
-    _nextBlockIconURL = (String)values[26];    
+    _nextBlockIconURL = (String)values[26];
+    _urlSeparator = (String)values[27];
   }
 
 //Private
@@ -647,10 +662,11 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     {
       Translator translator = getTranslator();
       String trHeadline = "";
-      if (newView.getHeadline() != null)
+      String headline = getNewHeadline(newView);
+      if (headline != null)
       {
-        trHeadline = translateText(newView.getHeadline(), translator, null);
-      }      
+        trHeadline = translateText(headline, translator, null);
+      }
       String newURL = getNewURL(newView);
       if (newURL != null)
       {
@@ -708,22 +724,21 @@ public class HtmlNewsCarousel2 extends UIComponentBase
       {
         writer.writeAttribute("class", "newInfo", null);
       }
+      String headline = getNewHeadline(newView);
       String newURL = getNewURL(newView);
       if (newURL != null)
       {
         writer.startElement("a", this);
         writer.writeAttribute("href", newURL, null);
-        if (newView.getHeadline() != null)
+        if (headline != null)
         {
-          String trHeadline = translateText(newView.getHeadline(), translator, 
-            null);
+          String trHeadline = translateText(headline, translator, null);
           writer.writeAttribute("aria-label", trHeadline, null);
         }
       }
       
       writer.startElement("p", this);
       writer.writeAttribute("class", "headline", null);
-      String headline = newView.getHeadline();
       if (headline == null) headline = "";
       renderPlainText(headline, writer, translator, null);
       if (newView.isDraft() && !getExcludeDrafts())
@@ -861,15 +876,45 @@ public class HtmlNewsCarousel2 extends UIComponentBase
 
   private String getNewURL(NewView newView)
   {
-    String moreInfoURL = getMoreInfoURL();
-    if (moreInfoURL != null) 
+    if (isCustomUrlHeadline(newView))
     {
-      return moreInfoURL;
+      String headline = newView.getHeadline();
+      int idx = headline.lastIndexOf(getUrlSeparator());
+      return headline.substring(idx + getUrlSeparator().length());
     }
     else
     {
-      return MatrixConfig.getProperty("contextPath") +
-        "/go.faces?xmid=" + getSection() + "&newid=" + newView.getNewId();
+      if (newView.getCustomUrl() != null)
+      {
+        return newView.getCustomUrl();
+      }
+      else
+      {
+        String moreInfoURL = getMoreInfoURL();
+        if (moreInfoURL != null) 
+        {
+          return moreInfoURL;
+        }
+        else
+        {
+          return MatrixConfig.getProperty("contextPath") +
+            "/go.faces?xmid=" + getSection() + "&newid=" + newView.getNewId();
+        }
+      }
+    }  
+  }
+  
+  public String getNewHeadline(NewView newView)
+  {
+    if (isCustomUrlHeadline(newView))
+    {
+      String headline = newView.getHeadline();
+      int idx = headline.lastIndexOf(getUrlSeparator());      
+      return headline.substring(0, idx);      
+    }
+    else
+    {
+      return newView.getHeadline();
     }
   }
 
@@ -968,4 +1013,9 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     return text;
   }  
 
+  private boolean isCustomUrlHeadline(NewView newView)
+  {
+    String headline = newView.getHeadline();
+    return (headline != null && headline.contains(getUrlSeparator()));
+  }
 }

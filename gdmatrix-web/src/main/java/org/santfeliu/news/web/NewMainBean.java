@@ -277,6 +277,7 @@ public class NewMainBean extends TypifiedPageBean
         newObject.setEndTime(endDateTime.substring(8, 14));
       }
       newObject.setUserId(UserSessionBean.getCurrentInstance().getUsername());
+      newObject.setCustomUrl(newObject.getCustomUrl().trim());
       NewStoreOptions newStoreOptions = new NewStoreOptions();
       newStoreOptions.setCleanSummary(cleanSummary);
       newStoreOptions.setCleanText(cleanText);
@@ -288,7 +289,7 @@ public class NewMainBean extends TypifiedPageBean
       HtmlFixer htmlFixer = new HtmlFixer(scriptName, userId, password);
       newObject.setSummary(htmlFixer.fixCode(newObject.getSummary()));
       newObject.setText(htmlFixer.fixCode(newObject.getText()));
-            
+
       newObject = NewsConfigBean.getPort().storeNew(newObject, newStoreOptions);
       setObjectId(newObject.getNewId());
     }

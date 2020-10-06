@@ -507,7 +507,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
   {
     NewView row = (NewView)getFacesContext().getExternalContext().
       getRequestMap().get("row");
-    if (isExternalUrlMode(row))
+    if (isCustomUrlHeadline(row))
     {
       String headline = row.getHeadline();
       int idx = headline.lastIndexOf(getUrlSeparator());
@@ -515,10 +515,17 @@ public class NewSearchBySectionBean extends BasicSearchBean
     }
     else
     {
-      MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
-        getMenuModel().getSelectedMenuItem();      
-      return getContextPath() + "/go.faces?xmid=" + menuItem.getMid() +
-        "&newid=" + row.getNewId();
+      if (row.getCustomUrl() != null)
+      {
+        return row.getCustomUrl();
+      }
+      else
+      {
+        MenuItemCursor menuItem = UserSessionBean.getCurrentInstance().
+          getMenuModel().getSelectedMenuItem();      
+        return getContextPath() + "/go.faces?xmid=" + menuItem.getMid() +
+          "&newid=" + row.getNewId();
+      }
     }
   }
   
@@ -526,7 +533,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
   {
     NewView row = (NewView)getFacesContext().getExternalContext().
       getRequestMap().get("row");
-    if (isExternalUrlMode(row))
+    if (isCustomUrlHeadline(row))
     {
       String headline = row.getHeadline();
       int idx = headline.lastIndexOf(getUrlSeparator());      
@@ -1522,7 +1529,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
     return new boolean[]{userCanRead, userCanEdit};
   }
   
-  private boolean isExternalUrlMode(NewView newView)
+  private boolean isCustomUrlHeadline(NewView newView)
   {
     String headline = newView.getHeadline();
     return (headline != null && headline.contains(getUrlSeparator()));

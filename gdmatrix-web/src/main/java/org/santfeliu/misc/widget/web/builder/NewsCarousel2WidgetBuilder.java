@@ -171,6 +171,10 @@ public class NewsCarousel2WidgetBuilder extends WidgetBuilder
       UIComponentTagUtils.setStringProperty(context, component, "moreNewsURL",
         moreNewsURLValue);
 
+      String urlSeparator = (String)properties.get("urlSeparator");
+      if (urlSeparator == null) urlSeparator = "###";
+      component.setUrlSeparator(urlSeparator);
+      
       String excludeDrafts = (String)properties.get("excludeDrafts");
       if (excludeDrafts == null || excludeDrafts.equals("false"))
       {

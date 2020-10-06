@@ -90,6 +90,7 @@ public class NewsManager implements NewsManagerPort
   private static final int NEW_HEADLINE_MAX_SIZE = 1000;
   private static final int NEW_SUMMARY_MAX_SIZE = 4000;
   private static final int NEW_KEYWORDS_MAX_SIZE = 1000;
+  private static final int NEW_CUSTOM_URL_MAX_SIZE = 1000;
   private static final int NEW_SECTION_PRIORITY_MAX_SIZE = 6;
 
   protected static final Logger log = Logger.getLogger("News");  
@@ -257,6 +258,10 @@ public class NewsManager implements NewsManagerPort
         {
           n.setKeywords((String)newArray[12]);
         }
+        if (newArray[13] != null)
+        {
+          n.setCustomUrl((String)newArray[13]);
+        }
         result.add(n);
       }
     }
@@ -296,6 +301,10 @@ public class NewsManager implements NewsManagerPort
         if (newArray[12] != null)
         {
           nv.setKeywords((String)newArray[12]);
+        }
+        if (newArray[13] != null)
+        {
+          nv.setCustomUrl((String)newArray[13]);
         }
         result.add(nv);
       }
@@ -660,6 +669,10 @@ public class NewsManager implements NewsManagerPort
         {
           nv.setSticky("Y".equalsIgnoreCase((String)newArray[14]));
         }
+        if (newArray[15] != null)
+        {
+          nv.setCustomUrl((String)newArray[15]);
+        }
         result.getNewView().add(nv);
         newIdString += nv.getNewId() + " ";
         newViewMap.put(nv.getNewId(), nv);
@@ -778,6 +791,11 @@ public class NewsManager implements NewsManagerPort
     }
     if (newObject.getKeywords() != null &&
       newObject.getKeywords().length() > NEW_KEYWORDS_MAX_SIZE)
+    {
+      throw new WebServiceException("VALUE_TOO_LARGE");
+    }
+    if (newObject.getCustomUrl() != null &&
+      newObject.getCustomUrl().length() > NEW_CUSTOM_URL_MAX_SIZE)
     {
       throw new WebServiceException("VALUE_TOO_LARGE");
     }
