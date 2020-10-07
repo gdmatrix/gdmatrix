@@ -31,26 +31,116 @@
 package org.santfeliu.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.activation.FileTypeMap;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class MimeTypeMap extends FileTypeMap
 {
-  private static final String defaultType = "application/octet-stream";
-  private Map extMap = new HashMap();
-  private Map mimeMap = new HashMap();
-
+  private static final String MIMEMAPFILE = "mimetypesmap.properties";
+  private static final String DEFAULT_TYPE = "application/octet-stream";
+  private static final Mapping mapping = new Mapping();
+  
   public MimeTypeMap()
   {
+    if (mapping.isEmpty())
+    {
+      //Get from properties file located in conf folder
+      java.util.Properties mimeProperties = new java.util.Properties();    
+      File mapFile = new File(MatrixConfig.getDirectory(), MIMEMAPFILE);
+      try (InputStream is = new FileInputStream(mapFile))
+      {
+        mimeProperties.load(is);
+        synchronized(mapping)
+        {
+          for (Object key : mimeProperties.keySet())
+          {
+            String extStr = (String) mimeProperties.get(key);
+            String[] extArray = extStr.split(",");
+            addMimeType((String) key, extArray);
+          }
+        }
+      }
+      catch (Exception ex)  
+      {
+        loadDefaultMimeTypes();
+        Logger.getLogger(MimeTypeMap.class.getName()).log(
+          Level.WARNING, null, ex);      
+      }
+    }
+  }
+    
+  @Override
+  public String getContentType(File file)
+  {
+    return getContentType(file.getName());
+  }
+  
+  @Override
+  public String getContentType(String filename)
+  {
+    int index = filename.lastIndexOf(".");
+    if (index == -1) return DEFAULT_TYPE;
+    String extension = filename.substring(index + 1).toLowerCase();
+    String mimeType = mapping.getMimeType(extension);
+    return mimeType == null ? DEFAULT_TYPE : mimeType;
+  }
+  
+  public String getExtension(String mimeType)
+  {
+    if (mimeType != null)
+      mimeType = mimeType.toLowerCase();
+    return mapping.getExtension(mimeType);
+  }  
+  
+  public static MimeTypeMap getMimeTypeMap()
+  {
+    MimeTypeMap mimeMap;
+    
+    FileTypeMap map = FileTypeMap.getDefaultFileTypeMap();
+    if (map instanceof MimeTypeMap)
+    {
+      mimeMap = (MimeTypeMap)map;
+    }
+    else
+    {
+      mimeMap = new MimeTypeMap();
+    }
+    return mimeMap;
+  }
+  
+  public static void refresh()
+  {
+    synchronized(mapping)
+    {    
+      mapping.clear();
+    }
+  }
+  
+  private void addMimeType(String mimeType, String[] extensions)
+  {
+    for (int i = 0; i < extensions.length; i++)
+    {
+      String extension = extensions[i].toLowerCase().trim();      
+      mapping.putToExtMap(extension, mimeType);
+    }
+    mapping.putToMimeMap(mimeType, extensions[0].toLowerCase().trim());
+  }  
+  
+  private synchronized void loadDefaultMimeTypes()
+  {
     addMimeType("text/html", new String[]{"htm", "html"});
-    addMimeType("text/plain", new String[]{"txt", "text", "java"});
+    addMimeType("text/plain", new String[]{"txt", "text", "java", "log"});
     addMimeType("text/css", new String[]{"css"});
     addMimeType("text/xml", new String[]{"xml"});        
     addMimeType("image/gif", new String[]{"gif"});
@@ -77,75 +167,47 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("application/pkcs7-signature", new String[]{"p7s"});
     addMimeType("application/pkcs7-mime", new String[]{"p7m"});
     addMimeType("application/vnd.oasis.opendocument.text", new String[]{"odt"});
-    addMimeType("application/vnd.oasis.opendocument.spreadsheet", new String[]{"ods"});    
-    addMimeType("application/vnd.oasis.opendocument.presentation", new String[]{"odp"});        
-    addMimeType("application/vnd.oasis.opendocument.database", new String[]{"odb"});            
-    addMimeType("application/vnd.oasis.opendocument.graphics", new String[]{"odg"});            
-    addMimeType("application/vnd.oasis.opendocument.chart", new String[]{"odc"});                
-    addMimeType("application/vnd.oasis.opendocument.formula", new String[]{"odf"});                
-    addMimeType("application/vnd.oasis.opendocument.image", new String[]{"odi"});                    
-    addMimeType("application/vnd.oasis.opendocument.text-master", new String[]{"odm"});
-    addMimeType("application/vnd.openxmlformats-officedocument.wordprocessingml.document", new String[]{"docx"});
-    addMimeType("application/vnd.openxmlformats-officedocument.wordprocessingml.template", new String[]{"dotx"});
-    addMimeType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new String[]{"xlsx"});
-    addMimeType("application/vnd.openxmlformats-officedocument.spreadsheetml.template", new String[]{"xltx"});
-    addMimeType("application/vnd.openxmlformats-officedocument.presentationml.presentation", new String[]{"pptx"});
-    addMimeType("application/vnd.openxmlformats-officedocument.presentationml.slideshow", new String[]{"ppsx"});
-    addMimeType("application/tcq", new String[]{"tcq"});
-    addMimeType("application/octet-stream", new String[]{"bin", "exe"});                           
-    addMimeType("audio/basic", new String[]{"au"});
-    addMimeType("audio/midi", new String[]{"mid", "midi"});
-    addMimeType("audio/mpeg", new String[]{"mp3", "mp2"});        
-    addMimeType("audio/x-mpeg", new String[]{"mpg", "mpeg"});
-    addMimeType("audio/x-wav", new String[]{"wav"});
-    addMimeType("video/mpeg", new String[]{"mpg", "mpe"});
-    addMimeType("video/quicktime", new String[]{"qt", "mov"});
-    addMimeType("video/x-msvideo", new String[]{"avi"});
-    addMimeType("video/x-ms-wmv", new String[]{"wmv"});
+    addMimeType("application/vnd.oasis.opendocument.spreadsheet", 
+      new String[]{"ods"});    
+    addMimeType("application/vnd.oasis.opendocument.presentation", 
+      new String[]{"odp"});      
   }
   
-  public String getContentType(File file)
+  public static class Mapping
   {
-    return getContentType(file.getName());
-  }
-  
-  public String getContentType(String filename)
-  {
-    int index = filename.lastIndexOf(".");
-    if (index == -1) return defaultType;
-    String extension = filename.substring(index + 1).toLowerCase();
-    String mimeType = (String)extMap.get(extension);
-    return mimeType == null ? defaultType : mimeType;
-  }
-  
-  public final void addMimeType(String mimeType, String[] extensions)
-  {
-    for (int i = 0; i < extensions.length; i++)
+    private Map<String,String> extMap = new HashMap<String,String>();
+    private Map<String,String> mimeMap = new HashMap<String,String>(); 
+    
+    public boolean isEmpty()
     {
-      String extension = extensions[i].toLowerCase();      
+      return (extMap.isEmpty() && mimeMap.isEmpty());
+    }
+    
+    public void putToMimeMap(String mimeType, String extension)
+    {
+      mimeMap.put(mimeType, extension);
+    }
+    
+    public void putToExtMap(String extension, String mimeType)
+    {
       extMap.put(extension, mimeType);
     }
-    mimeMap.put(mimeType, extensions[0]);
-  }
-  
-  public String getExtension(String mimeType)
-  {
-    return (String)mimeMap.get(mimeType);
-  }
-  
-  public static MimeTypeMap getMimeTypeMap()
-  {
-    MimeTypeMap mimeMap;
     
-    FileTypeMap map = FileTypeMap.getDefaultFileTypeMap();
-    if (map instanceof MimeTypeMap)
+    public String getMimeType(String extension)
     {
-      mimeMap = (MimeTypeMap)map;
+      return extMap.get(extension);
     }
-    else
+    
+    public String getExtension(String mimeType)
     {
-      mimeMap = new MimeTypeMap();
+      return mimeMap.get(mimeType);
     }
-    return mimeMap;
+    
+    public void clear()
+    {
+      mimeMap.clear();
+      extMap.clear();
+    }
   }
+   
 }
