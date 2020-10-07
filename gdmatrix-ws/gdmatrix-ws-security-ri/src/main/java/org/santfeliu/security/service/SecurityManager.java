@@ -44,6 +44,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -106,6 +108,8 @@ public class SecurityManager implements SecurityManagerPort
   public static final String LDAP_ADMIN_PASSWORD = "ldap.adminPassword";
 
   public static final String PK_SEPARATOR = ";";
+  
+  public static final String REPRESENTANT_PATTERN = "\\(R: (\\w+)\\)";
 
   private static final int ROLE_DESCRIPTION_MAX_SIZE = 400;
   private static final int ROLE_ID_MAX_SIZE = 20;
@@ -415,7 +419,8 @@ public class SecurityManager implements SecurityManagerPort
         if (!valid) throw new Exception("INVALID_CERTIFICATE");
 
         NIF = (String)attributes.get(SecurityProvider.NIF);
-        CIF = (String)attributes.get(SecurityProvider.CIF);
+        displayName = (String)attributes.get(SecurityProvider.COMMON_NAME);
+        CIF = extractCIF(displayName);
 
         if (NIF != null)
         {
@@ -428,7 +433,6 @@ public class SecurityManager implements SecurityManagerPort
         // TODO: accept others
         else throw new Exception("INVALID_CERTIFICATE");
 
-        displayName = (String)attributes.get(SecurityProvider.COMMON_NAME);
         givenName = (String)attributes.get(SecurityProvider.GIVEN_NAME);
         surname = (String)attributes.get(SecurityProvider.SURNAME);
         email = (String)attributes.get(SecurityProvider.EMAIL);
@@ -1369,5 +1373,18 @@ public class SecurityManager implements SecurityManagerPort
          ldapUrl, ldapDomain, ldapBase, userId, password);
     }
     return connector;
+  }
+  
+  private String extractCIF(String displayName)
+  {
+    String cif = null;
+    if (displayName != null)
+    {
+      Pattern pattern = Pattern.compile(REPRESENTANT_PATTERN);
+      Matcher matcher = pattern.matcher(displayName);
+      if (matcher.find())
+        cif = matcher.group(1);
+    } 
+    return cif;
   }
 }
