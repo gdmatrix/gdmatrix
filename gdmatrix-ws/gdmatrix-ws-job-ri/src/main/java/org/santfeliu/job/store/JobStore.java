@@ -60,11 +60,11 @@ package org.santfeliu.job.store;
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-import org.santfeliu.job.service.JobException;
 import java.io.Serializable;
 import java.util.List;
 import org.matrix.job.Job;
 import org.matrix.job.JobFilter;
+import org.santfeliu.job.service.JobException;
 import org.santfeliu.job.service.JobResponse;
 
 /**

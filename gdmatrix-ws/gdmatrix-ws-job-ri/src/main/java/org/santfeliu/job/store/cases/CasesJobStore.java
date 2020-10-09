@@ -53,10 +53,10 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.doc.util.DocumentUtils;
-import org.santfeliu.job.service.JobResponse;
-import org.santfeliu.job.store.JobStore;
 import org.santfeliu.job.service.JobException;
+import org.santfeliu.job.service.JobResponse;
 import org.santfeliu.job.service.JobResponse.ResponseType;
+import org.santfeliu.job.store.JobStore;
 import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
@@ -70,6 +70,7 @@ public class CasesJobStore implements JobStore
   public static final String JOB_TYPE = "JobCase";
   public static final String SUCCESS_INTERVENTION = "SuccessJobIntervention";
   public static final String ERROR_INTERVENTION = "ErrorJobIntervention";
+  public static final String JOB_CASE_DOCUMENT = "JobCaseDocument";
   
   @Override
   public Job storeJob(Job job) throws JobException
@@ -228,7 +229,7 @@ public class CasesJobStore implements JobStore
         CaseDocument caseDocument = new CaseDocument();
         caseDocument.setCaseId(jobResponse.getJobId());
         caseDocument.setDocId(document.getDocId());
-        caseDocument.setCaseDocTypeId("CaseDocument"); //TODO: 
+        caseDocument.setCaseDocTypeId(JOB_CASE_DOCUMENT); 
         port.storeCaseDocument(caseDocument);
       }
       

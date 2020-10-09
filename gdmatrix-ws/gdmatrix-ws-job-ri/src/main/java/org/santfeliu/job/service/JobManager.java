@@ -31,10 +31,6 @@
 package org.santfeliu.job.service;
 
 import java.util.ArrayList;
-import org.santfeliu.job.store.JobStore;
-import org.santfeliu.job.store.JobStoreFactory;
-import org.santfeliu.job.scheduler.Scheduler;
-import org.santfeliu.job.scheduler.SchedulerFactory;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +44,10 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.job.Job;
 import org.matrix.job.JobConstants;
 import org.matrix.job.JobFilter;
+import org.santfeliu.job.scheduler.Scheduler;
+import org.santfeliu.job.scheduler.SchedulerFactory;
+import org.santfeliu.job.store.JobStore;
+import org.santfeliu.job.store.JobStoreFactory;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.security.util.Credentials;

@@ -34,7 +34,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import org.matrix.job.JobFilter;
-
 import org.matrix.job.JobManagerPort;
 import org.matrix.job.JobManagerService;
 import org.matrix.util.WSDirectory;

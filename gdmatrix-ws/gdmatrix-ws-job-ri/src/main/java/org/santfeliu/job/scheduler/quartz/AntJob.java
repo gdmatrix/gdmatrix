@@ -30,7 +30,6 @@
  */
 package org.santfeliu.job.scheduler.quartz;
 
-import com.mchange.v2.cfg.DelayedLogItem;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
