@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.faces.application.FacesMessage;
 import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeModelBase;
 import org.matrix.cms.CMSManagerPort;
@@ -353,9 +352,6 @@ public class NewSectionsBean extends TypifiedPageBean
         }        
         ns.setSticky(node.isSticky());
         NewsConfigBean.getPort().storeNewSection(ns);
-        message("org.santfeliu.news.web.resources.NewsBundle",
-          "new_sections_published", new Object[]{ns.getSectionId()},
-          FacesMessage.SEVERITY_INFO);
       }
       else // not selected item
       {

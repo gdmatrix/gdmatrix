@@ -34,7 +34,6 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import org.matrix.news.New;
 import org.matrix.news.NewSection;
-import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.news.client.NewsManagerClient;
 import org.santfeliu.web.obj.ObjectBean;
 
@@ -158,11 +157,15 @@ public class NewBean extends ObjectBean
           NewSection newSection = new NewSection();
           newSection.setNewId(newId);
           newSection.setSectionId(autoSectionId);
-          NewsConfigBean.getPort().storeNewSection(newSection); 
-          message("org.santfeliu.news.web.resources.NewsBundle",
-            "new_sections_published", new Object[]{autoSectionId},
-            FacesMessage.SEVERITY_INFO);          
+          newSection = NewsConfigBean.getPort().storeNewSection(newSection);
+          newSectionList.add(newSection);
         }
+        for (NewSection ns : newSectionList)
+        {
+          message("org.santfeliu.news.web.resources.NewsBundle",
+            "new_sections_published", new Object[]{ns.getSectionId()},
+            FacesMessage.SEVERITY_INFO);            
+        }          
       }
       catch (Exception ex) 
       {
