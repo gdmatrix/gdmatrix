@@ -61,11 +61,7 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
     StringBuilder selectBuffer = new StringBuilder();
     StringBuilder fromBuffer = new StringBuilder();
     StringBuilder whereBuffer = new StringBuilder();
-    
-    int maxResults = filter.getMaxResults();    
-    if (!isCounterQuery() && maxResults > 0)
-      selectBuffer.append("SELECT * FROM (SELECT rn.*, ROWNUM rnum FROM (");   
-
+         
     appendMainStatement(selectBuffer, fromBuffer);
     appendRolesFilter(whereBuffer);
     appendContentIdFilter(whereBuffer);
@@ -95,8 +91,10 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
       buffer.append(whereBuffer);
     }
     
+    int maxResults = filter.getMaxResults();  
     if (!isCounterQuery() && maxResults > 0)
     {
+      buffer.insert(0, "SELECT * FROM (SELECT rn.*, ROWNUM rnum FROM (");       
       int firstResult = filter.getFirstResult();
       int rowNum = firstResult + maxResults;
       buffer.append(") rn WHERE ROWNUM <= ?rowNum) WHERE rnum > ?firstResult ");
