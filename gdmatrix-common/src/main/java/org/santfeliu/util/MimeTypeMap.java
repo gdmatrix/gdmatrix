@@ -170,7 +170,48 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("application/vnd.oasis.opendocument.spreadsheet", 
       new String[]{"ods"});    
     addMimeType("application/vnd.oasis.opendocument.presentation", 
-      new String[]{"odp"});      
+      new String[]{"odp"});       
+    addMimeType("application/vnd.oasis.opendocument.database", 
+      new String[]{"odb"});            
+    addMimeType("application/vnd.oasis.opendocument.graphics", 
+      new String[]{"odg"});            
+    addMimeType("application/vnd.oasis.opendocument.chart", 
+      new String[]{"odc"});                
+    addMimeType("application/vnd.oasis.opendocument.formula", 
+      new String[]{"odf"});                
+    addMimeType("application/vnd.oasis.opendocument.image", 
+      new String[]{"odi"});                    
+    addMimeType("application/vnd.oasis.opendocument.text-master", 
+      new String[]{"odm"});
+    addMimeType(
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
+      new String[]{"docx"});
+    addMimeType(
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.template", 
+      new String[]{"dotx"});
+    addMimeType(
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+      new String[]{"xlsx"});
+    addMimeType(
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.template", 
+      new String[]{"xltx"});
+    addMimeType(
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation", 
+      new String[]{"pptx"});
+    addMimeType(
+      "application/vnd.openxmlformats-officedocument.presentationml.slideshow", 
+      new String[]{"ppsx"});
+    addMimeType("application/tcq", new String[]{"tcq"});
+    addMimeType("application/octet-stream", new String[]{"bin", "exe"});                           
+    addMimeType("audio/basic", new String[]{"au"});
+    addMimeType("audio/midi", new String[]{"mid", "midi"});
+    addMimeType("audio/mpeg", new String[]{"mp3", "mp2"});        
+    addMimeType("audio/x-mpeg", new String[]{"mpg", "mpeg"});
+    addMimeType("audio/x-wav", new String[]{"wav"});
+    addMimeType("video/mpeg", new String[]{"mpg", "mpe"});
+    addMimeType("video/quicktime", new String[]{"qt", "mov"});
+    addMimeType("video/x-msvideo", new String[]{"avi"});
+    addMimeType("video/x-ms-wmv", new String[]{"wmv"});    
   }
   
   public static class Mapping
