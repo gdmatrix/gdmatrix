@@ -927,8 +927,8 @@ public class KernelManager implements KernelManagerPort
       int roomId = 1;
       try
       {
-        Number maxRoomId  = (Number)query.getSingleResult();
-        roomId = maxRoomId.intValue() + 1;
+        String maxRoomId  = (String)query.getSingleResult();
+        roomId = Integer.valueOf(maxRoomId) + 1;
       }
       catch (Exception ex)
       {
