@@ -36,6 +36,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import javax.faces.model.SelectItem;
 import org.apache.commons.lang.StringUtils;
@@ -59,6 +60,7 @@ import org.matrix.cases.CaseEventView;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.dic.Property;
 import org.santfeliu.cases.web.CaseConfigBean;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.PojoUtils;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.obj.PageBean;
@@ -119,11 +121,15 @@ public class EventCopyBean extends PageBean implements Serializable
   //Range
   public static final String BY_MAX_DATE = "0";
   public static final String BY_MAX_ITERATIONS = "1";
+  public static final int DEFAULT_MAX_RECURRENCES = 100;
+  public static final String MAX_RECURRENCES_PROPERTY = "agenda.maxRecurrences";
+  
   private String rangeStartDateTime;
   private int numberOfIterations;
   private String endRangeMode = BY_MAX_DATE;
   private String rangeEndDateTime;
   private boolean checkAttendantsAvailability;
+  private int maxRecurrences;
 
   //Hours pattern
   private HourPattern hourPattern;
@@ -144,6 +150,28 @@ public class EventCopyBean extends PageBean implements Serializable
 
   public EventCopyBean()
   {
+    init();
+  }
+  
+  private void init()
+  {
+    maxRecurrences = DEFAULT_MAX_RECURRENCES;
+    String maxRecurrencesValue = 
+      MatrixConfig.getProperty(MAX_RECURRENCES_PROPERTY);
+    if (maxRecurrencesValue != null)
+    {
+      try
+      {
+        maxRecurrences = Integer.valueOf(maxRecurrencesValue);
+      }
+      catch (NumberFormatException ex)
+      {
+        ResourceBundle bundle = ResourceBundle.getBundle(
+          "org.santfeliu.agenda.web.resources.AgendaBundle", getLocale()); 
+        String[] params = {maxRecurrencesValue};
+        warn(bundle.getString("eventCopy_invalidRecurrencesCount"), params);
+      }
+    }    
   }
 
   public void setEvent(Event event)
@@ -578,6 +606,11 @@ public class EventCopyBean extends PageBean implements Serializable
     this.firstRowIndex = firstRowIndex;
   }
 
+  public int getMaxRecurrencesCount()
+  {
+    return maxRecurrences;
+  }
+  
   //GUI actions
   @Override
   public String show()
@@ -1332,7 +1365,15 @@ public class EventCopyBean extends PageBean implements Serializable
       while (loop && cal.getTime().before(rangeEndDate))
       {
         loop = addEvents(events, cal);
+        loop = loop && events.size() < maxRecurrences;
       }
+      if (events.size() >= maxRecurrences)
+      {
+        ResourceBundle bundle = ResourceBundle.getBundle(
+          "org.santfeliu.agenda.web.resources.AgendaBundle", getLocale()); 
+        Object[] params = {maxRecurrences};
+        warn(bundle.getString("eventCopy_limitedRecurrencesCount"), params);
+      }      
       for (EventRow row : events)
       {
         row.checkRoomsAvailability();
@@ -1349,6 +1390,14 @@ public class EventCopyBean extends PageBean implements Serializable
       Calendar cal = Calendar.getInstance();
       cal.setTime(rangeStartDate);
       boolean loop = true;
+      if (numberOfIterations > maxRecurrences)
+      {
+        numberOfIterations = maxRecurrences;
+        ResourceBundle bundle = ResourceBundle.getBundle(
+          "org.santfeliu.agenda.web.resources.AgendaBundle", getLocale()); 
+        Object[] params = {maxRecurrences};
+        warn(bundle.getString("eventCopy_limitedRecurrencesCount"), params);        
+      }
       while (loop && events.size() < numberOfIterations)
       {
         loop = addEvents(events, cal);

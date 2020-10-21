@@ -750,7 +750,10 @@
     <param-name>org.santfeliu.job.service.JobManager.enabled</param-name>
     <param-value>false</param-value>
   </context-param>    
-  
+  <context-param>
+    <param-name>agenda.maxRecurrences</param-name>
+    <param-value>100</param-value>
+  </context-param>      
   <!-- listeners -->
   <listener>
     <listener-class>org.santfeliu.web.MatrixServletContextListener</listener-class>
