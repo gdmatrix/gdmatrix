@@ -56,23 +56,18 @@ public class SignatureManagerSource implements Source
   private static final String TITLE = "title";
   private static final String DOCTYPEID = "docTypeId";
   
-  public Document getDocument(String sigId)
+  @Override
+  public Document getDocument(String sigId) throws Exception
   {
-    try
+    SignatureManagerPort port = getSignatureManagerPort();
+
+    if (document == null)
     {
-      SignatureManagerPort port = getSignatureManagerPort();
-      
-      if (document == null)
-      {
-        SignedDocument doc = port.getDocument(sigId);
-        document = toDocument(doc);
-        document.setCsv(sigId);
-      }
+      SignedDocument doc = port.getDocument(sigId);
+      document = toDocument(doc);
+      document.setCsv(sigId);
     }
-    catch (Exception ex)
-    {
-      throw new RuntimeException(ex);
-    }
+
     return document;    
   }
   

@@ -30,11 +30,18 @@
  */
 package org.santfeliu.doc.util.authcopy;
 
+import com.lowagie.text.pdf.AcroFields;
+import com.lowagie.text.pdf.PdfPKCS7;
+import com.lowagie.text.pdf.PdfReader;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 import javax.activation.DataHandler;
+import org.apache.xml.security.signature.XMLSignature;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.matrix.dic.Property;
 import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.signature.xmldsig.XMLSignedDocument;
 
 /**
  *
@@ -42,13 +49,29 @@ import org.santfeliu.dic.util.DictionaryUtils;
  */
 public class Document
 {
+  private static final String DOCUMENT_WITHOUT_SIGNATURES_EXCEPTION = 
+    "DOCUMENT_WITHOUT_SIGNATURES";
+  private static final String CANNOT_EXTRACT_SIGNATURES_EXCEPTION = 
+    "CANNOT_EXTRACT_SIGNATURES";  
+  
+  private String docId;
   private String csv;
   private String title;
   private String docType;
   private String contentType;
   private DataHandler data;
-  private List<String> signatures;
+  private List signatures = new ArrayList();
   private List<Property> properties = new ArrayList();
+
+  public String getDocId()
+  {
+    return docId;
+  }
+
+  public void setDocId(String docId)
+  {
+    this.docId = docId;
+  }
   
   public String getTitle()
   {
@@ -100,19 +123,14 @@ public class Document
     this.data = data;
   }
 
-  public List<String> getSignatures()
+  public List getSignatures() throws Exception
   {
-    return signatures;
-  }
-  
-  void addSignature(String signature)
-  {
-    if (this.signatures == null)
-      this.signatures = new ArrayList();
+    if (!isSigned())
+      throw new Exception(DOCUMENT_WITHOUT_SIGNATURES_EXCEPTION);    
     
-    signatures.add(signature);
+    return this.signatures;
   }
-  
+   
   public boolean isSigned()
   {
     return (signatures != null && !signatures.isEmpty());
@@ -138,5 +156,41 @@ public class Document
   {
     return "application/pdf".equals(contentType);
   }
+  
+  void extractSignatures() throws Exception
+  {
+    signatures = new ArrayList();
+    try
+    {
+      BouncyCastleProvider provider = new BouncyCastleProvider();
+      Security.addProvider(provider);      
+      
+      if (isPdf())
+      {
+        PdfReader reader = new PdfReader(getData().getInputStream());
+        AcroFields fields = reader.getAcroFields();
+        for (String sigName : fields.getSignatureNames())
+        {
+          PdfPKCS7 pkcs7 = fields.verifySignature(sigName);
+          signatures.add(pkcs7);
+        }
+      }
+      else if (isXmlSignedDocument())
+      {
+        XMLSignedDocument signedDocument = new XMLSignedDocument();
+        signedDocument.parseDocument(getData().getInputStream());
+        for (int i = 0; i < signedDocument.getSignaturesCount(); i++)
+        {
+          XMLSignature signature = signedDocument.getSignature(i);
+          signatures.add(signature);               
+        } 
+      }
+    }
+    catch (Exception ex)
+    {
+      throw new Exception(CANNOT_EXTRACT_SIGNATURES_EXCEPTION);
+    }
+    
+  }    
   
 }

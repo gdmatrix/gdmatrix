@@ -36,5 +36,5 @@ package org.santfeliu.doc.util.authcopy;
  */
 public interface Source
 {
-  public Document getDocument(String id);
+  public Document getDocument(String id) throws Exception;
 }

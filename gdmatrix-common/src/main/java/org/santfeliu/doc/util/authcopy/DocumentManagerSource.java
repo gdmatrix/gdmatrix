@@ -56,11 +56,13 @@ public class DocumentManagerSource implements Source
   {
   }
   
-  public Document getDocument(String sigId)
+  @Override
+  public Document getDocument(String sigId) throws Exception 
   {
     String username = MatrixConfig.getProperty("adminCredentials.userId");
     String password = MatrixConfig.getProperty("adminCredentials.password");    
-    CachedDocumentManagerClient client = new CachedDocumentManagerClient(username, password);
+    CachedDocumentManagerClient client = 
+      new CachedDocumentManagerClient(username, password);
     if (document == null)
     {
       DocumentFilter filter = new DocumentFilter();
@@ -68,17 +70,20 @@ public class DocumentManagerSource implements Source
       List<org.matrix.doc.Document> documents = client.findDocuments(filter);
       if (documents != null && !documents.isEmpty())
       {
-        org.matrix.doc.Document doc = client.loadDocument(documents.get(0).getDocId(), 0, ContentInfo.ALL);
+        org.matrix.doc.Document doc = 
+          client.loadDocument(documents.get(0).getDocId(), 0, ContentInfo.ALL);
         document = createAuthcopyDocument(doc);
       }
     }
-    
+
     return document;
   }
   
-  private Document createAuthcopyDocument(org.matrix.doc.Document doc)
+  private Document createAuthcopyDocument(org.matrix.doc.Document doc) 
+    throws Exception
   {
     Document result = new Document();
+    result.setDocId(doc.getDocId());
     result.setTitle(doc.getTitle());
     Type type = TypeCache.getInstance().getType(doc.getDocTypeId());
     result.setDocType(type.getDescription());
