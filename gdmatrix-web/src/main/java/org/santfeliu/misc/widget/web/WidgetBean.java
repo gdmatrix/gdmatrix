@@ -642,7 +642,15 @@ public class WidgetBean extends WebBean
     "function removeWidget(widgetId) {" +
     "var widget = $(widgetId).widget;" +
     "if (widget) {" +
+    "var widgetElems = null;" +  
+    "if (typeof(getWidgetElems) === 'function') {" +   
+    "widgetElems = getWidgetElems(widgetId); " +
+    "}\n" +
     "portal_custom_container.remove(widget); " +
+    "if (widgetElems != null) {" +
+    "if (widgetElems.li != null) $(widgetElems.li).remove();" +
+    "if (widgetElems.ul != null) $(widgetElems.ul).remove();" +
+    "}\n" +
     "if (typeof(unselectWidget) === 'function') {" +   
     "unselectWidget(widgetId); " +
     "}}}\n" +
@@ -1001,15 +1009,17 @@ public class WidgetBean extends WebBean
   public String getWidgetSelectorScripts()
   {
     return "<script type=\"text/javascript\" " +
-    "src=\"/plugins/widget/widgetselector.js\"></script>" +
-    "<script type=\"text/javascript\">" +
-    "var widgetSelectorWindow = " + getWidgetSelectorWindow() + ";" +
-    "var widgetSelectorSize = " + getWidgetCatalogue().size() + ";" +
-    "var widgetSelectorIndexCookieName = '" +
-    getWidgetSelectorIndexCookieName() + "';" +
-    "widgetSelectorMove(" + getWidgetSelectorIndexCookieValue() + ");" +
-    "widgetSelectorMakeElementsVisible();" +  
-    "</script>";
+      "src=\"/plugins/widget/widgetselector.js?v=" + 
+      ApplicationBean.getCurrentInstance().getResourcesVersion() + 
+      "\"></script>" +
+      "<script type=\"text/javascript\">" +
+      "var widgetSelectorWindow = " + getWidgetSelectorWindow() + ";" +
+      "var widgetSelectorSize = " + getWidgetCatalogue().size() + ";" +
+      "var widgetSelectorIndexCookieName = '" +
+      getWidgetSelectorIndexCookieName() + "';" +
+      "widgetSelectorMove(" + getWidgetSelectorIndexCookieValue() + ");" +
+      "widgetSelectorMakeElementsVisible();" +  
+      "</script>";
   }
   
   private boolean isWidgetFolded(String widgetId)

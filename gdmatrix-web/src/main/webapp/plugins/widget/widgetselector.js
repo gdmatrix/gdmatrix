@@ -85,6 +85,30 @@ function unselectWidget(widgetId)
   
 }
 
+function getWidgetElems(widgetId)
+{
+  var result = null;
+  var widget = document.getElementById(widgetId);
+  if (widget != null)
+  {
+    var liElem = widget.parentElement;
+    if (liElem != null && liElem.tagName == 'LI')
+    {
+      result = {};
+      result.li = liElem;
+      var ulElem = liElem.parentElement;
+      if (ulElem != null && ulElem.tagName == 'UL')
+      {
+        if (ulElem.children.length == 1)
+        {
+          result.ul = ulElem;
+        }
+      }
+    }
+  }
+  return result;
+}
+
 function widgetSelectorMove(newIndex)
 {
   if (newIndex > widgetSelectorSize) newIndex = 1;

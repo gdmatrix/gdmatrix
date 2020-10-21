@@ -455,25 +455,27 @@ public class HtmlWidgetContainer extends UIPanel
               Boolean.valueOf(getColumnRenderAsList(column, i));
             if (columnRenderAsList)
             {
-              writer.startElement("ul", this);
-              writer.writeAttribute("class", "widgetList", null);              
-            }
-            for (HtmlWidget widget : widgets.get(column))
-            {
-              if (columnRenderAsList)
+              if (!widgets.get(column).isEmpty())
               {
-                writer.startElement("li", this);
+                writer.startElement("ul", this);
+                writer.writeAttribute("class", "widgetList", null);              
+                for (HtmlWidget widget : widgets.get(column))
+                {
+                  writer.startElement("li", this);
+                  RendererUtils.renderChild(context, widget);
+                  writer.endElement("li");
+                  writer.write("\n");
+                }
+                writer.endElement("ul");
               }
-              RendererUtils.renderChild(context, widget);
-              if (columnRenderAsList)
-              {
-                writer.endElement("li");
-              }
-              writer.write("\n");
             }
-            if (columnRenderAsList)
+            else
             {
-              writer.endElement("ul");
+              for (HtmlWidget widget : widgets.get(column))
+              {
+                RendererUtils.renderChild(context, widget);
+                writer.write("\n");
+              }
             }
           }
           writer.endElement("div");
