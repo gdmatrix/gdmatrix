@@ -1,7 +1,10 @@
 function newsCarouselPass()
-{  
-  var newIndex = newsCarouselGetNextNewIndex(newsCarouselIndex); 
-  newsCarouselChange(newIndex);
+{
+  if (!newsCarouselLock)
+  {
+    var newIndex = newsCarouselGetNextNewIndex(newsCarouselIndex); 
+    newsCarouselChange(newIndex);
+  }
 }
 
 function newsCarouselMouseOverItem(newIndex)
@@ -57,6 +60,15 @@ function newsCarouselStart()
 function newsCarouselStop()
 {
   clearInterval(newsCarouselIntervalId);
+}
+
+function newsCarouselSetLock(newValue)
+{
+  var pauseLinkDiv = document.querySelector("div .lockPanel .goPause");
+  pauseLinkDiv.style.visibility = (newValue ? 'hidden' : 'visible');
+  var playLinkDiv = document.querySelector("div .lockPanel .goPlay");
+  playLinkDiv.style.visibility = (newValue ? 'visible' : 'hidden');
+  newsCarouselLock = newValue;
 }
 
 function newsCarouselUpdateInfoLayer(newIndex)

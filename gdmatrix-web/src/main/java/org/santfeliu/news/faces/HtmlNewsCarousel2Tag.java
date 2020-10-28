@@ -68,6 +68,10 @@ public class HtmlNewsCarousel2Tag extends UIComponentTag
   private String renderDate;  
   private String newsPerBlock;
   private String urlSeparator;
+  private String pauseLabel;
+  private String pauseIconURL;
+  private String playLabel;
+  private String playIconURL;
 
   public String getRows()
   {
@@ -329,6 +333,46 @@ public class HtmlNewsCarousel2Tag extends UIComponentTag
     this.urlSeparator = urlSeparator;
   }
 
+  public String getPauseLabel() 
+  {
+    return pauseLabel;
+  }
+
+  public void setPauseLabel(String pauseLabel) 
+  {
+    this.pauseLabel = pauseLabel;
+  }
+
+  public String getPauseIconURL() 
+  {
+    return pauseIconURL;
+  }
+
+  public void setPauseIconURL(String pauseIconURL) 
+  {
+    this.pauseIconURL = pauseIconURL;
+  }
+
+  public String getPlayLabel() 
+  {
+    return playLabel;
+  }
+
+  public void setPlayLabel(String playLabel) 
+  {
+    this.playLabel = playLabel;
+  }
+
+  public String getPlayIconURL() 
+  {
+    return playIconURL;
+  }
+
+  public void setPlayIconURL(String playIconURL) 
+  {
+    this.playIconURL = playIconURL;
+  }
+
   @Override
   protected void setProperties(UIComponent component)
   {
@@ -405,6 +449,14 @@ public class HtmlNewsCarousel2Tag extends UIComponentTag
         context, component, "newsPerBlock", newsPerBlock);      
       UIComponentTagUtils.setStringProperty(
         context, component, "urlSeparator", urlSeparator);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "pauseLabel", pauseLabel);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "pauseIconURL", pauseIconURL);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "playLabel", playLabel);
+      UIComponentTagUtils.setStringProperty(
+        context, component, "playIconURL", playIconURL);
     }
     catch (Exception ex)
     {
@@ -438,6 +490,10 @@ public class HtmlNewsCarousel2Tag extends UIComponentTag
     renderDate = null;
     newsPerBlock = null;
     urlSeparator = null;
+    pauseLabel = null;
+    pauseIconURL = null;
+    playLabel = null;
+    playIconURL = null;
   }
 
   @Override

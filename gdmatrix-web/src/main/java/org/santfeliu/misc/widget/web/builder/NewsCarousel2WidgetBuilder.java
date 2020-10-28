@@ -56,7 +56,11 @@ public class NewsCarousel2WidgetBuilder extends WidgetBuilder
   private static final String DEFAULT_PREV_BLOCK_ICON_URL = "/images/previous.gif";    
   private static final String DEFAULT_SHOW_BLOCK_LABEL = "Mostrar bloc";
   private static final String DEFAULT_NEXT_BLOCK_LABEL = "Mostrar bloc següent";
-  private static final String DEFAULT_NEXT_BLOCK_ICON_URL = "/images/next.gif";  
+  private static final String DEFAULT_NEXT_BLOCK_ICON_URL = "/images/next.gif";
+  private static final String DEFAULT_PAUSE_LABEL = "Pausa";
+  private static final String DEFAULT_PAUSE_ICON_URL = "/images/pause.gif";  
+  private static final String DEFAULT_PLAY_LABEL = "Reanudar";
+  private static final String DEFAULT_PLAY_ICON_URL = "/images/play.gif";    
   private static final String DEFAULT_DRAFT_TEXT = "Esborrany";
   private static final String DEFAULT_STYLE_CLASS = "newsCarousel";
   private static final String DEFAULT_VAR = "n";
@@ -155,6 +159,22 @@ public class NewsCarousel2WidgetBuilder extends WidgetBuilder
       String nextBlockIconURL = (String)properties.get("nextBlockIconURL");
       if (nextBlockIconURL == null) nextBlockIconURL = DEFAULT_NEXT_BLOCK_ICON_URL;
       component.setNextBlockIconURL(nextBlockIconURL);
+      
+      String pauseLabel = (String)properties.get("pauseLabel");
+      if (pauseLabel == null) pauseLabel = DEFAULT_PAUSE_LABEL;
+      component.setPauseLabel(pauseLabel);
+      
+      String pauseIconURL = (String)properties.get("pauseIconURL");
+      if (pauseIconURL == null) pauseIconURL = DEFAULT_PAUSE_ICON_URL;
+      component.setPauseIconURL(pauseIconURL);
+      
+      String playLabel = (String)properties.get("playLabel");
+      if (playLabel == null) playLabel = DEFAULT_PLAY_LABEL;
+      component.setPlayLabel(playLabel);
+      
+      String playIconURL = (String)properties.get("playIconURL");
+      if (playIconURL == null) playIconURL = DEFAULT_PLAY_ICON_URL;
+      component.setPlayIconURL(playIconURL);      
       
       component.setDraftText(DEFAULT_DRAFT_TEXT);
 

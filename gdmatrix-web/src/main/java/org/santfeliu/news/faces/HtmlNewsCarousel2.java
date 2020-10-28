@@ -78,6 +78,10 @@ public class HtmlNewsCarousel2 extends UIComponentBase
   private String _showBlockLabel;
   private String _nextBlockLabel;
   private String _nextBlockIconURL;
+  private String _pauseLabel;
+  private String _pauseIconURL;
+  private String _playLabel;
+  private String _playIconURL;
   private Boolean _excludeDrafts;
   private String _draftText;
   private String _imageWidth;
@@ -336,6 +340,58 @@ public class HtmlNewsCarousel2 extends UIComponentBase
   {
     this._nextBlockIconURL = _nextBlockIconURL;
   }
+
+  public String getPauseLabel() 
+  {
+    if (_pauseLabel != null) return _pauseLabel;
+    ValueExpression ve = getValueExpression("pauseLabel");
+    return ve != null ? (String) ve.getValue(getFacesContext().getELContext()) : 
+      "Pausa";
+  }
+
+  public void setPauseLabel(String _pauseLabel) 
+  {
+    this._pauseLabel = _pauseLabel;
+  }
+
+  public String getPauseIconURL() 
+  {
+    if (_pauseIconURL != null) return _pauseIconURL;
+    ValueExpression ve = getValueExpression("pauseIconURL");
+    return ve != null ? (String) ve.getValue(getFacesContext().getELContext()) : 
+      null;
+  }
+
+  public void setPauseIconURL(String _pauseIconURL) 
+  {
+    this._pauseIconURL = _pauseIconURL;
+  }
+
+  public String getPlayLabel() 
+  {
+    if (_playLabel != null) return _playLabel;
+    ValueExpression ve = getValueExpression("playLabel");
+    return ve != null ? (String) ve.getValue(getFacesContext().getELContext()) : 
+      "Reanudar";
+  }
+
+  public void setPlayLabel(String _playLabel) 
+  {
+    this._playLabel = _playLabel;
+  }
+
+  public String getPlayIconURL() 
+  {
+    if (_playIconURL != null) return _playIconURL;
+    ValueExpression ve = getValueExpression("playIconURL");
+    return ve != null ? (String) ve.getValue(getFacesContext().getELContext()) : 
+      null;
+  }
+
+  public void setPlayIconURL(String _playIconURL)
+  {
+    this._playIconURL = _playIconURL;
+  }
   
   public String getMoreNewsURL()
   {
@@ -483,11 +539,6 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     if (!isRendered()) return;
     String clientId = getClientId(context);
     ResponseWriter writer = context.getResponseWriter();
-    writer.startElement("script", this);
-    writer.writeAttribute("type", "text/javascript", null);
-    writer.writeAttribute("src", "/plugins/carousel2/carousel.js?v=" + 
-      ApplicationBean.getCurrentInstance().getResourcesVersion(), null);
-    writer.endElement("script");
     try
     {
       SectionFilter filter = new SectionFilter();
@@ -510,25 +561,11 @@ public class HtmlNewsCarousel2 extends UIComponentBase
       List<NewView> newList = NewsConfigBean.getPort().
         findNewsBySectionFromCache(filter).get(0).getNewView();
       
-      int newCount = 0;
       if (newList != null && newList.size() > 0)
       {
         Translator translator = getTranslator();
         encodeNews(newList, writer, translator, clientId);
-        newCount = newList.size();
       }
-      writer.startElement("script", this);
-      writer.writeAttribute("type", "text/javascript", null);
-      writer.writeText("var newsCarouselNewCount = " + newCount + ";", null);
-      writer.writeText("var newsCarouselBlockSize = " + getNewsPerBlock() + ";", null);
-      writer.writeText("var newsCarouselIntervalId = 0;", null);
-      writer.writeText("var newsCarouselIndex = 1;", null);      
-      writer.writeText("var newsCarouselTransitionTime = " +
-        getTransitionTime() + ";", null);
-      writer.writeText("newsCarouselMakeNavPanelVisible();", null);
-      writer.writeText("newsCarouselChange(1);", null);
-      writer.writeText("newsCarouselStart();", null);
-      writer.endElement("script");
     }
     catch (Exception ex)
     {
@@ -541,7 +578,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[28];
+    Object values[] = new Object[32];
     values[0] = super.saveState(context);
     values[1] = _section;
     values[2] = _rows;
@@ -570,6 +607,10 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     values[25] = _prevBlockIconURL;
     values[26] = _nextBlockIconURL;
     values[27] = _urlSeparator;
+    values[28] = _pauseLabel;
+    values[29] = _pauseIconURL;
+    values[30] = _playLabel;
+    values[31] = _playIconURL;    
     return values;
   }
 
@@ -605,6 +646,10 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     _prevBlockIconURL = (String)values[25];
     _nextBlockIconURL = (String)values[26];
     _urlSeparator = (String)values[27];
+    _pauseLabel = (String)values[28];
+    _pauseIconURL = (String)values[29];
+    _playLabel = (String)values[30];
+    _playIconURL = (String)values[31];
   }
 
 //Private
@@ -617,14 +662,37 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     if (style != null) writer.writeAttribute("style", style, null);
     String styleClass = getStyleClass();
     if (styleClass != null) writer.writeAttribute("class", styleClass, null);
+    
+    writer.startElement("script", this);
+    writer.writeAttribute("type", "text/javascript", null);
+    writer.writeAttribute("src", "/plugins/carousel2/carousel.js?v=" + 
+      ApplicationBean.getCurrentInstance().getResourcesVersion(), null);
+    writer.endElement("script");
+
     int index = 1;
     for (NewView newView : news)
     {
       encodeImageLayer(newView, writer, index);
       index++;
-    }          
+    }
     encodeInfoLayer(news, writer, translator, clientId);
     encodeBottomLayer(writer, translator, news.size());
+    
+    writer.startElement("script", this);
+    writer.writeAttribute("type", "text/javascript", null);
+    writer.writeText("var newsCarouselNewCount = " + news.size() + ";", null);
+    writer.writeText("var newsCarouselBlockSize = " + getNewsPerBlock() + ";", 
+      null);
+    writer.writeText("var newsCarouselIntervalId = 0;", null);
+    writer.writeText("var newsCarouselIndex = 1;", null);
+    writer.writeText("var newsCarouselLock = false;", null);
+    writer.writeText("var newsCarouselTransitionTime = " +
+      getTransitionTime() + ";", null);
+    writer.writeText("newsCarouselMakeNavPanelVisible();", null);
+    writer.writeText("newsCarouselChange(1);", null);
+    writer.writeText("newsCarouselStart();", null);
+    writer.endElement("script");
+    
     writer.endElement("div");
   }
 
@@ -793,10 +861,48 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     int newCount) throws IOException
   {
     writer.startElement("div", this);
-    writer.writeAttribute("class", "bottomLayer", null);
+    writer.writeAttribute("class", "bottomLayer", null); 
+    encodeLockLayer(writer, translator);
     encodeNavPanelLayer(writer, translator, newCount);
     encodeMoreNewsLayer(writer, translator);
     writer.endElement("div");    
+  }
+
+  private void encodeLockLayer(ResponseWriter writer, Translator translator)
+    throws IOException
+  {
+    writer.startElement("div", this);
+    writer.writeAttribute("class", "lockPanel", null);
+    
+    writer.startElement("div", this);
+    writer.writeAttribute("class", "goPause", null);
+    writer.writeAttribute("style", "visibility:visible", null);
+    writer.startElement("a", this);
+    writer.writeAttribute("href", "javascript:newsCarouselSetLock(true);", 
+      null);
+    String pauseLabel = translateText(getPauseLabel(), translator, null);
+    writer.writeAttribute("title", pauseLabel, null);    
+    writer.startElement("img", this);
+    writer.writeAttribute("src", getPauseIconURL(), null);
+    writer.writeAttribute("alt", pauseLabel, null);    
+    writer.endElement("a");
+    writer.endElement("div");    
+
+    writer.startElement("div", this);
+    writer.writeAttribute("class", "goPlay", null);
+    writer.writeAttribute("style", "visibility:hidden", null);    
+    writer.startElement("a", this);
+    writer.writeAttribute("href", "javascript:newsCarouselSetLock(false);", 
+      null);
+    String playLabel = translateText(getPlayLabel(), translator, null);
+    writer.writeAttribute("title", playLabel, null);
+    writer.startElement("img", this);
+    writer.writeAttribute("src", getPlayIconURL(), null);
+    writer.writeAttribute("alt", playLabel, null);   
+    writer.endElement("a");
+    writer.endElement("div");    
+
+    writer.endElement("div");
   }
   
   private void encodeNavPanelLayer(ResponseWriter writer, Translator translator, int newCount) 
@@ -806,7 +912,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     writer.writeAttribute("id", "newsCarouselNavPanel", null);        
     writer.writeAttribute("style", "visibility:hidden", null);
     writer.writeAttribute("class", "navPanel", null);
-
+    
     writer.startElement("div", this);
     writer.writeAttribute("class", "goPrevious", null);
     writer.startElement("a", this);

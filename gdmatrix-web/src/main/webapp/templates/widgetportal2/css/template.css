@@ -2593,15 +2593,97 @@ h6.element-invisible
   color: #444;
 }
 
+div#not_carousel .widget_header 
+{
+  display: block !important;
+}
+
+div#not_carousel .widget_header .empty 
+{
+  height: 0;
+}
+
+div#not_carousel .widget_header_panel 
+{
+  background-color: #A51152;
+  border: 0;
+  min-height: inherit;
+  height: 25px;
+  line-height: 25px;
+  margin-bottom: 10px;
+}
+
+div#not_carousel .widget_header_panel .widget_fold,
+div#not_carousel .widget_header_panel .widget_unfold
+{
+  margin-top: 2px;
+}
+
+div#not_carousel .widget_header_panel:hover 
+{
+  background-color: #000000;
+}
+
+div#not_carousel .widget_content 
+{
+  min-height: inherit !important;
+}
+
+.newsCarousel
+{
+  min-height: 325px !important;
+}
+
 .newsCarousel p
 {
   margin: 0;
 }
 
+.newsCarousel div.infoLayer
+{
+  float: right;
+  margin-left: 0 !important;
+}
+
 .newsCarousel .bottomLayer
 {
-  height: 20px !important;
-  margin-top: 14px !important;
+  width: 646px !important;
+  position: relative !important;
+  height: 25px !important;
+  float: left !important;
+  margin-top: 290px !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+.newsCarousel .bottomLayer > div
+{
+  position: absolute;
+}
+
+.newsCarousel .bottomLayer .lockPanel
+{
+  left: 0;
+}
+
+.newsCarousel .bottomLayer .lockPanel > div
+{
+  display: inline-block;
+}
+
+.newsCarousel .bottomLayer .lockPanel > div.goPlay
+{
+  margin-left: -16px;
+}
+
+.newsCarousel .bottomLayer .navPanel
+{
+  right: 80px;
+}
+
+.newsCarousel .bottomLayer .moreNews
+{  
+  right: 0;
 }
 
 .newsCarousel .bottomLayer .navPanel,

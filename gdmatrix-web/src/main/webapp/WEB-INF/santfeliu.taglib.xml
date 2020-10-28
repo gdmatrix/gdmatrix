@@ -1744,6 +1744,22 @@
       <name>nextBlockIconURL</name>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <name>pauseLabel</name>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>pauseIconURL</name>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>playLabel</name>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>playIconURL</name>
+      <type>java.lang.String</type>
+    </attribute>                
   </tag>
   
   <tag>
