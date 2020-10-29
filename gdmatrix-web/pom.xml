@@ -12,14 +12,14 @@
   <packaging>war</packaging>
   <version>3.0</version>
   <name>gdmatrix-web</name>
-    
+
   <properties>
     <maven.test.skip>true</maven.test.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>  
+  </properties>
 
-  <dependencies> 
-       
+  <dependencies>
+
     <!-- JAX-WS -->
     <dependency>
       <groupId>com.sun.xml.ws</groupId>
@@ -31,16 +31,16 @@
           <artifactId>junit</artifactId>
         </exclusion>
       </exclusions>
-    </dependency> 
-    
+    </dependency>
+
     <!-- Servlet API -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>3.1.0</version>
       <scope>provided</scope>
-    </dependency>    
-    
+    </dependency>
+
     <!-- JSP & JSTL API -->
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
@@ -48,16 +48,16 @@
       <version>2.3.3</version>
       <scope>provided</scope>
     </dependency>
-        
-    <!-- Faces API -->  
+
+    <!-- Faces API -->
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>javax.faces-api</artifactId>
       <version>2.2</version>
       <scope>provided</scope>
-    </dependency>  
-    
-    <!-- Faces implementation and related libraries -->              
+    </dependency>
+
+    <!-- Faces implementation and related libraries -->
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.faces</artifactId>
@@ -71,7 +71,7 @@
     <dependency>
       <groupId>org.apache.myfaces.tomahawk</groupId>
       <artifactId>tomahawk21</artifactId>
-      <version>1.1.14</version>     
+      <version>1.1.14</version>
       <exclusions>
         <exclusion>
           <!-- Avoid collision with batik-bridge 1.7 -->
@@ -105,30 +105,30 @@
           <artifactId>commons-codec</artifactId>
         </exclusion>
       </exclusions>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.el</artifactId>
       <version>3.0.1-b11</version>
-    </dependency>    
-    
+    </dependency>
+
     <!-- PDF libraries -->
     <dependency>
       <groupId>com.github.librepdf</groupId>
       <artifactId>openpdf</artifactId>
       <version>1.3.11</version>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
       <version>2.0.17</version>
-    </dependency>      
+    </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>xmpbox</artifactId>
       <version>2.0.17</version>
-    </dependency>    
-    
+    </dependency>
+
     <!-- GDMatrix jars -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -151,7 +151,7 @@
           <artifactId>commons-collections</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>     
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-security-ri</artifactId>
@@ -162,91 +162,91 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-dic-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-classif-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-kernel-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-doc-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-cases-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-cms-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-feed-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-agenda-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-edu-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-elections-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-forum-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-job-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
-    </dependency>    
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-news-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-policy-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-presence-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -272,51 +272,51 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-search-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-sign-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-signature-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-sql-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-survey-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-translation-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-workflow-ri</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-audifilm</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>      
+      <scope>runtime</scope>
     </dependency>
-                       
+
     <!-- Other utility libraries -->
     <dependency>
       <groupId>org.mnode.ical4j</groupId>
@@ -351,9 +351,9 @@
     <dependency>
       <groupId>com.google.zxing</groupId>
       <artifactId>core</artifactId>
-      <version>3.2.1</version>  
+      <version>3.2.1</version>
     </dependency>
-    
+
     <!-- Transient dependencies declared direct to avoid conflicts -->
     <dependency>
       <groupId>commons-logging</groupId>
@@ -393,10 +393,10 @@
         <directory>${basedir}/src/main/resources</directory>
       </resource>
       <resource>
-        <directory>${project.build.directory}/generated-resources</directory>     
+        <directory>${project.build.directory}/generated-resources</directory>
       </resource>
     </resources>
-        
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -408,7 +408,7 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -426,10 +426,10 @@
               <includeClassifiers>resources</includeClassifiers>
               <excludeTransitive>true</excludeTransitive>
             </configuration>
-          </execution>                         
+          </execution>
         </executions>
-      </plugin>  
-               
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -438,11 +438,11 @@
           <useCache>true</useCache>
           <attachClasses>true</attachClasses>
         </configuration>
-      </plugin>                                                        
-    
+      </plugin>
+
     </plugins>
   </build>
-  
+
   <profiles>
     <profile>
       <id>gen-binaries</id>
@@ -450,14 +450,14 @@
         <dependency>
           <groupId>${project.groupId}</groupId>
           <artifactId>gdmatrix-elections</artifactId>
-          <version>${project.version}</version>  
+          <version>${project.version}</version>
           <exclusions>
             <exclusion>
               <groupId>*</groupId>
               <artifactId>*</artifactId>
             </exclusion>
-          </exclusions>           
-        </dependency>    
+          </exclusions>
+        </dependency>
         <dependency>
           <groupId>${project.groupId}</groupId>
           <artifactId>gdmatrix-ide</artifactId>
@@ -467,8 +467,8 @@
               <groupId>*</groupId>
               <artifactId>*</artifactId>
             </exclusion>
-          </exclusions>             
-        </dependency> 
+          </exclusions>
+        </dependency>
         <dependency>
           <groupId>${project.groupId}</groupId>
           <artifactId>gdmatrix-client</artifactId>
@@ -478,12 +478,12 @@
               <groupId>*</groupId>
               <artifactId>*</artifactId>
             </exclusion>
-          </exclusions>             
-        </dependency>                
+          </exclusions>
+        </dependency>
       </dependencies>
-      
+
       <build>
-        <plugins>      
+        <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>
@@ -497,18 +497,18 @@
                 </goals>
                 <configuration>
                   <outputDirectory>${project.build.directory}/gdmatrix-web-${project.version}/apps</outputDirectory>
-                  <resources>          
+                  <resources>
                     <resource>
                       <directory>${project.parent.basedir}/gdmatrix-client/target</directory>
                       <includes>
                         <include>GDMatrixClient*.*</include>
                       </includes>
                       <filtering>false</filtering>
-                    </resource>                  
-                  </resources>              
-                </configuration>            
+                    </resource>
+                  </resources>
+                </configuration>
               </execution>
-              <execution>  
+              <execution>
                 <id>copy-elections-resources</id>
                 <phase>generate-resources</phase>
                 <goals>
@@ -516,18 +516,18 @@
                 </goals>
                 <configuration>
                   <outputDirectory>${project.build.directory}/gdmatrix-web-${project.version}/apps</outputDirectory>
-                  <resources>          
+                  <resources>
                     <resource>
                       <directory>${project.parent.basedir}/gdmatrix-elections/target</directory>
                       <includes>
                         <include>gdmatrix-elections.jar</include>
                       </includes>
                       <filtering>false</filtering>
-                    </resource>                    
-                  </resources>              
-                </configuration>            
-              </execution>  
-              <execution>  
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+              <execution>
                 <id>copy-ide-resources</id>
                 <phase>generate-resources</phase>
                 <goals>
@@ -535,20 +535,36 @@
                 </goals>
                 <configuration>
                   <outputDirectory>${project.build.directory}/gdmatrix-web-${project.version}/apps</outputDirectory>
-                  <resources>          
+                  <resources>
                     <resource>
                       <directory>${project.parent.basedir}/gdmatrix-ide/target</directory>
                       <includes>
                         <include>gdmatrix-ide.jar</include>
                       </includes>
                       <filtering>false</filtering>
-                    </resource>                
-                  </resources>              
-                </configuration>            
-              </execution>                                          
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-licenses</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/${project.build.finalName}/licenses</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${basedir}/../legal</directory>
+                      <filtering>true</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
             </executions>
-          </plugin>  
-                  
+          </plugin>
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-war-plugin</artifactId>
@@ -562,7 +578,27 @@
                 WEB-INF/lib/gdmatrix-client-*.jar
               </packagingExcludes>
             </configuration>
-          </plugin>                      
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>2.0.0</version>
+            <configuration>
+              <licensesOutputDirectory>${project.build.directory}/${project.build.finalName}/licenses/other</licensesOutputDirectory>
+              <licensesOutputFile>${project.build.directory}/${project.build.finalName}/licenses/other/licenses.xml</licensesOutputFile>
+              <errorRemedy>ignore</errorRemedy>
+            </configuration>
+            <executions>
+              <execution>
+                <id>download-licenses</id>
+                <goals>
+                  <goal>download-licenses</goal>
+                </goals>
+                <phase>generate-resources</phase>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
