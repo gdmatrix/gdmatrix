@@ -116,7 +116,8 @@
               </h:outputLink>
 
               <h:outputText value="#{caseDocumentsBean.documentTitle}"
-                rendered="#{row.document.content == null}" />
+                rendered="#{row.document.content != null and row.document.content.contentId == null}"
+                style="margin-left:2px" />
             </t:column>
 
             <t:column style="width:15%;text-align:center" headerstyleClass="header">
