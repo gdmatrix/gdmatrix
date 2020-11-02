@@ -94,7 +94,8 @@ public class ReportBean extends ObjectBean implements Serializable
   @CMSProperty
   public static final String FOOTER_DOCID_PROPERTY = "footer.docId";
   @CMSProperty
-  public static final String SPREAD_REQUEST_PARAMETERS_PROPERTY = "spreadRequestParameters"; 
+  public static final String SPREAD_REQUEST_PARAMETERS_PROPERTY = 
+    "spreadRequestParameters"; 
   @CMSProperty
   public static final String RENDER_BUTTON_PROPERTY = "renderExecuteButton";  
   @CMSProperty
@@ -175,7 +176,8 @@ public class ReportBean extends ObjectBean implements Serializable
   {
     String url = null;
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getMenuModel().getSelectedMenuItem();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
     String docId = cursor.getProperty(HEADER_DOCID_PROPERTY);
     if (docId != null)
     {
@@ -188,7 +190,8 @@ public class ReportBean extends ObjectBean implements Serializable
   {
     String url = null;
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getMenuModel().getSelectedMenuItem();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
     String docId = cursor.getProperty(FOOTER_DOCID_PROPERTY);
     if (docId != null)
     {
@@ -221,7 +224,8 @@ public class ReportBean extends ObjectBean implements Serializable
   public String getOutputFormat()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getMenuModel().getSelectedMenuItem();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
     String outputFormat = cursor.getProperty(OUTPUT_FORMAT_PROPERTY);
     return outputFormat == null ? "html" : outputFormat;
   }
@@ -229,14 +233,16 @@ public class ReportBean extends ObjectBean implements Serializable
   public boolean isShowInIFrame()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getMenuModel().getSelectedMenuItem();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
     return "true".equals(cursor.getProperty(SHOW_IN_IFRAME_PROPERTY));
   }
 
   public String getPrintReportName()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getMenuModel().getSelectedMenuItem();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
     String printReportName = cursor.getProperty(PRINT_REPORT_NAME_PROPERTY);
     if (printReportName == null)
     {
@@ -263,14 +269,16 @@ public class ReportBean extends ObjectBean implements Serializable
   public String getPrintButtonLabel()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getMenuModel().getSelectedMenuItem();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
     return cursor.getProperty(PRINT_BUTTON_LABEL_PROPERTY);
   }
   
   public boolean isPrintButtonRendered()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getMenuModel().getSelectedMenuItem();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
     return "true".equals(cursor.getProperty(PRINT_BUTTON_RENDERED_PROPERTY));
   }
   
@@ -294,6 +302,7 @@ public class ReportBean extends ObjectBean implements Serializable
         String reportName = getReportName();
         if (reportName == null) throw new Exception("UNDEFINED_REPORT_NAME");
         parameters = getReportDefaultParameters(reportName);
+        putNodeParameters(parameters);        
         putRequestParameters(parameters);
       }
       catch (Exception ex)
@@ -414,10 +423,11 @@ public class ReportBean extends ObjectBean implements Serializable
         
         for (String spParam : spreadParameters)
         {
+          //avoid override of internal params
           if (!spParam.equalsIgnoreCase("username")
            && !spParam.equalsIgnoreCase("CIF")
-           && !spParam.equalsIgnoreCase("NIF"))  //avoid override of internal params
-          {
+           && !spParam.equalsIgnoreCase("NIF")) 
+          { 
             String value = cursor.getProperty("parameter_" + spParam);
             if (value == null)
             {
@@ -470,6 +480,22 @@ public class ReportBean extends ObjectBean implements Serializable
         parameters.put(paramName, paramValue);
     }    
   }  
+  
+  private void putNodeParameters(Map parameters)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();    
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
+    for (Object key : cursor.getProperties().keySet())
+    {
+      String propName = String.valueOf(key);
+      if (propName.startsWith("parameter_") && !propName.endsWith("$"))
+      {
+        String propValue = cursor.getProperty(propName);       
+        parameters.put(propName.substring(10), propValue);
+      }
+    }
+  }
   
   private String getFormName()
   {
