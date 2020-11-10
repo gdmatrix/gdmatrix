@@ -127,6 +127,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private String surname;
   private String NIF;
   private String CIF;
+  private Boolean representant;
   private String organizationName;
   private String email;
   private Set roles;
@@ -265,6 +266,16 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public void setCIF(String CIF)
   {
     this.CIF = CIF;
+  }
+
+  public Boolean isRepresentant()
+  {
+    return representant;
+  }
+
+  public void setRepresentant(Boolean representant)
+  {
+    this.representant = representant;
   }
 
   public String getOrganizationName()
@@ -1464,6 +1475,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     surname = user.getSurname();
     NIF = user.getNIF();
     CIF = user.getCIF();
+    representant = user.isRepresentant();
     organizationName = user.getOrganizationName();
     email = user.getEmail();
     roles = user.getRoles();
@@ -1509,6 +1521,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     out.writeObject(surname);
     out.writeObject(NIF);
     out.writeObject(CIF);
+    out.writeObject(representant);
     out.writeObject(organizationName);
     out.writeObject(email);
     out.writeObject(roles);
@@ -1535,6 +1548,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     surname = (String)in.readObject();
     NIF = (String)in.readObject();
     CIF = (String)in.readObject();
+    representant = (Boolean)in.readObject();
     organizationName = (String)in.readObject();
     email = (String)in.readObject();
     roles = (Set)in.readObject();

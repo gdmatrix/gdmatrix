@@ -408,6 +408,7 @@ public class SecurityManager implements SecurityManagerPort
       String CIF = null;
       String organizationName = null;
       String email = null;
+      boolean representant = false;
 
       if (validateCertificate) // use Certificate validation service
       {
@@ -419,9 +420,15 @@ public class SecurityManager implements SecurityManagerPort
         if (!valid) throw new Exception("INVALID_CERTIFICATE");
 
         NIF = (String)attributes.get(SecurityProvider.NIF);
-        displayName = (String)attributes.get(SecurityProvider.COMMON_NAME);
-        CIF = extractCIF(displayName);
-
+        CIF = (String)attributes.get(SecurityProvider.CIF);
+        
+        displayName = (String)attributes.get(SecurityProvider.COMMON_NAME); 
+        if (CIF != null)
+        {
+          String rep = extractRepresentant(displayName);  
+          representant = rep != null && CIF.equalsIgnoreCase(rep);
+        }
+        
         if (NIF != null)
         {
           userId = SecurityConstants.AUTH_USER_PREFIX + NIF;
@@ -466,6 +473,7 @@ public class SecurityManager implements SecurityManagerPort
       user.setSurname(surname);
       user.setNIF(NIF);
       user.setCIF(CIF);
+      user.setRepresentant(representant);
       user.setOrganizationName(organizationName);
       user.setEmail(email);
     }
@@ -1375,7 +1383,7 @@ public class SecurityManager implements SecurityManagerPort
     return connector;
   }
   
-  private String extractCIF(String displayName)
+  private String extractRepresentant(String displayName)
   {
     String cif = null;
     if (displayName != null)

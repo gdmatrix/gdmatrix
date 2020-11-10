@@ -40,7 +40,7 @@ import org.matrix.report.ParameterDefinition;
 import org.matrix.report.Report;
 import org.matrix.report.ReportManagerPort;
 import org.santfeliu.dic.util.DictionaryUtils;
-import static org.santfeliu.report.web.ReportBean.CONNECTION_NAME_PROPERTY;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.report.web.ReportConfigBean;
 import org.santfeliu.report.web.ReportServlet;
 import org.santfeliu.security.util.Credentials;
@@ -58,12 +58,13 @@ public class ReportDetailPanel extends DetailPanel
 {
   public static final String SHOW_IN_IFRAME_PROPERTY = "showInIFrame";  
   public static final String REPORT_NAME_PROPERTY = "reportName";
-//  public static final String OUTPUT_FORMAT_PROPERTY = "outputFormat";
   public static final String SPREAD_REQUEST_PARAMETERS_PROPERTY = "spreadRequestParameters"; 
   public static final String ALLOWED_TAGS_PROPERTY = "allowedHtmlTags";
+  private static final String STORED_PARAMS = "storedParams";
   
   private String url;
   private Case cas;
+  private Map parameters;  
   
 
   public String getUrl()
@@ -119,28 +120,7 @@ public class ReportDetailPanel extends DetailPanel
     try
     {
       StringBuilder buffer = new StringBuilder();
-      
-      String caseId = ((CaseDetailBean) detailBean).getCaseId(); 
-      buffer.append(buffer.length() == 0 ? "?" : "&");
-      buffer.append("caseId=").append(caseId);
-      
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      String NIF = userSessionBean.getNIF();
-      if (NIF != null)
-      {
-        buffer.append(buffer.length() == 0 ? "?" : "&");
-        buffer.append("NIF=").append(NIF);
-      }
-      String CIF = userSessionBean.getCIF();
-      if (CIF != null)
-      {
-        buffer.append(buffer.length() == 0 ? "?" : "&");
-        buffer.append("CIF=").append(CIF);
-      }
-      String username = userSessionBean.getUsername();
-      buffer.append(buffer.length() == 0 ? "?" : "&");
-      buffer.append("username=").append(URLEncoder.encode(username, "UTF-8"));
-      
+                
       for (Object e : getParameters().entrySet())
       {
         Map.Entry<String, String> entry = (Map.Entry<String, String>)e;
@@ -168,32 +148,9 @@ public class ReportDetailPanel extends DetailPanel
         }
       }
       
-      String connectionName = getProperty(CONNECTION_NAME_PROPERTY);
-      if (connectionName != null)
-      {
-        buffer.append(buffer.length() == 0 ? "?" : "&");
-        buffer.append(ReportServlet.CONNECTION_NAME_PARAMETER + "=");
-        buffer.append(connectionName);
-      }
-      
-      //spread url parameters
-      List<String> spreadParameters = getMultivaluedProperty(SPREAD_REQUEST_PARAMETERS_PROPERTY);
-      if (spreadParameters != null)
-      {
-        Map requestParams = getExternalContext().getRequestParameterMap();
-        for (String spParam : spreadParameters)
-        {
-          if (!spParam.equalsIgnoreCase("username")
-           && !spParam.equalsIgnoreCase("CIF")
-           && !spParam.equalsIgnoreCase("NIF"))  //avoid override of internal params
-          {
-            String value = (String) requestParams.get(spParam);
-            buffer.append(buffer.length() == 0 ? "?" : "&");
-            buffer.append(spParam).append("=");
-            buffer.append(value);          
-          }
-        }
-      }
+      String caseId = ((CaseDetailBean) detailBean).getCaseId(); 
+      buffer.append(buffer.length() == 0 ? "?" : "&");
+      buffer.append("caseId=").append(caseId);      
       
       return buffer.toString();
     }
@@ -207,14 +164,22 @@ public class ReportDetailPanel extends DetailPanel
   {
     try
     {
-      return getReportDefaultParameters(getReportName());
+      parameters = getReportDefaultParameters(getReportName());       
+      putRequestParameters(parameters);
+      putInjectedParameters(parameters);      
     }
     catch (Exception ex)
     {
       error(ex);
       return new HashMap();
     }
+    return parameters;
   }
+  
+  public void setParameters(Map parameters)
+  {
+    this.parameters = parameters;
+  }  
   
   private Map getReportDefaultParameters(String reportName) throws Exception
   {
@@ -234,5 +199,76 @@ public class ReportDetailPanel extends DetailPanel
   {
     return getProperty(REPORT_NAME_PROPERTY);
   }
+  
+  private void putInjectedParameters(Map parameters) 
+  {
+    //Injected from UserSessionBean 
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    
+    String NIF = userSessionBean.getNIF();
+    if (NIF != null)
+      parameters.put("NIF", NIF);
+    String CIF = userSessionBean.getCIF();
+    if (CIF != null)
+      parameters.put("CIF", CIF);
+    Boolean representant = userSessionBean.isRepresentant();
+    if (representant != null)
+      parameters.put("CIF_REPRESENTANT", String.valueOf(representant));
+    String username = userSessionBean.getUsername();
+    parameters.put("username", username);
+    
+    //Injected from CMS Node
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
+    
+    String connectionName = 
+      cursor.getProperty(ReportServlet.CONNECTION_NAME_PARAMETER );
+    if (connectionName != null)
+      parameters.put(ReportServlet.CONNECTION_NAME_PARAMETER , connectionName);          
+  }
+  
+  private void putRequestParameters(Map parameters)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+
+    //spread url parameters
+    List<String> spreadParameters = 
+      getMultivaluedProperty(SPREAD_REQUEST_PARAMETERS_PROPERTY);
+    if (spreadParameters != null)
+    {
+      Map requestParams = getExternalContext().getRequestParameterMap();
+
+      Map<String, String> storedParams = 
+        (Map<String, String>)userSessionBean.getAttribute(STORED_PARAMS);
+      if (storedParams == null)
+      {
+        storedParams = new HashMap<String, String>();
+        userSessionBean.setAttribute(STORED_PARAMS, storedParams);
+      }
+
+      for (String spParam : spreadParameters)
+      {
+        //avoid override of internal params
+        if (!spParam.equalsIgnoreCase("username")
+         && !spParam.equalsIgnoreCase("CIF")
+         && !spParam.equalsIgnoreCase("NIF")
+         && !spParam.equalsIgnoreCase("CIF_REPRESENTANT")) 
+        { 
+          String value = getProperty("parameter_" + spParam);
+          if (value == null)
+          {
+            value = (String)requestParams.get(spParam);
+            if (value == null)
+            {
+              value = storedParams.get(spParam);
+            }
+          }
+          parameters.put(spParam, value);
+          if (value != null)
+            storedParams.put(spParam, value);          
+        }    
+      }
+    }
+  }    
   
 }

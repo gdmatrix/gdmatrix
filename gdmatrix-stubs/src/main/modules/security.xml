@@ -50,6 +50,8 @@
       </property>
       <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
       </property>
+      <property name="representant" type="xs:boolean" minOccurs="0">
+      </property>      
     </entity>
 
     <entity name="Role">

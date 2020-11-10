@@ -60,6 +60,7 @@ public class User extends org.matrix.security.User implements Serializable
     surname = user.getSurname();
     nif = user.getNIF();
     cif = user.getCIF();
+    representant = user.isRepresentant();
     organizationName = user.getOrganizationName();
     email = user.getEmail();
     changeDateTime = user.getChangeDateTime();

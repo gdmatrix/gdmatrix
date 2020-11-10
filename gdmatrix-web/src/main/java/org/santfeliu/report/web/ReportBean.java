@@ -295,22 +295,20 @@ public class ReportBean extends ObjectBean implements Serializable
   
   public Map getParameters()
   {
-    if (parameters == null)
+    try
     {
-      try
-      {
-        String reportName = getReportName();
-        if (reportName == null) throw new Exception("UNDEFINED_REPORT_NAME");
-        parameters = getReportDefaultParameters(reportName);
-        putNodeParameters(parameters);        
-        putRequestParameters(parameters);
-      }
-      catch (Exception ex)
-      {
-        parameters = new HashMap();
-        error(ex);
-      }
+      String reportName = getReportName();
+      if (reportName == null) throw new Exception("UNDEFINED_REPORT_NAME");
+      parameters = getReportDefaultParameters(reportName);       
+      putRequestParameters(parameters);
+      putInjectedParameters(parameters);
     }
+    catch (Exception ex)
+    {
+      parameters = new HashMap();
+      error(ex);
+    }
+
     return parameters;
   }
   
@@ -368,22 +366,6 @@ public class ReportBean extends ObjectBean implements Serializable
     try
     {
       StringBuilder buffer = new StringBuilder();
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      String NIF = userSessionBean.getNIF();
-      if (NIF != null)
-      {
-        buffer.append(buffer.length() == 0 ? "?" : "&");
-        buffer.append("NIF=").append(NIF);
-      }
-      String CIF = userSessionBean.getCIF();
-      if (CIF != null)
-      {
-        buffer.append(buffer.length() == 0 ? "?" : "&");
-        buffer.append("CIF=").append(CIF);
-      }
-      String username = userSessionBean.getUsername();
-      buffer.append(buffer.length() == 0 ? "?" : "&");
-      buffer.append("username=").append(URLEncoder.encode(username, "UTF-8"));
 
       for (Object e : getParameters().entrySet())
       {
@@ -397,56 +379,7 @@ public class ReportBean extends ObjectBean implements Serializable
           buffer.append(URLEncoder.encode(value, "UTF-8"));
         }
       }
-      MenuItemCursor cursor = 
-        userSessionBean.getMenuModel().getSelectedMenuItem();
-      String connectionName = cursor.getProperty(CONNECTION_NAME_PROPERTY);
-      if (connectionName != null)
-      {
-        buffer.append(buffer.length() == 0 ? "?" : "&");
-        buffer.append(ReportServlet.CONNECTION_NAME_PARAMETER + "=");
-        buffer.append(connectionName);
-      }
-      
-      //spread url parameters
-      List<String> spreadParameters = 
-        cursor.getMultiValuedProperty(SPREAD_REQUEST_PARAMETERS_PROPERTY);
-      if (spreadParameters != null)
-      {
-        Map requestParams = getExternalContext().getRequestParameterMap();
-        Map<String, String> storedParams = 
-          (Map<String, String>)userSessionBean.getAttribute(STORED_PARAMS);
-        if (storedParams == null)
-        {
-          storedParams = new HashMap<String, String>();
-          userSessionBean.setAttribute(STORED_PARAMS, storedParams);
-        }
-        
-        for (String spParam : spreadParameters)
-        {
-          //avoid override of internal params
-          if (!spParam.equalsIgnoreCase("username")
-           && !spParam.equalsIgnoreCase("CIF")
-           && !spParam.equalsIgnoreCase("NIF")) 
-          { 
-            String value = cursor.getProperty("parameter_" + spParam);
-            if (value == null)
-            {
-              value = (String)requestParams.get(spParam);
-              if (value == null)
-              {
-                value = storedParams.get(spParam);
-              }
-            }
-            if (value != null)
-            {
-              storedParams.put(spParam, value);
-              buffer.append(buffer.length() == 0 ? "?" : "&");
-              buffer.append(spParam).append("=");
-              buffer.append(value);
-            }
-          }
-        }
-      }
+          
       System.out.println("REPORT URL>>>> " + buffer.toString());
       return buffer.toString();
     }
@@ -470,33 +403,79 @@ public class ReportBean extends ObjectBean implements Serializable
     return defaultParams;
   }
   
-  private void putRequestParameters(Map parameters)
+  private void putInjectedParameters(Map parameters) 
   {
-    Map requestParameters = getExternalContext().getRequestParameterMap();        
-    for (Object paramName : parameters.keySet())
-    {
-      String paramValue = (String) requestParameters.get(paramName);
-      if (paramValue != null)
-        parameters.put(paramName, paramValue);
-    }    
-  }  
-  
-  private void putNodeParameters(Map parameters)
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();    
+    //Injected from UserSessionBean 
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    
+    String NIF = userSessionBean.getNIF();
+    if (NIF != null)
+      parameters.put("NIF", NIF);
+    String CIF = userSessionBean.getCIF();
+    if (CIF != null)
+      parameters.put("CIF", CIF);
+    Boolean representant = userSessionBean.isRepresentant();
+    if (representant != null)
+      parameters.put("CIF_REPRESENTANT", String.valueOf(representant));
+    String username = userSessionBean.getUsername();
+    parameters.put("username", username);
+    
+    //Injected from CMS Node
     MenuItemCursor cursor = 
       userSessionBean.getMenuModel().getSelectedMenuItem();
-    for (Object key : cursor.getProperties().keySet())
-    {
-      String propName = String.valueOf(key);
-      if (propName.startsWith("parameter_") && !propName.endsWith("$"))
-      {
-        String propValue = cursor.getProperty(propName);       
-        parameters.put(propName.substring(10), propValue);
-      }
-    }
+    
+    String connectionName = 
+      cursor.getProperty(ReportServlet.CONNECTION_NAME_PARAMETER );
+    if (connectionName != null)
+      parameters.put(ReportServlet.CONNECTION_NAME_PARAMETER , connectionName);          
   }
   
+  private void putRequestParameters(Map parameters)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem(); 
+
+    //spread url parameters
+    List<String> spreadParameters = 
+      cursor.getMultiValuedProperty(SPREAD_REQUEST_PARAMETERS_PROPERTY);
+    if (spreadParameters != null)
+    {
+      Map requestParams = getExternalContext().getRequestParameterMap();
+
+      Map<String, String> storedParams = 
+        (Map<String, String>)userSessionBean.getAttribute(STORED_PARAMS);
+      if (storedParams == null)
+      {
+        storedParams = new HashMap<String, String>();
+        userSessionBean.setAttribute(STORED_PARAMS, storedParams);
+      }
+
+      for (String spParam : spreadParameters)
+      {
+        //avoid override of internal params
+        if (!spParam.equalsIgnoreCase("username")
+         && !spParam.equalsIgnoreCase("CIF")
+         && !spParam.equalsIgnoreCase("NIF")
+         && !spParam.equalsIgnoreCase("CIF_REPRESENTANT")) 
+        { 
+          String value = cursor.getProperty("parameter_" + spParam);
+          if (value == null)
+          {
+            value = (String)requestParams.get(spParam);
+            if (value == null)
+            {
+              value = storedParams.get(spParam);
+            }
+          }
+          parameters.put(spParam, value);
+          if (value != null)
+            storedParams.put(spParam, value);          
+        }    
+      }
+    }
+  }  
+    
   private String getFormName()
   {
     MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
