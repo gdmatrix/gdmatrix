@@ -63,7 +63,8 @@
       <query>
         SELECT DISTINCT n.newId,n.headline,n.summary,n.registerDate,
           n.registerTime,n.startDate,n.startTime,n.endDate,
-          n.endTime,n.strDraft,n.source,n.userId,n.keywords,n.customUrl
+          n.endTime,n.strDraft,n.source,n.userId,n.keywords,n.customUrl,
+          n.customUrlTarget
         FROM New n LEFT JOIN n.newSections ns 
         WHERE          
           (
@@ -338,7 +339,7 @@
           n.newId,n.headline,n.summary,n.registerDate,
           n.registerTime,n.startDate,n.startTime,n.endDate,
           n.endTime,n.strDraft,ns.sectionId,ns.priority,
-          ns.readingCount,n.keywords,ns.strSticky,n.customUrl
+          ns.readingCount,n.keywords,ns.strSticky,n.customUrl,n.customUrlTarget
         FROM New n LEFT JOIN n.newSections ns 
         WHERE 
           (
@@ -470,6 +471,9 @@
         </basic>
         <basic name="customUrl">
           <column name="CUSTOMURL" />
+        </basic>
+        <basic name="customUrlTarget">
+          <column name="CUSTOMURLTARGET" />
         </basic>
         <one-to-many name="newSections" mapped-by="nsNew" />
         <one-to-many name="newDocuments" mapped-by="ndNew" />

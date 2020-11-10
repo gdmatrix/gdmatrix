@@ -159,14 +159,18 @@
                          rendered="#{newSearchBean.editMode}"
                          translator="#{userSessionBean.translator}"
                          translationGroup="#{newSearchBean.translationGroup}" />            
-          <h:outputLink id="headlineLink" styleClass="headlineLink"
+          <sf:outputLink id="headlineLink" styleClass="headlineLink"
                         value="#{newSearchBean.newLink}"
-                        rendered="#{!newSearchBean.editMode}">
+                        rendered="#{!newSearchBean.editMode}"
+                        target="#{newSearchBean.newLinkTarget}"
+                        ariaLabel="#{newSearchBean.newAriaLabel}"
+                        translator="#{userSessionBean.translator}"
+                        translationGroup="#{newSearchBean.translationGroup}">
             <sf:outputText value="#{newSearchBean.newHeadline}" 
                            styleClass="headlineText"
                            translator="#{userSessionBean.translator}"
                            translationGroup="#{newSearchBean.translationGroup}" />
-          </h:outputLink>
+          </sf:outputLink>
         </t:column>
         <t:column style="width:10%" styleClass="actionsColumn"
                   rendered="#{newSearchBean.editMode}">

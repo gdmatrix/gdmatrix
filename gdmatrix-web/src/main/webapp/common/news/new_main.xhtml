@@ -65,9 +65,17 @@
         <h:outputText id="customUrlLabel" value="#{newsBundle.new_main_customUrl}:"
                       styleClass="textBox" style="width:16%"/>
         <h:inputText id="customUrlInput" value="#{newMainBean.newObject.customUrl}"
-                     size="70"
+                     style="width:60%"
                      onkeypress="checkMaxLength(this, #{newMainBean.propertySize.customUrl})"
                      styleClass="inputBox"/>
+        <t:div style="display:inline-block;margin-left:4px">
+          <h:selectBooleanCheckbox id="customUrlTargetBlankInput"
+                                   value="#{newMainBean.customUrlTargetBlank}"
+                                   styleClass="textBox" />
+          <h:outputText id="customUrlTargetBlankLabel"
+                        value="#{newsBundle.new_main_customUrlTargetBlank}"
+                        styleClass="textBox"/>
+        </t:div>
       </t:div>
       <t:div>
         <h:outputText id="userLabel" value="#{newsBundle.new_main_user}:"

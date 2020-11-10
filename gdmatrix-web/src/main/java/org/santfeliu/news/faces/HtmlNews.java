@@ -673,17 +673,20 @@ public class HtmlNews extends UIComponentBase
     
     String headline = newView.getHeadline();
     String url;
+    String urlTarget = null;
     if (isCustomUrlHeadline(newView))
     {
       int idx = headline.lastIndexOf(getUrlSeparator());
       url = headline.substring(idx + getUrlSeparator().length());
       headline = headline.substring(0, idx);
+      urlTarget = newView.getCustomUrlTarget();      
     }
     else
     {
       if (newView.getCustomUrl() != null)
       {
         url = newView.getCustomUrl();
+        urlTarget = newView.getCustomUrlTarget();
       }
       else
       {
@@ -695,9 +698,18 @@ public class HtmlNews extends UIComponentBase
     {
       writer.startElement("a", this);
       writer.writeAttribute("href", url, null);
+      if (urlTarget != null) writer.writeAttribute("target", urlTarget, null);
       if (headline != null)
       {
         String text = translateText(headline, translator, null);
+        if ("_blank".equals(urlTarget))
+        {
+          String openNewWindowLabel = 
+            MatrixConfig.getProperty("org.santfeliu.web.OpenNewWindowLabel");        
+          String translatedLabel = 
+            translateText(openNewWindowLabel, translator, null);
+          text = text + " (" + translatedLabel + ")";
+        }
         writer.writeAttribute("aria-label", text, null);
       }
     }

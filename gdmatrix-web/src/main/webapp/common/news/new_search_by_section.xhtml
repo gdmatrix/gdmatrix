@@ -165,15 +165,19 @@
                          columnClasses="hlineColFull"
                          rendered="#{newSearchBySectionBean.rootOnlyHeadlineRender}"
                          style="width:100%;text-align:left">
-              <h:outputLink value="#{newSearchBySectionBean.newLink}"
+              <sf:outputLink value="#{newSearchBySectionBean.newLink}"
                             styleClass="headlineLink"
+                            target="#{newSearchBySectionBean.newLinkTarget}"
+                            ariaLabel="#{newSearchBySectionBean.newAriaLabel}"
+                            translator="#{userSessionBean.translator}"
+                            translationGroup="#{newSearchBySectionBean.translationGroup}"
                             id="headlineLink">
                 <sf:outputText id="headlineText" 
                                value="#{newSearchBySectionBean.newHeadline}"
                                styleClass="headlineText"
                                translator="#{userSessionBean.translator}"
                                translationGroup="#{newSearchBySectionBean.translationGroup}" />
-              </h:outputLink>
+              </sf:outputLink>
             </h:panelGrid>
             <h:panelGrid columns="2" id="rootNewRow1_dh" styleClass="topPanel"
                          columnClasses="dateCol,hlineCol"
@@ -181,15 +185,19 @@
                          style="width:100%;text-align:left">
               <h:outputText id="newDate_dh" styleClass="newDate"
                             value="#{newSearchBySectionBean.newDate}"/>
-              <h:outputLink value="#{newSearchBySectionBean.newLink}"
+              <sf:outputLink value="#{newSearchBySectionBean.newLink}"
                             styleClass="headlineLink"
+                            target="#{newSearchBySectionBean.newLinkTarget}"
+                            ariaLabel="#{newSearchBySectionBean.newAriaLabel}"
+                            translator="#{userSessionBean.translator}"
+                            translationGroup="#{newSearchBySectionBean.translationGroup}"                            
                             id="headlineLink_dh">
                 <sf:outputText id="headlineText_dh" 
                                value="#{newSearchBySectionBean.newHeadline}"
                                styleClass="headlineText"
                                translator="#{userSessionBean.translator}"
                                translationGroup="#{newSearchBySectionBean.translationGroup}" />
-              </h:outputLink>
+              </sf:outputLink>
             </h:panelGrid>
             <h:panelGrid columns="1" id="rootNewRow2_i" styleClass="bottomPanel"
                          columnClasses="imgColFull"
@@ -387,8 +395,12 @@
                 </h:panelGrid>
                 <h:panelGrid columns="1"
                              style="width:100%">
-                  <h:outputLink value="#{newSearchBySectionBean.newLink}"
+                  <sf:outputLink value="#{newSearchBySectionBean.newLink}"
                                 styleClass="headlineLink"
+                                target="#{newSearchBySectionBean.newLinkTarget}"
+                                ariaLabel="#{newSearchBySectionBean.newAriaLabel}"
+                                translator="#{userSessionBean.translator}"
+                                translationGroup="#{newSearchBySectionBean.translationGroup}"                                
                                 id="sectionNewHeadlineLink"
                                 rendered="#{newSearchBySectionBean.childrenHeadlineRender}">
                     <sf:outputText id="sectionNewHeadlineText" 
@@ -396,7 +408,7 @@
                                    styleClass="headlineText"
                                    translator="#{userSessionBean.translator}"
                                    translationGroup="#{newSearchBySectionBean.translationGroup}" />
-                  </h:outputLink>
+                  </sf:outputLink>
                 </h:panelGrid>
                 <h:panelGrid columns="1" id="sectionNew_i"
                              styleClass="bottomPanel"

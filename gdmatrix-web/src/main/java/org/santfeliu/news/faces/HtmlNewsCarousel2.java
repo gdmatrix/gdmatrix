@@ -735,11 +735,22 @@ public class HtmlNewsCarousel2 extends UIComponentBase
       {
         trHeadline = translateText(headline, translator, null);
       }
-      String newURL = getNewURL(newView);
+      String newURL = getNewURL(newView);      
       if (newURL != null)
       {
         writer.startElement("a", this);
         writer.writeAttribute("href", newURL, null);        
+        String urlTarget = getNewURLTarget(newView);
+        if (urlTarget != null) writer.writeAttribute("target", urlTarget, null);
+        if ("_blank".equals(urlTarget))
+        {
+          String openNewWindowLabel = 
+            MatrixConfig.getProperty("org.santfeliu.web.OpenNewWindowLabel");
+          String translatedLabel = 
+            translateText(openNewWindowLabel, translator, null);
+          writer.writeAttribute("aria-label", trHeadline + " (" + 
+            translatedLabel + ")", null);
+        }
         writer.writeAttribute("title", trHeadline, null);
       }
       writer.startElement("img", this);
@@ -798,10 +809,24 @@ public class HtmlNewsCarousel2 extends UIComponentBase
       {
         writer.startElement("a", this);
         writer.writeAttribute("href", newURL, null);
+        String urlTarget = getNewURLTarget(newView);
+        if (urlTarget != null) writer.writeAttribute("target", urlTarget, null);        
         if (headline != null)
         {
           String trHeadline = translateText(headline, translator, null);
-          writer.writeAttribute("aria-label", trHeadline, null);
+          if ("_blank".equals(urlTarget))
+          {
+            String openNewWindowLabel = 
+              MatrixConfig.getProperty("org.santfeliu.web.OpenNewWindowLabel");
+            String translatedLabel = 
+              translateText(openNewWindowLabel, translator, null);
+            writer.writeAttribute("aria-label", trHeadline + " (" + 
+              translatedLabel + ")", null);
+          }
+          else
+          {
+            writer.writeAttribute("aria-label", trHeadline, null);
+          }
         }
       }
       
@@ -1010,6 +1035,15 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     }  
   }
   
+  private String getNewURLTarget(NewView newView)
+  {
+    if (isCustomUrlHeadline(newView) || newView.getCustomUrl() != null)
+    {
+      return newView.getCustomUrlTarget();
+    }
+    return null;
+  }
+
   public String getNewHeadline(NewView newView)
   {
     if (isCustomUrlHeadline(newView))

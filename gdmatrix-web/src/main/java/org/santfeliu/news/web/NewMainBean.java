@@ -66,6 +66,7 @@ public class NewMainBean extends TypifiedPageBean
   private boolean cleanHtmlInputText;
   private boolean editingSummary;
   private String htmlInputText;
+  private boolean customUrlTargetBlank;
 
   public NewMainBean()
   {
@@ -169,6 +170,16 @@ public class NewMainBean extends TypifiedPageBean
     this.editingSummary = editingSummary;
   }
 
+  public boolean isCustomUrlTargetBlank() 
+  {
+    return customUrlTargetBlank;
+  }
+
+  public void setCustomUrlTargetBlank(boolean customUrlTargetBlank) 
+  {
+    this.customUrlTargetBlank = customUrlTargetBlank;
+  }
+
   public String show()
   {
     try
@@ -229,6 +240,8 @@ public class NewMainBean extends TypifiedPageBean
           newObject = NewsConfigBean.getPort().loadNewFromCache(getObjectId());
           setStartDateTime(newObject.getStartDate() + newObject.getStartTime());
           setEndDateTime(newObject.getEndDate() + newObject.getEndTime());
+          setCustomUrlTargetBlank("_blank".equals(
+            newObject.getCustomUrlTarget()));
         }
         catch (Exception ex)
         {
@@ -278,6 +291,8 @@ public class NewMainBean extends TypifiedPageBean
       }
       newObject.setUserId(UserSessionBean.getCurrentInstance().getUsername());
       newObject.setCustomUrl(newObject.getCustomUrl().trim());
+      newObject.setCustomUrlTarget(isCustomUrlTargetBlank() ? "_blank" : null);
+      
       NewStoreOptions newStoreOptions = new NewStoreOptions();
       newStoreOptions.setCleanSummary(cleanSummary);
       newStoreOptions.setCleanText(cleanText);

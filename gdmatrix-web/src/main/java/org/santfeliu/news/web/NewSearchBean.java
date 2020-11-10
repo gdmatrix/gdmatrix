@@ -52,6 +52,7 @@ import org.santfeliu.cms.web.CMSConfigBean;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.news.client.NewsManagerClient;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
@@ -548,6 +549,21 @@ public class NewSearchBean extends BasicSearchBean
     }
   }
   
+  public String getNewLinkTarget()
+  {
+    NewView row = (NewView)getFacesContext().getExternalContext().
+      getRequestMap().get("row");
+    if ((isCustomUrlHeadline(row) || row.getCustomUrl() != null) && 
+      row.getCustomUrlTarget() != null)
+    {
+      return row.getCustomUrlTarget();
+    }
+    else
+    {
+      return "_self";
+    }
+  }
+  
   public String getNewHeadline()
   {
     NewView row = (NewView)getFacesContext().getExternalContext().
@@ -564,6 +580,17 @@ public class NewSearchBean extends BasicSearchBean
     }
   }
 
+  public String getNewAriaLabel()
+  {
+    if ("_blank".equals(getNewLinkTarget()))
+    {
+      String openNewWindowLabel = 
+        MatrixConfig.getProperty("org.santfeliu.web.OpenNewWindowLabel");
+      return getNewHeadline() + " (" + openNewWindowLabel + ")";
+    }
+    return null;
+  }
+  
   private Set<String> getEditableSections() throws Exception
   {
     Set<String> result = new HashSet<String>();

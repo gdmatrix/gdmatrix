@@ -200,6 +200,11 @@
           Adreça URL a la qual es redirigirà a l'usuari en fer clic a la notícia.
         </documentation>
       </property>
+      <property name="customUrlTarget" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Tipus d'enllaç a utilitzar a l'adreça URL externa.
+        </documentation>
+      </property>
     </entity>
 
     <entity name="NewSection">
@@ -478,6 +483,11 @@
           Adreça URL a la qual es redirigirà a l'usuari en fer clic a la notícia.
         </documentation>
       </property>
+      <property name="customUrlTarget" type="xs:string" minOccurs="0">
+        <documentation language="ca">
+          Tipus d'enllaç a utilitzar a l'adreça URL externa.
+        </documentation>
+      </property>      
     </struct>
 
     <struct name="NewsFilter">

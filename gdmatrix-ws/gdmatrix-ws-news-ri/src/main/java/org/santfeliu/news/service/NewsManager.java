@@ -262,6 +262,10 @@ public class NewsManager implements NewsManagerPort
         {
           n.setCustomUrl((String)newArray[13]);
         }
+        if (newArray[14] != null)
+        {
+          n.setCustomUrlTarget((String)newArray[14]);
+        }
         result.add(n);
       }
     }
@@ -305,6 +309,10 @@ public class NewsManager implements NewsManagerPort
         if (newArray[13] != null)
         {
           nv.setCustomUrl((String)newArray[13]);
+        }
+        if (newArray[14] != null)
+        {
+          nv.setCustomUrlTarget((String)newArray[14]);
         }
         result.add(nv);
       }
@@ -672,6 +680,10 @@ public class NewsManager implements NewsManagerPort
         if (newArray[15] != null)
         {
           nv.setCustomUrl((String)newArray[15]);
+        }
+        if (newArray[16] != null)
+        {
+          nv.setCustomUrlTarget((String)newArray[16]);
         }
         result.getNewView().add(nv);
         newIdString += nv.getNewId() + " ";

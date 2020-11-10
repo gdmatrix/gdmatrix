@@ -53,6 +53,7 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.news.client.NewsManagerClient;
 import org.santfeliu.util.HTMLCharTranslator;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.bean.CMSAction;
@@ -529,6 +530,21 @@ public class NewSearchBySectionBean extends BasicSearchBean
     }
   }
   
+  public String getNewLinkTarget()
+  {
+    NewView row = (NewView)getFacesContext().getExternalContext().
+      getRequestMap().get("row");
+    if ((isCustomUrlHeadline(row) || row.getCustomUrl() != null) && 
+      row.getCustomUrlTarget() != null)
+    {
+      return row.getCustomUrlTarget();
+    }
+    else
+    {
+      return "_self";
+    }
+  }
+  
   public String getNewHeadline()
   {
     NewView row = (NewView)getFacesContext().getExternalContext().
@@ -543,7 +559,18 @@ public class NewSearchBySectionBean extends BasicSearchBean
     {
       return row.getHeadline();
     }
-  }  
+  }
+
+  public String getNewAriaLabel()
+  {
+    if ("_blank".equals(getNewLinkTarget()))
+    {
+      String openNewWindowLabel = 
+        MatrixConfig.getProperty("org.santfeliu.web.OpenNewWindowLabel");
+      return getNewHeadline() + " (" + openNewWindowLabel + ")";
+    }
+    return null;
+  }
   
   @Override
   public String search()
