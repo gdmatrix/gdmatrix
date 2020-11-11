@@ -202,6 +202,23 @@ public class OrgTableBuilder
           }
         }
       }
+      filter = new CaseCaseFilter();
+      filter.setCaseId(llocTreball.getCaseId());
+      filter.setCaseCaseTypeId("sf:LlocTreballRegidor");
+      caseCaseViewList = port.findCaseCaseViews(filter);
+      for (CaseCaseView caseCaseView : caseCaseViewList)
+      {
+        if (isCurrent(caseCaseView))
+        {
+          Person person = getPersonFromCaseCase(caseCaseView, false);
+          if (person != null)
+          {
+            person.setType(PersonType.REGI);
+            person.setLlocTreball(llocTreball);
+            person.setBoss(llocTreball.isBoss());
+          }
+        }
+      }
     }
     
     //Manage substitutes and politicians
@@ -281,10 +298,18 @@ public class OrgTableBuilder
 
   private Person getPersonFromCaseCase(CaseCaseView caseCaseView)
   {
-    String treballadorCaseId = caseCaseView.getMainCase().getCaseId();
-    return personMap.get(treballadorCaseId);
+    return getPersonFromCaseCase(caseCaseView, true);
   }
 
+  private Person getPersonFromCaseCase(CaseCaseView caseCaseView, 
+    boolean personInMainCase)
+  {
+    String treballadorCaseId = (personInMainCase ? 
+      caseCaseView.getMainCase().getCaseId() : 
+      caseCaseView.getRelCase().getCaseId());
+    return personMap.get(treballadorCaseId);
+  }  
+  
   private boolean isCurrent(CaseCaseView caseCaseView)
   {
     return isCurrent(caseCaseView.getStartDate(), caseCaseView.getEndDate());
