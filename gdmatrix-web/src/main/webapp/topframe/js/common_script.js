@@ -90,13 +90,13 @@ function goMid(mid)
 {
   var action = document.forms[0].action;
   var index = action.indexOf('?');
-  if (index != -1) // no params
+  if (index != -1)
   {
     action = action.substring(0, index) + "?xmid=" + mid;
   }
   else
   {
-    action = action + "&xmid=" + mid;
+    action = action + "?xmid=" + mid;
   }
   document.forms[0].action = action;
   document.forms[0].submit();

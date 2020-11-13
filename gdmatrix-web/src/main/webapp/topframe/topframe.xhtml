@@ -53,7 +53,7 @@
       <c:if test="${userSessionBean.selectedMenuItem.properties.touchIconURL != null}">
         <link rel="apple-touch-icon" href="${userSessionBean.selectedMenuItem.properties.touchIconURL}" />
       </c:if>
-      <script type="text/javascript" src="${pageContext.request.contextPath}/topframe/js/common_script.js">
+      <script type="text/javascript" src="${pageContext.request.contextPath}/topframe/js/common_script.js?v=${applicationBean.resourcesVersion}">
         /* general script */
       </script>
     </h:head>
