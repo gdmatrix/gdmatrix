@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.script.ScriptClient;
 
 /**
@@ -51,7 +52,9 @@ public class JavascriptJob extends AbstractJob
       JobDataMap params = context.getJobDetail().getJobDataMap();
       String filename = (String)params.get("filename");
       
-      ScriptClient client = new ScriptClient();
+      String userId = MatrixConfig.getProperty("adminCredentials.userId");
+      String password = MatrixConfig.getProperty("adminCredentials.password");      
+      ScriptClient client = new ScriptClient(userId, password);
       client.put("logger", logger);
       for (String key : params.keySet())
       {
