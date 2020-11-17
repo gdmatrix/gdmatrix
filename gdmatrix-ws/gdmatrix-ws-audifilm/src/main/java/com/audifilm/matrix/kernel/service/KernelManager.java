@@ -1760,13 +1760,14 @@ public class KernelManager implements KernelManagerPort
         query.setParameter("countryId", cityPK.getCountryId());
         query.setParameter("provinceId", cityPK.getProvinceId());
         query.setParameter("cityId", cityPK.getCityId());
-        if (query.getSingleResult() == null)
+        String maxStreetId = (String) query.getSingleResult();
+        if (maxStreetId == null)
         {
           munivnum = 1;
         }
         else
         {
-          munivnum = ((Number)query.getSingleResult()).intValue() + 1;
+          munivnum = Integer.parseInt(maxStreetId) + 1;
         }
         DBCity dbCity = entityManager.find(DBCity.class, cityPK);
         dbCity.setMunivnum(munivnum);
