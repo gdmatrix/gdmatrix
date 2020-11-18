@@ -300,10 +300,10 @@ public abstract class LogFileLoaderTask extends ScriptableTask
       long workMs = 0;
       long startMs = System.currentTimeMillis();
       createStatements();
-      Iterator<FileResource> iter = fileSet.iterator();
+      Iterator iter = fileSet.iterator();
       while (iter.hasNext())
       {
-        File file = iter.next().getFile();
+        File file = ((FileResource)iter.next()).getFile();
         if (!isFileLoaded(file) && !isFileOpen(file) && !isLogFile(file) &&
           !fileLimitReached(fileCount, workMs))
         {

@@ -122,10 +122,10 @@ public class UploadDocumentsTask extends WSTask
     }
     else
     {
-      Iterator<FileResource> it = fileSet.iterator();
+      Iterator it = fileSet.iterator();
       while (it.hasNext())
       {
-        File file = it.next().getFile();
+        File file = ((FileResource)it.next()).getFile();
         setVariable(fileVar, file);
 
         log("Storing " + file.toString());        
