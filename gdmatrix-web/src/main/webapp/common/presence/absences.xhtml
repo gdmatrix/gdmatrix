@@ -122,7 +122,7 @@
           <f:converter converterId="IntervalConverter" />          
         </h:outputText>
       </p:column>    
-      <p:column sortBy="#{absencesBean.absenceStatusTitle}" styleClass="status_cell center" 
+      <p:column sortBy="#{absencesBean.absenceStatusTitle}-#{absenceView.absence.statusDetail}" styleClass="status_cell center" 
         style="width:22%" rendered="#{absencesBean.view == 'status'}" >
         <f:facet name="header">
           <h:outputText value="#{presenceBundle.status}" />
