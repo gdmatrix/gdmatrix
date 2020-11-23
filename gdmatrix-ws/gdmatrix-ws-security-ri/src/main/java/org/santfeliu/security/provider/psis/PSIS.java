@@ -42,10 +42,12 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.BindingProvider;
+import oasis.names.tc.dss._1_0.core.schema.Base64Data;
 import oasis.names.tc.dss._1_0.core.schema.DocumentHash;
 import oasis.names.tc.dss._1_0.core.schema.DocumentType;
 import oasis.names.tc.dss._1_0.core.schema.IncludeObject;
@@ -53,6 +55,7 @@ import oasis.names.tc.dss._1_0.core.schema.InlineXMLType;
 import oasis.names.tc.dss._1_0.core.schema.InputDocuments;
 import oasis.names.tc.dss._1_0.core.schema.KeySelector;
 import oasis.names.tc.dss._1_0.core.schema.OptionalInputs;
+import oasis.names.tc.dss._1_0.core.schema.Result;
 import oasis.names.tc.dss._1_0.core.schema.SignRequest;
 import oasis.names.tc.dss._1_0.core.schema.SignResponse;
 import oasis.names.tc.dss._1_0.core.schema.SignatureObjectType;
@@ -82,14 +85,16 @@ import org.w3c.dom.NodeList;
 
 /**
  *
- * @author unknown
+ * @author realor
+ * @author blanquepa
  */
 public class PSIS implements SecurityProvider
 {
-  private static int CONNECT_TIMEOUT = 30000; // 30 seconds
-  private static int READ_TIMEOUT = 300000; // 5 minutes
+  private static final int CONNECT_TIMEOUT = 30000; // 30 seconds
+  private static final int READ_TIMEOUT = 300000; // 5 minutes
   private static DigitalSignatureService service;
-  private static String serviceURL;
+  private static String dssServiceURL;
+  private static String dssPdfServiceURL;
   
   public static final String VALID_CERTIFICATE =
     "urn:oasis:names:tc:dss:1.0:profiles:XSS:resultminor:valid:certificate:Definitive";
@@ -103,11 +108,13 @@ public class PSIS implements SecurityProvider
     initService();
   }
 
+  @Override
   public String getName()
   {
     return "PSIS 1.0 - Agència Catalana de Certificació - www.catcert.net";
   }
 
+  @Override
   public boolean validateCertificate(byte[] certEncoded, Map attributes)
   {
     try
@@ -115,7 +122,8 @@ public class PSIS implements SecurityProvider
       SOAPport port = service.getDssPortSoap();
   
       Map requestContext = ((BindingProvider)port).getRequestContext();
-      requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL);
+      requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, 
+        dssServiceURL);
       requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
       requestContext.put("com.sun.xml.ws.request.timeout", READ_TIMEOUT);
   
@@ -232,6 +240,7 @@ public class PSIS implements SecurityProvider
     }
   }
 
+  @Override
   public boolean validateSignatureCMS(byte[] encoded, OutputStream out)
   {
     try
@@ -244,7 +253,7 @@ public class PSIS implements SecurityProvider
       String message = Template.create(template).merge(variables);
 
       HttpClient client = new HttpClient();
-      client.setURL(serviceURL);
+      client.setURL(dssServiceURL);
       client.setConnectTimeout(CONNECT_TIMEOUT);
       client.setReadTimeout(READ_TIMEOUT);
       client.doPost(message.getBytes());
@@ -274,13 +283,15 @@ public class PSIS implements SecurityProvider
     }
   }
 
+  @Override
   public boolean validateSignatureXML(Document signature, OutputStream out)
   {
     // TODO: not finished
     SOAPport port = service.getDssPortSoap();
 
     Map requestContext = ((BindingProvider)port).getRequestContext();
-    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL);
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, 
+      dssServiceURL);
     requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
     requestContext.put("com.sun.xml.ws.request.timeout", READ_TIMEOUT);
 
@@ -324,6 +335,52 @@ public class PSIS implements SecurityProvider
     return false;
   }
   
+  @Override
+  public boolean validateSignaturePDF(byte[] pdf, OutputStream out)
+  {
+    String docMimeType = "application/pdf";
+    
+    SOAPport port = service.getDssPortSoap();
+    
+    Map requestContext = ((BindingProvider)port).getRequestContext();
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, 
+      dssPdfServiceURL);
+    requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+    requestContext.put("com.sun.xml.ws.request.timeout", READ_TIMEOUT);
+    
+    VerifyRequest request = new VerifyRequest();
+    request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:DSS_PDF");
+    
+    InputDocuments inputDocuments = new InputDocuments();
+    Base64Data b64data = new Base64Data();
+    b64data.setValue(pdf);
+    b64data.setMimeType(docMimeType);
+    DocumentType document = new DocumentType();
+    document.setBase64Data(b64data);
+    inputDocuments.getDocumentOrTransformedDataOrDocumentHash().add(document);
+    request.setInputDocuments(inputDocuments);
+
+    VerifyResponse response = port.verify(request); 
+    Result result = response.getResult();
+       
+    if (result != null)
+    {
+      String resultMajor = result.getResultMajor();
+      String resultMinor = result.getResultMinor();
+
+      System.out.println("ResultMajor:" + resultMajor);
+      System.out.println("ResultMinor:" + resultMinor);
+    
+      if (out != null)
+        JAXB.marshal(response.getResult(), out);
+    
+      return resultMinor != null && resultMinor.contains(":valid:"); 
+    }
+    
+    return false;
+  } 
+   
+  @Override
   public byte[] createCMSTimeStamp(byte[] digest, 
     String digestMethod, byte[] certEncoded)
   {
@@ -332,7 +389,8 @@ public class PSIS implements SecurityProvider
       SOAPport port = service.getDssPortSoap();
   
       Map requestContext = ((BindingProvider)port).getRequestContext();
-      requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceURL);
+      requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, 
+        dssServiceURL);
       requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
       requestContext.put("com.sun.xml.ws.request.timeout", READ_TIMEOUT);
   
@@ -377,7 +435,8 @@ public class PSIS implements SecurityProvider
         new JAXBElement(new QName("http://www.w3.org/2000/09/xmldsig#", 
         "X509Data"), X509DataType.class, x509Data);
   
-      x509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName().add(x509Certificate);
+      x509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName()
+        .add(x509Certificate);
   
       ki.getContent().add(x509Data2);
   
@@ -411,6 +470,7 @@ public class PSIS implements SecurityProvider
     }
   }
   
+  @Override
   public Element createXMLTimeStamp(byte[] digest, 
     String digestMethod, byte[] certEncoded)
   {
@@ -432,7 +492,7 @@ public class PSIS implements SecurityProvider
       String message = Template.create(template).merge(variables);
 
       HttpClient client = new HttpClient();
-      client.setURL(serviceURL);
+      client.setURL(dssServiceURL);
       client.setConnectTimeout(CONNECT_TIMEOUT);
       client.setReadTimeout(READ_TIMEOUT);
       client.doPost(message.getBytes());
@@ -488,9 +548,12 @@ public class PSIS implements SecurityProvider
 
       System.out.println("PSIS WSDL: " + wsdlLocation);
       
-      serviceURL = MatrixConfig.getProperty(
+      dssServiceURL = MatrixConfig.getProperty(
         "org.santfeliu.security.provider.PSIS.serviceURL");
-      System.out.println("PSIS URL: " + serviceURL);
+      System.out.println("PSIS URL: " + dssServiceURL);
+      dssPdfServiceURL = MatrixConfig.getProperty(
+        "org.santfeliu.security.provider.PSIS.pdf.serviceURL");
+      System.out.println("PSIS PDF URL: " + dssPdfServiceURL);      
       
       QName qname = new QName("urn:oasis:names:tc:dss:1.0:core:wsdl", 
         "digitalSignatureService");
@@ -548,7 +611,7 @@ public class PSIS implements SecurityProvider
       "http://www.w3.org/2000/09/xmldsig#sha1", null);
     System.out.println(elem);
   }
-  
+    
   public static void main(String args[])
   {
     try

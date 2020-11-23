@@ -31,6 +31,7 @@
 package org.santfeliu.util.pdf.signature;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
@@ -43,7 +44,12 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.pdfbox.io.IOUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.santfeliu.security.SecurityProvider;
+import org.santfeliu.security.util.SecurityUtils;
 
 /**
  *
@@ -86,8 +92,9 @@ public abstract class PDFSigner
     this.tsaUrl = tsaUrl;
   }
   
-  protected String getAlias() throws KeyStoreException, NoSuchAlgorithmException, 
-    UnrecoverableKeyException, CertificateExpiredException, CertificateNotYetValidException
+  protected String getAlias() throws KeyStoreException, 
+    NoSuchAlgorithmException, UnrecoverableKeyException, 
+    CertificateExpiredException, CertificateNotYetValidException
   {
     Enumeration<String> aliases = this.keyStore.aliases();
     alias = null;
@@ -161,6 +168,22 @@ public abstract class PDFSigner
     doPreserve(is, os);
   }
   
+  public boolean validate(InputStream is, OutputStream os)
+  {
+    SecurityProvider securityProvider = SecurityUtils.getSecurityProvider();
+    byte[] pdf;
+    try
+    {
+      pdf = IOUtils.toByteArray(is);
+      return securityProvider.validateSignaturePDF(pdf, os);      
+    }
+    catch (IOException ex)
+    {
+      Logger.getLogger(PDFSigner.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return false;
+  }
+  
   protected abstract void doSign(InputStream is, OutputStream os, 
     SignatureLevel sigLevel, DigestAlgorithm digAlg, 
     EncryptionAlgorithm encAlg, SignatureInfo sigInfo, DocumentInfo docInfo) 
@@ -172,5 +195,5 @@ public abstract class PDFSigner
   protected abstract void doPreserve(InputStream is, OutputStream os)
     throws Exception;
 }
-
+    
 

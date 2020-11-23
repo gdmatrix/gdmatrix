@@ -297,6 +297,10 @@
     <param-value>http://psis.catcert.net/psis/catcert/dss</param-value>
   </context-param>
   <context-param>
+    <param-name>org.santfeliu.security.provider.PSIS.pdf.serviceURL</param-name>
+    <param-value>http://psis.catcert.net/psis/catcert/dsspdf</param-value>
+  </context-param>  
+  <context-param>
     <param-name>org.santfeliu.security.tspURL</param-name>
     <param-value>http://psis.catcert.net/psis/catcert/tsp</param-value>
   </context-param>

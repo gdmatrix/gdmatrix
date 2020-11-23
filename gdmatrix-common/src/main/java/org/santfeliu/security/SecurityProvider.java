@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public interface SecurityProvider
 {
@@ -73,6 +73,8 @@ public interface SecurityProvider
   public boolean validateSignatureCMS(byte[] cmsEncoded, OutputStream out);
   
   public boolean validateSignatureXML(Document signature, OutputStream out);
+  
+  public boolean validateSignaturePDF(byte[] pdf, OutputStream out);  
   
   public byte[] createCMSTimeStamp(byte[] digest, String digestMethod, byte[] certEncoded);
   
