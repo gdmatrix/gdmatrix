@@ -107,11 +107,12 @@ public class ReportBean extends ObjectBean implements Serializable
   
   private boolean reportRendered = false;
   private Map parameters;
+  private Map formValues;
 
   public ReportBean()
   {
   }
-
+  
   /* bean properties */
 
   public String getReportName()
@@ -292,23 +293,17 @@ public class ReportBean extends ObjectBean implements Serializable
     String readTimeout = getProperty(READ_TIMEOUT_PROPERTY);
     return readTimeout != null ? Integer.valueOf(readTimeout) : null;  
   }
-  
+
+  public Map getFormValues()
+  {
+    if (formValues == null)
+      formValues = getParameters();
+
+    return formValues;
+  }
+ 
   public Map getParameters()
   {
-    try
-    {
-      String reportName = getReportName();
-      if (reportName == null) throw new Exception("UNDEFINED_REPORT_NAME");
-      parameters = getReportDefaultParameters(reportName);       
-      putRequestParameters(parameters);
-      putInjectedParameters(parameters);
-    }
-    catch (Exception ex)
-    {
-      parameters = new HashMap();
-      error(ex);
-    }
-
     return parameters;
   }
   
@@ -316,6 +311,16 @@ public class ReportBean extends ObjectBean implements Serializable
   {
     this.parameters = parameters;
   }
+  
+  public void setParameters() throws Exception
+  {
+    String reportName = getReportName();
+    if (reportName == null) throw new Exception("UNDEFINED_REPORT_NAME");
+    parameters = getReportDefaultParameters(reportName);       
+    putRequestParameters(parameters);
+    putFormValues(parameters);
+    putUserParameters(parameters);    
+  }    
   
   /* actions */
   
@@ -341,15 +346,28 @@ public class ReportBean extends ObjectBean implements Serializable
   @CMSAction
   public String executeReport()
   {
-    MenuItemCursor menuItem = getSelectedMenuItem();
-    if (menuItem.getDirectProperty(ControllerBean.OBJECT_BEAN_PROPERTY) != null 
-      && menuItem.getDirectProperty(ControllerBean.PAGE_BEAN_PROPERTY) != null)
+    String outcome = null;
+    
+    try    
     {
-      return getControllerBean().showObject(
-        DictionaryConstants.REPORT_TYPE, getReportName());
+      setParameters();
+      
+      MenuItemCursor menuItem = getSelectedMenuItem();
+      if (menuItem.getDirectProperty(ControllerBean.OBJECT_BEAN_PROPERTY) != null 
+        && menuItem.getDirectProperty(ControllerBean.PAGE_BEAN_PROPERTY) != null)
+      {
+        outcome = getControllerBean().showObject(
+          DictionaryConstants.REPORT_TYPE, getReportName());
+      }
+      else
+        outcome = show();      
     }
-    else
-      return show();
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
+    return outcome;
   }
 
   /* private methods */
@@ -364,9 +382,9 @@ public class ReportBean extends ObjectBean implements Serializable
   private String getParametersString()
   {
     try
-    {
+    {      
       StringBuilder buffer = new StringBuilder();
-
+      
       for (Object e : getParameters().entrySet())
       {
         Map.Entry<String, String> entry = (Map.Entry<String, String>)e;
@@ -403,7 +421,7 @@ public class ReportBean extends ObjectBean implements Serializable
     return defaultParams;
   }
   
-  private void putInjectedParameters(Map parameters) 
+  private void putUserParameters(Map parameters) 
   {
     //Injected from UserSessionBean 
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -436,7 +454,7 @@ public class ReportBean extends ObjectBean implements Serializable
     MenuItemCursor cursor = 
       userSessionBean.getMenuModel().getSelectedMenuItem(); 
 
-    //spread url parameters
+    //spread request parameters
     List<String> spreadParameters = 
       cursor.getMultiValuedProperty(SPREAD_REQUEST_PARAMETERS_PROPERTY);
     if (spreadParameters != null)
@@ -453,28 +471,30 @@ public class ReportBean extends ObjectBean implements Serializable
 
       for (String spParam : spreadParameters)
       {
-        //avoid override of internal params
-        if (!spParam.equalsIgnoreCase("username")
-         && !spParam.equalsIgnoreCase("CIF")
-         && !spParam.equalsIgnoreCase("NIF")
-         && !spParam.equalsIgnoreCase("CIF_REPRESENTANT")) 
-        { 
-          String value = cursor.getProperty("parameter_" + spParam);
+        //1. Node parameter
+        String value = cursor.getProperty("parameter_" + spParam);
+        if (value == null)
+        {
+          //2. URL parameter
+          value = (String)requestParams.get(spParam);
           if (value == null)
           {
-            value = (String)requestParams.get(spParam);
-            if (value == null)
-            {
-              value = storedParams.get(spParam);
-            }
+            //3. In Session parameter
+            value = storedParams.get(spParam);
           }
-          parameters.put(spParam, value);
-          if (value != null)
-            storedParams.put(spParam, value);          
-        }    
+        }
+        parameters.put(spParam, value);
+        if (value != null)
+          storedParams.put(spParam, value);            
       }
     }
-  }  
+  } 
+  
+  private void putFormValues(Map parameters)
+  {
+    if (formValues != null)
+      parameters.putAll(formValues);       
+  }
     
   private String getFormName()
   {

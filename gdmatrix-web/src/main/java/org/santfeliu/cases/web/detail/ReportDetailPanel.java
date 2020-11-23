@@ -166,7 +166,7 @@ public class ReportDetailPanel extends DetailPanel
     {
       parameters = getReportDefaultParameters(getReportName());       
       putRequestParameters(parameters);
-      putInjectedParameters(parameters);      
+      putUserParameters(parameters);      
     }
     catch (Exception ex)
     {
@@ -200,7 +200,7 @@ public class ReportDetailPanel extends DetailPanel
     return getProperty(REPORT_NAME_PROPERTY);
   }
   
-  private void putInjectedParameters(Map parameters) 
+  private void putUserParameters(Map parameters) 
   {
     //Injected from UserSessionBean 
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -248,26 +248,19 @@ public class ReportDetailPanel extends DetailPanel
 
       for (String spParam : spreadParameters)
       {
-        //avoid override of internal params
-        if (!spParam.equalsIgnoreCase("username")
-         && !spParam.equalsIgnoreCase("CIF")
-         && !spParam.equalsIgnoreCase("NIF")
-         && !spParam.equalsIgnoreCase("CIF_REPRESENTANT")) 
-        { 
-          String value = getProperty("parameter_" + spParam);
+        String value = getProperty("parameter_" + spParam);
+        if (value == null)
+        {
+          value = (String)requestParams.get(spParam);
           if (value == null)
           {
-            value = (String)requestParams.get(spParam);
-            if (value == null)
-            {
-              value = storedParams.get(spParam);
-            }
+            value = storedParams.get(spParam);
           }
-          parameters.put(spParam, value);
-          if (value != null)
-            storedParams.put(spParam, value);          
-        }    
-      }
+        }
+        parameters.put(spParam, value);
+        if (value != null)
+          storedParams.put(spParam, value);          
+      }    
     }
   }    
   

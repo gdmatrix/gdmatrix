@@ -13,8 +13,8 @@
 
     <t:div rendered="#{reportBean.formRendered}" styleClass="filterPanel">
       <sf:customForm url="#{reportBean.formURL}"
-        values="#{reportBean.parameters}"
-        newValues="#{reportBean.parameters}"
+        values="#{reportBean.formValues}"
+        newValues="#{reportBean.formValues}"
         translator="#{userSessionBean.translator}"
         translationGroup="#{userSessionBean.translationGroup}" />
       <t:div styleClass="footer" rendered="#{reportBean.executeButtonRendered}">
