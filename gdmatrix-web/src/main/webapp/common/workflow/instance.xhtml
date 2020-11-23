@@ -44,7 +44,7 @@
               rendered="#{instanceBean.workflowAdmin or instanceBean.exitEnabled}"
               action="#{instanceBean.exitInstance}" immediate="true" 
               title="#{workflowBundle.exitLong}" 
-              ariaLabel="#{workflowBundle.exitLong}" />
+              ariaLabel="#{workflowBundle.exit}: #{workflowBundle.exitLong}" />
           </h:panelGroup>
         </t:div>
 
@@ -110,13 +110,13 @@
               styleClass="workflowCommandLink backward" onclick="showOverlay()"
               action="#{instanceBean.backward}" immediate="true"
               title="#{workflowBundle.previousLong}"
-              ariaLabel="#{workflowBundle.previousLong}" />
+              ariaLabel="#{workflowBundle.previous}: #{workflowBundle.previousLong}" />
             <sf:commandButton value="#{workflowBundle.next}" id="forward"
               rendered="#{instanceBean.formEnabled and instanceBean.forwardEnabled}"                           
               styleClass="workflowCommandLink forward" onclick="showOverlay()"
               action="#{instanceBean.forward}"
               title="#{workflowBundle.nextLong}"
-              ariaLabel="#{workflowBundle.nextLong}" />
+              ariaLabel="#{workflowBundle.next}: #{workflowBundle.nextLong}" />
           </h:panelGroup>
         </t:div>
       </t:div>

@@ -8,14 +8,14 @@
   <ui:composition template="/topframe/topframe.xhtml">
     <ui:define name="frame">  
 
-      <nav id="frame_nav_skipTop" aria-label="#{webBundle.skipToContent}">  
       <t:div id="templateSkipTop" forceId="true" styleClass="item skipDiv">
-        <h:outputLink value="#sf_main_content" rendered="#{userSessionBean.selectedMenuItem.properties.skipToContentIconURL != null}">
+        <h:outputLink value="#sf_main_content" 
+                      rendered="#{userSessionBean.selectedMenuItem.properties.skipToContentIconURL != null}"
+                      title="#{webBundle.skipToContent}">
           <t:graphicImage url="#{userSessionBean.selectedMenuItem.properties.skipToContentIconURL}"
                           alt="#{webBundle.skipToContent}" />          
         </h:outputLink>
       </t:div>
-      </nav>            
 
       <h:panelGrid id="generalLayout" 
                    columns="1"
@@ -157,16 +157,15 @@
         </script>
       </f:verbatim>
 
-      <nav id="frame_nav_skipBottom" aria-label="#{webBundle.skipToTop}">  
       <t:div id="templateSkipBottom" forceId="true" styleClass="skipDiv hide">
         <h:outputLink value="#"
                       onclick="skipToTop(); return false;"
+                      title="#{webBundle.skipToTop}"
                       rendered="#{userSessionBean.selectedMenuItem.properties.skipToTopIconURL != null}">
           <t:graphicImage url="#{userSessionBean.selectedMenuItem.properties.skipToTopIconURL}"
                           alt="#{webBundle.skipToTop}" />          
         </h:outputLink>
       </t:div>
-      </nav>            
 
       <f:verbatim>
         <script type="text/javascript">

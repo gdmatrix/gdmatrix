@@ -1058,6 +1058,8 @@ public class WidgetBean extends WebBean
     htmlWidget.setExternalTitle(widgetDef.getExternalTitle());
     htmlWidget.setAriaHidden(widgetDef.isAriaHidden());
     htmlWidget.setContentType(widgetDef.getContentType());
+    htmlWidget.setAriaDescription(widgetDef.getAriaDescription());
+    htmlWidget.setEditText(widgetDef.getEditText());
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     if (userSessionBean.isAdministrator())
     {

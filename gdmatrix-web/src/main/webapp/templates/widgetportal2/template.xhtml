@@ -36,7 +36,7 @@
                           title="#{webBundle.skipToContent}"
                           rendered="#{userSessionBean.selectedMenuItem.properties.skipToContentIconURL != null}">
               <t:graphicImage url="#{userSessionBean.selectedMenuItem.properties.skipToContentIconURL}"
-                              alt="#{webBundle.skipToContent}" />          
+                              alt="#{webBundle.skipToContent}" />
             </h:outputLink>
           </t:div>
 
@@ -418,7 +418,7 @@
           <t:div styleClass="centralArea">
             <sf:heading level="2" styleClass="element-invisible">
               <h:outputText value="#{webBundle.snMenu}" />
-            </sf:heading>                        
+            </sf:heading>
             <sf:treeMenu styleClass="snMenu" var="item"
                          baseMid="#{userSessionBean.selectedMenuItem.properties.snMenuMid}"
                          expandDepth="1" headingsRender="false" headingsBaseLevel="3">
@@ -472,8 +472,8 @@
               <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.mobileBrowserLabel}"
                              translator="#{userSessionBean.translator}"
                              translationGroup="#{userSessionBean.translationGroup}" />
-            </sf:outputLink>        
-          </t:div>
+            </sf:outputLink>
+          </t:div>  
 
           <t:div styleClass="rightArea">
             <sf:treeMenu styleClass="sideMenu" var="item"
@@ -499,7 +499,6 @@
         </footer>
       </t:div>
 
-      <nav id="wp2_nav_skipBottom" aria-label="#{webBundle.skipToTop}">  
       <t:div id="templateSkipBottom" forceId="true" styleClass="skipDiv hide">
         <h:outputLink value="#topframe_header"
                       title="#{webBundle.skipToTop}"
@@ -508,7 +507,6 @@
                           alt="#{webBundle.skipToTop}" />          
         </h:outputLink>
       </t:div>
-      </nav> 
       
       <script>
         

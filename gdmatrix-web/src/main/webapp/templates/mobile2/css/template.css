@@ -28,6 +28,12 @@
   background: url("/templates/mobile2/images/logo.png") no-repeat scroll left center rgba(0, 0, 0, 0);
 }
 */
+
+.mobile .topBar .logoDiv .logoLink
+{
+  background: none !important;
+}
+
 .mobile .topBar .showProfileLinkBg
 {
   position: absolute;
@@ -47,12 +53,16 @@
   width: 100%;
   height: 100%;  
   display: block;  
-  background: url("/templates/mobile2/images/profile_login.png") no-repeat scroll center center rgba(0, 0, 0, 0);  
+}
+
+.mobile .topBar .showProfileLink img
+{
+  margin-top: 4px; 
+  margin-left: 4px;
 }
 
 .mobile .topBar .showProfileLink.logged
 {
-  background: url("/templates/mobile2/images/profile_logout.png") no-repeat scroll center center rgba(0, 0, 0, 0);
 }
 
 .mobile .topBar .showSearchLink
@@ -60,13 +70,24 @@
   position: absolute;
   width: 40px;
   right: 0px;
-  background: url("/templates/mobile2/images/showsearch.png") no-repeat scroll center center rgba(0, 0, 0, 0);
   height: 100%;
 }
 
 .mobile .topBar .showSearchLink.selected
 {
   background-color: #DCDCDC;
+}
+
+.mobile .topBar .showSearchLink img
+{
+  margin-top: 4px;
+  margin-left: 4px;
+}
+
+.mobile .topBar a:hover img,
+.mobile .titleBar a:hover img
+{
+  opacity: 1;
 }
 
 .mobile .profileDiv
@@ -466,6 +487,15 @@
   left: 0;
 }
 
+.mobile .titleBar .moveUpDiv img,
+.mobile .titleBar .showChildrenMenuDiv img
+{
+  height: 20px;
+  width: 20px;
+  margin-top: 10px;
+  margin-left: 10px;  
+}
+
 .mobile .titleBar .showChildrenMenuDiv
 {
   right: 0;
@@ -491,21 +521,15 @@
 
 .mobile .titleBar .titleMenuLink#moveUpMenuLink
 {
-  background: url("/templates/mobile2/images/up.png") no-repeat scroll center center rgba(0, 0, 0, 0);
-  background-size: 20px;
 }
 
 .mobile .titleBar .showChildrenMenuDiv .showChildrenMenuLink
-{  
-  background: url("/templates/mobile2/images/unfold.png") no-repeat scroll center center rgba(0, 0, 0, 0);
-  background-size: 20px;
+{
   display: block;
 }
 
 .mobile .titleBar .showChildrenMenuDiv.open .showChildrenMenuLink
-{  
-  background: url("/templates/mobile2/images/fold.png") no-repeat scroll center center rgba(0, 0, 0, 0);
-  background-size: 20px;
+{
 }
 
 .mobile .titleBar.open
@@ -813,6 +837,50 @@
   margin-left: 2.5%;
   float: left;  
   vertical-align: top;
+}
+
+.widget .widget_edit
+{  
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  top: 0;
+  left: 0;  
+}
+
+.widget .widget_edit:hover,
+.button_widget .widget_edit:hover
+{
+  background: none !important;
+  border: 1px solid #888888;
+}
+  
+.widget .widget_edit .widget_edit_link,
+.button_widget .widget_edit .widget_edit_link
+{
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.widget .widget_edit .widget_edit_link img,
+.button_widget .widget_edit .widget_edit_link img
+{  
+  display: none;
+  margin-top: 2px;
+  margin-left: 2px;  
+}
+
+.widget .widget_edit:hover .widget_edit_link img,
+.button_widget .widget_edit:hover .widget_edit_link img
+{
+  display: block;
+}
+
+.widget_background,
+.button_widget_background
+{
+  position: relative;
 }
 
 /* Search nodes */

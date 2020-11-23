@@ -258,6 +258,11 @@ public class WidgetDefinition implements Serializable
     return getCursor().getProperty("externalTitle");
   }
   
+  public String getEditText()
+  {
+    return getCursor().getProperty("editText");
+  }  
+  
   public Boolean isAriaHidden()
   {
     String ariaHidden = getCursor().getProperty("ariaHidden");

@@ -41,9 +41,11 @@
       </h:panelGroup>
 
       <h:panelGroup styleClass="block2">
-        <h:outputText value="Workspace:" styleClass="workspace" />
-
-        <sf:commandMenu action="#{cmsToolbarBean.loadWorkspace}"
+        <h:outputLabel value="Workspace:" 
+                       styleClass="workspace" 
+                       for="workspaceSelect" />
+        <sf:commandMenu id="workspaceSelect"
+                        action="#{cmsToolbarBean.loadWorkspace}"
                         value="#{userSessionBean.workspaceId}"
                         styleClass="workspaceSelect">
           <f:selectItems value="#{cmsToolbarBean.workspaceItems}" />

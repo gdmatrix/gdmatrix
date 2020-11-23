@@ -171,6 +171,13 @@
             {
               document.getElementById('showChildrenMenuDiv').className='showChildrenMenuDiv open';
             }
+            if (document.getElementById('showChildrenMenuImg'))
+            {
+              document.getElementById('showChildrenMenuImg').src = 
+                "#{userSessionBean.selectedMenuItem.properties.hideChildrenIconURL != null ? 
+                  userSessionBean.selectedMenuItem.properties.hideChildrenIconURL : 
+                  '/templates/mobile2/images/fold.png'}";                      
+            }
             document.getElementById('titleBar').className='titleBar open';
             showChildrenMenu = true;
           }
@@ -194,7 +201,14 @@
             if (document.getElementById('showChildrenMenuDiv'))
             {
               document.getElementById('showChildrenMenuDiv').className='showChildrenMenuDiv';
-            }        
+            }
+            if (document.getElementById('showChildrenMenuImg'))
+            {
+              document.getElementById('showChildrenMenuImg').src = 
+                "#{userSessionBean.selectedMenuItem.properties.showChildrenIconURL != null ? 
+                  userSessionBean.selectedMenuItem.properties.showChildrenIconURL : 
+                  '/templates/mobile2/images/unfold.png'}";                      
+            }
             document.getElementById('titleBar').className='titleBar';
             showChildrenMenu = false;
           }
@@ -212,17 +226,34 @@
               title="#{userSessionBean.selectedMenuItem.properties['mobile2.pantoneTitle'] == null ?
                 'Inici' : userSessionBean.selectedMenuItem.properties['mobile2.pantoneTitle']}"
               translator="#{userSessionBean.translator}"
-              translationGroup="#{userSessionBean.translationGroup}">          
+              translationGroup="#{userSessionBean.translationGroup}"> 
+              <sf:graphicImage url="#{userSessionBean.selectedMenuItem.properties['logoURL.mobile'] != null ? 
+                                userSessionBean.selectedMenuItem.properties['logoURL.mobile'] : '/templates/mobile2/images/logo.png'}" 
+                               alt="#{userSessionBean.selectedMenuItem.properties['mobile2.pantoneTitle'] == null ?
+                                'Inici' : userSessionBean.selectedMenuItem.properties['mobile2.pantoneTitle']}"                           
+                               translator="#{userSessionBean.translator}"
+                               translationGroup="#{userSessionBean.translationGroup}" />              
             </sf:outputLink>
           </t:div>
           <t:div id="showProfileLinkBg" forceId="true" styleClass="showProfileLinkBg">
             <h:outputLink id="showProfileLink" title="#{webBundle.showProfilePanel}"
                            styleClass="showProfileLink#{userSessionBean.anonymousUser ? '' : ' logged'}"
                            onclick="switchTopDiv('profileDiv')" value="#">
+              <sf:graphicImage url="#{userSessionBean.anonymousUser ? 
+                                    (userSessionBean.selectedMenuItem.properties.showLoginIconURL != null ? userSessionBean.selectedMenuItem.properties.showLoginIconURL : '/templates/mobile2/images/profile_login.png') :
+                                    (userSessionBean.selectedMenuItem.properties.showLogoutIconURL != null ? userSessionBean.selectedMenuItem.properties.showLogoutIconURL : '/templates/mobile2/images/profile_logout.png')}"
+                               alt="#{webBundle.showProfilePanel}"
+                               translator="#{userSessionBean.translator}"
+                               translationGroup="#{userSessionBean.translationGroup}" />
             </h:outputLink>
-          </t:div>              
+          </t:div>
           <h:outputLink id="showSearchLink" title="#{webBundle.showGlobalSearch}" styleClass="showSearchLink"
-                           onclick="switchTopDiv('searchDiv')" value="#">              
+                           onclick="switchTopDiv('searchDiv')" value="#"> 
+            <sf:graphicImage url="#{userSessionBean.selectedMenuItem.properties.showSearchIconURL != null ? 
+                              userSessionBean.selectedMenuItem.properties.showSearchIconURL : '/templates/mobile2/images/showsearch.png'}" 
+                             alt="#{webBundle.showGlobalSearch}"
+                             translator="#{userSessionBean.translator}"
+                             translationGroup="#{userSessionBean.translationGroup}" />            
           </h:outputLink>
         </t:div>
 
@@ -239,7 +270,7 @@
               </t:div>
               <t:div styleClass="inputTextDiv">
                 <h:inputText binding="#{loginBean.usernameInputText}"
-                            tabindex="1" size="10" immediate="true"
+                            size="10" immediate="true"
                             onkeypress="login(event)"                      
                             id="userBox" />
               </t:div>
@@ -252,14 +283,14 @@
               </t:div>
               <t:div styleClass="inputTextDiv">
                 <h:inputSecret binding="#{loginBean.passwordInputSecret}"
-                              tabindex="2" size="10" immediate="true"
+                              size="10" immediate="true"
                               onkeypress="login(event)"                        
                               id="passwordBox" />
               </t:div>
             </t:div>
 
             <t:div styleClass="loginButtonDiv password">
-              <sf:secureCommandLink id="loginbutton" tabindex="3" 
+              <sf:secureCommandLink id="loginbutton" 
                 styleClass="loginButton"
                 action="#{loginBean.login}" function="login" immediate="true"
                 port="#{applicationBean.serverSecurePort}" scheme="https">
@@ -269,7 +300,7 @@
 
             <t:div styleClass="loginButtonDiv certificate">
               <sf:secureCommandLink
-                action="#{loginBean.loginCertificate}" immediate="true" tabindex="4"
+                action="#{loginBean.loginCertificate}" immediate="true"
                 scheme="https" port="#{applicationBean.clientSecurePort}" styleClass="loginButton">
                 <h:outputText value="#{webBundle.certificateAuthentication}"  />
               </sf:secureCommandLink>          
@@ -277,14 +308,14 @@
 
             <t:div styleClass="loginButtonDiv valid"
               rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true')}">
-              <h:outputLink value="#{validBean.loginURL}" tabindex="5" styleClass="loginButton">
+              <h:outputLink value="#{validBean.loginURL}" styleClass="loginButton">
                 <h:outputText value="VALid"  />
               </h:outputLink>   
             </t:div>
 
             <t:div styleClass="loginButtonDiv mobileid"
               rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_mobileid_enabled == 'true')}">
-              <h:outputLink value="#{mobileIdBean.loginURL}" tabindex="5" styleClass="loginButton">
+              <h:outputLink value="#{mobileIdBean.loginURL}" styleClass="loginButton">
                 <h:outputText value="MobileID"  />
               </h:outputLink>
             </t:div>
@@ -337,6 +368,11 @@
                                                     userSessionBean.selectedMenuItem.parentWithAction.mid : 
                                                 userSessionBean.selectedMenuItem.directProperties['mobile2.moveUpMid']}"
                             title="#{webBundle.moveUp}">
+                <sf:graphicImage url="#{userSessionBean.selectedMenuItem.properties.moveUpIconURL != null ? 
+                                  userSessionBean.selectedMenuItem.properties.moveUpIconURL : '/templates/mobile2/images/up.png'}" 
+                                 alt="#{webBundle.moveUp}"
+                                 translator="#{userSessionBean.translator}"
+                                 translationGroup="#{userSessionBean.translationGroup}" />                
               </h:outputLink>
             </t:div>        
           </t:div>
@@ -359,12 +395,18 @@
                              (userSessionBean.selectedMenuItem.anyRenderedSibling)))}" />
           </t:div>
           <t:div id="showChildrenMenuDiv" forceId="true" styleClass="showChildrenMenuDiv">        
-        <h:outputLink value="#" id="showChildrenMenuLink" styleClass="showChildrenMenuLink titleMenuLink"
-                   onclick="switchChildrenMenuDiv()"
-               rendered="#{userSessionBean.selectedMenuItem.anyRenderedChildren}"
-               title="#{webBundle.showChildrenMenu}">
-        </h:outputLink>
-            </t:div>          
+            <h:outputLink value="#" id="showChildrenMenuLink" styleClass="showChildrenMenuLink titleMenuLink"
+                          onclick="switchChildrenMenuDiv()"
+                          rendered="#{userSessionBean.selectedMenuItem.anyRenderedChildren}"
+                          title="#{webBundle.showChildrenMenu}">
+              <sf:graphicImage id="showChildrenMenuImg"
+                               url="#{userSessionBean.selectedMenuItem.properties.showChildrenIconURL != null ? 
+                                  userSessionBean.selectedMenuItem.properties.showChildrenIconURL : '/templates/mobile2/images/unfold.png'}" 
+                               alt="#{webBundle.showChildrenMenu}"
+                               translator="#{userSessionBean.translator}"
+                               translationGroup="#{userSessionBean.translationGroup}" />                              
+            </h:outputLink>
+          </t:div>          
           <t:div style="clear:both;" />
         </t:div>
         </header>          

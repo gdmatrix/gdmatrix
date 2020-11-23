@@ -87,8 +87,32 @@
           </sf:treeMenu>
         </t:div>
       </nav>
+      <t:div class="interior_container_div" 
+             rendered="#{widgetBean.interiorWidgetRender and 
+                         userSessionBean.selectedMenuItem.properties.interiorWidgetLayout != null}">
+        <nav id='interior_nav_wcont' aria-label='#{webBundle.interiorWidgetsMenu}'>
+          <sf:heading level="2" styleClass="element-invisible">
+            <h:outputText value="#{webBundle.interiorWidgetsMenu}" />
+          </sf:heading>
+          <sf:widgetContainer
+            id="interior_container"
+            binding="#{widgetBean.interiorContainer}"
+            columns="#{widgetBean.interiorColumns}"
+            columnClasses="#{widgetBean.interiorColumnClasses}"
+            columnTitles="#{widgetBean.interiorColumnTitles}"
+            columnRenderAsList="#{widgetBean.interiorColumnRenderAsList}"
+            layout="#{widgetBean.interiorLayout}"
+            dynamic="false"
+            translator="#{userSessionBean.translator}"
+            translationGroup="#{userSessionBean.translationGroup}"          
+            title="#{widgetBean.interiorTitle}"
+            headerDocId="#{widgetBean.interiorHeaderDocId}"
+            footerDocId="#{widgetBean.interiorFooterDocId}"
+            styleClass="widget_container #{userSessionBean.selectedMenuItem.properties.interiorWidgetPosition == 'bottom' ? 'bottom' : 'left'}" />      
+        </nav>
+      </t:div>      
     </t:div>
-
+    
     <t:div styleClass="ilcol2 #{userSessionBean.selectedMenuItem.properties.interiorContentWidth}#{(userSessionBean.selectedMenuItem.action == 'blank') ? ' blank' : ''}">
       <main id='sf_main_content' tabindex='-1'>
         <c:if test="${userSessionBean.selectedMenuItem.properties.action != '#{documentBean.loadDocument}'}">
@@ -155,27 +179,6 @@
       </main>
     </t:div>
     
-    <t:div rendered="#{widgetBean.interiorWidgetRender and 
-                       userSessionBean.selectedMenuItem.properties.interiorWidgetLayout != null}">
-      <nav id='interior_nav_wcont' aria-label='#{webBundle.interiorWidgetsMenu}'>      
-        <sf:widgetContainer
-          id="interior_container"
-          binding="#{widgetBean.interiorContainer}"
-          columns="#{widgetBean.interiorColumns}"
-          columnClasses="#{widgetBean.interiorColumnClasses}"
-          columnTitles="#{widgetBean.interiorColumnTitles}"
-          columnRenderAsList="#{widgetBean.interiorColumnRenderAsList}"
-          layout="#{widgetBean.interiorLayout}"
-          dynamic="false"
-          translator="#{userSessionBean.translator}"
-          translationGroup="#{userSessionBean.translationGroup}"          
-          title="#{widgetBean.interiorTitle}"
-          headerDocId="#{widgetBean.interiorHeaderDocId}"
-          footerDocId="#{widgetBean.interiorFooterDocId}"
-          styleClass="widget_container #{userSessionBean.selectedMenuItem.properties.interiorWidgetPosition == 'bottom' ? 'bottom' : 'left'}" />      
-      </nav>
-    </t:div>
-
     <h:outputText value="#{widgetBean.scripts}" escape="false" />
     
   </t:div>

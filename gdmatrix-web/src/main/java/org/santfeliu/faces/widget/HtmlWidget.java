@@ -32,6 +32,7 @@ package org.santfeliu.faces.widget;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import javax.el.ValueExpression;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponent;
@@ -56,6 +57,8 @@ public class HtmlWidget extends UIPanel
   private String _externalTitle;
   private Boolean _ariaHidden;
   private String _contentType;
+  private String _ariaDescription;
+  private String _editText;
 
   public HtmlWidget()
   {
@@ -108,6 +111,32 @@ public class HtmlWidget extends UIPanel
     if (_externalTitle != null) return _externalTitle;
     ValueExpression ve = getValueExpression("externalTitle");
     return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
+  }
+
+  public void setAriaDescription(String ariaDescription) 
+  {
+    this._ariaDescription = ariaDescription;
+  }
+
+  public String getAriaDescription() 
+  {
+    if (_ariaDescription != null) return _ariaDescription;
+    ValueExpression ve = getValueExpression("ariaDescription");
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : 
+      null;
+  }
+
+  public void setEditText(String editText) 
+  {
+    this._editText = editText;
+  }
+
+  public String getEditText() 
+  {
+    if (_editText != null) return _editText;
+    ValueExpression ve = getValueExpression("editText");
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : 
+      "Edita widget";
   }
   
   public void setContentType(String contentType)
@@ -256,15 +285,22 @@ public class HtmlWidget extends UIPanel
       nodeId = (String)this.getAttributes().get("nodeId");
     }
     if (nodeId != null)
-    {
+    {      
+      String editLinkDescription = 
+        translate(getEditText() + ": " + getAriaDescription());
       writer.startElement("div", this);
       writer.writeAttribute("id", "content_edit_" + getId(), null);
       writer.writeAttribute("class", "widget_edit", null);
       writer.startElement("a", this);
-      writer.writeAttribute("id", "content_edit_link_" + getId(), null);      
+      writer.writeAttribute("id", "content_edit_link_" + getId(), null);
+      writer.writeAttribute("title", editLinkDescription, null);
       writer.writeAttribute("href", "/go.faces?xmid=" + nodeId + "&" + 
         UserSessionBean.VIEW_MODE_PARAM + "=" + UserSessionBean.VIEW_MODE_EDIT, null);
       writer.writeAttribute("class", "widget_edit_link", null);
+      writer.startElement("img", this);
+      writer.writeAttribute("alt", editLinkDescription, null);
+      writer.writeAttribute("src", "/themes/default/images/edit.png", null);
+      writer.endElement("img");
       writer.endElement("a");
       writer.endElement("div");
     }
@@ -319,13 +355,15 @@ public class HtmlWidget extends UIPanel
   @Override
   public Object saveState(FacesContext context)
   {
-    Object values[] = new Object[6];
+    Object values[] = new Object[8];
     values[0] = super.saveState(context);
     values[1] = _style;
     values[2] = _styleClass;
     values[3] = _externalTitle;
     values[4] = _ariaHidden;
     values[5] = _contentType;
+    values[6] = _ariaDescription;
+    values[7] = _editText;
     return values;
   }
 
@@ -339,6 +377,8 @@ public class HtmlWidget extends UIPanel
     _externalTitle = (String)values[3];
     _ariaHidden = (Boolean)values[4];
     _contentType = (String)values[5];
+    _ariaDescription = (String)values[6];
+    _editText = (String)values[7];
   }
   
   private void renderHtmlText(String text, ResponseWriter writer, 
@@ -354,9 +394,28 @@ public class HtmlWidget extends UIPanel
     else writer.write(text);
   }
   
+  private Translator getTranslator()
+  {
+    return UserSessionBean.getCurrentInstance().getTranslator();
+  }
+  
   private String getTranslationGroup()
   {
-    return "widgetExternalTitle"; //TODO
+    return UserSessionBean.getCurrentInstance().getTranslationGroup();
+  }
+
+  private String translate(String text) throws IOException
+  {
+    Translator translator = getTranslator();
+    if (translator != null)
+    {
+      String userLanguage = FacesUtils.getViewLanguage();
+      StringWriter sw = new StringWriter();
+      translator.translate(new StringReader(text), sw, "text/plain",
+        userLanguage, getTranslationGroup());
+      text = sw.toString();
+    }
+    return text;
   }  
   
 }
