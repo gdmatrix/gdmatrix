@@ -129,7 +129,8 @@ public class QuartzScheduler implements Scheduler
         job.setRepetitions(1);
         Trigger trigger = buildTrigger(job);
         scheduler.scheduleJob(jobDetail, trigger);
-        scheduler.triggerJob(jobKey);
+        if (trigger.mayFireAgain())
+          scheduler.triggerJob(jobKey);
         scheduler.unscheduleJob(trigger.getKey());
       }
       else
