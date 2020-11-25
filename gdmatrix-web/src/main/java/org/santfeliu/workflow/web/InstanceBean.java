@@ -77,6 +77,7 @@ public class InstanceBean extends FacesBean implements Serializable
   private static final String CREATOR_SURNAME2 = "creator_surname2";
   private static final String CREATOR_NIF = "creator_nif";
   private static final String CREATOR_CIF = "creator_cif";
+  private static final String CREATOR_REPRESENTANT = "creator_representant";
   private static final String CREATOR_EMAIL = "creator_email";
   private static final String CREATOR_ORGANIZATION = "creator_organization";
   private static final String CREATOR_LANGUAGE = "creator_language";
@@ -963,6 +964,7 @@ public class InstanceBean extends FacesBean implements Serializable
     }
     map.put(CREATOR_NIF, userSessionBean.getNIF());
     map.put(CREATOR_CIF, userSessionBean.getCIF());
+    map.put(CREATOR_REPRESENTANT, userSessionBean.isRepresentant());
     map.put(CREATOR_ORGANIZATION, userSessionBean.getOrganizationName());
     map.put(CREATOR_EMAIL, userSessionBean.getEmail());
     map.put(CREATOR_LANGUAGE, FacesUtils.getViewLanguage());
