@@ -18,10 +18,11 @@
         <h:outputText value="#{caseMainBean.getCase().caseId}" styleClass="outputBox"
           style="width:20%" />
         <h:outputLink rendered="#{caseMainBean.showInTreeEnabled}"
-                      value="/go.faces?xmid=#{caseMainBean.caseTreeMid}"
-                      onclick="return goMid('#{caseMainBean.caseTreeMid}')">
+                      title="#{caseBundle.case_showInTree}"
+                      value="/go.faces?xmid=#{caseMainBean.caseTreeMid}&amp;caseId=#{caseMainBean.getCase().caseId}"
+                      onclick="return goMid('#{caseMainBean.caseTreeMid}&amp;caseId=#{caseMainBean.getCase().caseId}')">
           <h:graphicImage url="/common/cases/images/tree.gif"
-            alt="#{caseBundle.case_show_in_tree}"
+            alt="#{caseBundle.case_showInTree}"
             style="border:none;vertical-align:middle;margin-left:4px" />
         </h:outputLink>
       </t:div>

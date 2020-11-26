@@ -187,7 +187,44 @@
 
 .caseTree
 {
+  margin-top: 10px;
+}
 
+.caseTree .ui-tree 
+{
+  width: 100%;  
+}
+
+.caseTree .ui-tree .ui-tree-container
+{
+  overflow: inherit;  
+}
+
+.caseTree .ui-tree .ui-tree-toggler
+{
+  width: 16px;
+  height: 16px;  
+}
+
+.caseTree .ui-tree .ui-tree-toggler.ui-icon-triangle-1-e
+{
+  background-image: url('/common/cases/images/expand.png');
+}
+
+.caseTree .ui-tree .ui-tree-toggler.ui-icon-triangle-1-s
+{
+  background-image: url('/common/cases/images/collapse.png');
+}
+
+.caseTree .ui-tree .ui-treenode-leaf-icon 
+{
+  vertical-align: middle;
+}
+
+.caseTree .ui-tree .ui-treenode-label 
+{
+  height: 20px;
+  line-height: 20px;
 }
 
 .caseTree .node
@@ -216,6 +253,10 @@
 {
   text-decoration: none;
   vertical-align: super;
+}
+
+.caseTree .foundCaseLink span
+{
   background-color: yellow;
 }
 

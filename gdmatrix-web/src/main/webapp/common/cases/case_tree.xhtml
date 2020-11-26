@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"      
       xmlns:ui="http://java.sun.com/jsf/facelets"      
       xmlns:sf="http://faces.santfeliu.org"
       xmlns:t="http://myfaces.apache.org/tomahawk">
@@ -43,9 +44,10 @@
 
         <t:div styleClass="inputBox" style="margin-top:12px">
           <h:panelGroup>
-            <t:tree2 value="#{caseTreeBean.treeModel}" var="node" varNodeToggler="t"
-                     clientSideToggle="false" preserveToggle="false">
-              <f:facet name="case">
+            <p:tree value="#{caseTreeBean.root}" var="node" id="caseTree" dynamic="true" cache="false">
+              <p:ajax event="expand" listener="#{caseTreeBean.onNodeExpand}" /> 
+              <p:ajax event="collapse" listener="#{caseTreeBean.onNodeCollapse}" /> 
+              <p:treeNode type="Case">
                 <h:panelGroup styleClass="node">
                   <t:graphicImage styleClass="icon" alt="" rendered="#{node.icon != null}" value="#{node.icon}" border="0" />
                   <h:commandLink rendered="#{not node.renderPropertiesAsPopUp}"
@@ -100,8 +102,8 @@
                   </t:div>
 
                 </h:panelGroup>
-              </f:facet>
-            </t:tree2>
+              </p:treeNode>
+            </p:tree>
           </h:panelGroup>
         </t:div>
 

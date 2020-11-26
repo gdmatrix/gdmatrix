@@ -42,14 +42,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.myfaces.custom.tree2.HtmlTree;
-import org.apache.myfaces.custom.tree2.TreeModelBase;
-import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
+import org.primefaces.event.NodeCollapseEvent;
+import org.primefaces.event.NodeExpandEvent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.santfeliu.cases.CaseCaseCache;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -118,27 +119,108 @@ public class CaseTreeBean extends PageBean
   private List<String> treeLeafTypeList;
   private List<String> treeCaseTypeList;
 
-  private transient TreeModelBase treeModel;
-  private transient HtmlTree tree;
+  private TreeNode root;
   private static Map<String, List<CaseProperty>> casePropertiesMap;
   
   private String inputSearchText;
   private String inputDate;
 
-  private Set<String> loadedNodes;
-  private Set<String> expandedNodes;
-  private Set<String> selectedNodes;
+  private String selectedCaseId;
   private Set<String> foundCases;
+  private Set<String> exploredCases;
   private String lastMid = null;
+  private String lastTreeDate = null;
   private Integer scroll;
 
   private transient HtmlCalendar htmlCalendar;
   private transient String treeDate;
-
+  
   public CaseTreeBean()
   {    
   }
+  
+  public TreeNode getRoot() 
+  {
+    return root;
+  }
 
+  public void setRoot(TreeNode root) 
+  {
+    this.root = root;
+  }
+
+  public String getInputSearchText()
+  {
+    return inputSearchText;
+  }
+
+  public void setInputSearchText(String inputSearchText)
+  {
+    this.inputSearchText = inputSearchText;
+  }
+  
+  public String getInputDate()
+  {
+    return inputDate;
+  }
+
+  public void setInputDate(String inputDate)
+  {
+    this.inputDate = inputDate;
+  }
+
+  public Set<String> getFoundCases()
+  {
+    if (foundCases == null)
+    {
+      foundCases = new HashSet<String>();
+    }
+    return foundCases;
+  }
+
+  public void setFoundCases(Set<String> foundCases)
+  {
+    this.foundCases = foundCases;
+  }
+
+  public Set<String> getExploredCases()
+  {
+    if (exploredCases == null)
+    {
+      exploredCases = new HashSet<String>();
+    }
+    return exploredCases;
+  }
+
+  public void setExploredCases(Set<String> exploredCases)
+  {
+    this.exploredCases = exploredCases;
+  }
+  
+  public Integer getScroll()
+  {
+    return scroll;
+  }
+
+  public void setScroll(Integer scroll)
+  {
+    this.scroll = scroll;
+  }
+
+  public HtmlCalendar getHtmlCalendar()
+  {
+    if (htmlCalendar == null)
+    {
+      htmlCalendar = new HtmlCalendar();
+    }
+    return htmlCalendar;
+  }
+
+  public void setHtmlCalendar(HtmlCalendar htmlCalendar)
+  {
+    this.htmlCalendar = htmlCalendar;
+  }
+  
   public List<String> getTreeCaseTypeList()
   {
     if (treeCaseTypeList == null)
@@ -174,77 +256,7 @@ public class CaseTreeBean extends PageBean
   {
     this.treeLeafTypeList = treeLeafTypeList;
   }
-
-  public TreeModelBase getTreeModel() throws Exception
-  {
-    if (treeModel == null)
-    {
-      loadedNodes = null; //children reload
-      Case cas = getRootCase();
-      CaseTreeNode rootNode = new CaseTreeNode();
-      rootNode.setCaseId(cas.getCaseId());
-      rootNode.setTitle(cas.getTitle());
-      rootNode.setCaseTypeId(cas.getCaseTypeId());
-      treeModel = new TreeModelBase(rootNode);
-      for (String expandedNode : getExpandedNodes())
-      {
-        String[] sArray = new String[1];
-        sArray[0] = expandedNode;          
-        getTree().expandPath(sArray);
-      }
-    }
-    return treeModel;
-  }
-
-  public void setTreeModel(TreeModelBase treeModel)
-  {
-    this.treeModel = treeModel;
-  }
-
-  public String getInputSearchText()
-  {
-    return inputSearchText;
-  }
-
-  public void setInputSearchText(String inputSearchText)
-  {
-    this.inputSearchText = inputSearchText;
-  }
-
-  public HtmlCalendar getHtmlCalendar()
-  {
-    if (htmlCalendar == null)
-    {
-      htmlCalendar = new HtmlCalendar();
-    }
-    return htmlCalendar;
-  }
-
-  public void setHtmlCalendar(HtmlCalendar htmlCalendar)
-  {
-    this.htmlCalendar = htmlCalendar;
-  }
-
-  public Integer getScroll()
-  {
-    return scroll;
-  }
-
-  public void setScroll(Integer scroll)
-  {
-    this.scroll = scroll;
-  }
-
-  public String getInputDate()
-  {
-    return inputDate;
-  }
-
-  public void setInputDate(String inputDate)
-  {
-    this.inputDate = inputDate;
-  }
-
+  
   private String getTreeDate() throws Exception
   {
     if (treeDate == null)
@@ -266,77 +278,49 @@ public class CaseTreeBean extends PageBean
       if (treeDate == null) treeDate = "";
     }
     return treeDate;
-  }
-
-  public HtmlTree getTree() throws Exception
+  }  
+  
+  private void loadRoot()
   {
-    if (tree == null)
+    try
     {
-      tree = new HtmlTree();
-      tree.setModel(getTreeModel());
+      root = new DefaultTreeNode("", null);
+      root.setExpanded(true);
+      Case cas = getRootCase();
+      CaseInfo mainNodeInfo = new CaseInfo();
+      mainNodeInfo.setCaseId(cas.getCaseId());
+      mainNodeInfo.setTitle(cas.getTitle());
+      mainNodeInfo.setCaseTypeId(cas.getCaseTypeId());        
+      TreeNode mainNode = new DefaultTreeNode("Case", mainNodeInfo, root);
+      loadChildren(mainNode, false);
     }
-    return tree;
-  }
-
-  public void setTree(HtmlTree tree)
-  {
-    this.tree = tree;
-  }
-
-  public Set<String> getLoadedNodes()
-  {
-    if (loadedNodes == null)
+    catch (Exception ex)
     {
-      loadedNodes = new HashSet<String>();
+      error(ex);
     }
-    return loadedNodes;
   }
-
-  public void setLoadedNodes(Set<String> loadedNodes)
+  
+  private void loadChildren(TreeNode node, boolean includeSiblings)
   {
-    this.loadedNodes = loadedNodes;
-  }
-
-  public Set<String> getExpandedNodes()
-  {
-    if (expandedNodes == null)
+    if (node.getChildren() == null || node.getChildren().isEmpty())
+    {      
+      List<CaseInfo> caseInfoList = ((CaseInfo)node.getData()).getChildren();
+      for (CaseInfo caseInfo : caseInfoList)
+      {
+        TreeNode nAux = new DefaultTreeNode("Case", caseInfo, node);
+      }
+    }    
+    if (includeSiblings)
     {
-      expandedNodes = new HashSet<String>();
+      TreeNode parent = node.getParent();
+      for (TreeNode sibling : parent.getChildren())
+      {
+        if (sibling != node)
+        {
+          loadChildren(sibling, false);
+        }
+      }
     }
-    return expandedNodes;
-  }
-
-  public void setExpandedNodes(Set<String> expandedNodes)
-  {
-    this.expandedNodes = expandedNodes;
-  }
-
-  public Set<String> getFoundCases()
-  {
-    if (foundCases == null)
-    {
-      foundCases = new HashSet<String>();
-    }
-    return foundCases;
-  }
-
-  public void setFoundCases(Set<String> foundCases)
-  {
-    this.foundCases = foundCases;
-  }
-
-  public Set<String> getSelectedNodes()
-  {
-    if (selectedNodes == null)
-    {
-      selectedNodes = new HashSet<String>();
-    }
-    return selectedNodes;
-  }
-
-  public void setSelectedNodes(Set<String> selectedNodes)
-  {
-    this.selectedNodes = selectedNodes;
   }
 
   public boolean isRenderUpdateButton()
@@ -359,13 +343,20 @@ public class CaseTreeBean extends PageBean
           inputDate = sysFormat.format(new Date());
         }
         lastMid = UserSessionBean.getCurrentInstance().getSelectedMid();
-        reset();
       }
-      getSelectedNodes().clear();
-      if (!isNew())
+      loadExploredCases();
+      loadRoot();
+      Map requestParameters = getExternalContext().getRequestParameterMap();
+      String paramCaseId = (String)requestParameters.get("caseId");
+      if (paramCaseId != null) 
       {
-        expandCase(getObjectId(), true);
-      }      
+        selectedCaseId = paramCaseId;
+        getExploredCases().add(selectedCaseId);
+      }
+      for (String caseId : getExploredCases())
+      {
+        exploreCase(caseId);
+      }
     }
     catch (Exception ex)
     {
@@ -385,7 +376,8 @@ public class CaseTreeBean extends PageBean
     try
     {
       CaseCaseCache.getInstance().clear();
-      reset();            
+      reset();
+      loadRoot();
     }
     catch (Exception ex)
     {
@@ -398,25 +390,22 @@ public class CaseTreeBean extends PageBean
   {
     try
     {
-      //Search for cases
       foundCases = null;
+      if (lastTreeDate != null && !getTreeDate().equals(lastTreeDate))
+      {
+        update();
+      }
+      lastTreeDate = getTreeDate();
       if (inputSearchText != null && !inputSearchText.trim().isEmpty())
       {
-        List<String> caseIdList = findCaseIdList(inputSearchText.trim());        
+        List<String> caseIdList = findCaseIdList(inputSearchText.trim());
         getFoundCases().addAll(caseIdList);
         for (String caseId : caseIdList)
         {
-          expandCase(caseId, false);
+          exploreCase(caseId);
+          getExploredCases().add(caseId);
         }
       }
-
-      //Open current case
-      selectedNodes = null;
-      if (!isNew())
-      {
-        expandCase(getObjectId(), true);
-      }
-      
     }
     catch (Exception ex)
     {
@@ -436,8 +425,6 @@ public class CaseTreeBean extends PageBean
   
   private void reset()
   {
-    tree = null;
-    treeModel = null;
     casePropertiesMap = null;
     rootCase = null;
     rootIcon = null;
@@ -445,11 +432,11 @@ public class CaseTreeBean extends PageBean
     relationIconMap = null;
     caseTypeMap = null;
     treeCaseTypeList = null;
-    treeLeafTypeList = null;
-    loadedNodes = null;
-    expandedNodes = null;
+    treeLeafTypeList = null; 
     foundCases = null;
-    selectedNodes = null;
+    exploredCases = null;
+    selectedCaseId = null;
+    root = null;
   }
 
   private Case getRootCase() throws Exception
@@ -626,32 +613,47 @@ public class CaseTreeBean extends PageBean
     return caseTypeMap;
   }
 
-  private void expandCase(String caseId, boolean markAsSelected)
-    throws Exception
-  {
-    List<String> auxExpandedNodes = new ArrayList<String>();
+  private void exploreCase(String caseId) throws Exception
+  {    
+    List<TreeNode> auxExpandedNodes = new ArrayList<TreeNode>();    
     List<List<String>> caseIdPathList = getPathsToNode(caseId);
     for (List<String> caseIdPath : caseIdPathList)
     {
-      List<String> nodeIdsToExpand = 
-        getNodeIdsToExpand(caseIdPath, auxExpandedNodes);
-      auxExpandedNodes.addAll(nodeIdsToExpand);
-      if (markAsSelected)
+      try
       {
-        getSelectedNodes().add(nodeIdsToExpand.get(nodeIdsToExpand.size() - 1));
+        List<TreeNode> nodesToExpand = 
+          getNodesToExpand(caseIdPath, auxExpandedNodes);
+        auxExpandedNodes.addAll(nodesToExpand);
+        openAncestors(nodesToExpand.get(nodesToExpand.size() - 1));
       }
-      String[] sArray = nodeIdsToExpand.toArray(new String[0]);
-      getTree().expandPath(sArray);
+      catch (Exception ex)
+      {
+        error("ERROR_EXPANDING_TREE", ex.getMessage());
+        return;
+      }    
     }
   }
-
+  
+  private void openAncestors(TreeNode node) 
+  {
+    TreeNode auxNode = node.getParent();
+    while (auxNode != null)
+    {
+      auxNode.setExpanded(true);
+      auxNode = auxNode.getParent();
+    }
+  }  
+  
   private List<String> findCaseIdList(String searchString) throws Exception
   {    
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList();
     Set<String> caseIdSet = new HashSet();
     CaseFilter filter = new CaseFilter();
     filter.setTitle(searchString);
     filter.setMaxResults(getMaxCasesToSearch());
+    filter.setDateComparator("3");
+    filter.setFromDate(getTreeDate());
+    filter.setToDate(getTreeDate());
     addWildcards(filter);
     if (getTreeCaseTypeList().isEmpty())
     {
@@ -685,44 +687,46 @@ public class CaseTreeBean extends PageBean
       filter.setTitle(null);
   }
 
-  private CaseTreeNode getRootNode() throws Exception
-  {
-    return (CaseTreeNode)getTreeModel().getNodeById("0");
-  }
-
-  private List<String> getNodeIdsToExpand(List<String> caseIdPath,
-    List<String> expandedNodes) throws Exception
-  {   
-    List<String> result = new ArrayList<String>();
-    List children = null;
+  private List<TreeNode> getNodesToExpand(List<String> caseIdPath,
+    List<TreeNode> expandedNodes) throws Exception
+  {    
+    List<TreeNode> result = new ArrayList<TreeNode>();
+    List<TreeNode> children = null;
     int i = 0;
     for (String caseId : caseIdPath)
     {
       if (i++ == 0) //root
       {
-        CaseTreeNode rootNode = getRootNode();
+        TreeNode rootNode = getRoot().getChildren().get(0);
         children = rootNode.getChildren();
-        result.add(rootNode.getIdentifier());
+        result.add(rootNode);
       }
       else
       {
         boolean found = false;
-        CaseTreeNode auxTreeNode = null;
+        TreeNode auxTreeNode = null;
         for (int iChild = 0; iChild < children.size() && !found; iChild++)
         {
-          Object child = children.get(iChild);
-          CaseTreeNode treeNode = (CaseTreeNode)child;
-          if (caseId.equals(treeNode.getCaseId()))
+          TreeNode child = children.get(iChild);          
+          if (caseId.equals(((CaseInfo)child.getData()).getCaseId()))
           {
-            auxTreeNode = treeNode;
-            if (!expandedNodes.contains(treeNode.getIdentifier()))
+            auxTreeNode = child;
+            if (!expandedNodes.contains(child))
             {
               found = true;
             }
           }
         }
-        children = auxTreeNode.getChildren();
-        result.add(auxTreeNode.getIdentifier());
+        if (auxTreeNode != null)
+        {
+          result.add(auxTreeNode);
+          loadChildren(auxTreeNode, true);
+          children = auxTreeNode.getChildren();
+        }
+        else 
+        {
+          throw new Exception(caseId);
+        }
       }
     }
     return result;
@@ -873,8 +877,55 @@ public class CaseTreeBean extends PageBean
     }
     return getCasePropertiesMap().get(caseId);
   }
+  
+  public void onNodeExpand(NodeExpandEvent event)
+  {
+    List<TreeNode> children = event.getTreeNode().getChildren();
+    for (TreeNode child : children)
+    {
+      loadChildren(child, false);
+    }
+  }
 
-  public class CaseTreeNode implements TreeNode, Serializable
+  public void onNodeCollapse(NodeCollapseEvent event)
+  {
+  }
+  
+  private void loadExploredCases()
+  {
+    getExploredCases().clear();
+    if (root != null) loadExploredCases(root);
+  }
+  
+  private void loadExploredCases(TreeNode node)
+  {
+    if (node == root)
+    {
+      try
+      {
+        getExploredCases().add(getRootCase().getCaseId());
+      } 
+      catch (Exception ex) 
+      {       
+      }      
+    }
+    else
+    {
+      CaseInfo caseInfo = (CaseInfo)node.getData();
+      String caseId = caseInfo.getCaseId();
+      getExploredCases().add(caseId);
+    }
+    if (node.isExpanded())
+    {
+      List<TreeNode> children = node.getChildren();
+      for (TreeNode child : children)
+      {
+        loadExploredCases(child);
+      }
+    }
+  }
+
+  public class CaseInfo implements Serializable
   {
     private String caseId;
     private String caseTypeId;
@@ -882,14 +933,9 @@ public class CaseTreeBean extends PageBean
     private boolean direct;
     private String caseCaseTypeId;
     private String caseCaseStartDate;
-    private String caseCaseEndDate;
-
+    private String caseCaseEndDate;    
     private String identifier = "0";
     
-    private transient List<CaseTreeNode> _children;
-    private transient List<CaseCaseCache.CacheItem> _directCaseCases;
-    private transient List<CaseCaseCache.CacheItem> _reverseCaseCases;
-
     public String getCaseId()
     {
       return caseId;
@@ -960,134 +1006,114 @@ public class CaseTreeBean extends PageBean
       this.caseCaseStartDate = caseCaseStartDate;
     }
 
-    public boolean isLeaf()
-    {
-      return getChildren().isEmpty();
-    }
-
-    public void setLeaf(boolean bln)
-    {
-      //nothing here
-    }
-
     public List getChildren()
     {
-      if (!getLoadedNodes().contains(getIdentifier()))
-      {
-        try
-        {                      
-          _children = new ArrayList<CaseTreeNode>();
-          if (getTreeLeafTypeList().isEmpty() ||
-            !getTreeLeafTypeList().contains(caseTypeId))
-          {
-            linkCaseCases();
-            for (CaseCaseCache.CacheItem cacheItem : _directCaseCases)
-            {
-              CaseTreeNode node = new CaseTreeNode();
-              node.setCaseId(cacheItem.getRelCaseId());
-              node.setCaseTypeId(cacheItem.getRelCaseTypeId());
-              node.setTitle(cacheItem.getRelCaseTitle());
-              node.setDirect(true);
-              node.setCaseCaseTypeId(cacheItem.getCaseCaseTypeId());
-              node.setCaseCaseStartDate(cacheItem.getCaseCaseStartDate());
-              node.setCaseCaseEndDate(cacheItem.getCaseCaseEndDate());
-              _children.add(node);
-            }
-            for (CaseCaseCache.CacheItem cacheItem : _reverseCaseCases)
-            {
-              CaseTreeNode node = new CaseTreeNode();
-              node.setCaseId(cacheItem.getMainCaseId());
-              node.setCaseTypeId(cacheItem.getMainCaseTypeId());
-              node.setTitle(cacheItem.getMainCaseTitle());
-              node.setDirect(false);
-              node.setCaseCaseTypeId(cacheItem.getCaseCaseTypeId());
-              node.setCaseCaseStartDate(cacheItem.getCaseCaseStartDate());
-              node.setCaseCaseEndDate(cacheItem.getCaseCaseEndDate());
-              _children.add(node);
-            }
-            
-            final List<String> orderByList = getOrderByList();
-            if (!orderByList.isEmpty())
-            {
-              Collections.sort(_children, new Comparator() {
-                @Override
-                public int compare(Object o1, Object o2)
-                {
-                  int comparison = 0;
-                  for (String orderBy : orderByList)
-                  {
-                    boolean reverse = false;
-                    if (orderBy.endsWith(":desc"))
-                    {
-                      reverse = true;
-                      orderBy = orderBy.substring(0, orderBy.length() - 5);
-                    }
-                    CaseTreeNode node1 = (reverse ? (CaseTreeNode)o2 : (CaseTreeNode)o1);
-                    CaseTreeNode node2 = (reverse ? (CaseTreeNode)o1 : (CaseTreeNode)o2);
-                    if ("caseCaseType".equals(orderBy))
-                    {
-                      comparison = node1.getCaseCaseTypeId().compareTo(node2.getCaseCaseTypeId());
-                      if (comparison != 0) break;
-                    }
-                    else if ("caseType".equals(orderBy))
-                    {
-                      comparison = node1.getCaseTypeId().compareTo(node2.getCaseTypeId());
-                      if (comparison != 0) break;
-                    }
-                    else if ("caseId".equals(orderBy))
-                    {
-                      Integer caseId1 = 
-                        Integer.parseInt(node1.getCaseId().contains(":") ? 
-                          node1.getCaseId().substring(node1.getCaseId().indexOf(":") + 1) : 
-                          node1.getCaseId());
-                      Integer caseId2 = 
-                        Integer.parseInt(node2.getCaseId().contains(":") ? 
-                          node2.getCaseId().substring(node2.getCaseId().indexOf(":") + 1) : 
-                          node2.getCaseId());
-                      comparison = caseId1 - caseId2;
-                      if (comparison != 0) break;
-                    }
-                    else if (orderBy.startsWith("property[") && orderBy.endsWith("]"))
-                    {
-                      String propertyName = orderBy.substring(9, orderBy.length() - 1);
-                      try
-                      {
-                        String propertyValue1 = node1.getProperty(propertyName);
-                        if (propertyValue1 == null) propertyValue1 = "";
-                        String propertyValue2 = node2.getProperty(propertyName);
-                        if (propertyValue2 == null) propertyValue2 = "";
-                        comparison = propertyValue1.compareTo(propertyValue2);
-                      }                
-                      catch (Exception ex) { }
-                      if (comparison != 0) break;
-                    }
-                  }                
-                  return comparison;
-                }
-              });            
-            }
-            
-            int i = 0;
-            for (CaseTreeNode node : _children)
-            {              
-              node.setIdentifier(this.getIdentifier() + ":" + i);
-              i++;
-            }
-          }
-          getLoadedNodes().add(this.getIdentifier());
-          if (isExpandedInModel())
-          {
-            getExpandedNodes().add(this.getIdentifier());
-          }
-          else
-          {
-            getExpandedNodes().remove(this.getIdentifier());
-          }
-        }
-        catch (Exception ex)
+      List<CaseInfo> _children = new ArrayList();
+      try
+      {                      
+        if (getTreeLeafTypeList().isEmpty() ||
+          !getTreeLeafTypeList().contains(caseTypeId))
         {
-          error(ex);
+          List<CaseCaseCache.CacheItem> _directCaseCases = new ArrayList();
+          List<CaseCaseCache.CacheItem> _reverseCaseCases = new ArrayList();
+          linkCaseCases(_directCaseCases, _reverseCaseCases);
+          for (CaseCaseCache.CacheItem cacheItem : _directCaseCases)
+          {
+            CaseInfo node = new CaseInfo();
+            node.setCaseId(cacheItem.getRelCaseId());
+            node.setCaseTypeId(cacheItem.getRelCaseTypeId());
+            node.setTitle(cacheItem.getRelCaseTitle());
+            node.setDirect(true);
+            node.setCaseCaseTypeId(cacheItem.getCaseCaseTypeId());
+            node.setCaseCaseStartDate(cacheItem.getCaseCaseStartDate());
+            node.setCaseCaseEndDate(cacheItem.getCaseCaseEndDate());
+            _children.add(node);
+          }
+          for (CaseCaseCache.CacheItem cacheItem : _reverseCaseCases)
+          {
+            CaseInfo node = new CaseInfo();
+            node.setCaseId(cacheItem.getMainCaseId());
+            node.setCaseTypeId(cacheItem.getMainCaseTypeId());
+            node.setTitle(cacheItem.getMainCaseTitle());
+            node.setDirect(false);
+            node.setCaseCaseTypeId(cacheItem.getCaseCaseTypeId());
+            node.setCaseCaseStartDate(cacheItem.getCaseCaseStartDate());
+            node.setCaseCaseEndDate(cacheItem.getCaseCaseEndDate());
+            _children.add(node);
+          }
+
+          final List<String> orderByList = getOrderByList();
+          if (!orderByList.isEmpty())
+          {
+            Collections.sort(_children, new Comparator() {
+              @Override
+              public int compare(Object o1, Object o2)
+              {
+                int comparison = 0;
+                for (String orderBy : orderByList)
+                {
+                  boolean reverse = false;
+                  if (orderBy.endsWith(":desc"))
+                  {
+                    reverse = true;
+                    orderBy = orderBy.substring(0, orderBy.length() - 5);
+                  }
+                  CaseInfo node1 = (reverse ? (CaseInfo)o2 : (CaseInfo)o1);
+                  CaseInfo node2 = (reverse ? (CaseInfo)o1 : (CaseInfo)o2);
+                  if ("caseCaseType".equals(orderBy))
+                  {
+                    comparison = node1.getCaseCaseTypeId().compareTo(node2.getCaseCaseTypeId());
+                    if (comparison != 0) break;
+                  }
+                  else if ("caseType".equals(orderBy))
+                  {
+                    comparison = node1.getCaseTypeId().compareTo(node2.getCaseTypeId());
+                    if (comparison != 0) break;
+                  }
+                  else if ("caseId".equals(orderBy))
+                  {
+                    Integer caseId1 = 
+                      Integer.parseInt(node1.getCaseId().contains(":") ? 
+                        node1.getCaseId().substring(node1.getCaseId().indexOf(":") + 1) : 
+                        node1.getCaseId());
+                    Integer caseId2 = 
+                      Integer.parseInt(node2.getCaseId().contains(":") ? 
+                        node2.getCaseId().substring(node2.getCaseId().indexOf(":") + 1) : 
+                        node2.getCaseId());
+                    comparison = caseId1 - caseId2;
+                    if (comparison != 0) break;
+                  }
+                  else if (orderBy.startsWith("property[") && orderBy.endsWith("]"))
+                  {
+                    String propertyName = orderBy.substring(9, orderBy.length() - 1);
+                    try
+                    {
+                      String propertyValue1 = node1.getProperty(propertyName);
+                      if (propertyValue1 == null) propertyValue1 = "";
+                      String propertyValue2 = node2.getProperty(propertyName);
+                      if (propertyValue2 == null) propertyValue2 = "";
+                      comparison = propertyValue1.compareTo(propertyValue2);
+                    }                
+                    catch (Exception ex) { }
+                    if (comparison != 0) break;
+                  }
+                }                
+                return comparison;
+              }
+            });            
+          }
+
+          int i = 0;
+          for (CaseInfo node : _children)
+          {              
+            node.setIdentifier(this.getIdentifier() + ":" + i);
+            i++;
+          }
         }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
       }
       return _children;
     }
@@ -1128,12 +1154,7 @@ public class CaseTreeBean extends PageBean
     {
       return identifier;
     }
-
-    public int getChildCount()
-    {
-      return getChildren().size();
-    }
-
+    
     public String getIcon() throws Exception
     {
       if (isRoot())
@@ -1219,7 +1240,7 @@ public class CaseTreeBean extends PageBean
 
     public boolean isSelected()
     {
-      return getSelectedNodes().contains(getIdentifier());
+      return getCaseId().equals(selectedCaseId);
     }
 
     public String getStyleClass()
@@ -1252,51 +1273,39 @@ public class CaseTreeBean extends PageBean
       return "existingCaseCase"; //Current CaseCase
     }
 
-    private boolean isExpandedInModel() throws Exception
-    {
-      return getTreeModel().getTreeState().isNodeExpanded(getIdentifier());
-    }
-
-    private void linkCaseCases() throws Exception
+    private void linkCaseCases(List<CaseCaseCache.CacheItem> _directCaseCases, 
+      List<CaseCaseCache.CacheItem> _reverseCaseCases) throws Exception
     {
       CaseCaseCache caseCaseCache = CaseCaseCache.getInstance();
 
       //Direct relations
-      if (_directCaseCases == null)
+      List<CaseCaseCache.CacheItem> directCaseCases =
+        caseCaseCache.getDirectCaseCases(caseId, getTreeDate());
+      for (CaseCaseCache.CacheItem directCaseCase : directCaseCases)
       {
-        _directCaseCases = new ArrayList<CaseCaseCache.CacheItem>();
-        List<CaseCaseCache.CacheItem> directCaseCases =
-          caseCaseCache.getDirectCaseCases(caseId, getTreeDate());
-        for (CaseCaseCache.CacheItem directCaseCase : directCaseCases)
+        String auxCaseCaseTypeId = directCaseCase.getCaseCaseTypeId();
+        if (getRelationDirectionMap().containsKey(auxCaseCaseTypeId))
         {
-          String auxCaseCaseTypeId = directCaseCase.getCaseCaseTypeId();
-          if (getRelationDirectionMap().containsKey(auxCaseCaseTypeId))
+          String direction = getRelationDirectionMap().get(auxCaseCaseTypeId);
+          if ("direct".equals(direction))
           {
-            String direction = getRelationDirectionMap().get(auxCaseCaseTypeId);
-            if ("direct".equals(direction))
-            {
-              _directCaseCases.add(directCaseCase);
-            }
+            _directCaseCases.add(directCaseCase);
           }
         }
       }
-
+      
       //Reverse relations
-      if (_reverseCaseCases == null)
+      List<CaseCaseCache.CacheItem> reverseCaseCases =
+        caseCaseCache.getReverseCaseCases(caseId, getTreeDate());
+      for (CaseCaseCache.CacheItem reverseCaseCase : reverseCaseCases)
       {
-        _reverseCaseCases = new ArrayList<CaseCaseCache.CacheItem>();
-        List<CaseCaseCache.CacheItem> reverseCaseCases =
-          caseCaseCache.getReverseCaseCases(caseId, getTreeDate());
-        for (CaseCaseCache.CacheItem reverseCaseCase : reverseCaseCases)
+        String auxCaseCaseTypeId = reverseCaseCase.getCaseCaseTypeId();
+        if (getRelationDirectionMap().containsKey(auxCaseCaseTypeId))
         {
-          String auxCaseCaseTypeId = reverseCaseCase.getCaseCaseTypeId();
-          if (getRelationDirectionMap().containsKey(auxCaseCaseTypeId))
+          String direction = getRelationDirectionMap().get(auxCaseCaseTypeId);
+          if ("reverse".equals(direction))
           {
-            String direction = getRelationDirectionMap().get(auxCaseCaseTypeId);
-            if ("reverse".equals(direction))
-            {
-              _reverseCaseCases.add(reverseCaseCase);
-            }
+            _reverseCaseCases.add(reverseCaseCase);
           }
         }
       }
