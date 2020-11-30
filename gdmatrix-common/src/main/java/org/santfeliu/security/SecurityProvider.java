@@ -79,4 +79,6 @@ public interface SecurityProvider
   public byte[] createCMSTimeStamp(byte[] digest, String digestMethod, byte[] certEncoded);
   
   public Element createXMLTimeStamp(byte[] digest, String digestMethod, byte[] certEncoded);
+  
+  public boolean preserveSignaturePDF(byte[] pdf, OutputStream out);
 }

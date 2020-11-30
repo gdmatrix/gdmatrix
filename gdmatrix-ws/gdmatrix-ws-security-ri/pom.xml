@@ -33,7 +33,7 @@
             <configuration>
               <verbose>true</verbose>
               <keep>true</keep>
-              <wsdlDirectory>src/main/java/org/santfeliu/security/provider/psis</wsdlDirectory>
+              <wsdlDirectory>src/main/resources/org/santfeliu/security/provider/psis</wsdlDirectory>
               <wsdlFiles>
                 <wsdlFile>PSIS.wsdl</wsdlFile>           
               </wsdlFiles>
