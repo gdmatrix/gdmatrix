@@ -93,12 +93,17 @@
             </sf:outputLink>                       
 
             <t:div id="loginPanel" forceId="true" style="display:none">
-              <t:div id="errorMessage" forceId="true">
+              <t:div id="errorMessage" forceId="true" style="display:none">
                 <h:outputText value="#{loginBean.loginMessage}" />
               </t:div>
-
+              
               <t:div styleClass="loginBox password" 
                      rendered="#{userSessionBean.anonymousUser or userSessionBean.loginMethod == 'PASSWORD'}">
+                <sf:heading level="3" styleClass="element-invisible">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_password}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </sf:heading>
                 <t:div styleClass="headerLine">
                   <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_password}" 
                                  translator="#{userSessionBean.translator}" 
@@ -169,6 +174,11 @@
 
               <t:div styleClass="loginBox certificate" 
                      rendered="#{userSessionBean.anonymousUser or userSessionBean.loginMethod == 'CERTIFICATE'}">
+                <sf:heading level="3" styleClass="element-invisible">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </sf:heading>
                 <t:div styleClass="headerLine">
                   <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate}" 
                                  translator="#{userSessionBean.translator}"
@@ -183,17 +193,22 @@
                   <t:div>
                     <sf:secureCommandLink
                       action="#{loginBean.loginCertificate}" immediate="true"
-                      scheme="https" port="#{applicationBean.clientSecurePort}" styleClass="loginButton">
+                      scheme="https" port="#{applicationBean.clientSecurePort}" 
+                      styleClass="loginButton"
+                      ariaLabel="#{webBundle.certificateAuthentication}">
                       <h:outputText value="#{webBundle.certificateAuthentication}"  />
                     </sf:secureCommandLink>
                   </t:div>
                   <t:div rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_url != null}">
-                    <h:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_url}" 
-                                  styleClass="loginButton">
+                    <sf:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_url}" 
+                                  styleClass="loginButton"
+                                  ariaLabel="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_text}"
+                                  translator="#{userSessionBean.translator}"
+                                  translationGroup="login">
                       <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_text}" 
                                      translator="#{userSessionBean.translator}"
                                      translationGroup="login" />
-                    </h:outputLink>
+                    </sf:outputLink>
                   </t:div>
                 </t:div>
               </t:div>
@@ -201,6 +216,11 @@
               <t:div styleClass="loginBox valid" 
                      rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true') and 
                                  userSessionBean.anonymousUser or userSessionBean.loginMethod == 'VALID'}">
+                <sf:heading level="3" styleClass="element-invisible">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </sf:heading>
                 <t:div styleClass="headerLine">
                   <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid}" 
                                  translator="#{userSessionBean.translator}"
@@ -235,6 +255,11 @@
               <t:div styleClass="loginBox mobileid" 
                      rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_mobileid_enabled == 'true') and 
                                  userSessionBean.anonymousUser or userSessionBean.loginMethod == 'MOBILEID'}">
+                <sf:heading level="3" styleClass="element-invisible">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_mobileid}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </sf:heading>
                 <t:div styleClass="headerLine">
                   <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_mobileid}" 
                                  translator="#{userSessionBean.translator}"
@@ -517,7 +542,11 @@
             if (elem)
             {
               if (elem.innerHTML != '')
+              {
+                elem.style.display = "block";
+                elem.setAttribute("role", "alert");
                 togglePanelVisibility('loginPanel');
+              }
             }
           }
 
