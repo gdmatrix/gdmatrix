@@ -5,7 +5,7 @@
   <formats>
     <format>dir</format>
   </formats>
-  <baseDirectory>${project.basedir}/gdmatrix-client</baseDirectory>
+  <baseDirectory>${project.basedir}/client</baseDirectory>
   <dependencySets>
     <dependencySet>
       <useTransitiveDependencies>true</useTransitiveDependencies>
@@ -25,16 +25,7 @@
       <directory>src/main/deploy</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>einstall.bat</include>
-        <include>install.bat</include>
-      </includes>
-      <lineEnding>dos</lineEnding>
-    </fileSet>
-    <fileSet>
-      <directory>src/main/deploy</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>elevate.exe</include>
+        <include>gdmatrix.ico</include>
       </includes>
     </fileSet>
   </fileSets>

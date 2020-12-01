@@ -12,14 +12,13 @@
     <client_servlet_url>https://www.santfeliu.cat/commands</client_servlet_url>
     <client_update_url>https://www.santfeliu.cat/reports/matrix_client_update.html</client_update_url>
     <client_inaction_timeout>500</client_inaction_timeout>
-    
+
     <warp_packer_version>v0.3.0</warp_packer_version>
     <jre_download_url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download</jre_download_url>
     <jre_name>OpenJDK8U</jre_name>
     <jre_version>jdk8u242-b08</jre_version>
     <jre_file>8u242b08</jre_file>
-    
-    <project_nv>${project.name}-${project.version}</project_nv>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -108,6 +107,8 @@
                 </goals>
                 <phase>package</phase>
                 <configuration>
+                  <finalName>gdmatrix-client-win</finalName>
+                  <appendAssemblyId>false</appendAssemblyId>
                   <descriptors>
                     <descriptor>src/main/assembly/windows-assembly.xml</descriptor>
                   </descriptors>
@@ -120,6 +121,8 @@
                 </goals>
                 <phase>package</phase>
                 <configuration>
+                  <finalName>gdmatrix-client-mac</finalName>
+                  <appendAssemblyId>false</appendAssemblyId>
                   <descriptors>
                     <descriptor>src/main/assembly/macos-assembly.xml</descriptor>
                   </descriptors>
@@ -146,62 +149,58 @@
             <version>1.8</version>
             <executions>
               <execution>
-                <id>warp-packer</id>
+                <id>create-packages</id>
                 <phase>package</phase>
                 <configuration>
                   <target>
                     <mkdir dir="${user.home}/gdmatrix_build" />
 
-                    <script language="javascript">
-                      var osName = java.lang.System.getProperty("os.name");
-                      java.lang.System.out.println("OS name: " + osName);
-                      osName = osName.toLowerCase();
-                      if (osName.indexOf("win") !== -1)
-                      {
-                      project.setProperty("warp_packer", "windows-x64.warp-packer.exe");
-                      }
-                      else if (osName.indexOf("mac") !== -1)
-                      {
-                      project.setProperty("warp_packer", "macos-x64.warp-packer");
-                      }
-                      else
-                      {
-                      project.setProperty("warp_packer", "linux-x64.warp-packer");
-                      }
-                    </script>
-                    <echo>Downloading ${warp_packer}...</echo>
-                    <get src="https://github.com/dgiagio/warp/releases/download/${warp_packer_version}/${warp_packer}"
-                         dest="${user.home}/gdmatrix_build/${warp_packer}" skipexisting="true" />
-                    <chmod file="${user.home}/gdmatrix_build/${warp_packer}" perm="755" />
-
-                    <echo>Packaging GDMatrixClient for Windows-x64...</echo>
+                    <echo>Packaging GDMatrixClient for Windows...</echo>
                     <get src="${jre_download_url}/${jre_version}/${jre_name}-jre_x64_windows_hotspot_${jre_file}.zip"
                          dest="${user.home}/gdmatrix_build/windows-jre.zip" skipexisting="true" />
                     <unzip src="${user.home}/gdmatrix_build/windows-jre.zip"
-                           dest="${basedir}/target/${project_nv}-windows/gdmatrix-client" />
-                    <move file="${basedir}/target/${project_nv}-windows/gdmatrix-client/${jre_version}-jre"
-                          tofile="${basedir}/target/${project_nv}-windows/gdmatrix-client/jre" />
-                    <move file="${basedir}/target/${project_nv}-windows/gdmatrix-client/install.bat"
-                          tofile="${basedir}/target/${project_nv}-windows/gdmatrix-client/install 0.bat" />
-                    <exec executable="${user.home}/gdmatrix_build/${warp_packer}">
-                      <arg value="-a"/>
-                      <arg value="windows-x64" />
-                      <arg value="-i" />
-                      <arg value="${basedir}/target/${project_nv}-windows/gdmatrix-client" />
-                      <arg value="-e" />
-                      <arg value="install 0.bat" />
-                      <arg value="-o" />
-                      <arg value="${basedir}/target/GDMatrixClientWinInstall.exe" />
-                    </exec>
-                    <delete dir="${basedir}/target/${project_nv}-windows" failonerror="false" />
+                           dest="${basedir}/target/windows-jre" />
+                    <move file="${basedir}/target/windows-jre/${jre_version}-jre"
+                          tofile="${basedir}/target/windows-jre/jre" />
+                    <zip destfile="${basedir}/target/windows-jre.zip" basedir="${basedir}/target/windows-jre" />
+                    <zip destfile="${basedir}/target/gdmatrix-client-win.zip" basedir="${basedir}/target/gdmatrix-client-win" />
+                    <mkdir dir="${user.home}/headers" />
+                    <echo file="${basedir}/target/headers/header1.txt">==@FILE:install.bat${line.separator}</echo>
+                    <echo file="${basedir}/target/headers/header2.txt">==@FILE:einstall.bat${line.separator}</echo>
+                    <echo file="${basedir}/target/headers/header3.txt">==@FILE:elevate.exe${line.separator}</echo>
+                    <echo file="${basedir}/target/headers/header4.txt">==@FILE:7za.exe${line.separator}</echo>
+                    <echo file="${basedir}/target/headers/header5.txt">==@FILE:windows-jre.zip${line.separator}</echo>
+                    <echo file="${basedir}/target/headers/header6.txt">==@FILE:gdmatrix-client-win.zip${line.separator}</echo>
+                    <echo file="${basedir}/target/headers/header7.txt">==@FILE:signature.dat${line.separator}</echo>
+                    <concat destfile="${basedir}/target/GDMatrixClientWinInstall.exe" binary="yes">
+                      <fileset file="${basedir}/src/main/deploy/unpack.exe"/>
+                      <fileset file="${basedir}/target/headers/header1.txt"/>
+                      <fileset file="${basedir}/src/main/deploy/install.bat"/>
+                      <fileset file="${basedir}/target/headers/header2.txt"/>
+                      <fileset file="${basedir}/src/main/deploy/einstall.bat"/>
+                      <fileset file="${basedir}/target/headers/header3.txt"/>
+                      <fileset file="${basedir}/src/main/deploy/elevate.exe"/>
+                      <fileset file="${basedir}/target/headers/header4.txt"/>
+                      <fileset file="${basedir}/src/main/deploy/7za.exe"/>
+                      <fileset file="${basedir}/target/headers/header5.txt"/>
+                      <fileset file="${basedir}/target/windows-jre.zip"/>
+                      <fileset file="${basedir}/target/headers/header6.txt"/>
+                      <fileset file="${basedir}/target/gdmatrix-client-win.zip"/>
+                      <fileset file="${basedir}/target/headers/header7.txt"/>
+                    </concat>
+                    <delete dir="${basedir}/target/headers" failonerror="false" />
+                    <delete dir="${basedir}/target/windows-jre" failonerror="false" />
+                    <delete file="${basedir}/target/windows-jre.zip" failonerror="false" />
+                    <delete dir="${basedir}/target/gdmatrix-client-win" failonerror="false" />
+                    <delete file="${basedir}/target/gdmatrix-client-win.zip" failonerror="false" />
 
                     <echo>Packaging GDMatrixClient for MacOS-64...</echo>
                     <get src="${jre_download_url}/${jre_version}/${jre_name}-jre_x64_mac_hotspot_${jre_file}.tar.gz"
                          dest="${user.home}/gdmatrix_build/macos-jre.tar.gz" skipexisting="true" />
                     <untar src="${user.home}/gdmatrix_build/macos-jre.tar.gz" compression="gzip"
-                           dest="${basedir}/target/${project_nv}-macos/gdmatrix-client" />
-                    <move file="${basedir}/target/${project_nv}-macos/gdmatrix-client/${jre_version}-jre"
-                          tofile="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE" />
+                           dest="${basedir}/target/gdmatrix-client-mac/gdmatrix-client" />
+                    <move file="${basedir}/target/gdmatrix-client-mac/gdmatrix-client/${jre_version}-jre"
+                          tofile="${basedir}/target/gdmatrix-client-mac/gdmatrix-client/Contents/PlugIns/JRE" />
                     <zip destfile="${basedir}/target/GDMatrixClientMacInstall.zip">
                       <zipfileset file="${basedir}/src/main/deploy/HELP_macos.txt"
                                   fullpath="gdmatrix-client/HELP.txt" />
@@ -212,15 +211,15 @@
                                   filemode="755" />
                       <zipfileset file="${basedir}/src/main/deploy/gdmatrix.icns"
                                   fullpath="gdmatrix-client/GDMatrixClient.app/Contents/Resources/gdmatrix.icns" />
-                      <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE/Contents/Home/bin"
+                      <zipfileset dir="${basedir}/target/gdmatrix-client-mac/gdmatrix-client/Contents/PlugIns/JRE/Contents/Home/bin"
                                   prefix="gdmatrix-client/GDMatrixClient.app/Contents/PlugIns/JRE/Contents/Home/jre/bin"
                                   filemode="755" />
-                      <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/PlugIns/JRE/Contents/Home/lib"
+                      <zipfileset dir="${basedir}/target/gdmatrix-client-mac/gdmatrix-client/Contents/PlugIns/JRE/Contents/Home/lib"
                                   prefix="gdmatrix-client/GDMatrixClient.app/Contents/PlugIns/JRE/Contents/Home/jre/lib" />
-                      <zipfileset dir="${basedir}/target/${project_nv}-macos/gdmatrix-client/Contents/Java"
+                      <zipfileset dir="${basedir}/target/gdmatrix-client-mac/gdmatrix-client/Contents/Java"
                                   prefix="gdmatrix-client/GDMatrixClient.app/Contents/Java" />
                     </zip>
-                    <delete dir="${basedir}/target/${project_nv}-macos" failonerror="false" />
+                    <delete dir="${basedir}/target/gdmatrix-client-mac" failonerror="false" />
                   </target>
                 </configuration>
                 <goals>
