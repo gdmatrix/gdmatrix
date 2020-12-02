@@ -36,17 +36,12 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
-
 import java.awt.geom.Rectangle2D;
-
 import java.net.URL;
-
 import java.security.MessageDigest;
 import java.security.cert.X509Certificate;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -72,7 +67,7 @@ public class SignaturePanel extends JPanel implements Runnable
   {
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -80,7 +75,7 @@ public class SignaturePanel extends JPanel implements Runnable
     }
   }
   
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     setBorder(new LineBorder(Color.gray, 1));    
     URL url;

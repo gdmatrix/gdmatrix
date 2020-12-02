@@ -32,9 +32,7 @@ package org.santfeliu.matrix.client.ui.microsigner;
 
 import java.awt.Color;
 import java.awt.Component;
-
 import java.net.URL;
-
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;

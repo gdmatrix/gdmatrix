@@ -35,12 +35,9 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.security.cert.X509Certificate;
-
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -54,7 +51,7 @@ import javax.swing.table.TableColumn;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class CertificateInfoDialog extends JDialog
 {
@@ -68,7 +65,7 @@ public class CertificateInfoDialog extends JDialog
   {
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -81,7 +78,7 @@ public class CertificateInfoDialog extends JDialog
     super(owner);
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -89,7 +86,7 @@ public class CertificateInfoDialog extends JDialog
     }
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     this.setTitle(MicroSigner.getLocalizedText("CertInfo"));
     this.setSize(new Dimension(560, 300));

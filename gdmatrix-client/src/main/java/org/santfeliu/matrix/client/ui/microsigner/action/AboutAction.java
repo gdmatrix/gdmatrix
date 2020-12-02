@@ -31,10 +31,8 @@
 package org.santfeliu.matrix.client.ui.microsigner.action;
 
 import java.awt.event.ActionEvent;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-
 import javax.swing.JDialog;
 import org.santfeliu.matrix.client.ui.microsigner.AboutDialog;
 import org.santfeliu.matrix.client.ui.microsigner.MainPanel;
@@ -43,11 +41,11 @@ import org.santfeliu.matrix.client.ui.microsigner.MicroSigner;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class AboutAction extends AbstractAction
 {
-  private MainPanel mainPanel;
+  private final MainPanel mainPanel;
 
   public AboutAction(MainPanel mainPanel)
   {
@@ -56,6 +54,7 @@ public class AboutAction extends AbstractAction
     this.mainPanel = mainPanel;
   }
   
+  @Override
   public void actionPerformed(ActionEvent event)
   { 
     JDialog dialog = new AboutDialog(mainPanel.getFrame());

@@ -41,9 +41,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.security.cert.X509Certificate;
-
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
@@ -61,7 +59,7 @@ import org.santfeliu.matrix.client.ui.microsigner.action.*;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class MainPanel extends JPanel
 {
@@ -90,7 +88,7 @@ public class MainPanel extends JPanel
     this.microSigner = microSigner;
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -113,7 +111,7 @@ public class MainPanel extends JPanel
     headerLabel.setText(text);
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     DefaultMutableTreeNode rootNode = 
       new DefaultMutableTreeNode(MicroSigner.getLocalizedText("KeyStores"));

@@ -31,7 +31,6 @@
 package org.santfeliu.matrix.client.ui.microsigner.action;
 
 import java.awt.event.ActionEvent;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.santfeliu.matrix.client.ui.microsigner.KeyStoreNode;
@@ -41,11 +40,11 @@ import org.santfeliu.matrix.client.ui.microsigner.MicroSigner;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class RemoveKeyStoreAction extends AbstractAction
 {
-  private MainPanel mainPanel;
+  private final MainPanel mainPanel;
   
   public RemoveKeyStoreAction(MainPanel mainPanel)
   {
@@ -54,6 +53,7 @@ public class RemoveKeyStoreAction extends AbstractAction
     this.mainPanel = mainPanel;
   }
   
+  @Override
   public void actionPerformed(ActionEvent event)
   {
     KeyStoreNode ksNode = mainPanel.getSelectedKeyStoreNode();

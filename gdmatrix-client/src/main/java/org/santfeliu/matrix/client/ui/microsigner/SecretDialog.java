@@ -39,11 +39,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -54,7 +51,7 @@ import javax.swing.border.BevelBorder;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SecretDialog extends JDialog
 {
@@ -70,7 +67,7 @@ public class SecretDialog extends JDialog
     super(parent, MicroSigner.TITLE, true);
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -83,8 +80,7 @@ public class SecretDialog extends JDialog
     pinLabel.setText(text);
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setSize(new Dimension(240, 170));
     this.getContentPane().setLayout(gridBagLayout1);

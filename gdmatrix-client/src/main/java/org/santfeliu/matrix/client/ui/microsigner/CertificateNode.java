@@ -31,12 +31,11 @@
 package org.santfeliu.matrix.client.ui.microsigner;
 
 import java.security.cert.X509Certificate;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class CertificateNode extends DefaultMutableTreeNode
 {

@@ -32,13 +32,12 @@ package org.santfeliu.matrix.client.ui.microsigner;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import java.net.URL;
 import java.net.URLConnection;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SignatureServletClient
 {

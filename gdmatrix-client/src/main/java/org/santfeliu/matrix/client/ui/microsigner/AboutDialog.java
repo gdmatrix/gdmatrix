@@ -33,17 +33,13 @@ package org.santfeliu.matrix.client.ui.microsigner;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.net.URL;
-
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -60,7 +56,7 @@ import javax.swing.table.DefaultTableModel;
  * @author realor
  */
 public class AboutDialog extends JDialog
-{  
+{
   private BorderLayout borderLayout1 = new BorderLayout();
   private BorderLayout borderLayout2 = new BorderLayout();
   private JPanel centerPanel = new JPanel();
@@ -75,7 +71,7 @@ public class AboutDialog extends JDialog
     super(owner, true);
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -83,8 +79,7 @@ public class AboutDialog extends JDialog
     }
   }
 
-  private void jbInit()
-    throws Exception
+  private void initComponents() throws Exception
   {
     this.setTitle(MicroSigner.TITLE);
     this.setSize(new Dimension(451, 292));

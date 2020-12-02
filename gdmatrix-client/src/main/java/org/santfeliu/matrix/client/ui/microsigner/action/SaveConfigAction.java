@@ -34,7 +34,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-
 import javax.swing.JOptionPane;
 import org.santfeliu.matrix.client.ui.microsigner.MainPanel;
 import org.santfeliu.matrix.client.ui.microsigner.MicroSigner;
@@ -42,11 +41,11 @@ import org.santfeliu.matrix.client.ui.microsigner.MicroSigner;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SaveConfigAction extends AbstractAction
 {
-  private MainPanel mainPanel;
+  private final MainPanel mainPanel;
   
   public SaveConfigAction(MainPanel mainPanel)
   {
@@ -55,6 +54,7 @@ public class SaveConfigAction extends AbstractAction
     this.mainPanel = mainPanel;
   }
 
+  @Override
   public void actionPerformed(ActionEvent event)
   {
     try

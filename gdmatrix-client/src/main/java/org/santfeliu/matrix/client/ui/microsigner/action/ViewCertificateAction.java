@@ -31,7 +31,6 @@
 package org.santfeliu.matrix.client.ui.microsigner.action;
 
 import java.awt.event.ActionEvent;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.santfeliu.matrix.client.ui.microsigner.CertificateInfoDialog;
@@ -41,11 +40,11 @@ import org.santfeliu.matrix.client.ui.microsigner.MicroSigner;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ViewCertificateAction extends AbstractAction
 {
-  private MainPanel mainPanel;
+  private final MainPanel mainPanel;
 
   public ViewCertificateAction(MainPanel mainPanel)
   {
@@ -54,6 +53,7 @@ public class ViewCertificateAction extends AbstractAction
       MicroSigner.getLocalizedText("ViewCertificate"));      
   }
 
+  @Override
   public void actionPerformed(ActionEvent event)
   {
     CertificateNode certNode = mainPanel.getSelectedCertificateNode();

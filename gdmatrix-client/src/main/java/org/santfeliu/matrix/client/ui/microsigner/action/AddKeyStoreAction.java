@@ -32,7 +32,6 @@ package org.santfeliu.matrix.client.ui.microsigner.action;
 
 import java.awt.event.ActionEvent;
 import java.util.logging.Logger;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.santfeliu.matrix.client.ui.microsigner.KeyStoreDialog;
@@ -43,11 +42,11 @@ import org.santfeliu.matrix.client.ui.microsigner.MicroSigner;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class AddKeyStoreAction extends AbstractAction
 {
-  private MainPanel mainPanel;
+  private final MainPanel mainPanel;
 
   public AddKeyStoreAction(MainPanel mainPanel)
   {
@@ -56,6 +55,7 @@ public class AddKeyStoreAction extends AbstractAction
     this.mainPanel = mainPanel;
   }
   
+  @Override
   public void actionPerformed(ActionEvent event)
   {
     Logger.getLogger(getClass().getName()).info(event.toString());

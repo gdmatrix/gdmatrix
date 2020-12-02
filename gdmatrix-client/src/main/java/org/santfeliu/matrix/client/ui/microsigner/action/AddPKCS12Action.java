@@ -31,9 +31,7 @@
 package org.santfeliu.matrix.client.ui.microsigner.action;
 
 import java.awt.event.ActionEvent;
-
 import java.io.File;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -46,11 +44,11 @@ import org.santfeliu.matrix.client.ui.microsigner.SecretDialog;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class AddPKCS12Action extends AbstractAction
 {
-  private MainPanel mainPanel;
+  private final MainPanel mainPanel;
 
   public AddPKCS12Action(MainPanel mainPanel)
   {
@@ -58,6 +56,7 @@ public class AddPKCS12Action extends AbstractAction
     this.mainPanel = mainPanel;
   }
   
+  @Override
   public void actionPerformed(ActionEvent event)
   {
     JFileChooser fileChooser = new JFileChooser();
@@ -71,6 +70,7 @@ public class AddPKCS12Action extends AbstractAction
         return name.endsWith(".p12") || name.endsWith(".pfx");
       }
       
+      @Override
       public String getDescription()
       {
         return "PKCS#12 (*.p12, *.pfx)";

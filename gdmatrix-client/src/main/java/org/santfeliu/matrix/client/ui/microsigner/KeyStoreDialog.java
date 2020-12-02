@@ -38,12 +38,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.security.KeyStore;
 import java.security.Provider;
-
 import java.util.Enumeration;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -54,10 +51,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class KeyStoreDialog extends JDialog
 {
@@ -65,7 +61,6 @@ public class KeyStoreDialog extends JDialog
   private BorderLayout borderLayout = new BorderLayout();
   private JPanel centerPanel = new JPanel();
   private GridBagLayout gridBagLayout = new GridBagLayout();
-  
   private JPasswordField ksPasswordField = new JPasswordField();
   private JTextField ksPathTextField = new JTextField();
   private JComboBox ksTypeComboBox = new JComboBox();
@@ -85,7 +80,7 @@ public class KeyStoreDialog extends JDialog
     super(owner);
     try
     {
-      jbInit();
+      initComponents();
     }
     catch (Exception e)
     {
@@ -116,7 +111,7 @@ public class KeyStoreDialog extends JDialog
     return ksNode;
   }
 
-  private void jbInit() throws Exception
+  private void initComponents() throws Exception
   {
     setTitle(MicroSigner.TITLE);
     getContentPane().setLayout(borderLayout);
