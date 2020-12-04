@@ -48,8 +48,10 @@
           </h:outputLink>
 
           <!-- render as image -->
-          <h:graphicImage alt="" value="#{panel.resultsManager.columnValue}"
-            rendered="#{panel.resultsManager.imageColumn and panel.resultsManager.columnValue != null}"/>
+          <h:graphicImage value="#{panel.resultsManager.columnValue}"
+            rendered="#{panel.resultsManager.imageColumn and panel.resultsManager.columnValue != null}"
+            alt="#{panel.resultsManager.columnDescription}"
+            title="#{panel.resultsManager.columnDescription}"/>
 
           <!-- render as text -->
           <h:outputText value="#{panel.resultsManager.columnValue}"

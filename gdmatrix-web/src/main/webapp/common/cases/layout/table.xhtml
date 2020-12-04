@@ -20,9 +20,10 @@
                      styleClass="#{caseSearchBean.columnStyleClass}">
             <f:facet name="header">
               <sf:outputText value="#{caseSearchBean.localizedColumnName}"
-                            rendered="#{not (caseSearchBean.columnName == 'actions' and caseSearchBean.customColumn)}"
-                            translator="#{caseSearchBean.translator}"
-                            translationGroup="#{userSessionBean.translationGroup}"/>
+                rendered="#{not (caseSearchBean.columnName == 'actions' and caseSearchBean.customColumn)}"
+                translator="#{caseSearchBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}"
+                style="#{caseSearchBean.columnStyle}"/>
             </f:facet>
 
             <!-- title link -->
