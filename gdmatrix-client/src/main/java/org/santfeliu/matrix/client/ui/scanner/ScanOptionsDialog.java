@@ -50,7 +50,9 @@ public class ScanOptionsDialog extends javax.swing.JDialog
     feederCheckBox.setSelected(cmdTwain.isFeeder());
     duplexCheckBox.setSelected(cmdTwain.isDuplex());
     autoscanCheckBox.setSelected(cmdTwain.isAutoscan());
-    autofeedCheckBox.setSelected(cmdTwain.isAutofeed());    
+    autofeedCheckBox.setSelected(cmdTwain.isAutofeed());  
+    paperSizeComboBox.setSelectedItem(cmdTwain.getPaper().getName());
+    sizeInInchesCheckBox.setSelected(cmdTwain.isPaperSizeInInches());
   }
 
   /**
@@ -76,6 +78,9 @@ public class ScanOptionsDialog extends javax.swing.JDialog
     cancelButton = new javax.swing.JButton();
     brightnessValueLabel = new javax.swing.JLabel();
     contrastValueLabel = new javax.swing.JLabel();
+    paperSizeLabel = new javax.swing.JLabel();
+    paperSizeComboBox = new javax.swing.JComboBox<>();
+    sizeInInchesCheckBox = new javax.swing.JCheckBox();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/santfeliu/matrix/client/ui/scanner/resources/ScanFrame"); // NOI18N
@@ -145,15 +150,32 @@ public class ScanOptionsDialog extends javax.swing.JDialog
 
     contrastValueLabel.setText("0");
 
+    paperSizeLabel.setText(bundle.getString("paperSize")); // NOI18N
+
+    paperSizeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A0", "A1", "A2", "A3", "A4", "A5", "A6", "LETTER", "LEGAL" }));
+    paperSizeComboBox.setToolTipText("");
+
+    sizeInInchesCheckBox.setText(bundle.getString("sizeInInches")); // NOI18N
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addComponent(brightnessSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       .addComponent(contrastSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .addComponent(southPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .addGroup(layout.createSequentialGroup()
+        .addGap(18, 18, 18)
+        .addComponent(paperSizeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(paperSizeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(32, 32, 32))
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(sizeInInchesCheckBox)
+            .addGap(0, 0, Short.MAX_VALUE))
           .addGroup(layout.createSequentialGroup()
             .addComponent(brightnessLabel)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -173,7 +195,6 @@ public class ScanOptionsDialog extends javax.swing.JDialog
                   .addComponent(feederCheckBox))
                 .addGap(0, 0, Short.MAX_VALUE)))
             .addGap(10, 10, 10))))
-      .addComponent(southPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -197,7 +218,13 @@ public class ScanOptionsDialog extends javax.swing.JDialog
         .addComponent(autoscanCheckBox)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(autofeedCheckBox)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(paperSizeLabel)
+          .addComponent(paperSizeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(sizeInInchesCheckBox)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(southPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
     );
 
@@ -212,6 +239,8 @@ public class ScanOptionsDialog extends javax.swing.JDialog
     cmdTwain.setDuplex(duplexCheckBox.isSelected());
     cmdTwain.setAutoscan(autoscanCheckBox.isSelected());
     cmdTwain.setAutofeed(autofeedCheckBox.isSelected());
+    cmdTwain.setPaper((String) paperSizeComboBox.getSelectedItem());
+    cmdTwain.setPaperSizeInInches(sizeInInchesCheckBox.isSelected());
     setVisible(false);
     dispose();
   }//GEN-LAST:event_acceptButtonActionPerformed
@@ -283,6 +312,9 @@ public class ScanOptionsDialog extends javax.swing.JDialog
   private javax.swing.JLabel contrastValueLabel;
   private javax.swing.JCheckBox duplexCheckBox;
   private javax.swing.JCheckBox feederCheckBox;
+  private javax.swing.JComboBox<String> paperSizeComboBox;
+  private javax.swing.JLabel paperSizeLabel;
+  private javax.swing.JCheckBox sizeInInchesCheckBox;
   private javax.swing.JPanel southPanel;
   // End of variables declaration//GEN-END:variables
 }
