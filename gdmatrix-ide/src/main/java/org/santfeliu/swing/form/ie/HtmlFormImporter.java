@@ -302,6 +302,8 @@ public class HtmlFormImporter
         view.setPassword(element.getAttribute("password"));
         view.setDataref(element.getAttribute("dataref"));
         view.setOnChange(element.getAttribute("onchange"));
+        view.setTranslate(Boolean.parseBoolean(
+          element.getAttribute("translate")));
         view.setMultiple(getBoolean(element.getAttribute("multiple")));
 
         componentView = view;

@@ -249,6 +249,10 @@ public class HtmlFormExporter
       {
         writer.write(" onchange=\"" + view.getOnChange() + "\"");
       }
+      if (view.getTranslate() != null && view.getTranslate())
+      {
+        writer.write(" translate=\"" + view.getTranslate().toString() + "\"");
+      }
       writer.write(">");
 
       // static options

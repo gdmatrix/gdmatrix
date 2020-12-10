@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 
@@ -697,7 +698,9 @@ public class CustomForm extends UIComponentBase
       String connection = element.getAttribute("connection");
       String username = element.getAttribute("username");
       String password = element.getAttribute("password");
-
+      boolean translate = Boolean.parseBoolean(
+        element.getAttribute("translate"));
+      
       if (sql != null && sql.trim().length() > 0 &&
          connection != null && connection.trim().length() > 0)
       {
@@ -705,6 +708,7 @@ public class CustomForm extends UIComponentBase
         element.removeAttribute("connection");
         element.removeAttribute("username");
         element.removeAttribute("password");
+        element.removeAttribute("translate");
         Map values = getValues();
         QueryParameters queryParameters = new QueryParameters();
         Set<Map.Entry> entries = values.entrySet();
@@ -736,8 +740,9 @@ public class CustomForm extends UIComponentBase
           Element option = document.createElement("option");
           option.setAttribute("value",
             String.valueOf(row.getValues().get(0)));
-          Text text = document.createTextNode(
-            String.valueOf(row.getValues().get(1)));
+          String label = String.valueOf(row.getValues().get(1));
+          if (translate) label = translate(label);
+          Text text = document.createTextNode(label);
           option.appendChild(text);
           element.appendChild(option);
         }
@@ -1088,4 +1093,19 @@ public class CustomForm extends UIComponentBase
     }
     return result;
   }
+  
+  private String translate(String text) throws IOException
+  {
+    Translator translator = getTranslator();
+    if (translator != null)
+    {
+      String userLanguage = FacesUtils.getViewLanguage();
+      StringWriter sw = new StringWriter();
+      translator.translate(new StringReader(text), sw, "text/plain",
+        userLanguage, getTranslationGroup());
+      text = sw.toString();
+    }
+    return text;
+  }
+  
 }

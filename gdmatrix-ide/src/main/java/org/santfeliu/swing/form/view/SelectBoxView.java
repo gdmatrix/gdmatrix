@@ -354,6 +354,7 @@ public class SelectBoxView extends ComponentView
     clone.disabled = disabled;
     clone.size = size;
     clone.multiple = multiple;
+    clone.translate = translate;
     return clone;
   }
 }
