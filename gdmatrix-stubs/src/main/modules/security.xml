@@ -373,5 +373,22 @@
       <response name="removed" type="xs:boolean">
       </response>
     </operation>
+
+    <operation name="getUserInRoles">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <response name="role" type="xs:string"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
+    <operation name="getRoleInRoles">
+      <parameter name="roleId" type="xs:string">
+      </parameter>
+      <response name="role" type="xs:string"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
   </operations>
 </module>

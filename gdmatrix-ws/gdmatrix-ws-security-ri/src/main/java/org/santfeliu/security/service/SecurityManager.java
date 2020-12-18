@@ -118,7 +118,7 @@ public class SecurityManager implements SecurityManagerPort
   private static final int USER_ID_MAX_SIZE = 20;
 
   private static String masterPassword;
-  private static Set<String> certUserRoles;
+  private static final Set<String> certUserRoles;
   private static boolean validateCertificate;
   private static DigestEncoder digestEncoder;
   private static String digestParameters;
@@ -1003,7 +1003,23 @@ public class SecurityManager implements SecurityManagerPort
     }
     return result;
   }
+  
+  @Override
+  public List<String> getUserInRoles(String userId)
+  {
+    if (!isUserAdmin()) throw WSExceptionFactory.create("ACTION_DENIED");
 
+    return new ArrayList(UserCache.getUserInRoles(userId));
+  }
+
+  @Override
+  public List<String> getRoleInRoles(String roleId)
+  {
+    if (!isUserAdmin()) throw WSExceptionFactory.create("ACTION_DENIED");
+
+    return new ArrayList(UserCache.getRoleInRoles(roleId));
+  }
+  
   public static String getMasterPassword()
   {
     return masterPassword;
@@ -1210,7 +1226,7 @@ public class SecurityManager implements SecurityManagerPort
     {
       throw new Exception("VALUE_TOO_LARGE");
     }
-    else if (user.getUserId().indexOf(" ") != -1)
+    else if (user.getUserId().contains(" "))
     {
       throw new Exception("security:BLANK_USERNAME");
     }
