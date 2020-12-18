@@ -42,9 +42,20 @@
             <t:commandLink value="#{mapViewerBundle.editStyles}"
               action="#{sldEditorBean.show}" styleClass="barViewButton"
               rendered="#{mapViewerBean.editionEnabled and sldEditorBean.sldName != null}" />
-            <t:commandLink value="#{mapViewerBundle.catalogue}"
+            <t:commandLink
               action="#{mapViewerBean.showCatalogue}" styleClass="barViewButton"
-              rendered="#{mapViewerBean.catalogueVisible}" />
+              rendered="#{mapViewerBean.catalogueVisible}" immediate="true">
+              <sf:outputText value="#{userSessionBean.selectedMenuItem.parent.label}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="map:#{mapBean.map.name}" />
+            </t:commandLink>              
+            <h:outputLink value="#{userSessionBean.selectedMenuItem.properties.extraButtonURL}" 
+              rendered="#{userSessionBean.selectedMenuItem.properties.extraButtonURL != null}"
+              styleClass="barViewButton">
+              <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.extraButtonLabel}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="map:#{mapBean.map.name}" />
+            </h:outputLink>
           </t:div>
         </t:div>
 
