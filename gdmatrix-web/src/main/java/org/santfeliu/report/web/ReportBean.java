@@ -297,11 +297,16 @@ public class ReportBean extends ObjectBean implements Serializable
   public Map getFormValues()
   {
     if (formValues == null)
-      formValues = getParameters();
+    {
+      formValues = new HashMap();
+      formValues = parameters;
+      putRequestParameters(formValues); //Set fresh request parameters
+      putUserParameters(formValues); //Put user related parameters
+    }
 
     return formValues;
   }
- 
+
   public Map getParameters()
   {
     return parameters;
@@ -319,7 +324,7 @@ public class ReportBean extends ObjectBean implements Serializable
     parameters = getReportDefaultParameters(reportName);       
     putRequestParameters(parameters);
     putFormValues(parameters);
-    putUserParameters(parameters);    
+    putUserParameters(parameters);
   }    
   
   /* actions */
@@ -349,7 +354,7 @@ public class ReportBean extends ObjectBean implements Serializable
     String outcome = null;
     
     try    
-    {
+    {     
       setParameters();
       
       MenuItemCursor menuItem = getSelectedMenuItem();
@@ -360,7 +365,7 @@ public class ReportBean extends ObjectBean implements Serializable
           DictionaryConstants.REPORT_TYPE, getReportName());
       }
       else
-        outcome = show();      
+        outcome = show();
     }
     catch (Exception ex)
     {
@@ -493,7 +498,10 @@ public class ReportBean extends ObjectBean implements Serializable
   private void putFormValues(Map parameters)
   {
     if (formValues != null)
-      parameters.putAll(formValues);       
+    {
+      parameters.putAll(formValues); 
+      formValues = null; //Reset form values to force refresh
+    }      
   }
     
   private String getFormName()
