@@ -213,12 +213,12 @@ public class NewSearchBySectionBean extends BasicSearchBean
   private static final String SECTION_ID_PROPERTY =
     "sectionId";
   
-  private static final String DOC_SERVLET_PATH = "/documents/";
+  private static final String DOC_SERVLET_PATH = "/documents/";  
   
   private List<SectionView> childrenSectionViewList;  
   private SetObjectManager setObjectManager; 
   private SectionFilter filter;
-  private String lastMid = null;
+  private String lastMid = null;  
   
   private String searchNewId;  
   private String searchContent;
@@ -491,6 +491,7 @@ public class NewSearchBySectionBean extends BasicSearchBean
       }
       lastMid = UserSessionBean.getCurrentInstance().getSelectedMid();
       search();
+      ((NewBean)getObjectBean()).setRenderMainHeading(true);
       return "new_search_by_section";
     }
   }
@@ -1490,10 +1491,10 @@ public class NewSearchBySectionBean extends BasicSearchBean
       readingCount = client.incrementNewCounter(newId, sectionId);
     }
     newDetailsBean.setReadingCount(readingCount);
-    newDetailsBean.prepareView(client, newDocumentList);
+    newDetailsBean.prepareView(client, newDocumentList);    
     return "new_details";
-  }  
-  
+  }
+
   private void swapPriority(NewsManagerClient client, NewView nv1, NewView nv2,
     String sectionId)
   {

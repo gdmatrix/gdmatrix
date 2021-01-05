@@ -16,6 +16,12 @@
 
       <t:saveState value="#{newDetailsBean}"/>
 
+      <sf:heading level="1" styleClass="element-invisible">
+        <sf:outputText escape="false" value="#{newDetailsBean.newObject.headline}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{newDetailsBean.translationGroup}" />
+      </sf:heading>
+
       <t:div styleClass="newView">
 
         <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
@@ -93,13 +99,13 @@
           </t:dataList>
         </t:div>
         <t:div rendered="#{newDetailsBean.sharingEnabled}" styleClass="shareLayer">
-          <h:panelGroup>
+          <h:panelGroup>            
             <sf:outputText value="#{userSessionBean.selectedMenuItem.properties['details.shareText']}"
                            styleClass="shareText"
                            translator="#{userSessionBean.translator}"
                            translationGroup="#{newDetailsBean.translationGroup}"
                            rendered="#{userSessionBean.selectedMenuItem.properties['details.shareText'] != null}"/>
-            <t:dataList value="#{newDetailsBean.shareLinkList}" styleClass="shareTable" var="item">          
+            <t:dataList value="#{newDetailsBean.shareLinkList}" styleClass="shareTable" var="item" layout="unorderedList">          
               <sf:outputLink rendered="#{item.shareURL != 'EMAIL'}" target="_blank" value="#{item.shareURL}" styleClass="shareLink"
                              title="#{item.description}"
                              translator="#{userSessionBean.translator}"

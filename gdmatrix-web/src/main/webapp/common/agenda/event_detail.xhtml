@@ -14,6 +14,12 @@
       <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle" var="agendaBundle"/>
       <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" var="objectBundle" />
 
+      <sf:heading level="1" styleClass="element-invisible">
+        <sf:outputText escape="false" value="#{eventDetailBean.event.summary}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="event:#{eventDetailBean.event.eventId}" />
+      </sf:heading>
+      
       <sf:printableGroup name="printAgenda">
         <t:div styleClass="eventDetail" >
 
@@ -249,7 +255,7 @@
                 translator="#{userSessionBean.translator}"
                 translationGroup="#{userSessionBean.translationGroup}"
                 rendered="#{userSessionBean.selectedMenuItem.properties['details.shareText'] != null}"/>
-              <t:dataList value="#{eventDetailBean.shareLinkList}" styleClass="shareTable" var="item">
+              <t:dataList value="#{eventDetailBean.shareLinkList}" styleClass="shareTable" var="item" layout="unorderedList">
                 <sf:outputLink rendered="#{item.shareURL != 'EMAIL'}" 
                               value="#{item.shareURL}" 
                               styleClass="shareLink" 

@@ -784,8 +784,8 @@ public class EventSearchBean extends PageBean
         eventViewBean.search(eventFilter);
       }
 
-      resetEventFilter();
-
+      resetEventFilter();      
+      ((EventBean)getObjectBean()).setRenderMainHeading(true);      
       return "event_search";
     }
   }
@@ -961,7 +961,7 @@ public class EventSearchBean extends PageBean
     return true;
   }
 
-  public String showDetail()
+  public String showDetail()    
   {
     return showDetail((String)getValue("#{row.eventId}"));
   }

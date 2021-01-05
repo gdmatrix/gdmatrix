@@ -1,3 +1,8 @@
+main#sf_main_content
+{
+  outline: 0;
+}
+
 .main
 {
   width:100%;
@@ -71,7 +76,7 @@
 {
 }
 
-.main .menuCol /** menú esquerre*/
+.main .menuCol /** menï¿½ esquerre*/
 {
   width:150px;
   text-align:left;
@@ -740,7 +745,7 @@ textarea
 }
 
 
-/* News - Pàgina noticia ampliada */
+/* News - Pï¿½gina noticia ampliada */
 .newsSelectPage
 {
   border-width: 1px;

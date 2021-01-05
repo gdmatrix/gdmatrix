@@ -70,6 +70,8 @@ public abstract class ObjectBean extends PageBean
   static final String OBJECT_TYPE_ICON_URL =
     "_objectTypeIconUrl";
   
+  private boolean renderMainHeading = true;  
+  
   public ObjectBean()
   {
     objectId = ControllerBean.NEW_OBJECT_ID;
@@ -465,6 +467,16 @@ public abstract class ObjectBean extends PageBean
     executeTypeAction("postObjectShow");
   }  
   
+  public boolean isRenderMainHeading() 
+  {
+    return renderMainHeading;
+  }
+
+  public void setRenderMainHeading(boolean renderMainHeading) 
+  {
+    this.renderMainHeading = renderMainHeading;
+  }
+
   // other actions that may be implemented in derived classes
 
   public String remove()

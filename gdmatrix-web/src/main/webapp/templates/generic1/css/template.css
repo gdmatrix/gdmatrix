@@ -1,3 +1,8 @@
+main#sf_main_content
+{
+  outline: 0;
+}
+
 .main
 {
   width:100%;

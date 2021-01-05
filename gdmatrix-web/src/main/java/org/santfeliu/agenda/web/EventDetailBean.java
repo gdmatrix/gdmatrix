@@ -76,6 +76,7 @@ import org.santfeliu.util.template.WebTemplate;
 import org.santfeliu.web.HttpUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.ShareableWebBean;
+import org.santfeliu.web.obj.ControllerBean;
 import org.santfeliu.web.obj.DetailBean;
 import org.santfeliu.web.obj.PropertiesFilter;
 
@@ -132,7 +133,10 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
   public String show()
   {
     try
-    {
+    {      
+      ((EventBean)ControllerBean.getCurrentInstance().getObjectBean()).
+        setRenderMainHeading(false);      
+      
       AgendaManagerClient port = AgendaConfigBean.getPort();
       event = port.loadEventFromCache(eventId);
       resetSelector();

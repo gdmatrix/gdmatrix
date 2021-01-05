@@ -232,8 +232,7 @@ public abstract class ShareableWebBean extends WebBean implements Shareable
         {          
           String shareTarget = getShareTarget(shareTargetMap, 
             shareURLList.get(i));
-          String shareDescription = 
-            (shareText != null ? (shareText + " ") : "") + shareTarget;
+          String shareDescription = "Comparteix per " + shareTarget;
           ShareLink item = new ShareLink(shareURLList.get(i), 
             shareImageURLList.get(i), shareDescription);
           result.add(item);
@@ -241,8 +240,7 @@ public abstract class ShareableWebBean extends WebBean implements Shareable
       }
       if (isRenderShareByEmail() && getShareByEmailIcon() != null)
       {
-        String shareDescription = 
-          (shareText != null ? (shareText + " ") : "") + "E-mail";
+        String shareDescription = "Comparteix per e-mail";
         ShareLink item = new ShareLink("EMAIL", getShareByEmailIcon(), 
           shareDescription);
         result.add(item);

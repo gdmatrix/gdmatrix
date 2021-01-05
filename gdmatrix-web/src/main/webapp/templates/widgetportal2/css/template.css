@@ -40,6 +40,11 @@ body.webfont textarea
   font-family: Helvetica, Arial, sans-serif;
 }
 
+main#sf_main_content
+{
+  outline: 0;
+}
+
 /* TOP BAR */
 
 .topBar

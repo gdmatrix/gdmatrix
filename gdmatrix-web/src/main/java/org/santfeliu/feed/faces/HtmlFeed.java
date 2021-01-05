@@ -595,12 +595,15 @@ public class HtmlFeed extends UIComponentBase
         }        
       }
       
-      Translator translator = null;
-      if (isEnableTranslation())
+      if (!rowList.isEmpty())
       {
-        translator = getTranslator();
-      }      
-      encodeRows(rowList, writer, translator);
+        Translator translator = null;
+        if (isEnableTranslation())
+        {
+          translator = getTranslator();
+        }
+        encodeRows(rowList, writer, translator);
+      }
     }
     catch (Exception ex)
     {
@@ -686,7 +689,7 @@ public class HtmlFeed extends UIComponentBase
 //Private
   private void encodeRows(List<Row> rows, ResponseWriter writer, Translator translator) 
     throws IOException
-  {
+  {    
     Set<String> feedUrlSet = new HashSet();
     writer.startElement("ul", this);
     String style = getStyle();
@@ -774,11 +777,15 @@ public class HtmlFeed extends UIComponentBase
           ariaLabel = getCommonAriaLabel(row);
         }
         ariaLabel = HTMLNormalizer.cleanHTML(ariaLabel, true);
+        if (getHeadLineMaxSize() > 0)
+        {
+          ariaLabel = TextUtils.wordWrap(ariaLabel, getHeadLineMaxSize(), null);
+        }        
         String openNewWindowLabel = 
           MatrixConfig.getProperty("org.santfeliu.web.OpenNewWindowLabel");
         ariaLabel = (ariaLabel != null ? 
           (ariaLabel + " (" + openNewWindowLabel + ")") : null);
-        ariaLabel = translateText(ariaLabel, translator, null);
+        ariaLabel = translateText(ariaLabel, translator, null);        
         writer.writeAttribute("aria-label", ariaLabel, null);
       }
       writer.writeAttribute("target", "_blank", null);        

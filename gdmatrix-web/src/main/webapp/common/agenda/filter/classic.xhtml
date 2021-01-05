@@ -25,7 +25,7 @@
           <t:fieldset legend="#{agendaBundle.eventSearch_showEvents}">
             <t:selectOneRadio 
               value="#{eventSearchBean.onlyCurrentDate}" layout="pageDirection"
-                              style="vertical-align:middle">
+              style="vertical-align:middle">
               <f:selectItem itemLabel="#{agendaBundle.eventSearch_onlyCurrentDate}" itemValue="true" />
               <f:selectItem itemLabel="#{agendaBundle.eventSearch_fromCurrentDate}" itemValue="false"/>
             </t:selectOneRadio>
@@ -48,8 +48,8 @@
 
         <!-- EventId -->
         <t:div styleClass="filterRow" rendered="#{eventSearchBean.renderEventIdFilter}">
-          <h:outputText value="#{objectBundle.object_id}:" styleClass="textBox" style="width:15%"/>
-          <h:inputText value="#{eventSearchBean.eventId}"
+          <h:outputLabel for="eventId" value="#{objectBundle.object_id}:" styleClass="textBox" style="width:15%"/>
+          <h:inputText id="eventId" value="#{eventSearchBean.eventId}"
             styleClass="inputBox" style="width:12%" />
         </t:div>
 
@@ -78,8 +78,8 @@
         <!-- Content -->
         <t:div styleClass="filterRow" rendered="#{eventSearchBean.renderContentFilter}">
           <h:outputLabel for="eventContent" value="#{agendaBundle.event_content}:" styleClass="textBox" style="width:15%" />
-            <h:inputText id="eventContent" value="#{eventSearchBean.eventFilter.content}"
-                       styleClass="inputBox" style="width:65%"/>
+          <h:inputText id="eventContent" value="#{eventSearchBean.eventFilter.content}"
+                     styleClass="inputBox" style="width:65%" title="#{agendaBundle.event_content}"/>
         </t:div>
 
         <!-- Dates -->
@@ -219,6 +219,7 @@
         <t:div styleClass="footer">
           <h:commandButton id="default_button" value="#{objectBundle.search}"
             styleClass="searchButton"
+            title="#{objectBundle.search}"
             action="#{eventSearchBean.search}"
             rendered="#{eventSearchBean.renderFilterPanel and
               (eventSearchBean.renderRoomFilter or (!eventSearchBean.renderRoomFilter and eventSearchBean.roomFilterActive)

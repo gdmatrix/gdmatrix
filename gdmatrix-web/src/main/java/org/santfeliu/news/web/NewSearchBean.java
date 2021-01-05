@@ -321,6 +321,7 @@ public class NewSearchBean extends BasicSearchBean
       }
       lastMid = UserSessionBean.getCurrentInstance().getSelectedMid();
       search();
+      ((NewBean)getObjectBean()).setRenderMainHeading(true);      
       return "new_search";
     }
   }
@@ -512,7 +513,7 @@ public class NewSearchBean extends BasicSearchBean
       {
         readingCount = client.incrementNewCounter(newId, null);
       }
-      newDetailsBean.setReadingCount(readingCount);
+      newDetailsBean.setReadingCount(readingCount);      
       return "new_details";
     }
     catch (Exception ex)

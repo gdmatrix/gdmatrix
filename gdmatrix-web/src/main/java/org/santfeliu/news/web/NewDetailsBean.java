@@ -253,6 +253,9 @@ public class NewDetailsBean extends ShareableWebBean implements Serializable
   
   public void prepareView(NewsManagerClient client, List<NewDocument> newDocumentList) throws Exception
   {
+    ((NewBean)ControllerBean.getCurrentInstance().getObjectBean()).
+      setRenderMainHeading(false);    
+    
     String newId = newObject.getNewId();
     if (newDocumentList == null)
     {

@@ -512,28 +512,27 @@
           </nav>      
         </t:div>      
 
-        <main id="wp2_mobile_main" tabindex="-1" style="outline: 0;">        
-
-        <c:if test="${userSessionBean.selectedMenuItem.properties.action != '#{documentBean.loadDocument}'}">
-          <sf:heading rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderRender == 'true'}" 
-                      level="1" styleClass="element-invisible">
-            <sf:outputText escape="false" value="#{userSessionBean.selectedMenuItem.properties.interiorHeaderHeadLine}"
-              translator="#{userSessionBean.translator}"
-              translationGroup="#{userSessionBean.translationGroup}"
-              rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderHeadLine != null}" />
-            <sf:outputText escape="false" value=" - #{userSessionBean.selectedMenuItem.properties.interiorHeaderSummary}"
-              translator="#{userSessionBean.translator}"
-              translationGroup="#{userSessionBean.translationGroup}"
-              rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderSummary != null}" />
-          </sf:heading>
-          <sf:heading rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderRender != 'true'}" 
-                      level="1" styleClass="element-invisible">
-            <sf:outputText escape="false" value="#{userSessionBean.selectedMenuItem.properties.label}"
-              translator="#{userSessionBean.translator}"
-              translationGroup="#{userSessionBean.translationGroup}" />
-          </sf:heading>        
-        </c:if>
-
+        <main id="wp2_mobile_main" tabindex="-1" style="outline: 0;">
+          <c:if test="${userSessionBean.selectedMenuItem.properties.action != '#{documentBean.loadDocument}' and controllerBean.objectBean.renderMainHeading}">
+            <sf:heading rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderRender == 'true'}" 
+                        level="1" styleClass="element-invisible">
+              <sf:outputText escape="false" value="#{userSessionBean.selectedMenuItem.properties.interiorHeaderHeadLine}"
+                    translator="#{userSessionBean.translator}"
+                    translationGroup="#{userSessionBean.translationGroup}"
+                    rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderHeadLine != null}" />
+              <sf:outputText escape="false" value=" - #{userSessionBean.selectedMenuItem.properties.interiorHeaderSummary}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}"
+                rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderSummary != null}" />
+            </sf:heading>
+            <sf:heading rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderRender != 'true'}" 
+                        level="1" styleClass="element-invisible">
+              <sf:outputText escape="false" value="#{userSessionBean.selectedMenuItem.properties.label}"
+                translator="#{userSessionBean.translator}"
+                translationGroup="#{userSessionBean.translationGroup}" />
+            </sf:heading>        
+          </c:if> 
+          
         <t:div rendered="#{widgetBean.interiorTopWidgetRender and 
                            userSessionBean.selectedMenuItem.properties.interiorTopWidgetLayout != null}" 
                styleClass="widgetContainerLayer">
