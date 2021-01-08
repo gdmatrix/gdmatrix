@@ -137,7 +137,7 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
           state = "! " + state;
         }
       }
-      documentsTableModel.setValueAt(state, publishedCount + i, 0);
+      documentsTableModel.setValueAt(state, publishedCount, 0);
       publishedCount++;
     }
     JProgressBar progressBar = uploader.getProgressBar();
