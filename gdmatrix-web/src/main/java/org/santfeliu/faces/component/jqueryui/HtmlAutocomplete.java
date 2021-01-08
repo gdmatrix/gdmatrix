@@ -47,7 +47,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.model.SelectItem;
 
 /**
- *
+ * @deprecated Use Primefaces autocomplete component instead.
  * @author blanquepa
  */
 @FacesComponent(value = "HtmlAutocomplete")

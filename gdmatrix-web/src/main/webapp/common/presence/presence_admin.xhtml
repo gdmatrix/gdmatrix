@@ -723,7 +723,7 @@
               <f:attribute name="internalFormat" value="yyyyMMdd" />
             </h:outputText>
             <sf:calendar value="#{holiday.startDate}" rendered="#{presenceAdminBean.editingHoliday == holiday}" 
-              styleClass="input_date" />
+              styleClass="input_date" includeLibraries="false"  />
           </p:column>
           <p:column sortBy="#{holiday.endDate}" style="width:auto" styleClass="center">
             <f:facet name="header">
@@ -735,7 +735,7 @@
               <f:attribute name="internalFormat" value="yyyyMMdd" />
             </h:outputText>
             <sf:calendar value="#{holiday.endDate}" rendered="#{presenceAdminBean.editingHoliday == holiday}" 
-              styleClass="input_date" />
+              styleClass="input_date" includeLibraries="false" />
           </p:column>
           <p:column sortBy="#{holiday.description}" style="width:20%">
             <f:facet name="header">
@@ -828,7 +828,7 @@
               <f:attribute name="internalFormat" value="yyyyMMdd" />
             </h:outputText>
             <sf:calendar value="#{workReduction.startDate}" rendered="#{presenceAdminBean.editingWorkReduction == workReduction}" 
-              styleClass="input_date" />
+              styleClass="input_date" includeLibraries="false" />
           </p:column>
           <p:column sortBy="#{workReduction.endDate}" style="width:15%" styleClass="center">
             <f:facet name="header">
@@ -840,7 +840,7 @@
               <f:attribute name="internalFormat" value="yyyyMMdd" />
             </h:outputText>
             <sf:calendar value="#{workReduction.endDate}" rendered="#{presenceAdminBean.editingWorkReduction == workReduction}" 
-              styleClass="input_date" />
+              styleClass="input_date" includeLibraries="false" />
           </p:column>
           <p:column sortBy="#{workReduction.description}" style="width:45%">
             <f:facet name="header">

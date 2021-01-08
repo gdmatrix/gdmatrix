@@ -604,6 +604,7 @@ DIV.objectForm
 {
   font-family: arial;
   font-size: 12px;
+  color: black;
   background: white url('images/text_box_back.gif') top left repeat-x;
   border-style: solid;
   border-color: gray;
@@ -611,6 +612,11 @@ DIV.objectForm
   margin-left:2px;
   vertical-align: middle;
   padding:2px 1px 2px 1px;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
 }
 
 .objectSearch .autocompleteBox a,
@@ -648,10 +654,47 @@ DIV.objectForm
   background: transparent;
 }
 
+.objectSearch .autocompleteBox .ui-autocomplete-dropdown,
+.objectForm .autocompleteBox .ui-autocomplete-dropdown
+{
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;  
+  border: 1px solid gray;
+}
+
 .objectSearch .autocompleteBox .ui-button-icon-only,
 .objectForm .autocompleteBox .ui-button-icon-only
 {
   width: 16px;
+}
+
+.ui-autocomplete-panel .ui-autocomplete-list
+{
+  font-family: arial;
+  padding: 0px;
+}
+
+.ui-autocomplete-panel .ui-autocomplete-list-item
+{
+  height: 16px;
+}
+
+.ui-autocomplete-panel .ui-state-highlight
+{
+  background: #0066CC;
+  color: white;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;  
+}
+
+.ui-autocomplete-panel.ui-corner-all,
+.ui-autocomplete-panel.ui-corner-all
+{
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
 }
 
 .objectSearch .radioButton,

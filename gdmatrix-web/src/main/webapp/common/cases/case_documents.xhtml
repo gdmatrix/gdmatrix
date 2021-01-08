@@ -3,7 +3,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:sf="http://faces.santfeliu.org"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:p="http://primefaces.org/ui">
 
   <ui:composition template="/common/obj/object.xhtml">
     <ui:param name="css" value="/common/cases/css/cases.css" />
@@ -271,17 +272,16 @@
             <f:selectItems value="#{caseDocumentsBean.allTypeItems}" />
           </h:selectOneMenu>
         </t:div>
-
+       
         <t:div>
           <h:outputText value="#{caseBundle.caseDocuments_volume}: "
                         style="width:15%" styleClass="textBox" />
-          <sf:autocomplete value="#{caseDocumentsBean.editingDocument.volume}" 
-                           disabled="#{not caseBean.editable}"
-                           styleClass="autocompleteBox">
-            <f:selectItems value="#{caseDocumentsBean.volumeSelectItems}" />
-          </sf:autocomplete>
-        </t:div>
-
+          <p:autoComplete dropdown="true" 
+            value="#{caseDocumentsBean.editingDocument.volume}"
+            completeMethod="#{caseDocumentsBean.selectVolumes}"
+            styleClass="autocompleteBox"/>
+        </t:div>        
+ 
         <t:div>
           <h:outputText value="#{caseBundle.caseDocuments_comments}: "
                         style="width:15%" styleClass="textBox" />

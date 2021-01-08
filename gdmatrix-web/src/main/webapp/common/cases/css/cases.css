@@ -200,13 +200,14 @@
   overflow: inherit;  
 }
 
+/*
 .caseTree .ui-tree .ui-tree-toggler
 {
   width: 16px;
   height: 16px;  
 }
 
-.caseTree .ui-tree .ui-tree-toggler.ui-icon-triangle-1-e
+.caseTree .ui-tree .ui-tree-toggler.ui-icon-triangle-1-e 
 {
   background-image: url('/common/cases/images/expand.png');
 }
@@ -215,6 +216,7 @@
 {
   background-image: url('/common/cases/images/collapse.png');
 }
+*/
 
 .caseTree .ui-tree .ui-treenode-leaf-icon 
 {

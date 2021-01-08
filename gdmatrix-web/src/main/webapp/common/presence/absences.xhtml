@@ -36,8 +36,8 @@
         <f:selectItem itemLabel=" " itemValue="" />
         <f:selectItems value="#{presenceConfigBean.absenceTypeSelectItems}" />
       </t:selectOneMenu>
-      <sf:calendar id="absence_filter_start_date" value="#{absencesBean.filter.startDateTime}" styleClass="date" />
-      <sf:calendar id="absence_filter_end_date" value="#{absencesBean.filter.endDateTime}" styleClass="date" />
+      <sf:calendar id="absence_filter_start_date" value="#{absencesBean.filter.startDateTime}" styleClass="date" includeLibraries="false"/>
+      <sf:calendar id="absence_filter_end_date" value="#{absencesBean.filter.endDateTime}" styleClass="date" includeLibraries="false" />
       <t:selectOneMenu id="absence_filter_status" value="#{absencesBean.filter.status}">
         <f:selectItem itemLabel=" " itemValue="" />
         <f:selectItems value="#{presenceConfigBean.absenceStatusSelectItems}" />

@@ -1999,6 +1999,7 @@ input::-moz-focus-inner
 .presence_table .ui-widget-content
 {
   background-color: #F0F0F0;
+  background: #F0F0F0;
 }
 
 .presence_table table

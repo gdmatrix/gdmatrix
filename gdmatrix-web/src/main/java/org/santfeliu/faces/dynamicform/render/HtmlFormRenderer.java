@@ -57,7 +57,6 @@ import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
 import org.santfeliu.faces.component.jquery.JQueryRenderUtils;
-import org.santfeliu.faces.component.jqueryui.HtmlCalendar;
 import org.santfeliu.faces.component.jqueryui.JQueryUIRenderUtils;
 import org.santfeliu.faces.dynamicform.DynamicForm;
 import org.santfeliu.form.Field;
@@ -66,7 +65,6 @@ import org.santfeliu.form.View;
 import org.santfeliu.form.type.html.HtmlForm;
 import org.santfeliu.form.type.html.HtmlView;
 import org.santfeliu.util.TextUtils;
-import org.santfeliu.web.UserSessionBean;
 
 /**
  *
@@ -79,7 +77,6 @@ public class HtmlFormRenderer extends FormRenderer
   private static final String DEFAULT_NUMBER_FORMAT = "0.############";
   private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
   private static final String DEFAULT_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
-//  private static final String JS_CALENDAR_ENCODED = "JS_CALENDAR_ENCODED";  
   private static final Set specialAttributes = new HashSet();
 
   static
@@ -597,22 +594,22 @@ public class HtmlFormRenderer extends FormRenderer
       for (int i = 0; i < stringValues.length; i++)
       {
         writer.startElement(tag, component);
-        String name = view.getProperty("name");
-        String formValue = view.getProperty("value");
-        writer.writeAttribute("name", getFieldId(clientId, name), null);
+        String name = view.getProperty("name");        
+          String formValue = view.getProperty("value");
+          writer.writeAttribute("name", getFieldId(clientId, name), null);
 
-        String value = stringValues[i];
-        if (value == null && formValue != null)
-          writer.writeAttribute("value", formValue, null);
-        else if (value != null)
-          writer.writeAttribute("value", value, null);
-        renderViewAttributes(view, writer, "name", "value", "maxlength");
-        String maxLength = view.getProperty("maxlength");
-        if (maxLength != null && !"0".equals(maxLength))
-        {
-          writer.writeAttribute("maxlength", maxLength, null);
-        }
-        writer.endElement(tag);
+          String value = stringValues[i];
+          if (value == null && formValue != null)
+            writer.writeAttribute("value", formValue, null);
+          else if (value != null)
+            writer.writeAttribute("value", value, null);
+          renderViewAttributes(view, writer, "name", "value", "maxlength");
+          String maxLength = view.getProperty("maxlength");
+          if (maxLength != null && !"0".equals(maxLength))
+          {
+            writer.writeAttribute("maxlength", maxLength, null);
+          }
+          writer.endElement(tag);
         
         //encode datepicker component 
         String renderer = view.getProperty("renderer");
@@ -813,7 +810,8 @@ public class HtmlFormRenderer extends FormRenderer
   }
   
   protected void encodeDatePicker(HtmlView view, HtmlForm form,
-    DynamicForm component, String clientId, ResponseWriter writer) throws IOException
+    DynamicForm component, String clientId, ResponseWriter writer) 
+    throws IOException
   {
     String format = view.getProperty("format");
     if (format != null)
@@ -822,90 +820,42 @@ public class HtmlFormRenderer extends FormRenderer
           format.startsWith(HtmlForm.DATETIME_FORMAT + ":") ||
           format.equals(HtmlForm.DATE_FORMAT) ||
           format.equals(HtmlForm.DATETIME_FORMAT))
-      {
+      {       
+        JQueryUIRenderUtils jqUtils = new JQueryUIRenderUtils(component);        
+        FacesContext context = FacesContext.getCurrentInstance();       
+        jqUtils.encodeLibraries(context, writer); 
+        jqUtils.encodeDatePickerLibraries(context, writer);        
         
-        FacesContext context = FacesContext.getCurrentInstance();
-        Map requestMap = context.getExternalContext().getRequestMap();
-        if (requestMap.get(HtmlCalendar.JS_CALENDAR_ENCODED) == null)
-        {
-          requestMap.put(HtmlCalendar.JS_CALENDAR_ENCODED, "true");    
-
-          JQueryUIRenderUtils jqUtils = new JQueryUIRenderUtils(component);
-          jqUtils.encodeLibraries(context, writer);          
-
-          writer.startElement("script", component);
-          writer.writeAttribute("src", "/plugins/jquery/datepicker/datepicker-ca.js", null);
-          writer.endElement("script");
-
-          writer.startElement("script", component);
-          writer.writeAttribute("src", "/plugins/jquery/datepicker/datepicker-es.js", null);
-          writer.endElement("script");
-
-          writer.startElement("script", component);
-          writer.writeAttribute("src", "/plugins/jquery/timepicker/jquery-ui-timepicker-addon.js", null);
-          writer.endElement("script");
-
-          writer.startElement("script", component);
-          writer.writeAttribute("src", "/plugins/jquery/timepicker/jquery-ui-timepicker-es.js", null);
-          writer.endElement("script");        
-
-          writer.startElement("script", component);
-          writer.writeAttribute("src", "/plugins/jquery/timepicker/jquery-ui-timepicker-ca.js", null);
-          writer.endElement("script");        
-
-          writer.startElement("link", component);
-          writer.writeAttribute("rel", "stylesheet", null);
-          writer.writeAttribute("href", "/plugins/jquery/timepicker/jquery-ui-timepicker-addon.css", null);
-
-          writer.startElement("script", component);
-          writer.writeAttribute("src", "/plugins/jquery/timepicker/jquery-ui-timepicker-ca.js", null);
-          writer.endElement("script");
-
-        }
-      
         String name = view.getProperty("name");
-        String language = UserSessionBean.getCurrentInstance().getViewLanguage();        
-        writer.startElement("script", component);
-        writer.writeText("$(function() {", null);
-        writer.writeText("$.datepicker.setDefaults($.datepicker.regional['" + language + "']);", null);        
-        if (format.startsWith(HtmlForm.DATETIME_FORMAT + ":") || format.equals(HtmlForm.DATETIME_FORMAT))
+        String fieldName = getFieldId(clientId, name); 
+
+        boolean isDateTimeFormat = 
+          format.startsWith(HtmlForm.DATETIME_FORMAT + ":") 
+          || format.equals(HtmlForm.DATETIME_FORMAT);
+        
+        String style = view.getProperty("style");         
+        
+        if (isDateTimeFormat)
         {
-          String datePattern = DEFAULT_DATETIME_FORMAT;
+          String dateTimePattern = DEFAULT_DATETIME_FORMAT;
           if (!format.equals(HtmlForm.DATETIME_FORMAT))
-            datePattern = format.substring(HtmlForm.DATETIME_FORMAT.length() + 1);
-          String[] pattern = datePattern.split(" ");
-          if (pattern.length == 2)
-          {
-            writer.writeText("$( \"input[name='" + getFieldId(clientId, name) +"']\" ).datetimepicker({", null);                      
-            pattern[0] = pattern[0].toLowerCase();
-            pattern[0] = pattern[0].replaceAll("yyyy", "yy");
-            writer.writeText("dateFormat: '" + pattern[0] + "',", null);        
-            writer.writeText("timeFormat: '" + pattern[1] + "',", null);                  
-            writer.writeText("changeMonth: true,", null);  
-            writer.writeText("changeYear: true,", null);  
-            writer.writeText("controlType: 'select',", null);  
-            writer.writeText("oneLine: true", null);  
-            writer.writeText("});", null); 
-          }
+            dateTimePattern = 
+              format.substring(HtmlForm.DATETIME_FORMAT.length() + 1);
+          String[] pattern = dateTimePattern.split(" ");
+          String datePattern = pattern.length == 2 ? pattern[0] : "dd/mm/yy";
+          String timePattern = pattern.length == 2 ? pattern[1] : "HH:mm";              
+
+          jqUtils.encodeDateTimePicker(writer, fieldName, datePattern, 
+            timePattern, null, style);
         }
         else
         {
           String datePattern = DEFAULT_DATE_FORMAT;
           if (!format.equals(HtmlForm.DATE_FORMAT))
-            datePattern = format.substring(HtmlForm.DATE_FORMAT.length() + 1);     
-          datePattern = datePattern.toLowerCase();
-          datePattern = datePattern.replaceAll("yyyy", "yy");
-          writer.writeText("$( \"input[name='" + getFieldId(clientId, name) +"']\" ).datepicker({", null);          
-          writer.writeText("dateFormat: '" + datePattern + "',", null);        
-          writer.writeText("changeMonth: true,", null);  
-          writer.writeText("changeYear: true,", null);  
-          writer.writeText("controlType: 'select',", null);  
-          writer.writeText("oneLine: true", null);  
-          writer.writeText("});", null); 
-        }
-        writer.writeText("});", null);
-        
-        writer.endElement("script");        
+            datePattern = format.substring(HtmlForm.DATE_FORMAT.length() + 1);                  
+          
+          jqUtils.encodeDatePicker(writer, fieldName, datePattern, null, style);         
+        }     
       }
     }
   }
@@ -1047,7 +997,8 @@ public class HtmlFormRenderer extends FormRenderer
   }
 
   private void renderHtmlText(String text,
-    ResponseWriter writer, Translator translator, DynamicForm component) throws IOException
+    ResponseWriter writer, Translator translator, DynamicForm component) 
+    throws IOException
   {
     if (translator != null)
     {

@@ -275,10 +275,22 @@ public class CaseDocumentsBean extends TypifiedPageBean
   {
     return volumeSelectItems;
   }
-
+  
   public void setVolumeSelectItems(List<SelectItem> volumeSelectItems)
   {
     this.volumeSelectItems = volumeSelectItems;
+  }
+  
+  public List<String> selectVolumes(String query)
+  {
+    List<String> result = new ArrayList();
+    for (SelectItem selectItem : volumeSelectItems)
+    {
+      String volume = selectItem.getLabel();
+      if (volume.startsWith(query))
+        result.add(volume);
+    }
+    return result;
   }
   
   public boolean isRenderVolumeSelector()

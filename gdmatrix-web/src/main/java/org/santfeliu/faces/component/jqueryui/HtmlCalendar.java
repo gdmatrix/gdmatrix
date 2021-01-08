@@ -62,10 +62,17 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
   private String _dayLabel;
   private String _hourLabel; 
   private ResourceBundle bundle;
+  private String name = "date";
   
   public HtmlCalendar()
   {
     setRendererType("JQueryUI");
+  }
+  
+  public HtmlCalendar(String name)
+  {
+    this();
+    this.name = name;
   }
   
   public void setSingleInput(boolean singleInput)
@@ -77,7 +84,8 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
   {
     if (_singleInput != null) return _singleInput;
     ValueExpression ve = getValueExpression("singleInput");
-    Boolean v = ve != null ? (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+    Boolean v = ve != null ? 
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
     return v != null ? v : false;
   } 
 
@@ -85,7 +93,8 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
   {
     if (_dayLabel != null) return _dayLabel;
     ValueExpression ve = getValueExpression("dayLabel");
-    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
+    return ve != null ? 
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
   }
 
   public void setDayLabel(String _dayLabel)
@@ -97,7 +106,8 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
   {
     if (_hourLabel != null) return _hourLabel;
     ValueExpression ve = getValueExpression("hourLabel");
-    return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
+    return ve != null ? 
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
   }
 
   public void setHourLabel(String _hourLabel)
@@ -114,9 +124,25 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
   {
     if (jQueryUIEncoder.getTheme() != null) return jQueryUIEncoder.getTheme();
     ValueExpression ve = getValueExpression("theme");
-    String theme = ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
+    String theme = ve != null ? 
+      (String)ve.getValue(getFacesContext().getELContext()) : null;
     return theme == null ? jQueryUIEncoder.getDefaultTheme() : theme;
   }  
+  
+  public void setIncludeLibraries(boolean _includeLibraries)
+  {
+    jQueryUIEncoder.setRenderLibraries(_includeLibraries);
+  }
+  
+  public boolean isIncludeLibraries()
+  {
+    if (jQueryUIEncoder.isRenderLibraries() != null) 
+      return jQueryUIEncoder.isRenderLibraries() ;
+    ValueExpression ve = getValueExpression("includeLibraries");
+    Boolean v = ve != null ? 
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+    return v != null ? v : false;
+  }   
   
   public boolean hasDateTimeFormat()
   {
@@ -125,21 +151,26 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
   
  @Override
   public void encodeBegin(FacesContext context) throws IOException
+  {   
+    ResponseWriter writer = context.getResponseWriter();
+    String clientId = getClientId(context);     
+    encodeCalendar(context, writer, clientId);
+  }
+  
+  public void encodeCalendar(FacesContext context, ResponseWriter writer,
+    String clientId) 
+    throws IOException
   {
     Locale locale = context.getViewRoot().getLocale();
     bundle = ResourceBundle.getBundle(
-      "org.santfeliu.faces.component.resources.ComponentBundle", locale); 
+      "org.santfeliu.faces.component.resources.ComponentBundle", locale);     
     
-    ResponseWriter writer = context.getResponseWriter();
-    String clientId = getClientId(context);
-    encodeDateInputText(context, writer, clientId);
-//    encodeDateButton(context, writer, clientId, bundle);    
+    encodeDateInputText(context, writer, clientId);   
     if (hasDateTimeFormat() && !isSingleInput())
     {
       encodeTimeInputText(context, writer, clientId);
-//      encodeTimeButton(context, writer, clientId);
     }
-    encodeJavascript(context, writer);
+    encodeJavascript(context, writer, clientId);    
   }
 
   @Override
@@ -150,7 +181,7 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
     Map paramsMap = context.getExternalContext().getRequestParameterMap();
     String clientId = getClientId(context);
 
-    String dateValue = (String)paramsMap.get(getFieldId(clientId, "date"));
+    String dateValue = (String)paramsMap.get(getFieldId(clientId, this.name));
     if (dateValue == null) dateValue = "";
     String value = dateValue;
 
@@ -163,100 +194,34 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
     setSubmittedValue(value);
   }
 
-  private void encodeJavascript(FacesContext context, ResponseWriter writer)
+  private void encodeJavascript(FacesContext context, ResponseWriter writer,
+    String clientId)
     throws IOException
   {
-    encodeDatePicker(context, writer);
+    encodeDatePicker(context, writer, clientId);
   }
   
-  protected void encodeDatePicker(FacesContext context, ResponseWriter writer) throws IOException
+  protected void encodeDatePicker(FacesContext context, ResponseWriter writer,
+    String clientId) 
+    throws IOException
   {
-    String clientId = getClientId(context);
     String externalFormat = getExternalFormat();
-
     if (externalFormat == null)
       externalFormat = DEFAULT_EXTERNAL_FORMAT;
     
-    String contextPath = context.getExternalContext().getRequestContextPath();   
-    
-    Map requestMap = context.getExternalContext().getRequestMap();
-    if (requestMap.get(JS_CALENDAR_ENCODED) == null)
-    {
-      requestMap.put(JS_CALENDAR_ENCODED, "true");
-    
-      jQueryUIEncoder.encodeLibraries(context, writer);
-
-      writer.startElement("script", this);
-      writer.writeAttribute("src", contextPath +  "/plugins/jquery/datepicker/datepicker-ca.js", null);
-      writer.endElement("script");
-
-      writer.startElement("script", this);
-      writer.writeAttribute("src", contextPath +  "/plugins/jquery/datepicker/datepicker-es.js", null);
-      writer.endElement("script");
-      
-      writer.startElement("script", this);
-      writer.writeAttribute("src", contextPath +  "/plugins/jquery/datepicker/accessibility.js", null);
-      writer.endElement("script");
-      
-      writer.startElement("link", this);
-      writer.writeAttribute("rel", "stylesheet", null);
-      writer.writeAttribute("href", contextPath +  "/plugins/jquery/datepicker/datepicker.css", null);
-
-    
-//      writer.startElement("script", this);
-//      writer.writeAttribute("src", contextPath +  "/plugins/jquery/timepicker/jquery-ui-timepicker-addon.js", null);
-//      writer.endElement("script");
-//
-//      writer.startElement("script", this);
-//      writer.writeAttribute("src", contextPath +  "/plugins/jquery/timepicker/jquery-ui-timepicker-es.js", null);
-//      writer.endElement("script");        
-//
-//      writer.startElement("script", this);
-//      writer.writeAttribute("src", contextPath +  "/plugins/jquery/timepicker/jquery-ui-timepicker-ca.js", null);
-//      writer.endElement("script");        
-//
-//      writer.startElement("link", this);
-//      writer.writeAttribute("rel", "stylesheet", null);
-//      writer.writeAttribute("href", contextPath +  "/plugins/jquery/timepicker/jquery-ui-timepicker-addon.css", null);
-//
-//      writer.startElement("script", this);
-//      writer.writeAttribute("src", contextPath +  "/plugins/jquery/timepicker/jquery-ui-timepicker-ca.js", null);
-//      writer.endElement("script");
-//      
-//      writer.startElement("script", this);
-//      writer.writeAttribute("type", "text/javascript", clientId);
-//      writer.writeText("function focusPicker(fieldId){$( \"input[name='\" + fieldId + \"']\" ).focus()}", null);      
-//      writer.endElement("script");        
-
-    }
-    
-    String language = context.getViewRoot().getLocale().getLanguage();        
-    writer.startElement("script", this);
-    writer.writeText("$(function() {", null);
-    writer.writeText("$.datepicker.setDefaults($.datepicker.regional['" + language + "']);", null);
+    jQueryUIEncoder.encodeLibraries(context, writer); 
+    jQueryUIEncoder.encodeDatePickerLibraries(context, writer);    
 
     if (hasDateTimeFormat() && isSingleInput())
     {
       String[] pattern = externalFormat.split("\\" + getDateTimeSeparator());
       String datePattern = pattern[0];
-      datePattern = datePattern.toLowerCase();
-      datePattern = datePattern.replaceAll("yyyy", "yy");
-      String timePattern = pattern[1];
-      writer.writeText("$( \"input[name='" + getFieldId(clientId, "date") +"']\" ).datetimepicker({", null);
-      writer.writeText("showOn: 'button',", null);        
-      writer.writeText("buttonImage: '/plugins/jquery/datepicker/calendar.gif',", null);  
-      writer.writeText("buttonImageOnly: false,", null);      
-      writer.writeText("showButtonPanel: true,", null);                    
-      writer.writeText("onClose: function (){ this.focus();},", null);       
+      String timePattern = pattern[1]; 
+      String fieldName = getFieldId(clientId, name); 
+      String titleAttr = bundle.getString("calendar");
       
-      writer.writeText("dateFormat: '" + datePattern + "',", null);        
-      writer.writeText("timeFormat: '" + timePattern + "',", null);                  
-      writer.writeText("separator: '" + getDateTimeSeparator() + "',", null);      
-      writer.writeText("changeMonth: true,", null);  
-      writer.writeText("changeYear: true,", null);  
-      writer.writeText("controlType: 'select',", null);  
-      writer.writeText("oneLine: true", null);  
-      writer.writeText("});", null);
+      jQueryUIEncoder.encodeDateTimePicker(writer, fieldName, datePattern, 
+        timePattern, titleAttr, null);
     }
     else
     {
@@ -265,62 +230,30 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
       {
         String[] pattern = externalFormat.split("\\" + getDateTimeSeparator());
         datePattern = pattern[0];
-        datePattern = datePattern.toLowerCase();
-        datePattern = datePattern.replaceAll("yyyy", "yy");
-//        String timePattern = pattern[1];                        
-//        writer.writeText("$( \"input[name='" + getFieldId(clientId, "time") +"']\" ).timepicker({", null);
-//        writer.writeText("timeFormat: '" + timePattern + "',", null);                  
-//        writer.writeText("controlType: 'select',", null);  
-//        writer.writeText("oneLine: true, ", null); 
-//        writer.writeText("onClose: function (){ this.focus();}", null); 
-//        writer.writeText("});", null); 
-//
-//        writer.writeText("$( \"input[name='" + getFieldId(clientId, "time") +"']\" ).keypress(function(e) {", null);        
-//        writer.writeText("var keyCode = e.keyCode || e.which; ", null);
-//        writer.writeText("if (keyCode >= 37 && keyCode <= 40) {", null);
-//        writer.writeText("e.preventDefault();", null);
-//        writer.writeText("$(\".ui-timepicker-select:first\").focus();", null);
-//        writer.writeText("}", null);         
-//        writer.writeText("});", null); 
       }
 
-      datePattern = datePattern.toLowerCase();
-      datePattern = datePattern.replaceAll("yyyy", "yy");
-      writer.writeText("$( \"input[name='" + getFieldId(clientId, "date") +"']\" ).datepicker({", null);
-      writer.writeText("showOn: 'button',", null);        
-      writer.writeText("buttonImage: '/plugins/jquery/datepicker/calendar.gif',", null);  
-      writer.writeText("buttonImageOnly: false,", null);              
-      writer.writeText("showButtonPanel: true,", null);                    
-      writer.writeText("onClose: function (){ this.focus();},", null);                          
+      String fieldName = getFieldId(clientId, name); 
+      String titleAttr = bundle.getString("calendar");
 
-      writer.writeText("dateFormat: '" + datePattern + "',", null);        
-      writer.writeText("changeMonth: true,", null);  
-      writer.writeText("changeYear: true", null);
-      writer.writeText("});", null); 
-      
-      writer.writeText("$('.ui-datepicker-trigger').attr('title', '" + bundle.getString("calendar")+ "');", null);
-      writer.writeText("makeDatePickerAccessible('" + getFieldId(clientId, "date") + "');", null);
+      jQueryUIEncoder.encodeDatePicker(writer, fieldName, datePattern, 
+        titleAttr, null);
     }
-    writer.writeText("});", null);
-
-    writer.endElement("script");        
-
-  }  
-
+  } 
+  
   private void encodeDateInputText(FacesContext context,
     ResponseWriter writer, String clientId) throws IOException
   {
     if (getDayLabel() != null)
     {
       writer.startElement("label", this);
-      writer.writeAttribute("for", getFieldId(clientId, "date"), "for");
+      writer.writeAttribute("for", getFieldId(clientId, name), "for");
       writer.writeAttribute("class", "element-invisible", "class");
       writer.write(getDayLabel());
       writer.endElement("label");      
     }
     writer.startElement("input", this);
-    writer.writeAttribute("id", getFieldId(clientId, "date"), "id");
-    writer.writeAttribute("name", getFieldId(clientId, "date"), "name");
+    writer.writeAttribute("id", getFieldId(clientId, name), "id");
+    writer.writeAttribute("name", getFieldId(clientId, name), "name");
     writer.writeAttribute("value", getDateValue(), null);
     int formatLength = (hasDateTimeFormat() && isSingleInput() ? 
       getExternalFormat().length() : getExternalDateFormat().length());
@@ -340,7 +273,8 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
       writer.writeAttribute("class", styleClass, "styleClass");
     }
 
-    writer.writeAttribute("placeholder", getExternalDateFormat().toUpperCase(), null);
+    writer.writeAttribute("placeholder", 
+      getExternalDateFormat().toUpperCase(), null);
     writer.endElement("input");
   }
 
@@ -365,7 +299,8 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
     }
     
     if (hasDateTimeFormat())
-      writer.writeAttribute("placeholder", getExternalTimeFormat().toUpperCase(), null);
+      writer.writeAttribute("placeholder", 
+        getExternalTimeFormat().toUpperCase(), null);
     
     int formatLength = (hasDateTimeFormat() && isSingleInput() ? 
       getExternalFormat().length() : getExternalTimeFormat().length());
@@ -383,62 +318,7 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
     }
     writer.endElement("input");
   }
-/*
-  private void encodeDateButton(FacesContext context,
-    ResponseWriter writer, String clientId, ResourceBundle bundle) throws IOException
-  {
-    String contextPath = context.getExternalContext().getRequestContextPath();
-    String image = getButtonImage();
-    if (image == null)
-    {
-      image = "/plugins/jquery/datepicker/calendar.gif";
-    }
-    writer.startElement("img", this);
-    writer.writeAttribute("id", clientId + "_calendar", null);
-    writer.writeAttribute("src", contextPath + image, null);
-    writer.writeAttribute("onclick",
-      "javascript:focusPicker('" + getFieldId(clientId, "date") +"');", null);
-    
-    String style = getButtonStyle();
-    if (style != null)
-    {
-      writer.writeAttribute("style", style, "style");
-    }
-    String styleClass = getButtonStyleClass();
-    if (styleClass != null)
-    {
-      writer.writeAttribute("class", styleClass, "styleClass");
-    }
-    writer.writeAttribute("alt", bundle.getString("calendar"), null);
-    writer.endElement("img");
-  }
 
-  private void encodeTimeButton(FacesContext context,
-    ResponseWriter writer, String clientId) throws IOException
-  {
-    String contextPath = context.getExternalContext().getRequestContextPath();
-    String image = "/plugins/jquery/timepicker/clock.gif";
-       
-    writer.startElement("img", this);
-    writer.writeAttribute("id", clientId + "_clock", null);
-    writer.writeAttribute("src", contextPath + image, null);
-    writer.writeAttribute("onclick",
-      "javascript:focusPicker('" + getFieldId(clientId, "time") +"');", null);
-    String style = getButtonStyle();
-    if (style != null)
-    {
-      writer.writeAttribute("style", style, "style");
-    }
-    String styleClass = getButtonStyleClass();
-    if (styleClass != null)
-    {
-      writer.writeAttribute("class", styleClass, "styleClass");
-    }
-    writer.writeAttribute("alt", bundle.getString("clock"), null);
-    writer.writeAttribute("aria-hidden", "true", null);      
-    writer.endElement("img");
-  }
-*/
   private String getExternalDateFormat()
   {
     String format = getExternalFormat();
@@ -457,17 +337,18 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
   {
     return clientId + ":" + name;
   } 
-  
+    
   @Override
   public Object saveState(FacesContext context)
   {
     Object svalues[] = (Object[])super.saveState(context);
-    Object values[] = new Object[14];
+    Object values[] = new Object[15];
     System.arraycopy(svalues, 0, values, 0, svalues.length);
     values[10] = _singleInput;
     values[11] = jQueryUIEncoder.getTheme();
     values[12] = _dayLabel;
     values[13] = _hourLabel;
+    values[14] = jQueryUIEncoder.isRenderLibraries();
     return values;
   }
 
@@ -480,5 +361,6 @@ public class HtmlCalendar extends org.santfeliu.faces.component.HtmlCalendar
     jQueryUIEncoder.setTheme((String)values[11]);
     _dayLabel = (String)values[12];
     _hourLabel = (String)values[13];    
+    jQueryUIEncoder.setRenderLibraries((Boolean)values[14]);
   }  
 }

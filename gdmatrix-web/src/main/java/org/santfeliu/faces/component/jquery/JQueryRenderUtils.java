@@ -46,14 +46,8 @@ public class JQueryRenderUtils
   public static final String JQUERY_VERSION = "1.10.2";
   public static final String JQUERY_ENCODED = "JQUERY_ENCODED";  
   
-//  private UIComponent component; 
-  
-//  public JQueryRenderUtils(UIComponent component)
-//  {
-//    this.component = component;
-//  }
-  
-  public static void encodeLibraries(FacesContext context, ResponseWriter writer, UIComponent component) throws IOException
+  public static void encodeLibraries(FacesContext context, 
+    ResponseWriter writer, UIComponent component) throws IOException
   {
     ExternalContext externalContext = context.getExternalContext();
     String contextPath = externalContext.getRequestContextPath();
@@ -62,7 +56,8 @@ public class JQueryRenderUtils
     {
       requestMap.put(JQUERY_ENCODED, "true");
       writer.startElement("script", component);
-      writer.writeAttribute("src", contextPath +  "/plugins/jquery/jquery-" + JQUERY_VERSION + ".js", null);
+      writer.writeAttribute("src", contextPath + "/plugins/jquery/jquery-" 
+        + JQUERY_VERSION + ".js", null);
       writer.endElement("script");
     }    
   }  
@@ -75,7 +70,8 @@ public class JQueryRenderUtils
   
   public static boolean isJQueryPresent()
   {
-    return isJQueryPresent(FacesContext.getCurrentInstance().getExternalContext());
+    FacesContext ctx = FacesContext.getCurrentInstance();
+    return isJQueryPresent(ctx.getExternalContext());
   }
   
 }

@@ -2,7 +2,7 @@ var datePickerInputId = "datepicker";
 
 function makeDatePickerAccessible(dpId) {
   datePickerInputId = dpId;
-  $('.ui-datepicker-trigger').click(function () {
+  $('[name="' + dpId + '"]').next().click(function () {
     setTimeout(function () {
       var today = $('.ui-datepicker-today a')[0];
 
@@ -23,7 +23,7 @@ function makeDatePickerAccessible(dpId) {
       $(".ui-datepicker-current").hide();
 
       today.focus();
-      datePickHandler();
+      datePickHandler(dpId);
       $(document).on('click', '#ui-datepicker-div .ui-datepicker-close', function () {
         closeCalendar();
       });
@@ -31,10 +31,10 @@ function makeDatePickerAccessible(dpId) {
   });
 }
 
-function datePickHandler() {
+function datePickHandler(dpId) {
   var activeDate;
   var container = document.getElementById('ui-datepicker-div');
-  var input = document.getElementById(datePickerInputId);
+  var input = document.getElementsByName(dpId)[0];
 
   if (!container || !input) {
     return;

@@ -1039,6 +1039,10 @@
       <name>hourLabel</name>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <name>includeLibraries</name>
+      <type>java.lang.Boolean</type>
+    </attribute>    
   </tag>
   
   <tag>

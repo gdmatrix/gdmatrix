@@ -5,11 +5,11 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"      
       xmlns:sf="http://faces.santfeliu.org"
       xmlns:t="http://myfaces.apache.org/tomahawk">
-
+  
   <ui:composition template="/common/obj/object_search.xhtml">
     <ui:param name="css" value="/common/cases/css/cases.css" />    
     <ui:define name="filterlist">
-
+           
       <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                     var="caseBundle"/>
 
@@ -30,10 +30,10 @@
           <h:outputText value="#{caseBundle.caseSearch_date}:" />
           <sf:calendar id="caseTreeCalendar"
                        value="#{caseTreeBean.inputDate}"
-                       binding="#{caseTreeBean.htmlCalendar}"
                        styleClass="calendarBox"
                        buttonStyleClass="calendarButton"
-                       style="width:15%;margin-left:2px"/>
+                       style="width:15%;margin-left:2px"
+                       includeLibraries="false"/>
 
           <f:facet name="footer">
             <h:commandButton id="default_button" action="#{caseTreeBean.search}"

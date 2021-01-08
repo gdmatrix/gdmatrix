@@ -34,8 +34,8 @@
             <f:selectItem itemLabel=" " itemValue="" />
             <f:selectItems value="#{entriesBean.presenceEntryTypeSelectItems}" />
           </t:selectOneMenu>
-          <sf:calendar id="entry_filter_start_date" value="#{entriesBean.startDate}" styleClass="date" />
-          <sf:calendar id="entry_filter_end_date" value="#{entriesBean.endDate}" styleClass="date" />
+          <sf:calendar id="entry_filter_start_date" value="#{entriesBean.startDate}" styleClass="date" includeLibraries="false"/>
+          <sf:calendar id="entry_filter_end_date" value="#{entriesBean.endDate}" styleClass="date" includeLibraries="false" />
           <t:inputText id="entry_filter_reason" value="#{entriesBean.filter.reason}" />
           <t:selectBooleanCheckbox id="entry_filter_manipulated" value="#{entriesBean.manipulated}" />
 

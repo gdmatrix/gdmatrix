@@ -334,7 +334,7 @@ h6.element-invisible
 {
   width: 100%;  
 }
-
+/*
 .rolesTreeSearch .ui-tree .ui-tree-toggler
 {
   width: 16px;
@@ -350,7 +350,7 @@ h6.element-invisible
 {
   background-image: url('/common/security/images/collapse.png');
 }
-
+*/
 .rolesTreeSearch .ui-tree .ui-treenode-leaf-icon 
 {
   vertical-align: middle;
@@ -360,4 +360,10 @@ h6.element-invisible
 {
   height: 20px;
   line-height: 20px;
+}
+
+.rolesTreeSearch .ui-widget
+{
+  font-family: inherit;
+  font-size: inherit;
 }

@@ -34,9 +34,9 @@
         <f:selectItem itemValue="" itemLabel="Entre dates" /> 
       </sf:commandMenu>
       <sf:calendar id="stats_filter_start_date" value="#{presenceStatsBean.startDate}" styleClass="date" 
-         disabled="#{not presenceStatsBean.datesEnabled}" />
+         disabled="#{not presenceStatsBean.datesEnabled}" includeLibraries="false"/>
       <sf:calendar id="stats_filter_end_date" value="#{presenceStatsBean.endDate}" styleClass="date" 
-         disabled="#{not presenceStatsBean.datesEnabled}" />
+         disabled="#{not presenceStatsBean.datesEnabled}" includeLibraries="false" />
       <t:commandLink action="#{presenceStatsBean.search}" styleClass="button img_left" onclick="showOverlay()">
         <t:outputText value="#{objectBundle.update}" styleClass="refresh" />
       </t:commandLink>
