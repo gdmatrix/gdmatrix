@@ -115,7 +115,8 @@
     
     <t:div styleClass="ilcol2 #{userSessionBean.selectedMenuItem.properties.interiorContentWidth}#{(userSessionBean.selectedMenuItem.action == 'blank') ? ' blank' : ''}">
       <main id='sf_main_content' tabindex='-1'>
-        <c:if test="${userSessionBean.selectedMenuItem.properties.action != '#{documentBean.loadDocument}' and controllerBean.objectBean.renderMainHeading}">
+        <c:if test="${userSessionBean.selectedMenuItem.properties.action != '#{documentBean.loadDocument}' and controllerBean.objectBean.renderMainHeading and 
+                      userSessionBean.selectedMenuItem.properties.mainHeadingRender != 'false'}">
           <sf:heading rendered="#{userSessionBean.selectedMenuItem.properties.interiorHeaderRender == 'true'}" 
                       level="1" styleClass="element-invisible">
             <sf:outputText escape="false" value="#{userSessionBean.selectedMenuItem.properties.interiorHeaderHeadLine}"
