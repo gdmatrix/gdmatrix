@@ -36,6 +36,7 @@ import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.logging.Level;
@@ -52,10 +53,7 @@ public class CmdTwain
   public static final String GRAY_MODE = "GRAY";
   public static final String RGB_MODE = "RGB";
   
-  private File programDirectory;
-  
-  private Paper paper = Paper.A4;
-  private boolean paperSizeInInches = true;
+  private File programDirectory;  
   private String mode = RGB_MODE;
   private int dpi = 200;
   private int contrast = 0;
@@ -64,50 +62,17 @@ public class CmdTwain
   private boolean duplex = true;
   private boolean autoscan = true;
   private boolean autofeed = true;
-  
-  public enum Paper
+//  private String paper;
+//  private String paperSizeUnit;
+//  private double paperWidth = 0;
+//  private double paperHeight = 0;
+  private ScanPaper paper;
+
+  public CmdTwain()
   {
-    //Paper sizes in inches
-    A0(33.1,46.8),
-    A1(23.4,33.1),
-    A2(16.5,23.4),
-    A3(11.7,16.5),
-    A4(8.3,11.7),
-    A5(5.8,8.3),
-    A6(4.1,5.8),
-    LEGAL(8.5,14.0),    
-    LETTER(8.5,11.0);
-
-    private final double width;
-    private final double height;    
-    
-    Paper(double width, double height)
-    {
-      this.width = width;
-      this.height = height;
-    }
-    
-    public String getName()
-    {
-      return name();
-    }
-    
-    public String getSize()
-    {
-      return this.width + " " + this.height;
-    }
+    this.paper = new ScanPaper();
   }
-
-  public Paper getPaper()
-  {
-    return paper;
-  }
-
-  public void setPaper(String paper)
-  {
-    this.paper = Paper.valueOf(paper);
-  }
-
+    
   public String getMode()
   {
     return mode;
@@ -188,16 +153,16 @@ public class CmdTwain
     this.autofeed = autofeed;
   }
 
-  public boolean isPaperSizeInInches()
+  public ScanPaper getPaper()
   {
-    return paperSizeInInches;
+    return paper;
   }
 
-  public void setPaperSizeInInches(boolean paperSizeInInches)
+  public void setPaper(ScanPaper paper)
   {
-    this.paperSizeInInches = paperSizeInInches;
+    this.paper = paper;
   }
-  
+
   public BufferedImage[] scan() throws Exception
   {
     install();
@@ -280,10 +245,11 @@ public class CmdTwain
   {
     StringBuilder buffer = new StringBuilder();
     
-    if (!paperSizeInInches)
-      buffer.append("/PAPER=").append(paper.getName());
-    else
-      buffer.append("/IN /WH ").append(paper.getSize());
+    String pSize = paper.getFormattedWidth(ScanPaper.Units.IN) + " " 
+      + paper.getFormattedHeight(ScanPaper.Units.IN);
+    pSize = pSize.replaceAll(",", ".");
+
+    buffer.append("/IN /WH ").append(pSize);
     buffer.append(" /");
     buffer.append(mode);
     buffer.append(" ");
