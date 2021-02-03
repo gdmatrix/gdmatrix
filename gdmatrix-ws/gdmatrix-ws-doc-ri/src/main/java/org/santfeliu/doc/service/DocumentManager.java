@@ -65,12 +65,19 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
+import static org.matrix.dic.DictionaryConstants.WRITE_ACTION;
+import static org.matrix.dic.DictionaryConstants.DELETE_ACTION;
+import static org.matrix.dic.DictionaryConstants.CREATE_ACTION;
 import org.matrix.doc.DocumentManagerMetaData;
 import org.matrix.security.AccessControl;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
+import static org.matrix.doc.DocumentConstants.READ_ROLE;
+import static org.matrix.doc.DocumentConstants.WRITE_ROLE;
+import static org.matrix.doc.DocumentConstants.DELETE_ROLE;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
 //import org.matrix.doc.DocumentPerson;
@@ -104,15 +111,12 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TemporaryDataSource;
 import org.santfeliu.ws.WSExceptionFactory;
 
-import org.santfeliu.doc.util.Droid;
+import org.santfeliu.doc.util.droid.Droid;
 import org.santfeliu.security.User;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.log.CSVLogger;
 import org.santfeliu.ws.WSUtils;
-import uk.gov.nationalarchives.droid.AnalysisController;
-import uk.gov.nationalarchives.droid.FileFormatHit;
-import uk.gov.nationalarchives.droid.IdentificationFile;
-import uk.gov.nationalarchives.droid.signatureFile.FileFormat;
+import uk.gov.nationalarchives.droid.core.signature.FileFormat;
 
 
 /**
@@ -125,7 +129,14 @@ public class DocumentManager implements DocumentManagerPort
   public static final String DOCUMENT_STORE = "documentStore";  
   public static final String CONTENT_STORE = "contentStore"; 
   public static final String ADMIN_ROLE = "adminRole";
-
+  
+  private static final String REC_DOC_NOT_UPDATABLE = 
+    "doc:RECORDED_DOCUMENT_NOT_UPDATABLE";
+  private static final String NOT_LOCK_OWNER = 
+    "doc:NOT_LOCK_OWNER";
+  private static final String RELATION_EXISTS =
+    "doc:RELATION_EXISTS_WITH_ANOTHER_DOCUMENT";
+  
   @Resource
   WebServiceContext wsContext;
   private WSEndpoint endpoint;
@@ -351,8 +362,8 @@ public class DocumentManager implements DocumentManagerPort
           (State.DELETED.equals(document.getState()) && !ignoreDeleted))
           throw new WebServiceException("doc:DOCUMENT_NOT_FOUND");
 
-        String docTypeId =
-          getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, document.getDocTypeId());
+        String docTypeId = getWSEndpoint()
+          .toGlobalId(org.matrix.dic.Type.class, document.getDocTypeId());
         Type docType = TypeCache.getInstance().getType(docTypeId);
         if (!canUserReadDocument(user, document, docType))
           throw new WebServiceException("ACTION_DENIED");
@@ -420,8 +431,8 @@ public class DocumentManager implements DocumentManagerPort
       //User & System properties synchronization (User -> System)
       DocumentUtils.transferUserToSystemProperties(document);
 
-      String docTypeId =
-        getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, document.getDocTypeId());
+      String docTypeId = getWSEndpoint()
+        .toGlobalId(org.matrix.dic.Type.class, document.getDocTypeId());
       Type type = TypeCache.getInstance().getType(docTypeId);
 
       //Validations
@@ -480,7 +491,8 @@ public class DocumentManager implements DocumentManagerPort
           getWSEndpoint().toGlobalId(org.matrix.dic.Type.class,
           lastVersionDocument.getDocTypeId());
         
-        boolean persistentDelete = (version == DocumentConstants.PERSISTENT_DELETE);
+        boolean persistentDelete = 
+          (version == DocumentConstants.PERSISTENT_DELETE);
         Type docType =
           TypeCache.getInstance().getType(docTypeId);
         if (!canUserDeleteDocument(user, lastVersionDocument, docType))
@@ -528,15 +540,18 @@ public class DocumentManager implements DocumentManagerPort
             if (ver >= fromVersion && ver <= toVersion)
             {
               if (State.RECORD.equals(document.getState()) && !isUserAdmin())
-                          throw new WebServiceException("doc:RECORDED_DOCUMENT_NOT_UPDATABLE");
+                throw new WebServiceException(REC_DOC_NOT_UPDATABLE);
               String lockUser = document.getLockUserId();
-              if (!checkLocking(lockUser)) throw new Exception("doc:NOT_LOCK_OWNER");
-              boolean removed = docConn.removeDocument(docId, ver, persistentDelete);
-              if (removed && document.getContent() != null && persistentDelete) 
+              if (!checkLocking(lockUser)) 
+                throw new Exception(NOT_LOCK_OWNER);
+              boolean removed = 
+                docConn.removeDocument(docId, ver, persistentDelete);
+              Content content = document.getContent();
+              if (removed && content != null && persistentDelete) 
               {
                 result = true;
-                if (!docConn.isContentInUse(document.getContent().getContentId()))
-                  conConn.removeContent(document.getContent().getContentId());
+                if (!docConn.isContentInUse(content.getContentId()))
+                  conConn.removeContent(content.getContentId());
               }
             }
           }
@@ -596,10 +611,12 @@ public class DocumentManager implements DocumentManagerPort
           Map<String, List<Document>> documentsByContentMap = new HashMap();
           for (Document document : result)
           {
-            if (document.getContent() != null)
+            Content content = document.getContent();
+            if (content != null)
             {
-              String contentId = document.getContent().getContentId();
-              List<Document> contentDocuments = documentsByContentMap.get(contentId);
+              String contentId = content.getContentId();
+              List<Document> contentDocuments = 
+                documentsByContentMap.get(contentId);
               if (contentDocuments == null)
               {
                 contentDocuments = new ArrayList();
@@ -613,11 +630,13 @@ public class DocumentManager implements DocumentManagerPort
           ContentStoreConnection storeConn = contentStore.getConnection();
           try
           {
-            List<Content> contents = storeConn.findContents(documentsByContentMap.keySet());
+            List<Content> contents = 
+              storeConn.findContents(documentsByContentMap.keySet());
             for (Content content : contents)
             {
               describeContent(content);
-              List<Document> contentDocuments = documentsByContentMap.get(content.getContentId());
+              List<Document> contentDocuments = 
+                documentsByContentMap.get(content.getContentId());
               for (Document contentDocument : contentDocuments)
               {
                 contentDocument.setContent(content);
@@ -666,7 +685,8 @@ public class DocumentManager implements DocumentManagerPort
       logOperation("countDocuments", "IN", "");
 
       int result;
-      DocumentStoreConnection conn = documentStore.newConnection(getWSEndpoint());
+      DocumentStoreConnection conn = 
+        documentStore.newConnection(getWSEndpoint());
       try
       {
         result = conn.countDocuments(documentFilter, 
@@ -701,10 +721,11 @@ public class DocumentManager implements DocumentManagerPort
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
       User user = UserCache.getUser(credentials);
 
-      logOperation("lockDocument", "IN", "docId=" + docId + "&version=" + version,
-        user.getUserId());
+      logOperation("lockDocument", "IN", 
+        "docId=" + docId + "&version=" + version, user.getUserId());
 
-      DocumentStoreConnection conn = documentStore.newConnection(getWSEndpoint());
+      DocumentStoreConnection conn = 
+        documentStore.newConnection(getWSEndpoint());
       try
       {
         Document document = conn.loadDocument(docId, version);
@@ -755,7 +776,8 @@ public class DocumentManager implements DocumentManagerPort
       logOperation("unlockDocument", "IN", "docId=" + docId +
         "&version=" + version, user.getUserId());
 
-      DocumentStoreConnection conn = documentStore.newConnection(getWSEndpoint());
+      DocumentStoreConnection conn = 
+        documentStore.newConnection(getWSEndpoint());
       try
       {
         Document document = conn.loadDocument(docId, version);
@@ -983,16 +1005,8 @@ public class DocumentManager implements DocumentManagerPort
 
   private void initDroid() throws Exception
   {
-    // TODO: customize base path
     File baseDir = MatrixConfig.getDirectory();
-    File signatureFile = new File(baseDir, "DROID_signature.xml");
-    File configFile = new File(baseDir, "DROID_config.xml");
-    if (signatureFile.exists() && configFile.exists())
-    {
-      URL configURL = new URL("file:///" + configFile.getAbsolutePath());
-      droid = new Droid(configURL);
-      droid.readSignatureFile(signatureFile.getAbsolutePath());
-    }
+    droid = new Droid(baseDir);
   }
 
   private Document createDocument(DocumentStoreConnection docConn,
@@ -1033,7 +1047,8 @@ public class DocumentManager implements DocumentManagerPort
         storedContent = internalStoreContent(conConn, content);
       }
       else if (content != null && content.getContentId() != null)
-        storedContent = conConn.loadContent(content.getContentId(), ContentInfo.METADATA);
+        storedContent = 
+          conConn.loadContent(content.getContentId(), ContentInfo.METADATA);
       
       //Prepare ACL
       prepareAccessControlList(document, null);
@@ -1086,7 +1101,6 @@ public class DocumentManager implements DocumentManagerPort
     String username = getCurrentUsername();
     String docId = document.getDocId();
     int version = document.getVersion();
-//    boolean isNewVersion = document.getVersion() == DocumentConstants.NEW_VERSION;
 
     //get instance of the current document
     Document currentDocument = getCurrentDocument(docConn, docId, version);
@@ -1108,17 +1122,21 @@ public class DocumentManager implements DocumentManagerPort
       throw new Exception("doc:NOT_LOCK_OWNER");
 
     //get last version of this document
-    Document lastVersionDocument =
-      (version != DocumentConstants.LAST_VERSION && version != DocumentConstants.NEW_VERSION ?
-        docConn.loadDocument(docId, DocumentConstants.LAST_VERSION) : currentDocument);
+    boolean notNewAndNotLast = 
+      version != DocumentConstants.LAST_VERSION 
+      && version != DocumentConstants.NEW_VERSION; 
+    Document lastVersionDocument = (notNewAndNotLast ?
+        docConn.loadDocument(docId, DocumentConstants.LAST_VERSION) : 
+        currentDocument);
     if (lastVersionDocument == null)
       throw new WebServiceException("doc:DOCUMENT_NOT_FOUND");
     // document recorded, only administrator users can modify this document
     if (State.RECORD.equals(lastVersionDocument.getState()) && !isUserAdmin())
       throw new WebServiceException("doc:RECORDED_DOCUMENT_NOT_UPDATABLE");
     //only last version of documents can be recorded
-    if (version != 0 && version != -1 && version != lastVersionDocument.getVersion() 
-       && State.RECORD.equals(document.getState()))
+    if (version != 0 && version != -1 
+        && version != lastVersionDocument.getVersion() 
+        && State.RECORD.equals(document.getState()))
       throw new WebServiceException("doc:VERSION_NOT_RECORDABLE");
     
     Content content = document.getContent();  
@@ -1136,7 +1154,8 @@ public class DocumentManager implements DocumentManagerPort
 
       boolean copyContent =
         (!document.getLanguage().equals(currentDocument.getLanguage()) &&
-        (content != null && !document.getLanguage().equals(content.getLanguage()))
+        (content != null 
+        && !document.getLanguage().equals(content.getLanguage()))
         && content.getLanguage() != null); //no change if content's language is null.
 
       if (content!= null && content.getLanguage() == null
@@ -1265,9 +1284,10 @@ public class DocumentManager implements DocumentManagerPort
     content.setCaptureUserId(getCurrentUsername());
   }
 
-  private Document setAutomaticValues(Document document, Document currentDocument, 
-    int lastVersion, String time, String username, boolean lockOp) 
-    throws Exception
+  private Document setAutomaticValues(Document document, 
+    Document currentDocument, int lastVersion, String time, String username, 
+    boolean lockOp) 
+      throws Exception
   {
     if (document.getState() == null) 
       document.setState(State.COMPLETE);    
@@ -1428,7 +1448,7 @@ public class DocumentManager implements DocumentManagerPort
         List<RelatedDocument> newRelDocs = 
           newRelDocsMap.getRelationList(relType, relName);
         if (newRelDocs != null && newRelDocs.size() > 1)
-          throw new WebServiceException("doc:RELATION_EXISTS_WITH_ANOTHER_DOCUMENT");
+          throw new WebServiceException(RELATION_EXISTS);
       }
     }
     else if (isReverseRelation(relType))
@@ -1440,13 +1460,14 @@ public class DocumentManager implements DocumentManagerPort
       {
         RelatedDocumentsMap revRelDocsMap = 
           new RelatedDocumentsMap(revDocument.getRelatedDocument());
+        RelationType revertedType = DocumentUtils.revertRelation(relType);
         List<RelatedDocument> revRelList = 
-          revRelDocsMap.getRelationList(DocumentUtils.revertRelation(relType), relName);
+          revRelDocsMap.getRelationList(revertedType, relName);
         if (revRelList != null)
         {
           String revRelDocId = revRelList.get(0).getDocId();
           if (!newDocId.equals(revRelDocId))
-            throw new WebServiceException("doc:RELATION_EXISTS_WITH_ANOTHER_DOCUMENT");
+            throw new WebServiceException(RELATION_EXISTS);
         }
       }
     }
@@ -1468,14 +1489,12 @@ public class DocumentManager implements DocumentManagerPort
       for (Property p : document.getProperty())
       {
         String name = p.getName();
-        if (DocumentConstants.READ_ROLE.equals(name) ||
-            DocumentConstants.WRITE_ROLE.equals(name) ||
-            DocumentConstants.DELETE_ROLE.equals(name))
+        if (READ_ROLE.equals(name) || WRITE_ROLE.equals(name) ||
+          DELETE_ROLE.equals(name))
         {
           hasRoleProperties = true;
-          String action = name.equals(DocumentConstants.READ_ROLE) ?
-            DictionaryConstants.READ_ACTION : (name.equals(DocumentConstants.WRITE_ROLE) ?
-            DictionaryConstants.WRITE_ACTION : DictionaryConstants.DELETE_ACTION);
+          String action = name.equals(READ_ROLE) ? READ_ACTION : 
+            (name.equals(WRITE_ROLE) ? WRITE_ACTION : DELETE_ACTION);
           for (String value : p.getValue())
           {
             //Add security properties to ACL
@@ -1488,7 +1507,8 @@ public class DocumentManager implements DocumentManagerPort
       }
       
       //if incremental and document not provide role properties
-      if (document.isIncremental() && !hasRoleProperties && currentDocument != null)
+      if (document.isIncremental() && !hasRoleProperties && 
+        currentDocument != null)
       {
         document.getAccessControl().clear();
         document.getAccessControl().addAll(currentDocument.getAccessControl());
@@ -1509,9 +1529,9 @@ public class DocumentManager implements DocumentManagerPort
       List<Property> delete = new ArrayList(2);
       for (Property p : properties)
       {
-        if (p.getName().equals(DocumentConstants.READ_ROLE) ||
-            p.getName().equals(DocumentConstants.WRITE_ROLE) ||
-            p.getName().equals(DocumentConstants.DELETE_ROLE))
+        if (p.getName().equals(READ_ROLE) ||
+            p.getName().equals(WRITE_ROLE) ||
+            p.getName().equals(DELETE_ROLE))
         {
           delete.add(p);
         }
@@ -1528,8 +1548,8 @@ public class DocumentManager implements DocumentManagerPort
       map.put(acl.getRoleId() + ";" + acl.getAction(), acl);
     }
 
-    String roleId = SecurityConstants.SELF_ROLE_PREFIX + user.getUserId().trim() +
-      SecurityConstants.SELF_ROLE_SUFFIX;
+    String roleId = SecurityConstants.SELF_ROLE_PREFIX + 
+      user.getUserId().trim() + SecurityConstants.SELF_ROLE_SUFFIX;
     AccessControl ac = new AccessControl();
     ac.setRoleId(roleId);
     ac.setAction(DictionaryConstants.READ_ACTION);
@@ -1561,7 +1581,8 @@ public class DocumentManager implements DocumentManagerPort
       newDocument.setState(currentDocument.getState());
     if (newDocument.getCreationDate() == null)
       newDocument.setCreationDate(currentDocument.getCreationDate());
-    if (newDocument.getAuthorId() == null || newDocument.getAuthorId().isEmpty())
+    if (newDocument.getAuthorId() == null || 
+        newDocument.getAuthorId().isEmpty())
     {
       newDocument.getAuthorId().clear();
       newDocument.getAuthorId().addAll(currentDocument.getAuthorId());
@@ -1600,9 +1621,9 @@ public class DocumentManager implements DocumentManagerPort
       for(Property property : document.getProperty())
       {
         String name = property.getName();
-        if (!name.equals(DocumentConstants.READ_ROLE) &&
-            !name.equals(DocumentConstants.WRITE_ROLE) &&
-            !name.equals(DocumentConstants.DELETE_ROLE))
+        if (!name.equals(READ_ROLE) &&
+            !name.equals(WRITE_ROLE) &&
+            !name.equals(DELETE_ROLE))
         {
           propertiesMap.put(property.getName(), property);
         }
@@ -1631,7 +1652,8 @@ public class DocumentManager implements DocumentManagerPort
     return dataFile;
   }
 
-  private void logOperation(String operation, String messageType, String message)
+  private void logOperation(String operation, String messageType, 
+    String message)
   {
     logOperation(operation, messageType, message, getCurrentUsername());
   }
@@ -1748,23 +1770,9 @@ public class DocumentManager implements DocumentManagerPort
   {
     if (droid != null)
     {
-      IdentificationFile idf = droid.identify(dataFile.getAbsolutePath());
-      if (idf.getClassification() == 
-        AnalysisController.FILE_CLASSIFICATION_POSITIVE)
-      {
-        FileFormat format = null;
-        int i = 0;
-        boolean stop = false;
-        while (i < idf.getNumHits() && !stop)
-        {
-          FileFormatHit hit = idf.getHit(i);
-          format = hit.getFileFormat();
-          if (hit.isSpecific()) stop = true;
-          i++;
-        }
+      FileFormat format = droid.identify(dataFile.getAbsolutePath());
+      if (format != null)
         setContentFormat(content, format);
-        // set other Content properties
-      }
     }
   }
 
@@ -1811,8 +1819,8 @@ public class DocumentManager implements DocumentManagerPort
     Set<String> userRoles = user.getRoles();
 
     return userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, type, DictionaryConstants.READ_ACTION)
-      || checkDocumentACL(userRoles, document, DictionaryConstants.READ_ACTION);
+      || checkTypeACL(userRoles, type, READ_ACTION)
+      || checkDocumentACL(userRoles, document, READ_ACTION);
   }
 
   private boolean canUserCreateDocument(User user, Type type)
@@ -1820,7 +1828,7 @@ public class DocumentManager implements DocumentManagerPort
     Set<String> userRoles = user.getRoles();
 
     return (userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, type, DictionaryConstants.CREATE_ACTION));
+      || checkTypeACL(userRoles, type, CREATE_ACTION));
   }
 
   private boolean canUserModifyDocument(User user, 
@@ -1829,8 +1837,8 @@ public class DocumentManager implements DocumentManagerPort
     Set<String> userRoles = user.getRoles();
 
     return (userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, currentType, DictionaryConstants.WRITE_ACTION)
-      || checkDocumentACL(userRoles, currentDocument, DictionaryConstants.WRITE_ACTION));
+      || checkTypeACL(userRoles, currentType, WRITE_ACTION)
+      || checkDocumentACL(userRoles, currentDocument, WRITE_ACTION));
   }
 
   private boolean canUserDeleteDocument(User user, Document document, Type type)
@@ -1838,8 +1846,8 @@ public class DocumentManager implements DocumentManagerPort
     Set<String> userRoles = user.getRoles();
 
     return (userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, type, DictionaryConstants.DELETE_ACTION)
-      || checkDocumentACL(userRoles, document, DictionaryConstants.DELETE_ACTION));
+      || checkTypeACL(userRoles, type, DELETE_ACTION)
+      || checkDocumentACL(userRoles, document, DELETE_ACTION));
   }
 
   private boolean checkTypeACL(Set<String> userRoles, Type type, String action)
@@ -2035,7 +2043,8 @@ public class DocumentManager implements DocumentManagerPort
       }
     }    
     
-    private RelatedDocument getFromList(List<RelatedDocument> list, String docId)
+    private RelatedDocument getFromList(List<RelatedDocument> list, 
+      String docId)
     {
       RelatedDocument result = null;
       if (list != null)

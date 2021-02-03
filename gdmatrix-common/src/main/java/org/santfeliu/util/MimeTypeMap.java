@@ -201,6 +201,7 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType(
       "application/vnd.openxmlformats-officedocument.presentationml.slideshow", 
       new String[]{"ppsx"});
+    addMimeType("application/vnd.visio", new String[]{"vsd", "vsdx"});    
     addMimeType("application/tcq", new String[]{"tcq"});
     addMimeType("application/octet-stream", new String[]{"bin", "exe"});                           
     addMimeType("audio/basic", new String[]{"au"});

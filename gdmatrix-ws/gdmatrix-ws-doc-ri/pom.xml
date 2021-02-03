@@ -1,54 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.matrix</groupId>
-        <artifactId>gdmatrix-ws</artifactId>
-        <version>3.0</version>
-    </parent> 
-    <artifactId>gdmatrix-ws-doc-ri</artifactId>
-    <packaging>jar</packaging>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.matrix</groupId>
+    <artifactId>gdmatrix-ws</artifactId>
+    <version>3.0</version>
+  </parent> 
+  <artifactId>gdmatrix-ws-doc-ri</artifactId>
+  <packaging>jar</packaging>
      
-    <dependencies>
+  <dependencies>
     <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=C:\gdmatrix\lib\droid.jar -DgroupId=uk.gov.nationalarchives -DartifactId=droid -Dversion=3.0.0 -Dpackaging=jar -DlocalRepositoryPath=C:\gdmatrix\m2 -DpomFile=C:\gdmatrix\lib\droid.pom -->        
     <dependency>
-        <groupId>uk.gov.nationalarchives</groupId>
-        <artifactId>droid</artifactId>
-        <version>3.0.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-          </exclusion>
-        </exclusions>        
+      <groupId>uk.gov.nationalarchives</groupId>
+      <artifactId>droid-container</artifactId>
+      <version>6.5</version>              
+    </dependency>         
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gdmatrix-ws-dic-ri</artifactId>
+      <version>${project.version}</version>
     </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>gdmatrix-ws-dic-ri</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>gdmatrix-ws-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    <description>GDMatrix documents module web services reference implementation</description>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gdmatrix-ws-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <description>GDMatrix documents module web services reference implementation</description>
+ 
+  <build>
+    <plugins>      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>wsimport_PRONOM</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <keep>true</keep>
+              <wsdlDirectory>src/main/resources/org/santfeliu/doc/droid</wsdlDirectory>
+              <wsdlFiles>
+                <wsdlFile>PRONOM.wsdl</wsdlFile>           
+              </wsdlFiles>
+            </configuration>            
+          </execution>        
+        </executions>
+      </plugin> 
+    </plugins>
+  </build>  
+   
 </project>

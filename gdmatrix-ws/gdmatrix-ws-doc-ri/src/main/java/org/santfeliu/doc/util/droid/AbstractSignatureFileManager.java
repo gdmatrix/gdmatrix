@@ -28,51 +28,42 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.doc.test;
+package org.santfeliu.doc.util.droid;
 
-import java.net.URL;
-
-import org.santfeliu.doc.util.Droid;
-import uk.gov.nationalarchives.droid.FileFormatHit;
-import uk.gov.nationalarchives.droid.IdentificationFile;
-import uk.gov.nationalarchives.droid.signatureFile.FileFormat;
-
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
-public class DroidTest
+public abstract class AbstractSignatureFileManager 
+  implements DroidSignatureFileManager
 {
-  public DroidTest()
+  protected Path file;
+   
+  protected Path getDefaultFile(Path baseDir, String filename) 
+    throws IOException
   {
-  }
-
-  public static void main(String args[])
-  {
-    try
+    Path file = null;
+    Stream<Path> stream = Files.walk(baseDir, 1);
+    String pattern = "glob:**" + 
+    filename.replace("%s", "*");
+    PathMatcher matcher =
+    FileSystems.getDefault().getPathMatcher(pattern);
+    Iterator<Path> it = stream.iterator();
+    while (it.hasNext() && file == null)
     {
-      URL configURL = new URL("file:///C:/DROID_config.xml");
-      Droid droid = new Droid(configURL);
-      droid.readSignatureFile("C:/DROID_signature.xml");
-      IdentificationFile idf = droid.identify("c:/Acta.doc");
-      System.out.println("idt:" + idf.getClassificationText());
-      System.out.println("id:" + idf.getClassification());
-      int nh = idf.getNumHits();
-      System.out.println("hits:" + nh);
-      for (int i = 0; i < nh; i++)
-      {
-        FileFormatHit hit = idf.getHit(i);
-        FileFormat format = hit.getFileFormat();
-        System.out.println("mimeType: " + format.getMimeType());
-        System.out.println("name: " + format.getName());
-        System.out.println("PUID: " + format.getPUID());
-        System.out.println("PUID: " + format.getVersion());
-      }
+      Path item = it.next();
+      if (matcher.matches(item))
+        file = item;
     }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-    }
-  }
+    
+    return file;
+  }  
 }

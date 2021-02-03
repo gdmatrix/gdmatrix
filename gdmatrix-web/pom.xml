@@ -39,6 +39,11 @@
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
         </exclusion>
+        <!-- Avoid collision with droid-container dependency -->
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -243,6 +248,13 @@
       <artifactId>gdmatrix-ws-job-ri</artifactId>
       <version>${project.version}</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <!-- Declared direct to avoid conflicts with droid dependencies -->
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -392,12 +404,24 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.11</version>
+      <version>1.14</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.1</version>
+    </dependency>
+    <dependency>
+      <!-- Avoid conflicts with droid-container dependencies -->
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.6</version>
+    </dependency>
+    <dependency>
+      <!-- Avoid conflicts between dependencies of job and doc modules -->
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
     </dependency>
   </dependencies>
 
