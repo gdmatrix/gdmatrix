@@ -65,7 +65,7 @@ public class SignatureFileManagers
   public static SignatureFileManagers createInstance()
   {
     SignatureFileManagers instance = new SignatureFileManagers();
-    instance.put(ResolverType.BINARY, new BinarySignatureFilleManager());
+    instance.put(ResolverType.BINARY, new BinarySignatureFileManager());
     instance.put(ResolverType.CONTAINER, new ContainerSignatureFileManager());
     return instance;
   }

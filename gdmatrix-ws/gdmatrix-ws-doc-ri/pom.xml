@@ -49,7 +49,7 @@
             <configuration>
               <verbose>true</verbose>
               <keep>true</keep>
-              <wsdlDirectory>src/main/resources/org/santfeliu/doc/droid</wsdlDirectory>
+              <wsdlDirectory>src/main/resources/org/santfeliu/doc/util/droid</wsdlDirectory>
               <wsdlFiles>
                 <wsdlFile>PRONOM.wsdl</wsdlFile>           
               </wsdlFiles>

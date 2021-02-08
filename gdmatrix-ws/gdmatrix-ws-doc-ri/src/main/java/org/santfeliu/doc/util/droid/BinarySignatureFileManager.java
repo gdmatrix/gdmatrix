@@ -30,6 +30,7 @@
  */
 package org.santfeliu.doc.util.droid;
 
+import java.net.URL;
 import java.nio.file.Path;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -53,7 +54,7 @@ import uk.gov.nationalarchives.pronom.signaturefile.SignatureFileType;
  *
  * @author blanquepa
  */
-public class BinarySignatureFilleManager extends AbstractSignatureFileManager
+public class BinarySignatureFileManager extends AbstractSignatureFileManager
 {
   private static final String DEFAULT_FILENAME_PATTERN = 
     "DROID_SignatureFile_V%s.xml";
@@ -63,7 +64,13 @@ public class BinarySignatureFilleManager extends AbstractSignatureFileManager
   @Override
   public Path downloadFile(Path baseDir) throws Exception
   {
-    PronomServiceService service = new PronomServiceService();
+    Class cls = getClass();
+    String className = cls.getName();
+    int index = className.lastIndexOf(".");
+    String path = "/" + className.substring(0, index).replace('.', '/');
+    URL wsdlLocation = cls.getResource(path + "/PRONOM.wsdl");    
+    
+    PronomServiceService service = new PronomServiceService(wsdlLocation);
     PronomService pronomService = service.getPronomServiceSoap();
     SigFile sigFile = pronomService.getSignatureFileV1();
     SignatureFileType sigFileType = sigFile.getFFSignatureFile();
