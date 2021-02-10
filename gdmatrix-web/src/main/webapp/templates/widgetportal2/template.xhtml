@@ -252,45 +252,6 @@
                 </t:div>
               </t:div>
 
-              <t:div styleClass="loginBox mobileid" 
-                     rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_mobileid_enabled == 'true') and 
-                                 userSessionBean.anonymousUser or userSessionBean.loginMethod == 'MOBILEID'}">
-                <sf:heading level="3" styleClass="element-invisible">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_mobileid}" 
-                                 translator="#{userSessionBean.translator}" 
-                                 translationGroup="login" />
-                </sf:heading>
-                <t:div styleClass="headerLine">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_mobileid}" 
-                                 translator="#{userSessionBean.translator}"
-                                 translationGroup="login" />
-                </t:div>
-                <t:div styleClass="subHeaderLine" rendered="#{userSessionBean.anonymousUser}">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_mobileid_info}" 
-                                 translator="#{userSessionBean.translator}" 
-                                 translationGroup="login" />
-                </t:div>                
-                <t:div rendered="#{userSessionBean.anonymousUser}">
-                  <t:div>
-                    <sf:outputLink value="#{mobileIdBean.loginURL}" styleClass="loginButton"
-                                   ariaLabel="#{webBundle.buttonSigninMobileId}">
-                      <h:outputText value="#{webBundle.buttonSignin}" />
-                    </sf:outputLink>
-                  </t:div>
-                  <t:div rendered="#{userSessionBean.selectedMenuItem.properties.login_mobileid_register_url != null}">
-                    <sf:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_mobileid_register_url}" 
-                                   styleClass="loginButton" target="mobileid"
-                                   ariaLabel="#{userSessionBean.selectedMenuItem.properties.login_mobileid_register_text_aria}"
-                                   translator="#{userSessionBean.translator}"
-                                   translationGroup="login">
-                      <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_mobileid_register_text}" 
-                                     translator="#{userSessionBean.translator}"
-                                     translationGroup="login" />
-                    </sf:outputLink>
-                  </t:div>
-                </t:div>
-              </t:div>
-
               <!-- logout button -->
               <t:div styleClass="loginBox logout" rendered="#{not userSessionBean.anonymousUser}">
                 <t:div>

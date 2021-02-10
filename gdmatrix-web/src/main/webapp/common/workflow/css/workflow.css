@@ -842,14 +842,6 @@ ul.messages li
   margin-left: 0px;
 }
 
-.mobileidEnterPIN
-{
-  display:block;
-  margin:10px;
-  text-align: center;
-  font-weight: bold;
-}
-
 /* SelectMenu form assistant default styles */
 
 .workflowInstance .body .bot

@@ -49,7 +49,6 @@ public class LoginFormBean extends FormBean
   private boolean loginByPassword;
   private boolean loginByCertificate;
   private boolean loginByValid;
-  private boolean loginByMobileid;
 
   public String getMessage()
   {
@@ -96,9 +95,10 @@ public class LoginFormBean extends FormBean
     return loginByValid;
   }
 
+  @Deprecated
   public boolean isLoginByMobileid()
   {
-    return loginByMobileid;
+    return false;
   }
   
   public String getValidUrl()
@@ -115,21 +115,6 @@ public class LoginFormBean extends FormBean
       InstanceListBean.ACCESS_TOKEN_PARAM + "=" + accessToken + "&" + 
       InstanceListBean.INSTANCEID_PARAM + "=" + instanceId;
   }
-
-  public String getMobileidUrl()
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    String mid = userSessionBean.getMenuModel().getSelectedMid();
-    
-    InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
-    String instanceId = instanceBean.getInstanceId();
-    String accessToken = instanceBean.getAccessToken();
-    if (accessToken == null) accessToken = "";
-    
-    return "/mobileid?xmid=" + mid + "&" + 
-      InstanceListBean.ACCESS_TOKEN_PARAM + "=" + accessToken + "&" + 
-      InstanceListBean.INSTANCEID_PARAM + "=" + instanceId;
-  }
   
   @Override
   public String show(Form form)
@@ -139,7 +124,6 @@ public class LoginFormBean extends FormBean
     loginByPassword = "true".equals(form.getParameters().get("password"));
     loginByCertificate = "true".equals(form.getParameters().get("certificate"));
     loginByValid = "true".equals(form.getParameters().get("valid"));
-    loginByMobileid = "true".equals(form.getParameters().get("mobileid"));
 
     InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
     instanceBean.setAccessToken(UUID.randomUUID().toString() + 

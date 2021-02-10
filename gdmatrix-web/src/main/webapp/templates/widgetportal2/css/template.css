@@ -241,11 +241,6 @@ main#sf_main_content
   background: url(/templates/widgetportal2/images/certificate_icon.png) no-repeat 0px center;  
 }
 
-.topBar #loginPanel .loginBox.mobileid .headerLine
-{
-  background: url(/templates/widgetportal2/images/mobileid_icon.png) no-repeat 0px center;  
-}
-
 .topBar #loginPanel .loginBox.valid .headerLine
 {
   background: url(/templates/widgetportal2/images/valid_icon.png) no-repeat 0px center;  

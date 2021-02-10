@@ -477,80 +477,6 @@
   </context-param>
   <!-- END MatrixConfigCertificateStore configuration -->  
   <context-param>
-    <param-name>mobileId.keyStore.filename</param-name>
-    <param-value>mobileid-int.p12</param-value>
-  </context-param>
-  <context-param>
-    <param-name>mobileId.keyStore.password</param-name>
-    <param-value>111111</param-value>
-  </context-param>
-  <context-param>
-    <param-name>mobileId.source</param-name>
-    <param-value>1</param-value>
-  </context-param>
-  <context-param>
-    <param-name>mobileId.authenticate.endpoint</param-name>
-    <param-value>https://int.mobileid.cat:443/ridm/services/authenticateWS</param-value>
-  </context-param>
-  <context-param>
-    <param-name>mobileId.authenticate.subject</param-name>
-    <param-value>Acreditació Ajuntament de Sant Feliu de Llobregat</param-value>
-  </context-param>
-  <context-param>
-    <param-name>mobileId.pdfSignature.endpoint</param-name>
-    <param-value>https://int.mobileid.cat:443/ridm/services/signatureServiceWS</param-value>
-  </context-param>
-  <context-param>
-    <param-name>mobileId.pdfSignature.subject</param-name>
-    <param-value>Signatura Ajuntament de Sant Feliu de Llobregat</param-value>
-  </context-param>
-  <context-param>
-    <param-name>mobileId.hashSignature.endpoint</param-name>
-    <param-value>https://int.mobileid.cat:443/ridm/services/hashSignatureServiceWS</param-value>
-  </context-param>
-  <context-param>
-    <param-name>mobileId.hashSignature.subject</param-name>
-    <param-value>Signatura Ajuntament de Sant Feliu de Llobregat</param-value>
-  </context-param>
-  <!--
-      <context-param>
-          <param-name>mobileId.keyStore.filename</param-name>
-          <param-value>mobileid-pro.p12</param-value>
-      </context-param>
-      <context-param>
-          <param-name>mobileId.keyStore.password</param-name>
-          <param-value>7BB5959</param-value>
-      </context-param>
-      <context-param>
-          <param-name>mobileId.source</param-name>
-          <param-value>1</param-value>
-      </context-param>
-      <context-param>
-          <param-name>mobileId.authenticate.endpoint</param-name>
-          <param-value>https://ridm.firmaprofesional.com/idbcn/services/authenticateWS</param-value>
-      </context-param>
-      <context-param>
-          <param-name>mobileId.authenticate.subject</param-name>
-          <param-value>Acreditació Ajuntament de Sant Feliu de Llobregat</param-value>
-      </context-param>
-      <context-param>
-          <param-name>mobileId.pdfSignature.endpoint</param-name>
-          <param-value>https://ridm.firmaprofesional.com/idbcn/services/signatureServiceWS</param-value>
-      </context-param>
-      <context-param>
-          <param-name>mobileId.pdfSignature.subject</param-name>
-          <param-value>Signatura Ajuntament de Sant Feliu de Llobregat</param-value>
-      </context-param>
-      <context-param>
-        <param-name>mobileId.hashSignature.endpoint</param-name>
-        <param-value>https://ridm.firmaprofesional.com/idbcn/services/hashSignatureServiceWS</param-value>
-      </context-param>
-      <context-param>
-        <param-name>mobileId.hashSignature.subject</param-name>
-        <param-value>Signatura Ajuntament de Sant Feliu de Llobregat</param-value>
-      </context-param>
-  -->
-  <context-param>
     <param-name>valid.baseUrl</param-name>
     <param-value>https://identitats.aoc.cat</param-value>
   </context-param>
@@ -917,15 +843,6 @@
   <servlet-mapping>
     <servlet-name>ValidServlet</servlet-name>
     <url-pattern>/valid/*</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <description>MobileId servlet</description>
-    <servlet-name>MobileIdServlet</servlet-name>
-    <servlet-class>org.santfeliu.security.web.MobileIdServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>MobileIdServlet</servlet-name>
-    <url-pattern>/mobileid/*</url-pattern>
   </servlet-mapping>
   <servlet>
     <description>Clock servlet</description>

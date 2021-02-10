@@ -72,12 +72,6 @@
                 <h:outputText value="VALid" />
               </h:outputLink>
 
-              <!-- MobileID -->
-              <h:outputLink value="#{mobileIdBean.loginURL}" styleClass="button mobileid fixed"
-                rendered="#{loginBean.requestedAuthenticationLevel lt 3 and loginBean.requestedSignatureLevel lt 3 and 
-                           (userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_mobileid_enabled == 'true')}">
-                <h:outputText value="MobileID" />
-              </h:outputLink>              
             </h:panelGroup>
 
             <h:outputLink value="#{loginBean.cancelURL}" styleClass="button cancel fixed">

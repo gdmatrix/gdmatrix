@@ -10,7 +10,6 @@
     <ui:define name="form">
 
       <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
-      <f:loadBundle basename="org.santfeliu.security.web.resources.MobileIdBundle" var="mobileIdBundle" />
 
       <t:saveState value="#{signatureFormBean}" />
 
@@ -46,44 +45,8 @@
         </t:div>
       </t:div>
 
-      <!-- signature with MobileId -->
-      <h:panelGroup rendered="#{userSessionBean.loginMethod == 'MOBILEID'}">
-        <h:graphicImage url="/common/workflow/images/mobileid.png" alt="MOBILEID" title="MOBILEID" 
-          style="margin:8px;display:block;" />
-        <h:panelGroup rendered="#{signatureFormBean.mobileidState == 0}">
-          <t:div styleClass="buttonBar">
-            <h:commandButton value="#{workflowBundle.sign}"
-              action="#{signatureFormBean.signMobileid}"
-              alt="#{workflowBundle.sign}" title="#{workflowBundle.sign}"
-              onclick="javascript:showOverlay(); return true"
-              styleClass="workflowButton" />
-            <h:commandButton value="#{workflowBundle.cancel}"
-              action="#{signatureFormBean.cancelSignature}"
-              alt="#{workflowBundle.cancel}" title="#{workflowBundle.cancel}"
-              onclick="javascript:showOverlay(); return true"
-              styleClass="workflowButton" />
-          </t:div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{signatureFormBean.mobileidState == 1}">
-          <h:outputText value="#{mobileIdBundle.enterPIN}" styleClass="mobileidEnterPIN"/>
-          <t:div styleClass="buttonBar">
-            <h:commandButton value="#{mobileIdBundle.pinEntered}"
-              action="#{signatureFormBean.pinEntered}"
-              alt="#{mobileIdBundle.pinEntered}" title="#{mobileIdBundle.pinEntered}"
-              onclick="javascript:showOverlay(); return true"
-              styleClass="workflowButton" />
-            <h:commandButton value="#{mobileIdBundle.cancel}"
-              action="#{signatureFormBean.pinCancelled}"
-              alt="#{mobileIdBundle.cancel}" title="#{mobileIdBundle.cancel}"
-              onclick="javascript:showOverlay(); return true"
-              styleClass="workflowButton" />
-          </t:div>
-        </h:panelGroup>
-      </h:panelGroup>
-
       <!-- signature with certificate -->  
-      <t:div rendered="#{userSessionBean.loginMethod != 'VALID' and 
-                         userSessionBean.loginMethod != 'MOBILEID'}" styleClass="buttonBar">
+      <t:div rendered="#{userSessionBean.loginMethod != 'VALID'}" styleClass="buttonBar">
 
         <!-- signature with matrix client -->
         <h:panelGroup rendered="#{userSessionBean.matrixClientEnabled}">

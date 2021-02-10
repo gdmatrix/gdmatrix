@@ -90,12 +90,6 @@
  </managed-bean>
 
  <managed-bean>
-  <managed-bean-name>mobileIdFormBean</managed-bean-name>
-  <managed-bean-class>org.santfeliu.workflow.web.MobileIdFormBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
-
- <managed-bean>
   <managed-bean-name>showDocumentFormBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.workflow.web.ShowDocumentFormBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
@@ -260,11 +254,6 @@
    <navigation-case>
      <from-outcome>biometric_form</from-outcome>
      <to-view-id>/common/workflow/biometric_form.xhtml</to-view-id>
-   </navigation-case>
-
-   <navigation-case>
-     <from-outcome>mobileid_form</from-outcome>
-     <to-view-id>/common/workflow/mobileid_form.xhtml</to-view-id>
    </navigation-case>
 
  </navigation-rule>

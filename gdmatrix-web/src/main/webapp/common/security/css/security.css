@@ -225,11 +225,6 @@ body.loginPage
   background-image: url(../images/valid_icon.png);
 }
 
-.loginForm .button.mobileid
-{
-  background-image: url(../images/mobileid_icon.png);
-}
-
 /* UserInRole */
 
 .futureUserInRole

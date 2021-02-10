@@ -313,13 +313,6 @@
               </h:outputLink>   
             </t:div>
 
-            <t:div styleClass="loginButtonDiv mobileid"
-              rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_mobileid_enabled == 'true')}">
-              <h:outputLink value="#{mobileIdBean.loginURL}" styleClass="loginButton">
-                <h:outputText value="MobileID"  />
-              </h:outputLink>
-            </t:div>
-
             <t:div rendered="#{loginBean.loginMessage != null}" styleClass="errorMessageDiv" id="errorMessageDiv" forceId="true">
               <h:outputText value="#{loginBean.loginMessage}" />
             </t:div>        

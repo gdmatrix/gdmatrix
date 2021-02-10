@@ -446,10 +446,6 @@ public class WorkflowsDetailPanel extends TabulatedDetailPanel
     {
       return HIGH_LEVEL; // TODO: check type of certificate
     }
-    else if ("MOBILEID".equals(loginMethod))
-    {
-      return MEDIUM_LEVEL;
-    }
     else if ("VALID".equals(loginMethod))
     {
       return MEDIUM_LEVEL;
@@ -468,10 +464,6 @@ public class WorkflowsDetailPanel extends TabulatedDetailPanel
     if (UserSessionBean.LOGIN_CERTIFICATE.equals(loginMethod))
     {
       return HIGH_LEVEL; // TODO: check type of certificate
-    }
-    else if ("MOBILEID".equals(loginMethod))
-    {
-      return MEDIUM_LEVEL;
     }
     else if ("VALID".equals(loginMethod))
     {

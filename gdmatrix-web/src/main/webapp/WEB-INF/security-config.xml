@@ -75,11 +75,6 @@
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  <managed-bean>
-  <managed-bean-name>mobileIdBean</managed-bean-name>
-  <managed-bean-class>org.santfeliu.security.web.MobileIdBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
   <managed-bean-name>validBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.ValidBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
@@ -158,11 +153,6 @@
   <navigation-case>
    <from-outcome>role_roles_tree</from-outcome>
    <to-view-id>/common/security/role_roles_tree.xhtml</to-view-id>
-  </navigation-case>
-
-  <navigation-case>
-   <from-outcome>login_mobileid</from-outcome>
-   <to-view-id>/common/security/login_mobileid.xhtml</to-view-id>
   </navigation-case>
 
  </navigation-rule>

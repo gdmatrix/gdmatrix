@@ -61,7 +61,6 @@ public class LoginFormParametersEditor extends JPanel implements NodeEditor
   private JCheckBox passwordCheckBox = new JCheckBox();
   private JCheckBox certificateCheckBox = new JCheckBox();
   private JCheckBox validCheckBox = new JCheckBox();
-  private JCheckBox mobileidCheckBox = new JCheckBox();
   private JLabel methodsLabel = new JLabel();
   private JPanel methodsPanel = new JPanel();
 
@@ -98,9 +97,6 @@ public class LoginFormParametersEditor extends JPanel implements NodeEditor
     Object valid = parameters.get("valid");
     validCheckBox.setSelected("true".equals(valid));
 
-    Object mobileid = parameters.get("mobileid");
-    mobileidCheckBox.setSelected("true".equals(mobileid));
-
     return this;
   }
 
@@ -122,7 +118,6 @@ public class LoginFormParametersEditor extends JPanel implements NodeEditor
     parameters.put("password", String.valueOf(passwordCheckBox.isSelected()));
     parameters.put("certificate", String.valueOf(certificateCheckBox.isSelected()));
     parameters.put("valid", String.valueOf(validCheckBox.isSelected()));
-    parameters.put("mobileid", String.valueOf(mobileidCheckBox.isSelected()));
 
     formNode.setParameters(parameters);
   }
@@ -152,7 +147,6 @@ public class LoginFormParametersEditor extends JPanel implements NodeEditor
     passwordCheckBox.setText("Password");
     certificateCheckBox.setText("Certificate");
     validCheckBox.setText("VALid");
-    mobileidCheckBox.setText("MobileId");
 
     methodsLabel.setText("Methods:");
     this.add(methodsLabel,
@@ -167,6 +161,5 @@ public class LoginFormParametersEditor extends JPanel implements NodeEditor
     methodsPanel.add(passwordCheckBox);
     methodsPanel.add(certificateCheckBox);
     methodsPanel.add(validCheckBox);
-    methodsPanel.add(mobileidCheckBox);
   }
 }

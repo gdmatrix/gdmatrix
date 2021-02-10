@@ -32,34 +32,15 @@ package org.santfeliu.workflow.web;
 
 import cat.aoc.valid.DocumentToSign;
 import cat.aoc.valid.ValidClient;
-import cat.mobileid.HashSignatureWS;
-import cat.mobileid.MobileIdWS;
-import com.sun.org.apache.xml.internal.security.utils.UnsyncBufferedOutputStream;
-//import org.apache.xml.security.utils.UnsyncBufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import org.apache.xml.security.utils.XMLUtils;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.security.KeyStore;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.IOUtils;
-import org.apache.xml.security.algorithms.MessageDigestAlgorithm;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.xml.security.signature.XMLSignatureInput;
-import org.apache.xml.security.utils.Constants;
-import org.apache.xml.security.utils.DigesterOutputStream;
 import org.json.simple.JSONObject;
 import org.matrix.signature.DataHash;
 import org.matrix.signature.SignatureManagerPort;
@@ -72,13 +53,11 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.Properties;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.workflow.form.Form;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SignatureFormBean extends FormBean
 {
@@ -89,8 +68,6 @@ public class SignatureFormBean extends FormBean
   private String sigId; // sigId of document to sign
   private String result;
   private boolean IFrame;
-  private String mobileidTicket;
-  private String mobileidObject;
   
   private SignatureMatrixClientModel model;
 
@@ -294,177 +271,10 @@ public class SignatureFormBean extends FormBean
     return null;
   }
   
-  // Mobileid methods
-  public int getMobileidState()
-  {
-    return mobileidTicket == null ? 0 : 1;
-  }
-
-  public String signMobileid()
-  {
-    mobileidTicket = null;
-    try
-    {
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      String NIF = userSessionBean.getNIF();
-
-      String mobileidObjectId = UUID.randomUUID().toString();
-      
-      Document doc = 
-        DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-      Element root = doc.createElement("ds:Signature");
-      root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:ds", 
-        "http://www.w3.org/2000/09/xmldsig#");
-      doc.appendChild(root);
-      Element objectElem = doc.createElement("ds:Object");
-      objectElem.setAttribute("Id", mobileidObjectId);
-      root.appendChild(objectElem);
-
-      SignatureManagerPort port = getSignatureManagerPort();
-      List<DataHash> dataHashes = port.digestData(sigId);
-      for (DataHash dataHash : dataHashes)
-      {
-        Element docElem = doc.createElement("document");
-        objectElem.appendChild(docElem);
-        Element nomElem = doc.createElement("nom");
-        nomElem.setTextContent(dataHash.getName());
-        docElem.appendChild(nomElem);
-        Element resumElem = doc.createElement("resum");
-        resumElem.setTextContent(new String(Base64.encodeBase64(dataHash.getHash())));
-        docElem.appendChild(resumElem);
-        Element algElem = doc.createElement("algorisme");
-        algElem.setTextContent(dataHash.getAlgorithm());
-        docElem.appendChild(algElem);
-      }
-      
-      MessageDigestAlgorithm mda = MessageDigestAlgorithm.getInstance(
-        objectElem.getOwnerDocument(), Constants.ALGO_ID_DIGEST_SHA1);
-      mda.reset();
-      DigesterOutputStream diOs = new DigesterOutputStream(mda);
-      OutputStream os = new UnsyncBufferedOutputStream(diOs);
-      XMLSignatureInput output = new XMLSignatureInput(objectElem);         
-      output.updateOutputStream(os);
-      os.flush();
-      String hexHash = new String(Hex.encodeHex(diOs.getDigestValue()));    
-
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      XMLUtils.outputDOMc14nWithComments(objectElem, bos);
-      mobileidObject = new String(bos.toByteArray(), "UTF-8");
-      
-      String subject = MatrixConfig.getProperty("mobileId.hashSignature.subject");
-      String source = MatrixConfig.getProperty("mobileId.source");
-      
-      HashSignatureWS client = getMobileidClient();
-      Map<String, String> data = client.signHash(5, MobileIdWS.DOCTYPE_NIF,
-        NIF, subject, Integer.parseInt(source), hexHash,
-        getContextURL() + "/signatures/" + sigId, "1");
-
-      mobileidTicket = data.get("ticket");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return null;
-  }
-
-  public String pinEntered()
-  {
-    try
-    {
-      HashSignatureWS client = getMobileidClient();
-      Map<String, String> data = client.checkSignHash(mobileidTicket);
-      String error = data.get("error");
-      if ("0".equals(error))
-      {
-        URL url = new URL(client.getSignedDocumentUrl(data));
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try
-        {
-          IOUtils.copy(url.openStream(), os);
-        }
-        finally
-        {
-          os.close();
-        }
-        String document = new String(os.toByteArray(), "UTF-8");
-        int index = document.indexOf("<ds:X509Certificate>");
-        if (index != -1)
-        {
-          int index2 = document.indexOf("</ds:X509Certificate>");
-          if (index2 != -1)
-          {
-            String certBase64 = document.substring(index + 20, index2);
-            System.out.println(certBase64);
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            InputStream is = new ByteArrayInputStream(
-              Base64.decodeBase64(certBase64.getBytes()));
-            try
-            {
-              X509Certificate certificate = 
-                (X509Certificate)cf.generateCertificate(is);
-              String subjectDN = certificate.getSubjectDN().toString();
-              document = document.replace("<ds:X509Data>", 
-                "<ds:X509Data><ds:X509SubjectName>" + subjectDN + 
-                "</ds:X509SubjectName>");
-            }
-            finally
-            {
-              is.close();
-            }
-          }
-        }
-        document = document.replace("</ds:Signature>", 
-          mobileidObject + "</ds:Signature>");
-        SignatureManagerPort port = getSignatureManagerPort();
-        port.addExternalSignature(sigId, document.getBytes("UTF-8"));
-        
-        result = "OK";
-        InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
-        return instanceBean.forward();
-      }
-      else throw new Exception("ERROR: " + error);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return null;
-  }
-
-  public String pinCancelled()
-  {
-    mobileidTicket = null; // enter PIN
-    return null;
-  }
-  
   private SignatureManagerPort getSignatureManagerPort()
   {
     WSDirectory dir = WSDirectory.getInstance();
     WSEndpoint endpoint = dir.getEndpoint(SignatureManagerService.class);
     return endpoint.getPort(SignatureManagerPort.class);
-  }
-  
-  private HashSignatureWS getMobileidClient() throws Exception
-  {
-    String endpoint = MatrixConfig.getProperty("mobileId.hashSignature.endpoint");
-    String keyStoreFilename = MatrixConfig.getProperty(
-      "mobileId.keyStore.filename");
-    String password = MatrixConfig.getProperty("mobileId.keyStore.password");    
-    char[] keyStorePassword = password.toCharArray();
-
-    File certificateDir = new File(MatrixConfig.getDirectory(), "certificates");
-    File certificateFile = new File(certificateDir, keyStoreFilename);
-    KeyStore ks = KeyStore.getInstance("PKCS12");
-    InputStream is = new FileInputStream(certificateFile);
-    try
-    {
-      ks.load(is, keyStorePassword);
-    }
-    finally
-    {
-      is.close();
-    }
-    return new HashSignatureWS(endpoint, ks, keyStorePassword);
   }  
 }
