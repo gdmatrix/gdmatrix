@@ -38,24 +38,6 @@
       <scope>runtime</scope>    
     </dependency>
     <dependency>
-      <groupId>org.tmatesoft.svnkit</groupId>
-      <artifactId>svnkit</artifactId>
-      <version>1.3.0.5847</version>
-      <scope>runtime</scope>              
-    </dependency>
-    <dependency>
-      <groupId>org.tigris.subversion</groupId>
-      <artifactId>svnClientAdapter</artifactId>
-      <version>0.9.100</version>
-      <scope>runtime</scope>              
-    </dependency>
-    <dependency>
-      <groupId>org.tigris.subversion</groupId>
-      <artifactId>svnant</artifactId>
-      <version>1.3.0</version>
-      <scope>runtime</scope>              
-    </dependency> 
-    <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
       <version>0.1.50</version>
