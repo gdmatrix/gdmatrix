@@ -150,19 +150,31 @@ public class EventRecurrencesBean extends PageBean
       return null;
   }
 
+  public String deleteFutureRecurrences()
+  {
+    try
+    {
+      if (rows != null && !rows.isEmpty())
+      {
+        deleteRecurrences(rows, true);        
+        load();
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+
+    return null;    
+  }
+  
   public String deleteAllRecurrences()
   {
     try
     {
       if (rows != null && !rows.isEmpty())
       {
-        for (Event row : rows)
-        {
-          if (!row.getEventId().equals(getObjectId()))
-          {
-            AgendaConfigBean.getPort().removeEvent(row.getEventId());
-          }
-        }
+        deleteRecurrences(rows, false);
         
         //if current event isn't the master then change it to master
         if (!isMasterEvent())
@@ -237,7 +249,7 @@ public class EventRecurrencesBean extends PageBean
     }
     return null;
   }
-
+  
   private boolean isMasterEvent()
   {
     Event event = getEvent();
@@ -323,5 +335,29 @@ public class EventRecurrencesBean extends PageBean
     }
   }
   
-
+  private void deleteRecurrences(List<Event> events, boolean onlyFuture) 
+    throws Exception
+  {
+    Date now = new Date();
+    for (Event event : events)
+    {
+      if (!event.getEventId().equals(getObjectId()))
+      {
+        boolean delete = !onlyFuture;   
+        if (onlyFuture)
+        {
+          String sdt = event.getStartDateTime();    
+          if (sdt != null)
+          {
+            Date eventDate = TextUtils.parseInternalDate(sdt);
+            delete = now.before(eventDate);
+          }
+        }
+          
+        if (delete)  
+          AgendaConfigBean.getPort().removeEvent(event.getEventId());
+      }
+    }    
+  }  
+  
 }

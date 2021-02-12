@@ -121,6 +121,14 @@
 
             </t:div>
             <t:div styleClass="actionBar">
+              <h:commandButton action="#{eventRecurrencesBean.deleteFutureRecurrences()}"
+                 alt="#{objectBundle.eventRecurrences_deleteFutureRecurrences}"
+                 title="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}"
+                 value="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}"
+                 rendered="#{!empty eventRecurrencesBean.rows}"
+                 disabled="#{!eventBean.editable}"
+                 styleClass="removeButton"
+                 onclick="return confirm('#{agendaBundle.eventRecurrences_confirmDeleteFutureRecurrences}');" />              
               <h:commandButton action="#{eventRecurrencesBean.deleteAllRecurrences}"
                  alt="#{objectBundle.eventRecurrences_deleteAllRecurrences}"
                  title="#{agendaBundle.eventRecurrences_deleteAllRecurrences}"
