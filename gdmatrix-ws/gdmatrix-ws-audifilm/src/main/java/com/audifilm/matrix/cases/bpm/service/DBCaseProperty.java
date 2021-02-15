@@ -208,7 +208,7 @@ public enum DBCaseProperty
     //Load variables
     Query queryVariables = entityManager.createNamedQuery("findCaseVariables");
     queryVariables.setFirstResult(0);
-    queryVariables.setMaxResults(0);
+    queryVariables.setMaxResults(1000);
     queryVariables.setParameter("caseId", dbCase.getCaseId());
 
     List<Object []> caseVarList = queryVariables.getResultList();
