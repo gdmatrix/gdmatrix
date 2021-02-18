@@ -12,6 +12,9 @@ public class DBCaseVariable extends DBGenesysEntity
   String caseTypeId;
   String variableId;
   String value;
+  String x;
+  String y;
+  String tramcod;
 
   public String getCaseId()
   {
@@ -53,6 +56,35 @@ public class DBCaseVariable extends DBGenesysEntity
     this.value = value;
   }
 
+  public String getX()
+  {
+    return x;
+  }
+
+  public void setX(String x)
+  {
+    this.x = x;
+  }
+
+  public String getY()
+  {
+    return y;
+  }
+
+  public void setY(String y)
+  {
+    this.y = y;
+  }
+
+  public String getTramcod()
+  {
+    return tramcod;
+  }
+
+  public void setTramcod(String tramcod)
+  {
+    this.tramcod = tramcod;
+  }
 
   @Override
   public String[] getIds()

@@ -301,6 +301,7 @@
         cv.caseId = :caseId
         AND trim(cv.caseTypeId) = v.caseTypeId
         AND trim(cv.variableId) = v.variableId
+        AND cv.x = 0 AND cv.y = 0 AND cv.tramcod = 0
       ORDER BY cv.caseId, cv.caseTypeId, cv.variableId
     </query>
   </named-query>
@@ -1282,6 +1283,15 @@
       <basic name="stdhmod" >
         <column name="STDHMOD" updatable="false" />
       </basic>
+      <basic name="x" >
+        <column name="X" updatable="false" />
+      </basic>  
+      <basic name="y" >
+        <column name="Y" updatable="false" />
+      </basic>    
+      <basic name="tramcod" >
+        <column name="TRAMCOD" updatable="false" />
+      </basic>               
     </attributes>
   </entity>
 
