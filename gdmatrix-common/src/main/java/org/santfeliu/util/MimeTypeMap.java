@@ -55,27 +55,31 @@ public class MimeTypeMap extends FileTypeMap
   {
     if (mapping.isEmpty())
     {
-      //Get from properties file located in conf folder
+      loadDefaultMimeTypes();      
+      
+      //Override default mapping from properties file located in conf folder
       java.util.Properties mimeProperties = new java.util.Properties();    
       File mapFile = new File(MatrixConfig.getDirectory(), MIMEMAPFILE);
-      try (InputStream is = new FileInputStream(mapFile))
+      if (mapFile.exists())
       {
-        mimeProperties.load(is);
-        synchronized(mapping)
+        try (InputStream is = new FileInputStream(mapFile))
         {
-          for (Object key : mimeProperties.keySet())
+          mimeProperties.load(is);
+          synchronized(mapping)
           {
-            String extStr = (String) mimeProperties.get(key);
-            String[] extArray = extStr.split(",");
-            addMimeType((String) key, extArray);
+            for (Object key : mimeProperties.keySet())
+            {
+              String extStr = (String) mimeProperties.get(key);
+              String[] extArray = extStr.split(",");
+              addMimeType((String) key, extArray);
+            }
           }
         }
-      }
-      catch (Exception ex)  
-      {
-        loadDefaultMimeTypes();
-        Logger.getLogger(MimeTypeMap.class.getName()).log(
-          Level.WARNING, null, ex);      
+        catch (Exception ex)  
+        {
+          Logger.getLogger(MimeTypeMap.class.getName()).log(
+            Level.WARNING, null, ex);      
+        }
       }
     }
   }
@@ -142,7 +146,8 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("text/html", new String[]{"htm", "html"});
     addMimeType("text/plain", new String[]{"txt", "text", "java", "log"});
     addMimeType("text/css", new String[]{"css"});
-    addMimeType("text/xml", new String[]{"xml"});        
+    addMimeType("text/xml", new String[]{"xml"});    
+    addMimeType("text/markdown", new String[]{"md", "mdown"});     
     addMimeType("image/gif", new String[]{"gif"});
     addMimeType("image/jpeg", new String[]{"jpg", "jpeg"});
     addMimeType("image/tiff", new String[]{"tif", "tiff"});
