@@ -120,6 +120,7 @@ public class OrgTableBuilder
         llocTreball.setCaseId(llocTreballCase.getCaseId());
         llocTreball.setBoss(unitBoss);
         llocTreball.setUnitType(unitType);
+        llocTreball.setUnitCaseId(unitatOrgCase.getCaseId());
         llocTreball.getUnitList().addAll(parentUnitList);
         llocTreball.getUnitList().add(unitName);
         llocTreballMap.put(llocTreball.getCaseId(), llocTreball);        
@@ -374,7 +375,7 @@ public class OrgTableBuilder
     {
       String sql = "insert into org_trebunitat(perscod, unit1, unit2, unit3, "
         + "unit4, unit5, unit6, unit7, unit8, unittype, idcard, personfullname, workercaseid, persontype, "
-        + "jobcaseid, unitboss, substitutes, substitutedby, placecaseid) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        + "jobcaseid, unitboss, substitutes, substitutedby, placecaseid, unitcaseid) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
       pStmt = conn.prepareStatement(sql);
       for (Person person : personMap.values())
       {
@@ -391,6 +392,7 @@ public class OrgTableBuilder
           pStmt.setString(9, null);          
           pStmt.setString(10, null);
           pStmt.setString(15, null);
+          pStmt.setString(20, null);
         }
         else
         {
@@ -404,6 +406,7 @@ public class OrgTableBuilder
           pStmt.setString(9, person.getLlocTreball().getUnit(8));          
           pStmt.setString(10, person.getLlocTreball().getUnitType());
           pStmt.setString(15, person.getLlocTreball().getCaseId().substring(3));
+          pStmt.setString(20, person.getLlocTreball().getUnitCaseId().substring(3));
         }
         if (person.getPlaca() == null)
         {
@@ -492,6 +495,7 @@ public class OrgTableBuilder
     private String caseId;
     private List<String> unitList = new ArrayList();
     private String unitType;
+    private String unitCaseId;
     private boolean boss;
 
     public String getCaseId()
@@ -529,6 +533,16 @@ public class OrgTableBuilder
     public void setUnitType(String unitType)
     {
       this.unitType = unitType;
+    }
+
+    public String getUnitCaseId() 
+    {
+      return unitCaseId;
+    }
+
+    public void setUnitCaseId(String unitCaseId) 
+    {
+      this.unitCaseId = unitCaseId;
     }
 
     public boolean isBoss()
