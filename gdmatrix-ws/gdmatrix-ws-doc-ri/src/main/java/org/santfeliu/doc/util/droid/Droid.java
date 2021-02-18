@@ -200,7 +200,7 @@ public class Droid
     try
     {
       Droid droid = new Droid(new File("C:/gdmatrix/conf"));  
-      FileFormat format = droid.identify("c:/tmp/container-test/test.vsd");
+      FileFormat format = droid.identify("c:/tmp/container-test/apache-tomcat-6.0.47.zip");
       System.out.println("VSD PUID: " + format.getPUID() + " " + 
         format.getName() + " " + format.getVersion());        
     }

@@ -114,6 +114,7 @@ import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.doc.util.droid.Droid;
 import org.santfeliu.security.User;
 import org.santfeliu.security.util.SecurityUtils;
+import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.log.CSVLogger;
 import org.santfeliu.ws.WSUtils;
 import uk.gov.nationalarchives.droid.core.signature.FileFormat;
@@ -1634,7 +1635,7 @@ public class DocumentManager implements DocumentManagerPort
 
   private File getDataFile(Content content) throws Exception
   {
-    File dataFile;
+    File dataFile = null;
     DataHandler dh = content.getData();
     if (dh != null) // internal
     {
@@ -1643,12 +1644,21 @@ public class DocumentManager implements DocumentManagerPort
       {
         dataFile = ((javax.activation.FileDataSource)ds).getFile();
       }
-      else
+      else if (ds != null)
       {
-        dataFile = IOUtils.writeToFile(ds.getInputStream());
+        if (content.getContentType() != null)
+        {
+          String ext = 
+            MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());
+          dataFile = File.createTempFile("stream", "." + ext);
+          dataFile.deleteOnExit();
+          IOUtils.writeToFile(ds.getInputStream(), dataFile);
+        }
+        else
+          dataFile = IOUtils.writeToFile(ds.getInputStream());
       }
     }
-    else dataFile = null;
+
     return dataFile;
   }
 
@@ -1801,7 +1811,7 @@ public class DocumentManager implements DocumentManagerPort
     }
     content.setFormatId(format.getPUID());
     content.setFormatDescription(description);
-    if (content.getContentType() == null)
+    if (format.getMimeType() != null)
     {
       content.setContentType(format.getMimeType());
     }

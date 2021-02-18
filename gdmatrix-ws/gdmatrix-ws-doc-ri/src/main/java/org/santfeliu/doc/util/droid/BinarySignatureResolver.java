@@ -91,6 +91,10 @@ public class BinarySignatureResolver implements Resolver
   {
     IdentificationResultCollection results = 
       droidCore.matchBinarySignatures(request);
+    
+    if (results.getResults().isEmpty())
+      results = droidCore.matchExtensions(request, true);
+    
     droidCore.removeLowerPriorityHits(results);
     if (!results.getResults().isEmpty())
       return results.getResults().get(0);

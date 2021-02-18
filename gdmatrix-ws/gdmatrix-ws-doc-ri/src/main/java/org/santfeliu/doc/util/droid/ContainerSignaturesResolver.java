@@ -112,9 +112,12 @@ public class ContainerSignaturesResolver implements Resolver
 
         IdentificationResultCollection results =
           containerIdentifier.submit(request);
-
-        droidCore.removeLowerPriorityHits(results);
-        idenResult = results.getResults().get(0);
+        
+        if (!results.getResults().isEmpty())
+        {
+          droidCore.removeLowerPriorityHits(results);
+          idenResult = results.getResults().get(0);
+        }
       }
     }
     return idenResult;
