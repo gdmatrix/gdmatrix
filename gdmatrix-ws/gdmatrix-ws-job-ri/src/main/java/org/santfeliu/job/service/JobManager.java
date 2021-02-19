@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
@@ -76,6 +78,11 @@ public class JobManager
 
   public JobManager()
   {
+  }
+  
+  @PostConstruct
+  public void init()
+  {
     String enabledProp = 
       MatrixConfig.getClassProperty(getClass(), WS_ENABLED);
     this.wsEnabled = enabledProp != null && enabledProp.equalsIgnoreCase("true");
@@ -96,7 +103,7 @@ public class JobManager
           throw WSExceptionFactory.create(ex);
         }
       }
-    }
+    }    
   }
 
   public void scheduleJob(Job job)
@@ -301,6 +308,12 @@ public class JobManager
       }
     }
     return result;    
+  }
+  
+  @PreDestroy
+  public void destroy() throws JobException
+  {
+    this.scheduler.stop();
   }
   
   private boolean canUserDoAction(User user, String action)
