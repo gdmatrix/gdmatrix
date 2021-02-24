@@ -173,8 +173,16 @@ public class NewsWidgetBuilder extends WidgetBuilder
           UserSessionBean userSessionBean =
             UserSessionBean.getCurrentInstance();
           MenuItemCursor sectionNode =
-            userSessionBean.getMenuModel().getMenuItem(mid);
-          boolean exclude = !isEditorUser(sectionNode);
+            userSessionBean.getMenuModel().getMenuItem(mid);          
+          boolean exclude;
+          if (sectionNode.isNull()) //Non visible node
+          {
+            exclude = true;
+          }
+          else
+          {
+            exclude = !isEditorUser(sectionNode);
+          }
           excludeDraftsList.add(exclude);
         }
         else

@@ -30,12 +30,14 @@
  */
 package org.santfeliu.misc.widget.web.builder;
 
+import java.util.List;
 import org.santfeliu.misc.widget.web.WidgetDefinition;
 import java.util.Map;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import org.apache.myfaces.shared_tomahawk.taglib.UIComponentTagUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.news.faces.HtmlNewsCarousel2;
 import org.santfeliu.web.UserSessionBean;
 
@@ -201,9 +203,16 @@ public class NewsCarousel2WidgetBuilder extends WidgetBuilder
         UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
         MenuItemCursor sectionNode =
           userSessionBean.getMenuModel().getMenuItem(section);
-        String editorRole = sectionNode.getProperty("roles.update");
-        boolean excluded = !userSessionBean.isUserInRole(editorRole);
-        component.setExcludeDrafts(excluded);
+        boolean exclude;
+        if (sectionNode.isNull()) //Non visible node
+        {
+          exclude = true;
+        }
+        else
+        {
+          exclude = !isEditorUser(sectionNode);
+        }
+        component.setExcludeDrafts(exclude);
       }
       else
         component.setExcludeDrafts(true);
@@ -225,4 +234,13 @@ public class NewsCarousel2WidgetBuilder extends WidgetBuilder
     }
     return component;
   }
+  
+  private boolean isEditorUser(MenuItemCursor mic)
+  {
+    List<String> editRoles =
+      mic.getMultiValuedProperty(MenuModel.EDIT_ROLES);
+    if (editRoles == null || editRoles.isEmpty()) return true;
+    return UserSessionBean.getCurrentInstance().isUserInRole(editRoles);
+  }
+  
 }
