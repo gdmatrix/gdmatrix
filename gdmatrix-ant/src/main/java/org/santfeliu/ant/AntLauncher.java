@@ -37,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
@@ -68,7 +70,7 @@ public class AntLauncher
 
   public static List<Message> execute(String[] files, String target,
     Map properties, URL wsDirectory, String userId, String password,
-    File antDir) throws Exception
+    File antDir, Logger logger) throws Exception
   {
     if (antDir == null)
     {
@@ -99,10 +101,19 @@ public class AntLauncher
       mainFile = mainFile + ".xml";
     File mainTaskFile = new File(antDir, mainFile);
 
-    return execute(mainTaskFile, target, properties);
+    return execute(mainTaskFile, target, properties, logger);
   }
+  
+  public static List<Message> execute(String[] files, String target,
+    Map properties, URL wsDirectory, String userId, String password,
+    File antDir) throws Exception
+  {
+    return execute(files, target, properties, wsDirectory, userId, password, 
+      antDir, null);
+  }  
 
-  public static List<Message> execute(File file, String target, Map properties)
+  public static List<Message> execute(File file, String target, Map properties,
+    Logger logger)
     throws Exception
   {
     final int verbose;
@@ -148,11 +159,31 @@ public class AntLauncher
 
       @Override
       public void messageLogged(BuildEvent be)
-      {
+      {     
         if (be.getPriority() >= verbose)
         {
+          if (logger != null)
+          {
+            Level level = Level.ALL;
+            switch(be.getPriority())
+            {
+              case Project.MSG_ERR:
+                level = Level.SEVERE; break;    
+              case Project.MSG_WARN:
+                level = Level.WARNING; break;                
+              case Project.MSG_INFO:
+                level = Level.INFO; break;
+              case Project.MSG_VERBOSE:
+                level = Level.FINE; break;
+              case Project.MSG_DEBUG:
+                level = Level.ALL; break;
+            }
+            logger.log(level, be.getMessage()); 
+          }
+          else
+            System.out.println(be.getMessage()); 
+          
           messages.add(new Message(be.getMessage(), be.getPriority()));
-          System.out.println(be.getMessage());
         }
       }
     });
@@ -180,6 +211,12 @@ public class AntLauncher
       p.executeTarget(target);
     }
     return messages;
+  }
+  
+  public static List<Message> execute(File file, String target, Map properties)
+    throws Exception
+  {  
+    return execute(file, target, properties, null);
   }
 
   private static File downloadFile(String file, String userId, String password,

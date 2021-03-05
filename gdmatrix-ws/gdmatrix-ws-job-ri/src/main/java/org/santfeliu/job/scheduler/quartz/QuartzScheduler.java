@@ -126,11 +126,9 @@ public class QuartzScheduler implements Scheduler
       JobKey jobKey = jobDetail.getKey();
       if (!scheduler.checkExists(jobKey))
       {
-        job.setRepetitions(1);
-        Trigger trigger = buildTrigger(job);
+        Trigger trigger = buildImmediateTrigger(job);
         scheduler.scheduleJob(jobDetail, trigger);
-        if (trigger.mayFireAgain())
-          scheduler.triggerJob(jobKey);
+        Thread.sleep(1000); //let time to execute trigger before unschedule job
         scheduler.unscheduleJob(trigger.getKey());
       }
       else
@@ -238,16 +236,36 @@ public class QuartzScheduler implements Scheduler
 
     return jobBuilder.build();
   }
-
-  private Trigger buildTrigger(Job job) throws Exception
+  
+  private Trigger buildImmediateTrigger(Job job) throws Exception
   {
-    Trigger trigger = null;
+    Trigger trigger;
+    job.setRepetitions(1);   
+    TriggerKey triggerKey = getTriggerKey(job.getJobId());
+    if (!scheduler.checkExists(triggerKey))
+    {
+      TriggerBuilder triggerBuilder = TriggerBuilder.newTrigger()
+        .withIdentity(triggerKey); 
+      trigger = triggerBuilder.build();      
+    }   
+    else
+    {
+      trigger = scheduler.getTrigger(triggerKey);
+    }
+    
+    return trigger;
+  }
+
+  private Trigger buildTrigger(Job job) 
+    throws Exception
+  {
+    Trigger trigger;
     TriggerKey triggerKey = getTriggerKey(job.getJobId());
     if (!scheduler.checkExists(triggerKey))
     {
       TriggerBuilder triggerBuilder = TriggerBuilder.newTrigger()
         .withIdentity(triggerKey);
-
+      
       //When starts
       if (job.getStartDateTime() == null)
       {
@@ -269,7 +287,7 @@ public class QuartzScheduler implements Scheduler
       }
 
       //Trigger type resolver
-      String triggerType = null;
+      String triggerType;
       if (!StringUtils.isBlank(job.getDayOfMonth()) || 
         (job.getDayOfWeek() != null && !job.getDayOfWeek().isEmpty()))
         triggerType = CRON_TRIGGER;
@@ -281,11 +299,10 @@ public class QuartzScheduler implements Scheduler
         triggerType = CALENDAR_TRIGGER;
       else 
         triggerType = SIMPLE_TRIGGER;
-      
+
       //Firing once time doesn't need schedule
       if (job.getRepetitions() == null
-        || (job.getRepetitions() != null && job.getRepetitions() != 1) 
-        || !triggerType.equals(SIMPLE_TRIGGER))
+        || (job.getRepetitions() != null && job.getRepetitions() != 1))
       {
         ScheduleBuilder scheduleBuilder = 
           createScheduleBuilder(job, triggerType);
@@ -336,22 +353,16 @@ public class QuartzScheduler implements Scheduler
 
     //Interval
     Integer interval = job.getInterval();
-    if (interval != null && interval > 0)
-    {
-      String unitOfTime = job.getUnitOfTime();
-      if (unitOfTime != null && unitOfTime.equals(Scheduler.SECONDS))
-        scheduleBuilder.withIntervalInSeconds(interval);
-      else if (unitOfTime != null && unitOfTime.equals(Scheduler.HOURS))
-        scheduleBuilder.withIntervalInHours(interval);
-      else
-        scheduleBuilder.withIntervalInMinutes(interval);
-    }
-    else //Defaulted to 1 minute interval
-    {
-      if (interval == null)
-        interval = 1; 
+    if (interval == null)
+      interval = 0;
+    
+    String unitOfTime = job.getUnitOfTime();
+    if (unitOfTime != null && unitOfTime.equals(Scheduler.SECONDS))
+      scheduleBuilder.withIntervalInSeconds(interval);
+    else if (unitOfTime != null && unitOfTime.equals(Scheduler.HOURS))
+      scheduleBuilder.withIntervalInHours(interval);
+    else
       scheduleBuilder.withIntervalInMinutes(interval);
-    }
     
     //Misfire
     scheduleBuilder.withMisfireHandlingInstructionNextWithRemainingCount();
@@ -365,22 +376,25 @@ public class QuartzScheduler implements Scheduler
       CalendarIntervalScheduleBuilder.calendarIntervalSchedule();
     
     //Interval
+    Integer interval = job.getInterval();
+    if (interval == null)
+      interval = 0;        
     String unitOfTime = job.getUnitOfTime();
     if (unitOfTime == null)
       unitOfTime = Scheduler.DAYS;
     switch (unitOfTime)
     {
       case Scheduler.DAYS:
-        scheduleBuilder.withIntervalInDays(job.getInterval());
+        scheduleBuilder.withIntervalInDays(interval);
         break;
       case Scheduler.MONTHS:
-        scheduleBuilder.withIntervalInMonths(job.getInterval());
+        scheduleBuilder.withIntervalInMonths(interval);
         break;
       case Scheduler.WEEKS:
-        scheduleBuilder.withIntervalInWeeks(job.getInterval());
+        scheduleBuilder.withIntervalInWeeks(interval);
         break;
       case Scheduler.YEARS:
-        scheduleBuilder.withIntervalInYears(job.getInterval());
+        scheduleBuilder.withIntervalInYears(interval);
         break;
       default:
         break;
@@ -400,7 +414,9 @@ public class QuartzScheduler implements Scheduler
    
     String seconds = job.getStartDateTime().substring(12);
     String minutes = job.getStartDateTime().substring(10, 12);
-    String hours = job.getStartDateTime().substring(8, 10);    
+    String hours = job.getStartDateTime().substring(8, 10);  
+    String month = "*";
+    String year = "*";
    
     Integer interval = job.getInterval();
     String unitOfTime = job.getUnitOfTime();    
@@ -423,7 +439,16 @@ public class QuartzScheduler implements Scheduler
           //seconds = "0";
           //minutes = "0";
           hours = "0/" + interval;
-          break;        
+          break;     
+        case Scheduler.MONTHS:
+          month = job.getStartDateTime().substring(4, 6);
+          month = month + "/" + interval;
+          break;
+        case Scheduler.YEARS:
+          month = job.getStartDateTime().substring(4, 6);
+          year = job.getStartDateTime().substring(0, 4);
+          year = year + "/" + interval;
+          break;          
         default:
           break;
       }
@@ -438,10 +463,11 @@ public class QuartzScheduler implements Scheduler
       dayOfMonth = "?";
     exp.append(" ").append(dayOfMonth);
     
-    String month = "*";
     exp.append(" ").append(month);
       
     appendDayOfWeek(exp, job.getDayOfWeek());
+    
+    exp.append(" ").append(year);
    
     return CronScheduleBuilder.cronSchedule(exp.toString())
       .withMisfireHandlingInstructionDoNothing();

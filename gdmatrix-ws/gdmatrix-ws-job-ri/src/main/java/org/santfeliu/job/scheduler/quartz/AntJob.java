@@ -79,34 +79,15 @@ public class AntJob extends AbstractJob
         antDir = new File(dir);
       }
       
-      List<Message> messages = AntLauncher.execute(filenames, target,
+      AntLauncher.execute(filenames, target,
         params, wsDirectory, 
         MatrixConfig.getProperty("adminCredentials.userId"),
-        MatrixConfig.getProperty("adminCredentials.password"), antDir);
-           
-      for (Message message : messages)
-      {
-        Level level = Level.ALL;
-        switch(message.getLevel())
-        {
-          case Project.MSG_INFO:
-            level = Level.INFO; break;
-          case Project.MSG_WARN:
-            level = Level.WARNING; break;
-          case Project.MSG_ERR:
-            level = Level.SEVERE; break;
-          case Project.MSG_DEBUG:
-            level = Level.FINE; break;
-          case Project.MSG_VERBOSE:
-            level = Level.FINEST; break;
-        }
-
-        log(level, message.getMessage());
-      }
+        MatrixConfig.getProperty("adminCredentials.password"), antDir, logger);
       
     } 
     catch (Exception ex)
     {
+      log(Level.SEVERE, ex.getMessage());
       throw new JobExecutionException(ex);
     }
   }

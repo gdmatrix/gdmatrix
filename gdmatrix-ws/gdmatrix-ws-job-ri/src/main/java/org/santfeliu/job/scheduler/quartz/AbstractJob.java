@@ -76,16 +76,17 @@ public abstract class AbstractJob implements org.quartz.Job
         logger.addHandler(fh); 
       }
       
-      doExecute(context);
-      
-      if (audit)
-        context.getJobDetail().getJobDataMap().put("logFile", logFile);
-      
+      doExecute(context);  
     }
     catch (IOException ex)
     {
       throw new JobExecutionException(ex);
-    }      
+    } 
+    finally
+    {
+      if (audit && logFile != null)
+        context.getJobDetail().getJobDataMap().put("logFile", logFile);      
+    }
   }
   
   protected void log(Level level, String msg)
