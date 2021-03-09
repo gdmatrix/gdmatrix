@@ -79,7 +79,8 @@ public class ScriptServlet extends HttpServlet
       {
         Object output = null;
         if ("text/javascript".equals(script.contentType) ||
-            "application/x-javascript".equals(script.contentType))
+            "application/x-javascript".equals(script.contentType) ||
+            "application/javascript".equals(script.contentType))
         {
           output = executeJavaScript(script, request, response);
           if (output != null) writeOutput(output, response);
