@@ -164,7 +164,7 @@ public class AntLauncher
         {
           if (logger != null)
           {
-            Level level = Level.ALL;
+            Level level = Level.INFO;
             switch(be.getPriority())
             {
               case Project.MSG_ERR:

@@ -39,8 +39,9 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.santfeliu.job.service.JobException;
-import org.santfeliu.job.service.JobResponse;
-import org.santfeliu.job.service.JobResponse.ResponseType;
+import org.santfeliu.job.service.JobFiring;
+import org.matrix.job.LogType;
+import org.matrix.job.ResponseType;
 import org.santfeliu.job.store.JobStore;
 import org.santfeliu.util.TextUtils;
 
@@ -86,18 +87,28 @@ import org.santfeliu.util.TextUtils;
           = TextUtils.formatDate(this.startDate, "yyyyMMddHHmmss");
         String endDateTime
           = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-        JobResponse jobResponse = new JobResponse();
-        jobResponse.setJobId(jobId);
-        jobResponse.setStartDateTime(startDateTime);
-        jobResponse.setEndDateTime(endDateTime);  
-        jobResponse.setMessage("JOB_EXECUTION_LOCKED");
+        JobFiring jobFiring = new JobFiring();
+        jobFiring.setJobId(jobId);
+        jobFiring.setStartDateTime(startDateTime);
+        jobFiring.setEndDateTime(endDateTime);  
+        jobFiring.setMessage("JOB_EXECUTION_LOCKED");
         try
         {
-          jobResponse.setType(ResponseType.ERROR);
+          jobFiring.setResponseType(ResponseType.ERROR);
+          
           File logFile = (File) params.get("logFile");
           if (logFile != null)
-            jobResponse.setLogFile(logFile);
-          jobStore.storeJobResponse(jobResponse);
+            jobFiring.setLogFile(logFile);
+          
+          String sLogType = params.getString("logType");
+          LogType logType = 
+            sLogType != null ? LogType.valueOf(sLogType.toUpperCase()) : 
+              LogType.MULTIPLE;
+          
+          jobFiring.setLogType(logType);        
+          
+          jobStore.storeJobFiring(jobFiring);
+          
           if (logFile != null)
             logFile.delete();          
         }
@@ -133,30 +144,35 @@ import org.santfeliu.util.TextUtils;
           String endDateTime
             = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
           String jobId = params.getString("jobId");
-          JobResponse jobResponse = new JobResponse();
-          jobResponse.setJobId(jobId);
-          jobResponse.setStartDateTime(startDateTime);
-          jobResponse.setEndDateTime(endDateTime);
+          JobFiring jobFiring = new JobFiring();
+          jobFiring.setJobId(jobId);
+          jobFiring.setStartDateTime(startDateTime);
+          jobFiring.setEndDateTime(endDateTime);
           if (jobException != null)
           {
-            jobResponse.setMessage("JOB_EXECUTION_FAILED"
+            jobFiring.setMessage("JOB_EXECUTION_FAILED"
               + ":" + jobException.getMessage());
-            jobResponse.setType(ResponseType.ERROR);
+            jobFiring.setResponseType(ResponseType.ERROR);
           }
           else
           {
             String message = context.getResult() != null ? 
               ":" + context.getResult() : "";
-            jobResponse.setMessage("SUCCESSFUL_JOB_EXECUTION" 
+            jobFiring.setMessage("SUCCESSFUL_JOB_EXECUTION" 
               + message);
-            jobResponse.setType(ResponseType.SUCCESS);
+            jobFiring.setResponseType(ResponseType.SUCCESS);
           }
           
           File logFile = (File) params.get("logFile");
           if (logFile != null)
-            jobResponse.setLogFile(logFile);
+            jobFiring.setLogFile(logFile);
           
-          jobStore.storeJobResponse(jobResponse);
+          LogType logType = (LogType) params.get("logType");
+          if (logType == null)
+            logType = LogType.MULTIPLE;   
+          jobFiring.setLogType(logType);      
+                  
+          jobStore.storeJobFiring(jobFiring);
           
           if (logFile != null)
             logFile.delete();

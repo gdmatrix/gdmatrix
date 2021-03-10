@@ -30,15 +30,22 @@
  */
 package org.santfeliu.job.scheduler.quartz;
 
+import org.santfeliu.job.service.LogFormatter;
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.job.Job;
+import org.matrix.job.LogType;
 import org.quartz.CalendarIntervalScheduleBuilder;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.JobListener;
@@ -52,6 +59,8 @@ import org.quartz.impl.matchers.EverythingMatcher;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.job.scheduler.Scheduler;
 import org.santfeliu.job.service.JobException;
+import org.santfeliu.job.service.JobFiring;
+
 import org.santfeliu.job.store.JobStore;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
@@ -217,12 +226,17 @@ public class QuartzScheduler implements Scheduler
     JobBuilder jobBuilder = JobBuilder.newJob(getJobClass(job))
       .withIdentity(job.getJobId(), DEFAULT_GROUP);
 
-    //Map
+    //Map job main properties
     jobBuilder.usingJobData("jobId", job.getJobId());    
     jobBuilder.usingJobData("name", job.getName());
     jobBuilder.usingJobData("description", job.getDescription());
+    
+    //Map logging
     jobBuilder.usingJobData("audit", job.isAudit());
-
+    
+    String logVerbosity = null;
+    String logFormat = null;
+    LogType logType = null;
     List<Property> jobProperties = job.getProperty();
     if (jobProperties != null && !jobProperties.isEmpty())
     {
@@ -230,8 +244,66 @@ public class QuartzScheduler implements Scheduler
       {
         String propName = prop.getName();
         String propValue = String.valueOf(prop.getValue().get(0));
-        jobBuilder.usingJobData(propName, propValue);
+        if ("logVerbosity".equals(propName))
+          logVerbosity = propValue;
+        else if ("logFormat".equals(propName))
+          logFormat = propValue;
+        else if ("logType".equals(propName))
+          logType = LogType.valueOf(propValue.toUpperCase());
+        else
+          jobBuilder.usingJobData(propName, propValue);
       }
+    }    
+    
+    if (job.isAudit() != null && job.isAudit())
+    {
+      File logFile = null;
+      boolean appendLog = logType != null && LogType.CONTINUOUS.equals(logType);
+      
+      if (appendLog)
+      {
+        JobFiring jobFiring = jobStore.getLastJobFiring(job.getJobId());
+        if (jobFiring != null)
+          logFile = jobFiring.getLogFile();
+      }
+      
+      if (logFile == null)
+        logFile = File.createTempFile("Job", ".log");
+
+      Logger logger = Logger.getLogger(logFile.getName()); 
+      
+      FileHandler fh = new FileHandler(logFile.getAbsolutePath(), appendLog);
+      LogFormatter formatter = new LogFormatter(logFormat);  
+      fh.setFormatter(formatter);        
+      logger.addHandler(fh);            
+      
+      if (logVerbosity != null)
+      {
+        if ("SEVERE".equalsIgnoreCase(logVerbosity))
+          logger.setLevel(Level.SEVERE);
+        else if ("WARNING".equalsIgnoreCase(logVerbosity))
+          logger.setLevel(Level.WARNING);
+        else if ("INFO".equalsIgnoreCase(logVerbosity))
+          logger.setLevel(Level.INFO);
+        else if ("FINE".equalsIgnoreCase(logVerbosity))
+          logger.setLevel(Level.FINE);
+        else if ("FINER".equalsIgnoreCase(logVerbosity))
+         logger.setLevel(Level.FINER);
+        else if ("FINEST".equalsIgnoreCase(logVerbosity))
+          logger.setLevel(Level.FINEST);    
+        else if ("ALL".equalsIgnoreCase(logVerbosity))
+          logger.setLevel(Level.ALL);           
+      }
+      else
+        logger.setLevel(Level.INFO); 
+
+ 
+      
+      JobDataMap jobDataMap = new JobDataMap();
+      jobDataMap.put("logger", logger);
+      jobDataMap.put("logFile", logFile);
+      jobDataMap.put("logType", logType);
+      jobBuilder.usingJobData(jobDataMap);
     }
 
     return jobBuilder.build();

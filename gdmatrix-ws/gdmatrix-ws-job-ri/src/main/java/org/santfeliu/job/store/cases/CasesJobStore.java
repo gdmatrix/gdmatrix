@@ -31,6 +31,7 @@
 package org.santfeliu.job.store.cases;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,9 +44,14 @@ import org.matrix.cases.CaseFilter;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CaseManagerService;
 import org.matrix.cases.Intervention;
+import org.matrix.cases.InterventionFilter;
+import org.matrix.cases.InterventionView;
+import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.job.Job;
 import org.matrix.job.JobFilter;
+import org.matrix.job.LogType;
+import org.matrix.job.ResponseType;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.Type;
@@ -54,10 +60,10 @@ import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.job.service.JobException;
-import org.santfeliu.job.service.JobResponse;
-import org.santfeliu.job.service.JobResponse.ResponseType;
+import org.santfeliu.job.service.JobFiring;
 import org.santfeliu.job.store.JobStore;
 import org.santfeliu.util.FileDataSource;
+import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 
@@ -185,55 +191,69 @@ public class CasesJobStore implements JobStore
   }
 
   @Override
-  public void storeJobResponse(JobResponse jobResponse) 
+  public void storeJobFiring(JobFiring jobFiring) 
     throws JobException
   {
     try
     {
       Intervention intervention = new Intervention();
       
-      ResponseType type = jobResponse.getType();
+      ResponseType type = jobFiring.getResponseType();
       if (type == ResponseType.ERROR)
         intervention.setIntTypeId(ERROR_INTERVENTION);
       else
         intervention.setIntTypeId(SUCCESS_INTERVENTION);
       
-      intervention.setCaseId(jobResponse.getJobId());
-      String startDateTime = jobResponse.getStartDateTime();
+      intervention.setCaseId(jobFiring.getJobId());
+      String startDateTime = jobFiring.getStartDateTime();
       intervention.setStartDate(
         TextUtils.formatInternalDate(startDateTime, "yyyyMMdd"));
       intervention.setStartTime(
         TextUtils.formatInternalDate(startDateTime, "HHmmss"));
-      String endDateTime = jobResponse.getEndDateTime();
+      String endDateTime = jobFiring.getEndDateTime();
       intervention.setEndDate(
         TextUtils.formatInternalDate(endDateTime, "yyyyMMdd"));
       intervention.setEndTime(
         TextUtils.formatInternalDate(endDateTime, "HHmmss"));
-             
-      Document document = null;      
-      CaseManagerPort port = getCaseManagerPort();
-      File logFile = jobResponse.getLogFile();
+
+      CaseManagerPort port = getCaseManagerPort();      
+      Document document = null; 
+      File logFile = jobFiring.getLogFile();          
       if (logFile != null)
       {
-        document = new Document();
-        document.setDocTypeId("Document");
-        String title = "Job " + jobResponse.getJobId() + "_" 
-          + startDateTime + " log";
-        document.setTitle(title);
+        boolean continuousLog = 
+          jobFiring.getLogType().equals(LogType.CONTINUOUS);
+        boolean createCaseDocument = !continuousLog;
+        
+        if (continuousLog)
+          document = getLastLogDocument(jobFiring.getJobId());
+       
+        if (document == null)
+        {
+          document = new Document();
+          document.setDocTypeId("Document");
+          String title = "Job " + jobFiring.getJobId() + "_" 
+            + startDateTime + " log";
+          document.setTitle(title); 
+          createCaseDocument = true;
+        }        
         
         FileDataSource fds = new FileDataSource(logFile, "text/plain");
-        
+        document.setContent(null);
         DocumentUtils.setContentData(document, new DataHandler(fds));
         document = getDocumentManagerClient().storeDocument(document);
                 
-        CaseDocument caseDocument = new CaseDocument();
-        caseDocument.setCaseId(jobResponse.getJobId());
-        caseDocument.setDocId(document.getDocId());
-        caseDocument.setCaseDocTypeId(JOB_CASE_DOCUMENT); 
-        port.storeCaseDocument(caseDocument);
+        if (createCaseDocument)
+        {
+          CaseDocument caseDocument = new CaseDocument();
+          caseDocument.setCaseId(jobFiring.getJobId());
+          caseDocument.setDocId(document.getDocId());
+          caseDocument.setCaseDocTypeId(JOB_CASE_DOCUMENT); 
+          port.storeCaseDocument(caseDocument);
+        }
       }
       
-      String message = jobResponse.getMessage();
+      String message = jobFiring.getMessage();
       if (message != null)
       {
         intervention.setComments(message);
@@ -252,6 +272,89 @@ public class CasesJobStore implements JobStore
     {
       throw new JobException(ex);
     }
+  }
+  
+  @Override
+  public List<JobFiring> findJobFirings(String jobId, String fromDate, 
+    String toDate) throws JobException
+  {
+    List<JobFiring> result = new ArrayList<JobFiring>();
+    try
+    {
+      CaseManagerPort port = getCaseManagerPort();
+      
+      InterventionFilter filter = new InterventionFilter();    
+      filter.setCaseId(jobId);
+      if (fromDate != null)
+        filter.setFromDate(fromDate);
+      if (toDate != null)
+        filter.setToDate(toDate);
+      List<InterventionView> intViews = port.findInterventionViews(filter);
+      
+      if (intViews != null && !intViews.isEmpty())
+      {
+        for (InterventionView intView : intViews)
+        {
+          JobFiring jobFiring = 
+            JobFiringConverter.intToJobFiring(intView);
+          result.add(jobFiring);
+        }
+      }
+    }
+    catch (MalformedURLException ex)
+    {
+      throw new JobException(ex);
+    }
+    return result;
+  }
+   
+  @Override
+  public JobFiring loadJobFiring(String jobFiringId) throws JobException
+  {
+    JobFiring jobFiring = null;
+    try
+    {
+      CaseManagerPort port = getCaseManagerPort();
+      Intervention inv = port.loadIntervention(jobFiringId);
+      
+      jobFiring = JobFiringConverter.intToJobFiring(inv);      
+      
+      String logDocId = jobFiring.getLogId();
+      if (logDocId != null)
+      {
+        DocumentManagerClient client = getDocumentManagerClient();
+        Document doc = client.loadDocument(logDocId, 0, ContentInfo.ALL);
+        if (doc != null)
+        {
+          DataHandler dh = doc.getContent().getData();
+          jobFiring.setLogFile(IOUtils.writeToFile(dh));
+        }        
+      }      
+    } 
+    catch (IOException ex)
+    {
+      throw new JobException(ex);
+    }
+    
+    return jobFiring;
+  }
+  
+  @Override
+  public JobFiring getLastJobFiring(String jobId) throws JobException
+  {
+    List<JobFiring> firings = findJobFirings(jobId, null, null);
+    JobFiring lastFiring = firings.get(0);
+    return loadJobFiring(lastFiring.getJobFiringId());
+  }
+  
+  private Document getLastLogDocument(String jobId) throws Exception
+  {
+    List<JobFiring> firings = findJobFirings(jobId, null, null);
+    JobFiring lastFiring = firings.get(0);
+    String docId = lastFiring.getLogId();
+    
+    DocumentManagerClient client = getDocumentManagerClient();
+    return client.loadDocument(docId);
   }
   
   private DocumentManagerClient getDocumentManagerClient() 
@@ -297,5 +400,9 @@ public class CasesJobStore implements JobStore
 
     return port;
   }
+
+
+
+
 
 }

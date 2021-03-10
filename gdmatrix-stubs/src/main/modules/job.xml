@@ -68,6 +68,37 @@
         maxOccurs="unbounded" nillable="true">
       </property>
     </struct>
+    
+    <entity name="JobFiring">
+      <identifier name="jobFiringId" type="xs:string" minOccurs="0">
+      </identifier> 
+      <property name="jobId" type="xs:string" minOccurs="0">
+      </property>   
+      <property name="startDateTime" type="xs:string" minOccurs="0">
+      </property>     
+      <property name="endDateTime" type="xs:string" minOccurs="0">
+      </property>     
+      <property name="message" type="xs:string" minOccurs="0">
+      </property>  
+      <property name="logId" type="xs:string" minOccurs="0">
+      </property>   
+      <property name="logTitle" type="xs:string" minOccurs="0">
+      </property>   
+      <property name="responseType" type="job:ResponseType">    
+      </property>     
+      <property name="logType" type="job:LogType">    
+      </property>                                               
+    </entity>
+    
+    <enumeration name="ResponseType">
+      <value name="SUCCESS"></value>
+      <value name="ERROR"></value>
+    </enumeration>    
+    
+    <enumeration name="LogType">
+      <value name="MULTIPLE"></value>
+      <value name="CONTINUOUS"></value>
+    </enumeration>      
            
   </types>
   
@@ -122,7 +153,19 @@
       </parameter>
       <response name="nextDate" type="xs:string">
       </response>      
-    </operation>    
+    </operation>   
+    
+    <operation name="findJobFirings">
+      <parameter name="jobId" type="xs:string">
+      </parameter>
+      <parameter name="fromDate" type="xs:string">
+      </parameter>     
+      <parameter name="toDate" type="xs:string">
+      </parameter>       
+      <response name="jobFirings" type="job:JobFiring"
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>         
     
   </operations>
 </module>

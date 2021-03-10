@@ -65,7 +65,7 @@ import java.util.List;
 import org.matrix.job.Job;
 import org.matrix.job.JobFilter;
 import org.santfeliu.job.service.JobException;
-import org.santfeliu.job.service.JobResponse;
+import org.santfeliu.job.service.JobFiring;
 
 /**
  *
@@ -78,9 +78,18 @@ public interface JobStore extends Serializable
   public Job loadJob(String jobId) throws JobException;
   
   public boolean removeJob(String jobId) throws JobException;
+  
+  public List<Job> findJobs(JobFilter filter) throws JobException;  
 
-  public void storeJobResponse(JobResponse jobResponse) 
+  public void storeJobFiring(JobFiring jobFiring) 
     throws JobException;
+  
+  public List<JobFiring> findJobFirings(String jobId, String fromDate, 
+    String endDateTime) throws JobException;
+     
+  public JobFiring loadJobFiring(String jobFiringId) throws JobException;
+  
+  public JobFiring getLastJobFiring(String jobId) throws JobException;
+  
 
-  public List<Job> findJobs(JobFilter filter) throws JobException;
 }

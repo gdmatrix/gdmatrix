@@ -283,6 +283,30 @@ public class JobManager
     return result;
   }
   
+  public List<JobFiring> findJobFirings(String jobId, String fromDate, 
+    String toDate)
+  {
+    if (!wsEnabled)
+      throw WSExceptionFactory.create("MODULE_DISABLED");  
+    
+    List<JobFiring> result = new ArrayList();
+    try
+    {
+      Credentials credentials = SecurityUtils.getCredentials(wsContext);
+      User user = UserCache.getUser(credentials);
+      if (canUserDoAction(user, DictionaryConstants.READ_ACTION))       
+        result = jobStore.findJobFirings(jobId, fromDate, toDate);
+      else
+        throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");       
+    }
+    catch (JobException ex)
+    {
+      log.log(Level.SEVERE, "findJobFirings failed");
+      throw WSExceptionFactory.create(ex);      
+    }
+    return result;
+  }  
+  
   public String nextFiring(String jobId)
   {
     if (!wsEnabled)
