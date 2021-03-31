@@ -115,7 +115,7 @@ public class KernelManager implements KernelManagerPort
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext
+  @PersistenceContext(unitName="kernel_ri")
   public EntityManager entityManager;
 
   private WSEndpoint endpoint;

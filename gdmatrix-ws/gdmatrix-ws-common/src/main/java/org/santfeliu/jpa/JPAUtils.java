@@ -37,6 +37,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.util.HashSet;
@@ -70,21 +71,24 @@ public class JPAUtils
 
   static Set providers;
 
-  public static EntityManager createEntityManager(String unitName)
-    throws PersistenceException
+  public static EntityManager createEntityManager(String unitName, 
+    String instanceName) throws PersistenceException
   {
-    EntityManagerFactory emf = getEntityManagerFactory(unitName);
+    EntityManagerFactory emf = getEntityManagerFactory(unitName, instanceName);
     return emf.createEntityManager();
   }
 
   public static synchronized EntityManagerFactory
-    getEntityManagerFactory(String unitName) throws PersistenceException
+    getEntityManagerFactory(String unitName, String instanceName)
+      throws PersistenceException
   {
-    EntityManagerFactory factory = factories.get(unitName);
+    // May have multiple instances of the same persistence unit
+    String unitKey = unitName + "/" + instanceName;
+    EntityManagerFactory factory = factories.get(unitKey);
     if (factory == null)
     {
-      logger.log(Level.INFO, ">>>>>>>>>>>>>> Creating {0}", unitName);
-      Map properties = getPersistenceUnitPropertiesMap(unitName);
+      logger.log(Level.INFO, ">>>>>>>>>>>>>> Creating {0}", unitKey);
+      Map properties = getPersistenceUnitPropertiesMap(instanceName);
       
       //If it's first execution and persistence unit has extended properties 
       //defined then does a previous fake call to create factory method without 
@@ -96,14 +100,38 @@ public class JPAUtils
       factory = Persistence.createEntityManagerFactory(unitName, properties);
 
       logger.log(Level.INFO, ">>>>>>>>>>>>>> factory created {0}", factory);
-      factories.put(unitName, factory);
+      factories.put(unitKey, factory);
     }
     return factory;
   }
 
   public static synchronized void closeEntityManagerFactory(String unitName)
   {
-    EntityManagerFactory factory = factories.remove(unitName);
+    // closes all instances of the given unitName
+    List<String> keyList = new ArrayList<>(factories.keySet());
+    for (String key : keyList)
+    {
+      if (key.startsWith(unitName + "/"))
+      {
+        EntityManagerFactory factory = factories.remove(key);    
+        try
+        {
+          factory.close();
+        }
+        catch (Exception ex)
+        {
+          Logger.getLogger("JPAUtils").log(Level.SEVERE, ex.getMessage());        
+        }
+      }
+    }
+  }    
+    
+  public static synchronized void closeEntityManagerFactory(
+    String unitName, String instanceName)
+  {
+    // closes a specific instance of the given unitName
+    String unitKey = unitName + "/" + instanceName;
+    EntityManagerFactory factory = factories.remove(unitKey);
     if (factory != null)
     {
       try
@@ -269,13 +297,13 @@ public class JPAUtils
     return false;
   }
   
-  private static Map getPersistenceUnitPropertiesMap(String unitName)
+  private static Map getPersistenceUnitPropertiesMap(String instanceName)
   {
     HashMap map = new HashMap();
     String nonJtaDataSource = 
-      MatrixConfig.getProperty(unitName + ".nonJtaDataSource");
+      MatrixConfig.getProperty(instanceName + ".nonJtaDataSource");
     String jtaDataSource = 
-      MatrixConfig.getProperty(unitName + ".jtaDataSource");      
+      MatrixConfig.getProperty(instanceName + ".jtaDataSource");      
     if (nonJtaDataSource != null)
       map.put("javax.persistence.nonJtaDataSource", nonJtaDataSource);
     else if (jtaDataSource != null)

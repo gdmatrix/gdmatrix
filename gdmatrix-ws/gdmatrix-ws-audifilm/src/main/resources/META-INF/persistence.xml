@@ -2,7 +2,7 @@
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd">
 
   <!-- EclipseLink -->
-  <persistence-unit name="kernel" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="kernel_g5" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <non-jta-data-source>java:comp/env/jdbc/genesys5</non-jta-data-source>
     <mapping-file>com/audifilm/matrix/kernel/service/orm-ext.xml</mapping-file>

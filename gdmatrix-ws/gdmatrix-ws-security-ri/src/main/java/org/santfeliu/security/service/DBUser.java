@@ -36,7 +36,7 @@ import org.santfeliu.jpa.JPAUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBUser extends User
 {

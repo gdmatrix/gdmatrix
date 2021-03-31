@@ -77,7 +77,7 @@ public class ClassificationManager implements ClassificationManagerPort
   WebServiceContext wsContext;
   private WSEndpoint endpoint;
 
-  @PersistenceContext
+  @PersistenceContext(unitName="classif_ri")
   public EntityManager entityManager;
 
   protected static final Logger log = Logger.getLogger("Classification");

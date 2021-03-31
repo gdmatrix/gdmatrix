@@ -84,9 +84,8 @@ public class SecurityManager implements SecurityManagerPort
 
   protected static final Logger LOGGER = Logger.getLogger("Security");
 
-  @PersistenceContext
+  @PersistenceContext(unitName="security_ri")
   public EntityManager em;
-  
   
   // username and password formats
   public static final int USERNAME_LENGTH = 20;
@@ -144,13 +143,13 @@ public class SecurityManager implements SecurityManagerPort
       String certUserRolesString =
         MatrixConfig.getProperty(base + CERT_USER_ROLES);
       String roles[] = certUserRolesString.split(",");
-      certUserRoles = new HashSet<String>();
+      certUserRoles = new HashSet<>();
       for (String role : roles)
         certUserRoles.add(role.trim());
       userLength = Integer.parseInt(
         MatrixConfig.getProperty(base + USER_LENGTH));
       passwordLength = Integer.parseInt(
-        MatrixConfig.getProperty(base + PASSWORD_LENGTH));
+        MatrixConfig.getProperty(base + PASSWORD_LENGTH));      
     }
     catch (Exception ex)
     {
@@ -174,8 +173,8 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<User> findUsers(UserFilter filter)
   {
-    int userCount = (filter.getUserId() != null ? filter.getUserId().size() : 0);
-    Query query = null;
+    int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
+    Query query;
     if (userCount > 1)
       query = em.createNamedQuery("findUsersMultipleId");
     else
@@ -195,8 +194,8 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public int countUsers(UserFilter filter)
   {
-    int userCount = (filter.getUserId() != null ? filter.getUserId().size() : 0);
-    Query query = null;
+    int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
+    Query query;
     if (userCount > 1)
       query = em.createNamedQuery("countUsersMultipleId");
     else
@@ -533,7 +532,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<Role> findRoles(RoleFilter filter)
   {
-    int roleCount = (filter.getRoleId() != null ? filter.getRoleId().size() : 0);
+    int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
     Query query = null;
     if (roleCount > 1)
       query = em.createNamedQuery("findRolesMultipleId");
@@ -541,7 +540,7 @@ public class SecurityManager implements SecurityManagerPort
       query = em.createNamedQuery("findRolesSingleId");
     setRoleFilterParameters(query, filter, roleCount);
     List<DBRole> dbRoles = query.getResultList();
-    List<Role> roles = new ArrayList<Role>();
+    List<Role> roles = new ArrayList<>();
     for (DBRole dbRole : dbRoles)
     {
       Role role = new Role();
@@ -554,7 +553,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public int countRoles(RoleFilter filter)
   {
-    int roleCount = (filter.getRoleId() != null ? filter.getRoleId().size() : 0);
+    int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
     Query query = null;
     if (roleCount > 1)
       query = em.createNamedQuery("countRolesMultipleId");

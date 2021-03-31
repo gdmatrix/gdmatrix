@@ -107,7 +107,7 @@ public class PresenceManager implements PresenceManagerPort
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext
+  @PersistenceContext(unitName="presence_ri")
   public EntityManager entityManager;
 
   protected static final Logger log = Logger.getLogger("Presence");

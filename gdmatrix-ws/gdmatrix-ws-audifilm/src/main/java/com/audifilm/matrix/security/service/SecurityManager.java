@@ -28,7 +28,7 @@ public class SecurityManager
 
   public SecurityManager() throws Exception
   {
-    entityManager = JPAUtils.createEntityManager("security_g5");
+    entityManager = JPAUtils.createEntityManager("security_g5", "default");
     try
     {
       EntityTransaction tx = entityManager.getTransaction();

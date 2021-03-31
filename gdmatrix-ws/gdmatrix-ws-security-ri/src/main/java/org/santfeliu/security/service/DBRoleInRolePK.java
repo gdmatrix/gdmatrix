@@ -32,7 +32,7 @@ package org.santfeliu.security.service;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBRoleInRolePK
 {

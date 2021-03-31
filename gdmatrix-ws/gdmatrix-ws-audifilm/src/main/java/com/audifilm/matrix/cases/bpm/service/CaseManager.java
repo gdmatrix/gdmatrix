@@ -96,7 +96,7 @@ public class CaseManager implements CaseManagerPort
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext(unitName = "AudiCases")
+  @PersistenceContext(unitName = "cases_g5")
   public EntityManager entityManager;
 
 

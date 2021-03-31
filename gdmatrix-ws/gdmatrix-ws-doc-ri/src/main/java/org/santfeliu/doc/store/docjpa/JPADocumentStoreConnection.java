@@ -85,7 +85,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     throws Exception
   {
     this.endpoint = endpoint;
-    em = JPAUtils.createEntityManager("Document");
+    em = JPAUtils.createEntityManager("Document", endpoint.getName());
     try
     {
       EntityTransaction tx = em.getTransaction();

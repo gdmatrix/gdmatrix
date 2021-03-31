@@ -32,11 +32,9 @@ package org.santfeliu.ws;
 
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
-
 import com.sun.xml.ws.transport.http.servlet.WSServlet;
 import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import javax.servlet.ServletContext;
@@ -50,7 +48,7 @@ import javax.xml.ws.handler.MessageContext;
  */
 public class WSUtils
 {
-  public static Collection getServletAdapters(ServletContext context)
+  public static List<ServletAdapter> getServletAdapters(ServletContext context)
   {
     WSServletDelegate delegate =
       (WSServletDelegate)context.getAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
@@ -58,7 +56,7 @@ public class WSUtils
     return delegate.adapters;
   }
 
-  public static Collection getServletAdapters(WebServiceContext wsContext)
+  public static List<ServletAdapter> getServletAdapters(WebServiceContext wsContext)
   {
     ServletContext context = (ServletContext)wsContext.getMessageContext().
       get(MessageContext.SERVLET_CONTEXT);
@@ -72,8 +70,8 @@ public class WSUtils
   public static List<ServletAdapter> getServletAdapters(
     WebServiceContext wsContext, QName serviceName)
   {
-    ArrayList<ServletAdapter> servletAdapters = new ArrayList<ServletAdapter>();
-    Collection adapters = getServletAdapters(wsContext);
+    ArrayList<ServletAdapter> servletAdapters = new ArrayList<>();
+    List<ServletAdapter> adapters = getServletAdapters(wsContext);
 
     Iterator<ServletAdapter> iter = adapters.iterator();
     while (iter.hasNext())
@@ -94,7 +92,7 @@ public class WSUtils
       (String)wsContext.getMessageContext().get(MessageContext.PATH_INFO);
 
     ServletAdapter servletAdapter = null;
-    Collection adapters = getServletAdapters(wsContext);
+    List<ServletAdapter> adapters = getServletAdapters(wsContext);
 
     Iterator<ServletAdapter> iter = adapters.iterator();
     while (iter.hasNext() && servletAdapter == null)
@@ -112,7 +110,7 @@ public class WSUtils
     WebServiceContext wsContext, String name)
   {
     ServletAdapter servletAdapter = null;
-    Collection adapters = getServletAdapters(wsContext);
+    List<ServletAdapter> adapters = getServletAdapters(wsContext);
 
     Iterator<ServletAdapter> iter = adapters.iterator();
     while (iter.hasNext() && servletAdapter == null)
@@ -130,7 +128,7 @@ public class WSUtils
     WebServiceContext wsContext, Class implementationClass)
   {
     ServletAdapter servletAdapter = null;
-    Collection adapters = getServletAdapters(wsContext);
+    List<ServletAdapter> adapters = getServletAdapters(wsContext);
 
     Iterator<ServletAdapter> iter = adapters.iterator();
     while (iter.hasNext() && servletAdapter == null)
@@ -149,8 +147,8 @@ public class WSUtils
     ServletAdapter servletAdapter = null;
     ServletContext servletContext =
       endpoint.getContainer().getSPI(ServletContext.class);
-    Collection adapters = getServletAdapters(servletContext);
-     Iterator<ServletAdapter> iter = adapters.iterator();
+    List<ServletAdapter> adapters = getServletAdapters(servletContext);
+    Iterator<ServletAdapter> iter = adapters.iterator();
     while (iter.hasNext() && servletAdapter == null)
     {
       ServletAdapter sa = iter.next();

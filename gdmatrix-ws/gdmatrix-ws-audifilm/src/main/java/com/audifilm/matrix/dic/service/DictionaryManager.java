@@ -54,7 +54,7 @@ public class DictionaryManager implements DictionaryManagerPort
 
   @Resource
   WebServiceContext wsContext;
-  @PersistenceContext(unitName = "AudiDictionary")
+  @PersistenceContext(unitName = "dic_g5")
   public EntityManager entityManager;
 
   static final String DIC_ADMIN_ROLE = "DIC_ADMIN";

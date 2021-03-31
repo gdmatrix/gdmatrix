@@ -91,10 +91,9 @@ import org.santfeliu.ws.WSUtils;
 @JPA
 public class KernelManager implements KernelManagerPort
 {
-
   @Resource
   WebServiceContext wsContext;
-  @PersistenceContext(unitName = "Kernel")
+  @PersistenceContext(unitName = "kernel_g5")
   public EntityManager entityManager;
   private WSEndpoint endpoint;
   private static final String PERSON_CLAUPREF = "PERS    ";
@@ -119,6 +118,7 @@ public class KernelManager implements KernelManagerPort
     return endpoint;
   }
 
+  @Override
   public KernelMetaData getKernelMetaData()
   {
     KernelMetaData metaData = new KernelMetaData();

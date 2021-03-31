@@ -36,19 +36,16 @@ import com.sun.xml.ws.api.server.Invoker;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WSWebServiceContext;
 import com.sun.xml.ws.server.AbstractMultiInstanceResolver;
-
-import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
-
 import javax.xml.ws.Provider;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.ws.WSUtils;
 
 /**
@@ -58,10 +55,12 @@ import org.santfeliu.ws.WSUtils;
 public class JPAInstanceResolver<T> 
   extends AbstractMultiInstanceResolver<T>
 {
-  protected static final Logger log = Logger.getLogger("JPAInstanceResolver");
+  protected static final Logger LOGGER = 
+    Logger.getLogger("JPAInstanceResolver");
 
   private String serviceName;
   private Field field;
+  private String unitName;
 
   public JPAInstanceResolver(@NotNull Class<T> clazz)
   {
@@ -69,6 +68,7 @@ public class JPAInstanceResolver<T>
     setup(clazz);
   }
 
+  @Override
   public T resolve(Packet request)
   {
     return create();
@@ -84,23 +84,23 @@ public class JPAInstanceResolver<T>
   {
     return new Invoker()
     {
-      ServletAdapter servletAdapter;
-
       @Override
       public void start(@NotNull WSWebServiceContext wsc, 
         @NotNull WSEndpoint endpoint)
       {
-        log.log(Level.INFO, ">>>>> Start {0}", serviceName);
+        LOGGER.log(Level.INFO, ">>>>> Start {0}:{1}", 
+          new Object[]{serviceName, unitName});
         JPAInstanceResolver.this.start(wsc, endpoint);
       }
 
       @Override
       public void dispose()
       {
-        log.log(Level.INFO, ">>>>> Dispose {0}", serviceName);
-        if (servletAdapter != null)
+        LOGGER.log(Level.INFO, ">>>>> Dispose {0}:{1}", 
+          new Object[]{serviceName, unitName});
+        if (unitName != null)
         {
-          JPAUtils.closeEntityManagerFactory(servletAdapter.getName());
+          JPAUtils.closeEntityManagerFactory(unitName);
           JPAInstanceResolver.this.dispose();
         }
       }
@@ -112,14 +112,19 @@ public class JPAInstanceResolver<T>
         Object result = null;
         T instance = resolve(p);
 
-        if (servletAdapter == null)
-          servletAdapter = WSUtils.getServletAdapter(p.endpoint);
+        String endpointName = WSUtils.getServletAdapter(p.endpoint).getName();
 
-        String endpointName = servletAdapter.getName();
-        log.log(Level.INFO, ">>>>> Invoke {0}.{1}",
+        if (StringUtils.isBlank(unitName))
+        {
+          // when unitName is not defined in @PersistenceContext(unitName), 
+          // take unitName as the endpointName
+          unitName = endpointName;
+        }
+        
+        LOGGER.log(Level.INFO, ">>>>> Invoke {0}.{1}",
           new Object[]{endpointName, method.getName()});
 
-        EntityManager em = JPAUtils.createEntityManager(servletAdapter.getName());
+        EntityManager em = JPAUtils.createEntityManager(unitName, endpointName);
 
         field.set(instance, em); // EntityManager injection
         try
@@ -179,6 +184,7 @@ public class JPAInstanceResolver<T>
       if (field.isAnnotationPresent(PersistenceContext.class))
       {
         pc = field.getAnnotation(PersistenceContext.class);
+        unitName = pc.unitName();
       }
     }
     serviceName = clazz.getName();

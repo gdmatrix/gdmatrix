@@ -77,7 +77,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext
+  @PersistenceContext(unitName="dic_ri")
   public EntityManager entityManager;
 
   protected static final Logger log = Logger.getLogger("Dictionary");
