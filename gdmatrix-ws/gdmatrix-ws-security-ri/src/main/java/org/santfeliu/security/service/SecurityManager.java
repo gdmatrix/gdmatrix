@@ -1,37 +1,36 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.security.service;
 
 import java.io.ByteArrayInputStream;
-
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
@@ -56,7 +55,6 @@ import javax.persistence.Query;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 import org.apache.commons.lang.StringUtils;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.security.encoder.DigestEncoder;
@@ -68,6 +66,11 @@ import org.santfeliu.ws.WSExceptionFactory;
 import org.matrix.security.*;
 import static org.matrix.dic.DictionaryConstants.ROLE_TYPE;
 import org.santfeliu.security.util.StringCipher;
+import org.santfeliu.ws.WSProperties;
+import org.santfeliu.ws.annotations.Disposer;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
+import org.santfeliu.ws.annotations.State;
 
 
 /**
@@ -76,86 +79,137 @@ import org.santfeliu.security.util.StringCipher;
  */
 @WebService(endpointInterface="org.matrix.security.SecurityManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class SecurityManager implements SecurityManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("Security");
+
+  // internal constants
+  public static final String PK_SEPARATOR = ";";
+  public static final String REPRESENTANT_PATTERN = "\\(R: (\\w+)\\)";
+  public static final int ROLE_DESCRIPTION_MAX_SIZE = 400;
+  public static final int ROLE_ID_MAX_SIZE = 20;
+  public static final int ROLE_NAME_MAX_SIZE = 100;
+  public static final int USER_DISPLAY_NAME_MAX_SIZE = 20;
+  public static final int USER_ID_MAX_SIZE = 20;
+
+  // MatrigConfig properties
+
+  /* digest encoder className */
+  public static final String DIGEST_ENCODER = "digestEncoder";
+  /* digest encode parameters */
+  public static final String DIGEST_PARAMETERS = "digestParameters";
+  /* master password to log with any userId */
+  public static final String MASTER_PASSWORD = "masterPassword";
+  /* certificate user roles (list separated by comma) */
+  public static final String CERT_USER_ROLES = "certUserRoles";
+  /* validate certificate against a validation service (true|false) */
+  public static final String VALIDATE_CERTIFICATE = "validateCertificate";
+  /* minimum user length */
+  public static final String MIN_USER_LENGTH = "userLength";
+  /* minimum password length */
+  public static final String MIN_PASSWORD_LENGTH = "passwordLength";
+  /* admin userId */
+  public static final String ADMIN_USERID = "adminCredentials.userId";
+  /* admin password */
+  public static final String ADMIN_PASSWORD = "adminCredentials.password";
+  /* LDAP user validation enable (true|false) */
+  public static final String LDAP_ENABLED = "ldap.enabled";
+  /* LDAP server list (separated by comma) */
+  public static final String LDAP_URL = "ldap.url";
+  /* LDAP domain */
+  public static final String LDAP_DOMAIN = "ldap.domain";
+  /* LDAP search base */
+  public static final String LDAP_BASE = "ldap.base";
+  /* LDAP admin userId */
+  public static final String LDAP_ADMIN_USERID = "ldap.adminUserId";
+  /* LDAP admin password */
+  public static final String LDAP_ADMIN_PASSWORD = "ldap.adminPassword";
+
   @Resource
   WebServiceContext wsContext;
 
-  protected static final Logger LOGGER = Logger.getLogger("Security");
-
   @PersistenceContext(unitName="security_ri")
   public EntityManager em;
-  
-  // username and password formats
-  public static final int USERNAME_LENGTH = 20;
-  
-  // matrix config properties
-  public static final String DIGEST_PARAMETERS = "digestParameters";
-  public static final String DIGEST_ENCODER = "digestEncoder";
-  public static final String MASTER_PASSWORD = "masterPassword";
-  public static final String CERT_USER_ROLES = "certUserRoles";
-  public static final String VALIDATE_CERTIFICATE = "validateCertificate";
-  public static final String USER_LENGTH = "userLength";
-  public static final String PASSWORD_LENGTH = "passwordLength";
 
-  public static final String LDAP_ENABLED = "ldap.enabled";
-  public static final String LDAP_URL = "ldap.url";
-  public static final String LDAP_DOMAIN = "ldap.domain";
-  public static final String LDAP_BASE = "ldap.base";
-  public static final String LDAP_ADMIN_USERID = "ldap.adminUserId";
-  public static final String LDAP_ADMIN_PASSWORD = "ldap.adminPassword";
+  @State
+  public Configuration config;
 
-  public static final String PK_SEPARATOR = ";";
-  
-  public static final String REPRESENTANT_PATTERN = "\\(R: (\\w+)\\)";
-
-  private static final int ROLE_DESCRIPTION_MAX_SIZE = 400;
-  private static final int ROLE_ID_MAX_SIZE = 20;
-  private static final int ROLE_NAME_MAX_SIZE = 100;
-  private static final int USER_DISPLAY_NAME_MAX_SIZE = 20;
-  private static final int USER_ID_MAX_SIZE = 20;
-
-  private static String masterPassword;
-  private static final Set<String> certUserRoles;
-  private static boolean validateCertificate;
-  private static DigestEncoder digestEncoder;
-  private static String digestParameters;
-  private static int userLength;
-  private static int passwordLength;
-  
-  static
+  public class Configuration
   {
-    // initialization
-    try
+    String masterPassword;
+    Set<String> certUserRoles;
+    boolean validateCertificate;
+    DigestEncoder digestEncoder;
+    String digestParameters;
+    int minUserLength;
+    int minPasswordLength;
+
+    Configuration(String endpointName)
     {
-      String base = SecurityManager.class.getName() + ".";
-      String digestEncodeClass =
-        MatrixConfig.getProperty(base + DIGEST_ENCODER);
-      digestEncoder =
-        (DigestEncoder)Class.forName(digestEncodeClass).newInstance();
-      digestParameters =
-        MatrixConfig.getProperty(base + DIGEST_PARAMETERS);
-      masterPassword =
-        MatrixConfig.getProperty(base + MASTER_PASSWORD);
-      validateCertificate = "true".equals(
-        MatrixConfig.getProperty(base + VALIDATE_CERTIFICATE));
-      String certUserRolesString =
-        MatrixConfig.getProperty(base + CERT_USER_ROLES);
-      String roles[] = certUserRolesString.split(",");
-      certUserRoles = new HashSet<>();
-      for (String role : roles)
-        certUserRoles.add(role.trim());
-      userLength = Integer.parseInt(
-        MatrixConfig.getProperty(base + USER_LENGTH));
-      passwordLength = Integer.parseInt(
-        MatrixConfig.getProperty(base + PASSWORD_LENGTH));      
+      try
+      {
+        WSProperties props =
+          new WSProperties(endpointName, SecurityManager.class);
+        String digestEncodeClass = props.getString(DIGEST_ENCODER,
+          "org.santfeliu.security.encoder.MatrixDigestEncoder");
+        digestEncoder =
+          (DigestEncoder)Class.forName(digestEncodeClass).newInstance();
+        digestParameters = props.getString(DIGEST_PARAMETERS);
+        masterPassword = props.getString(MASTER_PASSWORD, "changeme");
+        validateCertificate = props.getBoolean(VALIDATE_CERTIFICATE, false);
+        String certUserRolesString = props.getString(CERT_USER_ROLES);
+        String roles[] = certUserRolesString.split(",");
+        certUserRoles = new HashSet<>();
+        for (String role : roles)
+          certUserRoles.add(role.trim());
+        minUserLength = props.getInteger(MIN_USER_LENGTH, 8);
+        minPasswordLength = props.getInteger(MIN_PASSWORD_LENGTH, 4);
+      }
+      catch (Exception ex)
+      {
+        LOGGER.log(Level.WARNING, "Configuration error: {0}", ex.toString());
+      }
     }
-    catch (Exception ex)
+  };
+
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    config = new Configuration(endpointName);
+
+    DBUser user = em.find(DBUser.class, "admin");
+    if (user == null)
     {
-      LOGGER.log(Level.SEVERE, "SecurityManager init failed", ex);
-      throw new RuntimeException(ex);
+      user = new DBUser();
+      user.setUserId("admin");
+      user.setDisplayName("Administrator");
+      em.persist(user);
     }
+
+    DBRole role = em.find(DBRole.class, "SECURITY_ADMIN");
+    if (role == null)
+    {
+      role = new DBRole();
+      role.setRoleId("SECURITY_ADMIN");
+      role.setName("Security Administrator");
+      em.persist(role);
+    }
+
+    DBUserInRole userInRole = em.find(DBUserInRole.class,
+      new DBUserInRolePK("admin" + PK_SEPARATOR + "SECURITY_ADMIN"));
+    if (userInRole == null)
+    {
+      userInRole = new DBUserInRole();
+      userInRole.setUserId("admin");
+      userInRole.setRoleId("SECURITY_ADMIN");
+      em.persist(userInRole);
+    }
+  }
+
+  @Disposer
+  public void dispose(String endpointName)
+  {
   }
 
   @Override
@@ -181,7 +235,7 @@ public class SecurityManager implements SecurityManagerPort
       query = em.createNamedQuery("findUsersSingleId");
     setUserFilterParameters(query, filter, userCount);
     List<DBUser> dbUsers = query.getResultList();
-    List<User> users = new ArrayList<User>();
+    List<User> users = new ArrayList<>();
     for (DBUser dbUser : dbUsers)
     {
       User user = new User();
@@ -206,7 +260,7 @@ public class SecurityManager implements SecurityManagerPort
     Number count = (Number)query.getSingleResult();
     return count.intValue();
   }
-  
+
   @Override
   public User loadUser(String userId)
   {
@@ -234,15 +288,21 @@ public class SecurityManager implements SecurityManagerPort
       // check user data
       String userId = user.getUserId().trim();
       String password = user.getPassword();
-      if (password != null)
+      if (!StringUtils.isBlank(password))
       {
+        // password change
+        String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
+
+        if (userId.equals(adminUserId) || isUserInLDAP(userId))
+          throw new Exception("security:CAN_NOT_CHANGE_PASSWORD");
+
         password = password.trim();
         checkPasswordFormat(password);
       }
       String personId = user.getPersonId();
       if (StringUtils.isBlank(personId))
       {
-        personId = 
+        personId =
           MatrixConfig.getProperty("SecurityManager.defaultPersonId");
         if (personId == null) personId = "0";
       }
@@ -253,7 +313,7 @@ public class SecurityManager implements SecurityManagerPort
       String changeDate = ddf.format(now);
       String changeTime = tdf.format(now);
       String changeUserId = UserCache.getUser(wsContext).getUserId();
-      
+
       DBUser dbUser = selectUser(userId);
       if (dbUser == null) // new user
       {
@@ -304,7 +364,7 @@ public class SecurityManager implements SecurityManagerPort
       query.setParameter("userId", userId);
       query.setParameter("roleId", null);
       query.executeUpdate();
-      
+
       query = em.createNamedQuery("removeUser");
       query.setParameter("userId", userId);
       query.executeUpdate();
@@ -324,7 +384,7 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "login userId:{0}", userId);
-      if (userId == null || userId.trim().length() == 0)
+      if (StringUtils.isBlank(userId))
       {
         user = null;
       }
@@ -352,9 +412,9 @@ public class SecurityManager implements SecurityManagerPort
           {
             throw new Exception("security:LOCKED_USER");
           }
-          
+
           // persistent user
-          if (isMasterPassword(userId, password) || 
+          if (isMasterPassword(userId, password) ||
               isValidPassword(userId, password, dbUser.getPassword()))
           {
             user = new User();
@@ -371,7 +431,7 @@ public class SecurityManager implements SecurityManagerPort
         else if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
         {
           // unregistered certificate user: #NUMBER
-          if (isMasterPassword(userId, password) || 
+          if (isMasterPassword(userId, password) ||
               getAuthUserPassword(userId).equals(password))
           {
             user = new User();
@@ -395,7 +455,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public User loginCertificate(byte[] certData)
   {
-    User user = null;  
+    User user = null;
     try
     {
       LOGGER.log(Level.INFO, "loginCertificate");
@@ -409,7 +469,7 @@ public class SecurityManager implements SecurityManagerPort
       String email = null;
       boolean representant = false;
 
-      if (validateCertificate) // use Certificate validation service
+      if (config.validateCertificate) // use Certificate validation service
       {
         Map attributes = new HashMap();
 
@@ -420,14 +480,14 @@ public class SecurityManager implements SecurityManagerPort
 
         NIF = (String)attributes.get(SecurityProvider.NIF);
         CIF = (String)attributes.get(SecurityProvider.CIF);
-        
-        displayName = (String)attributes.get(SecurityProvider.COMMON_NAME); 
+
+        displayName = (String)attributes.get(SecurityProvider.COMMON_NAME);
         if (CIF != null)
         {
-          String rep = extractRepresentant(displayName);  
+          String rep = extractRepresentant(displayName);
           representant = rep != null && CIF.equalsIgnoreCase(rep);
         }
-        
+
         if (NIF != null)
         {
           userId = SecurityConstants.AUTH_USER_PREFIX + NIF;
@@ -486,19 +546,24 @@ public class SecurityManager implements SecurityManagerPort
 
   @Override
   public String changePassword(
-    String userId, 
-    String oldPassword, 
+    String userId,
+    String oldPassword,
     String newPassword)
   {
     String result = null;
     try
     {
       LOGGER.log(Level.INFO, "changePassword userId:{0}", userId);
+
+      String adminUserId = MatrixConfig.getPathProperty(ADMIN_USERID);
+      if (adminUserId.equals(userId))
+        throw new Exception("security:CAN_NOT_CHANGE_PASSWORD");
+
       DBUser dbUser = selectUser(userId);
       if (dbUser != null)
       {
         if (isUserInLDAP(userId))
-          throw new Exception("NOT_IMPLEMENTED");
+          throw new Exception("security:CAN_NOT_CHANGE_PASSWORD");
 
         if (isValidDatabasePassword(userId, oldPassword, dbUser.getPassword()))
         {
@@ -508,13 +573,13 @@ public class SecurityManager implements SecurityManagerPort
           SimpleDateFormat ddf = new SimpleDateFormat("yyyyMMdd");
           SimpleDateFormat tdf = new SimpleDateFormat("HHmmss");
           String changeUserId = UserCache.getUser(wsContext).getUserId();
-          
+
           dbUser.setPassword(newHash);
           dbUser.setChangeUserId(changeUserId);
           dbUser.setStddmod(ddf.format(now));
           dbUser.setStdhmod(tdf.format(now));
           updateUser(dbUser);
-          
+
           result = "ok";
         }
         else throw new Exception("security:INVALID_PASSWORD");
@@ -533,7 +598,7 @@ public class SecurityManager implements SecurityManagerPort
   public List<Role> findRoles(RoleFilter filter)
   {
     int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
-    Query query = null;
+    Query query;
     if (roleCount > 1)
       query = em.createNamedQuery("findRolesMultipleId");
     else
@@ -554,7 +619,7 @@ public class SecurityManager implements SecurityManagerPort
   public int countRoles(RoleFilter filter)
   {
     int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
-    Query query = null;
+    Query query;
     if (roleCount > 1)
       query = em.createNamedQuery("countRolesMultipleId");
     else
@@ -569,7 +634,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public Role loadRole(String roleId)
   {
-    Role role = null;
+    Role role;
     LOGGER.log(Level.INFO, "loadRole roleId:{0}", roleId);
 
     DBRole dbRole = em.find(DBRole.class, roleId);
@@ -586,10 +651,10 @@ public class SecurityManager implements SecurityManagerPort
   {
     try
     {
-      LOGGER.log(Level.INFO, "storeRole roleId:{0}", role.getRoleId());      
+      LOGGER.log(Level.INFO, "storeRole roleId:{0}", role.getRoleId());
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
       validateRole(role);
-      if (StringUtils.isBlank(role.getRoleTypeId())) 
+      if (StringUtils.isBlank(role.getRoleTypeId()))
       {
         role.setRoleTypeId(ROLE_TYPE);
       }
@@ -630,7 +695,7 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "removeRole roleId:{0}", roleId);
-      if (!isUserAdmin()) throw new Exception("ACTION_DENIED");      
+      if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
       Query query = em.createNamedQuery("removeRole");
       query.setParameter("roleId", roleId);
       query.executeUpdate();
@@ -646,7 +711,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<UserInRole> findUserInRoles(UserInRoleFilter filter)
   {
-    List<UserInRole> userInRoles = new ArrayList<UserInRole>();
+    List<UserInRole> userInRoles = new ArrayList<>();
 
     String userId = filter.getUserId();
     String roleId = filter.getRoleId();
@@ -687,7 +752,7 @@ public class SecurityManager implements SecurityManagerPort
       if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
       {
         // add certificate roles
-        for (String certUserRoleId : certUserRoles)
+        for (String certUserRoleId : config.certUserRoles)
         {
           userInRole = new UserInRole();
           userInRole.setUserId(userId);
@@ -702,7 +767,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<UserInRoleView> findUserInRoleViews(UserInRoleFilter filter)
   {
-    List<UserInRoleView> userInRoleViews = new ArrayList<UserInRoleView>();
+    List<UserInRoleView> userInRoleViews = new ArrayList<>();
     if (filter.getUserId() == null)
     {
       Query query = em.createNamedQuery("findUserInRoleViews");
@@ -787,12 +852,12 @@ public class SecurityManager implements SecurityManagerPort
 
       if (userInRole.getRoleId().startsWith(SecurityConstants.SELF_ROLE_PREFIX))
         throw new RuntimeException("security:INVALID_ROLE");
-      
+
       if (userInRole.getUserInRoleId() == null) //insert
       {
         DBUserInRole dbUserInRole = new DBUserInRole(userInRole);
         em.persist(dbUserInRole);
- 
+
         touchUser(dbUserInRole.getUserId());
         dbUserInRole.copyTo(userInRole);
       }
@@ -823,7 +888,7 @@ public class SecurityManager implements SecurityManagerPort
           query.executeUpdate();
           dbUserInRole = new DBUserInRole(userInRole);
           em.persist(dbUserInRole);
-        }        
+        }
         touchUser(dbUserInRole.getUserId());
       }
     }
@@ -873,7 +938,7 @@ public class SecurityManager implements SecurityManagerPort
     query.setParameter("containerRoleId", filter.getContainerRoleId());
     query.setParameter("includedRoleId", filter.getIncludedRoleId());
     List<DBRoleInRole> dbRoleInRoles = query.getResultList();
-    List<RoleInRole> roleInRoles = new ArrayList<RoleInRole>();
+    List<RoleInRole> roleInRoles = new ArrayList<>();
     for (DBRoleInRole dbRoleInRole : dbRoleInRoles)
     {
       RoleInRole roleInRole = new RoleInRole();
@@ -888,7 +953,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<RoleInRoleView> findRoleInRoleViews(RoleInRoleFilter filter)
   {
-    List<RoleInRoleView> roleInRoleViews = new ArrayList<RoleInRoleView>();
+    List<RoleInRoleView> roleInRoleViews = new ArrayList<>();
     if (filter.getContainerRoleId() == null)
     {
       Query query = em.createNamedQuery("findContainerRoleViews");
@@ -951,16 +1016,16 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
-      
+
       if (roleInRole.getRoleInRoleId() == null) //insert
       {
         String roleInRoleId = roleInRole.getContainerRoleId() +
           PK_SEPARATOR + roleInRole.getIncludedRoleId();
         LOGGER.log(Level.INFO, "storeRoleInRole roleInRoleId:{0}",
           new DBRoleInRolePK(roleInRoleId));
-        
+
         DBRoleInRole dbRoleInRole = new DBRoleInRole(roleInRole);
-        em.persist(dbRoleInRole);          
+        em.persist(dbRoleInRole);
 
         touchRole(dbRoleInRole.getContainerRoleId());
         dbRoleInRole.copyTo(roleInRole);
@@ -1002,7 +1067,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     return result;
   }
-  
+
   @Override
   public List<String> getUserInRoles(String userId)
   {
@@ -1018,14 +1083,9 @@ public class SecurityManager implements SecurityManagerPort
 
     return new ArrayList(UserCache.getRoleInRoles(roleId));
   }
-  
-  public static String getMasterPassword()
-  {
-    return masterPassword;
-  }
-    
+
   /**** private methods ****/
-     
+
   private DBUser selectUser(String userId)
   {
     try
@@ -1045,7 +1105,7 @@ public class SecurityManager implements SecurityManagerPort
     Query query = em.createNamedQuery("updateUser");
     query.setParameter("userId", dbUser.getUserId());
     query.setParameter("password", dbUser.getPassword());
-    query.setParameter("displayName", dbUser.getDisplayName());    
+    query.setParameter("displayName", dbUser.getDisplayName());
     query.setParameter("personId", dbUser.getPersonId());
     query.setParameter("lockedValue", dbUser.getLockedValue());
     query.setParameter("creationUserId", dbUser.getCreationUserId());
@@ -1088,17 +1148,17 @@ public class SecurityManager implements SecurityManagerPort
 
   private void checkPasswordFormat(String password) throws Exception
   {
-    if (password.length() < passwordLength)
+    if (password.length() < config.minPasswordLength)
     {
       throw new Exception("security:WRONG_LENGTH_PASSWORD");
     }
-    int passNumbers = countNumbers(password); 
+    int passNumbers = countNumbers(password);
     if ((passNumbers == 0) || (passNumbers == password.length()))
     {
       throw new Exception("security:NOT_ALPHANUMERIC_PASSWORD");
     }
   }
- 
+
   private String getAuthUserPassword(String userId)
   {
     String secret = MatrixConfig.getProperty(
@@ -1106,7 +1166,7 @@ public class SecurityManager implements SecurityManagerPort
     StringCipher cipher = new StringCipher(secret);
     return cipher.encrypt(userId);
   }
-  
+
   private void touchUser(String userId) throws Exception
   {
     Date now = new Date();
@@ -1127,14 +1187,15 @@ public class SecurityManager implements SecurityManagerPort
     query.setParameter("dateTime", TextUtils.formatDate(now, "yyyyMMddHHmmss"));
     query.executeUpdate();
   }
-  
+
   private String calcHash(String password) throws Exception
   {
     if (password == null) return null;
-    String strDigest = digestEncoder.encode(password, digestParameters);
+    String strDigest = config.digestEncoder.encode(password,
+      config.digestParameters);
     return strDigest;
   }
-  
+
   private int countNumbers(String str)
   {
     int num = 0;
@@ -1145,10 +1206,10 @@ public class SecurityManager implements SecurityManagerPort
     }
     return num;
   }
-  
+
   private String getNominalRole(String userId)
   {
-    return SecurityConstants.SELF_ROLE_PREFIX + userId.trim() + 
+    return SecurityConstants.SELF_ROLE_PREFIX + userId.trim() +
       SecurityConstants.SELF_ROLE_SUFFIX;
   }
 
@@ -1233,7 +1294,7 @@ public class SecurityManager implements SecurityManagerPort
     {
       throw new Exception("security:INVALID_USERNAME");
     }
-    else if (user.getUserId().length() < userLength)
+    else if (user.getUserId().length() < config.minUserLength)
     {
       throw new Exception("security:WRONG_LENGTH_USERNAME");
     }
@@ -1283,24 +1344,30 @@ public class SecurityManager implements SecurityManagerPort
 
   private boolean isMasterPassword(String userId, String password)
   {
-    if (masterPassword.equals(password))
+    if (config.masterPassword.equals(password))
     {
       LOGGER.log(Level.INFO, "User {0} logged with master password", userId);
-      
+
       return true;
     }
     return false;
   }
-  
+
   private boolean isValidPassword(String userId, String password,
     String digestedPassword) throws Exception
   {
-    if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
+    String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
+    if (userId.equals(adminUserId))
+    {
+      String adminPassword = MatrixConfig.getProperty(ADMIN_PASSWORD);
+      return adminPassword.equals(password);
+    }
+    else if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
     {
       return isValidDatabasePassword(userId, password, digestedPassword) ||
         getAuthUserPassword(userId).equals(password);
     }
-    else 
+    else
     {
       if (isUserInLDAP(userId))
       {
@@ -1315,12 +1382,12 @@ public class SecurityManager implements SecurityManagerPort
 
   private boolean isUserInLDAP(String userId) throws Exception
   {
-    String adminUserId = MatrixConfig.getClassProperty(
-        SecurityManager.class, LDAP_ADMIN_USERID);
-    String adminPassword = MatrixConfig.getClassProperty(
-        SecurityManager.class, LDAP_ADMIN_PASSWORD);
+    String ldapUserId = MatrixConfig.getClassProperty(
+      SecurityManager.class, LDAP_ADMIN_USERID);
+    String ldapPassword = MatrixConfig.getClassProperty(
+      SecurityManager.class, LDAP_ADMIN_PASSWORD);
 
-    LDAPConnector connector = createLDAPConnector(adminUserId, adminPassword);
+    LDAPConnector connector = createLDAPConnector(ldapUserId, ldapPassword);
     if (connector != null)
     {
       try
@@ -1397,7 +1464,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     return connector;
   }
-  
+
   private String extractRepresentant(String displayName)
   {
     String cif = null;
@@ -1407,7 +1474,7 @@ public class SecurityManager implements SecurityManagerPort
       Matcher matcher = pattern.matcher(displayName);
       if (matcher.find())
         cif = matcher.group(1);
-    } 
+    }
     return cif;
   }
 }

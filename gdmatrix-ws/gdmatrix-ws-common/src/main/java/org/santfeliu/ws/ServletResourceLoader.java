@@ -44,7 +44,6 @@ import java.util.Set;
  */
 final class ServletResourceLoader implements ResourceLoader
 {
-
   private final ServletContext context;
 
   public ServletResourceLoader(ServletContext context)
@@ -52,16 +51,19 @@ final class ServletResourceLoader implements ResourceLoader
     this.context = context;
   }
 
+  @Override
   public URL getResource(String path) throws MalformedURLException
   {
     return context.getResource(path);
   }
 
+  @Override
   public URL getCatalogFile() throws MalformedURLException
   {
     return getResource("/WEB-INF/jax-ws-catalog.xml");
   }
 
+  @Override
   public Set<String> getResourcePaths(String path)
   {
     return context.getResourcePaths(path);

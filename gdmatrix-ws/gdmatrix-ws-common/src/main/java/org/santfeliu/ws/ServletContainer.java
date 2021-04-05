@@ -34,6 +34,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.ResourceLoader;
 import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.transport.http.servlet.ServletModule;
 
 import javax.servlet.ServletContext;
@@ -49,15 +50,15 @@ import java.net.MalformedURLException;
  */
 class ServletContainer extends Container
 {
-
   private final ServletContext servletContext;
+  
   private final ServletModule module = new ServletModule()
   {
-
-    private final List<BoundEndpoint> endpoints = new ArrayList<BoundEndpoint>();
+    private final List<BoundEndpoint> endpoints = new ArrayList<>();
 
     public
     @NotNull
+    @Override
     List<BoundEndpoint> getBoundEndpoints()
     {
       return endpoints;
@@ -65,6 +66,7 @@ class ServletContainer extends Container
 
     public
     @NotNull
+    @Override
     String getContextPath()
     {
       // Cannot compute this since we don't know about hostname and port etc
@@ -72,9 +74,10 @@ class ServletContainer extends Container
         ServletContainer.class.getName() + " doesn't support getContextPath()");
     }
   };
+  
   private final ResourceLoader loader = new ResourceLoader()
   {
-
+    @Override
     public URL getResource(String resource) throws MalformedURLException
     {
       return servletContext.getResource("/WEB-INF/" + resource);
@@ -86,6 +89,7 @@ class ServletContainer extends Container
     this.servletContext = servletContext;
   }
 
+  @Override
   public <T> T getSPI(Class<T> spiType)
   {
     if (spiType == ServletContext.class)

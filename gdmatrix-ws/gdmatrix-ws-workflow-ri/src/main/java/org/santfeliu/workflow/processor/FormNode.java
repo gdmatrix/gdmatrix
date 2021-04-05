@@ -53,12 +53,11 @@ import org.santfeliu.workflow.form.FormFactory;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class FormNode extends org.santfeliu.workflow.node.FormNode 
   implements NodeProcessor
-{
-  
+{  
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception
@@ -326,7 +325,7 @@ public class FormNode extends org.santfeliu.workflow.node.FormNode
         Object result = cx.evaluateString(scope, mcondition, "<cond>", 1, null);
         if (result instanceof Boolean)
         {
-          cancelled = ((Boolean)result).booleanValue();
+          cancelled = ((Boolean)result);
         }
       }
       finally

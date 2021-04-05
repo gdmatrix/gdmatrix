@@ -31,9 +31,7 @@
 package org.santfeliu.workflow.processor;
 
 import java.util.Map;
-
 import org.matrix.workflow.WorkflowConstants;
-
 import org.santfeliu.util.Properties;
 import org.santfeliu.util.template.Template;
 import org.santfeliu.workflow.WorkflowActor;
@@ -44,12 +42,11 @@ import org.santfeliu.workflow.WorkflowInstance;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ReturnNode extends org.santfeliu.workflow.node.ReturnNode 
   implements NodeProcessor
-{
-    
+{    
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception

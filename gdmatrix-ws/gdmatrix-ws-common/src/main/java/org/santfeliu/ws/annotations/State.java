@@ -28,44 +28,22 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.workflow.processor;
+package org.santfeliu.ws.annotations;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
-import org.santfeliu.util.script.ScriptableBase;
-import org.santfeliu.util.template.Template;
-import org.santfeliu.workflow.WorkflowActor;
-import org.santfeliu.workflow.WorkflowInstance;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  * @author realor
  */
-public class ConditionNode extends org.santfeliu.workflow.node.ConditionNode 
-  implements NodeProcessor
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+@Documented
+public @interface State
 {
-  @Override
-  public String process(WorkflowInstance instance, WorkflowActor actor)
-    throws Exception
-  {
-    Context cx = ContextFactory.getGlobal().enterContext();
-    try
-    {
-      String mcondition = Template.create(condition).merge(instance);
-      Scriptable scope = new ScriptableBase(cx, instance);
-      Object result = cx.evaluateString(scope, mcondition, "<cond>", 1, null);
-      if (result instanceof Boolean)
-      {
-        boolean isTrue = ((Boolean)result);
-        return isTrue ? CONTINUE_OUTCOME : END_OUTCOME;
-      }
-      else return END_OUTCOME;
-    }
-    finally
-    {
-      Context.exit();
-    }
-  }
 }

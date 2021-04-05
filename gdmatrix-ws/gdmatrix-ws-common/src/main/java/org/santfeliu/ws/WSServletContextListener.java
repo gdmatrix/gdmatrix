@@ -35,8 +35,8 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
-
 import java.io.File;
+import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
@@ -58,14 +58,15 @@ public final class WSServletContextListener
 {
   private WSServletDelegate delegate;
   private static final String JAXWS_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
-  private static final Logger logger = Logger.getLogger(
+  private static final Logger LOGGER = Logger.getLogger(
     com.sun.xml.ws.util.Constants.LoggingDomain + ".server.http");
 
+  @Override
   public void contextInitialized(ServletContextEvent event)
   {
-    if (logger.isLoggable(Level.INFO))
+    if (LOGGER.isLoggable(Level.INFO))
     {
-      logger.info(WsservletMessages.LISTENER_INFO_INITIALIZE());
+      LOGGER.info(WsservletMessages.LISTENER_INFO_INITIALIZE());
     }
     ServletContext context = event.getServletContext();
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -77,7 +78,7 @@ public final class WSServletContextListener
     {
       // Parse the descriptor file and build endpoint infos
       DeploymentDescriptorParser<ServletAdapter> parser =
-        new DeploymentDescriptorParser<ServletAdapter>(
+        new DeploymentDescriptorParser<>(
         classLoader, new ServletResourceLoader(context),
         createContainer(context), new ServletAdapterList());
       
@@ -104,44 +105,81 @@ public final class WSServletContextListener
       delegate = createDelegate(adapters, context);
 
       context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO, delegate);
+      
+      for (ServletAdapter adapter : adapters)
+      {
+        String endpointName = adapter.getName();
+        LOGGER.log(Level.INFO, ">>>>> Initializing endpoint {0}", endpointName);
+        Class<?> clazz = adapter.getEndpoint().getImplementationClass();
+        WSController controller = WSController.getInstance(clazz);
+        try
+        {
+          controller.initialize(endpointName);
+          LOGGER.log(Level.INFO, "Endpoint {0} initialized.", endpointName);
+        }
+        catch (Exception ex)
+        {
+          LOGGER.log(Level.SEVERE, "Endpoint {0} initialization failed: {1}", 
+            new Object[]{endpointName, ex.toString()});
+        }
+      }
     }
-    catch (Throwable e)
+    catch (IOException | WebServiceException e)
     {
-      logger.log(Level.SEVERE,
-              WsservletMessages.LISTENER_PARSING_FAILED(e), e);
+      LOGGER.log(Level.SEVERE,
+        WsservletMessages.LISTENER_PARSING_FAILED(e), e);
       context.removeAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
       throw new WebServiceException("listener.parsingFailed", e);
-    }
+    } 
   }
 
+  @Override
   public void contextDestroyed(ServletContextEvent event)
   {
+    for (ServletAdapter adapter : delegate.adapters)
+    {
+      String endpointName = adapter.getName();
+      LOGGER.log(Level.INFO, ">>>>> Disposing endpoint {0}", endpointName);
+      Class<?> clazz = adapter.getEndpoint().getImplementationClass();
+      WSController controller = WSController.getInstance(clazz);
+      try
+      {
+        controller.dispose(endpointName);
+        LOGGER.log(Level.INFO, "Endpoint {0} disposed.", endpointName);
+      }
+      catch (Exception ex)
+      {
+        LOGGER.log(Level.SEVERE, "Endpoint {0} dispose failed: {1}", 
+          new Object[]{endpointName, ex.toString()});
+      }
+    }
+
     if (delegate != null)
     { // the deployment might have failed.
       delegate.destroy();
     }
 
-    if (logger.isLoggable(Level.INFO))
+    if (LOGGER.isLoggable(Level.INFO))
     {
-      logger.info(WsservletMessages.LISTENER_INFO_DESTROY());
+      LOGGER.info(WsservletMessages.LISTENER_INFO_DESTROY());
     }
   }
 
+  @Override
   public void attributeAdded(ServletContextAttributeEvent event)
   {
   }
 
+  @Override
   public void attributeRemoved(ServletContextAttributeEvent event)
   {
   }
 
+  @Override
   public void attributeReplaced(ServletContextAttributeEvent event)
   {
   }
 
-  /**
-   * Creates {@link Container} implementation that hosts the JAX-WS endpoint.
-   */
   protected
   @NotNull
   Container createContainer(ServletContext context)
@@ -149,12 +187,10 @@ public final class WSServletContextListener
     return new ServletContainer(context);
   }
 
-  /**
-   * Creates {@link WSServletDelegate} that does the real work.
-   */
   protected
   @NotNull
-  WSServletDelegate createDelegate(List<ServletAdapter> adapters, ServletContext context)
+  WSServletDelegate createDelegate(List<ServletAdapter> adapters, 
+    ServletContext context)
   {
     return new WSServletDelegate(adapters, context);
   }

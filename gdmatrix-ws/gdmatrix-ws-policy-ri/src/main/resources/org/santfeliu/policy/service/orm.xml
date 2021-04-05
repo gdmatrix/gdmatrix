@@ -192,74 +192,76 @@
     <table name="POL_POLICY" />
     <attributes>
       <id name="policyId">
-        <column name="POLICYID" />
+        <column name="POLICYID" length="10" />
         <generated-value strategy="TABLE" generator="POL_POLICY" />
         <table-generator name="POL_POLICY" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="POL_POLICY"
           initial-value="0" allocation-size="1" />
       </id>
       <basic name="title">
-        <column name="TITLE" />
+        <column name="TITLE" length="200" />
       </basic>
       <basic name="description">
-        <column name="DESCRIPTION" />
+        <column name="DESCRIPTION" length="2000" />
       </basic>
       <basic name="policyTypeId">
-        <column name="POLICYTYPEID" />
+        <column name="POLICYTYPEID" length="64" />
       </basic>
       <basic name="activationDateExpression">
-        <column name="ACTDATEEXPR" />
+        <column name="ACTDATEEXPR" length="2000" />
       </basic>
       <basic name="activationCondition">
-        <column name="ACTCONDITION" />
+        <column name="ACTCONDITION" length="2000" />
       </basic>
       <basic name="automaticExecutionValue">
-        <column name="AUTOEXEC" />
+        <column name="AUTOEXEC" length="1" />
       </basic>
       <basic name="mandate">
-        <column name="MANDATE" />
+        <column name="MANDATE" length="2000" />
       </basic>
       <basic name="evaluationCode">
-        <column name="EVALCODE" />
+        <column name="EVALCODE" length="100" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="CHANGEUSERID" />
+        <column name="CHANGEUSERID" length="20" />
       </basic>
       <transient name="automaticExecution" />
     </attributes>
   </entity>
 
-  <entity class="org.santfeliu.policy.service.DBDisposalHold" 
+  <entity class="org.santfeliu.policy.service.DBDisposalHold"
           name="DisposalHold" access="PROPERTY">
     <table name="POL_DISPHOLD" />
     <attributes>
       <id name="dispHoldId">
-        <column name="DISPHOLDID" />
+        <column name="DISPHOLDID" length="10" />
         <generated-value strategy="TABLE" generator="POL_DISPHOLD" />
         <table-generator name="POL_DISPHOLD" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="POL_DISPHOLD"
           initial-value="0" allocation-size="1" />
       </id>
       <basic name="title">
-        <column name="TITLE" />
+        <column name="TITLE" length="2000" />
       </basic>
       <basic name="startDate">
-        <column name="START" />
+        <column name="STARTDATE" length="8" />
       </basic>
       <basic name="endDate">
-        <column name="ENDDATE" />
+        <column name="ENDDATE" length="8" />
       </basic>
       <basic name="reason">
-        <column name="REASON" />
+        <column name="REASON" length="2000" />
       </basic>
     </attributes>
   </entity>
@@ -269,41 +271,42 @@
     <table name="POL_CLASSPOLICY" />
     <attributes>
       <id name="classPolicyId">
-        <column name="CLASSPOLICYID" />
+        <column name="CLASSPOLICYID" length="10" />
         <generated-value strategy="TABLE" generator="POL_CLASSPOLICY" />
         <table-generator name="POL_CLASSPOLICY" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="POL_CLASSPOLICY"
           initial-value="0" allocation-size="1" />
       </id>
       <basic name="classId">
-        <column name="CLASSID" />
+        <column name="CLASSID" length="32" />
       </basic>
       <basic name="policyId">
-        <column name="POLICYID" />
+        <column name="POLICYID" length="10" />
       </basic>
       <basic name="dispHoldId">
-        <column name="DISPHOLDID" />
+        <column name="DISPHOLDID" length="10" />
       </basic>
       <basic name="reason">
-        <column name="REASON" />
+        <column name="REASON" length="2000" />
       </basic>
       <basic name="startDate">
-        <column name="STARTDATE" />
+        <column name="STARTDATE" length="8" />
       </basic>
       <basic name="endDate">
-        <column name="ENDDATE" />
+        <column name="ENDDATE" length="8" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="CHANGEUSERID" />
+        <column name="CHANGEUSERID" length="20" />
       </basic>
     </attributes>
   </entity>
@@ -313,50 +316,51 @@
     <table name="POL_CASEPOLICY" />
     <attributes>
       <id name="casePolicyId">
-        <column name="CASEPOLICYID" />
+        <column name="CASEPOLICYID" length="10" />
         <generated-value strategy="TABLE" generator="POL_CASEPOLICY" />
         <table-generator name="POL_CASEPOLICY" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="POL_CASEPOLICY"
           initial-value="0" allocation-size="1" />
       </id>
       <basic name="caseId">
-        <column name="CASEID" />
+        <column name="CASEID" length="32" />
       </basic>
       <basic name="policyId">
-        <column name="POLICYID" />
+        <column name="POLICYID" length="10" />
       </basic>
       <basic name="activationDate">
-        <column name="ACTDATE" />
+        <column name="ACTDATE" length="8" />
       </basic>
       <basic name="stateValue">
-        <column name="STATE" />
+        <column name="STATE" length="1" />
       </basic>
       <basic name="dispHoldId">
-        <column name="DISPHOLDID" />
+        <column name="DISPHOLDID" length="10" />
       </basic>
       <basic name="reason">
-        <column name="REASON" />
+        <column name="REASON" length="2000" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="approvalDateTime">
-        <column name="APPROVALDT" />
+        <column name="APPROVALDT" length="14" />
       </basic>
       <basic name="approvalUserId">
-        <column name="APPROVALUSERID" />
+        <column name="APPROVALUSERID" length="20" />
       </basic>
       <basic name="executionDateTime">
-        <column name="EXECUTIONDT" />
+        <column name="EXECUTIONDT" length="14" />
       </basic>
       <basic name="executionUserId">
-        <column name="EXECUTIONUSERID" />
+        <column name="EXECUTIONUSERID" length="20" />
       </basic>
       <basic name="executionResult">
-        <column name="EXECUTIONRESULT" />
+        <column name="EXECUTIONRESULT" length="1000" />
       </basic>
       <transient name="state" />
     </attributes>
@@ -367,50 +371,51 @@
     <table name="POL_DOCPOLICY" />
     <attributes>
       <id name="docPolicyId">
-        <column name="DOCPOLICYID" />
+        <column name="DOCPOLICYID" length="10" />
         <generated-value strategy="TABLE" generator="POL_DOCPOLICY" />
         <table-generator name="POL_DOCPOLICY" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="POL_DOCPOLICY"
           initial-value="0" allocation-size="1" />
       </id>
       <basic name="docId">
-        <column name="DOCID" />
+        <column name="DOCID" length="10" />
       </basic>
       <basic name="policyId">
-        <column name="POLICYID" />
+        <column name="POLICYID" length="10" />
       </basic>
       <basic name="activationDate">
-        <column name="ACTDATE" />
+        <column name="ACTDATE" length="8" />
       </basic>
       <basic name="stateValue">
-        <column name="STATE" />
+        <column name="STATE" length="1" />
       </basic>
       <basic name="dispHoldId">
-        <column name="DISPHOLDID" />
+        <column name="DISPHOLDID" length="10" />
       </basic>
       <basic name="reason">
-        <column name="REASON" />
+        <column name="REASON" length="2000" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="approvalDateTime">
-        <column name="APPROVALDT" />
+        <column name="APPROVALDT" length="14" />
       </basic>
       <basic name="approvalUserId">
-        <column name="APPROVALUSERID" />
+        <column name="APPROVALUSERID" length="20" />
       </basic>
       <basic name="executionDateTime">
-        <column name="EXECUTIONDT" />
+        <column name="EXECUTIONDT" length="14" />
       </basic>
       <basic name="executionUserId">
-        <column name="EXECUTIONUSERID" />
+        <column name="EXECUTIONUSERID" length="20" />
       </basic>
       <basic name="executionResult">
-        <column name="EXECUTIONRESULT" />
+        <column name="EXECUTIONRESULT" length="1000" />
       </basic>
       <transient name="state" />
     </attributes>
@@ -421,16 +426,16 @@
     <table name="POL_POLICYPROP" />
     <attributes>
       <id name="policyId">
-        <column name="POLICYID" />
+        <column name="POLICYID" length="10" />
       </id>
       <id name="name">
-        <column name="PROPNAME" />
+        <column name="PROPNAME" length="100" />
       </id>
       <id name="index">
         <column name="INDX" />
       </id>
       <basic name="value">
-        <column name="PROPVALUE" />
+        <column name="PROPVALUE" length="4000" />
       </basic>
     </attributes>
   </entity>

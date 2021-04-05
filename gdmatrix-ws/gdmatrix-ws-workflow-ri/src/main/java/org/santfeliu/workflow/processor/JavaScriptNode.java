@@ -35,19 +35,17 @@ import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
 import org.santfeliu.util.script.ScriptableBase;
 import org.santfeliu.util.template.Template;
-
 import org.santfeliu.workflow.WorkflowActor;
 import org.santfeliu.workflow.WorkflowInstance;
 
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JavaScriptNode extends org.santfeliu.workflow.node.JavaScriptNode 
   implements NodeProcessor
-{  
-  
+{ 
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception
@@ -67,5 +65,4 @@ public class JavaScriptNode extends org.santfeliu.workflow.node.JavaScriptNode
     }
     return String.valueOf(result);
   }
-  
 }

@@ -34,15 +34,13 @@ import org.santfeliu.workflow.WorkflowActor;
 import org.santfeliu.workflow.WorkflowInstance;
 
 
-
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class NopNode extends org.santfeliu.workflow.node.NopNode 
   implements NodeProcessor
-{  
-
+{
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
   {

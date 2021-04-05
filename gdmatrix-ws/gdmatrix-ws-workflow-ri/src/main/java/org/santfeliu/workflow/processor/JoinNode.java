@@ -31,9 +31,7 @@
 package org.santfeliu.workflow.processor;
 
 import java.util.StringTokenizer;
-
 import org.matrix.workflow.WorkflowConstants;
-
 import org.santfeliu.workflow.Workflow;
 import org.santfeliu.workflow.WorkflowActor;
 import org.santfeliu.workflow.WorkflowEngine;
@@ -42,12 +40,11 @@ import org.santfeliu.workflow.WorkflowNode;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JoinNode extends org.santfeliu.workflow.node.JoinNode 
   implements NodeProcessor
 {
-  
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception

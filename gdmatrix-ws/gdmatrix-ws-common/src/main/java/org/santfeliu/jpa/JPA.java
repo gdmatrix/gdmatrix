@@ -30,6 +30,7 @@
  */
 package org.santfeliu.jpa;
 
+import org.santfeliu.ws.MultiInstanceResolver;
 import com.sun.xml.ws.api.server.InstanceResolverAnnotation;
 
 import java.lang.annotation.Documented;
@@ -45,7 +46,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@InstanceResolverAnnotation(JPAInstanceResolver.class)
+@InstanceResolverAnnotation(MultiInstanceResolver.class)
 public @interface JPA
 {
 }

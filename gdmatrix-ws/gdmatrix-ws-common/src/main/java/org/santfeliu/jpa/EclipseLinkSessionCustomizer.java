@@ -36,11 +36,12 @@ import org.eclipse.persistence.sessions.Session;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class EclipseLinkSessionCustomizer
   implements SessionCustomizer
 {
+  @Override
   public void customize(Session session)
     throws Exception
   {

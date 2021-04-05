@@ -33,17 +33,14 @@ package org.santfeliu.workflow.processor;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class JavaNode extends org.santfeliu.workflow.processor.JavaScriptNode 
   implements NodeProcessor
 {
- 
-  
   @Override
   public String getType()
   {
     return "Java";
   }
-
 }

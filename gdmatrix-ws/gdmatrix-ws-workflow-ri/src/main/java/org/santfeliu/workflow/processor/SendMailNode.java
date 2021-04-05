@@ -47,12 +47,11 @@ import org.santfeliu.workflow.WorkflowInstance;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SendMailNode extends org.santfeliu.workflow.node.SendMailNode 
   implements NodeProcessor
 {
-  
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception
@@ -153,5 +152,4 @@ public class SendMailNode extends org.santfeliu.workflow.node.SendMailNode
       return new PasswordAuthentication(username, password);
     }
   }
-
 }

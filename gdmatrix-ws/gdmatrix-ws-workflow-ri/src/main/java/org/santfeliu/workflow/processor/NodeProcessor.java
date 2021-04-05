@@ -39,5 +39,6 @@ import org.santfeliu.workflow.WorkflowInstance;
  */
 public interface NodeProcessor
 {
-  public String process(WorkflowInstance instance, WorkflowActor actor) throws Exception;
+  public String process(WorkflowInstance instance, WorkflowActor actor) 
+    throws Exception;
 }

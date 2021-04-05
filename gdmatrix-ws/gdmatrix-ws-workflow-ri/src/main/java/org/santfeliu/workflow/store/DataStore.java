@@ -31,13 +31,11 @@
 package org.santfeliu.workflow.store;
 
 import java.util.Properties;
-
 import org.santfeliu.workflow.WorkflowException;
-
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public interface DataStore
 {

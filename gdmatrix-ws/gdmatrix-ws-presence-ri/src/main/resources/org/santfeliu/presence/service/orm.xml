@@ -3,791 +3,798 @@
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
                  version="1.0">
-    <description>Presence</description>
-    <package>org.santfeliu.presence.service</package>
+  <description>Presence</description>
+  <package>org.santfeliu.presence.service</package>
 
-    <named-query name="countWorkers">
-      <query>
-        SELECT count(w) FROM DBWorker w
-        WHERE
-         (w.personId = :personId OR :personId IS NULL) AND
-         (lower(w.fullName) LIKE :fullName OR :fullName IS NULL) AND
-         (lower(w.team) LIKE :team OR :team IS NULL) AND
-        (w.validatorPersonId = :validatorPersonId OR :validatorPersonId IS NULL)
-      </query>
-    </named-query>
+  <named-query name="countWorkers">
+    <query>
+      SELECT count(w) FROM DBWorker w
+      WHERE
+      (w.personId = :personId OR :personId IS NULL) AND
+      (lower(w.fullName) LIKE :fullName OR :fullName IS NULL) AND
+      (lower(w.team) LIKE :team OR :team IS NULL) AND
+      (w.validatorPersonId = :validatorPersonId OR :validatorPersonId IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findWorkers">
-      <query>
-        SELECT w FROM DBWorker w
-        WHERE
-         (w.personId = :personId OR :personId IS NULL) AND
-         (lower(w.fullName) LIKE :fullName OR :fullName IS NULL) AND
-         (lower(w.team) LIKE :team OR :team IS NULL) AND
-        (w.validatorPersonId = :validatorPersonId OR :validatorPersonId IS NULL)
-         ORDER BY w.fullName
-      </query>
-    </named-query>
+  <named-query name="findWorkers">
+    <query>
+      SELECT w FROM DBWorker w
+      WHERE
+      (w.personId = :personId OR :personId IS NULL) AND
+      (lower(w.fullName) LIKE :fullName OR :fullName IS NULL) AND
+      (lower(w.team) LIKE :team OR :team IS NULL) AND
+      (w.validatorPersonId = :validatorPersonId OR :validatorPersonId IS NULL)
+      ORDER BY w.fullName
+    </query>
+  </named-query>
 
-    <named-query name="countPresenceEntries">
-      <query>
-        SELECT count(e) FROM DBPresenceEntry e
-        WHERE
-         (e.personId = :personId OR :personId IS NULL) AND
-         (e.startDateTime &lt;= :endDateTime OR :endDateTime IS NULL) AND
-         (e.endDateTime &gt;= :startDateTime OR e.endDateTime IS NULL) AND
-         (e.entryTypeId = :entryTypeId OR :entryTypeId IS NULL) AND
-         (e.manipulatedValue = :manipulatedValue OR :manipulatedValue IS NULL) AND
-         (e.reason LIKE :reason OR :reason IS NULL)
-      </query>
-    </named-query>
+  <named-query name="countPresenceEntries">
+    <query>
+      SELECT count(e) FROM DBPresenceEntry e
+      WHERE
+      (e.personId = :personId OR :personId IS NULL) AND
+      (e.startDateTime &lt;= :endDateTime OR :endDateTime IS NULL) AND
+      (e.endDateTime &gt;= :startDateTime OR e.endDateTime IS NULL) AND
+      (e.entryTypeId = :entryTypeId OR :entryTypeId IS NULL) AND
+      (e.manipulatedValue = :manipulatedValue OR :manipulatedValue IS NULL) AND
+      (e.reason LIKE :reason OR :reason IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findPresenceEntries">
-      <query>
-        SELECT e FROM DBPresenceEntry e
-        WHERE
-         (e.personId = :personId OR :personId IS NULL) AND
-         (e.startDateTime &lt;= :endDateTime OR :endDateTime IS NULL) AND
-         (e.endDateTime &gt;= :startDateTime OR e.endDateTime IS NULL) AND
-         (e.entryTypeId = :entryTypeId OR :entryTypeId IS NULL) AND
-         (e.manipulatedValue = :manipulatedValue OR :manipulatedValue IS NULL) AND
-         (e.reason LIKE :reason OR :reason IS NULL)
-         ORDER BY e.startDateTime
-      </query>
-    </named-query>
+  <named-query name="findPresenceEntries">
+    <query>
+      SELECT e FROM DBPresenceEntry e
+      WHERE
+      (e.personId = :personId OR :personId IS NULL) AND
+      (e.startDateTime &lt;= :endDateTime OR :endDateTime IS NULL) AND
+      (e.endDateTime &gt;= :startDateTime OR e.endDateTime IS NULL) AND
+      (e.entryTypeId = :entryTypeId OR :entryTypeId IS NULL) AND
+      (e.manipulatedValue = :manipulatedValue OR :manipulatedValue IS NULL) AND
+      (e.reason LIKE :reason OR :reason IS NULL)
+      ORDER BY e.startDateTime
+    </query>
+  </named-query>
 
-    <named-query name="findPresenceEntryOnDate">
-      <query>
-        SELECT e FROM DBPresenceEntry e
-        WHERE
-         e.personId = :personId AND
-         e.startDateTime &lt;= :dateTime AND 
-        (e.endDateTime &gt; :dateTime OR e.endDateTime IS NULL)
-      </query>
-    </named-query>
+  <named-query name="findPresenceEntryOnDate">
+    <query>
+      SELECT e FROM DBPresenceEntry e
+      WHERE
+      e.personId = :personId AND
+      e.startDateTime &lt;= :dateTime AND 
+      (e.endDateTime &gt; :dateTime OR e.endDateTime IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findNextPresenceEntry">
-      <query>
-        SELECT e FROM DBPresenceEntry e
-        WHERE
-         e.personId = :personId AND
-         e.startDateTime &gt; :dateTime
-         ORDER BY e.startDateTime
-      </query>
-    </named-query>
+  <named-query name="findNextPresenceEntry">
+    <query>
+      SELECT e FROM DBPresenceEntry e
+      WHERE
+      e.personId = :personId AND
+      e.startDateTime &gt; :dateTime
+      ORDER BY e.startDateTime
+    </query>
+  </named-query>
 
-    <named-query name="findPreviousPresenceEntry">
-      <query>
-        SELECT e FROM DBPresenceEntry e
-        WHERE
-         e.personId = :personId AND
-         e.startDateTime &lt; :dateTime
-         ORDER BY e.startDateTime DESC
-      </query>
-    </named-query>
+  <named-query name="findPreviousPresenceEntry">
+    <query>
+      SELECT e FROM DBPresenceEntry e
+      WHERE
+      e.personId = :personId AND
+      e.startDateTime &lt; :dateTime
+      ORDER BY e.startDateTime DESC
+    </query>
+  </named-query>
 
-    <named-query name="findWorkerWeekOnPeriod">
-      <query>
-        SELECT ww FROM DBWorkerWeek ww
-        WHERE
-         ww.personId = :personId AND
-         (ww.startDate &lt;= :endDate OR :endDate IS NULL) AND
-         (ww.endDate &gt;= :startDate OR ww.endDate IS NULL) 
-         ORDER BY ww.startDate
-      </query>
-    </named-query>
+  <named-query name="findWorkerWeekOnPeriod">
+    <query>
+      SELECT ww FROM DBWorkerWeek ww
+      WHERE
+      ww.personId = :personId AND
+      (ww.startDate &lt;= :endDate OR :endDate IS NULL) AND
+      (ww.endDate &gt;= :startDate OR ww.endDate IS NULL) 
+      ORDER BY ww.startDate
+    </query>
+  </named-query>
 
-    <named-query name="countHolidays">
-      <query>
-        SELECT count(h) FROM DBHoliday h
-        WHERE
-         (h.description LIKE :description OR :description IS NULL) AND
-         (:startDate &lt;= h.endDate OR :startDate IS NULL) AND
-         (h.startDate &lt;= :endDate OR :endDate IS NULL)
-      </query>
-    </named-query>
+  <named-query name="countHolidays">
+    <query>
+      SELECT count(h) FROM DBHoliday h
+      WHERE
+      (h.description LIKE :description OR :description IS NULL) AND
+      (:startDate &lt;= h.endDate OR :startDate IS NULL) AND
+      (h.startDate &lt;= :endDate OR :endDate IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findHolidays">
-      <query>
-        SELECT h FROM DBHoliday h
-        WHERE
-         (h.description LIKE :description OR :description IS NULL) AND
-         (:startDate &lt;= h.endDate OR :startDate IS NULL) AND
-         (h.startDate &lt;= :endDate OR :endDate IS NULL)
-        ORDER BY h.optionalValue, h.startDate
-      </query>
-    </named-query>
+  <named-query name="findHolidays">
+    <query>
+      SELECT h FROM DBHoliday h
+      WHERE
+      (h.description LIKE :description OR :description IS NULL) AND
+      (:startDate &lt;= h.endDate OR :startDate IS NULL) AND
+      (h.startDate &lt;= :endDate OR :endDate IS NULL)
+      ORDER BY h.optionalValue, h.startDate
+    </query>
+  </named-query>
 
-    <named-query name="countWorkReductions">
-      <query>
-        SELECT count(r) FROM DBWorkReduction r
-        WHERE
-         (r.description LIKE :description OR :description IS NULL) AND
-         (:startDate &lt;= r.endDate OR :startDate IS NULL) AND
-         (r.startDate &lt;= :endDate OR :endDate IS NULL)
-      </query>
-    </named-query>
+  <named-query name="countWorkReductions">
+    <query>
+      SELECT count(r) FROM DBWorkReduction r
+      WHERE
+      (r.description LIKE :description OR :description IS NULL) AND
+      (:startDate &lt;= r.endDate OR :startDate IS NULL) AND
+      (r.startDate &lt;= :endDate OR :endDate IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findWorkReductions">
-      <query>
-        SELECT r FROM DBWorkReduction r
-        WHERE
-         (r.description LIKE :description OR :description IS NULL) AND
-         (:startDate &lt;= r.endDate OR :startDate IS NULL) AND
-         (r.startDate &lt;= :endDate OR :endDate IS NULL)
-        ORDER BY r.startDate
-      </query>
-    </named-query>
+  <named-query name="findWorkReductions">
+    <query>
+      SELECT r FROM DBWorkReduction r
+      WHERE
+      (r.description LIKE :description OR :description IS NULL) AND
+      (:startDate &lt;= r.endDate OR :startDate IS NULL) AND
+      (r.startDate &lt;= :endDate OR :endDate IS NULL)
+      ORDER BY r.startDate
+    </query>
+  </named-query>
 
-    <named-query name="countPresenceEntryTypes">
-      <query>
-        SELECT count(et) FROM DBPresenceEntryType et
-        WHERE
-         (et.label LIKE :label OR :label IS NULL) AND
-         (et.enabledValue = :enabled OR :enabled IS NULL) AND
-         (et.filter IS NULL OR :team = '%' OR
-         (et.filter LIKE '+%' AND et.filter LIKE :team) OR
-         (et.filter LIKE '-%' AND (et.filter NOT LIKE :team OR :team IS NULL)))
-      </query>
-    </named-query>
+  <named-query name="countPresenceEntryTypes">
+    <query>
+      SELECT count(et) FROM DBPresenceEntryType et
+      WHERE
+      (et.label LIKE :label OR :label IS NULL) AND
+      (et.enabledValue = :enabled OR :enabled IS NULL) AND
+      (et.filter IS NULL OR :team = '%' OR
+      (et.filter LIKE '+%' AND et.filter LIKE :team) OR
+      (et.filter LIKE '-%' AND (et.filter NOT LIKE :team OR :team IS NULL)))
+    </query>
+  </named-query>
 
-    <named-query name="findPresenceEntryTypes">
-      <query>
-        SELECT et FROM DBPresenceEntryType et
-        WHERE
-         (et.label LIKE :label OR :label IS NULL) AND
-         (et.enabledValue = :enabled OR :enabled IS NULL) AND
-         (et.filter IS NULL OR :team = '%' OR
-         (et.filter LIKE '+%' AND et.filter LIKE :team) OR
-         (et.filter LIKE '-%' AND (et.filter NOT LIKE :team OR :team IS NULL)))
-        ORDER BY et.position
-      </query>
-    </named-query>
+  <named-query name="findPresenceEntryTypes">
+    <query>
+      SELECT et FROM DBPresenceEntryType et
+      WHERE
+      (et.label LIKE :label OR :label IS NULL) AND
+      (et.enabledValue = :enabled OR :enabled IS NULL) AND
+      (et.filter IS NULL OR :team = '%' OR
+      (et.filter LIKE '+%' AND et.filter LIKE :team) OR
+      (et.filter LIKE '-%' AND (et.filter NOT LIKE :team OR :team IS NULL)))
+      ORDER BY et.position
+    </query>
+  </named-query>
 
-    <named-query name="countAbsenceTypes">
-      <query>
-        SELECT count(a) FROM DBAbsenceType a
-        WHERE
-         (a.label LIKE :label OR :label IS NULL)
-      </query>
-    </named-query>
+  <named-query name="countAbsenceTypes">
+    <query>
+      SELECT count(a) FROM DBAbsenceType a
+      WHERE
+      (a.label LIKE :label OR :label IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findAbsenceTypes">
-      <query>
-        SELECT a FROM DBAbsenceType a
-        WHERE
-         (a.label LIKE :label OR :label IS NULL)
-        ORDER BY a.position
-      </query>
-    </named-query>
+  <named-query name="findAbsenceTypes">
+    <query>
+      SELECT a FROM DBAbsenceType a
+      WHERE
+      (a.label LIKE :label OR :label IS NULL)
+      ORDER BY a.position
+    </query>
+  </named-query>
 
-    <named-query name="countDayTypes">
-      <query>
-        SELECT count(d) FROM DBDayType d
-        WHERE
-         (d.label LIKE :label OR :label IS NULL)
-      </query>
-    </named-query>
+  <named-query name="countDayTypes">
+    <query>
+      SELECT count(d) FROM DBDayType d
+      WHERE
+      (d.label LIKE :label OR :label IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findDayTypes">
-      <query>
-        SELECT d FROM DBDayType d
-        WHERE
-         (d.label LIKE :label OR :label IS NULL)
-        ORDER BY d.label
-      </query>
-    </named-query>
+  <named-query name="findDayTypes">
+    <query>
+      SELECT d FROM DBDayType d
+      WHERE
+      (d.label LIKE :label OR :label IS NULL)
+      ORDER BY d.label
+    </query>
+  </named-query>
 
-    <named-query name="countWeekTypes">
-      <query>
-        SELECT count(w) FROM DBWeekType w
-        WHERE
-         (w.label LIKE :label OR :label IS NULL)
-      </query>
-    </named-query>
+  <named-query name="countWeekTypes">
+    <query>
+      SELECT count(w) FROM DBWeekType w
+      WHERE
+      (w.label LIKE :label OR :label IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findWeekTypes">
-      <query>
-        SELECT w FROM DBWeekType w
-        WHERE
-         (w.label LIKE :label OR :label IS NULL)
-        ORDER BY w.label
-      </query>
-    </named-query>
+  <named-query name="findWeekTypes">
+    <query>
+      SELECT w FROM DBWeekType w
+      WHERE
+      (w.label LIKE :label OR :label IS NULL)
+      ORDER BY w.label
+    </query>
+  </named-query>
 
-    <named-query name="countAbsenceCounters">
-      <query>
-        SELECT count(c) FROM DBAbsenceCounter c, DBAbsenceType t
-        WHERE
-         c.absenceTypeId = t.absenceTypeId AND
-         (c.personId = :personId OR :personId IS NULL) AND
-         (c.year = :year OR :year IS NULL) AND
-         (c.absenceTypeId = :absenceTypeId OR :absenceTypeId IS NULL) AND
-         (t.counterVisibleValue = :counterVisibleValue OR :counterVisibleValue IS NULL)
-      </query>
-    </named-query>
+  <named-query name="countAbsenceCounters">
+    <query>
+      SELECT count(c) FROM DBAbsenceCounter c, DBAbsenceType t
+      WHERE
+      c.absenceTypeId = t.absenceTypeId AND
+      (c.personId = :personId OR :personId IS NULL) AND
+      (c.year = :year OR :year IS NULL) AND
+      (c.absenceTypeId = :absenceTypeId OR :absenceTypeId IS NULL) AND
+      (t.counterVisibleValue = :counterVisibleValue OR :counterVisibleValue IS NULL)
+    </query>
+  </named-query>
 
-    <named-query name="findAbsenceCounters">
-      <query>
-        SELECT c FROM DBAbsenceCounter c, DBAbsenceType t
-        WHERE
-         c.absenceTypeId = t.absenceTypeId AND
-         (c.personId = :personId OR :personId IS NULL) AND
-         (c.year = :year OR :year IS NULL) AND
-         (c.absenceTypeId = :absenceTypeId OR :absenceTypeId IS NULL) AND
-         (t.counterVisibleValue = :counterVisibleValue OR :counterVisibleValue IS NULL)        
-        ORDER BY t.position
-      </query>
-    </named-query>
+  <named-query name="findAbsenceCounters">
+    <query>
+      SELECT c FROM DBAbsenceCounter c, DBAbsenceType t
+      WHERE
+      c.absenceTypeId = t.absenceTypeId AND
+      (c.personId = :personId OR :personId IS NULL) AND
+      (c.year = :year OR :year IS NULL) AND
+      (c.absenceTypeId = :absenceTypeId OR :absenceTypeId IS NULL) AND
+      (t.counterVisibleValue = :counterVisibleValue OR :counterVisibleValue IS NULL)        
+      ORDER BY t.position
+    </query>
+  </named-query>
 
-    <named-query name="findAbsenceCounterViews">
-      <query>
-        SELECT c, t FROM DBAbsenceCounter c, DBAbsenceType t
-        WHERE
-         c.absenceTypeId = t.absenceTypeId AND
-         (c.personId = :personId OR :personId IS NULL) AND
-         (c.year = :year OR :year IS NULL) AND
-         (c.absenceTypeId = :absenceTypeId OR :absenceTypeId IS NULL) AND
-         (t.counterVisibleValue = :counterVisibleValue OR :counterVisibleValue IS NULL)  
-        ORDER BY t.position
-      </query>
-    </named-query>
+  <named-query name="findAbsenceCounterViews">
+    <query>
+      SELECT c, t FROM DBAbsenceCounter c, DBAbsenceType t
+      WHERE
+      c.absenceTypeId = t.absenceTypeId AND
+      (c.personId = :personId OR :personId IS NULL) AND
+      (c.year = :year OR :year IS NULL) AND
+      (c.absenceTypeId = :absenceTypeId OR :absenceTypeId IS NULL) AND
+      (t.counterVisibleValue = :counterVisibleValue OR :counterVisibleValue IS NULL)  
+      ORDER BY t.position
+    </query>
+  </named-query>
 
-    <named-query name="findAbsenceEntries">
-      <query>
-        SELECT e FROM DBPresenceEntry e
-        WHERE
-          e.absenceId = :absenceId
-        ORDER BY e.startDateTime
-      </query>
-    </named-query>
+  <named-query name="findAbsenceEntries">
+    <query>
+      SELECT e FROM DBPresenceEntry e
+      WHERE
+      e.absenceId = :absenceId
+      ORDER BY e.startDateTime
+    </query>
+  </named-query>
 
-    <named-query name="findParameters">
-      <query>
-        SELECT p FROM DBPresenceParameter p
-        ORDER BY p.parameterId
-      </query>
-    </named-query>
+  <named-query name="findParameters">
+    <query>
+      SELECT p FROM DBPresenceParameter p
+      ORDER BY p.parameterId
+    </query>
+  </named-query>
 
-    <named-query name="findAbsenceOverlap">
-      <query>
-        SELECT count(a) FROM DBAbsence a
-        WHERE
-          a.personId = :personId
-          AND a.startDateTime &lt; :endDateTime
-          AND a.endDateTime &gt; :startDateTime
-          AND (:absenceId IS NULL OR a.absenceId &lt;&gt; :absenceId)
-      </query>
-    </named-query>
+  <named-query name="findAbsenceOverlap">
+    <query>
+      SELECT count(a) FROM DBAbsence a
+      WHERE
+      a.personId = :personId
+      AND a.startDateTime &lt; :endDateTime
+      AND a.endDateTime &gt; :startDateTime
+      AND (:absenceId IS NULL OR a.absenceId &lt;&gt; :absenceId)
+    </query>
+  </named-query>
 
-    <named-query name="findFirstPresenceEntryDateTime">
-      <query>
-       SELECT e.startDateTime FROM DBPresenceEntry e 
-       WHERE
-         e.personId = :personId 
-       ORDER BY e.startDateTime ASC
-      </query>
-    </named-query>
+  <named-query name="findFirstPresenceEntryDateTime">
+    <query>
+      SELECT e.startDateTime FROM DBPresenceEntry e 
+      WHERE
+      e.personId = :personId 
+      ORDER BY e.startDateTime ASC
+    </query>
+  </named-query>
 
-    <named-query name="lockWorker">
-      <query>
-       UPDATE DBWorker w
-         SET w.personId = :personId
-       WHERE
-         w.personId = :personId 
-      </query>
-    </named-query>
+  <named-query name="lockWorker">
+    <query>
+      UPDATE DBWorker w
+      SET w.personId = :personId
+      WHERE
+      w.personId = :personId 
+    </query>
+  </named-query>
 
-    <named-query name="getWorkerGroup">
-      <query>
-        SELECT wg.relatedPersonId FROM DBWorkerGroup wg
-        WHERE wg.personId = :personId ORDER BY wg.position
-      </query>
-    </named-query>
+  <named-query name="getWorkerGroup">
+    <query>
+      SELECT wg.relatedPersonId FROM DBWorkerGroup wg
+      WHERE wg.personId = :personId ORDER BY wg.position
+    </query>
+  </named-query>
 
-    <named-query name="clearWorkerGroup">
-      <query>
-        DELETE FROM DBWorkerGroup wg
-        WHERE wg.personId = :personId
-      </query>
-    </named-query>
+  <named-query name="clearWorkerGroup">
+    <query>
+      DELETE FROM DBWorkerGroup wg
+      WHERE wg.personId = :personId
+    </query>
+  </named-query>
 
-    <!-- ****** Entities ****** -->
+  <!-- ****** Entities ****** -->
 
-    <entity name="DBAbsence" 
-      class="org.santfeliu.presence.service.DBAbsence" access="PROPERTY">
-      <table name="PCN_ABSENCE" />
-      <attributes>
-        <id name="absenceId">
-          <column name="ABSID" />
-          <generated-value strategy="TABLE" generator="PCN_ABSENCE"/>
-          <table-generator name="PCN_ABSENCE" table="TABLESEQ"
-            pk-column-name="COUNTER" value-column-name="VALUE" 
-            initial-value="0" allocation-size="1" />
-        </id>
-        <basic name="personId">
-            <column name="PERSONID"/>
-        </basic>
-        <basic name="absenceTypeId">
-            <column name="ABSTYPEID"/>
-        </basic>
-        <basic name="startDateTime">
-            <column name="STARTDT"/>
-        </basic>
-        <basic name="endDateTime">
-            <column name="ENDDT"/>
-        </basic>
-        <basic name="reason">
-            <column name="REASON"/>
-        </basic>
-        <basic name="status">
-            <column name="STATUS"/>
-        </basic>
-        <basic name="statusDetail">
-            <column name="STATUSDETAIL"/>
-        </basic>
-        <basic name="requestedDays">
-            <column name="REQDAYS"/>
-        </basic>
-        <basic name="consolidatedDays">
-            <column name="CONSOLDAYS"/>
-        </basic>
-        <basic name="requestedTime">
-            <column name="REQTIME"/>
-        </basic>
-        <basic name="consolidatedTime">
-            <column name="CONSOLTIME"/>
-        </basic>
-        <basic name="instanceId">
-            <column name="INSTANCEID"/>
-        </basic>
-        <basic name="absenceDocId">
-            <column name="ABSDOCID"/>
-        </basic>
-        <basic name="justificantDocId">
-            <column name="JUSTDOCID"/>
-        </basic>
-      </attributes>
-    </entity>
+  <entity name="DBAbsence"
+    class="org.santfeliu.presence.service.DBAbsence" access="PROPERTY">
+    <table name="PCN_ABSENCE" />
+    <attributes>
+      <id name="absenceId">
+        <column name="ABSID" length="10" />
+        <generated-value strategy="TABLE" generator="PCN_ABSENCE"/>
+        <table-generator name="PCN_ABSENCE" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE" 
+          pk-column-value="PCN_ABSENCE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="personId">
+        <column name="PERSONID" lentgh="10" />
+      </basic>
+      <basic name="absenceTypeId">
+        <column name="ABSTYPEID" length="8" />
+      </basic>
+      <basic name="startDateTime">
+        <column name="STARTDT" length="14" />
+      </basic>
+      <basic name="endDateTime">
+        <column name="ENDDT" length="14" />
+      </basic>
+      <basic name="reason">
+        <column name="REASON" length="200" />
+      </basic>
+      <basic name="status">
+        <column name="STATUS" length="1" />
+      </basic>
+      <basic name="statusDetail">
+        <column name="STATUSDETAIL" length="200" />
+      </basic>
+      <basic name="requestedDays">
+        <column name="REQDAYS" precision="14" scale="8" />
+      </basic>
+      <basic name="consolidatedDays">
+        <column name="CONSOLDAYS" precision="14" scale="8" />
+      </basic>
+      <basic name="requestedTime">
+        <column name="REQTIME" precision="10" scale="0" />
+      </basic>
+      <basic name="consolidatedTime">
+        <column name="CONSOLTIME" precision="10" scale="0" />
+      </basic>
+      <basic name="instanceId">
+        <column name="INSTANCEID" length="10" />
+      </basic>
+      <basic name="absenceDocId">
+        <column name="ABSDOCID" length="10" />
+      </basic>
+      <basic name="justificantDocId">
+        <column name="JUSTDOCID" length="10" />
+      </basic>
+    </attributes>
+  </entity>
 
-    <entity name="DBAbsenceType"
-      class="org.santfeliu.presence.service.DBAbsenceType" access="PROPERTY">
-      <table name="PCN_ABSENCETYPE"  />
-      <attributes>
-        <id name="absenceTypeId">
-          <column name="ABSTYPEID"/>
-          <generated-value strategy="TABLE" generator="PCN_ABSENCETYPE"/>
-          <table-generator name="PCN_ABSENCETYPE" table="TABLESEQ"
-            pk-column-name="COUNTER" value-column-name="VALUE" 
-            initial-value="0" allocation-size="1" />
-        </id>
-        <basic name="label">
-          <column name="LABEL"/>
-        </basic>
-        <basic name="description">
-          <column name="DESCRIPTION"/>
-        </basic>
-        <basic name="authorizableValue">
-          <column name="AUTHOR"/>
-        </basic>
-        <basic name="justificableValue">
-          <column name="JUSTIFY"/>
-        </basic>
-        <basic name="enabledValue">
-          <column name="ENABLED"/>
-        </basic>
-        <basic name="counterVisibleValue">
-          <column name="COUNTERVISIBLE"/>
-        </basic>
-        <basic name="holidayValue">
-          <column name="HOLIDAY"/>
-        </basic>
-        <basic name="countingValue">
-          <column name="COUNTING"/>
-        </basic>
-        <basic name="carryValue">
-          <column name="CARRY"/>
-        </basic>
-        <basic name="defaultTime">
-          <column name="DEFTIME"/>
-        </basic>
-        <basic name="position">
-          <column name="POSITION"/>
-        </basic>
-        <basic name="entryTypeId">
-          <column name="ENTRYTYPEID"/>
-        </basic>
-      </attributes>
-    </entity>
+  <entity name="DBAbsenceType"
+    class="org.santfeliu.presence.service.DBAbsenceType" access="PROPERTY">
+    <table name="PCN_ABSENCETYPE"  />
+    <attributes>
+      <id name="absenceTypeId">
+        <column name="ABSTYPEID" length="8" />
+        <generated-value strategy="TABLE" generator="PCN_ABSENCETYPE"/>
+        <table-generator name="PCN_ABSENCETYPE" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="PCN_ABSENCETYPE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="label">
+        <column name="LABEL" length="100" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" length="1000" />
+      </basic>
+      <basic name="authorizableValue">
+        <column name="AUTHOR" length="1" />
+      </basic>
+      <basic name="justificableValue">
+        <column name="JUSTIFY" length="1" />
+      </basic>
+      <basic name="enabledValue">
+        <column name="ENABLED" length="1" />
+      </basic>
+      <basic name="counterVisibleValue">
+        <column name="COUNTERVISIBLE" length="1" />
+      </basic>
+      <basic name="holidayValue">
+        <column name="HOLIDAY" length="1" />
+      </basic>
+      <basic name="countingValue">
+        <column name="COUNTING" length="1" />
+      </basic>
+      <basic name="carryValue">
+        <column name="CARRY" length="1" />
+      </basic>
+      <basic name="defaultTime">
+        <column name="DEFTIME" precision="10" scale="0" />
+      </basic>
+      <basic name="position">
+        <column name="POSITION" precision="10" scale="0" />
+      </basic>
+      <basic name="entryTypeId">
+        <column name="ENTRYTYPEID" length="8" />
+      </basic>
+    </attributes>
+  </entity>
 
-    <entity name="DBWorker" 
-      class="org.santfeliu.presence.service.DBWorker" access="PROPERTY">
-      <table name="PCN_WORKER"  />
-      <attributes>
-        <id name="personId">
-          <column name="PERSONID"/>
-        </id>
-        <basic name="fullName">
-          <column name="FULLNAME"/>
-        </basic>
-        <basic name="validatorPersonId">
-          <column name="VALPERSONID"/>
-        </basic>
-        <basic name="team">
-          <column name="TEAM"/>
-        </basic>
-        <basic name="compensationTime">
-          <column name="BONUSTIME"/>
-        </basic>
-      </attributes>
-    </entity>
+  <entity name="DBWorker" 
+    class="org.santfeliu.presence.service.DBWorker" access="PROPERTY">
+    <table name="PCN_WORKER" />
+    <attributes>
+      <id name="personId">
+        <column name="PERSONID" length="10" />
+      </id>
+      <basic name="fullName">
+        <column name="FULLNAME" length="100" />
+      </basic>
+      <basic name="validatorPersonId">
+        <column name="VALPERSONID" length="10" />
+      </basic>
+      <basic name="team">
+        <column name="TEAM" length="20" />
+      </basic>
+      <basic name="compensationTime">
+        <column name="BONUSTIME" precision="10" scale="0" />
+      </basic>
+    </attributes>
+  </entity>
 
-    <entity name="DBWeekType" 
-      class="org.santfeliu.presence.service.DBWeekType" access="PROPERTY">
-      <table name="PCN_WEEKTYPE" />
-      <attributes>
-        <id name="weekTypeId">
-          <column name="WEEKTYPEID"/>
-          <generated-value strategy="TABLE" generator="PCN_WEEKTYPE"/>
-          <table-generator name="PCN_WEEKTYPE" table="TABLESEQ"
-            pk-column-name="COUNTER" value-column-name="VALUE" 
-            initial-value="0" allocation-size="1" />
-        </id>
-        <basic name="label">
-          <column name="LABEL"/>
-        </basic>
-        <basic name="mondayTypeId">
-          <column name="MODAYTYPEID" />
-        </basic>
-        <basic name="tuesdayTypeId">
-          <column name="TUDAYTYPEID" />
-        </basic>
-        <basic name="wednesdayTypeId">
-          <column name="WEDAYTYPEID" />
-        </basic>
-        <basic name="thursdayTypeId">
-          <column name="THDAYTYPEID" />
-        </basic>
-        <basic name="fridayTypeId">
-          <column name="FRDAYTYPEID" />
-        </basic>
-        <basic name="saturdayTypeId">
-          <column name="SADAYTYPEID" />
-        </basic>
-        <basic name="sundayTypeId">
-          <column name="SUDAYTYPEID" />
-        </basic>
-      </attributes>
-    </entity>
-    
-    <entity name="DBDayType" 
-      class="org.santfeliu.presence.service.DBDayType" access="PROPERTY">
-      <table name="PCN_DAYTYPE" />
-      <attributes>
-        <id name="dayTypeId">
-          <column name="DAYTYPEID"/>
-          <generated-value strategy="TABLE" generator="PCN_DAYTYPE"/>
-          <table-generator name="PCN_DAYTYPE" table="TABLESEQ"
-            pk-column-name="COUNTER" value-column-name="VALUE" 
-            initial-value="0" allocation-size="1" />
-        </id>
-        <basic name="label">
-          <column name="LABEL"/>
-        </basic>
-        <basic name="inTime1">
-          <column name="INTIME1"/>
-        </basic>
-        <basic name="outTime1">
-          <column name="OUTTIME1"/>
-        </basic>
-        <basic name="inTime2">
-          <column name="INTIME2"/>
-        </basic>
-        <basic name="outTime2">
-          <column name="OUTTIME2"/>
-        </basic>
-        <basic name="color">
-          <column name="COLOR"/>
-        </basic>
-        <basic name="code">
-          <column name="CODE"/>
-        </basic>
-        <basic name="flexibility1">
-          <column name="FLEX1" />
-        </basic>
-        <basic name="flexibility2">
-          <column name="FLEX2" />
-        </basic>
-        <basic name="holidaysValue">
-          <column name="HOLIDAYS" />
-        </basic>
-        <basic name="reductionsValue">
-          <column name="REDUCTIONS" />
-        </basic>
-        <transient name="holidaysEnabled" />
-        <transient name="reductionsEnabled" />
-      </attributes>
-    </entity>
+  <entity name="DBWeekType" 
+    class="org.santfeliu.presence.service.DBWeekType" access="PROPERTY">
+    <table name="PCN_WEEKTYPE" />
+    <attributes>
+      <id name="weekTypeId">
+        <column name="WEEKTYPEID" length="8" />
+        <generated-value strategy="TABLE" generator="PCN_WEEKTYPE"/>
+        <table-generator name="PCN_WEEKTYPE" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE" 
+          pk-column-value="PCN_WEEKTYPE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="label">
+        <column name="LABEL" length="100" />
+      </basic>
+      <basic name="mondayTypeId">
+        <column name="MODAYTYPEID" length="8" />
+      </basic>
+      <basic name="tuesdayTypeId">
+        <column name="TUDAYTYPEID" length="8" />
+      </basic>
+      <basic name="wednesdayTypeId">
+        <column name="WEDAYTYPEID" length="8" />
+      </basic>
+      <basic name="thursdayTypeId">
+        <column name="THDAYTYPEID" length="8" />
+      </basic>
+      <basic name="fridayTypeId">
+        <column name="FRDAYTYPEID" length="8" />
+      </basic>
+      <basic name="saturdayTypeId">
+        <column name="SADAYTYPEID" length="8" />
+      </basic>
+      <basic name="sundayTypeId">
+        <column name="SUDAYTYPEID" length="8" />
+      </basic>
+    </attributes>
+  </entity>
 
-    <entity name="DBHoliday" 
-      class="org.santfeliu.presence.service.DBHoliday" access="PROPERTY">
-      <table name="PCN_HOLIDAY" />
-      <attributes>
-        <id name="holidayId">
-          <column name="HOLIDAYID"/>
-          <generated-value strategy="TABLE" generator="PCN_HOLIDAY"/>
-          <table-generator name="PCN_HOLIDAY" table="TABLESEQ"
-            pk-column-name="COUNTER" value-column-name="VALUE" 
-            initial-value="0" allocation-size="1" />
-        </id>
-        <basic name="startDate">
-          <column name="STARTDATE"/>
-        </basic>
-        <basic name="endDate">
-          <column name="ENDDATE"/>
-        </basic>
-        <basic name="description">
-          <column name="DESCRIPTION"/>
-        </basic>
-        <basic name="optionalValue">
-          <column name="OPTIONAL"/>
-        </basic>
-        <basic name="color">
-          <column name="COLOR"/>
-        </basic>
-        <transient name="optional" />
-      </attributes>
-    </entity>
+  <entity name="DBDayType" 
+    class="org.santfeliu.presence.service.DBDayType" access="PROPERTY">
+    <table name="PCN_DAYTYPE" />
+    <attributes>
+      <id name="dayTypeId">
+        <column name="DAYTYPEID" length="8" />
+        <generated-value strategy="TABLE" generator="PCN_DAYTYPE"/>
+        <table-generator name="PCN_DAYTYPE" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE" 
+          pk-column-value="PCN_DAYTYPE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="label">
+        <column name="LABEL" length="100" />
+      </basic>
+      <basic name="inTime1">
+        <column name="INTIME1" length="6" />
+      </basic>
+      <basic name="outTime1">
+        <column name="OUTTIME1" length="6"/>
+      </basic>
+      <basic name="inTime2">
+        <column name="INTIME2" length="6"/>
+      </basic>
+      <basic name="outTime2">
+        <column name="OUTTIME2" length="6" />
+      </basic>
+      <basic name="color">
+        <column name="COLOR" length="6" />
+      </basic>
+      <basic name="code">
+        <column name="CODE" length="3" />
+      </basic>
+      <basic name="flexibility1">
+        <column name="FLEX1" length="1" />
+      </basic>
+      <basic name="flexibility2">
+        <column name="FLEX2" length="1" />
+      </basic>
+      <basic name="holidaysValue">
+        <column name="HOLIDAYS" length="1" />
+      </basic>
+      <basic name="reductionsValue">
+        <column name="REDUCTIONS" length="1" />
+      </basic>
+      <transient name="holidaysEnabled" />
+      <transient name="reductionsEnabled" />
+    </attributes>
+  </entity>
 
-    <entity name="DBWorkReduction"
-      class="org.santfeliu.presence.service.DBWorkReduction" access="PROPERTY">
-      <table name="PCN_REDUCTION"  />
-      <attributes>
-        <id name="reductionId">
-          <column name="REDUCTIONID"/>
-          <generated-value strategy="TABLE" generator="PCN_REDUCTION"/>
-          <table-generator name="PCN_REDUCTION" table="TABLESEQ"
-            pk-column-name="COUNTER" value-column-name="VALUE" 
-            initial-value="0" allocation-size="1" />
-        </id>
-        <basic name="startDate">
-          <column name="STARTDATE"/>
-        </basic>
-        <basic name="endDate">
-          <column name="ENDDATE"/>
-        </basic>
-        <basic name="description">
-          <column name="DESCRIPTION"/>
-        </basic>
-        <basic name="factor">
-          <column name="FACTOR"/>
-        </basic>
-      </attributes>
-    </entity>
+  <entity name="DBHoliday" 
+    class="org.santfeliu.presence.service.DBHoliday" access="PROPERTY">
+    <table name="PCN_HOLIDAY" />
+    <attributes>
+      <id name="holidayId">
+        <column name="HOLIDAYID" lentgh="10" />
+        <generated-value strategy="TABLE" generator="PCN_HOLIDAY"/>
+        <table-generator name="PCN_HOLIDAY" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE" 
+          pk-column-value="PCN_HOLIDAY"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="startDate">
+        <column name="STARTDATE" length="8" />
+      </basic>
+      <basic name="endDate">
+        <column name="ENDDATE" length="8" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" length="100" />
+      </basic>
+      <basic name="optionalValue">
+        <column name="OPTIONAL" length="1" />
+      </basic>
+      <basic name="color">
+        <column name="COLOR" length="6" />
+      </basic>
+      <transient name="optional" />
+    </attributes>
+  </entity>
 
-    <entity name="DBPresenceEntryType" 
-      class="org.santfeliu.presence.service.DBPresenceEntryType" access="PROPERTY">
-      <table name="PCN_ENTRYTYPE" />
-      <attributes>
-        <id name="entryTypeId">
-          <column name="ENTRYTYPEID"/>
-          <generated-value strategy="TABLE" generator="PCN_ENTRYTYPE"/>
-          <table-generator name="PCN_ENTRYTYPE" table="TABLESEQ"
-            pk-column-name="COUNTER" value-column-name="VALUE" 
-            initial-value="0" allocation-size="1" />
-        </id>
-        <basic name="label">
-          <column name="LABEL"/>
-        </basic>
-        <basic name="description">
-          <column name="DESCRIPTION"/>
-        </basic>
-        <basic name="maxWorkedTime">
-          <column name="MAXWORKEDTIME"/>
-        </basic>
-        <basic name="realWorkValue">
-          <column name="REALWORK"/>
-        </basic>
-        <basic name="position">
-          <column name="POSITION"/>
-        </basic>
-        <basic name="enabledValue">
-          <column name="ENABLED"/>
-        </basic>
-        <basic name="color">
-          <column name="COLOR"/>
-        </basic>
-        <basic name="filter">
-          <column name="FILTER"/>
-        </basic>
-        <basic name="code">
-          <column name="CODE"/>
-        </basic>
-        <basic name="consolidableValue">
-          <column name="CONSOLIDABLE"/>
-        </basic>
-        <basic name="absenceValue">
-          <column name="ABSENCE"/>
-        </basic>
-        <transient name="enabled" />
-        <transient name="realWork" />
-        <transient name="consolidable" />
-        <transient name="absence" />
-      </attributes>
-    </entity>
+  <entity name="DBWorkReduction"
+    class="org.santfeliu.presence.service.DBWorkReduction" access="PROPERTY">
+    <table name="PCN_REDUCTION"  />
+    <attributes>
+      <id name="reductionId">
+        <column name="REDUCTIONID" length="10" />
+        <generated-value strategy="TABLE" generator="PCN_REDUCTION"/>
+        <table-generator name="PCN_REDUCTION" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE" 
+          pk-column-value="PCN_REDUCTION"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="startDate">
+        <column name="STARTDATE" length="8" />
+      </basic>
+      <basic name="endDate">
+        <column name="ENDDATE" length="8" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" length="100" />
+      </basic>
+      <basic name="factor">
+        <column name="FACTOR" precision="12" scale="8" />
+      </basic>
+    </attributes>
+  </entity>
 
-    <entity name="DBPresenceEntry" 
-      class="org.santfeliu.presence.service.DBPresenceEntry" access="PROPERTY">
-      <table name="PCN_ENTRY" />
-      <id-class class="org.santfeliu.presence.service.DBPresenceEntryPK"/>
-      <attributes>
-        <id name="personId">
-          <column name="PERSONID"/>
-        </id>
-        <id name="startDateTime">
-          <column name="STARTDT"/>
-        </id>
-        <basic name="endDateTime">
-          <column name="ENDDT"/>
-        </basic>
-        <basic name="entryTypeId">
-          <column name="ENTRYTYPEID"/>
-        </basic>
-        <basic name="duration">
-          <column name="DURATION"/>
-        </basic>
-        <basic name="manipulatedValue">
-          <column name="MANIPULATED"/>
-        </basic>
-        <basic name="reason">
-          <column name="REASON"/>
-        </basic>
-        <basic name="creationDateTime">
-          <column name="CREATIONDT"/>
-        </basic>
-        <basic name="changeDateTime">
-          <column name="CHANGEDT"/>
-        </basic>
-        <basic name="creationUserId">
-          <column name="CREATIONUSERID"/>
-        </basic>
-        <basic name="changeUserId">
-          <column name="CHANGEUSERID"/>
-        </basic>
-        <basic name="ipAddress">
-          <column name="IPADDRESS"/>
-        </basic>
-        <basic name="workedTime">
-          <column name="WORKEDTIME"/>
-        </basic>
-        <basic name="compensationTime">
-          <column name="BONUSTIME"/>
-        </basic>
-        <basic name="absenceId">
-          <column name="ABSID"/>
-        </basic>
-        <basic name="previousEntryTypeId">
-          <column name="PREVENTRYTYPEID"/>
-        </basic>
-        <transient name="entryId" />
-      </attributes>
-    </entity>
+  <entity name="DBPresenceEntryType"
+    class="org.santfeliu.presence.service.DBPresenceEntryType" access="PROPERTY">
+    <table name="PCN_ENTRYTYPE" />
+    <attributes>
+      <id name="entryTypeId">
+        <column name="ENTRYTYPEID" length="8" />
+        <generated-value strategy="TABLE" generator="PCN_ENTRYTYPE"/>
+        <table-generator name="PCN_ENTRYTYPE" table="TABLESEQ"
+          pk-column-name="COUNTER" value-column-name="VALUE" 
+          pk-column-value="PCN_ENTRYTYPE"
+          initial-value="0" allocation-size="1" />
+      </id>
+      <basic name="label">
+        <column name="LABEL" length="100" />
+      </basic>
+      <basic name="description">
+        <column name="DESCRIPTION" length="1000" />
+      </basic>
+      <basic name="maxWorkedTime">
+        <column name="MAXWORKEDTIME" precision="10" scale="0" />
+      </basic>
+      <basic name="realWorkValue">
+        <column name="REALWORK" length="1" />
+      </basic>
+      <basic name="position">
+        <column name="POSITION" precision="10" scale="0" />
+      </basic>
+      <basic name="enabledValue">
+        <column name="ENABLED" length="1" />
+      </basic>
+      <basic name="color">
+        <column name="COLOR" length="6" />
+      </basic>
+      <basic name="filter">
+        <column name="FILTER" length="100" />
+      </basic>
+      <basic name="code">
+        <column name="CODE" length="3" />
+      </basic>
+      <basic name="consolidableValue">
+        <column name="CONSOLIDABLE" length="1" />
+      </basic>
+      <basic name="absenceValue">
+        <column name="ABSENCE" length="1" />
+      </basic>
+      <transient name="enabled" />
+      <transient name="realWork" />
+      <transient name="consolidable" />
+      <transient name="absence" />
+    </attributes>
+  </entity>
 
-    <entity name="DBWorkerWeek"
-      class="org.santfeliu.presence.service.DBWorkerWeek" access="PROPERTY">
-      <table name="PCN_WORKERWEEK" />
-      <id-class class="org.santfeliu.presence.service.DBWorkerWeekPK"/>
-      <attributes>
-        <id name="personId">
-          <column name="PERSONID"/>
-        </id>
-        <id name="startDate">
-          <column name="STARTDATE"/>
-        </id>
-        <basic name="endDate">
-          <column name="ENDDATE"/>
-        </basic>
-        <basic name="weekTypeId">
-          <column name="WEEKTYPEID"/>
-        </basic>
-      </attributes>
-    </entity>
+  <entity name="DBPresenceEntry" 
+    class="org.santfeliu.presence.service.DBPresenceEntry" access="PROPERTY">
+    <table name="PCN_ENTRY" />
+    <id-class class="org.santfeliu.presence.service.DBPresenceEntryPK"/>
+    <attributes>
+      <id name="personId">
+        <column name="PERSONID" length="10" />
+      </id>
+      <id name="startDateTime">
+        <column name="STARTDT" length="14" />
+      </id>
+      <basic name="endDateTime">
+        <column name="ENDDT" length="14" />
+      </basic>
+      <basic name="entryTypeId">
+        <column name="ENTRYTYPEID" length="8" />
+      </basic>
+      <basic name="duration">
+        <column name="DURATION" precision="10" scale="0" />
+      </basic>
+      <basic name="manipulatedValue">
+        <column name="MANIPULATED" length="1" />
+      </basic>
+      <basic name="reason">
+        <column name="REASON" length="200" />
+      </basic>
+      <basic name="creationDateTime">
+        <column name="CREATIONDT" length="14" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" length="14" />
+      </basic>
+      <basic name="creationUserId">
+        <column name="CREATIONUSERID" length="20" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" length="20" />
+      </basic>
+      <basic name="ipAddress">
+        <column name="IPADDRESS" length="50" />
+      </basic>
+      <basic name="workedTime">
+        <column name="WORKEDTIME" precision="10" scale="0" />
+      </basic>
+      <basic name="compensationTime">
+        <column name="BONUSTIME" precision="10" scale="0" />
+      </basic>
+      <basic name="absenceId">
+        <column name="ABSID" length="10" />
+      </basic>
+      <basic name="previousEntryTypeId">
+        <column name="PREVENTRYTYPEID" length="8" />
+      </basic>
+      <transient name="entryId" />
+    </attributes>
+  </entity>
 
-    <entity name="DBWorkerDay"
-      class="org.santfeliu.presence.service.DBWorkerDay" access="PROPERTY">
-      <table name="PCN_WORKERDAY" />
-      <id-class class="org.santfeliu.presence.service.DBWorkerDayPK"/>
-      <attributes>
-        <id name="personId">
-          <column name="PERSONID"/>
-        </id>
-        <id name="date">
-          <column name="WDATE"/>
-        </id>
-        <basic name="dayTypeId">
-          <column name="DAYTYPEID"/>
-        </basic>
-      </attributes>
-    </entity>
+  <entity name="DBWorkerWeek"
+    class="org.santfeliu.presence.service.DBWorkerWeek" access="PROPERTY">
+    <table name="PCN_WORKERWEEK" />
+    <id-class class="org.santfeliu.presence.service.DBWorkerWeekPK"/>
+    <attributes>
+      <id name="personId">
+        <column name="PERSONID" length="10" />
+      </id>
+      <id name="startDate">
+        <column name="STARTDATE" length="8" />
+      </id>
+      <basic name="endDate">
+        <column name="ENDDATE" length="8" />
+      </basic>
+      <basic name="weekTypeId">
+        <column name="WEEKTYPEID" length="8" />
+      </basic>
+    </attributes>
+  </entity>
 
-    <entity name="DBWorkerGroup"
-      class="org.santfeliu.presence.service.DBWorkerGroup" access="PROPERTY">
-      <table name="PCN_WORKERGROUP" />
-      <id-class class="org.santfeliu.presence.service.DBWorkerGroupPK"/>
-      <attributes>
-        <id name="personId">
-          <column name="PERSONID"/>
-        </id>
-        <id name="relatedPersonId">
-          <column name="RELPERSONID"/>
-        </id>
-        <basic name="position">
-          <column name="POSITION"/>
-        </basic>
-      </attributes>
-    </entity>
+  <entity name="DBWorkerDay"
+    class="org.santfeliu.presence.service.DBWorkerDay" access="PROPERTY">
+    <table name="PCN_WORKERDAY" />
+    <id-class class="org.santfeliu.presence.service.DBWorkerDayPK"/>
+    <attributes>
+      <id name="personId">
+        <column name="PERSONID" length="10" />
+      </id>
+      <id name="date">
+        <column name="WDATE" length="8" />
+      </id>
+      <basic name="dayTypeId">
+        <column name="DAYTYPEID" length="8" />
+      </basic>
+    </attributes>
+  </entity>
 
-    <entity name="DBAbsenceCounter" 
-      class="org.santfeliu.presence.service.DBAbsenceCounter" access="PROPERTY">
-      <table name="PCN_ABSENCECOUNTER" />
-      <id-class class="org.santfeliu.presence.service.DBAbsenceCounterPK"/>
-      <attributes>
-        <id name="personId">
-          <column name="PERSONID"/>
-        </id>
-        <id name="year">
-          <column name="YEAR" />
-        </id>
-        <id name="absenceTypeId">
-          <column name="ABSTYPEID" />
-        </id>
-        <basic name="remainingTime">
-          <column name="REMAININGTIME" />
-        </basic>
-        <basic name="totalTime">
-          <column name="TOTALTIME" />
-        </basic>
-        <transient name="absenceCounterId" />
-      </attributes>
-    </entity>
+  <entity name="DBWorkerGroup"
+    class="org.santfeliu.presence.service.DBWorkerGroup" access="PROPERTY">
+    <table name="PCN_WORKERGROUP" />
+    <id-class class="org.santfeliu.presence.service.DBWorkerGroupPK"/>
+    <attributes>
+      <id name="personId">
+        <column name="PERSONID" length="10" />
+      </id>
+      <id name="relatedPersonId">
+        <column name="RELPERSONID" length="10" />
+      </id>
+      <basic name="position">
+        <column name="POSITION" precision="10" scale="0" />
+      </basic>
+    </attributes>
+  </entity>
 
-    <entity name="DBPresenceParameter" 
-      class="org.santfeliu.presence.service.DBPresenceParameter" access="PROPERTY">
-      <table name="PCN_PARAMETER" />
-      <attributes>
-        <id name="parameterId">
-          <column name="PARAMID"/>
-        </id>
-        <basic name="value">
-          <column name="VALUE" />
-        </basic>
-        <basic name="changeUserId">
-          <column name="CHANGEUSERID" />
-        </basic>
-        <basic name="changeDateTime">
-          <column name="CHANGEDT" />
-        </basic>
-      </attributes>
-    </entity>
+  <entity name="DBAbsenceCounter" 
+    class="org.santfeliu.presence.service.DBAbsenceCounter" access="PROPERTY">
+    <table name="PCN_ABSENCECOUNTER" />
+    <id-class class="org.santfeliu.presence.service.DBAbsenceCounterPK"/>
+    <attributes>
+      <id name="personId">
+        <column name="PERSONID" length="10" />
+      </id>
+      <id name="year">
+        <column name="YEAR" length="4" />
+      </id>
+      <id name="absenceTypeId">
+        <column name="ABSTYPEID" length="8" />
+      </id>
+      <basic name="remainingTime">
+        <column name="REMAININGTIME" precision="10" scale="0" />
+      </basic>
+      <basic name="totalTime">
+        <column name="TOTALTIME" precision="10" scale="0" />
+      </basic>
+      <transient name="absenceCounterId" />
+    </attributes>
+  </entity>
+
+  <entity name="DBPresenceParameter" 
+    class="org.santfeliu.presence.service.DBPresenceParameter" access="PROPERTY">
+    <table name="PCN_PARAMETER" />
+    <attributes>
+      <id name="parameterId">
+        <column name="PARAMID" length="50" />
+      </id>
+      <basic name="value">
+        <column name="VALUE" length="1000" />
+      </basic>
+      <basic name="changeUserId">
+        <column name="CHANGEUSERID" length="20" />
+      </basic>
+      <basic name="changeDateTime">
+        <column name="CHANGEDT" length="14" />
+      </basic>
+    </attributes>
+  </entity>
 
 </entity-mappings>

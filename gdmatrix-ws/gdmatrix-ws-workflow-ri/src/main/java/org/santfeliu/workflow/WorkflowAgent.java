@@ -33,10 +33,12 @@ package org.santfeliu.workflow;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.matrix.workflow.WorkflowConstants;
 
-
+/**
+ *
+ * @author realor
+ */
 public abstract class WorkflowAgent extends WorkflowActor
   implements Runnable
 {
@@ -47,7 +49,7 @@ public abstract class WorkflowAgent extends WorkflowActor
   public static final String WAITING = "WAITING";
   public static final String RECOVERING = "RECOVERING";
   public static final String TERMINATED = "TERMINATED";
-  public static final Logger log = Logger.getLogger("WorkflowAgent");
+  public static final Logger LOGGER = Logger.getLogger("WorkflowAgent");
 
   protected WorkflowEngine engine;
   protected String state;
@@ -73,8 +75,6 @@ public abstract class WorkflowAgent extends WorkflowActor
     return true;
   }
 
-  public abstract void run();
-
   public String getAgentState()
   {
     if (!thread.isAlive()) state = TERMINATED;
@@ -96,7 +96,8 @@ public abstract class WorkflowAgent extends WorkflowActor
    
   public void kill()
   {
-    end = true;    
+    end = true;
+    thread.interrupt();
     synchronized (this)
     {
       notify();
@@ -118,11 +119,7 @@ public abstract class WorkflowAgent extends WorkflowActor
     return lastError;
   }
 
-  /**
- *
- * @author unknown
- */
-public class Statistics
+  public class Statistics
   {
     long creationTime;
     long lastProcessTime;
@@ -159,12 +156,12 @@ public class Statistics
   {
     try
     {
-      log.log(Level.SEVERE, error.toString());
+      LOGGER.log(Level.SEVERE, error.toString());
       Thread.sleep(RECOVERY_TIME); // wait for 10 seconds to recover
     }
     catch (InterruptedException ex)
     {
-      log.log(Level.INFO, "agent {0} interrupted.", getName());
+      LOGGER.log(Level.INFO, "agent {0} interrupted.", getName());
       end = true;
     }
     finally
@@ -185,7 +182,7 @@ public class Statistics
     }
     catch (InterruptedException ex)
     {
-      log.log(Level.INFO, "agent {0} interrupted.", getName());
+      LOGGER.log(Level.INFO, "agent {0} interrupted.", getName());
       end = true;
     }
     finally

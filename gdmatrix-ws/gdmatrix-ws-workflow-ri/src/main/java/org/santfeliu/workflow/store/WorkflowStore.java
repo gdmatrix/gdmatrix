@@ -38,7 +38,7 @@ import org.santfeliu.workflow.WorkflowException;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public interface WorkflowStore
 {

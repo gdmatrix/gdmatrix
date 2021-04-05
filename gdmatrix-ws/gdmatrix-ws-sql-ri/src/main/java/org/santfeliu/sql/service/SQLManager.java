@@ -49,31 +49,33 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.Table;
 import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.ws.service.ObjectManager;
+import javax.annotation.PostConstruct;
 
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @WebService(endpointInterface = "org.matrix.sql.SQLManagerPort")
 @HandlerChain(file="handlers.xml")
 public class SQLManager extends ObjectManager
   implements SQLManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("SQL");
+
+  public static final String CONNECTION_STORE = "connectionStore";
+
   @Resource
   WebServiceContext wsContext;
-
-  protected static final Logger log = Logger.getLogger("SQL");
-  
-  public static final String CONNECTION_STORE = "connectionStore";
   
   private ConnectionStore connStore;
   
-  
-  public SQLManager()
+  @PostConstruct
+  public void construct()
   {
     try
     {
+      LOGGER.log(Level.INFO, "Initializing SQLManager");
       //Set up ConnectionStore
       String connectionStoreClassName = 
         MatrixConfig.getClassProperty(SQLManager.class, CONNECTION_STORE);
@@ -87,11 +89,11 @@ public class SQLManager extends ObjectManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "SQLManager init failed", ex);
+      LOGGER.log(Level.SEVERE, "SQLManager init failed", ex);
       throw WSExceptionFactory.create(ex);
-    }
+    }    
   }
-
+  
   @Override
   public QueryTable executeDriverQuery(String sql, QueryParameters parameters, 
     String driver, String url, String username, String password)
@@ -110,7 +112,7 @@ public class SQLManager extends ObjectManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "executeDriverQuery", ex);
+      LOGGER.log(Level.SEVERE, "executeDriverQuery", ex);
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -134,7 +136,7 @@ public class SQLManager extends ObjectManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "executeAliasQuery", ex);
+      LOGGER.log(Level.SEVERE, "executeAliasQuery", ex);
       throw WSExceptionFactory.create(ex);
     }    
   }
@@ -160,7 +162,7 @@ public class SQLManager extends ObjectManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "executeDriverUpdate", ex);
+      LOGGER.log(Level.SEVERE, "executeDriverUpdate", ex);
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -184,7 +186,7 @@ public class SQLManager extends ObjectManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "executeAliasUpdate", ex);
+      LOGGER.log(Level.SEVERE, "executeAliasUpdate", ex);
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -198,7 +200,7 @@ public class SQLManager extends ObjectManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "createConnection", ex);
+      LOGGER.log(Level.SEVERE, "createConnection", ex);
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -212,7 +214,7 @@ public class SQLManager extends ObjectManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeConnection", ex);
+      LOGGER.log(Level.SEVERE, "removeConnection", ex);
       throw WSExceptionFactory.create(ex);
     }
   }

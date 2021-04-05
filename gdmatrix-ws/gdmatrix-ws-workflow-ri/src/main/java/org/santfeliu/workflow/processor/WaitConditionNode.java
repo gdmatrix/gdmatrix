@@ -33,7 +33,6 @@ package org.santfeliu.workflow.processor;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
-
 import org.santfeliu.util.script.ScriptableBase;
 import org.santfeliu.util.template.Template;
 import org.santfeliu.workflow.WorkflowActor;
@@ -41,12 +40,12 @@ import org.santfeliu.workflow.WorkflowInstance;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class WaitConditionNode extends org.santfeliu.workflow.node.WaitConditionNode 
+public class WaitConditionNode 
+  extends org.santfeliu.workflow.node.WaitConditionNode 
   implements NodeProcessor
 {
-
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception
@@ -59,7 +58,7 @@ public class WaitConditionNode extends org.santfeliu.workflow.node.WaitCondition
       Object result = cx.evaluateString(scope, mcondition, "<cond>", 1, null);
       if (result instanceof Boolean)
       {
-        boolean isTrue = ((Boolean)result).booleanValue();
+        boolean isTrue = ((Boolean)result);
         return isTrue ? CONTINUE_OUTCOME : WAIT_OUTCOME;
       }
       else return END_OUTCOME;

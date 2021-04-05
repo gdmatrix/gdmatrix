@@ -28,44 +28,52 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.workflow.processor;
+package org.santfeliu.ws;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
-import org.santfeliu.util.script.ScriptableBase;
-import org.santfeliu.util.template.Template;
-import org.santfeliu.workflow.WorkflowActor;
-import org.santfeliu.workflow.WorkflowInstance;
-
+import org.santfeliu.util.MatrixConfig;
 
 /**
  *
  * @author realor
  */
-public class ConditionNode extends org.santfeliu.workflow.node.ConditionNode 
-  implements NodeProcessor
+public class WSProperties
 {
-  @Override
-  public String process(WorkflowInstance instance, WorkflowActor actor)
-    throws Exception
+  protected String endpointName;
+  protected Class clazz;
+  
+  public WSProperties(String endpointName, Class clazz)
   {
-    Context cx = ContextFactory.getGlobal().enterContext();
-    try
+    this.endpointName = endpointName;
+    this.clazz = clazz;
+  }
+
+  public boolean getBoolean(String name, boolean defaultValue)
+  {
+    String value = getString(name);
+    if (value == null) return defaultValue;
+    return Boolean.valueOf(value);
+  }
+  
+  public int getInteger(String name, int defaultValue)
+  {
+    String value = getString(name);
+    if (value == null) return defaultValue;
+    return Integer.parseInt(value);
+  }
+  
+  public String getString(String name, String defaultValue)
+  {    
+    String value = getString(name);
+    return value == null ? defaultValue : value;
+  }
+
+  public String getString(String name)
+  {    
+    String value = MatrixConfig.getProperty(endpointName + "." + name);
+    if (value == null)
     {
-      String mcondition = Template.create(condition).merge(instance);
-      Scriptable scope = new ScriptableBase(cx, instance);
-      Object result = cx.evaluateString(scope, mcondition, "<cond>", 1, null);
-      if (result instanceof Boolean)
-      {
-        boolean isTrue = ((Boolean)result);
-        return isTrue ? CONTINUE_OUTCOME : END_OUTCOME;
-      }
-      else return END_OUTCOME;
+      value = MatrixConfig.getProperty(clazz.getName() + "." + name);
     }
-    finally
-    {
-      Context.exit();
-    }
+    return value;
   }
 }

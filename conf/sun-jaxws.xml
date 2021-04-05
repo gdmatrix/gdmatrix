@@ -2,203 +2,187 @@
 
 <endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
 
-    <endpoint
-        name="security"
-        implementation="org.santfeliu.security.service.SecurityManager"
-        service="{http://security.matrix.org/}SecurityManagerService"
-        url-pattern="/services/security" />
+  <endpoint
+    name="security"
+    implementation="org.santfeliu.security.service.SecurityManager"
+    service="{http://security.matrix.org/}SecurityManagerService"
+    url-pattern="/services/security" />
 
-    <endpoint
-        name="kernel"
-        implementation="com.audifilm.matrix.kernel.service.KernelManager"
-        service="{http://kernel.matrix.org/}KernelManagerService"
-        url-pattern="/services/kernel" />
+  <endpoint
+    name="kernel"
+    implementation="com.audifilm.matrix.kernel.service.KernelManager"
+    service="{http://kernel.matrix.org/}KernelManagerService"
+    url-pattern="/services/kernel" />
         
-    <endpoint
-        name="edu"
-        implementation="org.santfeliu.edu.service.EducationManager"
-        service="{http://edu.matrix.org/}EducationManagerService"
-        url-pattern="/services/edu" />
+  <endpoint
+    name="edu"
+    implementation="org.santfeliu.edu.service.EducationManager"
+    service="{http://edu.matrix.org/}EducationManagerService"
+    url-pattern="/services/edu" />
        
-    <endpoint
-        name="forum"
-        implementation="org.santfeliu.forum.service.ForumManager"
-        service="{http://forum.matrix.org/}ForumManagerService"
-        url-pattern="/services/forum" />
+  <endpoint
+    name="forum"
+    implementation="org.santfeliu.forum.service.ForumManager"
+    service="{http://forum.matrix.org/}ForumManagerService"
+    url-pattern="/services/forum" />
 
-    <endpoint
-        name="search"
-        implementation="org.santfeliu.search.service.SearchManager"
-        service="{http://search.matrix.org/}SearchManagerService"
-        url-pattern="/services/search" />
+  <endpoint
+    name="search"
+    implementation="org.santfeliu.search.service.SearchManager"
+    service="{http://search.matrix.org/}SearchManagerService"
+    url-pattern="/services/search" />
 
-    <endpoint
-        name="sign"
-        implementation="org.santfeliu.sign.service.SignatureManager"
-        service="{http://sign.matrix.org/}SignatureManagerService"
-        url-pattern="/services/sign" />
+  <endpoint
+    name="sign"
+    implementation="org.santfeliu.sign.service.SignatureManager"
+    service="{http://sign.matrix.org/}SignatureManagerService"
+    url-pattern="/services/sign" />
 
-    <endpoint
-        name="signature"
-        implementation="org.santfeliu.signature.service.SignatureManager"
-        service="{http://signature.matrix.org/}SignatureManagerService"
-        url-pattern="/services/signature" />
+  <endpoint
+    name="signature"
+    implementation="org.santfeliu.signature.service.SignatureManager"
+    service="{http://signature.matrix.org/}SignatureManagerService"
+    url-pattern="/services/signature" />
         
-    <endpoint
-        name="survey"
-        implementation="org.santfeliu.survey.service.SurveyManager"
-        service="{http://survey.matrix.org/}SurveyManagerService"
-        url-pattern="/services/survey" />
+  <endpoint
+    name="survey"
+    implementation="org.santfeliu.survey.service.SurveyManager"
+    service="{http://survey.matrix.org/}SurveyManagerService"
+    url-pattern="/services/survey" />
 
-    <endpoint
-        name="translation"
-        implementation="org.santfeliu.translation.service.TranslationManager"
-        service="{http://translation.matrix.org/}TranslationManagerService"
-        url-pattern="/services/translation" />
+  <endpoint
+    name="translation"
+    implementation="org.santfeliu.translation.service.TranslationManager"
+    service="{http://translation.matrix.org/}TranslationManagerService"
+    url-pattern="/services/translation" />
 
-    <endpoint
-        name="report"
-        implementation="org.santfeliu.report.service.ReportManager"
-        service="{http://report.matrix.org/}ReportManagerService"
-        url-pattern="/services/report" />
+  <endpoint
+    name="report"
+    implementation="org.santfeliu.report.service.ReportManager"
+    service="{http://report.matrix.org/}ReportManagerService"
+    url-pattern="/services/report" />
 
-    <endpoint
-        name="lreport"
-        implementation="org.santfeliu.report.service.ReportManager"
-        service="{http://report.matrix.org/}ReportManagerService"
-        url-pattern="/services/lreport"
-        enable-mtom="true" />
+  <endpoint
+    name="lreport"
+    implementation="org.santfeliu.report.service.ReportManager"
+    service="{http://report.matrix.org/}ReportManagerService"
+    url-pattern="/services/lreport"
+    enable-mtom="true" />
 
-    <endpoint
-        name="agenda"
-        implementation="org.santfeliu.agenda.service.AgendaManager"
-        service="{http://agenda.matrix.org/}AgendaManagerService"
-        url-pattern="/services/agenda" />
+  <endpoint
+    name="agenda"
+    implementation="org.santfeliu.agenda.service.AgendaManager"
+    service="{http://agenda.matrix.org/}AgendaManagerService"
+    url-pattern="/services/agenda" />
 
-    <endpoint
-        name="classif"
-        implementation="org.santfeliu.classif.service.ClassificationManager"
-        service="{http://classif.matrix.org/}ClassificationManagerService"
-        url-pattern="/services/classif" />
+  <endpoint
+    name="classif"
+    implementation="org.santfeliu.classif.service.ClassificationManager"
+    service="{http://classif.matrix.org/}ClassificationManagerService"
+    url-pattern="/services/classif" />
 
-    <endpoint
-        name="doc"
-        implementation="org.santfeliu.doc.service.DocumentManager"
-        service="{http://doc.matrix.org/}DocumentManagerService"
-        url-pattern="/services/doc"
-        enable-mtom="false" />
+  <endpoint
+    name="doc"
+    implementation="org.santfeliu.doc.service.DocumentManager"
+    service="{http://doc.matrix.org/}DocumentManagerService"
+    url-pattern="/services/doc"
+    enable-mtom="false" />
 
-    <endpoint
-        name="ldoc"
-        implementation="org.santfeliu.doc.service.DocumentManager"
-        service="{http://doc.matrix.org/}DocumentManagerService"
-        url-pattern="/services/ldoc"
-        enable-mtom="true" />
+  <endpoint
+    name="ldoc"
+    implementation="org.santfeliu.doc.service.DocumentManager"
+    service="{http://doc.matrix.org/}DocumentManagerService"
+    url-pattern="/services/ldoc"
+    enable-mtom="true" />
 
-    <endpoint
-        name="cases_sf"
-        implementation="org.santfeliu.cases.service.CaseManager"
-        service="{http://cases.matrix.org/}CaseManagerService"
-        url-pattern="/services/cases_sf" />
+  <endpoint
+    name="cases_sf"
+    implementation="org.santfeliu.cases.service.CaseManager"
+    service="{http://cases.matrix.org/}CaseManagerService"
+    url-pattern="/services/cases_sf" />
 
-<!--
-    <endpoint
-        name="cases_g5"
-        implementation="com.audifilm.matrix.cases.service.CaseManager"
-        service="{http://cases.matrix.org/}CaseManagerService"
-        url-pattern="/services/cases_g5" />
--->
+  <endpoint
+    name="cases_g5"
+    implementation="com.audifilm.matrix.cases.bpm.service.CaseManager"
+    service="{http://cases.matrix.org/}CaseManagerService"
+    url-pattern="/services/cases_g5" />
 
-   <endpoint
-        name="cases_g5"
-        implementation="com.audifilm.matrix.cases.bpm.service.CaseManager"
-        service="{http://cases.matrix.org/}CaseManagerService"
-        url-pattern="/services/cases_g5" />
+  <endpoint
+    name="cases"
+    implementation="org.santfeliu.cases.proxy.CaseManager"
+    service="{http://cases.matrix.org/}CaseManagerService"
+    url-pattern="/services/cases" />
 
-    <endpoint
-        name="cases"
-        implementation="org.santfeliu.cases.proxy.CaseManager"
-        service="{http://cases.matrix.org/}CaseManagerService"
-        url-pattern="/services/cases" />
+  <endpoint
+    name="policy"
+    implementation="org.santfeliu.policy.service.PolicyManager"
+    service="{http://policy.matrix.org/}PolicyManagerService"
+    url-pattern="/services/policy" />
 
-    <endpoint
-        name="policy"
-        implementation="org.santfeliu.policy.service.PolicyManager"
-        service="{http://policy.matrix.org/}PolicyManagerService"
-        url-pattern="/services/policy" />
+  <endpoint
+    name="dic_sf"
+    implementation="org.santfeliu.dic.service.DictionaryManager"
+    service="{http://dic.matrix.org/}DictionaryManagerService"
+    url-pattern="/services/dic_sf" />
 
-    <endpoint
-        name="dic_sf"
-        implementation="org.santfeliu.dic.service.DictionaryManager"
-        service="{http://dic.matrix.org/}DictionaryManagerService"
-        url-pattern="/services/dic_sf" />
+  <endpoint
+    name="dic_g5"
+    implementation="com.audifilm.matrix.dic.service.DictionaryManager"
+    service="{http://dic.matrix.org/}DictionaryManagerService"
+    url-pattern="/services/dic_g5" />
 
-    <endpoint
-        name="dic_g5"
-        implementation="com.audifilm.matrix.dic.service.DictionaryManager"
-        service="{http://dic.matrix.org/}DictionaryManagerService"
-        url-pattern="/services/dic_g5" />
+  <endpoint
+    name="dic"
+    implementation="org.santfeliu.dic.proxy.DictionaryManager"
+    service="{http://dic.matrix.org/}DictionaryManagerService"
+    port="{http://dic.matrix.org/}DictionaryManagerPort"
+    url-pattern="/services/dic" />
 
-    <endpoint
-        name="dic"
-        implementation="org.santfeliu.dic.proxy.DictionaryManager"
-        service="{http://dic.matrix.org/}DictionaryManagerService"
-        port="{http://dic.matrix.org/}DictionaryManagerPort"
-        url-pattern="/services/dic" />
-
-    <endpoint
-        name="elections"
-        implementation="org.santfeliu.elections.service.ElectionsManager"
-        service="{http://elections.matrix.org/}ElectionsManagerService"
-        url-pattern="/services/elections" />
+  <endpoint
+    name="elections"
+    implementation="org.santfeliu.elections.service.ElectionsManager"
+    service="{http://elections.matrix.org/}ElectionsManagerService"
+    url-pattern="/services/elections" />
         
-    <endpoint
-        name="news"
-        implementation="org.santfeliu.news.service.NewsManager"
-        service="{http://news.matrix.org/}NewsManagerService"
-        url-pattern="/services/news" />
+  <endpoint
+    name="news"
+    implementation="org.santfeliu.news.service.NewsManager"
+    service="{http://news.matrix.org/}NewsManagerService"
+    url-pattern="/services/news" />
         
-    <endpoint
-        name="sql"
-        implementation="org.santfeliu.sql.service.SQLManager"
-        service="{http://sql.matrix.org/}SQLManagerService"
-        url-pattern="/services/sql" />
+  <endpoint
+    name="sql"
+    implementation="org.santfeliu.sql.service.SQLManager"
+    service="{http://sql.matrix.org/}SQLManagerService"
+    url-pattern="/services/sql" />
 
-    <endpoint
-        name="workflow"
-        implementation="org.santfeliu.workflow.service.WorkflowManager"
-        service="{http://workflow.matrix.org/}WorkflowManagerService"
-        url-pattern="/services/workflow"/>
-        
-<!--
-    <endpoint
-        name="notify"
-        implementation="org.santfeliu.notify.service.NotifyManager"
-        service="{http://notify.matrix.org/}NotifyManagerService"
-        url-pattern="/services/notify"/>
--->
-    <endpoint
-        name="cms"
-        implementation="org.santfeliu.cms.service.CMSManager"
-        service="{http://cms.matrix.org/}CMSManagerService"
-        url-pattern="/services/cms" />
-
-    <endpoint
-        name="feed"
-        implementation="org.santfeliu.feed.service.FeedManager"
-        service="{http://feed.matrix.org/}FeedManagerService"
-        url-pattern="/services/feed" />
-
-    <endpoint
-        name="presence"
-        implementation="org.santfeliu.presence.service.PresenceManager"
-        service="{http://presence.matrix.org/}PresenceManagerService"
-        url-pattern="/services/presence" />
+  <endpoint
+    name="workflow"
+    implementation="org.santfeliu.workflow.service.WorkflowManager"
+    service="{http://workflow.matrix.org/}WorkflowManagerService"
+    url-pattern="/services/workflow"/>
     
-    <endpoint
-        name="job"
-        implementation="org.santfeliu.job.service.JobManager"
-        service="{http://job.matrix.org/}JobManagerService"
-        url-pattern="/services/job" />    
+  <endpoint
+    name="cms"
+    implementation="org.santfeliu.cms.service.CMSManager"
+    service="{http://cms.matrix.org/}CMSManagerService"
+    url-pattern="/services/cms" />
+
+  <endpoint
+    name="feed"
+    implementation="org.santfeliu.feed.service.FeedManager"
+    service="{http://feed.matrix.org/}FeedManagerService"
+    url-pattern="/services/feed" />
+
+  <endpoint
+    name="presence"
+    implementation="org.santfeliu.presence.service.PresenceManager"
+    service="{http://presence.matrix.org/}PresenceManagerService"
+    url-pattern="/services/presence" />
     
+  <endpoint
+    name="job"
+    implementation="org.santfeliu.job.service.JobManager"
+    service="{http://job.matrix.org/}JobManagerService"
+    url-pattern="/services/job" />    
 </endpoints>

@@ -337,7 +337,10 @@ public class JobManager
   @PreDestroy
   public void destroy() throws JobException
   {
-    this.scheduler.stop();
+    if (scheduler != null)
+    {
+      scheduler.stop();
+    }
   }
   
   private boolean canUserDoAction(User user, String action)

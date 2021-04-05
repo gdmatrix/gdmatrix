@@ -85,7 +85,6 @@ import org.matrix.presence.WorkerSchedule;
 import org.matrix.presence.WorkerStatistics;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.presence.util.Utils;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.security.UserCache;
@@ -94,6 +93,8 @@ import static org.santfeliu.presence.util.Utils.*;
 import static org.matrix.presence.PresenceConstants.*;
 import org.matrix.presence.ScheduleFault;
 import org.santfeliu.security.User;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 /**
  *
@@ -101,27 +102,34 @@ import org.santfeliu.security.User;
  */
 @WebService(endpointInterface = "org.matrix.presence.PresenceManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class PresenceManager implements PresenceManagerPort
 {
-  @Resource
-  WebServiceContext wsContext;
-
-  @PersistenceContext(unitName="presence_ri")
-  public EntityManager entityManager;
-
-  protected static final Logger log = Logger.getLogger("Presence");
+  private static final Logger LOGGER = Logger.getLogger("Presence");
 
   public static final String WEEK_DEFAULT = "WEEK_DEFAULT";
 
   private static final int MAX_ENTRY_REASON_LENGTH = 200;
   private static final int MAX_ABSENCE_REASON_LENGTH = 200;
 
+  @Resource
+  WebServiceContext wsContext;
+
+  @PersistenceContext(unitName="presence_ri")
+  public EntityManager entityManager;
+
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    // create emf
+  }  
+  
   /* Worker */
 
   @Override
   public int countWorkers(WorkerFilter filter)
   {
+    LOGGER.log(Level.INFO, "countWorkers {0}", filter.getPersonId());
     Query query = entityManager.createNamedQuery("countWorkers");
     setWorkerFilter(query, filter);
     return ((Number)query.getSingleResult()).intValue();
@@ -130,6 +138,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<Worker> findWorkers(WorkerFilter filter)
   {
+    LOGGER.log(Level.INFO, "findWorkers {0}", filter.getPersonId());
     Query query = entityManager.createNamedQuery("findWorkers");
     setWorkerFilter(query, filter);
     return query.getResultList();
@@ -138,7 +147,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public Worker loadWorker(String personId)
   {
-    log.log(Level.INFO, "loadWorker {0}", personId);
+    LOGGER.log(Level.INFO, "loadWorker {0}", personId);
     DBWorker dbWorker =
       entityManager.find(DBWorker.class, personId);
     if (dbWorker == null)
@@ -150,7 +159,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public Worker storeWorker(Worker worker)
   {
-    log.log(Level.INFO, "storeWorker {0}", worker.getPersonId());
+    LOGGER.log(Level.INFO, "storeWorker {0}", worker.getPersonId());
     DBWorker dbWorker;
 
     String personId = worker.getPersonId();
@@ -161,7 +170,7 @@ public class PresenceManager implements PresenceManagerPort
     if (person == null)
       throw new WebServiceException("presence:PERSON_NOT_FOUND");
 
-    HashSet<String> personIds = new HashSet<String>();
+    HashSet<String> personIds = new HashSet<>();
     personIds.add(personId);
     checkValidationLoop(worker.getValidatorPersonId(), personIds);
 
@@ -191,7 +200,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeWorker(String personId)
   {
-    log.log(Level.INFO, "removeWorker {0}", personId);
+    LOGGER.log(Level.INFO, "removeWorker {0}", personId);
     boolean removed;
     try
     {
@@ -213,6 +222,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countAbsenceCounters(AbsenceCounterFilter filter)
   {
+    LOGGER.log(Level.INFO, "countAbsenceCounters {0}", filter.getPersonId());
     Query query = entityManager.createNamedQuery("countAbsenceCounters");
     setAbsenceCounterFilter(query, filter);
     return ((Number)query.getSingleResult()).intValue();
@@ -221,18 +231,21 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<AbsenceCounter> findAbsenceCounters(AbsenceCounterFilter filter)
   {
+    LOGGER.log(Level.INFO, "findAbsenceCounters {0}", filter.getPersonId());
     Query query = entityManager.createNamedQuery("findAbsenceCounters");
     setAbsenceCounterFilter(query, filter);
     return query.getResultList();
   }
 
   @Override
-  public List<AbsenceCounterView> findAbsenceCounterViews(AbsenceCounterFilter filter)
+  public List<AbsenceCounterView> findAbsenceCounterViews(
+    AbsenceCounterFilter filter)
   {
+    LOGGER.log(Level.INFO, "findAbsenceCounterViews {0}", filter.getPersonId());
     Query query = entityManager.createNamedQuery("findAbsenceCounterViews");
     setAbsenceCounterFilter(query, filter);
     List list = query.getResultList();
-    List<AbsenceCounterView> views = new ArrayList<AbsenceCounterView>();
+    List<AbsenceCounterView> views = new ArrayList<>();
     for (Object elem : list)
     {
       Object[] row = (Object[])elem;
@@ -250,7 +263,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public AbsenceCounter loadAbsenceCounter(String absenceCounterId)
   {
-    log.log(Level.INFO, "loadAbsenceCounter {0}", absenceCounterId);
+    LOGGER.log(Level.INFO, "loadAbsenceCounter {0}", absenceCounterId);
     DBAbsenceCounterPK pk = new DBAbsenceCounterPK(absenceCounterId);
     DBAbsenceCounter dbAbsenceCounter =
       entityManager.find(DBAbsenceCounter.class, pk);
@@ -262,7 +275,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public AbsenceCounter storeAbsenceCounter(AbsenceCounter absenceCounter)
   {
-    log.log(Level.INFO, "storeAbsenceCounter {0}",
+    LOGGER.log(Level.INFO, "storeAbsenceCounter {0}",
       absenceCounter.getAbsenceCounterId());
 
     if (absenceCounter.getTotalTime() < 0)
@@ -290,7 +303,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeAbsenceCounter(String absenceCounterId)
   {
-    log.log(Level.INFO, "removeAbsenceCounter {0}", absenceCounterId);
+    LOGGER.log(Level.INFO, "removeAbsenceCounter {0}", absenceCounterId);
     boolean removed;
     try
     {
@@ -312,6 +325,7 @@ public class PresenceManager implements PresenceManagerPort
   public int createAbsenceCounters(String personId, String year, 
     boolean createZeroCounters)
   {
+    LOGGER.log(Level.INFO, "findAbsenceTypes {0}", personId);
     Query query = entityManager.createNamedQuery("findAbsenceTypes");
     query.setParameter("label", null);
     List<DBAbsenceType> dbAbsenceTypes = query.getResultList();
@@ -368,6 +382,7 @@ public class PresenceManager implements PresenceManagerPort
   public int copyAbsenceCounters(String fromPersonId,
     List<String> toPersonIds, String year)
   {
+    LOGGER.log(Level.INFO, "findAbsenceCounters {0}", fromPersonId);
     int counters = 0;
     Query query = entityManager.createNamedQuery("findAbsenceCounters");
     query.setParameter("year", year);
@@ -406,6 +421,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countPresenceEntryTypes(PresenceEntryTypeFilter filter)
   {
+    LOGGER.log(Level.INFO, "countPresenceEntryTypes {0}", filter.getLabel());
     Query query = entityManager.createNamedQuery("countPresenceEntryTypes");
     setPresenceEntryTypeFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -413,8 +429,10 @@ public class PresenceManager implements PresenceManagerPort
   }
 
   @Override
-  public List<PresenceEntryType> findPresenceEntryTypes(PresenceEntryTypeFilter filter)
+  public List<PresenceEntryType> findPresenceEntryTypes(
+    PresenceEntryTypeFilter filter)
   {
+    LOGGER.log(Level.INFO, "findPresenceEntryTypes {0}", filter.getLabel());
     Query query = entityManager.createNamedQuery("findPresenceEntryTypes");
     setPresenceEntryTypeFilter(query, filter);
     return query.getResultList();
@@ -423,7 +441,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public PresenceEntryType loadPresenceEntryType(String entryTypeId)
   {
-    log.log(Level.INFO, "loadEntryType {0}", entryTypeId);
+    LOGGER.log(Level.INFO, "loadEntryType {0}", entryTypeId);
     DBPresenceEntryType dbEntryType =
       entityManager.find(DBPresenceEntryType.class, entryTypeId);
     if (dbEntryType == null)
@@ -435,7 +453,7 @@ public class PresenceManager implements PresenceManagerPort
   public PresenceEntryType storePresenceEntryType(
     PresenceEntryType presenceEntryType)
   {
-    log.log(Level.INFO, "storePresenceEntryType {0}",
+    LOGGER.log(Level.INFO, "storePresenceEntryType {0}",
       presenceEntryType.getEntryTypeId());
     DBPresenceEntryType dbPresenceEntryType;
     String entryTypeId = presenceEntryType.getEntryTypeId();
@@ -474,7 +492,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removePresenceEntryType(String entryTypeId)
   {
-    log.log(Level.INFO, "removePresenceEntryType {0}", entryTypeId);
+    LOGGER.log(Level.INFO, "removePresenceEntryType {0}", entryTypeId);
     boolean removed;
     try
     {
@@ -496,6 +514,8 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countPresenceEntries(PresenceEntryFilter filter)
   {
+    LOGGER.log(Level.INFO, "countPresenceEntries {0}", 
+      filter.getStartDateTime());
     String sql = "SELECT count(e) FROM DBPresenceEntry e WHERE ";
     if (filter.getPersonId().size() > 0)
     {
@@ -516,6 +536,8 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<PresenceEntry> findPresenceEntries(PresenceEntryFilter filter)
   {
+    LOGGER.log(Level.INFO, "findPresenceEntries {0}", 
+      filter.getStartDateTime());
     String sql = "SELECT e FROM DBPresenceEntry e WHERE ";
     if (filter.getPersonId().size() > 0)
     {
@@ -534,7 +556,7 @@ public class PresenceManager implements PresenceManagerPort
       (List<PresenceEntry>)query.getResultList();
     if (filter.isSplitByDay())
     {
-      List<PresenceEntry> splitted = new ArrayList<PresenceEntry>();
+      List<PresenceEntry> splitted = new ArrayList<>();
       for (PresenceEntry presenceEntry : presenceEntries)
       {
         splitted.addAll(splitPresenceEntry(presenceEntry));
@@ -559,7 +581,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public PresenceEntry loadPresenceEntry(String entryId)
   {
-    log.log(Level.INFO, "loadPresenceEntry {0}", entryId);
+    LOGGER.log(Level.INFO, "loadPresenceEntry {0}", entryId);
     DBPresenceEntryPK pk = new DBPresenceEntryPK(entryId);
     DBPresenceEntry dbPresenceEntry =
       entityManager.find(DBPresenceEntry.class, pk);
@@ -571,7 +593,8 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public PresenceEntry storePresenceEntry(PresenceEntry presenceEntry)
   {
-    log.log(Level.INFO, "storePresenceEntry {0}", presenceEntry.getEntryId());
+    LOGGER.log(Level.INFO, "storePresenceEntry {0}", 
+      presenceEntry.getEntryId());
     String nowDateTime = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
 
     User user = UserCache.getUser(wsContext);
@@ -761,7 +784,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removePresenceEntry(String entryId)
   {
-    log.log(Level.INFO, "removePresenceEntry {0}", entryId);
+    LOGGER.log(Level.INFO, "removePresenceEntry {0}", entryId);
     boolean removed;
     try
     {
@@ -811,6 +834,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countAbsences(AbsenceFilter filter)
   {
+    LOGGER.log(Level.INFO, "countAbsences {0}", filter.getStartDateTime());
     String sql = "SELECT count(a) FROM DBAbsence a WHERE " +
       "(a.absenceId = :absenceId OR :absenceId IS NULL) AND ";
     if (filter.getPersonId().size() > 0)
@@ -831,6 +855,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<Absence> findAbsences(AbsenceFilter filter)
   {
+    LOGGER.log(Level.INFO, "findAbsences {0}", filter.getStartDateTime());
     String sql = "SELECT a FROM DBAbsence a WHERE " +
       "(a.absenceId = :absenceId OR :absenceId IS NULL) AND ";
     if (filter.getPersonId().size() > 0)
@@ -847,7 +872,7 @@ public class PresenceManager implements PresenceManagerPort
     List<Absence> absences = query.getResultList();
     if (filter.isSplitByDay())
     {
-      List<Absence> splitted = new ArrayList<Absence>();
+      List<Absence> splitted = new ArrayList<>();
       for (Absence absence : absences)
       {
         splitted.addAll(splitAbsence(absence));
@@ -870,6 +895,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<AbsenceView> findAbsenceViews(AbsenceFilter filter)
   {
+    LOGGER.log(Level.INFO, "findAbsenceViews {0}", filter.getStartDateTime());
     String sql =
       "SELECT a, t, w FROM DBAbsence a, DBAbsenceType t, DBWorker w WHERE ";
     if (filter.getPersonId().size() > 0)
@@ -913,7 +939,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public Absence loadAbsence(String absenceId)
   {
-    log.log(Level.INFO, "loadAbsence {0}", absenceId);
+    LOGGER.log(Level.INFO, "loadAbsence {0}", absenceId);
     DBAbsence dbAbsence =
       entityManager.find(DBAbsence.class, absenceId);
     if (dbAbsence == null)
@@ -924,7 +950,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public Absence storeAbsence(Absence absence)
   {
-    log.log(Level.INFO, "storeAbsence {0}", absence.getAbsenceId());
+    LOGGER.log(Level.INFO, "storeAbsence {0}", absence.getAbsenceId());
     if (absence.getStartDateTime() == null || absence.getEndDateTime() == null)
       throw new WebServiceException("presence:UNDEFINED_DATE");
     if (absence.getStartDateTime().compareTo(absence.getEndDateTime()) >= 0)
@@ -990,7 +1016,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeAbsence(String absenceId)
   {
-    log.log(Level.INFO, "removeAbsence {0}", absenceId);
+    LOGGER.log(Level.INFO, "removeAbsence {0}", absenceId);
     boolean removed;
     try
     {
@@ -1027,6 +1053,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countAbsenceTypes(AbsenceTypeFilter filter)
   {
+    LOGGER.log(Level.INFO, "countAbsenceTypes {0}", filter.getLabel());
     Query query = entityManager.createNamedQuery("countAbsenceTypes");
     setAbsenceTypeFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -1036,6 +1063,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<AbsenceType> findAbsenceTypes(AbsenceTypeFilter filter)
   {
+    LOGGER.log(Level.INFO, "findAbsenceTypes {0}", filter.getLabel());
     Query query = entityManager.createNamedQuery("findAbsenceTypes");
     setAbsenceTypeFilter(query, filter);
     return query.getResultList();
@@ -1044,7 +1072,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public AbsenceType loadAbsenceType(String absenceTypeId)
   {
-    log.log(Level.INFO, "loadAbsenceType {0}", absenceTypeId);
+    LOGGER.log(Level.INFO, "loadAbsenceType {0}", absenceTypeId);
     DBAbsenceType dbAbsenceType =
       entityManager.find(DBAbsenceType.class, absenceTypeId);
     if (dbAbsenceType == null)
@@ -1055,7 +1083,8 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public AbsenceType storeAbsenceType(AbsenceType absenceType)
   {
-    log.log(Level.INFO, "storeAbsenceType {0}", absenceType.getAbsenceTypeId());
+    LOGGER.log(Level.INFO, "storeAbsenceType {0}", 
+      absenceType.getAbsenceTypeId());
     DBAbsenceType dbAbsenceType;
     String absenceTypeId = absenceType.getAbsenceTypeId();
     if (absenceTypeId == null)
@@ -1075,7 +1104,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeAbsenceType(String absenceTypeId)
   {
-    log.log(Level.INFO, "removeAbsenceType {0}", absenceTypeId);
+    LOGGER.log(Level.INFO, "removeAbsenceType {0}", absenceTypeId);
     boolean removed;
     try
     {
@@ -1097,6 +1126,8 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countWeekTypes(WeekTypeFilter filter)
   {
+    LOGGER.log(Level.INFO, "countWeekTypes {0}", filter.getLabel());
+
     Query query = entityManager.createNamedQuery("countWeekTypes");
     setWeekTypeFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -1106,6 +1137,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<WeekType> findWeekTypes(WeekTypeFilter filter)
   {
+    LOGGER.log(Level.INFO, "findWeekTypes {0}", filter.getLabel());
     Query query = entityManager.createNamedQuery("findWeekTypes");
     setWeekTypeFilter(query, filter);
     return query.getResultList();
@@ -1114,7 +1146,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public WeekType loadWeekType(String weekTypeId)
   {
-    log.log(Level.INFO, "loadWeekType {0}", weekTypeId);
+    LOGGER.log(Level.INFO, "loadWeekType {0}", weekTypeId);
     DBWeekType dbWeekType = entityManager.find(DBWeekType.class, weekTypeId);
     if (dbWeekType == null)
       throw new WebServiceException("presence:WEEKTYPE_NOT_FOUND");
@@ -1124,7 +1156,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public WeekType storeWeekType(WeekType weekType)
   {
-    log.log(Level.INFO, "storeWeekType {0}", weekType.getWeekTypeId());
+    LOGGER.log(Level.INFO, "storeWeekType {0}", weekType.getWeekTypeId());
     DBWeekType dbWeekType;
     String weekTypeId = weekType.getWeekTypeId();
     if (weekTypeId == null)
@@ -1142,7 +1174,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeWeekType(String weekTypeId)
   {
-    log.log(Level.INFO, "removeWeekType {0}", weekTypeId);
+    LOGGER.log(Level.INFO, "removeWeekType {0}", weekTypeId);
     boolean removed;
     try
     {
@@ -1164,6 +1196,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countDayTypes(DayTypeFilter filter)
   {
+    LOGGER.log(Level.INFO, "countDayTypes {0}", filter.getLabel());
     Query query = entityManager.createNamedQuery("countDayTypes");
     setDayTypeFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -1173,6 +1206,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<DayType> findDayTypes(DayTypeFilter filter)
   {
+    LOGGER.log(Level.INFO, "findDayTypes {0}", filter.getLabel());
     Query query = entityManager.createNamedQuery("findDayTypes");
     setDayTypeFilter(query, filter);
     return query.getResultList();
@@ -1181,7 +1215,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public DayType loadDayType(String dayTypeId)
   {
-    log.log(Level.INFO, "loadWeekType {0}", dayTypeId);
+    LOGGER.log(Level.INFO, "loadWeekType {0}", dayTypeId);
     DBDayType dbDayType = entityManager.find(DBDayType.class, dayTypeId);
     if (dbDayType == null)
       throw new WebServiceException("presence:DAYTYPE_NOT_FOUND");
@@ -1191,8 +1225,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public DayType storeDayType(DayType dayType)
   {
-    log.log(Level.INFO, "storeDayType {0}", dayType.getDayTypeId());
-    
+    LOGGER.log(Level.INFO, "storeDayType {0}", dayType.getDayTypeId());
     String inTime1 = dayType.getInTime1();
     String outTime1 = dayType.getOutTime1();
     String inTime2 = dayType.getInTime2();
@@ -1221,7 +1254,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeDayType(String dayTypeId)
   {
-    log.log(Level.INFO, "removeDayType {0}", dayTypeId);
+    LOGGER.log(Level.INFO, "removeDayType {0}", dayTypeId);
     boolean removed;
     try
     {
@@ -1243,6 +1276,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countHolidays(HolidayFilter filter)
   {
+    LOGGER.log(Level.INFO, "countHolidays {0}", filter.getStartDate());
     Query query = entityManager.createNamedQuery("countHolidays");
     setHolidayFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -1252,7 +1286,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<Holiday> findHolidays(HolidayFilter filter)
   {
-    log.log(Level.INFO, "findHolidays {0}", filter.getStartDate());
+    LOGGER.log(Level.INFO, "findHolidays {0}", filter.getStartDate());
     Query query = entityManager.createNamedQuery("findHolidays");
     setHolidayFilter(query, filter);
     return query.getResultList();
@@ -1261,7 +1295,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public Holiday loadHoliday(String holidayId)
   {
-    log.log(Level.INFO, "loadHoliday {0}", holidayId);
+    LOGGER.log(Level.INFO, "loadHoliday {0}", holidayId);
     DBHoliday dbHoliday = entityManager.find(DBHoliday.class, holidayId);
     if (dbHoliday == null)
       throw new WebServiceException("presence:HOLIDAY_NOT_FOUND");
@@ -1271,7 +1305,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public Holiday storeHoliday(Holiday holiday)
   {
-    log.log(Level.INFO, "storeHoliday {0} {1}",
+    LOGGER.log(Level.INFO, "storeHoliday {0} {1}",
       new Object[]{holiday.getStartDate(), holiday.getDescription()});
     DBHoliday dbHoliday;
     String holidayId = holiday.getHolidayId();
@@ -1294,7 +1328,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeHoliday(String holidayId)
   {
-    log.log(Level.INFO, "removeHoliday {0}", holidayId);
+    LOGGER.log(Level.INFO, "removeHoliday {0}", holidayId);
     boolean removed;
     try
     {
@@ -1316,6 +1350,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int countWorkReductions(WorkReductionFilter filter)
   {
+    LOGGER.log(Level.INFO, "countWorkReductions {0}", filter.getStartDate());
     Query query = entityManager.createNamedQuery("countWorkReductions");
     setWorkReductionFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -1325,7 +1360,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<WorkReduction> findWorkReductions(WorkReductionFilter filter)
   {
-    log.log(Level.INFO, "findWorkReductions {0}", filter.getStartDate());
+    LOGGER.log(Level.INFO, "findWorkReductions {0}", filter.getStartDate());
     Query query = entityManager.createNamedQuery("findWorkReductions");
     setWorkReductionFilter(query, filter);
     return query.getResultList();
@@ -1334,7 +1369,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public WorkReduction loadWorkReduction(String reductionId)
   {
-    log.log(Level.INFO, "loadWorkReduction {0}", reductionId);
+    LOGGER.log(Level.INFO, "loadWorkReduction {0}", reductionId);
     DBWorkReduction dbWorkReduction =
       entityManager.find(DBWorkReduction.class, reductionId);
     if (dbWorkReduction == null)
@@ -1345,7 +1380,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public WorkReduction storeWorkReduction(WorkReduction workReduction)
   {
-    log.log(Level.INFO, "storeWorkReduction {0} {1}",
+    LOGGER.log(Level.INFO, "storeWorkReduction {0} {1}",
       new Object[]{workReduction.getStartDate(), workReduction.getDescription()});
     DBWorkReduction dbWorkReduction;
     String reductionId = workReduction.getReductionId();
@@ -1365,7 +1400,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeWorkReduction(String reductionId)
   {
-    log.log(Level.INFO, "removeWorkReduction {0}", reductionId);
+    LOGGER.log(Level.INFO, "removeWorkReduction {0}", reductionId);
     boolean removed;
     try
     {
@@ -1388,6 +1423,7 @@ public class PresenceManager implements PresenceManagerPort
   public String setWorkerWeekType(String personId,
     String startDate, String endDate, String weekTypeId)
   {
+    LOGGER.log(Level.INFO, "setWorkerWeekType {0}", personId);
     Query query = entityManager.createNamedQuery("findWorkerWeekOnPeriod");
     query.setParameter("personId", personId);
     query.setParameter("startDate", startDate);
@@ -1452,6 +1488,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public String setWorkerDayType(String personId, String date, String dayTypeId)
   {
+    LOGGER.log(Level.INFO, "setWorkerDayType {0}", personId);
     if (WEEK_DEFAULT.equals(dayTypeId))
     {
       DBWorkerDayPK pk = new DBWorkerDayPK(personId, date);
@@ -1481,18 +1518,17 @@ public class PresenceManager implements PresenceManagerPort
   public List<WorkerSchedule> getSchedule(List<String> personIdList,
     String startDate, String endDate)
   {
+    LOGGER.log(Level.INFO, "getSchedule {0}", startDate);
     if (startDate == null || endDate == null ||
       compareDates(startDate, endDate) > 0)
       throw new WebServiceException("presence:INVALID_PERIOD");
 
-    List<WorkerSchedule> scheduleList = new ArrayList<WorkerSchedule>();
+    List<WorkerSchedule> scheduleList = new ArrayList<>();
 
-    HashMap<String, List<DBWorkerWeek>> wwMap =
-      new HashMap<String, List<DBWorkerWeek>>();
-    HashMap<String, List<DBWorkerDay>> wdMap =
-      new HashMap<String, List<DBWorkerDay>>();
-    HashMap<String, DBWeekType> wtMap = new HashMap<String, DBWeekType>();
-    HashMap<String, DBDayType> dtMap = new HashMap<String, DBDayType>();
+    HashMap<String, List<DBWorkerWeek>> wwMap = new HashMap<>();
+    HashMap<String, List<DBWorkerDay>> wdMap = new HashMap<>();
+    HashMap<String, DBWeekType> wtMap = new HashMap<>();
+    HashMap<String, DBDayType> dtMap = new HashMap<>();
 
     loadWeekAndDayTypes(personIdList, startDate, endDate,
       wwMap, wdMap, wtMap, dtMap);
@@ -1507,7 +1543,6 @@ public class PresenceManager implements PresenceManagerPort
     Calendar calendar = Calendar.getInstance();
     for (String personId : personIdList)
     {
-      //System.out.println(">> " + personId);
       WorkerSchedule schedule = new WorkerSchedule();
       schedule.setPersonId(personId);
       schedule.setStartDate(startDate);
@@ -1571,6 +1606,7 @@ public class PresenceManager implements PresenceManagerPort
     String startDateTime, String endDateTime, 
     boolean splitByDay, boolean cropByPeriod)
   {
+    LOGGER.log(Level.INFO, "getScheduleEntries {0}", startDateTime);
     if (startDateTime == null || endDateTime == null ||
       compareDates(startDateTime, endDateTime) > 0)
       throw new WebServiceException("presence:INVALID_PERIOD");
@@ -1582,12 +1618,10 @@ public class PresenceManager implements PresenceManagerPort
     startDate = TextUtils.formatDate(calendar.getTime(), "yyyyMMdd");
     String endDate = endDateTime.substring(0, 8);
 
-    HashMap<String, List<DBWorkerWeek>> wwMap =
-      new HashMap<String, List<DBWorkerWeek>>();
-    HashMap<String, List<DBWorkerDay>> wdMap =
-      new HashMap<String, List<DBWorkerDay>>();
-    HashMap<String, DBWeekType> wtMap = new HashMap<String, DBWeekType>();
-    HashMap<String, DBDayType> dtMap = new HashMap<String, DBDayType>();
+    HashMap<String, List<DBWorkerWeek>> wwMap = new HashMap<>();
+    HashMap<String, List<DBWorkerDay>> wdMap = new HashMap<>();
+    HashMap<String, DBWeekType> wtMap = new HashMap<>();
+    HashMap<String, DBDayType> dtMap = new HashMap<>();
 
     loadWeekAndDayTypes(personIdList, startDate, endDate,
       wwMap, wdMap, wtMap, dtMap);
@@ -1606,7 +1640,7 @@ public class PresenceManager implements PresenceManagerPort
     query.setParameter("endDate", endDate);
     List<DBWorkReduction> dbWorkReductions = query.getResultList();
 
-    List<ScheduleEntry> scheduleEntries = new ArrayList<ScheduleEntry>();
+    List<ScheduleEntry> scheduleEntries = new ArrayList<>();
     for (String personId : personIdList)
     {
       List<DBWorkerWeek> wwPersonList = wwMap.get(personId);
@@ -1742,7 +1776,7 @@ public class PresenceManager implements PresenceManagerPort
   public WorkerStatistics getWorkerStatistics(String personId,
     String startDateTime, String endDateTime)
   {
-    log.log(Level.INFO, "getWorkerStatistics {0}", personId);
+    LOGGER.log(Level.INFO, "getWorkerStatistics {0}", personId);
 
     String nowDateTime = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
 
@@ -1751,7 +1785,7 @@ public class PresenceManager implements PresenceManagerPort
     workerStatistics.setStartDateTime(startDateTime);
     workerStatistics.setEndDateTime(endDateTime);
 
-    List<String> idList = new ArrayList<String>();
+    List<String> idList = new ArrayList<>();
     idList.add(personId);
     List<ScheduleEntry> scheduleEntries =
       getScheduleEntries(idList, startDateTime, endDateTime, true, true);
@@ -1882,9 +1916,6 @@ public class PresenceManager implements PresenceManagerPort
     int duration;
     while (scheduleEntry != null)
     {
-      //System.out.println(">>> schedule: " + scheduleEntry.getStartDateTime() +
-      //  "/" + scheduleEntry.getEndDateTime());
-
       if (presenceEntry == null)
       {
         //
@@ -1914,9 +1945,6 @@ public class PresenceManager implements PresenceManagerPort
           lastEntryWorkedTime : presenceEntry.getWorkedTime();
         int entryDuration = presenceEntry.getEndDateTime() == null ?
           lastEntryDuration : presenceEntry.getDuration();
-
-//        System.out.println(">>> presence: " +
-//          ps + "/" + pe + " wt:" + entryWorkedTime + " dur:" + entryDuration);
 
         if (ps.compareTo(ss) <= 0 && se.compareTo(pe) <= 0)
         {
@@ -2069,6 +2097,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<PresenceParameter> findParameters()
   {
+    LOGGER.log(Level.INFO, "findParameters");
     Query query = entityManager.createNamedQuery("findParameters");
     List<PresenceParameter> parameters = query.getResultList();
     return parameters;
@@ -2077,7 +2106,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public PresenceParameter loadParameter(String parameterId)
   {
-    log.log(Level.INFO, "loadParameter {0}", parameterId);
+    LOGGER.log(Level.INFO, "loadParameter {0}", parameterId);
     DBPresenceParameter dbParameter =
       entityManager.find(DBPresenceParameter.class, parameterId);
     if (dbParameter == null)
@@ -2088,7 +2117,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public PresenceParameter storeParameter(PresenceParameter parameter)
   {
-    log.log(Level.INFO, "storeParameter {0}", parameter.getParameterId());
+    LOGGER.log(Level.INFO, "storeParameter {0}", parameter.getParameterId());
     DBPresenceParameter dbParameter = new DBPresenceParameter();
     dbParameter.setParameterId(parameter.getParameterId());
     dbParameter.setValue(parameter.getValue());
@@ -2103,7 +2132,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public boolean removeParameter(String parameterId)
   {
-    log.log(Level.INFO, "removeParameter {0}", parameterId);
+    LOGGER.log(Level.INFO, "removeParameter {0}", parameterId);
     boolean removed;
     try
     {
@@ -2123,6 +2152,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public List<String> getWorkerGroup(String personId)
   {
+    LOGGER.log(Level.INFO, "getWorkerGroup {0}", personId);
     Query query = entityManager.createNamedQuery("getWorkerGroup");
     query.setParameter("personId", personId);
     return (List<String>)query.getResultList();
@@ -2131,6 +2161,7 @@ public class PresenceManager implements PresenceManagerPort
   @Override
   public int setWorkerGroup(String personId, List<String> relatedPersonIdList)
   {
+    LOGGER.log(Level.INFO, "setWorkerGroup {0}", personId);
     Query query = entityManager.createNamedQuery("clearWorkerGroup");
     query.setParameter("personId", personId);
     query.executeUpdate();
@@ -2146,6 +2177,19 @@ public class PresenceManager implements PresenceManagerPort
     }
     return position;
   }
+  
+  public static KernelManagerPort getKernelPort()
+  {
+    WSDirectory wsDirectory = WSDirectory.getInstance();
+    WSEndpoint endpoint =
+      wsDirectory.getEndpoint(KernelManagerService.class);
+    return endpoint.getPort(KernelManagerPort.class,
+      MatrixConfig.getProperty("adminCredentials.userId"),
+      MatrixConfig.getProperty("adminCredentials.password"));
+  }
+  
+  
+  // private methods
   
   private DBHoliday findHoliday(List<DBHoliday> list, String date)
   {
@@ -2224,7 +2268,7 @@ public class PresenceManager implements PresenceManagerPort
       List<DBWorkerDay> wdPersonList = wdMap.get(personId);
       if (wdPersonList == null)
       {
-        wdPersonList = new ArrayList<DBWorkerDay>();
+        wdPersonList = new ArrayList<>();
         wdMap.put(personId, wdPersonList);
       }
       wdPersonList.add(wd);
@@ -2559,7 +2603,7 @@ public class PresenceManager implements PresenceManagerPort
 
   private List<ScheduleEntry> splitScheduleEntry(ScheduleEntry scheduleEntry)
   {
-    List<ScheduleEntry> parts = new ArrayList<ScheduleEntry>();
+    List<ScheduleEntry> parts = new ArrayList<>();
     String startDateTime = scheduleEntry.getStartDateTime();
     String endDateTime = scheduleEntry.getEndDateTime();
     Date startDate = TextUtils.parseInternalDate(startDateTime);
@@ -2618,7 +2662,7 @@ public class PresenceManager implements PresenceManagerPort
   
   private List<PresenceEntry> splitPresenceEntry(PresenceEntry presenceEntry)
   {
-    List<PresenceEntry> parts = new ArrayList<PresenceEntry>();
+    List<PresenceEntry> parts = new ArrayList<>();
     String startDateTime = presenceEntry.getStartDateTime();
     String endDateTime = presenceEntry.getEndDateTime();
     Date startDate = TextUtils.parseInternalDate(startDateTime);
@@ -2667,7 +2711,7 @@ public class PresenceManager implements PresenceManagerPort
 
   private List<Absence> splitAbsence(Absence absence)
   {
-    List<Absence> parts = new ArrayList<Absence>();
+    List<Absence> parts = new ArrayList<>();
     String startDateTime = absence.getStartDateTime();
     String endDateTime = absence.getEndDateTime();
     Date startDate = TextUtils.parseInternalDate(startDateTime);
@@ -2735,7 +2779,7 @@ public class PresenceManager implements PresenceManagerPort
     String personId = dbAbsence.getPersonId();
     String startDateTime = dbAbsence.getStartDateTime();
     String endDateTime = dbAbsence.getEndDateTime();
-    List<String> personIdList = new ArrayList<String>();
+    List<String> personIdList = new ArrayList<>();
     personIdList.add(personId);
     List<ScheduleEntry> scheduleEntries = getScheduleEntries(personIdList,
       startDateTime, endDateTime, false, false);
@@ -3251,16 +3295,6 @@ public class PresenceManager implements PresenceManagerPort
     {
       return true;
     }
-  }
-
-  public static KernelManagerPort getKernelPort()
-  {
-    WSDirectory wsDirectory = WSDirectory.getInstance();
-    WSEndpoint endpoint =
-      wsDirectory.getEndpoint(KernelManagerService.class);
-    return endpoint.getPort(KernelManagerPort.class,
-      MatrixConfig.getProperty("adminCredentials.userId"),
-      MatrixConfig.getProperty("adminCredentials.password"));
   }
 
   private String getFullName(Person person)

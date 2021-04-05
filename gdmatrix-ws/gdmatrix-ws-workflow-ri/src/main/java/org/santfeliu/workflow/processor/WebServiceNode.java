@@ -31,33 +31,28 @@
 package org.santfeliu.workflow.processor;
 
 import java.io.IOException;
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import java.util.logging.Level;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import org.santfeliu.security.util.BasicAuthorization;
-
 import org.santfeliu.util.XMLPrinter;
 import org.santfeliu.util.net.HttpClient;
 import org.santfeliu.util.template.Template;
 import org.santfeliu.workflow.WorkflowActor;
 import org.santfeliu.workflow.WorkflowInstance;
-
 import org.w3c.dom.Document;
 
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WebServiceNode extends org.santfeliu.workflow.node.WebServiceNode 
   implements NodeProcessor
 {
-
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception

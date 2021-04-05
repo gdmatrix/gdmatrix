@@ -34,15 +34,15 @@ import java.util.Calendar;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WorkflowEvent
 {
-  private String instanceId;
-  private int eventNum;
-  private Calendar time;
-  private ValueChanges valueChanges;
-  private String actorName;
+  private final String instanceId;
+  private final int eventNum;
+  private final Calendar time;
+  private final ValueChanges valueChanges;
+  private final String actorName;
 
   public WorkflowEvent(String instanceId, ValueChanges valueChanges, 
     String actorName)
@@ -89,6 +89,7 @@ public class WorkflowEvent
     return valueChanges;
   }
   
+  @Override
   public String toString()
   {
     return "[" + instanceId + "/" + eventNum + "] (" + time + ", " +

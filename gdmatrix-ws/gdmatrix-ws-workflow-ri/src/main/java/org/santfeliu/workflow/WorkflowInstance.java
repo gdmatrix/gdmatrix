@@ -34,13 +34,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import org.matrix.workflow.WorkflowConstants;
-
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WorkflowInstance extends HashMap
 {
@@ -111,7 +109,7 @@ public class WorkflowInstance extends HashMap
   }
 
   @Override
-  public Object put(Object key, Object newValue)
+  public final Object put(Object key, Object newValue)
   {
     Object oldValue = null;
     

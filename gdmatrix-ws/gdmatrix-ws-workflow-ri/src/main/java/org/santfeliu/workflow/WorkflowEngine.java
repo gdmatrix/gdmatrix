@@ -48,17 +48,16 @@ import org.santfeliu.workflow.store.DataStore;
 import org.santfeliu.workflow.store.DataStoreConnection;
 import org.santfeliu.workflow.store.WorkflowStore;
 
-
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WorkflowEngine
 {
   public static final String TIMER_AGENT_NAME = "cronos";
-  private WorkflowStore workflowStore;
-  private DataStore dataStore;
-  private Map agents = new HashMap();
+  private final WorkflowStore workflowStore;
+  private final DataStore dataStore;
+  private final Map agents = new HashMap();
 
   public WorkflowEngine(WorkflowStore workflowStore, DataStore dataStore)
   {
@@ -93,7 +92,6 @@ public class WorkflowEngine
     while (iter.hasNext())
     {
       WorkflowAgent agent = (WorkflowAgent)iter.next();
-      System.out.println("Killing agent " + agent.getName());
       if (agent.isAlive())
       {
         agent.kill();

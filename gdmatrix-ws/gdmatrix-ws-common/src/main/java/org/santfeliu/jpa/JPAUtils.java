@@ -64,7 +64,7 @@ public class JPAUtils
   private static final String TOPLINK_PROVIDER =
     "oracle.toplink.essentials.PersistenceProvider";
 
-  static final Logger logger  = Logger.getLogger("JPAUtils");
+  static final Logger LOGGER  = Logger.getLogger("JPAUtils");
 
   static HashMap<String, EntityManagerFactory> factories = 
     new HashMap<String, EntityManagerFactory>();
@@ -87,27 +87,45 @@ public class JPAUtils
     EntityManagerFactory factory = factories.get(unitKey);
     if (factory == null)
     {
-      logger.log(Level.INFO, ">>>>>>>>>>>>>> Creating {0}", unitKey);
+      LOGGER.log(Level.INFO, ">>>>>>>>>> Creating EMF {0}", unitKey);
       Map properties = getPersistenceUnitPropertiesMap(instanceName);
       
       //If it's first execution and persistence unit has extended properties 
       //defined then does a previous fake call to create factory method without 
       //map, allowing to initialize all persitence units with properties defined
       //on persistence.xml files as default properties. 
-      if (factories.isEmpty() && !properties.isEmpty())
-        Persistence.createEntityManagerFactory(unitName);
+//      if (factories.isEmpty() && !properties.isEmpty())
+//        Persistence.createEntityManagerFactory(unitName);
       
       factory = Persistence.createEntityManagerFactory(unitName, properties);
 
-      logger.log(Level.INFO, ">>>>>>>>>>>>>> factory created {0}", factory);
+      LOGGER.log(Level.INFO, ">>>>>>>>>> Created EMF {0} with parameters {1}", 
+        new Object[]{unitKey, properties.toString()});
       factories.put(unitKey, factory);
     }
     return factory;
   }
 
+  public static synchronized void closeEntityManagerFactories()
+  {
+    // closes all emf instances
+    for (EntityManagerFactory factory : factories.values())
+    {
+      try
+      {
+        factory.close();
+      }
+      catch (Exception ex)
+      {
+        LOGGER.log(Level.SEVERE, ex.getMessage());    
+      }
+    }
+    factories.clear();
+  }
+    
   public static synchronized void closeEntityManagerFactory(String unitName)
   {
-    // closes all instances of the given unitName
+    // closes all emf instances of the given unitName
     List<String> keyList = new ArrayList<>(factories.keySet());
     for (String key : keyList)
     {
@@ -120,7 +138,7 @@ public class JPAUtils
         }
         catch (Exception ex)
         {
-          Logger.getLogger("JPAUtils").log(Level.SEVERE, ex.getMessage());        
+          LOGGER.log(Level.SEVERE, ex.getMessage());        
         }
       }
     }
@@ -129,7 +147,7 @@ public class JPAUtils
   public static synchronized void closeEntityManagerFactory(
     String unitName, String instanceName)
   {
-    // closes a specific instance of the given unitName
+    // closes a specific emf instance of the given unitName
     String unitKey = unitName + "/" + instanceName;
     EntityManagerFactory factory = factories.remove(unitKey);
     if (factory != null)
@@ -140,27 +158,11 @@ public class JPAUtils
       }
       catch (Exception ex)
       {
-        Logger.getLogger("JPAUtils").log(Level.SEVERE, ex.getMessage());        
+        LOGGER.log(Level.SEVERE, ex.getMessage());        
       }
     }
   }
   
-  public static synchronized void closeEntityManagerFactories()
-  {
-    for (EntityManagerFactory factory : factories.values())
-    {
-      try
-      {
-        factory.close();
-      }
-      catch (Exception ex)
-      {
-        Logger.getLogger("JPAUtils").log(Level.SEVERE, ex.getMessage());    
-      }
-    }
-    factories.clear();
-  }
-
   public static void copy(Object src, Object dest)
   {
     Class srcClass = src.getClass();
@@ -187,7 +189,7 @@ public class JPAUtils
         }
         catch (Exception ex)
         {
-          ex.printStackTrace();
+          LOGGER.log(Level.SEVERE, "copy error", ex);
         }
       }
     }
@@ -206,7 +208,7 @@ public class JPAUtils
       }
       catch (Exception ex)
       {
-        ex.printStackTrace();
+        LOGGER.log(Level.SEVERE, "copy error", ex);
       }
     }
   }
@@ -274,8 +276,8 @@ public class JPAUtils
           break;
       line = line.trim();
       Matcher m = Pattern.compile("^([^#]+)").matcher(line);
-      if(m.find())
-          names.add(m.group().trim());
+      if (m.find())
+        names.add(m.group().trim());
     }
     while(true);
     return names;
@@ -311,5 +313,4 @@ public class JPAUtils
     
     return map;
   }
-
 }

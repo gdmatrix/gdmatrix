@@ -31,12 +31,11 @@
 package org.santfeliu.workflow;
 
 import java.text.SimpleDateFormat;
-
 import org.santfeliu.util.Table;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class TimerAgent extends WorkflowAgent
 {

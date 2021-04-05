@@ -34,7 +34,7 @@ import java.util.logging.Level;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class GenericAgent extends WorkflowAgent
 {
@@ -46,19 +46,20 @@ public class GenericAgent extends WorkflowAgent
     super(engine, name);
   }
 
+  @Override
   public void run()
   {
-    log.log(Level.INFO, "agent {0} started.", getName());
+    LOGGER.log(Level.INFO, "agent {0} started.", getName());
     state = RUNNABLE;
     while (!end && !Thread.interrupted())
     {
       try
       {
-        log.log(Level.INFO, "agent {0} looking for instance...", getName());
+        LOGGER.log(Level.INFO, "agent {0} looking for instance...", getName());
         String instanceId = engine.findProcessableInstance(getName());
         if (instanceId != null)
         {
-          log.log(Level.INFO, "agent {0} processing instance {1}",
+          LOGGER.log(Level.INFO, "agent {0} processing instance {1}",
             new Object[]{getName(), instanceId});
           statistics.processCount++;
           statistics.lastProcessTime = System.currentTimeMillis();
@@ -75,20 +76,20 @@ public class GenericAgent extends WorkflowAgent
         else
         {
           state = WAITING;
-          log.log(Level.INFO, "agent {0} waiting for event...", getName());
+          LOGGER.log(Level.INFO, "agent {0} waiting for event...", getName());
           waitForEvent(WAIT_TIME);
         }
       }
       catch (Throwable error)
       {
         state = RECOVERING;
-        log.log(Level.WARNING, "agent {0} recovering...", getName());
+        LOGGER.log(Level.WARNING, "agent {0} recovering...", getName());
         lastError = error;
         statistics.errorCount++;
         recover(error);
       }
     }
     state = TERMINATED;
-    log.log(Level.INFO, "agent {0} terminated.", getName());
+    LOGGER.log(Level.INFO, "agent {0} terminated.", getName());
   }
 }

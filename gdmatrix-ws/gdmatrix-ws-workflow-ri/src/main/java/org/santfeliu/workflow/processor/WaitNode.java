@@ -31,12 +31,9 @@
 package org.santfeliu.workflow.processor;
 
 import java.text.SimpleDateFormat;
-
 import java.util.Calendar;
 import java.util.Date;
-
 import org.matrix.workflow.WorkflowConstants;
-
 import org.santfeliu.util.template.Template;
 import org.santfeliu.workflow.WorkflowActor;
 import org.santfeliu.workflow.WorkflowEngine;
@@ -45,12 +42,11 @@ import org.santfeliu.workflow.WorkflowInstance;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WaitNode extends org.santfeliu.workflow.node.WaitNode 
   implements NodeProcessor
 {
-
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception

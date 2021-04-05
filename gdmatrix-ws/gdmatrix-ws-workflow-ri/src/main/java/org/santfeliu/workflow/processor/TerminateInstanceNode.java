@@ -31,7 +31,6 @@
 package org.santfeliu.workflow.processor;
 
 import org.matrix.workflow.WorkflowConstants;
-
 import org.santfeliu.util.template.Template;
 import org.santfeliu.workflow.WorkflowActor;
 import org.santfeliu.workflow.WorkflowInstance;
@@ -39,12 +38,12 @@ import org.santfeliu.workflow.WorkflowInstance;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class TerminateInstanceNode extends org.santfeliu.workflow.node.TerminateInstanceNode 
+public class TerminateInstanceNode 
+  extends org.santfeliu.workflow.node.TerminateInstanceNode 
   implements NodeProcessor
 {
-  
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception
@@ -62,5 +61,4 @@ public class TerminateInstanceNode extends org.santfeliu.workflow.node.Terminate
     instance.setActiveNodes(null);
     return END_OUTCOME;
   }
-
 }

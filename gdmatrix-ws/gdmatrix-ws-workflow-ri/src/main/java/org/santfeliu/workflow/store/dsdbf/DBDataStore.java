@@ -31,7 +31,6 @@
 package org.santfeliu.workflow.store.dsdbf;
 
 import java.util.Properties;
-
 import org.santfeliu.dbf.DBConnection;
 import org.santfeliu.dbf.DBRepository;
 import org.santfeliu.workflow.WorkflowException;
@@ -41,7 +40,7 @@ import org.santfeliu.workflow.store.DataStoreConnection;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBDataStore implements DataStore
 {
@@ -52,12 +51,13 @@ public class DBDataStore implements DataStore
   private String URL;
   private String username;
   private String password;
-  private DBRepository repository = new DBRepository();
+  private final DBRepository repository = new DBRepository();
   
   public DBDataStore()
   {
   }
 
+  @Override
   public void init(Properties properties) throws WorkflowException
   {
     try
@@ -77,8 +77,8 @@ public class DBDataStore implements DataStore
     }
   }
 
-  public DataStoreConnection getConnection()
-    throws WorkflowException
+  @Override
+  public DataStoreConnection getConnection() throws WorkflowException
   {
     DBConnection conn;
     try
@@ -95,7 +95,6 @@ public class DBDataStore implements DataStore
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
       throw new WorkflowException(ex);
     }
   }

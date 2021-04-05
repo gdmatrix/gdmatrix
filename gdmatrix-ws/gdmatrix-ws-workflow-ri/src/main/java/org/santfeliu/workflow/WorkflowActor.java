@@ -35,7 +35,10 @@ import java.util.Iterator;
 import java.util.Set;
 import org.matrix.workflow.WorkflowConstants;
 
-
+/**
+ *
+ * @author realor
+ */
 public abstract class WorkflowActor
 {
   private String name;

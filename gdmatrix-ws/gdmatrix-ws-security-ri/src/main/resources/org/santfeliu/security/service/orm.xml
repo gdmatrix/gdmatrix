@@ -315,7 +315,7 @@
   </named-query>
 
   <entity class="org.santfeliu.security.service.DBUser" name="User"
-          access="PROPERTY">
+    access="PROPERTY">
     <!-- Synonym of GENESYS5.ORG_USUARI -->
     <table name="ORG_USUARI"  />
     <attributes>
@@ -332,7 +332,7 @@
         <column name="PERSCOD" length="20" />
       </basic>
       <basic name="lockedValue">
-        <column name="BLOQUEJAT" length="1" />
+        <column name="BLOQUEJAT" precision="1" scale="0" />
       </basic>
       <basic name="creationUserId">
         <column name="STDUGR" length="20" />
@@ -356,7 +356,7 @@
   </entity>
 
   <entity class="org.santfeliu.security.service.DBRole" name="Role"
-          access="PROPERTY">
+    access="PROPERTY">
     <table name="APL_ROL" />
     <attributes>
       <id name="roleId">
@@ -387,14 +387,15 @@
   </entity>
 
   <entity class="org.santfeliu.security.service.DBUserInRole"
-          name="UserInRole" access="PROPERTY">
+    name="UserInRole" access="PROPERTY">
     <table name="APL_ROLUSR" />
+    <id-class class="org.santfeliu.security.service.DBUserInRolePK" />
     <attributes>
       <id name="userId">
-        <column name="USRCOD" length="8" />
+        <column name="USRCOD" length="20" />
       </id>
       <id name="roleId">
-        <column name="ROLCOD" length="8" />
+        <column name="ROLCOD" length="20" />
       </id>
       <basic name="comments">
         <column name="COMMENTS" length="1000" />
@@ -409,7 +410,7 @@
   </entity>
 
   <entity class="org.santfeliu.security.service.DBRoleInRole" 
-          name="RoleInRole" access="PROPERTY">
+    name="RoleInRole" access="PROPERTY">
     <table name="APL_ROLROL" />
     <id-class class="org.santfeliu.security.service.DBRoleInRolePK" />
     <attributes>

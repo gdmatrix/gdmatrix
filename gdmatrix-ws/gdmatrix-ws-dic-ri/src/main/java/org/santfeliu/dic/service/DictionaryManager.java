@@ -60,27 +60,23 @@ import org.matrix.dic.*;
 import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.dic.RootTypeFactory;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
+
 /**
  *
  * @author realor
  */
 @WebService(endpointInterface = "org.matrix.dic.DictionaryManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class DictionaryManager implements DictionaryManagerPort
 {
-  @Resource
-  WebServiceContext wsContext;
-
-  @PersistenceContext(unitName="dic_ri")
-  public EntityManager entityManager;
-
-  protected static final Logger log = Logger.getLogger("Dictionary");
+  private static final Logger LOGGER = Logger.getLogger("Dictionary");
 
   private static final int MAX_TYPEID_LENGTH = 64;
   private static final int MAX_TYPEDESCRIPTION_LENGTH = 1000;
@@ -92,15 +88,27 @@ public class DictionaryManager implements DictionaryManagerPort
   private static final int MAX_ENUMTYPEITEM_DESCRIPTION_LENGTH = 2000;
   private static final int MAX_ENUMTYPEITEM_INDEX_LENGTH = 5;
 
+  @Resource
+  WebServiceContext wsContext;
+
+  @PersistenceContext(unitName="dic_ri")
+  public EntityManager entityManager;
+  
   //typeActions method
   private static HashMap<String, List<String>> typeActionsMap = new
     HashMap<String, List<String>>();
   private static long lastModified;
   
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    // create emf
+  }  
+  
   @Override
   public Type loadType(String typeId)
   {
-    log.log(Level.INFO, "loadType {0}", new Object[]{typeId});
+    LOGGER.log(Level.INFO, "loadType {0}", new Object[]{typeId});
 
     if (typeId == null)
       throw new WebServiceException("dic:TYPEID_IS_MANDATORY");
@@ -144,7 +152,7 @@ public class DictionaryManager implements DictionaryManagerPort
     User user = UserCache.getUser(wsContext);
     
     String typeId = type.getTypeId();
-    log.log(Level.INFO, "storeType {0}, userId: {1}",
+    LOGGER.log(Level.INFO, "storeType {0}, userId: {1}",
       new Object[]{typeId, user.getUserId()});
 
     if (typeId == null || typeId.trim().length() == 0)
@@ -209,7 +217,7 @@ public class DictionaryManager implements DictionaryManagerPort
   {
     User user = UserCache.getUser(wsContext);
 
-    log.log(Level.INFO, "removeType {0}", new Object[]{typeId});
+    LOGGER.log(Level.INFO, "removeType {0}", new Object[]{typeId});
 
     if (typeId == null)
       throw new WebServiceException("dic:TYPEID_IS_MANDATORY");
@@ -258,7 +266,7 @@ public class DictionaryManager implements DictionaryManagerPort
   {
     User user = UserCache.getUser(wsContext);
 
-    log.log(Level.INFO, "countTypes");
+    LOGGER.log(Level.INFO, "countTypes");
 
     if (isRootTypeFilter(filter))
     {
@@ -278,7 +286,7 @@ public class DictionaryManager implements DictionaryManagerPort
   {
     User user = UserCache.getUser(wsContext);
 
-    log.log(Level.INFO, "findTypes");
+    LOGGER.log(Level.INFO, "findTypes");
     
     if (StringUtils.isBlank(filter.getTypeId()) &&
         StringUtils.isBlank(filter.getSuperTypeId()) &&
@@ -352,7 +360,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public EnumType loadEnumType(String enumTypeId)
   {
-    log.log(Level.INFO, "loadEnumType {0}", new Object[]{enumTypeId});
+    LOGGER.log(Level.INFO, "loadEnumType {0}", new Object[]{enumTypeId});
 
     if (enumTypeId == null)
       throw new WebServiceException("dic:TYPEID_IS_MANDATORY");
@@ -371,7 +379,7 @@ public class DictionaryManager implements DictionaryManagerPort
   public EnumType storeEnumType(EnumType enumType)
   {
     String enumTypeId = enumType.getEnumTypeId();
-    log.log(Level.INFO, "storeEnumType {0}", new Object[]{enumTypeId});
+    LOGGER.log(Level.INFO, "storeEnumType {0}", new Object[]{enumTypeId});
     checkEnumType(enumType);
 
     User user = UserCache.getUser(wsContext);
@@ -395,7 +403,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public boolean removeEnumType(String enumTypeId)
   {
-    log.log(Level.INFO, "removeEnumType {0}", new Object[]{enumTypeId});
+    LOGGER.log(Level.INFO, "removeEnumType {0}", new Object[]{enumTypeId});
 
     if (enumTypeId == null)
       throw new WebServiceException("dic:ENUMTYPEID_IS_MANDATORY");
@@ -426,7 +434,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public int countEnumTypes(EnumTypeFilter filter)
   {
-    log.log(Level.INFO, "countEnumTypes");
+    LOGGER.log(Level.INFO, "countEnumTypes");
     Query query = entityManager.createNamedQuery("countEnumTypes");
     applyEnumTypeFilter(query, filter);
     Number number = (Number)query.getSingleResult();
@@ -436,7 +444,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public List<EnumType> findEnumTypes(EnumTypeFilter filter)
   {
-    log.log(Level.INFO, "findEnumTypes");
+    LOGGER.log(Level.INFO, "findEnumTypes");
     List<EnumType> result = new ArrayList<EnumType>();
     Query query = entityManager.createNamedQuery("findEnumTypes");
     applyEnumTypeFilter(query, filter);
@@ -455,7 +463,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public EnumTypeItem loadEnumTypeItem(String enumTypeItemId)
   {
-    log.log(Level.INFO, "loadEnumTypeItem {0}", enumTypeItemId);
+    LOGGER.log(Level.INFO, "loadEnumTypeItem {0}", enumTypeItemId);
 
     if (enumTypeItemId == null)
       throw new WebServiceException("dic:ENUMTYPEITEMID_IS_MANDATORY");
@@ -475,7 +483,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public EnumTypeItem storeEnumTypeItem(EnumTypeItem enumTypeItem)
   {
-    log.log(Level.INFO, "storeEnumTypeItem enumTypeId {0}, value {1}",
+    LOGGER.log(Level.INFO, "storeEnumTypeItem enumTypeId {0}, value {1}",
       new String[]{enumTypeItem.getEnumTypeId(), enumTypeItem.getValue()});
     checkEnumTypeItem(enumTypeItem);
 
@@ -499,7 +507,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public boolean removeEnumTypeItem(String enumTypeItemId)
   {
-    log.log(Level.INFO, "removeEnumTypeItem {0}", new String[]{enumTypeItemId});
+    LOGGER.log(Level.INFO, "removeEnumTypeItem {0}", new String[]{enumTypeItemId});
 
     if (enumTypeItemId == null)
       throw new WebServiceException("dic:ENUMTYPEITEMID_IS_MANDATORY");
@@ -522,7 +530,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public int countEnumTypeItems(EnumTypeItemFilter filter)
   {
-    log.log(Level.INFO, "countEnumTypeItems");
+    LOGGER.log(Level.INFO, "countEnumTypeItems");
     Query query = entityManager.createNamedQuery("countEnumTypeItems");
     applyEnumTypeItemFilter(query, filter);
     Number number = (Number)query.getSingleResult();
@@ -532,7 +540,7 @@ public class DictionaryManager implements DictionaryManagerPort
   @Override
   public List<EnumTypeItem> findEnumTypeItems(EnumTypeItemFilter filter)
   {
-    log.log(Level.INFO, "findEnumTypeItems");
+    LOGGER.log(Level.INFO, "findEnumTypeItems");
     List<EnumTypeItem> result = new ArrayList<EnumTypeItem>();
     boolean sorted = true;
     if (filter.getEnumTypeId() != null)

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.store.dsdbf;
@@ -54,20 +54,19 @@ import org.santfeliu.workflow.store.DataStoreConnection;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class DBDataStoreConnection
-  implements DataStoreConnection
+public class DBDataStoreConnection implements DataStoreConnection
 {
   private final String SEQUENCE_TABLE_NAME = "TABLESEQ";
   private final String INSTANCE_SEQUENCE_NAME = "workflow.instance";
   private final String SEQUENCE_COLUMN_NAME = "value";
-  
+
   private final DBConnection conn;
   private final HashMap parameters = new HashMap(10);
   private final Set lockedInstances = new HashSet();
-  
-  private final SimpleDateFormat dateFormat = 
+
+  private final SimpleDateFormat dateFormat =
     new SimpleDateFormat("yyyyMMddHHmmss");
 
   public DBDataStoreConnection(DBConnection conn)
@@ -78,14 +77,13 @@ public class DBDataStoreConnection
   }
 
   @Override
-  public String createInstance(String workflowName)
-    throws Exception
+  public String createInstance(String workflowName) throws Exception
   {
-    int instanceId = DBUtils.getSequenceValue(conn, SEQUENCE_TABLE_NAME, 
+    int instanceId = DBUtils.getSequenceValue(conn, SEQUENCE_TABLE_NAME,
       new DBKey(INSTANCE_SEQUENCE_NAME), SEQUENCE_COLUMN_NAME);
 
     String startDateTime =  TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-    
+
     parameters.clear();
     parameters.put("instanceid", String.valueOf(instanceId));
     parameters.put("workflow", workflowName);
@@ -124,9 +122,9 @@ public class DBDataStoreConnection
     parameters.put("agentName", agentName);
     conn.setMaxRows(0);
     Table result = conn.executeQuery(
-      "select i.instanceid from wfw_instance i, wfw_variable v where " + 
-      "i.instanceid = v.instanceid and i.processable = 'Y' and v.name = '" + 
-      WorkflowConstants.AGENT_NAME + "' and v.value = {agentName}", 
+      "select i.instanceid from wfw_instance i, wfw_variable v where " +
+      "i.instanceid = v.instanceid and i.processable = 'Y' and v.name = '" +
+      WorkflowConstants.AGENT_NAME + "' and v.value = {agentName}",
       parameters);
 
     int count = result.getRowCount();
@@ -147,7 +145,7 @@ public class DBDataStoreConnection
     parameters.put("instanceid", instanceId);
     parameters.put("processable", processable ? "Y" : "N");
     int numUpdated = conn.executeUpdate(
-      "update wfw_instance set processable = {processable} " + 
+      "update wfw_instance set processable = {processable} " +
       "where instanceid = {instanceid}", parameters);
     if (numUpdated == 0)
       throw new WorkflowException("Instance " + instanceId + " not found");
@@ -161,9 +159,9 @@ public class DBDataStoreConnection
       parameters.clear();
       parameters.put("instanceid", instanceId);
       int numUpdated = conn.executeUpdate(
-        "update wfw_instance set instanceid = instanceid " + 
+        "update wfw_instance set instanceid = instanceid " +
         "where instanceid = {instanceid}", parameters);
-      if (numUpdated == 0) 
+      if (numUpdated == 0)
         throw new WorkflowException("Instance " + instanceId + " not found");
       lockedInstances.add(instanceId);
     }
@@ -172,7 +170,7 @@ public class DBDataStoreConnection
   @Override
   public void pushEvent(WorkflowEvent event) throws Exception
   {
-    int eventNum = DBUtils.getSequenceValue(conn, "wfw_instance", 
+    int eventNum = DBUtils.getSequenceValue(conn, "wfw_instance",
       new DBKey(event.getInstanceId()), "eventcount");
 
     Date now = new Date();
@@ -180,7 +178,7 @@ public class DBDataStoreConnection
 
     parameters.clear();
     parameters.put("instanceid", event.getInstanceId());
-    parameters.put("eventnum", new Integer(eventNum));
+    parameters.put("eventnum", eventNum);
     parameters.put("eventdate", nowString.substring(0, 8));
     parameters.put("eventhour", nowString.substring(8));
     parameters.put("actor", event.getActorName());
@@ -198,9 +196,9 @@ public class DBDataStoreConnection
       if (type != null)
       {
         Object oldValue = valueChanges.getOldValue(name);
-        String sNewValue = (newValue == null) ? 
+        String sNewValue = (newValue == null) ?
           null : convertValueToString(newValue);
-        String sOldValue = (oldValue == null) ? 
+        String sOldValue = (oldValue == null) ?
           null : convertValueToString(oldValue);
         parameters.put("name", name);
         parameters.put("type", type);
@@ -219,8 +217,8 @@ public class DBDataStoreConnection
     parameters.put("instanceid", instanceId);
     conn.setMaxRows(1);
     Table result = conn.executeQuery(
-      "select e.eventnum, e.eventdate, e.eventhour, e.actor " + 
-      "from wfw_instance i, wfw_event e " + 
+      "select e.eventnum, e.eventdate, e.eventhour, e.actor " +
+      "from wfw_instance i, wfw_event e " +
       "where i.instanceid = {instanceid} and i.instanceid = e.instanceid " +
       "and e.eventnum = i.eventcount and i.eventcount > 1 ", parameters);
 
@@ -229,8 +227,8 @@ public class DBDataStoreConnection
       int eventNum = ((Number)result.getElementAt(0, 0)).intValue();
       String sdate = (String)result.getElementAt(0, 1);
       String shour = (String)result.getElementAt(0, 2);
-      String actorName = (String)result.getElementAt(0, 3);     
-      Date date = dateFormat.parse(sdate + shour);      
+      String actorName = (String)result.getElementAt(0, 3);
+      Date date = dateFormat.parse(sdate + shour);
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(date);
 
@@ -240,7 +238,7 @@ public class DBDataStoreConnection
       conn.setMaxRows(0);
       parameters.clear();
       parameters.put("instanceid", instanceId);
-      parameters.put("eventnum", new Integer(eventNum));
+      parameters.put("eventnum", eventNum);
       result = conn.executeQuery(
         "select name, type, newvalue, oldvalue from wfw_eventvar where " +
         "instanceid = {instanceid} and eventnum = {eventnum}", parameters);
@@ -256,25 +254,25 @@ public class DBDataStoreConnection
         valueChanges.registerChange(name, oldValue, newValue);
       }
 
-      event = new WorkflowEvent(instanceId, eventNum, calendar, 
+      event = new WorkflowEvent(instanceId, eventNum, calendar,
         valueChanges, actorName);
 
       // remove event
       parameters.clear();
       parameters.put("instanceid", instanceId);
-      parameters.put("eventnum", new Integer(eventNum));
+      parameters.put("eventnum", eventNum);
       conn.executeUpdate(
         "delete wfw_eventvar where " +
-        "instanceid = {instanceid} and eventnum = {eventnum}", 
+        "instanceid = {instanceid} and eventnum = {eventnum}",
         parameters);
       conn.executeUpdate(
         "delete wfw_event where " +
-        "instanceid = {instanceid} and eventnum = {eventnum}", 
+        "instanceid = {instanceid} and eventnum = {eventnum}",
         parameters);
       // decrement eventcount
       conn.executeUpdate(
         "update wfw_instance set eventcount = eventcount - 1 where " +
-        "instanceid = {instanceid}", 
+        "instanceid = {instanceid}",
         parameters);
     }
     return event;
@@ -288,7 +286,7 @@ public class DBDataStoreConnection
     parameters.clear();
     parameters.put("instanceid", instanceId);
     Table result = conn.executeQuery(
-      "select name, type, value from wfw_variable where " + 
+      "select name, type, value from wfw_variable where " +
       "instanceid = {instanceid} ", parameters);
 
     if (result.isEmpty())
@@ -351,7 +349,7 @@ public class DBDataStoreConnection
   public void programTimer(String instanceId, String dateTime)
     throws Exception
   {
-    Map alarm = 
+    Map alarm =
       conn.selectMap("wfw_timer", new DBKey(instanceId, dateTime));
     if (alarm == null)
     {
@@ -386,7 +384,7 @@ public class DBDataStoreConnection
     }
     return timers;
   }
-  
+
   @Override
   public Table findInstances(InstanceFilter filter, Set roles)
     throws Exception
@@ -407,7 +405,7 @@ public class DBDataStoreConnection
       parameters.put("startDateTime", startDate + "000000");
       if (endDate == null) endDate = "99991231";
       parameters.put("endDateTime", endDate + "235959");
-      
+
       queryBuilder.addCondition(
         "i.startdt between {startDateTime} and {endDateTime}");
       innerQuery = true;
@@ -427,7 +425,7 @@ public class DBDataStoreConnection
         parameters.put("name" + num, name);
         parameters.put("value" + num, value);
         queryBuilder.addTable("wfw_variable va" + num);
-        
+
         queryBuilder.addCondition("va" + num + ".instanceid = i.instanceid");
         queryBuilder.addCondition(
           "va" + num + ".name like {name" + num + "} and " +
@@ -449,7 +447,7 @@ public class DBDataStoreConnection
       }
     }
 
-    String query = "select v.instanceid, v.name, v.value, v.type from " + 
+    String query = "select v.instanceid, v.name, v.value, v.type from " +
       "wfw_variable v where " +
       "v.name in ('" +
       WorkflowConstants.WORKFLOW_NAME + "', '" +
@@ -493,8 +491,8 @@ public class DBDataStoreConnection
         instanceCount++;
         if (instanceCount <= filter.getMaxResults())
         {
-          result.addRow(new Object[]{instanceId, variables});          
-        }        
+          result.addRow(new Object[]{instanceId, variables});
+        }
       }
       String varName = String.valueOf(table.getElementAt(row, 1));
       String svalue = String.valueOf(table.getElementAt(row, 2));
@@ -507,24 +505,21 @@ public class DBDataStoreConnection
   }
 
   @Override
-  public void rollback()
-    throws Exception
+  public void rollback() throws Exception
   {
     conn.rollback();
     lockedInstances.clear();
   }
 
   @Override
-  public void commit()
-    throws Exception
+  public void commit() throws Exception
   {
     conn.commit();
     lockedInstances.clear();
   }
 
   @Override
-  public void close()
-    throws Exception
+  public void close() throws Exception
   {
     conn.close();
     lockedInstances.clear();
@@ -564,7 +559,7 @@ public class DBDataStoreConnection
     }
     return type;
   }
-  
+
   private String convertValueToString(Object value)
   {
     if (value instanceof Number)
@@ -575,13 +570,13 @@ public class DBDataStoreConnection
         value = String.valueOf(number.intValue());
       }
     }
-    return value.toString();
+    return String.valueOf(value);
   }
-  
+
   private Object convertValueToJava(String svalue, String type)
   {
     Object value = null;
-    
+
     if (svalue == null)
     {
       value = null;
@@ -594,7 +589,7 @@ public class DBDataStoreConnection
       }
       catch (NumberFormatException ex)
       {
-        value = new Double(0.0);
+        value = 0.0;
       }
     }
     else if (WorkflowConstants.TEXT_TYPE.equals(type))
@@ -631,7 +626,7 @@ public class DBDataStoreConnection
       if (whereClause.length() > 0) whereClause.append(" and");
       whereClause.append(" (").append(expr).append(") ");
     }
-    
+
     @Override
     public String toString()
     {

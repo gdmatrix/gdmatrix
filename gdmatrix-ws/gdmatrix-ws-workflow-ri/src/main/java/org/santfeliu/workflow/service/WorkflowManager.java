@@ -37,21 +37,17 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-
 import javax.xml.ws.WebServiceContext;
-
 import org.matrix.workflow.InstanceFilter;
 import org.matrix.workflow.InstanceView;
 import org.matrix.workflow.Variable;
 import org.matrix.workflow.WorkflowConstants;
 import org.matrix.workflow.WorkflowManagerPort;
-
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.MatrixConfig;
@@ -73,10 +69,10 @@ import org.santfeliu.ws.WSExceptionFactory;
 @HandlerChain(file="handlers.xml")
 public class WorkflowManager implements WorkflowManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("Workflow");
+
   @Resource
   WebServiceContext wsContext;
-
-  protected static final Logger log = Logger.getLogger("Workflow");
 
   protected WorkflowEngine engine;
   protected int maxSteps = 50;
@@ -86,12 +82,13 @@ public class WorkflowManager implements WorkflowManagerPort
   public static final String WORKFLOW_STORE = "workflowStore";
   public static final String AGENTS = "agents";
   public static final String MAX_STEPS = "maxSteps";
-
-  public WorkflowManager()
+  
+  @PostConstruct
+  public void construct()
   {
+    LOGGER.log(Level.INFO, "Initializing WorkflowManager");
     try
     {
-      log.info("WorkflowManager init");
       Properties properties = MatrixConfig.getProperties();
       
       // setup workflowStore
@@ -133,9 +130,16 @@ public class WorkflowManager implements WorkflowManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "WorkflowManager init failed", ex);
+      LOGGER.log(Level.SEVERE, "WorkflowManager init failed", ex);
       throw new RuntimeException(ex);
     }
+  }
+  
+  @PreDestroy
+  public void destroy()
+  {
+    LOGGER.log(Level.INFO, "Destroying WorkflowManager, killing agents...");
+    engine.killAllAgents();
   }
   
   @Override
@@ -262,7 +266,7 @@ public class WorkflowManager implements WorkflowManagerPort
     {  
       Table table = engine.findInstances(filter, getWorkflowUser());
 
-      ArrayList<InstanceView> instanceList = new ArrayList<InstanceView>();
+      ArrayList<InstanceView> instanceList = new ArrayList<>();
       for (int i = 0; i < table.getRowCount(); i++)
       {
         InstanceView instanceView = new InstanceView();
@@ -294,14 +298,7 @@ public class WorkflowManager implements WorkflowManagerPort
     {
       throw WSExceptionFactory.create(ex);
     }
-  }
-
-  @PreDestroy
-  public void destroy()
-  {
-    log.log(Level.INFO, "Destroying WorkflowManager, killing agents...");
-    engine.killAllAgents();
-  }
+  }  
   
   /**** private methods ****/
 
@@ -331,7 +328,7 @@ public class WorkflowManager implements WorkflowManagerPort
   private boolean getBooleanValue(Object value)
   {
     if (value == null) return false;
-    else if (value instanceof Boolean) return ((Boolean)value).booleanValue();
+    else if (value instanceof Boolean) return ((Boolean)value);
     else return false;
   }
 }

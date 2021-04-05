@@ -148,16 +148,16 @@
     <table name="CLS_CLASS" />
     <attributes>
       <id name="classId">
-        <column name="CLASSID" />
+        <column name="CLASSID" length="32" />
       </id>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
     </attributes>
   </entity>
@@ -168,46 +168,46 @@
     <id-class class="org.santfeliu.classif.service.DBClassPeriodPK" />
     <attributes>
       <id name="classId">
-        <column name="CLASSID" />
+        <column name="CLASSID" length="32" />
       </id>
       <id name="startDateTime">
-        <column name="STARTDT" />
+        <column name="STARTDT" length="14" />
       </id>
       <basic name="endDateTime">
-        <column name="ENDDT" />
+        <column name="ENDDT" length="14" />
       </basic>
       <basic name="classTypeId">
-        <column name="CLASSTYPEID" />
+        <column name="CLASSTYPEID" length="64" />
       </basic>
       <basic name="title">
-        <column name="TITLE" />
+        <column name="TITLE" length="200" />
       </basic>
       <basic name="description">
-        <column name="DESCRIPTION" />
+        <column name="DESCRIPTION" length="4000" />
       </basic>
       <basic name="location">
-        <column name="LOCATION" />
+        <column name="LOCATION" length="32" />
       </basic>
       <basic name="offlineDownloadValue">
-        <column name="OFFLINEDOWNLOAD" />
+        <column name="OFFLINEDOWNLOAD" length="1" />
       </basic>
       <basic name="superClassId">
-        <column name="SUPERCLASSID" />
+        <column name="SUPERCLASSID" length="32" />
       </basic>
       <basic name="accessControlUserId">
-        <column name="ACUSERID" />
+        <column name="ACUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="CHANGEUSERID" />
+        <column name="CHANGEUSERID" length="20" />
       </basic>
       <basic name="changeReason">
-        <column name="CHANGEREASON" />
+        <column name="CHANGEREASON" length="4000" />
       </basic>
       <basic name="periodId">
-        <column name="PERIODID" />
+        <column name="PERIODID" precision="10" scale="0" />
       </basic>
     </attributes>
   </entity>
@@ -218,16 +218,16 @@
     <id-class class="org.santfeliu.classif.service.DBClassPeriodPropertyValuePK" />
     <attributes>
       <id name="periodId">
-        <column name="PERIODID" />
+        <column name="PERIODID" precision="10" scale="0" />
       </id>
       <id name="name">
-        <column name="PROPNAME" />
+        <column name="PROPNAME" length="100" />
       </id>
       <id name="index">
-        <column name="PROPINDEX" />
+        <column name="PROPINDEX" precision="5" scale="0" />
       </id>
       <basic name="value">
-        <column name="PROPVALUE" />
+        <column name="PROPVALUE" length="4000" />
       </basic>
     </attributes>
   </entity>
@@ -237,10 +237,10 @@
     <table name="TABLESEQ" />
     <attributes>
       <id name="name">
-        <column name="COUNTER" />
+        <column name="COUNTER" length="50" />
       </id>
       <basic name="value">
-        <column name="VALUE" />
+        <column name="VALUE" precision="10" scale="0" />
       </basic>
     </attributes>
   </entity>

@@ -36,10 +36,9 @@ import org.matrix.workflow.InstanceFilter;
 import org.santfeliu.util.Table;
 import org.santfeliu.workflow.WorkflowEvent;
 
-
 /**
  *
- * @author unknown
+ * @author realor
  */
 public interface DataStoreConnection
 {

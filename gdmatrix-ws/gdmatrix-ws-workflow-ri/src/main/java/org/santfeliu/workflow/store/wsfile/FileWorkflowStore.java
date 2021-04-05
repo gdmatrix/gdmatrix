@@ -32,28 +32,25 @@ package org.santfeliu.workflow.store.wsfile;
 
 import java.io.File;
 import java.io.FileInputStream;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
-
 import org.santfeliu.workflow.Workflow;
 import org.santfeliu.workflow.WorkflowException;
 import org.santfeliu.workflow.io.WorkflowReader;
 import org.santfeliu.workflow.store.BaseWorkflowStore;
 import org.santfeliu.workflow.store.dsdbf.DBDataStore;
 
-
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class FileWorkflowStore extends BaseWorkflowStore
 {
   private static final String PKG = DBDataStore.class.getName() + ".";
 
-  private String WORKFLOW_EXTENSION = ".xml";
-  private String WORKFLOW_VERSION_SEPARATOR = "@";
+  private final String WORKFLOW_EXTENSION = ".xml";
+  private final String WORKFLOW_VERSION_SEPARATOR = "@";
   
   private String directory;
 
@@ -72,8 +69,8 @@ public class FileWorkflowStore extends BaseWorkflowStore
     return directory;
   }
 
-  public void init(Properties properties)
-    throws WorkflowException
+  @Override
+  public void init(Properties properties) throws WorkflowException
   {
     try
     {
@@ -81,10 +78,11 @@ public class FileWorkflowStore extends BaseWorkflowStore
     }
     catch (Exception ex)
     {
-      WorkflowException.createException(ex);
+      throw WorkflowException.createException(ex);
     }
   }
 
+  @Override
   public String getCurrentWorkflowVersion(String workflowName)
   {
     String currentVersion = "";
@@ -106,8 +104,8 @@ public class FileWorkflowStore extends BaseWorkflowStore
     return currentVersion;
   }
 
-  public Collection getWorkflowNames()
-    throws WorkflowException
+  @Override
+  public Collection getWorkflowNames() throws WorkflowException
   {
     HashSet set = new HashSet();
     File dir = new File(directory);
@@ -126,6 +124,7 @@ public class FileWorkflowStore extends BaseWorkflowStore
   }
   
   /* if workflowVersion == null returns the last version */
+  @Override
   protected Workflow loadWorkflow(
     String workflowName, String workflowVersion) throws WorkflowException
   {

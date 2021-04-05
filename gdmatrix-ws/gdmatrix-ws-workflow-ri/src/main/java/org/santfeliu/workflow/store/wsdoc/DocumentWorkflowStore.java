@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.store.wsdoc;
@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.dic.Property;
@@ -53,7 +52,7 @@ import org.santfeliu.workflow.util.WorkflowFixer.Issue;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DocumentWorkflowStore extends BaseWorkflowStore
 {
@@ -86,6 +85,7 @@ public class DocumentWorkflowStore extends BaseWorkflowStore
     return password;
   }
 
+  @Override
   public void init(Properties properties) throws WorkflowException
   {
     try
@@ -95,10 +95,11 @@ public class DocumentWorkflowStore extends BaseWorkflowStore
     }
     catch (Exception ex)
     {
-      WorkflowException.createException(ex);
+      throw WorkflowException.createException(ex);
     }
   }
 
+  @Override
   public String getCurrentWorkflowVersion(String workflowName)
     throws WorkflowException
   {
@@ -129,34 +130,34 @@ public class DocumentWorkflowStore extends BaseWorkflowStore
     }
   }
 
-  public Collection getWorkflowNames()
-    throws WorkflowException
+  @Override
+  public Collection getWorkflowNames() throws WorkflowException
   {
     return null;
   }
 
   /* if workflowVersion == null returns the last version */
 
-  protected Workflow loadWorkflow(String workflowName, 
-                                  String workflowVersion)
+  @Override
+  protected Workflow loadWorkflow(String workflowName, String workflowVersion)
     throws WorkflowException
   {
     Workflow workflow = null;
     try
     {
-      System.out.println("WFN:" + workflowName + " VER:" + 
+      System.out.println("WFN:" + workflowName + " VER:" +
                          workflowVersion);
 
       DocumentManagerClient client = getDocumentManagerClient();
       Document document = null;
       if (workflowVersion == null)
       {
-        document = client.loadDocumentByName("WORKFLOW", PROPERTY_NAME, 
+        document = client.loadDocumentByName("WORKFLOW", PROPERTY_NAME,
           workflowName, TranslationConstants.UNIVERSAL_LANGUAGE, 0);
       }
       else
       {
-        document = client.loadDocumentByName("WORKFLOW", PROPERTY_NAME, 
+        document = client.loadDocumentByName("WORKFLOW", PROPERTY_NAME,
           workflowName, TranslationConstants.UNIVERSAL_LANGUAGE,
           Integer.parseInt(workflowVersion));
       }
@@ -169,11 +170,11 @@ public class DocumentWorkflowStore extends BaseWorkflowStore
       System.out.println("Workflow contentId: " + contentId);
 
       DataHandler dh = document.getContent().getData();
-      DataSource dataSource = dh.getDataSource();      
+      DataSource dataSource = dh.getDataSource();
       InputStream stream = dataSource.getInputStream();
       try
       {
-        WorkflowReader reader = 
+        WorkflowReader reader =
           new WorkflowReader("org.santfeliu.workflow.processor");
         workflow = reader.read(stream);
         workflow.setVersion(workflowVersion);

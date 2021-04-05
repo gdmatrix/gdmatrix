@@ -56,14 +56,11 @@ import org.santfeliu.workflow.WorkflowInstance;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode 
   implements NodeProcessor
 {
-  
-
-
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception
@@ -246,7 +243,7 @@ public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
       {
         if (propertyList == null)
         {
-          propertyList = new ArrayList<Property>();
+          propertyList = new ArrayList<>();
           Properties finalProps = new Properties();
           Template.merge(properties, finalProps, instance);
           for (Object key : finalProps.keySet())
@@ -318,5 +315,4 @@ public class DocumentNode extends org.santfeliu.workflow.node.DocumentNode
     else // default 
       return new DocumentManagerClient(userId, password);
   }
-
 }

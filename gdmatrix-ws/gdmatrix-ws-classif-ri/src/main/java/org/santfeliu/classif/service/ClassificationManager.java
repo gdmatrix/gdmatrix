@@ -58,11 +58,12 @@ import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.WSTypeValidator;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.jpa.JPAUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 /**
  *
@@ -70,9 +71,14 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.classif.ClassificationManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class ClassificationManager implements ClassificationManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("Classification");
+
+  private static final String FINAL_DATE_TIME = "99991231235959";
+  private static final String PERIOD_SEQUENCE_NAME = "classif.period";
+
   @Resource
   WebServiceContext wsContext;
   private WSEndpoint endpoint;
@@ -80,14 +86,17 @@ public class ClassificationManager implements ClassificationManagerPort
   @PersistenceContext(unitName="classif_ri")
   public EntityManager entityManager;
 
-  protected static final Logger log = Logger.getLogger("Classification");
-  protected static final String FINAL_DATE_TIME = "99991231235959";
-
-  private static final String PERIOD_SEQUENCE_NAME = "classif.period";
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    // create emf
+  }
 
   @Override
   public Class loadClass(String classId, String dateTime)
   {
+    LOGGER.log(Level.INFO, "loadClass {0} {1}", 
+      new Object[]{classId, dateTime});
     if (classId == null)
       throw new WebServiceException("classif:CLASSID_IS_MANDATORY");
 
@@ -126,6 +135,8 @@ public class ClassificationManager implements ClassificationManagerPort
   @Override
   public Class storeClass(Class classObject)
   {
+    LOGGER.log(Level.INFO, "storeClass {0}", classObject.getClassId());
+
     classObject = getWSEndpoint().toLocal(Class.class, classObject);
 
     // check security
@@ -164,7 +175,7 @@ public class ClassificationManager implements ClassificationManagerPort
     if (newClass)
     {
       // new class
-      log.log(Level.INFO, "NEW CLASS: {0}", new Object[]{classId});
+      LOGGER.log(Level.INFO, "NEW CLASS: {0}", new Object[]{classId});
       dbClass = new DBClass();
       dbClass.copyFrom(classObject);
       dbClass.setCreationDateTime(currentDateTime);
@@ -186,7 +197,7 @@ public class ClassificationManager implements ClassificationManagerPort
       // check path
       if (superClassId != null)
       {
-        HashSet ancestors = new HashSet();
+        HashSet<String> ancestors = new HashSet<>();
         ancestors.add(classId);
         checkPath(superClassId, ancestors, startDateTime, endDateTime);
       }
@@ -244,6 +255,8 @@ public class ClassificationManager implements ClassificationManagerPort
   @Override
   public boolean removeClass(String classId)
   {
+    LOGGER.log(Level.INFO, "removeClass {0}", classId);
+    
     if (classId == null)
       throw new WebServiceException("classif:CLASSID_IS_MANDATORY");
 
@@ -284,6 +297,7 @@ public class ClassificationManager implements ClassificationManagerPort
   @Override
   public int countClasses(ClassFilter filter)
   {
+    LOGGER.log(Level.INFO, "countClasses {0}", filter.getTitle());
     filter = getWSEndpoint().toLocal(ClassFilter.class, filter);
     Query query = entityManager.createNamedQuery("countClasses");
     applyFilterParameters(filter, query);
@@ -294,8 +308,9 @@ public class ClassificationManager implements ClassificationManagerPort
   @Override
   public List<Class> findClasses(ClassFilter filter)
   {
+    LOGGER.log(Level.INFO, "findClasses {0}", filter.getTitle());
     filter = getWSEndpoint().toLocal(ClassFilter.class, filter);
-    List<Class> classList = new ArrayList<Class>();
+    List<Class> classList = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findClasses");
     applyFilterParameters(filter, query);
     query.setFirstResult(filter.getFirstResult());
@@ -319,6 +334,8 @@ public class ClassificationManager implements ClassificationManagerPort
   @Override
   public List<String> listModifiedClasses(String dateTime1, String dateTime2)
   {
+    LOGGER.log(Level.INFO, "listModifiedClasses {0} {1}", 
+      new Object[]{dateTime1, dateTime2});
     Query query = entityManager.createNamedQuery("listModifiedClasses");
     query.setParameter("dateTime1", dateTime1);
     query.setParameter("dateTime2", dateTime2);
@@ -340,8 +357,6 @@ public class ClassificationManager implements ClassificationManagerPort
   private void loadProperties(List<Property> properties,
     DBClassPeriod dbClassPeriod)
   {
-    System.out.println(">>>>>>>>>> Load properties ");
-
     Integer periodId = dbClassPeriod.getPeriodId();
     if (periodId == null) return;
 
@@ -353,7 +368,6 @@ public class ClassificationManager implements ClassificationManagerPort
     properties.clear();
     for (DBClassPeriodPropertyValue pv : pvs)
     {
-      System.out.println("pv >>>>>> " + pv.getName() + " " + pv.getValue());
       String name = pv.getName();
       if (!previousName.equals(name))
       {
@@ -364,20 +378,16 @@ public class ClassificationManager implements ClassificationManagerPort
       }
       property.getValue().add(pv.getValue());
     }
-    System.out.println(">>>>>>>>>>>>>>> " + properties);
   }
 
   private void storeProperties(List<Property> properties,
     DBClassPeriod dbClassPeriod)
   {
-    System.out.println(">>>>>>>>>> Store properties " + properties);
-
     Integer periodId = dbClassPeriod.getPeriodId();
     if (properties.isEmpty() && periodId == null) return;
 
     if (periodId == null) // no properties assigned yet
     {
-      System.out.println(">>>> increment counter");
       Query query = entityManager.createNamedQuery("incrementCounter");
       query.setParameter("name", PERIOD_SEQUENCE_NAME);
       int modified = query.executeUpdate();
@@ -385,18 +395,15 @@ public class ClassificationManager implements ClassificationManagerPort
 
       if (modified == 1)
       {
-        System.out.println(">>>> read counter");
         DBCounter counter =
           entityManager.find(DBCounter.class, PERIOD_SEQUENCE_NAME);        
         if (counter == null) throw new RuntimeException("Can't read counter");
         entityManager.refresh(counter);
         periodId = counter.getValue();
-        System.out.println(">>>>>>>>>>> COUNTER VALUE:" + periodId);
       }
       else // create counter
       {
-        System.out.println(">>>> create counter");
-        periodId = new Integer(0); // initial value
+        periodId = 0; // initial value
         DBCounter counter = new DBCounter();
         counter.setName(PERIOD_SEQUENCE_NAME);
         counter.setValue(periodId);
@@ -407,21 +414,18 @@ public class ClassificationManager implements ClassificationManagerPort
     }
     else
     {
-      System.out.println(">>>> remove old properties");
       // remove old values
-      Query query = entityManager.createNamedQuery("findClassPeriodPropertyValues");
+      Query query = 
+        entityManager.createNamedQuery("findClassPeriodPropertyValues");
       query.setParameter("periodId", periodId);
       List<DBClassPeriodPropertyValue> pvl = query.getResultList();
       for (DBClassPeriodPropertyValue pv : pvl)
       {
-        System.out.println(">>>> remove old property " + pv.getName());
         entityManager.remove(pv);
       }
     }
     entityManager.flush();
 
-    System.out.println(">>>> saving properties " + properties +
-      " for periodId:" + periodId);
     for (Property property : properties)
     {
       String name = property.getName();      
@@ -430,8 +434,6 @@ public class ClassificationManager implements ClassificationManagerPort
       {
         if (value != null)
         {
-          System.out.println(
-            ">>>> save property " + name + "[" + index + "]=" + value);
           DBClassPeriodPropertyValue pv = new DBClassPeriodPropertyValue();
           pv.setPeriodId(periodId);
           pv.setName(name);
@@ -467,7 +469,7 @@ public class ClassificationManager implements ClassificationManagerPort
       periodPart2.setPeriodId(null); // force new periodId
       entityManager.persist(periodPart2);
       entityManager.flush();
-      List<Property> properties = new ArrayList<Property>();
+      List<Property> properties = new ArrayList<>();
       loadProperties(properties, periodPart1);
       storeProperties(properties, periodPart2);
     }
@@ -494,7 +496,7 @@ public class ClassificationManager implements ClassificationManagerPort
     }
   }
 
-  private void checkPath(String classId, HashSet ancestors,
+  private void checkPath(String classId, HashSet<String> ancestors,
     String startDateTime, String endDateTime)
   {
     if (ancestors.contains(classId))
@@ -514,7 +516,7 @@ public class ClassificationManager implements ClassificationManagerPort
         String superClassId = period.getSuperClassId();
         if (superClassId != null)
         {
-          HashSet newAncestors = new HashSet();
+          HashSet<String> newAncestors = new HashSet<>();
           newAncestors.addAll(ancestors);
           newAncestors.add(classId);
           String dateTime1 = max(startDateTime, period.getStartDateTime());

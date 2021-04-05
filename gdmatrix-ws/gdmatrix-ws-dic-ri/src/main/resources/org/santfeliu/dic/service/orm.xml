@@ -331,6 +331,7 @@
         <generated-value strategy="TABLE" generator="dic.enumTypeItem"/>
         <table-generator name="dic.enumTypeItem" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="dic.enumTypeItem"
           initial-value="0" allocation-size="1" />
       </id>
       <basic name="enumTypeId">

@@ -30,13 +30,14 @@
  */
 package org.santfeliu.workflow.store;
 
-
 import java.util.HashMap;
-
 import org.santfeliu.workflow.Workflow;
 import org.santfeliu.workflow.WorkflowException;
 
-
+/**
+ *
+ * @author realor
+ */
 public abstract class BaseWorkflowStore implements WorkflowStore
 {
   protected HashMap cache = new HashMap();

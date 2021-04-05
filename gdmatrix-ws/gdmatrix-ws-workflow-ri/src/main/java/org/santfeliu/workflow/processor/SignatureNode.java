@@ -35,7 +35,6 @@ import org.matrix.signature.SignatureManagerPort;
 import org.matrix.signature.SignatureManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
-
 import org.santfeliu.signature.PropertyListConverter;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.Properties;
@@ -47,12 +46,11 @@ import org.santfeliu.ws.WSPortFactory;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SignatureNode extends org.santfeliu.workflow.node.SignatureNode 
   implements NodeProcessor
 {
-  
   @Override
   public String process(WorkflowInstance instance, WorkflowActor actor)
     throws Exception

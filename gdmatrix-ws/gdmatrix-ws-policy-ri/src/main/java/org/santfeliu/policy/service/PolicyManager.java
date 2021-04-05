@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -75,10 +77,11 @@ import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.WSTypeValidator;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 /**
  *
@@ -86,21 +89,30 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.policy.PolicyManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class PolicyManager implements PolicyManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("Policy");
+  
   @Resource
   WebServiceContext wsContext;
 
   @PersistenceContext(unitName="policy_ri")
   public EntityManager entityManager;
-
+  
   private WSEndpoint endpoint;
 
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    // create emf
+  }  
+  
   // Policy
   @Override
   public Policy loadPolicy(String policyId)
   {
+    LOGGER.log(Level.INFO, "loadPolicy {0}", policyId);
     DBPolicy dbPolicy = entityManager.find(DBPolicy.class,
       getWSEndpoint().toLocalId(Policy.class, policyId));
 
@@ -131,6 +143,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public Policy storePolicy(Policy policy)
   {
+    LOGGER.log(Level.INFO, "storePolicy {0}", policy.getPolicyId());
     User user = UserCache.getUser(wsContext);
     policy = getWSEndpoint().toLocal(Policy.class, policy);
 
@@ -203,6 +216,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public boolean removePolicy(String policyId)
   {
+    LOGGER.log(Level.INFO, "removePolicy {0}", policyId);
     boolean removed;
     try
     {
@@ -230,6 +244,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public int countPolicies(PolicyFilter filter)
   {
+    LOGGER.log(Level.INFO, "countPolicies {0}", filter.getPolicyTypeId());
     Query query = entityManager.createNamedQuery("countPolicies");
     applyFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -239,7 +254,8 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public List<Policy> findPolicies(PolicyFilter filter)
   {
-    List<Policy> results = new ArrayList<Policy>();
+    LOGGER.log(Level.INFO, "findPolicies {0}", filter.getPolicyTypeId());
+    List<Policy> results = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findPolicies");
     applyFilter(query, filter);
     query.setFirstResult(filter.getFirstResult());
@@ -259,6 +275,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public ClassPolicy loadClassPolicy(String classPolicyId)
   {
+    LOGGER.log(Level.INFO, "loadClassPolicy {0}", classPolicyId);
     DBClassPolicy dbClassPolicy =
       entityManager.find(DBClassPolicy.class, classPolicyId);
     if (dbClassPolicy == null)
@@ -271,6 +288,8 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public ClassPolicy storeClassPolicy(ClassPolicy classPolicy)
   {
+    LOGGER.log(Level.INFO, "storeClassPolicy {0}", 
+      classPolicy.getClassPolicyId());
     validateClassPolicy(classPolicy);
 
     User user = UserCache.getUser(wsContext);
@@ -298,6 +317,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public boolean removeClassPolicy(String classPolicyId)
   {
+    LOGGER.log(Level.INFO, "removeClassPolicy {0}", classPolicyId);
     boolean removed;
     try
     {
@@ -316,6 +336,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public int countClassPolicies(ClassPolicyFilter filter)
   {
+    LOGGER.log(Level.INFO, "countClassPolicies {0}", filter.getClassId());
     Query query = entityManager.createNamedQuery("countClassPolicies");
     applyFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -325,13 +346,15 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public List<ClassPolicy> findClassPolicies(ClassPolicyFilter filter)
   {
+    LOGGER.log(Level.INFO, "findClassPolicies {0}", filter.getClassId());
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
 
   @Override
   public List<ClassPolicyView> findClassPolicyViews(ClassPolicyFilter filter)
   {
-    List<ClassPolicyView> results = new ArrayList<ClassPolicyView>();
+    LOGGER.log(Level.INFO, "findClassPolicyViews {0}", filter.getClassId());
+    List<ClassPolicyView> results = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findClassPolicyViews");
     applyFilter(query, filter);
     query.setFirstResult(filter.getFirstResult());
@@ -356,6 +379,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public CasePolicy loadCasePolicy(String casePolicyId)
   {
+    LOGGER.log(Level.INFO, "loadCasePolicy {0}", casePolicyId);
     DBCasePolicy dbCasePolicy =
       entityManager.find(DBCasePolicy.class, casePolicyId);
     if (dbCasePolicy == null)
@@ -368,6 +392,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public CasePolicy storeCasePolicy(CasePolicy casePolicy)
   {
+    LOGGER.log(Level.INFO, "storeCasePolicy {0}", casePolicy.getCasePolicyId());
     validateCasePolicy(casePolicy);
 
     User user = UserCache.getUser(wsContext);
@@ -395,6 +420,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public boolean removeCasePolicy(String casePolicyId)
   {
+    LOGGER.log(Level.INFO, "removeCasePolicy {0}", casePolicyId);
     boolean removed;
     try
     {
@@ -413,6 +439,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public int countCasePolicies(CasePolicyFilter filter)
   {
+    LOGGER.log(Level.INFO, "countCasePolicies {0}", filter.getPolicyId());
     Query query = entityManager.createNamedQuery("countCasePolicies");
     applyFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -422,19 +449,21 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public List<CasePolicy> findCasePolicies(CasePolicyFilter filter)
   {
+    LOGGER.log(Level.INFO, "findCasePolicies {0}", filter.getPolicyId());
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
 
   @Override
   public List<CasePolicyView> findCasePolicyViews(CasePolicyFilter filter)
   {
-    List<CasePolicyView> results = new ArrayList<CasePolicyView>();
+    LOGGER.log(Level.INFO, "findCasePolicyViews {0}", filter.getPolicyId());
+    List<CasePolicyView> results = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findCasePolicyViews");
     applyFilter(query, filter);
     query.setFirstResult(filter.getFirstResult());
     query.setMaxResults(filter.getMaxResults());
     List<Object[]> rows = query.getResultList();
-    List<String> caseIdList = new ArrayList<String>();
+    List<String> caseIdList = new ArrayList<>();
     for (Object[] row : rows)
     {
       CasePolicyView view = new CasePolicyView();
@@ -451,7 +480,7 @@ public class PolicyManager implements PolicyManagerPort
     }
     if (caseIdList.size() > 0) // find case info
     {
-      HashMap<String, Case> caseMap = new HashMap<String, Case>();
+      HashMap<String, Case> caseMap = new HashMap<>();
       CaseManagerPort casePort = getCaseManagerPort();
       CaseFilter caseFilter = new CaseFilter();
       caseFilter.getCaseId().addAll(caseIdList);
@@ -473,6 +502,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public DocumentPolicy loadDocumentPolicy(String docPolicyId)
   {
+    LOGGER.log(Level.INFO, "loadDocumentPolicy {0}", docPolicyId);
     DBDocumentPolicy dbDocPolicy =
       entityManager.find(DBDocumentPolicy.class, docPolicyId);
     if (dbDocPolicy == null)
@@ -485,6 +515,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public DocumentPolicy storeDocumentPolicy(DocumentPolicy docPolicy)
   {
+    LOGGER.log(Level.INFO, "storeDocumentPolicy {0}", docPolicy.getPolicyId());
     validateDocumentPolicy(docPolicy);
 
     User user = UserCache.getUser(wsContext);
@@ -513,6 +544,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public boolean removeDocumentPolicy(String docPolicyId)
   {
+    LOGGER.log(Level.INFO, "removeDocumentPolicy {0}", docPolicyId);
     boolean removed;
     try
     {
@@ -531,6 +563,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public int countDocumentPolicies(DocumentPolicyFilter filter)
   {
+    LOGGER.log(Level.INFO, "countDocumentPolicies {0}", filter.getPolicyId());
     Query query = entityManager.createNamedQuery("countDocumentPolicies");
     applyFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -540,6 +573,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public List<DocumentPolicy> findDocumentPolicies(DocumentPolicyFilter filter)
   {
+    LOGGER.log(Level.INFO, "findDocumentPolicies {0}", filter.getPolicyId());
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
 
@@ -547,13 +581,14 @@ public class PolicyManager implements PolicyManagerPort
   public List<DocumentPolicyView> findDocumentPolicyViews(
     DocumentPolicyFilter filter)
   {
-    List<DocumentPolicyView> results = new ArrayList<DocumentPolicyView>();
+    LOGGER.log(Level.INFO, "findDocumentPolicyViews {0}", filter.getPolicyId());
+    List<DocumentPolicyView> results = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findDocumentPolicyViews");
     applyFilter(query, filter);
     query.setFirstResult(filter.getFirstResult());
     query.setMaxResults(filter.getMaxResults());
     List<Object[]> rows = query.getResultList();
-    List<String> docIdList = new ArrayList<String>();
+    List<String> docIdList = new ArrayList<>();
     for (Object[] row : rows)
     {
       DocumentPolicyView view = new DocumentPolicyView();
@@ -571,7 +606,7 @@ public class PolicyManager implements PolicyManagerPort
     if (docIdList.size() > 0)
     {
       // find document info
-      HashMap<String, Document> docMap = new HashMap<String, Document>();
+      HashMap<String, Document> docMap = new HashMap<>();
       DocumentManagerPort docPort = getDocumentManagerPort();
       DocumentFilter docFilter = new DocumentFilter();
       docFilter.getDocId().addAll(docIdList);
@@ -596,6 +631,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public DisposalHold loadDisposalHold(String dispHoldId)
   {
+    LOGGER.log(Level.INFO, "loadDisposalHold {0}", dispHoldId);
     DBDisposalHold dbDispHold =
       entityManager.find(DBDisposalHold.class, dispHoldId);
     if (dbDispHold == null)
@@ -608,6 +644,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public DisposalHold storeDisposalHold(DisposalHold dispHold)
   {
+    LOGGER.log(Level.INFO, "storeDisposalHold {0}", dispHold.getDispHoldId());
     User user = UserCache.getUser(wsContext);
     String dispHoldId = dispHold.getDispHoldId();
     if (dispHoldId == null) // new
@@ -633,6 +670,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public boolean removeDisposalHold(String dispHoldId)
   {
+    LOGGER.log(Level.INFO, "removeDisposalHold {0}", dispHoldId);
     boolean removed;
     try
     {
@@ -651,6 +689,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public int countDisposalHolds(DisposalHoldFilter filter)
   {
+    LOGGER.log(Level.INFO, "countDisposalHolds {0}", filter.getStartDate());
     Query query = entityManager.createNamedQuery("countDisposalHolds");
     applyFilter(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -660,7 +699,8 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public List<DisposalHold> findDisposalHolds(DisposalHoldFilter filter)
   {
-    List<DisposalHold> results = new ArrayList<DisposalHold>();
+    LOGGER.log(Level.INFO, "findDisposalHolds {0}", filter.getStartDate());
+    List<DisposalHold> results = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findDisposalHolds");
     applyFilter(query, filter);
     query.setFirstResult(filter.getFirstResult());
@@ -681,12 +721,14 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public String analizeDocument(String docId)
   {
+    LOGGER.log(Level.INFO, "analizeDocument {0}", docId);
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
 
   @Override
   public String analizeCase(String caseId)
   {
+    LOGGER.log(Level.INFO, "analizeCase {0}", caseId);
     throw new WebServiceException("NOT_IMPLEMENTED");
   }
 
@@ -978,13 +1020,13 @@ public class PolicyManager implements PolicyManagerPort
     String policyTypeId = policy.getPolicyTypeId();
     if (policyTypeId == null)
       throw new WebServiceException("policy:POLICY_TYPE_UNDEFINED");
-    policyTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, policyTypeId);
+    policyTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, 
+      policyTypeId);
 
     org.santfeliu.dic.Type type = TypeCache.getInstance().getType(policyTypeId);
 
     WSTypeValidator validator = new WSTypeValidator(type);
     validator.validate(policy, "policyId");
-
   }
 
   private void validateDocumentPolicy(DocumentPolicy docPolicy)
