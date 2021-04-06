@@ -125,7 +125,9 @@ public class SecurityManager implements SecurityManagerPort
   public static final String LDAP_ADMIN_USERID = "ldap.adminUserId";
   /* LDAP admin password */
   public static final String LDAP_ADMIN_PASSWORD = "ldap.adminPassword";
-
+  /* default personId for a user */
+  public static final String DEFAULT_PERSONID = "defaultPersonId";
+  
   @Resource
   WebServiceContext wsContext;
 
@@ -144,6 +146,7 @@ public class SecurityManager implements SecurityManagerPort
     String digestParameters;
     int minUserLength;
     int minPasswordLength;
+    String defaultPersonId;
 
     Configuration(String endpointName)
     {
@@ -165,6 +168,7 @@ public class SecurityManager implements SecurityManagerPort
           certUserRoles.add(role.trim());
         minUserLength = props.getInteger(MIN_USER_LENGTH, 8);
         minPasswordLength = props.getInteger(MIN_PASSWORD_LENGTH, 4);
+        defaultPersonId = props.getString("defaultPersonId", "0");
       }
       catch (Exception ex)
       {
@@ -184,7 +188,9 @@ public class SecurityManager implements SecurityManagerPort
       user = new DBUser();
       user.setUserId("admin");
       user.setDisplayName("Administrator");
+      user.setPersonId(config.defaultPersonId);
       em.persist(user);
+      em.flush();
     }
 
     DBRole role = em.find(DBRole.class, "SECURITY_ADMIN");
@@ -194,6 +200,7 @@ public class SecurityManager implements SecurityManagerPort
       role.setRoleId("SECURITY_ADMIN");
       role.setName("Security Administrator");
       em.persist(role);
+      em.flush();
     }
 
     DBUserInRole userInRole = em.find(DBUserInRole.class,
@@ -204,6 +211,7 @@ public class SecurityManager implements SecurityManagerPort
       userInRole.setUserId("admin");
       userInRole.setRoleId("SECURITY_ADMIN");
       em.persist(userInRole);
+      em.flush();
     }
   }
 
@@ -302,9 +310,7 @@ public class SecurityManager implements SecurityManagerPort
       String personId = user.getPersonId();
       if (StringUtils.isBlank(personId))
       {
-        personId =
-          MatrixConfig.getProperty("SecurityManager.defaultPersonId");
-        if (personId == null) personId = "0";
+        personId = config.defaultPersonId;
       }
 
       SimpleDateFormat ddf = new SimpleDateFormat("yyyyMMdd");

@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -59,6 +57,9 @@ import org.santfeliu.workflow.WorkflowEvent;
 import org.santfeliu.workflow.store.WorkflowStore;
 import org.santfeliu.workflow.WorkflowUser;
 import org.santfeliu.ws.WSExceptionFactory;
+import org.santfeliu.ws.annotations.Disposer;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.SingleInstance;
 
 
 /**
@@ -67,6 +68,7 @@ import org.santfeliu.ws.WSExceptionFactory;
  */
 @WebService(endpointInterface = "org.matrix.workflow.WorkflowManagerPort")
 @HandlerChain(file="handlers.xml")
+@SingleInstance
 public class WorkflowManager implements WorkflowManagerPort
 {
   private static final Logger LOGGER = Logger.getLogger("Workflow");
@@ -83,8 +85,8 @@ public class WorkflowManager implements WorkflowManagerPort
   public static final String AGENTS = "agents";
   public static final String MAX_STEPS = "maxSteps";
   
-  @PostConstruct
-  public void construct()
+  @Initializer
+  public void initialize(String endpoint)
   {
     LOGGER.log(Level.INFO, "Initializing WorkflowManager");
     try
@@ -135,10 +137,10 @@ public class WorkflowManager implements WorkflowManagerPort
     }
   }
   
-  @PreDestroy
-  public void destroy()
+  @Disposer
+  public void dispose(String endpoint)
   {
-    LOGGER.log(Level.INFO, "Destroying WorkflowManager, killing agents...");
+    LOGGER.log(Level.INFO, "Disposing WorkflowManager, killing agents...");
     engine.killAllAgents();
   }
   

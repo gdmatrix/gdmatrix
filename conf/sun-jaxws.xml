@@ -7,7 +7,7 @@
     implementation="org.santfeliu.security.service.SecurityManager"
     service="{http://security.matrix.org/}SecurityManagerService"
     url-pattern="/services/security" />
-
+  
   <endpoint
     name="kernel"
     implementation="com.audifilm.matrix.kernel.service.KernelManager"

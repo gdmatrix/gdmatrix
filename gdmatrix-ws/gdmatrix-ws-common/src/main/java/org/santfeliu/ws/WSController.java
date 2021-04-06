@@ -30,6 +30,9 @@
  */
 package org.santfeliu.ws;
 
+import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.server.InstanceResolver;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,10 +56,14 @@ public class WSController
 {
   protected static final Logger LOGGER = Logger.getLogger("WSController");
 
-  private static final HashMap<String, WSController> instances =
+  private static final HashMap<WSEndpoint, WSController> instances =
     new HashMap<>();
 
-  protected Class clazz;
+  protected WSEndpoint endpoint;
+  protected String endpointName;
+  protected Object state;
+  protected InstanceResolver instanceResolver;
+
   protected Method initializerMethod;
   protected Method disposerMethod;
 
@@ -64,22 +71,21 @@ public class WSController
   protected Field stateField;
   protected String unitName;
 
-  public static synchronized WSController getInstance(Class clazz)
+  public static synchronized WSController getInstance(WSEndpoint endpoint)
   {
-    String className = clazz.getName();
-    WSController controller = instances.get(className);
+    WSController controller = instances.get(endpoint);
     if (controller == null)
     {
-      controller = new WSController(clazz);
-      instances.put(className, controller);
+      controller = new WSController(endpoint);
+      instances.put(endpoint, controller);
     }
     return controller;
   }
 
-  WSController(Class clazz)
+  WSController(WSEndpoint endpoint)
   {
-    this.clazz = clazz;
-    setup(clazz);
+    this.endpoint = endpoint;
+    setup(endpoint.getImplementationClass());
   }
 
   private void setup(Class clazz)
@@ -123,48 +129,97 @@ public class WSController
     }
   }
 
-  public void initialize(String endpointName)
-    throws InstantiationException, IllegalAccessException,
-    IllegalArgumentException, InvocationTargetException
+  public WSEndpoint getEndpoint()
   {
-    if (initializerMethod != null)
+    return endpoint;
+  }
+
+  public String getEndpointName()
+  {
+    return endpointName;
+  }
+
+  public void setEndpointName(String endpointName)
+  {
+    this.endpointName = endpointName;
+  }
+
+  public Object getState()
+  {
+    return state;
+  }
+
+  public void setState(Object state)
+  {
+    this.state = state;
+  }
+
+  public InstanceResolver getInstanceResolver()
+  {
+    return instanceResolver;
+  }
+
+  public void setInstanceResolver(InstanceResolver instanceResolver)
+  {
+    this.instanceResolver = instanceResolver;
+  }
+
+  public void initialize()
+  {
+    LOGGER.log(Level.INFO, ">>>>> Initializing endpoint {0}", endpointName);
+    try
     {
-      Object instance = clazz.newInstance();
-      try
+      if (initializerMethod != null)
       {
-        if (entityManagerField == null)
+        Object instance = instanceResolver.resolve(new Packet());
+        try
         {
-          initializerMethod.invoke(instance, endpointName);
+          if (entityManagerField == null)
+          {
+            initializerMethod.invoke(instance, endpointName);
+          }
+          else
+          {
+            invokeJPA(instance, initializerMethod, endpointName);
+          }
+          LOGGER.log(Level.INFO, "Endpoint {0} initialized.", endpointName);
         }
-        else
+        finally
         {
-          invokeJPA(endpointName, instance, initializerMethod, endpointName);
+          saveState(instance);
         }
       }
-      finally
-      {
-        saveState(endpointName, instance);
-      }
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "Endpoint {0} initialization failed: {1}",
+        new Object[]{endpointName, ex.toString()});
     }
   }
 
-  public void dispose(String endpointName) throws InstantiationException,
-    IllegalAccessException, IllegalArgumentException, InvocationTargetException
+  public void dispose()
   {
+    LOGGER.log(Level.INFO, ">>>>> Disposing endpoint {0}", endpointName);
     try
     {
       if (disposerMethod != null)
       {
-        Object instance = clazz.newInstance();
+        Object instance = instanceResolver.resolve(new Packet());
         if (entityManagerField == null)
         {
           disposerMethod.invoke(instance, endpointName);
         }
         else
         {
-          invokeJPA(endpointName, instance, disposerMethod, endpointName);
+          invokeJPA(instance, disposerMethod, endpointName);
         }
+        LOGGER.log(Level.INFO, "Endpoint {0} disposed.", endpointName);
       }
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "Endpoint {0} dispose failed: {1}",
+        new Object[]{endpointName, ex.toString()});
     }
     finally
     {
@@ -177,18 +232,18 @@ public class WSController
     }
   }
 
-  public Object invoke(String endpointName, Object instance, Method method,
-    Object... args) throws IllegalArgumentException, IllegalAccessException,
+  public Object invoke(Object instance, Method method, Object... args)
+    throws IllegalArgumentException, IllegalAccessException,
     InvocationTargetException
   {
     Object result;
 
-    LOGGER.log(Level.INFO, ">>>>>>>>>>> Invoke {0}.{1}",
+    LOGGER.log(Level.INFO, ">>>>> Invoke {0}.{1}",
       new Object[]{endpointName, method.getName()});
 
     try
     {
-      injectState(endpointName, instance);
+      injectState(instance);
 
       if (entityManagerField == null)
       {
@@ -196,12 +251,12 @@ public class WSController
       }
       else
       {
-        result = invokeJPA(endpointName, instance, method, args);
+        result = invokeJPA(instance, method, args);
       }
     }
     finally
     {
-      saveState(endpointName, instance);
+      saveState(instance);
     }
     return result;
   }
@@ -217,27 +272,25 @@ public class WSController
     return em;
   }
 
-  protected void injectState(String endpointName, Object instance)
+  protected void injectState(Object instance)
     throws IllegalArgumentException, IllegalAccessException
   {
     if (stateField != null)
     {
-      Object state = StateStore.getState(endpointName);
       stateField.set(instance, state);
     }
   }
 
-  protected void saveState(String endpointName, Object instance)
+  protected void saveState(Object instance)
     throws IllegalArgumentException, IllegalAccessException
   {
     if (stateField != null)
     {
-      Object state = stateField.get(instance);
-      StateStore.putState(endpointName, state);
+      state = stateField.get(instance);
     }
   }
 
-  protected Object invokeJPA(String endpointName, Object instance,
+  protected Object invokeJPA(Object instance,
     Method method, Object...args) throws IllegalArgumentException,
     IllegalAccessException, InvocationTargetException
   {

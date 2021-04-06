@@ -43,17 +43,16 @@ import javax.xml.ws.Provider;
 /**
  *
  * @author realor
+ * @param <T> the service instance class
  */
 public class MultiInstanceResolver<T> extends AbstractMultiInstanceResolver<T>
 {
-  protected final WSController controller;
-  protected String endpointName;
+  protected WSController controller;
 
   public MultiInstanceResolver(@NotNull Class<T> clazz)
   {
     // An instance of this resolver is created for each endpoint
     super(clazz);
-    controller = WSController.getInstance(clazz);
   }
 
   @Override
@@ -71,6 +70,8 @@ public class MultiInstanceResolver<T> extends AbstractMultiInstanceResolver<T>
       public void start(@NotNull WSWebServiceContext wsc,
         @NotNull WSEndpoint endpoint)
       {
+        controller = WSController.getInstance(endpoint);        
+        controller.setInstanceResolver(MultiInstanceResolver.this);
         MultiInstanceResolver.this.start(wsc, endpoint);
       }
 
@@ -100,13 +101,7 @@ public class MultiInstanceResolver<T> extends AbstractMultiInstanceResolver<T>
       {
         T instance = resolve(packet); // create service instance
 
-        if (endpointName == null)
-        {
-          // get endpointName on first invoke, not possible to get it on start
-          endpointName = WSUtils.getServletAdapter(packet.endpoint).getName();
-        }
-
-        return controller.invoke(endpointName, instance, method, args);
+        return controller.invoke(instance, method, args);
       }
     };
   }

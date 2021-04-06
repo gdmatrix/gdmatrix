@@ -31,7 +31,9 @@
 package org.santfeliu.workflow;
 
 import java.text.SimpleDateFormat;
+import java.util.logging.Level;
 import org.santfeliu.util.Table;
+import static org.santfeliu.workflow.WorkflowAgent.LOGGER;
 
 /**
  *
@@ -46,9 +48,10 @@ public class TimerAgent extends WorkflowAgent
     super(engine, name);
   }
 
+  @Override
   public void run()
   {
-    System.out.println("agent " + getName() + " started.");
+    LOGGER.log(Level.INFO, "TimerAgent {0} started.", getName());
     state = RUNNABLE;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     do
@@ -66,8 +69,8 @@ public class TimerAgent extends WorkflowAgent
           String dateTime = (String)alarms.getElementAt(i, 1);
           try
           {
-            System.out.println("agent " + getName() +
-              " awakening instance " + instanceId);
+            LOGGER.log(Level.INFO, "TimerAgent {0} awakening instance {1}", 
+              new Object[]{getName(), instanceId});
             engine.doStep(instanceId, this, false);
           }
           catch (Exception ex)
@@ -82,7 +85,7 @@ public class TimerAgent extends WorkflowAgent
       catch (Throwable error)
       {
         state = RECOVERING;
-        System.out.println("agent " + getName() + " recovering...");
+        LOGGER.log(Level.WARNING, "TimerAgent {0} recovering...", getName());
         lastError = error;
         statistics.errorCount++;
         recover(error);
@@ -90,6 +93,6 @@ public class TimerAgent extends WorkflowAgent
     } while (!end && !Thread.interrupted());
     
     state = TERMINATED;
-    System.out.println("agent " + getName() + " terminated.");    
+    LOGGER.log(Level.INFO, "TimerAgent {0} terminated.", getName());
   }
 }

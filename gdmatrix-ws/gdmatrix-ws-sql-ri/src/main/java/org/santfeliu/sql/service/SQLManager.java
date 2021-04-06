@@ -49,7 +49,9 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.Table;
 import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.ws.service.ObjectManager;
-import javax.annotation.PostConstruct;
+import org.santfeliu.ws.annotations.SingleInstance;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.Disposer;
 
 
 /**
@@ -58,6 +60,7 @@ import javax.annotation.PostConstruct;
  */
 @WebService(endpointInterface = "org.matrix.sql.SQLManagerPort")
 @HandlerChain(file="handlers.xml")
+@SingleInstance
 public class SQLManager extends ObjectManager
   implements SQLManagerPort
 {
@@ -70,8 +73,8 @@ public class SQLManager extends ObjectManager
   
   private ConnectionStore connStore;
   
-  @PostConstruct
-  public void construct()
+  @Initializer
+  public void initialize(String endpointName)
   {
     try
     {
@@ -92,6 +95,12 @@ public class SQLManager extends ObjectManager
       LOGGER.log(Level.SEVERE, "SQLManager init failed", ex);
       throw WSExceptionFactory.create(ex);
     }    
+  }
+
+  @Disposer
+  public void disposer(String endpointName)
+  {
+    LOGGER.log(Level.INFO, "SQLManager disposed.");
   }
   
   @Override

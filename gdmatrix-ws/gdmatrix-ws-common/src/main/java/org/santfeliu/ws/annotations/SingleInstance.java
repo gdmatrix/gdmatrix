@@ -28,27 +28,25 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.ws;
+package org.santfeliu.ws.annotations;
 
-import java.util.HashMap;
+import com.sun.xml.ws.api.server.InstanceResolverAnnotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.santfeliu.ws.SingleInstanceResolver;
 
 /**
  *
  * @author realor
  */
-public class StateStore
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Documented
+@InstanceResolverAnnotation(SingleInstanceResolver.class)
+public @interface SingleInstance
 {
-  private static final HashMap<String, Object> states = new HashMap<>();
-  
-  public static synchronized Object getState(String endpointName)
-  {
-    return states.get(endpointName);
-  }
-
-  public static synchronized void putState(String endpointName, 
-    Object configuration)
-  {
-    states.put(endpointName, configuration);
-  }
 }
-

@@ -33,6 +33,7 @@ package org.santfeliu.ws;
 import com.sun.xml.ws.transport.http.servlet.*;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import java.io.File;
@@ -108,19 +109,13 @@ public final class WSServletContextListener
       
       for (ServletAdapter adapter : adapters)
       {
-        String endpointName = adapter.getName();
-        LOGGER.log(Level.INFO, ">>>>> Initializing endpoint {0}", endpointName);
-        Class<?> clazz = adapter.getEndpoint().getImplementationClass();
-        WSController controller = WSController.getInstance(clazz);
-        try
+        WSEndpoint endpoint = adapter.getEndpoint();
+        WSController controller = WSController.getInstance(endpoint);
+        if (controller != null)
         {
-          controller.initialize(endpointName);
-          LOGGER.log(Level.INFO, "Endpoint {0} initialized.", endpointName);
-        }
-        catch (Exception ex)
-        {
-          LOGGER.log(Level.SEVERE, "Endpoint {0} initialization failed: {1}", 
-            new Object[]{endpointName, ex.toString()});
+          String endpointName = adapter.getName();
+          controller.setEndpointName(endpointName);
+          controller.initialize();
         }
       }
     }
@@ -138,19 +133,11 @@ public final class WSServletContextListener
   {
     for (ServletAdapter adapter : delegate.adapters)
     {
-      String endpointName = adapter.getName();
-      LOGGER.log(Level.INFO, ">>>>> Disposing endpoint {0}", endpointName);
-      Class<?> clazz = adapter.getEndpoint().getImplementationClass();
-      WSController controller = WSController.getInstance(clazz);
-      try
+      WSEndpoint endpoint = adapter.getEndpoint();
+      WSController controller = WSController.getInstance(endpoint);
+      if (controller != null)
       {
-        controller.dispose(endpointName);
-        LOGGER.log(Level.INFO, "Endpoint {0} disposed.", endpointName);
-      }
-      catch (Exception ex)
-      {
-        LOGGER.log(Level.SEVERE, "Endpoint {0} dispose failed: {1}", 
-          new Object[]{endpointName, ex.toString()});
+        controller.dispose();
       }
     }
 
