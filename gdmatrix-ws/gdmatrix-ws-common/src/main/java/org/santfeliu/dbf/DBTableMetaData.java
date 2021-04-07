@@ -48,7 +48,7 @@ package org.santfeliu.dbf;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBTableMetaData
 {
@@ -115,9 +115,10 @@ public class DBTableMetaData
     return index == -1 ? null : columnClasses[index];
   }
   
+  @Override
   public String toString()
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     buffer.append(tableName);
     buffer.append("={");
     buffer.append(columnNames[0]);
@@ -201,7 +202,7 @@ public class DBTableMetaData
 
   DBStatement buildUpdateStatement(String[] colNames)
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     String[] params = new String[colNames.length + 
                                  primaryKeyColumnIndices.length];
     Class[] paramClasses = new Class[params.length];                               
@@ -242,7 +243,7 @@ public class DBTableMetaData
 
   private void buildSelectStatement()
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     String[] params = new String[primaryKeyColumnIndices.length];
     Class[] paramClasses = new Class[params.length];
 
@@ -271,7 +272,7 @@ public class DBTableMetaData
 
   private void buildInsertStatement()
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     String[] params = new String[columnNames.length];
     Class[] paramClasses = new Class[params.length];
 
@@ -300,7 +301,7 @@ public class DBTableMetaData
 
   private void buildDeleteStatement()
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     String[] params = new String[primaryKeyColumnIndices.length];
     Class[] paramClasses = new Class[params.length];
 

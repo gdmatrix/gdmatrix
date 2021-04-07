@@ -38,17 +38,20 @@ import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.WebServiceException;
 import org.matrix.sql.QueryParameters;
 import org.matrix.sql.QueryTable;
+import static org.matrix.sql.SQLConstants.SQL_ADMIN_ROLE;
 import org.matrix.sql.SQLManagerPort;
 import org.santfeliu.dbf.DBConnection;
+import org.santfeliu.dbf.DBRepository;
+import org.santfeliu.security.UserCache;
 import org.santfeliu.sql.QueryParametersConverter;
 import org.santfeliu.sql.QueryTableConverter;
 import org.santfeliu.sql.store.ConnectionStore;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.Table;
 import org.santfeliu.ws.WSExceptionFactory;
-import org.santfeliu.ws.service.ObjectManager;
 import org.santfeliu.ws.annotations.SingleInstance;
 import org.santfeliu.ws.annotations.Initializer;
 import org.santfeliu.ws.annotations.Disposer;
@@ -61,8 +64,7 @@ import org.santfeliu.ws.annotations.Disposer;
 @WebService(endpointInterface = "org.matrix.sql.SQLManagerPort")
 @HandlerChain(file="handlers.xml")
 @SingleInstance
-public class SQLManager extends ObjectManager
-  implements SQLManagerPort
+public class SQLManager implements SQLManagerPort
 {
   private static final Logger LOGGER = Logger.getLogger("SQL");
 
@@ -71,7 +73,11 @@ public class SQLManager extends ObjectManager
   @Resource
   WebServiceContext wsContext;
   
-  private ConnectionStore connStore;
+  // connection store
+  ConnectionStore connStore;
+  
+  // dbrepository to execute sql statements
+  DBRepository repository;
   
   @Initializer
   public void initialize(String endpointName)
@@ -89,6 +95,8 @@ public class SQLManager extends ObjectManager
       connStore = (ConnectionStore)connStoreClass.newInstance();
       Properties properties = MatrixConfig.getClassProperties(connStoreClass);
       connStore.init(properties);
+      
+      repository = new DBRepository();
     }
     catch (Exception ex)
     {
@@ -98,7 +106,7 @@ public class SQLManager extends ObjectManager
   }
 
   @Disposer
-  public void disposer(String endpointName)
+  public void dispose(String endpointName)
   {
     LOGGER.log(Level.INFO, "SQLManager disposed.");
   }
@@ -107,8 +115,10 @@ public class SQLManager extends ObjectManager
   public QueryTable executeDriverQuery(String sql, QueryParameters parameters, 
     String driver, String url, String username, String password)
   {
+    checkPermissions();
+    
     try
-    {
+    {      
       QueryTable result = null;
       DBConnection conn = 
         repository.getConnection(driver, url, username, password);
@@ -130,6 +140,8 @@ public class SQLManager extends ObjectManager
   public QueryTable executeAliasQuery(String sql, QueryParameters parameters, 
     String alias, String username, String password)
   {
+    checkPermissions();
+    
     try
     {
       QueryTable result = null;
@@ -154,6 +166,8 @@ public class SQLManager extends ObjectManager
   public int executeDriverUpdate(String sql, QueryParameters parameters, 
     String driver, String url, String username, String password)
   {
+    checkPermissions();
+    
     try
     {
       int result = 0;    
@@ -180,6 +194,8 @@ public class SQLManager extends ObjectManager
   public int executeAliasUpdate(String sql, QueryParameters parameters, 
     String alias, String username, String password)
   {
+    checkPermissions();
+
     try
     {
       int result = 0;
@@ -203,6 +219,8 @@ public class SQLManager extends ObjectManager
   @Override
   public void createConnection(String alias, String driver, String url)
   {
+    checkPermissions();
+
     try
     {
       connStore.addConnection(alias, driver, url);
@@ -217,6 +235,8 @@ public class SQLManager extends ObjectManager
   @Override
   public void removeConnection(String alias)
   {
+    checkPermissions();
+
     try
     {
       connStore.removeConnection(alias);
@@ -229,6 +249,12 @@ public class SQLManager extends ObjectManager
   }
   
   //Private methods
+  private void checkPermissions()
+  {
+    if (!UserCache.getUser(wsContext).isInRole(SQL_ADMIN_ROLE))
+      throw new WebServiceException("ACCESS_DENIED");
+  }
+    
   private Table doExecuteQuery(DBConnection conn, String sql, Map parameters)
     throws Exception
   {

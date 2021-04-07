@@ -30,12 +30,19 @@
  */
 package org.santfeliu.workflow.store.dsdbf;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
 import org.santfeliu.dbf.DBConnection;
+import org.santfeliu.dbf.DBException;
 import org.santfeliu.dbf.DBRepository;
 import org.santfeliu.workflow.WorkflowException;
 import org.santfeliu.workflow.store.DataStore;
 import org.santfeliu.workflow.store.DataStoreConnection;
+import static org.santfeliu.dbf.DBConnection.ORACLE_VENDOR;
 
 
 /**
@@ -44,6 +51,7 @@ import org.santfeliu.workflow.store.DataStoreConnection;
  */
 public class DBDataStore implements DataStore
 {
+  private static final Logger LOGGER = Logger.getLogger("DBDataStore");
   private static final String PKG = DBDataStore.class.getName() + ".";
 
   private String dataSourceName;
@@ -70,6 +78,7 @@ public class DBDataStore implements DataStore
         username = properties.getProperty(PKG + "username");
         password = properties.getProperty(PKG + "password");
       }
+      createTables();
     }
     catch (Exception ex)
     {
@@ -147,5 +156,39 @@ public class DBDataStore implements DataStore
   public String getPassword()
   {
     return password;
+  }
+  
+  private void createTables() throws DBException, IOException
+  {
+    DBConnection conn;      
+    if (dataSourceName != null)
+    {
+      conn = repository.getConnection(dataSourceName);
+    }
+    else
+    {
+      conn = repository.getConnection(driver, URL, username, password);
+    }
+    try
+    {
+      String vendor = conn.getDatabaseVendor();
+      switch (vendor)
+      {
+        case ORACLE_VENDOR:
+          vendor = "oracle";
+          break;
+        default:
+          vendor = "ansi";
+      }
+      LOGGER.log(Level.INFO, "Creating tables for database [{0}]", vendor);
+      InputStream is = DBDataStore.class.getResourceAsStream(vendor + ".sql");
+      String script = IOUtils.toString(is, "UTF-8");
+      int errors = conn.executeScript(script, true);
+      LOGGER.log(Level.INFO, "Table creation errors: {0}", errors);      
+    }
+    finally
+    {
+      conn.close();
+    }    
   }
 }

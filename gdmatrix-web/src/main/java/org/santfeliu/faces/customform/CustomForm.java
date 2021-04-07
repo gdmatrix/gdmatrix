@@ -70,6 +70,7 @@ import org.matrix.util.WSEndpoint;
 
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.net.HttpClient;
 import org.santfeliu.util.template.WebTemplate;
 
@@ -727,9 +728,15 @@ public class CustomForm extends UIComponentBase
           queryParameters.getParameters().add(param);
         }
         // get port to SQL service
+        String adminUserId = 
+          MatrixConfig.getProperty("adminCredentials.userId");
+        String adminPassword = 
+          MatrixConfig.getProperty("adminCredentials.password");
+
         WSDirectory dir = WSDirectory.getInstance();
         WSEndpoint endpoint = dir.getEndpoint(SQLManagerService.class);
-        SQLManagerPort port = endpoint.getPort(SQLManagerPort.class);
+        SQLManagerPort port = endpoint.getPort(SQLManagerPort.class,
+          adminUserId, adminPassword);
 
         sql = sql.replaceAll("\\\\n", "\n");
         QueryTable table = port.executeAliasQuery(sql, queryParameters,

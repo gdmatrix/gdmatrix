@@ -254,9 +254,14 @@ public class UserPreferences implements Serializable
 
   private SQLManagerPort getSQLPort()
   {
+    String adminUserId = 
+      MatrixConfig.getProperty("adminCredentials.userId");
+    String adminPassword = 
+      MatrixConfig.getProperty("adminCredentials.password");
+
     WSDirectory dir = WSDirectory.getInstance();
     WSEndpoint endpoint = dir.getEndpoint(SQLManagerService.class);
-    return endpoint.getPort(SQLManagerPort.class);
+    return endpoint.getPort(SQLManagerPort.class, adminUserId, adminPassword);
   }
 
 }

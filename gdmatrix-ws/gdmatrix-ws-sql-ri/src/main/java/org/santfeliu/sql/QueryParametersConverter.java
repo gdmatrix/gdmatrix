@@ -33,15 +33,13 @@ package org.santfeliu.sql;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Set;
-
 import org.matrix.sql.QueryParameter;
 import org.matrix.sql.QueryParameters;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class QueryParametersConverter
 {

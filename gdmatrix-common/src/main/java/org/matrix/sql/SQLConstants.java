@@ -28,55 +28,13 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.sql.store;
-
-import java.util.HashMap;
-import java.util.Map;
-import org.santfeliu.dbf.DBConnection;
-
+package org.matrix.sql;
 
 /**
  *
  * @author realor
  */
-public class InMemoryConnectionStore implements ConnectionStore
+public class SQLConstants
 {
-  private static Map connections;
-  
-  public InMemoryConnectionStore()
-  {
-  }
-
-  @Override
-  public void init(Map properties)
-  {
-    if (connections == null)
-      connections = new HashMap();
-  }
-
-  @Override
-  public DBConnection getConnection(String alias, String username, 
-                                    String password)
-    throws Exception
-  {
-    DBConnection result = null;
-    String[] conn = (String[])connections.get(alias);
-    if (conn != null)
-      result = repository.getConnection(conn[0], conn[1], username, password);
-    
-    return result;
-  }
-
-  @Override
-  public void addConnection(String alias, String driver, String url)
-  {
-    String[] connection = new String[]{driver, url};
-    connections.put(alias, connection);
-  }
-
-  @Override
-  public void removeConnection(String alias)
-  {
-    connections.remove(alias);
-  }
+  public static final String SQL_ADMIN_ROLE = "SQL_ADMIN";
 }

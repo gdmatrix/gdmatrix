@@ -32,14 +32,13 @@ package org.santfeliu.sql;
 
 import java.util.List;
 import java.util.Set;
-
 import org.matrix.sql.QueryRow;
 import org.matrix.sql.QueryTable;
 import org.santfeliu.util.Table;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class QueryTableConverter
 {

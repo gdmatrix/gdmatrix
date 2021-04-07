@@ -51,7 +51,7 @@ import javax.sql.DataSource;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBRepository 
 {
@@ -86,7 +86,7 @@ public class DBRepository
       statements.put(stmtName, dbStmt);
     }
   }
-  
+
   public DBConnection getConnection(String dataSourceName)
     throws DBException
   {
@@ -139,7 +139,7 @@ public class DBRepository
     DBTableMetaData metaData = (DBTableMetaData)metaDatas.get(tableName);
     return metaData;
   }
-
+  
   public Collection getStatements()
   {
     return statements.values();

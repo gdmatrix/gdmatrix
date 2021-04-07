@@ -83,6 +83,13 @@
     </query>
   </named-query>
 
+  <named-query name="selectUserInRole">
+    <query>
+      SELECT u FROM UserInRole u WHERE trim(u.userId) = trim(:userId)
+      and trim(u.roleId) = trim(:roleId)
+    </query>
+  </named-query>
+
   <named-query name="listUserRoles">
     <query>
       SELECT u.roleId FROM UserInRole u WHERE trim(u.userId) = trim(:userId)

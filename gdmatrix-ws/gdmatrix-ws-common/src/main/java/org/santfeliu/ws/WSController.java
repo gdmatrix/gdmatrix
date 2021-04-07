@@ -187,6 +187,11 @@ public class WSController
         }
       }
     }
+    catch (InvocationTargetException ex)
+    {
+      LOGGER.log(Level.SEVERE, "Endpoint {0} initialization failed: {1}",
+        new Object[]{endpointName, ex.getTargetException().toString()});
+    }
     catch (Exception ex)
     {
       LOGGER.log(Level.SEVERE, "Endpoint {0} initialization failed: {1}",
@@ -212,6 +217,11 @@ public class WSController
         }
         LOGGER.log(Level.INFO, "Endpoint {0} disposed.", endpointName);
       }
+    }
+    catch (InvocationTargetException ex)
+    {
+      LOGGER.log(Level.SEVERE, "Endpoint {0} initialization failed: {1}",
+        new Object[]{endpointName, ex.getTargetException().toString()});
     }
     catch (Exception ex)
     {

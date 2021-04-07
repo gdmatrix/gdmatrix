@@ -30,7 +30,7 @@
  */
 package org.santfeliu.dbf;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Encapsulates a SQL statement with parameters
@@ -46,7 +46,7 @@ import java.util.Vector;
  */
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBStatement 
 { 
@@ -83,9 +83,10 @@ public class DBStatement
     return paramClasses;
   }
   
+  @Override
   public String toString()
   {
-    StringBuffer buffer = new StringBuffer(sql);
+    StringBuilder buffer = new StringBuilder(sql);
     if (params.length > 0)
     {
       buffer.append(" (");
@@ -114,12 +115,11 @@ public class DBStatement
     return buffer.toString();
   }
   
-  private void parse(String statement)
-    throws DBException
+  private void parse(String statement) throws DBException
   {
-    Vector vparams = new Vector();
-    StringBuffer bufferSql = new StringBuffer();
-    StringBuffer bufferParam = new StringBuffer();
+    ArrayList vparams = new ArrayList();
+    StringBuilder bufferSql = new StringBuilder();
+    StringBuilder bufferParam = new StringBuilder();
     int index = 0;
     int state = 0;
     while (index < statement.length())

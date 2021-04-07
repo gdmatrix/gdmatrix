@@ -31,13 +31,12 @@
 package org.santfeliu.sql.store;
 
 import java.util.Map;
-
 import org.santfeliu.dbf.DBConnection;
 import org.santfeliu.dbf.DBRepository;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public interface ConnectionStore
 {
@@ -48,7 +47,8 @@ public interface ConnectionStore
   public DBConnection getConnection(String alias, String username, 
     String password) throws Exception;
   
-  public void addConnection(String alias, String driver, String url) throws Exception;
+  public void addConnection(String alias, String driver, String url) 
+    throws Exception;
   
   public void removeConnection(String alias) throws Exception;
 }

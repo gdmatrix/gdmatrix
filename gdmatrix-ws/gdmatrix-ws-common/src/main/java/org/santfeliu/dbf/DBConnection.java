@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.dbf;
@@ -37,9 +37,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.lang.reflect.Method;
-
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -49,28 +47,35 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.santfeliu.util.Table;
-
 
 /**
  *
- * @author unknown
+ * @author realor
  */
-public class DBConnection 
+public class DBConnection
 {
-  private DBRepository repository;
-  private Connection jdbcConn;
-  private HashMap objectVars;
+  private static final Logger LOGGER = Logger.getLogger("DBConnection");
+  
+  public static final String ORACLE_VENDOR = "oracle";
+  public static final String SQLSERVER_VENDOR = "sqlserver";
+  public static final String MYSQL_VENDOR = "mysql";
+  public static final String POSTGRES_VENDOR = "postgres";
+  public static final String OTHER_VENDOR = "other";
+
+  private final DBRepository repository;
+  private final Connection jdbcConn;
+  private final HashMap objectVars;
   private boolean smartUpdate;
   private boolean returnLobsAsFiles;
   private int maxRows;
@@ -82,11 +87,46 @@ public class DBConnection
     this.objectVars = new HashMap();
   }
 
+  public String getDatabaseVendor() throws DBException
+  {
+    try
+    {
+      String vendor;
+      String productName = jdbcConn.getMetaData().getDatabaseProductName();
+      productName = productName.toLowerCase();
+      if (productName.contains("oracle"))
+      {
+        vendor = ORACLE_VENDOR;
+      }
+      else if (productName.contains("mysql") || productName.contains("mariadb"))
+      {
+        vendor = MYSQL_VENDOR;
+      }
+      else if (productName.contains("postgres"))
+      {
+        vendor = POSTGRES_VENDOR;
+      }
+      else if (productName.contains("sqlserver"))
+      {
+        vendor = SQLSERVER_VENDOR;
+      }
+      else
+      {
+        vendor = OTHER_VENDOR;
+      }
+      return vendor;
+    }
+    catch (SQLException ex)
+    {
+      throw DBException.createException(ex);
+    }
+  }
+
   public String getTableName(Object object) throws DBException
   {
     throw new DBException("NOT_IMPLEMENTED_YET");
   }
-  
+
   /**
    * Returns the metadata of a table.
    * @param tableName is the name of the table. A schema prefix
@@ -115,14 +155,14 @@ public class DBConnection
             String[] columnNames = new String[rsMetaData.getColumnCount()];
             Class[] columnClasses = new Class[rsMetaData.getColumnCount()];
             readMetaData(rsMetaData, columnNames, columnClasses);
-          
+
             int[] primaryKeyColumnIndices = readPrimaryKeyColumnIndices(
               jdbcConn.getMetaData(), tableName, columnNames);
-          
+
             if (primaryKeyColumnIndices.length == 0)
               throw new DBException("Primary key undefined: " + tableName);
 
-            metaData = new DBTableMetaData(tableName, 
+            metaData = new DBTableMetaData(tableName,
               columnNames, columnClasses, primaryKeyColumnIndices);
             repository.metaDatas.put(tableName, metaData);
           }
@@ -145,15 +185,15 @@ public class DBConnection
   }
 
   /**
-   * Selects the row from table <code>tableName</code> identified by 
+   * Selects the row from table <code>tableName</code> identified by
    * <code>primaryKey</code> Object.
    * @param tableName is the name of the table to read from. A schema prefix
    * can be specified: <code>schema.tableName</code>.
-   * @param primaryKey is a DBKey object that identifies the 
+   * @param primaryKey is a DBKey object that identifies the
    * row to be selected.
-   * @return a <code>Map</code> containing one entry 
-   * {<code>columnName</code>, <code>value</code>} for each column in the 
-   * table, where <code>columnName</code> is a <code>String</code> in 
+   * @return a <code>Map</code> containing one entry
+   * {<code>columnName</code>, <code>value</code>} for each column in the
+   * table, where <code>columnName</code> is a <code>String</code> in
    * lowercase and <code>value</code> is an object of class <code>DBConnection.
    * getMetaData(tableName).getColumnClass(columnName)</code>
    * or returns <code>null</code> if there is no row identified by this <code>
@@ -161,7 +201,7 @@ public class DBConnection
    * @throws DBException
    */
   public Map selectMap(String tableName, DBKey primaryKey)
-    throws DBException  
+    throws DBException
   {
     try
     {
@@ -181,7 +221,7 @@ public class DBConnection
     throws DBException
   {
     throw new DBException("NOT_IMPLEMENTED_YET");
-    
+
   }
 
   public Object[] selectBeans(String tableName, String filter)
@@ -192,19 +232,19 @@ public class DBConnection
 
   /**
    * Inserts a row in table <code>tableName</code> with values contained in
-   * <code>object</code>. 
+   * <code>object</code>.
    * @param tableName is the name of the table to insert into. A schema prefix
    * can be specified: <code>schema.tableName</code>.
-   * @param object is a <code>Map</code> containing one entry 
-   * {<code>columnName</code>, <code>value</code>} for each column of 
-   * <code>tableName</code> where <code>columnName</code> is a 
+   * @param object is a <code>Map</code> containing one entry
+   * {<code>columnName</code>, <code>value</code>} for each column of
+   * <code>tableName</code> where <code>columnName</code> is a
    * <code>String</code> in lowercase and <code>value</code> is an instance
    * of a class valid for that column. Most JDBC drivers do automatic type
-   * conversion when possible and do not require that the type of 
+   * conversion when possible and do not require that the type of
    * <code>value</code> exactly match the type of the column. Values of type
    * <code>java.io.InputStream</code> or <code>java.io.File</code> are
    * accepted for LOB columns.
-   * @return a <code>DBKey</code> object that holds the primary key of 
+   * @return a <code>DBKey</code> object that holds the primary key of
    * the inserted row.
    * @throws DBException
    */
@@ -219,7 +259,7 @@ public class DBConnection
       return getPrimaryKey(tableName, object);
     }
     catch (Exception ex)
-    { 
+    {
       throw DBException.createException(ex);
     }
   }
@@ -228,19 +268,19 @@ public class DBConnection
   {
     throw new DBException("NOT_IMPLEMENTED_YET");
   }
-  
+
   /**
-   * Updates the row of table <code>tableName</code> identified by 
-   * <code>primaryKey</code> with values contained in <code>object</code>. 
-   * When smartUpdate is enabled, only will be updated that columns that 
-   * have an entry {<code>columnName</code>, <code>value</code>} 
-   * inside <code>object</code>. If smartUpdate is disabled, 
-   * <code>object</code> must contain such an entry for each column in 
-   * the table. <code>columnName</code> is a <code>String</code> in lowercase 
-   * and <code>value</code> is an instance of a class valid for that column. 
-   * Most JDBC drivers do automatic type conversion when possible and do not 
-   * require that the type of <code>value</code> exactly match the type of 
-   * the column. Values of type <code>java.io.InputStream</code> or 
+   * Updates the row of table <code>tableName</code> identified by
+   * <code>primaryKey</code> with values contained in <code>object</code>.
+   * When smartUpdate is enabled, only will be updated that columns that
+   * have an entry {<code>columnName</code>, <code>value</code>}
+   * inside <code>object</code>. If smartUpdate is disabled,
+   * <code>object</code> must contain such an entry for each column in
+   * the table. <code>columnName</code> is a <code>String</code> in lowercase
+   * and <code>value</code> is an instance of a class valid for that column.
+   * Most JDBC drivers do automatic type conversion when possible and do not
+   * require that the type of <code>value</code> exactly match the type of
+   * the column. Values of type <code>java.io.InputStream</code> or
    * <code>java.io.File</code> are accepted for LOB columns.
    * @param tableName is the name of the table to update. A schema prefix
    * can be specified: <code>schema.tableName</code>.
@@ -261,22 +301,21 @@ public class DBConnection
       objectVars.put("o", object);
       putKey(objectVars, primaryKey);
       DBStatement statement = smartUpdate ?
-        buildSmartUpdateStatement(metaData, object) : 
+        buildSmartUpdateStatement(metaData, object) :
         metaData.updateStatement;
       if (statement == null) //nothing to update
       {
-        return primaryKey; 
+        return primaryKey;
       }
       else
       {
         int numUpdated = executeUpdate(statement, objectVars);
-        return (numUpdated == 0) ? null : 
+        return (numUpdated == 0) ? null :
           getPrimaryKey(metaData, object, primaryKey);
       }
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
       throw DBException.createException(ex);
     }
   }
@@ -287,13 +326,13 @@ public class DBConnection
   }
 
   /**
-   * Deletes the row of <code>tableName</code> identified by 
+   * Deletes the row of <code>tableName</code> identified by
    * <code>primaryKey</code>.
    * @param tableName is the name of the table to delete from. A schema prefix
    * can be specified: <code>schema.tableName</code>.
-   * @param primaryKey is a <code>DBKey</code> object that identifies 
+   * @param primaryKey is a <code>DBKey</code> object that identifies
    * the row to delete.
-   * @return <code>true</code> if row was deleted, or <code>false</code> 
+   * @return <code>true</code> if row was deleted, or <code>false</code>
    * otherwise.
    * @throws DBException
    */
@@ -303,13 +342,13 @@ public class DBConnection
     {
       DBTableMetaData metaData = getMetaData(tableName);
       objectVars.clear();
-      putKey(objectVars, primaryKey);    
+      putKey(objectVars, primaryKey);
       int numUpdated = executeUpdate(metaData.deleteStatement, objectVars);
       return numUpdated > 0;
     }
     catch (Exception ex)
     {
-      throw DBException.createException(ex);    
+      throw DBException.createException(ex);
     }
   }
 
@@ -327,21 +366,21 @@ public class DBConnection
    * </code>
    * </p>
    * @param statement is a <code>String</code> with a valid SQL statement with
-   * parameters. A parameter is expressed between braces and suports this 
+   * parameters. A parameter is expressed between braces and suports this
    * formats:
    * <ul>
-   * <li>{<code>key</code>}: where <code>key</code> is the key in Map 
+   * <li>{<code>key</code>}: where <code>key</code> is the key in Map
    * <code>parameters</code> that contains the value of this parameter.
-   * <li>{<code>mapKey.key</code>}: where <code>mapKey</code> 
-   * references a <code>Map</code> in <code>parameters</code> that has a key 
+   * <li>{<code>mapKey.key</code>}: where <code>mapKey</code>
+   * references a <code>Map</code> in <code>parameters</code> that has a key
    * <code>key</code> that contains the value of this parameter.
-   * <li>{<code>beanKey.propertyName</code>}: where <code>beanKey</code> 
-   * references a java bean in <code>parameters</code> that has a property 
+   * <li>{<code>beanKey.propertyName</code>}: where <code>beanKey</code>
+   * references a java bean in <code>parameters</code> that has a property
    * named <code>propertyName</code> that returns the value of this parameter.
    * </ul>
-   * @param parameters contains the values of the parameters referenced in 
+   * @param parameters contains the values of the parameters referenced in
    * <code>statement</code>.
-   * @return a <code>Table</code> that contains the rows returned by this 
+   * @return a <code>Table</code> that contains the rows returned by this
    * <code>statement</code>.
    * @throws DBException
    */
@@ -355,7 +394,7 @@ public class DBConnection
     }
     catch (Exception ex)
     {
-      throw DBException.createException(ex);    
+      throw DBException.createException(ex);
     }
   }
 
@@ -373,19 +412,19 @@ public class DBConnection
    * </code>
    * </p>
    * @param statement is a <code>String</code> with a valid SQL statement with
-   * parameters. A parameter is expressed between braces and suports this 
+   * parameters. A parameter is expressed between braces and suports this
    * formats:
    * <ul>
-   * <li>{<code>key</code>}: where <code>key</code> is the key in Map 
+   * <li>{<code>key</code>}: where <code>key</code> is the key in Map
    * <code>parameters</code> that contains the value of this parameter.
-   * <li>{<code>mapKey.key</code>}: where <code>mapKey</code> 
-   * references a <code>Map</code> in <code>parameters</code> that has a key 
+   * <li>{<code>mapKey.key</code>}: where <code>mapKey</code>
+   * references a <code>Map</code> in <code>parameters</code> that has a key
    * <code>key</code> that contains the value of this parameter.
-   * <li>{<code>beanKey.propertyName</code>}: where <code>beanKey</code> 
-   * references a java bean in <code>parameters</code> that has a property 
+   * <li>{<code>beanKey.propertyName</code>}: where <code>beanKey</code>
+   * references a java bean in <code>parameters</code> that has a property
    * named <code>propertyName</code> that returns the value of this parameter.
    * </ul>
-   * @param parameters contains the values of the parameters referenced in 
+   * @param parameters contains the values of the parameters referenced in
    * <code>statement</code>.
    * @return the number of rows updated.
    * @throws DBException
@@ -400,7 +439,7 @@ public class DBConnection
     }
     catch (Exception ex)
     {
-      throw DBException.createException(ex);    
+      throw DBException.createException(ex);
     }
   }
 
@@ -424,7 +463,7 @@ public class DBConnection
     }
     catch (Exception ex)
     {
-      throw DBException.createException(ex);      
+      throw DBException.createException(ex);
     }
   }
 
@@ -450,9 +489,9 @@ public class DBConnection
   {
     return maxRows;
   }
-  
+
   /**
-   * Enables or disables the smartUpdate mode. When enabled, only 
+   * Enables or disables the smartUpdate mode. When enabled, only
    * columns inside Map will be updated in database. If disabled, Map
    * objects must contain all columns in the table. If any column is absent,
    * then a null value will be set.
@@ -471,14 +510,14 @@ public class DBConnection
   {
     return smartUpdate;
   }
-  
+
   /**
    * Sets the way LOBs (large objects) will be returned. If returnLobsAsFiles
    * is enabled, then LOBs will be stored in temporary files and a
    * <code>java.util.File</code> will be returned inside Maps or Tables. The
    * invoker is responsible of removing this file when finished.
-   * If returnAsFiles is disabled, then LOBS will be returned as 
-   * <code>byte[]</code> for BLOB columns or <code>String</code> for CLOB 
+   * If returnAsFiles is disabled, then LOBS will be returned as
+   * <code>byte[]</code> for BLOB columns or <code>String</code> for CLOB
    * columns. By default, returnLobsAsFiles is disabled.
    * @param asFiles must be set to true to return LOBs as files.
    */
@@ -486,7 +525,7 @@ public class DBConnection
   {
     this.returnLobsAsFiles = asFiles;
   }
-  
+
   /**
    * Returns the returnLobsAsFiles property.
    * @return true if returnLobsAsFiles is enabled. Returns false otherwise.
@@ -495,7 +534,7 @@ public class DBConnection
   {
     return returnLobsAsFiles;
   }
-  
+
   public void setAutoCommit(boolean autoCommit) throws DBException
   {
     try
@@ -504,10 +543,10 @@ public class DBConnection
     }
     catch (SQLException ex)
     {
-      throw DBException.createException(ex);    
+      throw DBException.createException(ex);
     }
   }
-  
+
   public boolean getAutoCommit() throws DBException
   {
     try
@@ -516,10 +555,10 @@ public class DBConnection
     }
     catch (SQLException ex)
     {
-      throw DBException.createException(ex);          
+      throw DBException.createException(ex);
     }
   }
-  
+
   public void commit() throws DBException
   {
     try
@@ -528,7 +567,7 @@ public class DBConnection
     }
     catch (SQLException ex)
     {
-      throw DBException.createException(ex);          
+      throw DBException.createException(ex);
     }
   }
 
@@ -540,7 +579,7 @@ public class DBConnection
     }
     catch (SQLException ex)
     {
-      throw DBException.createException(ex);          
+      throw DBException.createException(ex);
     }
   }
 
@@ -553,14 +592,43 @@ public class DBConnection
     }
     catch (SQLException ex)
     {
-      throw DBException.createException(ex);    
+      throw DBException.createException(ex);
     }
+  }
+
+  public int executeScript(String script, boolean ignoreErrors)
+    throws DBException
+  {
+    int errors = 0;
+    String[] statements = script.split(";(?=(?:[^\']*\'[^\']*\')*[^\']*$)");
+    for (String statement : statements)
+    {
+      try
+      {
+        statement = statement.trim();
+        if (statement.length() > 0)
+        {
+          LOGGER.log(Level.FINEST, "Execute statement: {0}", 
+            statement);
+          executeUpdate(statement, Collections.EMPTY_MAP);
+        }
+      }
+      catch (DBException ex)
+      {
+        LOGGER.log(Level.FINEST, "Error executing statement: {0}", 
+          ex.toString());
+        
+        if (!ignoreErrors) throw ex;
+        errors++;
+      }
+    }
+    return errors;
   }
 
   /* private methods */
 
   /* return null if object do not exists */
-  private Map executeSelectMap(DBStatement dbStmt, 
+  private Map executeSelectMap(DBStatement dbStmt,
                                Map variables) throws Exception
   {
     HashMap object = null;
@@ -570,13 +638,13 @@ public class DBConnection
       ResultSet rs = prepStmt.executeQuery();
       try
       {
-        ResultSetMetaData rsMetaData = rs.getMetaData(); 
+        ResultSetMetaData rsMetaData = rs.getMetaData();
         if (rs.next())
         {
           object = new HashMap();
           for (int column = 0; column < rsMetaData.getColumnCount(); column++)
           {
-            String columnName = 
+            String columnName =
               rsMetaData.getColumnName(column + 1).toLowerCase();
             object.put(columnName, readColumn(rs, column + 1));
           }
@@ -589,8 +657,8 @@ public class DBConnection
     }
     finally
     {
-      prepStmt.close(); 
-    }    
+      prepStmt.close();
+    }
     return object;
   }
 
@@ -607,7 +675,7 @@ public class DBConnection
         String columnNames[] = new String[rsMetaData.getColumnCount()];
         for (int column = 0; column < columnNames.length; column++)
         {
-          columnNames[column] = 
+          columnNames[column] =
             rsMetaData.getColumnName(column + 1).toLowerCase();
         }
         Table table = new Table(columnNames);
@@ -630,7 +698,7 @@ public class DBConnection
     }
     finally
     {
-      prepStmt.close();  
+      prepStmt.close();
     }
   }
 
@@ -712,7 +780,7 @@ public class DBConnection
         }
         else // bean property
         {
-          String methodName = "get" + property.substring(0, 1).toUpperCase() + 
+          String methodName = "get" + property.substring(0, 1).toUpperCase() +
                               property.substring(1);
           Method method = object.getClass().getMethod(methodName, new Class[0]);
           Object result = method.invoke(object, new Object[0]);
@@ -723,8 +791,8 @@ public class DBConnection
     return prepStmt;
   }
 
-  private void setParameter(PreparedStatement prepStmt, 
-                            int index, Object value, Class paramClass) 
+  private void setParameter(PreparedStatement prepStmt,
+                            int index, Object value, Class paramClass)
                             throws SQLException, IOException
   {
     InputStream is = null;
@@ -769,7 +837,7 @@ public class DBConnection
     //System.out.println(">> end setParameter");
   }
 
-  private Object readColumn(ResultSet rs, int column) 
+  private Object readColumn(ResultSet rs, int column)
     throws SQLException, IOException
   {
     Object result = rs.getObject(column);
@@ -794,7 +862,7 @@ public class DBConnection
       {
         InputStream is = clob.getAsciiStream();
         File tempFile = flushToDisk(is);
-        result = tempFile;        
+        result = tempFile;
       }
       else
       {
@@ -833,7 +901,7 @@ public class DBConnection
     }
     return temp;
   }
-  
+
   private void putKey(Map map, DBKey key)
   {
     for (int i = 0; i < key.values.length; i++)
@@ -842,7 +910,7 @@ public class DBConnection
     }
   }
 
-  private void readMetaData(ResultSetMetaData rsMetaData, 
+  private void readMetaData(ResultSetMetaData rsMetaData,
                             String[] columnNames, Class[] columnClasses)
     throws SQLException, ClassNotFoundException
   {
@@ -873,7 +941,7 @@ public class DBConnection
 
     if (columnNames.length > 0)
     {
-      //sort to construct statement always the same way      
+      //sort to construct statement always the same way
       Arrays.sort(columnNames);
       return metaData.buildUpdateStatement(columnNames);
     }
@@ -919,7 +987,7 @@ public class DBConnection
     {
       while (rs.next())
       {
-        int seq = rs.getInt("KEY_SEQ"); 
+        int seq = rs.getInt("KEY_SEQ");
         String name = rs.getString("COLUMN_NAME").toLowerCase();
         if (seq > keyColumnNames.size())
         {
@@ -947,7 +1015,7 @@ public class DBConnection
   {
     try
     {
-      DBRepository rep = new DBRepository();      
+      DBRepository rep = new DBRepository();
       DBConnection conn = rep.getConnection(
         "oracle.jdbc.driver.OracleDriver",
         "jdbc:oracle:thin:@*****:*****:*****",
@@ -961,11 +1029,11 @@ public class DBConnection
         map.put("titol", "PROVA");
         map.put("doccod", "99989");
         map.put("data", new File("c:/demo.xml"));
-        DBKey pk = 
+        DBKey pk =
           conn.update("DOC_INTERN", new DBKey(new Integer(182), "ES"), map);
 
         System.out.println(pk);
-        
+
         conn.setReturnLobsAsFiles(true);
         Map map = new HashMap();
         map.put("doccod", new Integer(186));
@@ -977,10 +1045,10 @@ public class DBConnection
         Map map2 = conn.selectMap("DOC_INTERN", new DBKey(new Integer(186), "ES"));
         System.out.println(map2);
          */
-         
+
         //System.out.println(new String(blob.getBytes(0, 4)));
-/*      
-        int num = DBUtils.getSequenceValue(conn, "GENESYS5.NCL_CLAU", 
+/*
+        int num = DBUtils.getSequenceValue(conn, "GENESYS5.NCL_CLAU",
           DBKey.fromString("MENUITEM;MENUITEM;APL "), "clauvnum");
         System.out.println(num);
 
@@ -995,7 +1063,7 @@ public class DBConnection
         Table t = conn.executeQuery(
           "select * from testdb where trim(nom) = trim({persona.nom})", vars);
         System.out.println(t);
-*/      
+*/
         conn.commit();
       }
       finally

@@ -191,17 +191,19 @@ public class QueryInstanceBean extends FacesBean implements Savable
       List<SelectItem> selectItems = super.get(key);
       if (selectItems == null)
       {
-        selectItems = new ArrayList<SelectItem>();
+        selectItems = new ArrayList<>();
         Query query = getQuery();
         Query.Parameter parameter = query.getParameter((String)key);
 
-        String userId = MatrixConfig.getProperty("adminCredentials.userId");
-        String password = MatrixConfig.getProperty("adminCredentials.password");
+        String adminUserId = 
+          MatrixConfig.getProperty("adminCredentials.userId");
+        String adminPassword = 
+          MatrixConfig.getProperty("adminCredentials.password");
 
         WSDirectory wsDirectory = WSDirectory.getInstance();
         WSEndpoint endpoint = wsDirectory.getEndpoint(SQLManagerService.class);
         SQLManagerPort sqlPort = endpoint.getPort(SQLManagerPort.class,
-          userId, password);
+          adminUserId, adminPassword);
 
         Query.Connection conn = query.getConnection();
         QueryParameters parameters = new QueryParameters();

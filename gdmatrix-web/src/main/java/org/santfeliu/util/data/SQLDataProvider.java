@@ -44,6 +44,7 @@ import org.matrix.sql.SQLManagerPort;
 import org.matrix.sql.SQLManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.Table;
 
 /**
@@ -142,9 +143,15 @@ public class SQLDataProvider implements DataProvider
     }
 
     // get port to SQL service
+    String adminUserId = 
+      MatrixConfig.getProperty("adminCredentials.userId");
+    String adminPassword = 
+      MatrixConfig.getProperty("adminCredentials.password");
+
     WSDirectory dir = WSDirectory.getInstance();
     WSEndpoint endpoint = dir.getEndpoint(SQLManagerService.class);
-    SQLManagerPort port = endpoint.getPort(SQLManagerPort.class);
+    SQLManagerPort port = endpoint.getPort(SQLManagerPort.class, 
+      adminUserId, adminPassword);
 
     QueryTable queryTable = port.executeAliasQuery(query, queryParameters,
      connection, username, password);

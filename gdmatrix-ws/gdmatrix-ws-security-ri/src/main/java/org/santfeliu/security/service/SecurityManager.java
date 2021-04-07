@@ -80,6 +80,7 @@ import org.matrix.forum.ForumConstants;
 import org.matrix.job.JobConstants;
 import org.matrix.kernel.KernelConstants;
 import org.matrix.presence.PresenceConstants;
+import org.matrix.sql.SQLConstants;
 import org.matrix.workflow.WorkflowConstants;
 
 
@@ -214,22 +215,25 @@ public class SecurityManager implements SecurityManagerPort
       "Forum administrator");
     createUserInRole(adminId, WorkflowConstants.WORKFLOW_ADMIN_ROLE, 
       "Workflow administrator");
+    createUserInRole(adminId, SQLConstants.SQL_ADMIN_ROLE, 
+      "SQL administrator");
     createUserInRole(adminId, PresenceConstants.PRESENCE_ADMIN_ROLE, 
       "Presence administrator");
   }
   
   private void createUser(String userId)
   {
-    DBUser user = entityManager.find(DBUser.class, userId);
-    if (user == null)
+    Query query = entityManager.createNamedQuery("selectUser");
+    query.setParameter("userId", userId);
+    if (query.getResultList().isEmpty())
     {
-      user = new DBUser();
+      DBUser user = new DBUser();
       user.setUserId("admin");
       user.setDisplayName("Administrator");
       user.setPersonId(config.defaultPersonId);
       entityManager.persist(user);
       entityManager.flush();
-    }    
+    }
   }
   
   private void createUserInRole(String userId, String roleId, String roleDesc)
@@ -244,11 +248,12 @@ public class SecurityManager implements SecurityManagerPort
       entityManager.flush();
     }
 
-    DBUserInRole userInRole = entityManager.find(DBUserInRole.class,
-      new DBUserInRolePK(userId + PK_SEPARATOR + roleId));
-    if (userInRole == null)
+    Query query = entityManager.createNamedQuery("selectUserInRole");
+    query.setParameter("userId", userId);
+    query.setParameter("roleId", roleId);    
+    if (query.getResultList().isEmpty())
     {
-      userInRole = new DBUserInRole();
+      DBUserInRole userInRole = new DBUserInRole();
       userInRole.setUserId(userId);
       userInRole.setRoleId(roleId);
       entityManager.persist(userInRole);
