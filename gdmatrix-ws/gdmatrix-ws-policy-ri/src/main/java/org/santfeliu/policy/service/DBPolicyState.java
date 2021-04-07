@@ -34,7 +34,7 @@ import org.matrix.policy.PolicyState;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBPolicyState
 {

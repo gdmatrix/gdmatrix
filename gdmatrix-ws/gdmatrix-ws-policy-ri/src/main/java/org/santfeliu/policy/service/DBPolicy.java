@@ -35,7 +35,7 @@ import org.matrix.policy.Policy;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBPolicy extends Policy
 {

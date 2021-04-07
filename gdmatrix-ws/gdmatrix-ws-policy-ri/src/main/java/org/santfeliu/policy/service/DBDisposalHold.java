@@ -35,7 +35,7 @@ import org.santfeliu.jpa.JPAUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBDisposalHold extends DisposalHold
 {

@@ -55,6 +55,10 @@ import javax.persistence.Query;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.agenda.AgendaConstants;
+import org.matrix.cases.CaseConstants;
+import org.matrix.classif.ClassificationConstants;
+import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.security.encoder.DigestEncoder;
@@ -64,13 +68,19 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.ws.WSExceptionFactory;
 import org.matrix.security.*;
-import static org.matrix.dic.DictionaryConstants.ROLE_TYPE;
 import org.santfeliu.security.util.StringCipher;
 import org.santfeliu.ws.WSProperties;
 import org.santfeliu.ws.annotations.Disposer;
 import org.santfeliu.ws.annotations.Initializer;
 import org.santfeliu.ws.annotations.MultiInstance;
 import org.santfeliu.ws.annotations.State;
+import static org.matrix.dic.DictionaryConstants.ROLE_TYPE;
+import org.matrix.doc.DocumentConstants;
+import org.matrix.forum.ForumConstants;
+import org.matrix.job.JobConstants;
+import org.matrix.kernel.KernelConstants;
+import org.matrix.presence.PresenceConstants;
+import org.matrix.workflow.WorkflowConstants;
 
 
 /**
@@ -93,7 +103,7 @@ public class SecurityManager implements SecurityManagerPort
   public static final int USER_DISPLAY_NAME_MAX_SIZE = 20;
   public static final int USER_ID_MAX_SIZE = 20;
 
-  // MatrigConfig properties
+  // MatrixConfig properties
 
   /* digest encoder className */
   public static final String DIGEST_ENCODER = "digestEncoder";
@@ -132,10 +142,10 @@ public class SecurityManager implements SecurityManagerPort
   WebServiceContext wsContext;
 
   @PersistenceContext(unitName="security_ri")
-  public EntityManager em;
+  EntityManager entityManager;
 
   @State
-  public Configuration config;
+  Configuration config;
 
   public class Configuration
   {
@@ -182,36 +192,67 @@ public class SecurityManager implements SecurityManagerPort
   {
     config = new Configuration(endpointName);
 
-    DBUser user = em.find(DBUser.class, "admin");
+    String adminId = MatrixConfig.getProperty(ADMIN_USERID);
+    createUser(adminId);
+    createUserInRole(adminId, SecurityConstants.SECURITY_ADMIN_ROLE, 
+      "Security administrator");
+    createUserInRole(adminId, DictionaryConstants.DIC_ADMIN_ROLE, 
+      "Dictionary administrator");
+    createUserInRole(adminId, KernelConstants.KERNEL_ADMIN_ROLE, 
+      "Kernel administrator");
+    createUserInRole(adminId, DocumentConstants.DOC_ADMIN_ROLE, 
+      "Document administrator");
+    createUserInRole(adminId, CaseConstants.CASE_ADMIN_ROLE, 
+      "Case administrator");
+    createUserInRole(adminId, ClassificationConstants.CLASSIF_ADMIN_ROLE, 
+      "Classification administrator");
+    createUserInRole(adminId, AgendaConstants.AGENDA_ADMIN_ROLE, 
+      "Agenda administrator");
+    createUserInRole(adminId, JobConstants.JOB_ADMIN_ROLE, 
+      "Job administrator");
+    createUserInRole(adminId, ForumConstants.FORUM_ADMIN_ROLE, 
+      "Forum administrator");
+    createUserInRole(adminId, WorkflowConstants.WORKFLOW_ADMIN_ROLE, 
+      "Workflow administrator");
+    createUserInRole(adminId, PresenceConstants.PRESENCE_ADMIN_ROLE, 
+      "Presence administrator");
+  }
+  
+  private void createUser(String userId)
+  {
+    DBUser user = entityManager.find(DBUser.class, userId);
     if (user == null)
     {
       user = new DBUser();
       user.setUserId("admin");
       user.setDisplayName("Administrator");
       user.setPersonId(config.defaultPersonId);
-      em.persist(user);
-      em.flush();
-    }
-
-    DBRole role = em.find(DBRole.class, "SECURITY_ADMIN");
+      entityManager.persist(user);
+      entityManager.flush();
+    }    
+  }
+  
+  private void createUserInRole(String userId, String roleId, String roleDesc)
+  {
+    DBRole role = entityManager.find(DBRole.class, roleId);
     if (role == null)
     {
       role = new DBRole();
-      role.setRoleId("SECURITY_ADMIN");
-      role.setName("Security Administrator");
-      em.persist(role);
-      em.flush();
+      role.setRoleId(roleId);
+      role.setName(roleDesc);
+      entityManager.persist(role);
+      entityManager.flush();
     }
 
-    DBUserInRole userInRole = em.find(DBUserInRole.class,
-      new DBUserInRolePK("admin" + PK_SEPARATOR + "SECURITY_ADMIN"));
+    DBUserInRole userInRole = entityManager.find(DBUserInRole.class,
+      new DBUserInRolePK(userId + PK_SEPARATOR + roleId));
     if (userInRole == null)
     {
       userInRole = new DBUserInRole();
-      userInRole.setUserId("admin");
-      userInRole.setRoleId("SECURITY_ADMIN");
-      em.persist(userInRole);
-      em.flush();
+      userInRole.setUserId(userId);
+      userInRole.setRoleId(roleId);
+      entityManager.persist(userInRole);
+      entityManager.flush();
     }
   }
 
@@ -238,9 +279,9 @@ public class SecurityManager implements SecurityManagerPort
     int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
     Query query;
     if (userCount > 1)
-      query = em.createNamedQuery("findUsersMultipleId");
+      query = entityManager.createNamedQuery("findUsersMultipleId");
     else
-      query = em.createNamedQuery("findUsersSingleId");
+      query = entityManager.createNamedQuery("findUsersSingleId");
     setUserFilterParameters(query, filter, userCount);
     List<DBUser> dbUsers = query.getResultList();
     List<User> users = new ArrayList<>();
@@ -259,9 +300,9 @@ public class SecurityManager implements SecurityManagerPort
     int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
     Query query;
     if (userCount > 1)
-      query = em.createNamedQuery("countUsersMultipleId");
+      query = entityManager.createNamedQuery("countUsersMultipleId");
     else
-      query = em.createNamedQuery("countUsersSingleId");
+      query = entityManager.createNamedQuery("countUsersSingleId");
     setUserFilterParameters(query, filter, userCount);
     query.setFirstResult(0);
     query.setMaxResults(1);
@@ -273,7 +314,7 @@ public class SecurityManager implements SecurityManagerPort
   public User loadUser(String userId)
   {
     LOGGER.log(Level.INFO, "loadUser userId:{0}", userId);
-
+    
     // checkRoles
     DBUser dbUser = selectUser(userId);
     if (dbUser == null)
@@ -332,7 +373,7 @@ public class SecurityManager implements SecurityManagerPort
         dbUser.setChangeUserId(changeUserId);
         dbUser.setStddmod(changeDate);
         dbUser.setStdhmod(changeTime);
-        em.persist(dbUser);
+        entityManager.persist(dbUser);
       }
       else // change user
       {
@@ -366,12 +407,12 @@ public class SecurityManager implements SecurityManagerPort
       LOGGER.log(Level.INFO, "removeUser userId:{0}", userId);
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
 
-      Query query = em.createNamedQuery("removeUserInRole");
+      Query query = entityManager.createNamedQuery("removeUserInRole");
       query.setParameter("userId", userId);
       query.setParameter("roleId", null);
       query.executeUpdate();
 
-      query = em.createNamedQuery("removeUser");
+      query = entityManager.createNamedQuery("removeUser");
       query.setParameter("userId", userId);
       query.executeUpdate();
     }
@@ -606,9 +647,9 @@ public class SecurityManager implements SecurityManagerPort
     int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
     Query query;
     if (roleCount > 1)
-      query = em.createNamedQuery("findRolesMultipleId");
+      query = entityManager.createNamedQuery("findRolesMultipleId");
     else
-      query = em.createNamedQuery("findRolesSingleId");
+      query = entityManager.createNamedQuery("findRolesSingleId");
     setRoleFilterParameters(query, filter, roleCount);
     List<DBRole> dbRoles = query.getResultList();
     List<Role> roles = new ArrayList<>();
@@ -627,9 +668,9 @@ public class SecurityManager implements SecurityManagerPort
     int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
     Query query;
     if (roleCount > 1)
-      query = em.createNamedQuery("countRolesMultipleId");
+      query = entityManager.createNamedQuery("countRolesMultipleId");
     else
-      query = em.createNamedQuery("countRolesSingleId");
+      query = entityManager.createNamedQuery("countRolesSingleId");
     setRoleFilterParameters(query, filter, roleCount);
     query.setFirstResult(0);
     query.setMaxResults(1);
@@ -643,7 +684,7 @@ public class SecurityManager implements SecurityManagerPort
     Role role;
     LOGGER.log(Level.INFO, "loadRole roleId:{0}", roleId);
 
-    DBRole dbRole = em.find(DBRole.class, roleId);
+    DBRole dbRole = entityManager.find(DBRole.class, roleId);
     if (dbRole == null)
       throw new WebServiceException("security:ROLE_NOT_FOUND");
 
@@ -668,21 +709,21 @@ public class SecurityManager implements SecurityManagerPort
 
       Date now = new Date();
       String nowDateTime = TextUtils.formatDate(now, "yyyyMMddHHmmss");
-      DBRole dbRole = em.find(DBRole.class, role.getRoleId());
+      DBRole dbRole = entityManager.find(DBRole.class, role.getRoleId());
       if (dbRole == null)
       {
         dbRole = new DBRole();
         dbRole.copyFrom(role);
         dbRole.setCreationDateTime(nowDateTime);
         dbRole.setCreationUserId(userId);
-        em.persist(dbRole);
+        entityManager.persist(dbRole);
       }
       else // update role
       {
         dbRole.copyFrom(role);
         dbRole.setChangeDateTime(nowDateTime);
         dbRole.setChangeUserId(userId);
-        dbRole = em.merge(dbRole);
+        dbRole = entityManager.merge(dbRole);
       }
       dbRole.copyTo(role);
     }
@@ -702,7 +743,7 @@ public class SecurityManager implements SecurityManagerPort
     {
       LOGGER.log(Level.INFO, "removeRole roleId:{0}", roleId);
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
-      Query query = em.createNamedQuery("removeRole");
+      Query query = entityManager.createNamedQuery("removeRole");
       query.setParameter("roleId", roleId);
       query.executeUpdate();
     }
@@ -725,7 +766,7 @@ public class SecurityManager implements SecurityManagerPort
       !userId.startsWith(SecurityConstants.TEMP_USER_PREFIX))
     {
       // search in database
-      Query query = em.createNamedQuery("findUserInRoles");
+      Query query = entityManager.createNamedQuery("findUserInRoles");
       query.setParameter("userId", userId);
       query.setParameter("roleId", roleId);
       query.setParameter("comments", addWildCards(filter.getComments()));
@@ -776,7 +817,7 @@ public class SecurityManager implements SecurityManagerPort
     List<UserInRoleView> userInRoleViews = new ArrayList<>();
     if (filter.getUserId() == null)
     {
-      Query query = em.createNamedQuery("findUserInRoleViews");
+      Query query = entityManager.createNamedQuery("findUserInRoleViews");
       query.setParameter("roleId", filter.getRoleId());
       query.setParameter("comments", addWildCards(filter.getComments()));
       query.setParameter("minDate", filter.getMinDate());
@@ -800,7 +841,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     else
     {
-      Query query = em.createNamedQuery("findRoleInUserViews");
+      Query query = entityManager.createNamedQuery("findRoleInUserViews");
       query.setParameter("userId", filter.getUserId());
       query.setParameter("comments", addWildCards(filter.getComments()));
       query.setParameter("minDate", filter.getMinDate());
@@ -862,7 +903,7 @@ public class SecurityManager implements SecurityManagerPort
       if (userInRole.getUserInRoleId() == null) //insert
       {
         DBUserInRole dbUserInRole = new DBUserInRole(userInRole);
-        em.persist(dbUserInRole);
+        entityManager.persist(dbUserInRole);
 
         touchUser(dbUserInRole.getUserId());
         dbUserInRole.copyTo(userInRole);
@@ -874,7 +915,7 @@ public class SecurityManager implements SecurityManagerPort
           userInRole.getRoleId();
         if (userInRole.getUserInRoleId().equals(dbUserInRoleId)) //merge
         {
-          Query query = em.createNamedQuery("updateUserInRole");
+          Query query = entityManager.createNamedQuery("updateUserInRole");
           query.setParameter("userId", userInRole.getUserId());
           query.setParameter("roleId", userInRole.getRoleId());
           query.setParameter("comments", userInRole.getComments());
@@ -888,12 +929,12 @@ public class SecurityManager implements SecurityManagerPort
             SecurityManager.PK_SEPARATOR);
           String oldUserId = ids[0];
           String oldRoleId = ids[1];
-          Query query = em.createNamedQuery("removeUserInRole");
+          Query query = entityManager.createNamedQuery("removeUserInRole");
           query.setParameter("userId", oldUserId);
           query.setParameter("roleId", oldRoleId);
           query.executeUpdate();
           dbUserInRole = new DBUserInRole(userInRole);
-          em.persist(dbUserInRole);
+          entityManager.persist(dbUserInRole);
         }
         touchUser(dbUserInRole.getUserId());
       }
@@ -921,7 +962,7 @@ public class SecurityManager implements SecurityManagerPort
       if (roleId.startsWith(SecurityConstants.SELF_ROLE_PREFIX))
         throw new RuntimeException("security:SELF_ROLE_NOT_REMOVABLE");
 
-      Query query = em.createNamedQuery("removeUserInRole");
+      Query query = entityManager.createNamedQuery("removeUserInRole");
       query.setParameter("userId", userId);
       query.setParameter("roleId", roleId);
       query.executeUpdate();
@@ -940,7 +981,7 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<RoleInRole> findRoleInRoles(RoleInRoleFilter filter)
   {
-    Query query = em.createNamedQuery("findRoleInRoles");
+    Query query = entityManager.createNamedQuery("findRoleInRoles");
     query.setParameter("containerRoleId", filter.getContainerRoleId());
     query.setParameter("includedRoleId", filter.getIncludedRoleId());
     List<DBRoleInRole> dbRoleInRoles = query.getResultList();
@@ -962,7 +1003,7 @@ public class SecurityManager implements SecurityManagerPort
     List<RoleInRoleView> roleInRoleViews = new ArrayList<>();
     if (filter.getContainerRoleId() == null)
     {
-      Query query = em.createNamedQuery("findContainerRoleViews");
+      Query query = entityManager.createNamedQuery("findContainerRoleViews");
       query.setParameter("includedRoleId", filter.getIncludedRoleId());
       List<DBRole> dbRoles = query.getResultList();
       for (DBRole dbRole : dbRoles)
@@ -978,7 +1019,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     else
     {
-      Query query = em.createNamedQuery("findIncludedRoleViews");
+      Query query = entityManager.createNamedQuery("findIncludedRoleViews");
       query.setParameter("containerRoleId", filter.getContainerRoleId());
       List<DBRole> dbRoles = query.getResultList();
       for (DBRole dbRole : dbRoles)
@@ -1003,7 +1044,7 @@ public class SecurityManager implements SecurityManagerPort
     {
       LOGGER.log(Level.INFO, "loadRoleInRole:{0}", roleInRoleId);
       DBRoleInRole dbRoleInRole =
-        em.find(DBRoleInRole.class, new DBRoleInRolePK(roleInRoleId));
+        entityManager.find(DBRoleInRole.class, new DBRoleInRolePK(roleInRoleId));
       if (dbRoleInRole == null) return null;
       roleInRole = new RoleInRole();
       dbRoleInRole.copyTo(roleInRole);
@@ -1031,7 +1072,7 @@ public class SecurityManager implements SecurityManagerPort
           new DBRoleInRolePK(roleInRoleId));
 
         DBRoleInRole dbRoleInRole = new DBRoleInRole(roleInRole);
-        em.persist(dbRoleInRole);
+        entityManager.persist(dbRoleInRole);
 
         touchRole(dbRoleInRole.getContainerRoleId());
         dbRoleInRole.copyTo(roleInRole);
@@ -1060,8 +1101,8 @@ public class SecurityManager implements SecurityManagerPort
       if (!isUserAdmin()) throw new Exception("ACTION_DENIED");
 
       DBRoleInRolePK pk = new DBRoleInRolePK(roleInRoleId);
-      DBRoleInRole dbRoleInRole = em.getReference(DBRoleInRole.class, pk);
-      em.remove(dbRoleInRole);
+      DBRoleInRole dbRoleInRole = entityManager.getReference(DBRoleInRole.class, pk);
+      entityManager.remove(dbRoleInRole);
       result = true;
 
       touchRole(pk.getContainerRoleId());
@@ -1096,7 +1137,7 @@ public class SecurityManager implements SecurityManagerPort
   {
     try
     {
-      Query query = em.createNamedQuery("selectUser");
+      Query query = entityManager.createNamedQuery("selectUser");
       query.setParameter("userId", userId);
       return (DBUser)query.getSingleResult();
     }
@@ -1108,7 +1149,7 @@ public class SecurityManager implements SecurityManagerPort
 
   private int updateUser(DBUser dbUser)
   {
-    Query query = em.createNamedQuery("updateUser");
+    Query query = entityManager.createNamedQuery("updateUser");
     query.setParameter("userId", dbUser.getUserId());
     query.setParameter("password", dbUser.getPassword());
     query.setParameter("displayName", dbUser.getDisplayName());
@@ -1137,7 +1178,7 @@ public class SecurityManager implements SecurityManagerPort
   {
     try
     {
-      Query query = em.createNamedQuery("findUserInRoles");
+      Query query = entityManager.createNamedQuery("findUserInRoles");
       String ids[] = userInRoleId.split(SecurityManager.PK_SEPARATOR);
       query.setParameter("userId", ids[0]);
       query.setParameter("roleId", ids[1]);
@@ -1178,7 +1219,7 @@ public class SecurityManager implements SecurityManagerPort
     Date now = new Date();
     SimpleDateFormat ddf = new SimpleDateFormat("yyyyMMdd");
     SimpleDateFormat tdf = new SimpleDateFormat("HHmmss");
-    Query query = em.createNamedQuery("touchUser");
+    Query query = entityManager.createNamedQuery("touchUser");
     query.setParameter("userId", userId.trim());
     query.setParameter("date", ddf.format(now));
     query.setParameter("time", tdf.format(now));
@@ -1188,7 +1229,7 @@ public class SecurityManager implements SecurityManagerPort
   private void touchRole(String roleId) throws Exception
   {
     Date now = new Date();
-    Query query = em.createNamedQuery("touchRole");
+    Query query = entityManager.createNamedQuery("touchRole");
     query.setParameter("roleId", roleId);
     query.setParameter("dateTime", TextUtils.formatDate(now, "yyyyMMddHHmmss"));
     query.executeUpdate();

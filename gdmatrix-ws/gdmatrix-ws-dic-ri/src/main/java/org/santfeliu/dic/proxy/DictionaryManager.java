@@ -63,6 +63,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     super(DictionaryManagerService.class, DictionaryManagerPort.class);
   }
 
+  @Override
   public Type loadType(String typeId)
   {
     if (typeId == null) return null;
@@ -82,6 +83,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.loadType(typeId);
   }
 
+  @Override
   public Type storeType(Type type)
   {
     // find endpoint
@@ -101,6 +103,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.storeType(type);
   }
 
+  @Override
   public boolean removeType(String typeId)
   {
     // find endpoint
@@ -117,6 +120,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.removeType(typeId);
   }
 
+  @Override
   public int countTypes(TypeFilter filter)
   {
     int count = 0;
@@ -147,9 +151,10 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     return count;
   }
 
+  @Override
   public List<Type> findTypes(TypeFilter filter)
   {
-    List<Type> types = new ArrayList<Type>();
+    List<Type> types = new ArrayList<>();
     Credentials credentials = SecurityUtils.getCredentials(wsContext);
     List<WSEndpoint> endpoints =
       getWSDirectory().getEndpoints(DictionaryManagerService.class);
@@ -203,6 +208,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     return types;
   }
 
+  @Override
   public List<Property> initProperties(String typeId, List<Property> property)
   {
     if (typeId == null) return null;
@@ -221,6 +227,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.initProperties(typeId, property);
   }
 
+  @Override
   public List<Property> completeProperties(String typeId,
     List<Property> property)
   {
@@ -240,6 +247,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.completeProperties(typeId, property);
   }
 
+  @Override
   public List<String> getTypeActions(String typeId)
   {
     ArrayList<String> actions = new ArrayList();
@@ -262,9 +270,10 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     return actions;
   }
 
+  @Override
   public List<String> listModifiedTypes(String dateTime1, String dateTime2)
   {
-    ArrayList<String> list = new ArrayList<String>();
+    ArrayList<String> list = new ArrayList<>();
     Credentials credentials = SecurityUtils.getCredentials(wsContext);
     List<WSEndpoint> endpoints =
       getWSDirectory().getEndpoints(DictionaryManagerService.class);
@@ -295,32 +304,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     return list;
   }
 
-  /* private methods */
-
-  private WSEndpoint getDestinationEndpoint(String typeId)
-  {
-    InternalEntity internalEntity =
-      getWSDirectory().getInternalEntity(DictionaryConstants.TYPE_TYPE, typeId);
-    WSEndpoint endpoint = (internalEntity == null) ?
-      getDefaultEndpoint() : internalEntity.getEndpoint();
-    return endpoint;
-  }
-
-  private DictionaryManagerPort getPort(WSEndpoint endpoint)
-  {
-    Credentials credentials = SecurityUtils.getCredentials(wsContext);
-    return getPort(endpoint, credentials);
-  }
-
-  private DictionaryManagerPort getPort(WSEndpoint endpoint,
-    Credentials credentials)
-  {
-    DictionaryManagerPort port =
-      endpoint.getPort(DictionaryManagerPort.class,
-      credentials.getUserId(), credentials.getPassword());
-    return port;
-  }
-
+  @Override
   public EnumType loadEnumType(String enumTypeId)
   {
     if (enumTypeId == null) return null;
@@ -340,6 +324,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.loadEnumType(enumTypeId);
   }
 
+  @Override
   public EnumType storeEnumType(EnumType enumType)
   {
     // find endpoint
@@ -359,6 +344,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.storeEnumType(enumType);
   }
 
+  @Override
   public boolean removeEnumType(String enumTypeId)
   {
     // find endpoint
@@ -376,16 +362,19 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.removeEnumType(enumTypeId);
   }
 
+  @Override
   public int countEnumTypes(EnumTypeFilter filter)
   {
     return count("countEnumTypes", filter);
   }
 
+  @Override
   public List<EnumType> findEnumTypes(EnumTypeFilter filter)
   {
     return find("countEnumTypes", "findEnumTypes", filter, EnumType.class);
   }
 
+  @Override
   public EnumTypeItem loadEnumTypeItem(String enumTypeItemId)
   {
     if (enumTypeItemId == null) return null;
@@ -406,6 +395,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.loadEnumTypeItem(enumTypeItemId);
   }
 
+  @Override
   public EnumTypeItem storeEnumTypeItem(EnumTypeItem enumTypeItem)
   {
     // find endpoint
@@ -434,6 +424,7 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.storeEnumTypeItem(enumTypeItem);
   }
 
+  @Override
   public boolean removeEnumTypeItem(String enumTypeItemId)
   {
     // find endpoint
@@ -452,14 +443,42 @@ public class DictionaryManager extends WSProxy implements DictionaryManagerPort
     else return port.removeEnumTypeItem(enumTypeItemId);
   }
 
+  @Override
   public int countEnumTypeItems(EnumTypeItemFilter filter)
   {
     return count("countEnumTypeItems", filter);
   }
 
+  @Override
   public List<EnumTypeItem> findEnumTypeItems(EnumTypeItemFilter filter)
   {
     return find("countEnumTypeItems", "findEnumTypeItems", filter,
       EnumTypeItem.class);
+  }
+
+  /* private methods */
+
+  private WSEndpoint getDestinationEndpoint(String typeId)
+  {
+    InternalEntity internalEntity =
+      getWSDirectory().getInternalEntity(DictionaryConstants.TYPE_TYPE, typeId);
+    WSEndpoint endpoint = (internalEntity == null) ?
+      getDefaultEndpoint() : internalEntity.getEndpoint();
+    return endpoint;
+  }
+
+  private DictionaryManagerPort getPort(WSEndpoint endpoint)
+  {
+    Credentials credentials = SecurityUtils.getCredentials(wsContext);
+    return getPort(endpoint, credentials);
+  }
+
+  private DictionaryManagerPort getPort(WSEndpoint endpoint,
+    Credentials credentials)
+  {
+    DictionaryManagerPort port =
+      endpoint.getPort(DictionaryManagerPort.class,
+      credentials.getUserId(), credentials.getPassword());
+    return port;
   }
 }

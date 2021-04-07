@@ -30,46 +30,47 @@
  */
 package org.santfeliu.policy.service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import org.matrix.policy.ClassPolicy;
-import org.santfeliu.jpa.JPAUtils;
-
 /**
  *
  * @author realor
  */
-public class DBClassPolicy extends ClassPolicy
+public class DBPolicyPropertyPK
 {
-  public void copyTo(ClassPolicy classPolicy)
+  private String policyId;
+  private String name;
+  private int index;
+
+  public DBPolicyPropertyPK()
   {
-    JPAUtils.copy(this, classPolicy);
   }
 
-  public void copyFrom(ClassPolicy classPolicy)
+  public String getPolicyId()
   {
-    classPolicyId = classPolicy.getClassPolicyId();
-    classId = classPolicy.getClassId();
-    policyId = classPolicy.getPolicyId();
-    dispHoldId = classPolicy.getDispHoldId();
-    reason = classPolicy.getReason();
-    startDate = classPolicy.getStartDate();
-    endDate = classPolicy.getEndDate();
+    return policyId;
   }
 
-  public boolean isActiveAt(Date date)
+  public void setPolicyId(String policyId)
   {
-    boolean active = true;
-    SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
-    String nowDate = df.format(date);
-    if (startDate != null)
-    {
-      active = startDate.compareTo(nowDate) <= 0;
-    }
-    if (active && endDate != null)
-    {
-      active = endDate.compareTo(nowDate) >= 0;
-    }
-    return active;
+    this.policyId = policyId;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+
+  public void setName(String name)
+  {
+    this.name = name;
+  }
+
+  public int getIndex()
+  {
+    return index;
+  }
+
+  public void setIndex(int index)
+  {
+    this.index = index;
   }
 }

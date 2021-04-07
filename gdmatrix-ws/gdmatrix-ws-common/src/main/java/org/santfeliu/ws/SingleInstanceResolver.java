@@ -94,7 +94,7 @@ public class SingleInstanceResolver<T extends Object>
       public Object invoke(Packet packet, Method method, Object... args) 
         throws InvocationTargetException, IllegalAccessException
       {
-        return controller.invoke(instance, method, args);
+        return method.invoke(instance, args);
       }
     };
   }

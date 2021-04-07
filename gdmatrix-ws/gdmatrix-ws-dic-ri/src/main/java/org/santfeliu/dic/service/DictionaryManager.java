@@ -92,7 +92,7 @@ public class DictionaryManager implements DictionaryManagerPort
   WebServiceContext wsContext;
 
   @PersistenceContext(unitName="dic_ri")
-  public EntityManager entityManager;
+  EntityManager entityManager;
   
   //typeActions method
   private static HashMap<String, List<String>> typeActionsMap = new
@@ -103,7 +103,7 @@ public class DictionaryManager implements DictionaryManagerPort
   public void initialize(String endpointName)
   {
     // create emf
-  }  
+  }
   
   @Override
   public Type loadType(String typeId)

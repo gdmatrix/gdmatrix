@@ -84,7 +84,7 @@ public class ClassificationManager implements ClassificationManagerPort
   private WSEndpoint endpoint;
 
   @PersistenceContext(unitName="classif_ri")
-  public EntityManager entityManager;
+  EntityManager entityManager;
 
   @Initializer
   public void initialize(String endpointName)

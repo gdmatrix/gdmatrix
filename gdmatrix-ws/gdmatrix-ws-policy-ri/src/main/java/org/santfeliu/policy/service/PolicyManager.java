@@ -98,7 +98,7 @@ public class PolicyManager implements PolicyManagerPort
   WebServiceContext wsContext;
 
   @PersistenceContext(unitName="policy_ri")
-  public EntityManager entityManager;
+  EntityManager entityManager;
   
   private WSEndpoint endpoint;
 

@@ -424,6 +424,7 @@
   <entity class="org.santfeliu.policy.service.DBPolicyProperty" 
           name="PolicyProperty" access="PROPERTY">
     <table name="POL_POLICYPROP" />
+    <id-class class="org.santfeliu.policy.service.DBPolicyPropertyPK" />
     <attributes>
       <id name="policyId">
         <column name="POLICYID" length="10" />

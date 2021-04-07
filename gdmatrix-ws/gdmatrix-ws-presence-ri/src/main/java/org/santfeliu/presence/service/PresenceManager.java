@@ -116,7 +116,7 @@ public class PresenceManager implements PresenceManagerPort
   WebServiceContext wsContext;
 
   @PersistenceContext(unitName="presence_ri")
-  public EntityManager entityManager;
+  EntityManager entityManager;
 
   @Initializer
   public void initialize(String endpointName)

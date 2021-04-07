@@ -36,7 +36,9 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -61,14 +63,14 @@ public class WSController
 
   protected WSEndpoint endpoint;
   protected String endpointName;
-  protected Object state;
+  protected Object[] state;
   protected InstanceResolver instanceResolver;
 
   protected Method initializerMethod;
   protected Method disposerMethod;
 
   protected Field entityManagerField;
-  protected Field stateField;
+  protected Field[] stateFields;
   protected String unitName;
 
   public static synchronized WSController getInstance(WSEndpoint endpoint)
@@ -90,21 +92,26 @@ public class WSController
 
   private void setup(Class clazz)
   {
-    Field[] fields = clazz.getFields();
+    List<Field> stateFieldList = new ArrayList<>();
+    Field[] fields = clazz.getDeclaredFields();
     for (Field field : fields)
     {
       if (field.isAnnotationPresent(PersistenceContext.class))
       {
-        PersistenceContext pc = field.getAnnotation(PersistenceContext.class);
+        field.setAccessible(true);
         entityManagerField = field;
+        PersistenceContext pc = field.getAnnotation(PersistenceContext.class);
         unitName = pc.unitName();
       }
       else if (field.isAnnotationPresent(State.class))
       {
-        stateField = field;
+        field.setAccessible(true);
+        stateFieldList.add(field);
       }
-      if (stateField != null && entityManagerField != null) break;
     }
+    int count = stateFieldList.size();
+    stateFields = stateFieldList.toArray(new Field[count]);
+    state = new Object[count];
 
     Method[] methods = clazz.getMethods();
     for (Method method : methods)
@@ -142,16 +149,6 @@ public class WSController
   public void setEndpointName(String endpointName)
   {
     this.endpointName = endpointName;
-  }
-
-  public Object getState()
-  {
-    return state;
-  }
-
-  public void setState(Object state)
-  {
-    this.state = state;
   }
 
   public InstanceResolver getInstanceResolver()
@@ -275,18 +272,26 @@ public class WSController
   protected void injectState(Object instance)
     throws IllegalArgumentException, IllegalAccessException
   {
-    if (stateField != null)
+    if (stateFields != null)
     {
-      stateField.set(instance, state);
+      for (int i = 0; i < stateFields.length; i++)
+      {
+        Field field = stateFields[i];
+        field.set(instance, state[i]);
+      }
     }
   }
 
   protected void saveState(Object instance)
     throws IllegalArgumentException, IllegalAccessException
   {
-    if (stateField != null)
+    if (stateFields != null)
     {
-      state = stateField.get(instance);
+      for (int i = 0; i < stateFields.length; i++)
+      {
+        Field field = stateFields[i];
+        state[i] = field.get(instance);
+      }
     }
   }
 

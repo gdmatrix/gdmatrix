@@ -265,7 +265,8 @@ public class WorkflowManager implements WorkflowManagerPort
   public List<InstanceView> findInstances(InstanceFilter filter)
   {
     try
-    {  
+    {
+      System.out.println("\n\n\n>>>>>>User:" + getWorkflowUser().getName());
       Table table = engine.findInstances(filter, getWorkflowUser());
 
       ArrayList<InstanceView> instanceList = new ArrayList<>();

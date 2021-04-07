@@ -99,7 +99,7 @@ public class TypeConverter
       {
         builder.append("%");
       }
-      else if (id.indexOf("%") != -1)
+      else if (id.contains("%"))
       {
         builder.append(id);
       }
