@@ -683,60 +683,41 @@
   <context-param>
     <param-name>agenda.maxRecurrences</param-name>
     <param-value>100</param-value>
-  </context-param>      
+  </context-param>
+
   <!-- listeners -->
   <listener>
     <listener-class>org.santfeliu.web.MatrixServletContextListener</listener-class>
   </listener>
+
   <listener>
     <listener-class>org.santfeliu.ws.WSServletContextListener</listener-class>
   </listener>
+
   <!-- Servlets -->
-  <servlet>
-    <description>WSDirectory servlet</description>
-    <servlet-name>WSDirectoryServlet</servlet-name>
-    <servlet-class>org.santfeliu.web.servlet.WSDirectoryServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>ScannerServlet</servlet-name>
-    <servlet-class>org.santfeliu.web.servlet.ScannerServlet</servlet-class>
-    <init-param>
-      <description>Scan time gap in seconds</description>
-      <param-name>scanTimeGap</param-name>
-      <param-value>600</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <servlet-name>PaymentServlet</servlet-name>
-    <servlet-class>org.santfeliu.web.servlet.PaymentServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>WSDirectoryServlet</servlet-name>
-    <url-pattern>/wsdirectory/*</url-pattern>
-  </servlet-mapping>
   <servlet>
     <description>JAX-WS endpoint</description>
     <display-name>jaxws</display-name>
     <servlet-name>jaxws</servlet-name>
     <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>jaxws</servlet-name>
     <url-pattern>/services/*</url-pattern>
   </servlet-mapping>
-  <!--    
-      <servlet>
-          <description>Faces servlet</description>
-          <servlet-name>FacesServlet</servlet-name>
-          <servlet-class>org.santfeliu.web.FacesServlet</servlet-class>
-      </servlet>
-      <servlet-mapping>
-          <servlet-name>FacesServlet</servlet-name>
-          <url-pattern>*.faces</url-pattern>
-      </servlet-mapping>
-  -->
+
+  <servlet>
+    <description>WSDirectory servlet</description>
+    <servlet-name>WSDirectoryServlet</servlet-name>
+    <servlet-class>org.santfeliu.web.servlet.WSDirectoryServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>WSDirectoryServlet</servlet-name>
+    <url-pattern>/wsdirectory/*</url-pattern>
+  </servlet-mapping>
+
   <servlet>
     <description>Document servlet. Retrieves documents by docid or UUID.</description>
     <servlet-name>DocumentServlet</servlet-name>
@@ -750,6 +731,21 @@
     <servlet-name>DocumentServlet</servlet-name>
     <url-pattern>/documents/*</url-pattern>
   </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ScannerServlet</servlet-name>
+    <servlet-class>org.santfeliu.web.servlet.ScannerServlet</servlet-class>
+    <init-param>
+      <description>Scan time gap in seconds</description>
+      <param-name>scanTimeGap</param-name>
+      <param-value>600</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ScannerServlet</servlet-name>
+    <url-pattern>/scanner/*</url-pattern>
+  </servlet-mapping>
+
   <servlet>
     <description>Classification servlet</description>
     <servlet-name>ClassificationServlet</servlet-name>
@@ -759,6 +755,7 @@
     <servlet-name>ClassificationServlet</servlet-name>
     <url-pattern>/classif/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>News RSS servlet</description>
     <servlet-name>NewsRSSServlet</servlet-name>
@@ -768,6 +765,7 @@
     <servlet-name>NewsRSSServlet</servlet-name>
     <url-pattern>/rss/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Feeds RSS servlet</description>
     <servlet-name>FeedRSSServlet</servlet-name>
@@ -777,6 +775,7 @@
     <servlet-name>FeedRSSServlet</servlet-name>
     <url-pattern>/feed/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Agenda servlet</description>
     <servlet-name>AgendaServlet</servlet-name>
@@ -786,6 +785,7 @@
     <servlet-name>AgendaServlet</servlet-name>
     <url-pattern>/events/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Signature servlet. Manages signature documents</description>
     <servlet-name>SignatureServlet</servlet-name>
@@ -795,6 +795,7 @@
     <servlet-name>SignatureServlet</servlet-name>
     <url-pattern>/signatures/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>QRCode generator servlet</description>
     <servlet-name>QRCodeServlet</servlet-name>
@@ -804,6 +805,7 @@
     <servlet-name>QRCodeServlet</servlet-name>
     <url-pattern>/qrcode/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Proxy servlet</description>
     <servlet-name>ProxyServlet</servlet-name>
@@ -813,6 +815,7 @@
     <servlet-name>ProxyServlet</servlet-name>
     <url-pattern>/proxy/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Form servlet</description>
     <servlet-name>FormServlet</servlet-name>
@@ -822,6 +825,7 @@
     <servlet-name>FormServlet</servlet-name>
     <url-pattern>/form/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Script servlet</description>
     <servlet-name>ScriptServlet</servlet-name>
@@ -835,6 +839,7 @@
     <servlet-name>ScriptServlet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Valid servlet</description>
     <servlet-name>ValidServlet</servlet-name>
@@ -844,6 +849,16 @@
     <servlet-name>ValidServlet</servlet-name>
     <url-pattern>/valid/*</url-pattern>
   </servlet-mapping>
+
+  <servlet>
+    <servlet-name>PaymentServlet</servlet-name>
+    <servlet-class>org.santfeliu.web.servlet.PaymentServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PaymentServlet</servlet-name>
+    <url-pattern>/pagament/*</url-pattern>
+  </servlet-mapping>
+
   <servlet>
     <description>Clock servlet</description>
     <servlet-name>ClockServlet</servlet-name>
@@ -853,6 +868,7 @@
     <servlet-name>ClockServlet</servlet-name>
     <url-pattern>/clock/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>FCKEditor resources servlet</description>
     <servlet-name>FCKEditorServlet</servlet-name>
@@ -866,6 +882,7 @@
     <servlet-name>FCKEditorServlet</servlet-name>
     <url-pattern>/fckfaces/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Commands Servlet</description>
     <servlet-name>CommandServlet</servlet-name>
@@ -875,6 +892,7 @@
     <servlet-name>CommandServlet</servlet-name>
     <url-pattern>/commands/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Report servlet</description>
     <servlet-name>ReportServlet</servlet-name>
@@ -884,6 +902,7 @@
     <servlet-name>ReportServlet</servlet-name>
     <url-pattern>/reports/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Image scale servlet</description>
     <servlet-name>ImageScaleServlet</servlet-name>
@@ -897,6 +916,7 @@
     <servlet-name>ImageScaleServlet</servlet-name>
     <url-pattern>/imgscale/*</url-pattern>
   </servlet-mapping>
+
   <servlet>
     <description>Work servlet</description>
     <servlet-name>WorkServlet</servlet-name>
@@ -906,6 +926,7 @@
     <servlet-name>WorkServlet</servlet-name>
     <url-pattern>/work/*</url-pattern>
   </servlet-mapping>
+
   <!-- Filters -->
   <filter>
     <description>Set UTF-8 character encoding</description>
@@ -916,6 +937,7 @@
     <filter-name>CharacterEncoding</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
   <filter>
     <filter-name>RemoteIpFilter</filter-name>
     <filter-class>org.santfeliu.web.filter.RemoteIpFilter</filter-class>
@@ -924,6 +946,7 @@
     <filter-name>RemoteIpFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
   <filter>
     <filter-name>ShortcutFilter</filter-name>
     <filter-class>org.santfeliu.web.filter.ShortcutFilter</filter-class>
@@ -932,21 +955,7 @@
     <filter-name>ShortcutFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <!--
-      <filter>
-          <filter-name>RequestControlFilter</filter-name>
-          <filter-class>org.santfeliu.web.filter.RequestControlFilter</filter-class>
-          <init-param>
-              <param-name>maxRequests</param-name>
-              <param-value>40</param-value>
-          </init-param>
-      </filter>
-      <filter-mapping>
-          <filter-name>RequestControlFilter</filter-name>
-          <url-pattern>*.faces</url-pattern>
-          <url-pattern>/rss/*</url-pattern>
-      </filter-mapping>
-  -->
+  
   <filter>
     <filter-name>ExtensionsFilter</filter-name>
     <filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>
@@ -988,14 +997,7 @@
     <filter-name>ExtensionsFilter</filter-name>
     <url-pattern>/faces/*</url-pattern>
   </filter-mapping>
-  <servlet-mapping>
-    <servlet-name>ScannerServlet</servlet-name>
-    <url-pattern>/scanner/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>PaymentServlet</servlet-name>
-    <url-pattern>/pagament/*</url-pattern>
-  </servlet-mapping>
+
   <session-config>
     <session-timeout>100</session-timeout>
   </session-config>
