@@ -48,6 +48,8 @@ import org.matrix.cases.CasePerson;
 import org.matrix.cases.Demand;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.Problem;
+import org.matrix.cms.Node;
+import org.matrix.cms.Workspace;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.matrix.edu.Course;
@@ -187,13 +189,11 @@ public class DictionaryConstants
   public static final String POLITICAL_PARTY_TYPE =
     PoliticalParty.class.getSimpleName();
 
-  /* forest module */
-/*
+  /* cms module */
   public static final String NODE_TYPE =
     Node.class.getSimpleName();
-  public static final String SESSION_TYPE =
-    Session.class.getSimpleName();
-*/
+  public static final String WORKSPACE_TYPE =
+    Workspace.class.getSimpleName();
 
   /* forum module */
   public static final String FORUM_TYPE =
@@ -309,6 +309,8 @@ public class DictionaryConstants
     rootTypeClasses.put(CASE_POLICY_TYPE, CasePolicy.class);
     rootTypeClasses.put(DOCUMENT_POLICY_TYPE, DocumentPolicy.class);
     rootTypeClasses.put(DISPOSAL_HOLD_TYPE, DisposalHold.class);
+    rootTypeClasses.put(NODE_TYPE, Node.class);
+    rootTypeClasses.put(WORKSPACE_TYPE, Workspace.class);
     rootTypeClasses.put(DOCUMENT_TYPE, Document.class);
     rootTypeClasses.put(CONTENT_TYPE, Content.class);
     rootTypeClasses.put(SCHOOL_TYPE, School.class);

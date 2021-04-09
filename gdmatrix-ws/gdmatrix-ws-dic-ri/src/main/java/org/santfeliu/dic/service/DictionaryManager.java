@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.dic.service;
@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -93,18 +94,17 @@ public class DictionaryManager implements DictionaryManagerPort
 
   @PersistenceContext(unitName="dic_ri")
   EntityManager entityManager;
-  
+
   //typeActions method
-  private static HashMap<String, List<String>> typeActionsMap = new
-    HashMap<String, List<String>>();
+  private static HashMap<String, List<String>> typeActionsMap = new HashMap<>();
   private static long lastModified;
-  
+
   @Initializer
   public void initialize(String endpointName)
   {
-    // create emf
+    createRootTypes();
   }
-  
+
   @Override
   public Type loadType(String typeId)
   {
@@ -117,10 +117,7 @@ public class DictionaryManager implements DictionaryManagerPort
     DBType dbType = entityManager.find(DBType.class, typeId);
     if (dbType == null || dbType.isRemoved())
     {
-      // type not found, it's a root type?
-      type = RootTypeFactory.getRootType(typeId);
-      if (type == null) // it's not a root type, throw exception
-        throw new WebServiceException("dic:TYPE_NOT_FOUND");
+      throw new WebServiceException("dic:TYPE_NOT_FOUND");
     }
     else // type found
     {
@@ -150,7 +147,7 @@ public class DictionaryManager implements DictionaryManagerPort
   public Type storeType(Type type)
   {
     User user = UserCache.getUser(wsContext);
-    
+
     String typeId = type.getTypeId();
     LOGGER.log(Level.INFO, "storeType {0}, userId: {1}",
       new Object[]{typeId, user.getUserId()});
@@ -170,17 +167,17 @@ public class DictionaryManager implements DictionaryManagerPort
       checkType(type);
       dbPropertyDefinitionList = null;
       dbAccessControlList = null;
-      addNominalRoles(user, type);      
+      addNominalRoles(user, type);
       if (dbType == null) // New Type
       {
-        dbType = new DBType(type);        
+        dbType = new DBType(type);
         auditType(dbType, user, true);
         setSuperType(dbType, user, true);
         entityManager.persist(dbType);
       }
       else // Type has removed mark
       {
-        dbType.copyFrom(type);        
+        dbType.copyFrom(type);
         dbType.setRemoved("F");
         auditType(dbType, user, true);
         setSuperType(dbType, user, true);
@@ -196,7 +193,7 @@ public class DictionaryManager implements DictionaryManagerPort
         throw new WebServiceException("dic:NOT_AUTHORIZED_TO_MODIFY_TYPE");
 
       checkType(type);
-      dbType.copyFrom(type);      
+      dbType.copyFrom(type);
       auditType(dbType, user, false);
       setSuperType(dbType, user, false);
       entityManager.merge(dbType);
@@ -206,8 +203,8 @@ public class DictionaryManager implements DictionaryManagerPort
     // --- store data in DIC_PROPDEF ---
     storePropertyDefinitionList(type, dbPropertyDefinitionList);
     // --- store data in DIC_ACL ---
-    storeAccessControlList(type, dbAccessControlList);    
-    
+    storeAccessControlList(type, dbAccessControlList);
+
     dbType.copyTo(type);
     return type;
   }
@@ -280,14 +277,14 @@ public class DictionaryManager implements DictionaryManagerPort
       return number.intValue();
     }
   }
-  
+
   @Override
   public List<Type> findTypes(TypeFilter filter)
   {
     User user = UserCache.getUser(wsContext);
 
     LOGGER.log(Level.INFO, "findTypes");
-    
+
     if (StringUtils.isBlank(filter.getTypeId()) &&
         StringUtils.isBlank(filter.getSuperTypeId()) &&
         StringUtils.isBlank(filter.getTypePath()) &&
@@ -297,12 +294,12 @@ public class DictionaryManager implements DictionaryManagerPort
         StringUtils.isBlank(filter.getMaxChangeDateTime()) &&
         filter.getMaxResults() == 0)
       throw new WebServiceException("FILTER_NOT_ALLOWED");
-    
+
     ArrayList<Type> types = new ArrayList<Type>();
     Query query = entityManager.createNamedQuery("findTypes");
     applyFilter(query, filter, user);
     query.setFirstResult(filter.getFirstResult());
-    query.setMaxResults(filter.getMaxResults());      
+    query.setMaxResults(filter.getMaxResults());
     List<DBType> dbTypes = query.getResultList();
     for (DBType dbType : dbTypes)
     {
@@ -467,10 +464,10 @@ public class DictionaryManager implements DictionaryManagerPort
 
     if (enumTypeItemId == null)
       throw new WebServiceException("dic:ENUMTYPEITEMID_IS_MANDATORY");
-    
+
     DBEnumTypeItem dbEnumTypeItem = entityManager.find(DBEnumTypeItem.class,
       enumTypeItemId);
-    
+
     if (dbEnumTypeItem == null)
     {
       throw new WebServiceException("dic:ENUM_TYPE_ITEM_NOT_FOUND");
@@ -503,7 +500,7 @@ public class DictionaryManager implements DictionaryManagerPort
     dbEnumTypeItem.copyTo(enumTypeItem);
     return enumTypeItem;
   }
-  
+
   @Override
   public boolean removeEnumTypeItem(String enumTypeItemId)
   {
@@ -513,7 +510,7 @@ public class DictionaryManager implements DictionaryManagerPort
       throw new WebServiceException("dic:ENUMTYPEITEMID_IS_MANDATORY");
 
     try
-    {      
+    {
       DBEnumTypeItem dbEnumTypeItem =
         entityManager.getReference(DBEnumTypeItem.class, enumTypeItemId);
       decrementIndexes(dbEnumTypeItem.getEnumTypeId(),
@@ -608,12 +605,12 @@ public class DictionaryManager implements DictionaryManagerPort
   }
 
   private int processIndexes(EnumTypeItem enumTypeItem, int currentIndex)
-  {    
+  {
     String enumTypeId = enumTypeItem.getEnumTypeId();
     int maxIndex = getMaxIndexInEnumType(enumTypeId);
     Integer newIndex = enumTypeItem.getIndex();
     if (currentIndex < 0) //Insert
-    {      
+    {
       if (newIndex == null || newIndex > maxIndex)
       {
         newIndex = maxIndex + 1;
@@ -625,7 +622,7 @@ public class DictionaryManager implements DictionaryManagerPort
     }
     else //Update
     {
-      if (newIndex == null || 
+      if (newIndex == null ||
         (newIndex > currentIndex && newIndex > maxIndex))
       {
         decrementIndexes(enumTypeId, currentIndex + 1, null);
@@ -664,7 +661,7 @@ public class DictionaryManager implements DictionaryManagerPort
     query.setParameter("increment", increment);
     query.setParameter("minIndex", minIndex);
     query.setParameter("maxIndex", maxIndex);
-    query.executeUpdate();    
+    query.executeUpdate();
   }
 
   private int getCurrentIndex(String enumTypeItemId)
@@ -803,7 +800,7 @@ public class DictionaryManager implements DictionaryManagerPort
     List<DBPropertyDefinition> dbPropertyDefinitionList)
   {
     String typeId = type.getTypeId();
-    ArrayList<PropertyDefinition> pdList = new ArrayList<PropertyDefinition>();
+    ArrayList<PropertyDefinition> pdList = new ArrayList<>();
     pdList.addAll(type.getPropertyDefinition());
 
     if (dbPropertyDefinitionList != null)
@@ -839,7 +836,7 @@ public class DictionaryManager implements DictionaryManagerPort
     List<DBAccessControl> dbAccessControlList)
   {
     String typeId = type.getTypeId();
-    ArrayList<AccessControl> ACL = new ArrayList<AccessControl>();
+    ArrayList<AccessControl> ACL = new ArrayList<>();
     ACL.addAll(type.getAccessControl());
 
     if (dbAccessControlList != null)
@@ -888,14 +885,14 @@ public class DictionaryManager implements DictionaryManagerPort
     if (user.isInRole(DictionaryConstants.DIC_ADMIN_ROLE)) return true;
     String superTypeId = type.getSuperTypeId();
     if (superTypeId == null) return false;
-    
-    // check for 'DeriveDefinition' role in super Type    
+
+    // check for 'DeriveDefinition' role in super Type
     List<DBAccessControl> dbAccessControlList =
       loadAccessControlList(superTypeId);
-    return canUserDoAction(user, 
+    return canUserDoAction(user,
       DictionaryConstants.DERIVE_DEFINITION_ACTION, dbAccessControlList);
   }
-  
+
   private boolean canUserModifyTypeDefinition(User user, Type type,
     DBType dbType, List<DBAccessControl> dbAccessControlList)
   {
@@ -1059,12 +1056,12 @@ public class DictionaryManager implements DictionaryManagerPort
     Object value = query.getSingleResult();
     return (value == null ? 0 : ((Number)value).intValue());
   }
-  
+
   private void setSuperType(DBType dbType, User user, boolean isNew)
   {
     // check superType
     String typeId = dbType.getTypeId();
-    String superTypeId = dbType.getSuperTypeId();    
+    String superTypeId = dbType.getSuperTypeId();
     if (isNew) // new Type
     {
       if (superTypeId == null) // root Type
@@ -1166,7 +1163,7 @@ public class DictionaryManager implements DictionaryManagerPort
     Query query = entityManager.createNamedQuery("changeTypePaths");
     query.setParameter("newTypePath", newTypePath == null ? "" : newTypePath);
     query.setParameter("oldTypePath", oldTypePath);
-    query.setParameter("oldTypePathPattern", 
+    query.setParameter("oldTypePathPattern",
       oldTypePath.replaceAll("_", "\\\\_") + "%");
     query.executeUpdate();
   }
@@ -1252,7 +1249,7 @@ public class DictionaryManager implements DictionaryManagerPort
     if (value == null || value.length() == 0) return null;
     return "%" + value.toUpperCase() + "%";
   }
-  
+
   private void addNominalRoles(User user, Type typeObject)
   {
     AccessControl ac = new AccessControl();
@@ -1266,5 +1263,42 @@ public class DictionaryManager implements DictionaryManagerPort
     ac.setAction(DictionaryConstants.DERIVE_DEFINITION_ACTION);
     typeObject.getAccessControl().add(ac);
   }
-  
+
+  private void createRootTypes()
+  {
+    String adminUserId = MatrixConfig.getProperty("adminCredentials.userId");
+    String now = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
+    HashSet<String> rootTypeIds = DictionaryConstants.rootTypeIds;
+    for (String rootTypeId : rootTypeIds)
+    {
+      Type type = RootTypeFactory.getRootType(rootTypeId);
+
+      String typeId = type.getTypeId();
+      LOGGER.log(Level.INFO, "Looking for root type [{0}]", typeId);
+      DBType dbType = entityManager.find(DBType.class, typeId);
+      if (dbType == null) // does not exist
+      {
+        LOGGER.log(Level.INFO, "Creating root type [{0}]", typeId);
+        dbType = new DBType(type);
+        dbType.setTypePath(DictionaryConstants.TYPE_PATH_SEPARATOR + typeId +
+          DictionaryConstants.TYPE_PATH_SEPARATOR);
+        dbType.setCreationDateTime(now);
+        dbType.setChangeDateTime(now);
+        dbType.setCreationUserId(adminUserId);
+        dbType.setChangeUserId(adminUserId);
+        entityManager.persist(dbType);
+        entityManager.flush();
+
+        List<PropertyDefinition> pdList = type.getPropertyDefinition();
+        for (PropertyDefinition propertyDefinition : pdList)
+        {
+          DBPropertyDefinition dbPropertyDefinition =
+            new DBPropertyDefinition(propertyDefinition);
+          dbPropertyDefinition.setTypeId(typeId);
+          entityManager.persist(dbPropertyDefinition);
+        }
+        entityManager.flush();
+      }
+    }
+  }
 }
