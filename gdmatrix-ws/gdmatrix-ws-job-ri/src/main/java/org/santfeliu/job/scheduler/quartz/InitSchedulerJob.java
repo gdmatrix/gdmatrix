@@ -95,5 +95,4 @@ public class InitSchedulerJob implements org.quartz.Job
     }    
   }
    
-
 }

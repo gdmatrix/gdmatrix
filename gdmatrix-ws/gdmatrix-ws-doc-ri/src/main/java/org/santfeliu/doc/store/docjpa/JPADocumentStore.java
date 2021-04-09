@@ -35,18 +35,23 @@ import java.util.Properties;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.doc.store.DocumentStore;
 import org.santfeliu.doc.store.DocumentStoreConnection;
+import org.santfeliu.jpa.JPAUtils;
 
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class JPADocumentStore implements DocumentStore
 {
+  @Override
   public void init(Properties properties)
   {
+    //Triggers table autocreation.
+    JPAUtils.createEntityManager("doc_ri", "default");    
   }
 
+  @Override
   public DocumentStoreConnection newConnection(WSEndpoint endpoint)
     throws Exception
   {

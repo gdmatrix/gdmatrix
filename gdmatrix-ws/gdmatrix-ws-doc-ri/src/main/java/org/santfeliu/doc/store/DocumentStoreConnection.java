@@ -39,7 +39,7 @@ import org.matrix.doc.RelatedDocument;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public interface DocumentStoreConnection
 {

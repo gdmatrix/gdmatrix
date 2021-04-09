@@ -85,10 +85,11 @@ import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 @WebService(endpointInterface = "org.matrix.kernel.KernelManagerPort")
 @HandlerChain(file = "handlers.xml")
-@JPA
+@MultiInstance
 public class KernelManager implements KernelManagerPort
 {
   @Resource

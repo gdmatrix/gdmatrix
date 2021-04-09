@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
@@ -57,12 +55,16 @@ import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.ws.WSExceptionFactory;
+import org.santfeliu.ws.annotations.Disposer;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.SingleInstance;
 
 /**
  *
  * @author blanquepa
  */
 @WebService(endpointInterface = "org.matrix.job.JobManagerPort")
+@SingleInstance
 public class JobManager
 {
   @Resource
@@ -70,7 +72,11 @@ public class JobManager
 
   private static final String WS_ENABLED = "enabled";
   
-  protected static final Logger log = Logger.getLogger("Job");
+  public static final String MODULE_DISABLED = "MODULE_DISABLED";
+  public static final String INSUFFICIENT_PRIVILEGES = 
+    "INSUFFICIENT_PRIVILEGES";
+  
+  protected static final Logger LOGGER = Logger.getLogger("Job");
 
   private boolean wsEnabled;
   private Scheduler scheduler;
@@ -80,36 +86,46 @@ public class JobManager
   {
   }
   
-  @PostConstruct
-  public void init()
+  @Initializer
+  public void initialize(String endpointName)
   {
     String enabledProp = 
       MatrixConfig.getClassProperty(getClass(), WS_ENABLED);
-    this.wsEnabled = enabledProp != null && enabledProp.equalsIgnoreCase("true");
-    if (this.wsEnabled)
-    {
-      jobStore = JobStoreFactory.newJobStore();
-
-      if (scheduler == null)
+    wsEnabled = enabledProp != null && enabledProp.equalsIgnoreCase("true");
+    if (wsEnabled)
+    {    
+      try
       {      
-        scheduler = SchedulerFactory.newScheduler(jobStore);
-        try
-        {
+        jobStore = JobStoreFactory.newJobStore();
+        jobStore.init();
+
+        if (scheduler == null)
+        {      
+          scheduler = SchedulerFactory.newScheduler(jobStore);
           scheduler.start();
-        } 
-        catch (JobException ex)
-        {
-          log.log(Level.SEVERE, "JobManager initialization failed");
-          throw WSExceptionFactory.create(ex);
         }
-      }
-    }    
+      } 
+      catch (JobException ex)
+      {
+        LOGGER.log(Level.SEVERE, "JobManager initialization failed");
+        throw WSExceptionFactory.create(ex);
+      }      
+    } 
   }
+  
+  @Disposer
+  public void dispose(String endpointName) throws JobException
+  {
+    if (scheduler != null)
+    {
+      scheduler.stop();
+    }
+  }  
 
   public void scheduleJob(Job job)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     try
     {
@@ -120,12 +136,12 @@ public class JobManager
         if (canUserDoAction(user, DictionaryConstants.WRITE_ACTION))         
           scheduler.scheduleJob(job);
         else
-          throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");         
+          throw WSExceptionFactory.create(INSUFFICIENT_PRIVILEGES);         
       }
     } 
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "Job scheduling failed");
+      LOGGER.log(Level.SEVERE, "Job scheduling failed");
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -133,7 +149,7 @@ public class JobManager
   public void unscheduleJob(String jobId)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     try
     {
@@ -142,11 +158,11 @@ public class JobManager
       if (canUserDoAction(user, DictionaryConstants.WRITE_ACTION)) 
         scheduler.unscheduleJob(jobId);
       else
-        throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");       
+        throw WSExceptionFactory.create(INSUFFICIENT_PRIVILEGES);       
     } 
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "Job unscheduling failed");
+      LOGGER.log(Level.SEVERE, "Job unscheduling failed");
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -154,7 +170,7 @@ public class JobManager
   public void executeJob(Job job)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     try
     {
@@ -169,11 +185,11 @@ public class JobManager
         scheduler.executeJob(job);
       }
       else
-        throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");       
+        throw WSExceptionFactory.create(INSUFFICIENT_PRIVILEGES);       
     } 
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "Job execution failed");
+      LOGGER.log(Level.SEVERE, "Job execution failed");
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -181,7 +197,7 @@ public class JobManager
   public Job storeJob(Job job)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     Job result = null;
     try
@@ -200,11 +216,11 @@ public class JobManager
         }
       }
       else
-        throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");       
+        throw WSExceptionFactory.create(INSUFFICIENT_PRIVILEGES);       
     } 
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "storeJob failed");
+      LOGGER.log(Level.SEVERE, "storeJob failed");
       throw WSExceptionFactory.create(ex);
     }
     return result;
@@ -213,7 +229,7 @@ public class JobManager
   public Job loadJob(String jobId)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     Job result = null;
     try
@@ -223,11 +239,11 @@ public class JobManager
       if (canUserDoAction(user, DictionaryConstants.READ_ACTION))       
         result = jobStore.loadJob(jobId);
       else
-        throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");        
+        throw WSExceptionFactory.create(INSUFFICIENT_PRIVILEGES);        
     } 
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "loadJob failed");
+      LOGGER.log(Level.SEVERE, "loadJob failed");
       throw WSExceptionFactory.create("JOB_NOT_FOUND", ex.getMessage());
     }
     return result;
@@ -236,7 +252,7 @@ public class JobManager
   public boolean removeJob(String jobId)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     boolean result = false;
     try
@@ -250,11 +266,11 @@ public class JobManager
           scheduler.unscheduleJob(jobId);
       }
       else
-        throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");       
+        throw WSExceptionFactory.create(INSUFFICIENT_PRIVILEGES);       
     } 
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "removeJob failed");
+      LOGGER.log(Level.SEVERE, "removeJob failed");
       throw WSExceptionFactory.create(ex);
     }
     return result;
@@ -263,7 +279,7 @@ public class JobManager
   public List<Job> findJobs(JobFilter filter)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     List<Job> result = new ArrayList();
     try
@@ -273,11 +289,11 @@ public class JobManager
       if (canUserDoAction(user, DictionaryConstants.READ_ACTION))       
         result = jobStore.findJobs(filter);
       else
-        throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");       
+        throw WSExceptionFactory.create(INSUFFICIENT_PRIVILEGES);       
     }
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "findJobs failed");
+      LOGGER.log(Level.SEVERE, "findJobs failed");
       throw WSExceptionFactory.create(ex);      
     }
     return result;
@@ -287,7 +303,7 @@ public class JobManager
     String toDate)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     List<JobFiring> result = new ArrayList();
     try
@@ -297,11 +313,11 @@ public class JobManager
       if (canUserDoAction(user, DictionaryConstants.READ_ACTION))       
         result = jobStore.findJobFirings(jobId, fromDate, toDate);
       else
-        throw WSExceptionFactory.create("INSUFFICIENT_PRIVILEGES");       
+        throw WSExceptionFactory.create(INSUFFICIENT_PRIVILEGES);       
     }
     catch (JobException ex)
     {
-      log.log(Level.SEVERE, "findJobFirings failed");
+      LOGGER.log(Level.SEVERE, "findJobFirings failed");
       throw WSExceptionFactory.create(ex);      
     }
     return result;
@@ -310,7 +326,7 @@ public class JobManager
   public String nextFiring(String jobId)
   {
     if (!wsEnabled)
-      throw WSExceptionFactory.create("MODULE_DISABLED");  
+      throw WSExceptionFactory.create(MODULE_DISABLED);  
     
     String result = null;    
     try
@@ -327,21 +343,14 @@ public class JobManager
         result = "UNSCHEDULED_JOB";
       else
       {
-        log.log(Level.SEVERE, "nextFiring");
+        LOGGER.log(Level.SEVERE, "nextFiring");
         throw WSExceptionFactory.create(ex);
       }
     }
     return result;    
   }
   
-  @PreDestroy
-  public void destroy() throws JobException
-  {
-    if (scheduler != null)
-    {
-      scheduler.stop();
-    }
-  }
+
   
   private boolean canUserDoAction(User user, String action)
   {
@@ -363,5 +372,5 @@ public class JobManager
     
     return true;
   }    
-
+  
 }

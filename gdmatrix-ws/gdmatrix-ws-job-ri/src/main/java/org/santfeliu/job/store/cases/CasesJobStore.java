@@ -46,6 +46,9 @@ import org.matrix.cases.CaseManagerService;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.DictionaryManagerPort;
+import org.matrix.dic.DictionaryManagerService;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.job.Job;
@@ -74,9 +77,55 @@ import org.santfeliu.util.TextUtils;
 public class CasesJobStore implements JobStore
 {
   public static final String JOB_TYPE = "JobCase";
-  public static final String SUCCESS_INTERVENTION = "SuccessJobIntervention";
-  public static final String ERROR_INTERVENTION = "ErrorJobIntervention";
-  public static final String JOB_CASE_DOCUMENT = "JobCaseDocument";
+  public static final String JOB_INTERVENTION_TYPE = "JobIntervention";  
+  public static final String SUCCESS_INTERVENTION_TYPE = 
+    "SuccessJobIntervention";
+  public static final String ERROR_INTERVENTION_TYPE = "ErrorJobIntervention";
+  public static final String JOB_CASE_DOCUMENT_TYPE = "JobCaseDocument";
+  
+  public CasesJobStore()
+  {
+  }
+  
+  @Override
+  public void init() throws JobException
+  {
+    try
+    {
+      Thread thread = new Thread()
+      {
+        @Override
+        public void run()
+        {          
+          createType(JOB_TYPE, 
+            DictionaryConstants.CASE_TYPE, 
+            "Scheduled task");
+          
+          createType(JOB_INTERVENTION_TYPE, 
+            DictionaryConstants.INTERVENTION_TYPE, 
+            "Execution of a scheduled task"); 
+          
+          createType(SUCCESS_INTERVENTION_TYPE, 
+            JOB_INTERVENTION_TYPE, 
+            "Successful execution of a scheduled task");
+          
+          createType(ERROR_INTERVENTION_TYPE, 
+            JOB_INTERVENTION_TYPE, 
+            "Erroneous execution of a scheduled task"); 
+          
+          createType(JOB_CASE_DOCUMENT_TYPE, 
+            DictionaryConstants.CASE_DOCUMENT_TYPE, 
+            "Execution log document of a scheduled task");             
+        }
+      };
+      thread.start();
+    }
+    catch (Exception ex)
+    {
+      throw new JobException(ex);
+    }  
+  }
+  
   
   @Override
   public Job storeJob(Job job) throws JobException
@@ -200,9 +249,9 @@ public class CasesJobStore implements JobStore
       
       ResponseType type = jobFiring.getResponseType();
       if (type == ResponseType.ERROR)
-        intervention.setIntTypeId(ERROR_INTERVENTION);
+        intervention.setIntTypeId(ERROR_INTERVENTION_TYPE);
       else
-        intervention.setIntTypeId(SUCCESS_INTERVENTION);
+        intervention.setIntTypeId(SUCCESS_INTERVENTION_TYPE);
       
       intervention.setCaseId(jobFiring.getJobId());
       String startDateTime = jobFiring.getStartDateTime();
@@ -248,7 +297,7 @@ public class CasesJobStore implements JobStore
           CaseDocument caseDocument = new CaseDocument();
           caseDocument.setCaseId(jobFiring.getJobId());
           caseDocument.setDocId(document.getDocId());
-          caseDocument.setCaseDocTypeId(JOB_CASE_DOCUMENT); 
+          caseDocument.setCaseDocTypeId(JOB_CASE_DOCUMENT_TYPE); 
           port.storeCaseDocument(caseDocument);
         }
       }
@@ -378,6 +427,29 @@ public class CasesJobStore implements JobStore
     return client;    
   }
   
+  private DictionaryManagerPort getDicManagerPort() throws MalformedURLException
+  {
+    DictionaryManagerPort port = null;
+
+    String wsDirectoryURL =
+      MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
+
+    if (wsDirectoryURL == null)
+    {
+      String contextPath = MatrixConfig.getProperty("contextPath");
+      wsDirectoryURL = "http://localhost" + contextPath + "/wsdirectory";
+    }
+
+    WSDirectory wsDirectory = 
+      WSDirectory.getInstance(new URL(wsDirectoryURL));      
+    WSEndpoint endpoint = wsDirectory.getEndpoint(DictionaryManagerService.class);
+    port = endpoint.getPort(DictionaryManagerPort.class,
+      MatrixConfig.getProperty("adminCredentials.userId"),
+      MatrixConfig.getProperty("adminCredentials.password"));      
+
+    return port;
+  }  
+  
   private CaseManagerPort getCaseManagerPort() throws MalformedURLException
   {
     CaseManagerPort port = null;
@@ -401,8 +473,23 @@ public class CasesJobStore implements JobStore
     return port;
   }
 
-
-
-
-
+  private void createType(String typeId, String superTypeId, String description)
+  {
+    Type type = TypeCache.getInstance().getType(typeId);
+    if (type == null)
+    {
+      try 
+      {
+        org.matrix.dic.Type t = new org.matrix.dic.Type();
+        t.setSuperTypeId(superTypeId);
+        t.setTypeId(typeId);
+        t.setDescription(description);
+        t.setInstantiable(true);
+        getDicManagerPort().storeType(t);
+      }
+      catch (Exception ex) 
+      {
+      }
+    }    
+  }
 }

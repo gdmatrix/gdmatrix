@@ -49,7 +49,7 @@
         maxOccurs="unbounded" nillable="true">
       </property>                                                 
     </entity>
-
+    
     <struct name="JobFilter">
       <property name="jobId" type="xs:string" minOccurs="0"
         maxOccurs="unbounded" nillable="true" references="job:Job">
@@ -89,7 +89,7 @@
       <property name="logType" type="job:LogType">    
       </property>                                               
     </entity>
-    
+        
     <enumeration name="ResponseType">
       <value name="SUCCESS"></value>
       <value name="ERROR"></value>

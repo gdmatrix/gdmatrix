@@ -28,70 +28,29 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.doc.store.cntfs;
+package org.santfeliu.doc.store.cnt.fs;
 
-import java.io.File;
+import java.util.Properties;
 
-import java.util.List;
-import java.util.Set;
-
-import org.matrix.doc.Content;
-
-import org.matrix.doc.ContentInfo;
+import org.santfeliu.doc.store.ContentStore;
 import org.santfeliu.doc.store.ContentStoreConnection;
-
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
-public class FileSystemContentStoreConnection implements ContentStoreConnection
+public class FileSystemContentStore implements ContentStore
 {
-  public FileSystemContentStoreConnection()
+  public FileSystemContentStore()
   {
   }
 
-  public Content storeContent(Content content, File file)
+  public void init()
+  {
+  }
+
+  public ContentStoreConnection getConnection()
   {
     return null;
   }
-
-  public Content loadContent(String contentId, ContentInfo contentInfo)
-  {
-    return null;
-  }
-
-  public boolean removeContent(String contentId)
-  {
-    return false;
-  }
-
-  public Content copyContent(Content content, String currentContentId) throws Exception
-  {
-    return null;
-  }
-  
-  public List<Content> findContents(Set<String> contentsId)
-  {
-    return null;
-  }
-  
-  public File markupContent(String contentId, String searchExpression)
-  {
-    return null;
-  }
-
-  public void rollback()
-  {
-  }
-
-  public void commit()
-  {
-  }
-
-  public void close()
-  {
-  }
-
-
 }

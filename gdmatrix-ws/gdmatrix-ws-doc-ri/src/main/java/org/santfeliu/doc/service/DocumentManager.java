@@ -101,7 +101,8 @@ import org.santfeliu.doc.store.ContentStore;
 import org.santfeliu.doc.store.ContentStoreConnection;
 import org.santfeliu.doc.store.DocumentStore;
 import org.santfeliu.doc.store.DocumentStoreConnection;
-import org.santfeliu.doc.store.cntora.OracleContentStore;
+import org.santfeliu.doc.store.cnt.jdbc.ora.OracleContentStore;
+
 import org.santfeliu.doc.store.docjpa.JPADocumentStore;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.security.UserCache;
@@ -117,6 +118,8 @@ import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.log.CSVLogger;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.SingleInstance;
 import uk.gov.nationalarchives.droid.core.signature.FileFormat;
 
 
@@ -125,6 +128,7 @@ import uk.gov.nationalarchives.droid.core.signature.FileFormat;
  * @author blanquepa, realor
  */
 @WebService(endpointInterface = "org.matrix.doc.DocumentManagerPort")
+@SingleInstance
 public class DocumentManager implements DocumentManagerPort
 {
   public static final String DOCUMENT_STORE = "documentStore";  
@@ -146,7 +150,7 @@ public class DocumentManager implements DocumentManagerPort
   private ContentStore contentStore;
   private Droid droid;
   
-  protected static final Logger log = Logger.getLogger("Document");
+  protected static final Logger LOGGER = Logger.getLogger("Document");
 
   @Deprecated
   private static final int DOCUMENT_TITLE_MAX_SIZE = 512;
@@ -157,20 +161,21 @@ public class DocumentManager implements DocumentManagerPort
 
   protected static CSVLogger csvLogger;
 
-
-  static
-  {
-    String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
-    if (logConfig != null)
-    {
-      csvLogger = CSVLogger.getInstance(logConfig);
-    }
-  }
-
   public DocumentManager()
+  {
+  }
+  
+  @Initializer
+  public void initialize(String endpointName)
   {
     try
     {
+      String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
+      if (logConfig != null)
+      {
+        csvLogger = CSVLogger.getInstance(logConfig);
+      }
+      
       initDocumentStore();
       initContentStore();
       initDroid();
@@ -178,7 +183,7 @@ public class DocumentManager implements DocumentManagerPort
     catch (Exception ex)
     {
       throw new RuntimeException(ex);
-    }
+    }    
   }
 
   @Override
@@ -1000,7 +1005,7 @@ public class DocumentManager implements DocumentManagerPort
       //default contentStore
       contentStore = new OracleContentStore();
     }
-    contentStore.init(null);
+    contentStore.init();
     System.out.println(contentStore.getClass() + " initialized");          
   }
 
@@ -1269,7 +1274,7 @@ public class DocumentManager implements DocumentManagerPort
       }
       catch(Exception e)
       {
-        log.log(Level.WARNING, "Introspection of content " + 
+        LOGGER.log(Level.WARNING, "Introspection of content " + 
           Level.INFO, content.getContentId() + " failed: " + e.getMessage());
       }
     }
@@ -1671,7 +1676,7 @@ public class DocumentManager implements DocumentManagerPort
   private void logOperation(String operation, String messageType,
     String message, String userId)
   {
-    log.log(Level.INFO, "{0} {1}: {2}", 
+    LOGGER.log(Level.INFO, "{0} {1}: {2}", 
       new Object[]{operation, messageType, message});
 
     if (csvLogger != null)

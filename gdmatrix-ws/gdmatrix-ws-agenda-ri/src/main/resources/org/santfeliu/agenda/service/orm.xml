@@ -193,92 +193,69 @@
       </query>
     </named-query>
 
-    <!-- Legacy code. Delete in future -->
-    <named-query name="incrementGenericCounter">
-      <query>
-        UPDATE DBCounter c SET
-          c.counter = c.counter + 1,
-          c.stdumod = :userId,
-          c.stddmod = :day,
-          c.stdhmod = :hour
-        WHERE c.claupref = :claupref AND c.claucod = :claucod
-          AND c.clauorigen = :clauorigen
-      </query>
-    </named-query>
-
-    <named-query name="readGenericCounter">
-      <query>
-        SELECT c.counter FROM DBCounter c
-        WHERE c.claupref = :claupref AND c.claucod = :claucod
-          AND c.clauorigen = :clauorigen
-      </query>
-    </named-query>
-    <!-- end legacy code -->
-
     <entity class="org.santfeliu.agenda.service.DBEvent"
       name="DBEvent">
       <table name="AGD_ESDEVENIMENT" />
       <attributes>
         <id name="eventId">
-          <column name="ESDEVCOD" />
-<!--
+          <column name="ESDEVCOD" precision="8" scale="0" />
           <generated-value strategy="TABLE" generator="AGD_ESDEVENIMENT"/>
           <table-generator name="AGD_ESDEVENIMENT" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="AGD_ESDEVENIMENT"
             initial-value="0" allocation-size="1"/>
--->
         </id>
         <basic name="eventTypeId">
-          <column name="EVENTTYPEID" />
+          <column name="EVENTTYPEID" length="64" />
         </basic>
         <basic name="tipesdevcod">
-          <column name="TIPESDEVCOD" />
+          <column name="TIPESDEVCOD" precision="4" scale="0" />
         </basic>
         <basic name="summary">
-          <column name="ESDEVNOM" />
+          <column name="ESDEVNOM" length="1000" />
         </basic>
         <basic name="description">
-          <column name="OBSERV" />
+          <column name="OBSERV" length="4000" />
         </basic>
         <basic name="text" fetch="LAZY">
           <column name="TEXT" />
           <lob/>
         </basic>
         <basic name="comments">
-          <column name="OBSERVOCUL" />
+          <column name="OBSERVOCUL" length="2000" />
         </basic>
         <basic name="datainici">
-          <column name="DATAINICI" />
+          <column name="DATAINICI" length="8" />
         </basic>
         <basic name="horainici">
-          <column name="HORAINICI" />
+          <column name="HORAINICI" length="6" />
         </basic>
         <basic name="datafinal">
-          <column name="DATAFINAL" />
+          <column name="DATAFINAL" length="8" />
         </basic>
         <basic name="horafinal">
-          <column name="HORAFINAL" />
+          <column name="HORAFINAL" length="6" />
         </basic>
         <basic name="stddgr">
-          <column name="STDDGR" />
+          <column name="STDDGR" length="8" />
         </basic>
         <basic name="stdhgr">
-          <column name="STDHGR" />
+          <column name="STDHGR" length="6" />
         </basic>
         <basic name="creationUserId">
-          <column name="STDUGR" />
+          <column name="STDUGR" length="20" />
         </basic>
         <basic name="stddmod">
-          <column name="STDDMOD" />
+          <column name="STDDMOD" length="8" />
         </basic>
         <basic name="stdhmod">
-          <column name="STDHMOD" />
+          <column name="STDHMOD" length="6" />
         </basic>
         <basic name="changeUserId">
-          <column name="STDUMOD" />
+          <column name="STDUMOD" length="20" />
         </basic>
         <basic name="visibleassist">
-          <column name="VISIBLEASSIST" />
+          <column name="VISIBLEASSIST" length="1" />
         </basic>
         <transient name="accessControl" />
         <transient name="property" />
@@ -290,35 +267,36 @@
       <table name="AGD_DOCUMENT" />
       <attributes>
         <id name="eventDocId">
-          <column name="EVENTDOCID" />
+          <column name="EVENTDOCID" precision="10" scale="0" />
           <generated-value strategy="TABLE" generator="AGD_DOCUMENT"/>
           <table-generator name="AGD_DOCUMENT" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="AGD_DOCUMENT"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="eventId">
-          <column name="EVENTID" />
+          <column name="EVENTID" nullable="false" precision="8" scale="0" />
         </basic>
         <basic name="docId">
-          <column name="DOCID" />
+          <column name="DOCID" nullable="false" precision="10" scale="0" />
         </basic>
         <basic name="creationDateTime">
-            <column name="CREATIONDT" />
+            <column name="CREATIONDT" length="14" />
         </basic>
         <basic name="creationUserId">
-            <column name="CREATIONUSERID" />
+            <column name="CREATIONUSERID" length="50"  />
         </basic>
         <basic name="changeDateTime">
-            <column name="CHANGEDT" />
+            <column name="CHANGEDT" length="14" />
         </basic>
         <basic name="changeUserId">
-            <column name="CHANGEUSERID" />
+            <column name="CHANGEUSERID" length="50" />
         </basic>
         <basic name="eventDocTypeId">
-            <column name="EVENTDOCTYPEID" />
+            <column name="EVENTDOCTYPEID" length="64" />
         </basic>
         <basic name="comments">
-          <column name="COMMENTS" />
+          <column name="COMMENTS" length="200" />
         </basic>
         <many-to-one name="dbEvent">
           <join-column name="EVENTID" referenced-column-name="ESDEVCOD"
@@ -333,37 +311,37 @@
       <id-class class="org.santfeliu.agenda.service.DBEventPlacePK" />
       <attributes>
         <basic name="tipesdevcod">
-          <column name="TIPESDEVCOD" />
+          <column name="TIPESDEVCOD" precision="4" scale="0" />
         </basic>
         <id name="eventId">
-          <column name="ESDEVCOD" />
+          <column name="ESDEVCOD" precision="8" scale="0" />
         </id>
         <id name="numordre">
-          <column name="NUMORDRE" />
+          <column name="NUMORDRE" precision="4" scale="0" />
         </id>
         <basic name="paiscod">
-          <column name="PAISCOD" />
+          <column name="PAISCOD" precision="4" scale="0" />
         </basic>
         <basic name="provcod">
-          <column name="PROVCOD" />
+          <column name="PROVCOD" precision="4" scale="0" />
         </basic>
         <basic name="municod">
-          <column name="MUNICOD" />
+          <column name="MUNICOD" precision="4" scale="0" />
         </basic>
         <basic name="carcod">
-          <column name="CARCOD" />
+          <column name="CARCOD" precision="8" scale="0" />
         </basic>
         <basic name="domcod">
-          <column name="DOMCOD" />
+          <column name="DOMCOD" precision="8" scale="0" />
         </basic>
         <basic name="salacod">
-          <column name="SALACOD" />
+          <column name="SALACOD" precision="5" scale="0" />
         </basic>
         <basic name="comments">
-          <column name="OBSERV" />
+          <column name="OBSERV" length="500" />
         </basic>
         <basic name="numero">
-          <column name="NUMERO" />
+          <column name="NUMERO" precision="4" scale="0" />
         </basic>
         <many-to-one name="dbEvent">
           <join-column name="ESDEVCOD" referenced-column-name="ESDEVCOD"
@@ -378,25 +356,25 @@
       <table name="AGD_ASSISTIR" />
       <attributes>
         <id name="eventId">
-          <column name="ESDEVCOD" />
+          <column name="ESDEVCOD" precision="8" scale="0" />
         </id>
         <id name="personId">
-          <column name="PERSCOD" />
+          <column name="PERSCOD" precision="8" scale="0" />
         </id>
         <basic name="attendantTypeId">
-          <column name="ATTENDANTTYPEID" />
+          <column name="ATTENDANTTYPEID" length="64" />
         </basic>
         <basic name="comments">
-          <column name="OBSERV" />
+          <column name="OBSERV" length="200" />
         </basic>
         <basic name="rol">
-          <column name="ROL" />
+          <column name="ROL" length="50" />
         </basic>
         <basic name="incognit">
-          <column name="INCOGNIT" />
+          <column name="INCOGNIT" length="1" />
         </basic>
         <basic name="attended">
-          <column name="PRESENTAT" />
+          <column name="PRESENTAT" length="1" />
         </basic>
         <many-to-one name="dbEvent">
           <join-column name="ESDEVCOD" referenced-column-name="ESDEVCOD"
@@ -410,14 +388,15 @@
       <table name="AGD_TEMATICA" />
       <attributes>
         <id name="themeId">
-          <column name="TEMACOD" />
+          <column name="TEMACOD" scale="4" />
           <generated-value strategy="TABLE" generator="AGD_TEMATICA"/>
           <table-generator name="AGD_TEMATICA" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="AGD_TEMATICA"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="description">
-          <column name="TEMADESC" />
+          <column name="TEMADESC" length="100" />
         </basic>
       </attributes>
     </entity>
@@ -428,13 +407,13 @@
       <id-class class="org.santfeliu.agenda.service.DBEventThemePK" />
       <attributes>
         <id name="eventId">
-          <column name="ESDEVCOD" />
+          <column name="ESDEVCOD" scale="8" precision="0" />
         </id>
         <id name="themeId">
-          <column name="TEMACOD" />
+          <column name="TEMACOD" scale="4" precision="0" />
         </id>
         <basic name="tipesdevcod">
-          <column name="TIPESDEVCOD" />
+          <column name="TIPESDEVCOD" scale="4" precision="0" />
         </basic>
       </attributes>
     </entity>
@@ -445,47 +424,18 @@
       <id-class class="org.santfeliu.agenda.service.DBEventPropertyPK" />
       <attributes>
         <id name="eventId">
-          <column name="ESDEVCOD" />
+          <column name="ESDEVCOD" scale="8" precision="0" />
         </id>
         <id name="name">
-          <column name="ATRIBNOM" />
+          <column name="ATRIBNOM" length="20" />
         </id>
         <basic name="value">
-          <column name="VALOR" />
+          <column name="VALOR" length="1000" />
         </basic>
         <basic name="tipesdevcod">
-          <column name="TIPESDEVCOD" />
+          <column name="TIPESDEVCOD" precision="4" scale="0" />
         </basic>
       </attributes>
     </entity>
-
-    <!-- Legacy code. Delete in future -->
-    <entity class="org.santfeliu.kernel.service.DBCounter" name="DBCounter">
-      <table name="NCL_CLAU" />
-      <attributes>
-        <id name="claupref">
-          <column name="CLAUPREF" />
-        </id>
-        <id name="claucod">
-          <column name="CLAUCOD" />
-        </id>
-        <id name="clauorigen">
-          <column name="CLAUORIGEN" />
-        </id>
-        <basic name="claudesc">
-          <column name="CLAUDESC" />
-        </basic>
-        <basic name="counter">
-          <column name="CLAUVNUM" />
-        </basic>
-        <basic name="stdugr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-      </attributes>
-    </entity>
-    <!-- End legacy code. Delete in future -->
 
 </entity-mappings>

@@ -28,16 +28,11 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.doc.store.cntora;
+package org.santfeliu.doc.store.cnt.jdbc;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,10 +50,10 @@ import org.santfeliu.util.TemporaryDataSource;
 
 
 /**
- * @deprecated use org.santfeliu.doc.store.cnt.jdbc.* package
+ *
  * @author blanquepa
  */
-public class OracleContentStoreConnection implements ContentStoreConnection
+public class JdbcContentStoreConnection implements ContentStoreConnection
 {
   public static final String INTERNAL = "I";
   public static final String EXTERNAL = "E";
@@ -67,10 +62,10 @@ public class OracleContentStoreConnection implements ContentStoreConnection
   public static final String FMT_BINARY = "BINARY";
   public static final String FMT_IGNORE = "IGNORE";
 
-  private Connection conn;
-  private Properties config;
+  protected Connection conn;
+  protected Properties config;
 
-  public OracleContentStoreConnection(Connection conn, Properties config)
+  public JdbcContentStoreConnection(Connection conn, Properties config)
   {
     try
     {
@@ -85,9 +80,9 @@ public class OracleContentStoreConnection implements ContentStoreConnection
   
   public void createTables() throws Exception
   {
-    createContentTable();
-    createInternalTable();
-    createExternalTable();
+    createTable("createContentTable");
+    createTable("createInternalTable");
+    createTable("createExternalTable");
   }  
 
   // ** Content operations : access via JDBC
@@ -246,68 +241,12 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     }
     return contents;
   }
-
+  
   @Override
-  public File markupContent(String contentId, String searchExpression)
+  public File markupContent(String contentId, String searchExpression) 
     throws Exception
   {
-    File file = null;
-
-    // **** select fileType and mimeType
-    String fileType = null;
-    String mimeType = null;
-    String sqlContent = config.getProperty("selectContentTypeSQL");
-    PreparedStatement stmtContent = conn.prepareStatement(sqlContent);
-    try
-    {
-      stmtContent.setString(1, contentId);
-      ResultSet rs = stmtContent.executeQuery();
-      try
-      {
-        if (rs.next())
-        {
-          fileType = rs.getString(1);
-          mimeType = rs.getString(2);
-        }
-        else throw new Exception("doc:INVALID_CONTENTID");
-      }
-      finally
-      {
-        rs.close();
-      }
-    }
-    finally
-    {
-      stmtContent.close();
-    }
-    file = File.createTempFile("mkp", ".tmp");
-    FileOutputStream out = new FileOutputStream(file);
-    // call markup
-    if (mimeType != null && mimeType.startsWith("text/") &&
-      !"text/html".equals(mimeType))
-    {
-      // markup for non html text files
-      ByteArrayOutputStream bout = new ByteArrayOutputStream();
-      oracleMarkupContent(contentId, searchExpression, fileType,
-        "{{{",
-        "}}}",
-        " ",
-        " ", bout);
-      // Oracle don't transform text files to html
-      // this transformation must be performed here for non html text files
-      createHTMLFile(bout.toByteArray(), out);
-    }
-    else
-    {
-      // markup for binary or html files
-      oracleMarkupContent(contentId, searchExpression, fileType,
-        "<a name=\"ctx%CURNUM\" style=\"color:red\"><b>",
-        "</b></a>",
-        "<a href=\"#ctx%PREVNUM\">&lt;&lt;&nbsp;</a>",
-        "<a href=\"#ctx%NEXTNUM\">&nbsp;&gt;&gt;</a>", out);
-    }
-    out.close();
-    return file;
+    throw new Exception("Not implemented yet.");
   }
 
   @Override
@@ -332,9 +271,9 @@ public class OracleContentStoreConnection implements ContentStoreConnection
   }
 
   /***** private methods *****/  
-  private void createContentTable() throws Exception
+  protected void createTable(String queryName) throws Exception
   {
-    String sql = config.getProperty("createContentTable");
+    String sql = config.getProperty(queryName);
     PreparedStatement prepStmt = conn.prepareStatement(sql);
     try
     {
@@ -345,35 +284,7 @@ public class OracleContentStoreConnection implements ContentStoreConnection
       prepStmt.close();
     }    
   }
-  
-  private void createInternalTable() throws Exception
-  {
-    String sql = config.getProperty("createInternalTable");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
-    {
-      prepStmt.executeUpdate();
-    }
-    finally
-    {
-      prepStmt.close();
-    }    
-  }  
-  
-  private void createExternalTable() throws Exception
-  {
-    String sql = config.getProperty("createExternalTable");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
-    {
-      prepStmt.executeUpdate();
-    }
-    finally
-    {
-      prepStmt.close();
-    }    
-  }    
-  
+    
   private void insertContentMetaData(Connection conn, Content content)
     throws Exception
   {
@@ -566,121 +477,4 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     return format;
   }
 
-  private void createHTMLFile(byte[] textData, OutputStream out)
-    throws Exception
-  {
-    // TODO: improve html generation
-    PrintWriter pr = new PrintWriter(out);
-    String s = new String(textData, "UTF-8");
-    s = s.replaceAll("&", "&amp;");
-    s = s.replaceAll("<", "&lt;");
-    s = s.replaceAll(">", "&gt;");
-    s = s.replaceAll(" ", "&nbsp;");
-    s = s.replaceAll("\n", "<br>");
-    s = s.replace("{{{", "<span style=\"background:yellow\">");
-    s = s.replace("}}}", "</span>");
-    s = "<html><body style=\"font-family:courier new;font-size:12px\">" + s +
-      "</body></html>";
-    pr.write(s);
-    pr.flush();
-  }
-
-  private void oracleMarkupContent(
-    String contentId, String searchExpression, String fileType,
-    String startTag, String endTag, String prevTag, String nextTag,
-    OutputStream out) throws Exception
-  {
-    // ******* generate random query_id
-    int query_id = (int)(Math.random() * 1000000);
-
-    // ******** select rowid
-    String rowid = "";
-    String sqlRowid = EXTERNAL.equals(fileType) ?
-      config.getProperty("selectExternalRowidSQL") :
-      config.getProperty("selectInternalRowidSQL");
-    PreparedStatement stmtRowid = conn.prepareStatement(sqlRowid);
-    try
-    {
-      stmtRowid.setString(1, contentId);
-      ResultSet rs = stmtRowid.executeQuery();
-      try
-      {
-        if (rs.next())
-        {
-          rowid = rs.getString(1);
-        }
-        else throw new Exception("doc:INVALID_CONTENTID");
-      }
-      finally
-      {
-        rs.close();
-      }
-    }
-    finally
-    {
-      stmtRowid.close();
-    }
-
-    // ******** execute ctx_doc.markup procedure
-    String sqlCall = EXTERNAL.equals(fileType) ?
-      config.getProperty("markupExternalCall") :
-      config.getProperty("markupInternalCall");
-    PreparedStatement stmtCall = conn.prepareCall(sqlCall);
-    try
-    {
-      stmtCall.setString(1, rowid);
-      stmtCall.setString(2, searchExpression);
-      stmtCall.setInt(3, query_id);
-      stmtCall.setString(4, startTag);
-      stmtCall.setString(5, endTag);
-      stmtCall.setString(6, prevTag);
-      stmtCall.setString(7, nextTag);
-      stmtCall.executeUpdate();
-    }
-    finally
-    {
-      stmtCall.close();
-    }
-
-    // ******** read markup
-    String sqlSelect = config.getProperty("selectMarkupSQL");
-    PreparedStatement stmtSel = conn.prepareStatement(sqlSelect);
-    try
-    {
-      stmtSel.setInt(1, query_id);
-      ResultSet rs = stmtSel.executeQuery();
-      try
-      {
-        if (rs.next())
-        {
-          Clob clob = rs.getClob(1);
-          InputStream in = clob.getAsciiStream();
-          IOUtils.writeToStream(in, out);
-        }
-      }
-      finally
-      {
-        rs.close();
-      }
-    }
-    finally
-    {
-      stmtSel.close();
-    }
-
-    // ******** remove markup
-    String sqlDel = config.getProperty("deleteMarkupSQL");
-    PreparedStatement stmtDel = conn.prepareStatement(sqlDel);
-    try
-    {
-      stmtDel.setInt(1, query_id);
-      stmtDel.executeUpdate();
-    }
-    finally
-    {
-      stmtDel.close();
-    }
-    // commit delete
-    conn.commit();
-  }
 }

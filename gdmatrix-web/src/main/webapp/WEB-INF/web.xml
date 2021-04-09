@@ -554,7 +554,7 @@
   </context-param>
   <context-param>
     <param-name>org.santfeliu.doc.service.DocumentManager.contentStore</param-name>
-    <param-value>org.santfeliu.doc.store.cntora.OracleContentStore</param-value>
+    <param-value>org.santfeliu.doc.store.cnt.jdbc.ora.OracleContentStore</param-value>
   </context-param>
   <context-param>
     <param-name>org.santfeliu.doc.service.DocumentManager.migrationFlag</param-name>

@@ -105,10 +105,8 @@ import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.WSTypeValidator;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.jpa.JPAQuery;
 import org.santfeliu.jpa.JPAUtils;
-import org.santfeliu.kernel.service.DBCounter;
 import org.santfeliu.kernel.service.DBEntityBase;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
@@ -118,6 +116,8 @@ import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.audit.Auditor;
 import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 
 /**
@@ -126,40 +126,41 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.agenda.AgendaManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
-public class AgendaManager
-  implements org.matrix.agenda.AgendaManagerPort
+@MultiInstance
+public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
 {
   @Resource
   WebServiceContext wsContext;
-  @PersistenceContext
+  
+  @PersistenceContext(unitName="agenda_ri")
   public EntityManager entityManager;
   
-  protected static final Logger log = Logger.getLogger("Agenda");
+  protected static final Logger LOGGER = Logger.getLogger("Agenda");
+  
   static final String PK_SEPARATOR = ";";
   private static final String THEMES_SEPARATOR = ",";
   private static final String CONFIDENT_TYPEID = "ConfidentPersonPerson";
 
-  //Event counter constants. Legacy code to delete in future.
-  private static final String EVENT_CLAUPREF = "ESDEV   ";
-  private static final String EVENT_CLAUCOD = "ESDEV   ";
-  private static final String EVENT_CLAUORIGEN = "AGD ";
-  private static final String EVENT_CLAUDESC = "Contador d'esdeveniments";
-
   public static final String HIDDEN_EVENT_STRING = "???";
   public static final String DELETED_EVENT_DATETIME = "00010101000000";
 
-  public static final HashSet<String> incrementalProperties = new HashSet();
+  public static final HashSet<String> INCREMENTAL_PROPERTIES = new HashSet();
   static
   {
-    incrementalProperties.add("exchangeId");
-    incrementalProperties.add("masterEventId");
+    INCREMENTAL_PROPERTIES.add("exchangeId");
+    INCREMENTAL_PROPERTIES.add("masterEventId");
   }
 
   public AgendaManager()
   {
   }
-
+  
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    //create emf
+  }    
+  
   @Override
   public Event loadEvent(String eventId)
   {
@@ -196,7 +197,7 @@ public class AgendaManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadEvent failed");
+      LOGGER.log(Level.SEVERE, "loadEvent failed");
         throw WSExceptionFactory.create(ex);
     }
 
@@ -229,12 +230,12 @@ public class AgendaManager
         throw new WebServiceException("agenda:ACTION_DENIED");
 
       PropertyDefinition pd = eventType.getPropertyDefinition("tipesdevcod");
-      String tipesdevcod = pd.getValue().get(0);
-      dbEvent.setTipesdevcod(tipesdevcod);
-
-      //Event counter. Legacy code to delete in future.
-      dbEvent.setEventId(String.valueOf(getNextCounterValue(
-        EVENT_CLAUPREF, EVENT_CLAUCOD, EVENT_CLAUORIGEN, EVENT_CLAUDESC)));
+      if (pd != null)
+      {
+        String tipesdevcod = pd.getValue().get(0);
+        if (tipesdevcod != null)        
+          dbEvent.setTipesdevcod(tipesdevcod);
+      }
 
       Auditor.auditCreation(dbEvent, user.getUserId());
 
@@ -351,7 +352,7 @@ public class AgendaManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "countEvents failed");
+      LOGGER.log(Level.SEVERE, "countEvents failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -405,7 +406,7 @@ public class AgendaManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findEvents failed");
+      LOGGER.log(Level.SEVERE, "findEvents failed");
         throw WSExceptionFactory.create(ex);
     }
 
@@ -486,7 +487,7 @@ public class AgendaManager
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findEvents failed");
+      LOGGER.log(Level.SEVERE, "findEvents failed");
         throw WSExceptionFactory.create(ex);
     }
 
@@ -1584,7 +1585,7 @@ public class AgendaManager
            getPropertyByName(propertyName, properties);
         if (property == null)
         {
-          if (!incrementalProperties.contains(propertyName))
+          if (!INCREMENTAL_PROPERTIES.contains(propertyName))
           {
             // remove property
             entityManager.remove(dbEventProperty);
@@ -1885,47 +1886,6 @@ public class AgendaManager
     }
 
     return attendantViews;
-  }
-
-  //Event counter private methods. Legacy code to delete in future.
-  private int getNextCounterValue(String claupref, String claucod,
-    String clauorigen, String claudesc)
-  {
-    int counter;
-
-    // update counter
-    Date now = new Date();
-    Query query = entityManager.createNamedQuery("incrementGenericCounter");
-    query.setParameter("claupref", claupref);
-    query.setParameter("claucod", claucod);
-    query.setParameter("clauorigen", clauorigen);
-    query.setParameter("userId", getUserId());
-    query.setParameter("day", getDateString(now));
-    query.setParameter("hour", getTimeString(now));
-    int numUpdated = query.executeUpdate();
-
-    if (numUpdated == 1)
-    {
-      query = entityManager.createNamedQuery("readGenericCounter");
-      query.setParameter("claupref", claupref);
-      query.setParameter("claucod", claucod);
-      query.setParameter("clauorigen", clauorigen);
-      Number value = (Number)query.getSingleResult();
-      counter = value.intValue();
-    }
-    else // counter row do not exists, then create it.
-    {
-      counter = 0; // starting value
-      DBCounter dbCounter = new DBCounter();
-      dbCounter.setClaupref(claupref);
-      dbCounter.setClaucod(claucod);
-      dbCounter.setClauorigen(clauorigen);
-      dbCounter.setClaudesc(claudesc);
-      dbCounter.setCounter(counter);
-      auditCreation(dbCounter);
-      entityManager.persist(dbCounter);
-    }
-    return counter;
   }
 
   private String getUserId()

@@ -4,9 +4,10 @@
   <!-- EclipseLink -->
   <persistence-unit name="kernel_ri" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <non-jta-data-source>java:comp/env/jdbc/genesys5</non-jta-data-source>
+    <non-jta-data-source>java:comp/env/jdbc/matrix</non-jta-data-source>
     <mapping-file>org/santfeliu/kernel/service/orm.xml</mapping-file>
     <properties>
+      <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>        
       <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
       <property name="eclipselink.logging.level" value="FINE"/>
       <property name="eclipselink.cache.shared.default" value="false"/>

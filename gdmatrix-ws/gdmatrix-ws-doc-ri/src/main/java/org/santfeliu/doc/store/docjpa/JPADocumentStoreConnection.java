@@ -69,7 +69,7 @@ import org.santfeliu.jpa.JPAQuery;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class JPADocumentStoreConnection implements DocumentStoreConnection
 {
@@ -85,7 +85,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     throws Exception
   {
     this.endpoint = endpoint;
-    em = JPAUtils.createEntityManager("Document", endpoint.getName());
+    em = JPAUtils.createEntityManager("doc_ri", endpoint.getName());
     try
     {
       EntityTransaction tx = em.getTransaction();
@@ -98,6 +98,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     }
   }
 
+  @Override
   public Document storeDocument(Document document)
     throws Exception
   {
@@ -145,6 +146,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
   }
 
   //User properties
+  @Override
   public void storeProperties(String docId, int version,
     List<Property> properties)
     throws Exception
@@ -168,6 +170,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     removeProperties(em, docId, version);
   }
 
+  @Override
   public void storeRelatedDocuments(String docId, int version,
     List<RelatedDocument> relDocs)
     throws Exception
@@ -206,6 +209,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     }
   }
 
+  @Override
   public void storeAccessControlList(Document document)
   {
     List<DBAccessControl> dbAccessControlList = loadAccessControlList(em,
@@ -214,6 +218,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     storeAccessControlList(document, dbAccessControlList);
   }
 
+  @Override
   public Document loadDocument(String docId, int version)
     throws Exception
   {
@@ -258,6 +263,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     return document;
   } 
   
+  @Override
   public boolean removeDocument(String docId, int version, boolean persistent) throws Exception
   {
     boolean result;    
@@ -289,11 +295,13 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     return result;
   }
   
+  @Override
   public void removeProperties(String docId, int version) throws Exception
   {
     removeProperties(em, docId, version);
   }
   
+  @Override
   public List<Document> findDocuments(DocumentFilter filter,
     List<String> userRoles, boolean isAdminUser)
     throws Exception
@@ -379,6 +387,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     return documents;
   }
 
+  @Override
   public int countDocuments(DocumentFilter filter, List<String> userRoles,
     boolean isAdminUser)
     throws Exception
@@ -524,6 +533,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
 //    return docPersViewList;
 //  }
 
+  @Override
   public boolean isContentInUse(String contentId)
     throws Exception
   {
@@ -534,6 +544,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     return results.size() > 0;
   }
   
+  @Override
   public void commit()
   {
     EntityTransaction tx = em.getTransaction();
@@ -543,6 +554,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     }
   }
 
+  @Override
   public void rollback()
   {
     EntityTransaction tx = em.getTransaction();
@@ -552,6 +564,7 @@ public class JPADocumentStoreConnection implements DocumentStoreConnection
     }
   }
 
+  @Override
   public void close()
   {
     em.close();

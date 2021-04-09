@@ -28,15 +28,27 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.doc.store;
+package org.santfeliu.doc.store.cnt.jdbc.ora;
+
+
+import java.sql.Connection;
+
+import java.util.Properties;
+import org.santfeliu.doc.store.cnt.jdbc.JdbcContentStore;
+import org.santfeliu.doc.store.cnt.jdbc.JdbcContentStoreConnection;
+
 
 
 /**
  *
  * @author blanquepa
  */
-public interface ContentStore
+public class OracleContentStore extends JdbcContentStore
 {
-  public void init() throws Exception;
-  public ContentStoreConnection getConnection() throws Exception; 
+  @Override
+  protected JdbcContentStoreConnection getContentStoreConnection(Connection conn, 
+    Properties config)
+  {
+    return new OracleContentStoreConnection(conn, config);
+  }
 }

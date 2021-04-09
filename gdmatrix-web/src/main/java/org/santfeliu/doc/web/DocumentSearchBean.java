@@ -1066,9 +1066,12 @@ public class DocumentSearchBean extends DynamicTypifiedSearchBean
     if (document != null)
     {
       Content content = document.getContent();
-      String extension = 
-        MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());
-      return extension;
+      if (content != null)
+      {
+        String extension = 
+          MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());
+        return extension;
+      }
     }
     return "";
   }

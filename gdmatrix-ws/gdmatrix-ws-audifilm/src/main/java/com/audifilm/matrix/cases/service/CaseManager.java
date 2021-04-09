@@ -82,6 +82,7 @@ import org.matrix.cases.InterventionProblemView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.DocumentManagerService;
 import org.santfeliu.jpa.JPAQuery;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 /**
  *
@@ -89,7 +90,7 @@ import org.santfeliu.jpa.JPAQuery;
  */
 @WebService(endpointInterface = "org.matrix.cases.CaseManagerPort")
 @HandlerChain(file = "handlers.xml")
-@JPA
+@MultiInstance
 public class CaseManager implements CaseManagerPort
 {
   @Resource

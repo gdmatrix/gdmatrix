@@ -28,29 +28,26 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.doc.store.cntfs;
+package org.santfeliu.doc.store.cnt.jdbc.postgresql;
 
+import java.sql.Connection;
 import java.util.Properties;
-
-import org.santfeliu.doc.store.ContentStore;
-import org.santfeliu.doc.store.ContentStoreConnection;
+import org.santfeliu.doc.store.cnt.jdbc.JdbcContentStore;
+import org.santfeliu.doc.store.cnt.jdbc.JdbcContentStoreConnection;
 
 /**
- *
- * @author unknown
+ * It only differs with JdbcContentStore in creating CNT_INTERNAL table 
+ * caused by BLOB data field (BYTEA in PostgreSQL).
+ * 
+ * @author blanquepa
  */
-public class FileSystemContentStore implements ContentStore
+public class PostgreSQLContentStore extends JdbcContentStore
 {
-  public FileSystemContentStore()
-  {
-  }
 
-  public void init(Properties properties)
+  @Override
+  protected JdbcContentStoreConnection getContentStoreConnection(Connection conn, 
+    Properties config)
   {
-  }
-
-  public ContentStoreConnection getConnection()
-  {
-    return null;
+    return new JdbcContentStoreConnection(conn, config); 
   }
 }

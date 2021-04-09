@@ -386,53 +386,54 @@
       <table name="CAS_CASE" />
       <attributes>
         <id name="caseId">
-          <column name="CASEID" />
+          <column name="CASEID" precision="10" scale="0" />
           <generated-value strategy="TABLE" generator="cases.case"/>
           <table-generator name="cases.case" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE" 
+            pk-column-value="cases.case"
             initial-value="0" allocation-size="1"/> 
         </id>
         <basic name="startDate">
-            <column name="INITDATE" />
+            <column name="INITDATE" length="8" />
         </basic>
         <basic name="startTime">
-            <column name="INITHOUR" />
+            <column name="INITHOUR" length="6" />
         </basic>
         <basic name="endDate">
-            <column name="ENDDATE" />
+            <column name="ENDDATE" length="8" />
         </basic>
         <basic name="endTime">
-            <column name="ENDHOUR" />
+            <column name="ENDHOUR" length="6" />
         </basic>
         <basic name="caseTypeId">
-            <column name="TYPE" />
+            <column name="TYPE" length="64" />
         </basic>
         <basic name="state">
-            <column name="STATE" />
+            <column name="STATE" length="30" />
         </basic>
         <basic name="description">
-            <column name="DESCRIPTION" />
+            <column name="DESCRIPTION" length="1000" />
         </basic>
         <basic name="source">
-            <column name="SOURCE" />
+            <column name="SOURCE" length="50" />
         </basic>
         <basic name="title">
-            <column name="TITLE" />
+            <column name="TITLE" length="512" />
         </basic>
         <basic name="comments">
-            <column name="COMMENTS" />
+            <column name="COMMENTS" length="200" />
         </basic>
         <basic name="creationDateTime">
-            <column name="creationDT" />
+            <column name="creationDT" length="14" />
         </basic>
         <basic name="creationUserId">
-            <column name="creationUserId" />
+            <column name="creationUserId" length="50" />
         </basic>
         <basic name="changeDateTime">
-            <column name="changeDT" />
+            <column name="changeDT" length="14" />
         </basic>
         <basic name="changeUserId">
-            <column name="changeUserId" />
+            <column name="changeUserId" length="50" />
         </basic>
         <many-to-one name="caseType">
           <join-column name="TYPE" referenced-column-name="TYPEID"
@@ -450,16 +451,16 @@
       <id-class class="org.santfeliu.cases.service.DBCasePropertyPK"/>            
       <attributes>
         <id name="id">
-          <column name="CASEID" />
+          <column name="CASEID" precision="10" scale="0" />
         </id>        
         <id name="name">
-          <column name="PROPNAME" />
+          <column name="PROPNAME" length="100" />
         </id>
         <id name="index">
-          <column name="INDX" />
+          <column name="INDX" precision="3" scale="0" />
         </id>
         <basic name="value">
-          <column name="PROPVALUE" />
+          <column name="PROPVALUE" length="4000" />
         </basic>
       </attributes>
     </entity>     
@@ -470,25 +471,25 @@
       <id-class class="org.santfeliu.cases.service.DBCaseAddressPK"/>            
       <attributes>
         <id name="caseId">
-          <column name="CASEID" />
+          <column name="CASEID" precision="10" scale="0" />
         </id>
         <id name="addressId">
-            <column name="ADDRESSID" />
+            <column name="ADDRESSID" length="32" />
         </id>
         <basic name="radius">
-            <column name="RADIUS" />
+            <column name="RADIUS" precision="6" scale="0" />
         </basic>
         <basic name="comments">
-          <column name="COMMENTS" />
+          <column name="COMMENTS" length="200" />
         </basic>
         <basic name="startDate">
-            <column name="STARTDATE" />
+            <column name="STARTDATE" length="8" />
         </basic>
         <basic name="endDate">
-            <column name="ENDDATE" />
+            <column name="ENDDATE" length="8" />
         </basic>
         <basic name="caseAddressTypeId">
-            <column name="CASEADDRESSTYPEID" />
+            <column name="CASEADDRESSTYPEID" length="64" />
         </basic>        
         <many-to-one name="caseObject">
           <join-column name="CASEID" referenced-column-name="CASEID"
@@ -504,68 +505,68 @@
       <table name="CAS_PERSON" />
       <attributes>
         <id name="casePersonId">
-          <column name="CASEPERSONID" />
+          <column name="CASEPERSONID" precision="10" scale="0" />
           <generated-value strategy="TABLE" generator="cases.casePerson"/>
           <table-generator name="cases.casePerson" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="caseId">
-          <column name="CASEID" />
+          <column name="CASEID" precision="10" scale="0" />
         </basic>
         <basic name="personId">
-          <column name="PERSCOD" />
+          <column name="PERSCOD" length="32" />
         </basic>
         <basic name="startDate">
-            <column name="STARTDATE" />
+            <column name="STARTDATE" length="8" />
         </basic>
         <basic name="endDate">
-            <column name="ENDDATE" />
+            <column name="ENDDATE" length="8" />
         </basic>
         <basic name="comments">
-          <column name="COMMENTS" />
+          <column name="COMMENTS" length="200" />
         </basic>
         <basic name="creationDateTime">
-            <column name="CREATIONDT" />
+            <column name="CREATIONDT" length="14"/>
         </basic>
         <basic name="creationUserId">
-            <column name="CREATIONUSERID" />
+            <column name="CREATIONUSERID" length="50" />
         </basic>
         <basic name="changeDateTime">
-            <column name="CHANGEDT" />
+            <column name="CHANGEDT" length="14" />
         </basic>
         <basic name="changeUserId">
-            <column name="CHANGEUSERID" />
+            <column name="CHANGEUSERID" length="50" />
         </basic>
         <basic name="casePersonTypeId">
-            <column name="CASEPERSONTYPEID" />
+            <column name="CASEPERSONTYPEID" length="64" />
         </basic>
         <basic name="addressId">
-            <column name="ADDRESSID" />
+            <column name="ADDRESSID" length="32" />
         </basic>
         <basic name="contactId1">
-            <column name="CONTACTID" />
+            <column name="CONTACTID" length="32" />
         </basic>
         <basic name="contactId2">
-            <column name="CONTACTID2" />
+            <column name="CONTACTID2" length="32" />
         </basic>
         <basic name="contactId3">
-            <column name="CONTACTID3" />
+            <column name="CONTACTID3" length="32" />
         </basic>
         <basic name="representantPersonId">
-            <column name="REPPERSONID" />
+            <column name="REPPERSONID" length="32" />
         </basic>
         <basic name="representantAddressId">
-            <column name="REPADDRESSID" />
+            <column name="REPADDRESSID" length="32" />
         </basic>
         <basic name="representantContactId1">
-            <column name="REPCONTACTID" />
+            <column name="REPCONTACTID" length="32" />
         </basic>
         <basic name="representantContactId2">
-            <column name="REPCONTACTID2" />
+            <column name="REPCONTACTID2" length="32" />
         </basic>
         <basic name="representantContactId3">
-            <column name="REPCONTACTID3" />
+            <column name="REPCONTACTID3" length="32" />
         </basic>
         <many-to-one name="caseObject">
           <join-column name="CASEID" referenced-column-name="CASEID"
@@ -589,35 +590,36 @@
           <column name="INTERVENTIONID" />
           <generated-value strategy="TABLE" generator="cases.intervention"/>
           <table-generator name="cases.intervention" table="TABLESEQ"
-            pk-column-name="COUNTER" value-column-name="VALUE" 
+            pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="cases.intervention" 
             initial-value="0" allocation-size="1"/> 
         </id>
         <basic name="caseId">
-            <column name="CASEID" />
+            <column name="CASEID" precision="10" scale="0" />
         </basic>
         <basic name="intTypeId">
-            <column name="TYPE" />
+            <column name="TYPE" length="64" />
         </basic>
         <basic name="startDate">
-            <column name="INITDATE" />
+            <column name="INITDATE" length="8" />
         </basic>
         <basic name="startTime">
-            <column name="INITHOUR" />
+            <column name="INITHOUR" length="6" />
         </basic>
         <basic name="endDate">
-            <column name="ENDDATE" />
+            <column name="ENDDATE" length="8" />
         </basic>
         <basic name="endTime">
-            <column name="ENDHOUR" />
+            <column name="ENDHOUR" length="6" />
         </basic>
         <basic name="personId">
-            <column name="PERSCOD" />
+            <column name="PERSCOD" length="32" />
         </basic>
         <basic name="userId">
-            <column name="USRNAME" />
+            <column name="USRNAME" length="50" />
         </basic>
         <basic name="comments">
-          <column name="COMMENTS" />
+          <column name="COMMENTS" length="2000" />
         </basic>
         <many-to-one name="caseObject">
           <join-column name="CASEID" referenced-column-name="CASEID"
@@ -637,16 +639,16 @@
       <id-class class="org.santfeliu.cases.service.DBInterventionPropertyPK"/>  
       <attributes>
         <id name="id">
-          <column name="INTERVENTIONID" />
+          <column name="INTERVENTIONID" precision="10" scale="0" />
         </id>        
         <id name="name">
-          <column name="PROPNAME" />
+          <column name="PROPNAME" length="100" />
         </id>
         <id name="index">
-          <column name="INDX" />
+          <column name="INDX" precision="3" scale="0" />
         </id>        
         <basic name="value">
-          <column name="PROPVALUE" />
+          <column name="PROPVALUE" length="2000" />
         </basic>
       </attributes>
     </entity>     
@@ -663,28 +665,28 @@
             initial-value="0" allocation-size="1"/> 
         </id>
         <basic name="caseId">
-            <column name="CASEID" />
+            <column name="CASEID" precision="10" scale="0" />
         </basic>
         <basic name="probTypeId">
-            <column name="PROBLEMTYPE" />
+            <column name="PROBLEMTYPE" length="64" />
         </basic>
         <basic name="personId">
-            <column name="PERSONID" />
+            <column name="PERSONID" precision="8" scale="0" />
         </basic>
         <basic name="comments">
-            <column name="COMMENTS" />
+            <column name="COMMENTS" length="200" />
         </basic>
         <basic name="startDate">
-            <column name="STARTDATE" />
+            <column name="STARTDATE" length="8" />
         </basic>
         <basic name="endDate">
-            <column name="ENDDATE" />
+            <column name="ENDDATE" length="6" />
         </basic>
         <basic name="reason">
-            <column name="REASON" />
+            <column name="REASON" length="50" />
         </basic>
         <basic name="priority">
-            <column name="PRIORITY" />
+            <column name="PRIORITY" precision="1" scale="0" />
         </basic>
         <many-to-one name="caseObject">
           <join-column name="CASEID" referenced-column-name="CASEID"
@@ -705,13 +707,13 @@
             initial-value="0" allocation-size="1"/> 
         </id>
         <basic name="caseId">
-            <column name="CASEID" />
+            <column name="CASEID" precision="10" scale="0" />
         </basic>
         <basic name="demandTypeId">
-            <column name="DEMANDTYPE" />
+            <column name="DEMANDTYPE" length="64" />
         </basic>
         <basic name="comments">
-            <column name="COMMENTS" />
+            <column name="COMMENTS" length="200" />
         </basic>
         <many-to-one name="caseObject">
           <join-column name="CASEID" referenced-column-name="CASEID"
@@ -726,31 +728,31 @@
       <id-class class="org.santfeliu.cases.service.DBCaseDocumentPK"/>
       <attributes>
         <id name="caseId">
-          <column name="CASEID" />
+          <column name="CASEID" precision="10" scale="0" />
         </id>
         <id name="docId">
-            <column name="DOCID" />
+            <column name="DOCID" length="32" />
         </id>
         <basic name="creationDateTime">
-            <column name="CREATIONDT" />
+            <column name="CREATIONDT" length="14" />
         </basic>
         <basic name="creationUserId">
-            <column name="CREATIONUSERID" />
+            <column name="CREATIONUSERID" length="50" />
         </basic>
         <basic name="changeDateTime">
-            <column name="CHANGEDT" />
+            <column name="CHANGEDT" length="14" />
         </basic>
         <basic name="changeUserId">
-            <column name="CHANGEUSERID" />
+            <column name="CHANGEUSERID" length="50" />
         </basic>
         <basic name="caseDocTypeId">
-            <column name="CASEDOCTYPEID" />
+            <column name="CASEDOCTYPEID" length="64" />
         </basic>
         <basic name="comments">
-            <column name="COMMENTS" />
+            <column name="COMMENTS" length="200" />
         </basic>
         <basic name="volume">
-            <column name="VOLUME" />
+            <column name="VOLUME" length="100" />
         </basic>
         <many-to-one name="caseObject">
           <join-column name="CASEID" referenced-column-name="CASEID"
@@ -767,19 +769,20 @@
           <generated-value strategy="TABLE" generator="cases.caseEvent"/>
           <table-generator name="cases.caseEvent" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="cases.caseEvent"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="caseId">
-          <column name="CASEID" />
+          <column name="CASEID" precision="10" scale="0" />
         </basic>
         <basic name="eventId">
-            <column name="ESDEVCOD" />
+            <column name="ESDEVCOD" precision="8" scale="0" />
         </basic>
         <basic name="caseEventTypeId">
-            <column name="CASEEVENTTYPEID" />
+            <column name="CASEEVENTTYPEID" length="64" />
         </basic>                
         <basic name="comments">
-          <column name="COMMENTS" />
+          <column name="COMMENTS" length="1000" />
         </basic>                        
         <many-to-one name="caseObject">
           <join-column name="CASEID" referenced-column-name="CASEID"
@@ -798,16 +801,16 @@
       <id-class class="org.santfeliu.cases.service.DBCaseEventPropertyPK"/>  
       <attributes>
         <id name="id">
-          <column name="CASEEVENTID" />
+          <column name="CASEEVENTID" precision="10" scale="0" />
         </id>        
         <id name="name">
-          <column name="PROPNAME" />
+          <column name="PROPNAME" length="100" />
         </id>
         <id name="index">
-          <column name="INDX" />
+          <column name="INDX" precision="3" scale="0" />
         </id>
         <basic name="value">
-          <column name="PROPVALUE" />
+          <column name="PROPVALUE" length="4000" />
         </basic>
       </attributes>
     </entity>
@@ -818,13 +821,13 @@
       <id-class class="org.santfeliu.cases.service.DBAccessControlPK" />
       <attributes>
         <id name="caseId">
-          <column name="CASEID" />
+          <column name="CASEID" precision="10" scale="0" />
         </id>
         <id name="roleId">
-          <column name="ROLEID" />
+          <column name="ROLEID" length="50" />
         </id>
         <id name="action">
-          <column name="ACTION" />
+          <column name="ACTION" length="128" />
         </id>
       </attributes>
     </entity>
@@ -838,25 +841,26 @@
           <generated-value strategy="TABLE" generator="cases.caseCase"/>
           <table-generator name="cases.caseCase" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="cases.caseCase"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="caseId">
-          <column name="CASEID" />
+          <column name="CASEID" precision="10" scale="0" />
         </basic>
         <basic name="relCaseId">
-            <column name="RELCASEID" />
+            <column name="RELCASEID" length="15" />
         </basic>
         <basic name="caseCaseTypeId">
-            <column name="CASECASETYPEID" />
+            <column name="CASECASETYPEID" length="64" />
         </basic>
         <basic name="comments">
-            <column name="COMMENTS" />
+            <column name="COMMENTS" length="2000" />
         </basic>
         <basic name="startDate">
-            <column name="STARTDATE" />
+            <column name="STARTDATE" length="8" />
         </basic>
         <basic name="endDate">
-            <column name="ENDDATE" />
+            <column name="ENDDATE" length="8" />
         </basic>
         <many-to-one name="mainCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
@@ -875,16 +879,16 @@
       <id-class class="org.santfeliu.cases.service.DBCaseCasePropertyPK"/>  
       <attributes>
         <id name="id">
-          <column name="CASECASEID" />
+          <column name="CASECASEID" precision="10" scale="0" />
         </id>
         <id name="name">
-          <column name="PROPNAME" />
+          <column name="PROPNAME" length="100" />
         </id>
         <id name="index">
-          <column name="INDX" />
+          <column name="INDX" precision="3" scale="0" />
         </id>
         <basic name="value">
-          <column name="PROPVALUE" />
+          <column name="PROPVALUE" length="4000" />
         </basic>
       </attributes>
     </entity>         
@@ -894,20 +898,20 @@
       <table name="CAS_INTPROB" />
       <attributes>
         <id name="intProbId">
-          <column name="INTPROBID" />
+          <column name="INTPROBID" precision="10" scale="0" />
           <generated-value strategy="TABLE" generator="cases.intProb"/>
           <table-generator name="cases.intProb" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="intId">
-          <column name="INTERVENTIONID" />
+          <column name="INTERVENTIONID" precision="10" scale="0" />
         </basic>
         <basic name="probId">
-            <column name="PROBLEMID" />
+            <column name="PROBLEMID" precision="10" scale="0" />
         </basic>
         <basic name="comments">
-            <column name="COMMENTS" />
+            <column name="COMMENTS" length="200" />
         </basic>
         <many-to-one name="intervention">
           <join-column name="INTERVENTIONID" referenced-column-name="INTERVENTIONID"
@@ -925,10 +929,10 @@
       <table name="TABLESEQ" />
       <attributes>
         <id name="counter">
-          <column name="COUNTER" />
+          <column name="COUNTER" length="50" />
         </id>
         <basic name="value">
-          <column name="VALUE" />
+          <column name="VALUE" precision="20" scale="0"/>
         </basic>
       </attributes>
     </entity>

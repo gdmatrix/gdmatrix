@@ -28,7 +28,7 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.doc.store.cntora;
+package org.santfeliu.doc.store.cnt.jdbc;
 
 import java.io.InputStream;
 
@@ -45,17 +45,19 @@ import org.santfeliu.util.MatrixConfig;
 
 
 /**
- * @deprecated use org.santfeliu.doc.store.cnt.jdbc.* package
- * @author unknown
+ *
+ * @author blanquepa
  */
-public class OracleContentStore implements ContentStore
+public abstract class JdbcContentStore implements ContentStore
 {
-  private Properties config = new Properties();
+  private final Properties config = new Properties();
   
-  public OracleContentStore()
+  public JdbcContentStore()
   {
   }
 
+
+  @Override
   public void init()
     throws Exception
   {
@@ -69,13 +71,19 @@ public class OracleContentStore implements ContentStore
       InputStream is = cls.getResourceAsStream(path + "/jdbc.properties");
       config.load(is);
       //Try auto tables creation
+      JdbcContentStoreConnection conn = getConnection();
       try
       {
-        OracleContentStoreConnection conn = getConnection();
         conn.createTables();
+        conn.commit();
       }
       catch(Exception cex)
       {
+        conn.rollback();
+      }
+      finally
+      {
+        conn.close();
       }
     }
     catch(Exception ex)
@@ -84,7 +92,8 @@ public class OracleContentStore implements ContentStore
     }
   }
 
-  public OracleContentStoreConnection getConnection()
+  @Override
+  public JdbcContentStoreConnection getConnection()
     throws Exception
   {
     try
@@ -102,9 +111,11 @@ public class OracleContentStore implements ContentStore
         dataSourceName = MatrixConfig.getProperty("global.dataSource");  
         ds = (javax.sql.DataSource)envContext.lookup(dataSourceName);        
       }
+      
       Connection conn = ds.getConnection();
       conn.setAutoCommit(false);
-      return new OracleContentStoreConnection(conn, config);
+      
+      return getContentStoreConnection(conn, config);
     }
     catch (Exception ex)
     {
@@ -112,4 +123,7 @@ public class OracleContentStore implements ContentStore
       throw new Exception(ex);
     }
   }
+  
+  protected abstract JdbcContentStoreConnection getContentStoreConnection(
+    Connection conn, Properties config);
 }

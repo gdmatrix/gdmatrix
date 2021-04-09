@@ -73,6 +73,8 @@ import org.santfeliu.job.service.JobFiring;
  */
 public interface JobStore extends Serializable
 { 
+  public void init() throws JobException;
+  
   public Job storeJob(Job job) throws JobException;
   
   public Job loadJob(String jobId) throws JobException;

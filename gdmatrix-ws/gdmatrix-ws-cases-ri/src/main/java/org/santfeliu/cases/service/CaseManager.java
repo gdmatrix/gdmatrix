@@ -110,7 +110,6 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.service.DBType;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.dic.util.WSTypeValidator;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.jpa.JPAUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
@@ -122,6 +121,8 @@ import org.santfeliu.util.audit.Auditor;
 import org.santfeliu.util.keywords.KeywordsManager;
 import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 
 /**
@@ -130,16 +131,16 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.cases.CaseManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class CaseManager implements CaseManagerPort
 {
   @Resource
   WebServiceContext wsContext;
   
-  @PersistenceContext
+  @PersistenceContext(unitName="cases_ri")
   public EntityManager em;
   
-  protected static final Logger log = Logger.getLogger("Cases");  
+  protected static final Logger LOGGER = Logger.getLogger("Cases");  
   
   public static final String PK_SEPARATOR = ";";
 
@@ -148,6 +149,12 @@ public class CaseManager implements CaseManagerPort
   public CaseManager()
   {
   }
+  
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    //create emf
+  }    
 
   @Override
   public CaseMetaData getCaseMetaData()
@@ -164,7 +171,7 @@ public class CaseManager implements CaseManagerPort
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
       User user = UserCache.getUser(credentials);
 
-      log.log(Level.INFO, "loadCase caseId:{0}",
+      LOGGER.log(Level.INFO, "loadCase caseId:{0}",
         new Object[]{caseId});
 
       if (caseId == null)
@@ -183,7 +190,7 @@ public class CaseManager implements CaseManagerPort
 
       //Properties
       List<DBCaseProperty> dbProperties = 
-              loadDBProperties("loadCaseProperties", caseId);
+        loadDBProperties("loadCaseProperties", caseId);
       List<Property> properties = toProperties(dbProperties);
       dbCase.getProperty().addAll(properties);
 
@@ -198,7 +205,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadCase failed");
+      LOGGER.log(Level.SEVERE, "loadCase failed");
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -211,7 +218,7 @@ public class CaseManager implements CaseManagerPort
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
       User user = UserCache.getUser(credentials);
 
-      log.log(Level.INFO, "storeCase caseId:{0}",
+      LOGGER.log(Level.INFO, "storeCase caseId:{0}",
         new Object[]{caseObject.getCaseId() != null ?
           caseObject.getCaseId() : "NEW"});
 
@@ -281,7 +288,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeCase failed");
+      LOGGER.log(Level.SEVERE, "storeCase failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -303,7 +310,7 @@ public class CaseManager implements CaseManagerPort
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
       User user = UserCache.getUser(credentials);
 
-      log.log(Level.INFO, "removeCase caseId:{0}",
+      LOGGER.log(Level.INFO, "removeCase caseId:{0}",
         new Object[]{caseId});
 
       if (caseId == null) return false;
@@ -381,7 +388,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeCase failed");
+      LOGGER.log(Level.SEVERE, "removeCase failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -391,7 +398,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findCases");
+      LOGGER.log(Level.INFO, "findCases");
       
       validateCaseFilter(filter);
 
@@ -399,7 +406,10 @@ public class CaseManager implements CaseManagerPort
       if (!StringUtils.isBlank(caseTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(caseTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(caseTypeId));
+        if (type == null)
+          throw new Exception("cases:CASE_TYPE_NOT_FOUND");
         filter.setCaseTypeId(type.getTypePath());
       }
 
@@ -407,7 +417,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findCases failed");
+      LOGGER.log(Level.SEVERE, "findCases failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -432,13 +442,14 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "countCases");
+      LOGGER.log(Level.INFO, "countCases");
 
       String caseTypeId = filter.getCaseTypeId();
       if (!StringUtils.isBlank(caseTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(caseTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(caseTypeId));
         filter.setCaseTypeId(type.getTypePath());
       }
     
@@ -446,7 +457,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "countCases failed");
+      LOGGER.log(Level.SEVERE, "countCases failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -466,7 +477,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "loadCasePerson casePersonId:{0}",
+      LOGGER.log(Level.INFO, "loadCasePerson casePersonId:{0}",
         new Object[]{casePersonId});
 
       CasePerson casePerson = null;
@@ -488,7 +499,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadCasePerson failed");
+      LOGGER.log(Level.SEVERE, "loadCasePerson failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -502,7 +513,7 @@ public class CaseManager implements CaseManagerPort
       User user = UserCache.getUser(credentials);
 
       String casePersonId = casePerson.getCasePersonId();
-      log.log(Level.INFO, "storeCasePerson casePersonId:{0}",
+      LOGGER.log(Level.INFO, "storeCasePerson casePersonId:{0}",
         new Object[]{casePersonId != null ? casePersonId : "NEW"});
 
       validateCasePerson(casePerson);
@@ -527,7 +538,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeCasePerson failed");
+      LOGGER.log(Level.SEVERE, "storeCasePerson failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -537,7 +548,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeCasePerson casePersonId:{0}",
+      LOGGER.log(Level.INFO, "removeCasePerson casePersonId:{0}",
         new Object[]{id});
 
       DBCasePerson dbCasePerson = em.getReference(DBCasePerson.class, id);
@@ -549,7 +560,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeCasePerson failed");
+      LOGGER.log(Level.SEVERE, "removeCasePerson failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -559,11 +570,12 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findCasePersonViews caseId:{0} personId:{1}",
+      LOGGER.log(Level.INFO, "findCasePersonViews caseId:{0} personId:{1}",
         new Object[]{filter.getCaseId(), filter.getPersonId()});
 
-      if (StringUtils.isBlank(filter.getCaseId()) && StringUtils.isBlank(filter.getPersonId()))
-        throw new Exception("FILTER_NOT_ALLOWED");
+      if (StringUtils.isBlank(filter.getCaseId()) 
+        && StringUtils.isBlank(filter.getPersonId()))
+          throw new Exception("FILTER_NOT_ALLOWED");
         
       List<CasePersonView> casePersonViewList = new ArrayList();
 
@@ -571,7 +583,8 @@ public class CaseManager implements CaseManagerPort
       if (!StringUtils.isBlank(casePersonTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(casePersonTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(casePersonTypeId));
         filter.setCasePersonTypeId(type.getTypePath() + "%");
       }
       
@@ -613,21 +626,21 @@ public class CaseManager implements CaseManagerPort
         if (maxResults == 0) maxResults = Integer.MAX_VALUE;
         int index = 0;
         int added = 0;          
-        for(DBCasePerson dbCasePerson : dbRowList)
+        for(DBCasePerson dbCP : dbRowList)
         {
           if (index++ >= firstResult && added < maxResults)
           {
-            if (allowedCaseIds.contains(dbCasePerson.getCaseId()))
+            if (allowedCaseIds.contains(dbCP.getCaseId()))
             {
               CasePersonView casePersonView = new CasePersonView();
-              casePersonView.setCasePersonId(dbCasePerson.getCasePersonId());
-              casePersonView.setComments(dbCasePerson.getComments());
-              casePersonView.setCasePersonTypeId(dbCasePerson.getCasePersonTypeId());
-              casePersonView.setStartDate(dbCasePerson.getStartDate());
-              casePersonView.setEndDate(dbCasePerson.getEndDate());
+              casePersonView.setCasePersonId(dbCP.getCasePersonId());
+              casePersonView.setComments(dbCP.getComments());
+              casePersonView.setCasePersonTypeId(dbCP.getCasePersonTypeId());
+              casePersonView.setStartDate(dbCP.getStartDate());
+              casePersonView.setEndDate(dbCP.getEndDate());
 
-              String caseId = dbCasePerson.getCaseId();
-              String personId = dbCasePerson.getPersonId();
+              String caseId = dbCP.getCaseId();
+              String personId = dbCP.getPersonId();
               if (personId != null) //Set PersonView
               {
                 List list = personIdMap.get(personId);
@@ -637,7 +650,7 @@ public class CaseManager implements CaseManagerPort
               }
               if (caseId != null) //Set CaseView
               {
-                DBCase dbCase = dbCasePerson.getCaseObject();
+                DBCase dbCase = dbCP.getCaseObject();
                 Case caseObject = new Case();
                 caseObject.setCaseId(caseId);
                 caseObject.setTitle(dbCase.getTitle());
@@ -667,12 +680,14 @@ public class CaseManager implements CaseManagerPort
             personFilter.getPersonId().addAll(personIdMap.keySet());
             personFilter.setFirstResult(0);
             personFilter.setMaxResults(0);
-            List<PersonView> personViewList = port.findPersonViews(personFilter);
+            List<PersonView> personViewList = 
+              port.findPersonViews(personFilter);
 
             //Parse WS result and completes the rowlist of the return table
             for (PersonView personView : personViewList)
             {
-              List<CasePersonView> cpvList = personIdMap.get(personView.getPersonId());
+              List<CasePersonView> cpvList = 
+                personIdMap.get(personView.getPersonId());
               for (CasePersonView casePersonView : cpvList)
               {
                 casePersonView.setPersonView(personView);
@@ -690,7 +705,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findCasePersonViews failed");
+      LOGGER.log(Level.SEVERE, "findCasePersonViews failed");
         throw WSExceptionFactory.create(ex);
     }
   }  
@@ -700,17 +715,19 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "countCasePersons caseId:{0} personId:{1}",
+      LOGGER.log(Level.INFO, "countCasePersons caseId:{0} personId:{1}",
         new Object[]{filter.getCaseId(), filter.getPersonId()});
       
-      if (StringUtils.isBlank(filter.getCaseId()) && StringUtils.isBlank(filter.getPersonId()))
-        throw new Exception("FILTER_NOT_ALLOWED");
+      if (StringUtils.isBlank(filter.getCaseId()) 
+        && StringUtils.isBlank(filter.getPersonId()))
+          throw new Exception("FILTER_NOT_ALLOWED");
       
       String casePersonTypeId = filter.getCasePersonTypeId();
       if (!StringUtils.isBlank(casePersonTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(casePersonTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(casePersonTypeId));
         filter.setCasePersonTypeId(type.getTypePath() + "%");
       }  
 
@@ -744,7 +761,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "countCasePersons failed");
+      LOGGER.log(Level.SEVERE, "countCasePersons failed");
       throw WSExceptionFactory.create(ex);
     }
   }  
@@ -754,7 +771,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "loadCaseAddress caseAddressId:{0}",
+      LOGGER.log(Level.INFO, "loadCaseAddress caseAddressId:{0}",
         new Object[]{id});
 
       CaseAddress caseAddress = null;
@@ -777,7 +794,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadCaseAddress failed");
+      LOGGER.log(Level.SEVERE, "loadCaseAddress failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -789,7 +806,7 @@ public class CaseManager implements CaseManagerPort
     {
       String caseAddressId = caseAddress.getCaseAddressId();
 
-      log.log(Level.INFO, "storeCaseAddress caseAddressId:{0}",
+      LOGGER.log(Level.INFO, "storeCaseAddress caseAddressId:{0}",
         new Object[]{caseAddressId != null ? caseAddressId : "NEW"});
 
       validateCaseAddress(caseAddress);
@@ -811,7 +828,8 @@ public class CaseManager implements CaseManagerPort
         else
         {
           dbCaseAddress =
-            em.getReference(DBCaseAddress.class, new DBCaseAddressPK(caseAddressId));
+            em.getReference(DBCaseAddress.class, 
+              new DBCaseAddressPK(caseAddressId));
           if (dbCaseAddress != null)
             em.remove(dbCaseAddress);
           em.persist(new DBCaseAddress(caseAddress));
@@ -822,7 +840,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeCaseAddress failed");
+      LOGGER.log(Level.SEVERE, "storeCaseAddress failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -832,7 +850,8 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeCaseAddress caseAddressId:{0}", new Object[]{id});
+      LOGGER.log(Level.INFO, "removeCaseAddress caseAddressId:{0}", 
+        new Object[]{id});
 
       String[] pk = getSplitPk(id, 2);
       DBCaseAddress dbCaseAddress =
@@ -845,7 +864,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeCaseAddress failed");
+      LOGGER.log(Level.SEVERE, "removeCaseAddress failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -855,11 +874,12 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findCaseAddressViews caseId:{0} addressId:{1}",
+      LOGGER.log(Level.INFO, "findCaseAddressViews caseId:{0} addressId:{1}",
         new Object[]{filter.getCaseId(), filter.getAddressId()});
       
-      if (StringUtils.isBlank(filter.getCaseId()) && StringUtils.isBlank(filter.getAddressId()))
-        throw new Exception("FILTER_NOT_ALLOWED");      
+      if (StringUtils.isBlank(filter.getCaseId()) 
+        && StringUtils.isBlank(filter.getAddressId()))
+          throw new Exception("FILTER_NOT_ALLOWED");      
 
       //Init return table and its rowlist
       List<CaseAddressView> caseAddressViewList = new ArrayList();
@@ -902,19 +922,19 @@ public class CaseManager implements CaseManagerPort
         if (maxResults == 0) maxResults = Integer.MAX_VALUE;
         int index = 0;
         int added = 0;         
-        for(DBCaseAddress dbCaseAddress : dbCaseAddressList)
+        for(DBCaseAddress dbCA : dbCaseAddressList)
         {
           if (index++ >= firstResult && added < maxResults)
           {
-            if (allowedCaseIds.contains(dbCaseAddress.getCaseId()))
+            if (allowedCaseIds.contains(dbCA.getCaseId()))
             {          
-              String caseId = dbCaseAddress.getCaseId();
-              String addressId = dbCaseAddress.getAddressId();
+              String caseId = dbCA.getCaseId();
+              String addressId = dbCA.getAddressId();
               CaseAddressView caseAddressView = new CaseAddressView();
-              caseAddressView.setComments(dbCaseAddress.getComments());
-              caseAddressView.setStartDate(dbCaseAddress.getStartDate());
-              caseAddressView.setEndDate(dbCaseAddress.getEndDate());
-              caseAddressView.setCaseAddressTypeId(dbCaseAddress.getCaseAddressTypeId());
+              caseAddressView.setComments(dbCA.getComments());
+              caseAddressView.setStartDate(dbCA.getStartDate());
+              caseAddressView.setEndDate(dbCA.getEndDate());
+              caseAddressView.setCaseAddressTypeId(dbCA.getCaseAddressTypeId());
               if (addressId != null)
               {
                 caseAddressView.setCaseAddressId(
@@ -923,7 +943,7 @@ public class CaseManager implements CaseManagerPort
               }
               if (caseId != null) //Set CaseView
               {
-                DBCase dbCase = dbCaseAddress.getCaseObject();
+                DBCase dbCase = dbCA.getCaseObject();
                 Case caseObject = new Case();
                 caseObject.setCaseId(caseId);
                 caseObject.setTitle(dbCase.getTitle());
@@ -948,12 +968,14 @@ public class CaseManager implements CaseManagerPort
             addressFilter.getAddressIdList().addAll(addressIdMap.keySet());
             addressFilter.setFirstResult(0);
             addressFilter.setMaxResults(0);
-            List<AddressView> addressViewList = port.findAddressViews(addressFilter);
+            List<AddressView> addressViewList = 
+              port.findAddressViews(addressFilter);
 
             //Parse WS result and completes the rowlist of the return table
             for (AddressView addressView : addressViewList)
             {
-              CaseAddressView caseAddressView = addressIdMap.get(addressView.getAddressId());
+              CaseAddressView caseAddressView = 
+                addressIdMap.get(addressView.getAddressId());
               if (caseAddressView != null)
                 caseAddressView.setAddressView(addressView);
             }
@@ -969,7 +991,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findCaseAddressViews failed");
+      LOGGER.log(Level.SEVERE, "findCaseAddressViews failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -979,11 +1001,12 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "countCaseAddresses caseId:{0} addressId:{1}",
+      LOGGER.log(Level.INFO, "countCaseAddresses caseId:{0} addressId:{1}",
         new Object[]{filter.getCaseId(), filter.getAddressId()});
       
-      if (StringUtils.isBlank(filter.getCaseId()) && StringUtils.isBlank(filter.getAddressId()))
-        throw new Exception("FILTER_NOT_ALLOWED");
+      if (StringUtils.isBlank(filter.getCaseId()) 
+        && StringUtils.isBlank(filter.getAddressId()))
+          throw new Exception("FILTER_NOT_ALLOWED");
 
       Query query = setQueryParameters("findCaseAddresses", filter);
 
@@ -1020,7 +1043,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "loadIntervention intId:{0}",
+      LOGGER.log(Level.INFO, "loadIntervention intId:{0}",
         new Object[]{intId});
 
       DBIntervention dbIntervention =
@@ -1041,7 +1064,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadIntervention failed");
+      LOGGER.log(Level.SEVERE, "loadIntervention failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1053,7 +1076,7 @@ public class CaseManager implements CaseManagerPort
     {
       String intId = intervention.getIntId();
 
-      log.log(Level.INFO, "storeIntervention intervention:{0}",
+      LOGGER.log(Level.INFO, "storeIntervention intervention:{0}",
         new Object[]{intId != null ? intId : "NEW"});
 
       validateIntervention(intervention);
@@ -1074,7 +1097,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeIntervention failed");
+      LOGGER.log(Level.SEVERE, "storeIntervention failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1084,7 +1107,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeIntervention intervention:{0}",
+      LOGGER.log(Level.INFO, "removeIntervention intervention:{0}",
         new Object[]{intId});
 
 //      Query query =
@@ -1107,7 +1130,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeIntervention failed");
+      LOGGER.log(Level.SEVERE, "removeIntervention failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1117,7 +1140,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findInterventionViews caseId:{0}",
+      LOGGER.log(Level.INFO, "findInterventionViews caseId:{0}",
         new Object[]{filter.getCaseId()});
       
       validateInterventionFilter(filter); 
@@ -1128,7 +1151,8 @@ public class CaseManager implements CaseManagerPort
       if (!StringUtils.isBlank(intTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(intTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(intTypeId));
         filter.setIntTypeId(type.getTypePath());
       }
       
@@ -1206,9 +1230,6 @@ public class CaseManager implements CaseManagerPort
 
           if (!filter.isExcludeMetadata())
           {
-//            List<DBInterventionProperty> dbProperties = 
-//              loadDBProperties("loadInterventionProperties", dbIntervention.getIntId());
-
             List<DBInterventionProperty> dbProperties = 
               propsMap.get(dbIntervention.getIntId()); 
             if (dbProperties != null && !dbProperties.isEmpty())
@@ -1232,7 +1253,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findInterventionViews failed");
+      LOGGER.log(Level.SEVERE, "findInterventionViews failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1246,11 +1267,13 @@ public class CaseManager implements CaseManagerPort
       if (!StringUtils.isBlank(intTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(intTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(intTypeId));
         filter.setIntTypeId(type.getTypePath());
       }      
       
-      FindInterventionsQueryBuilder queryBuilder = FindInterventionsQueryBuilder.getInstance();
+      FindInterventionsQueryBuilder queryBuilder = 
+        FindInterventionsQueryBuilder.getInstance();
       queryBuilder.setFilter(filter);
       queryBuilder.setUserRoles(UserCache.getUser(wsContext).getRolesList());
       queryBuilder.setCounterQuery(true);
@@ -1268,7 +1291,8 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "loadCaseDocument caseDocumentId:{0}", new Object[]{caseDocId});
+      LOGGER.log(Level.INFO, "loadCaseDocument caseDocumentId:{0}", 
+        new Object[]{caseDocId});
 
       CaseDocument caseDocument = null;
 
@@ -1292,7 +1316,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadCaseDocument failed");
+      LOGGER.log(Level.SEVERE, "loadCaseDocument failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1306,7 +1330,7 @@ public class CaseManager implements CaseManagerPort
       User user = UserCache.getUser(credentials);
 
       String caseDocId = caseDocument.getCaseDocId();
-      log.log(Level.INFO, "storeCaseDocument caseDocumentId:{0}",
+      LOGGER.log(Level.INFO, "storeCaseDocument caseDocumentId:{0}",
         new Object[]{caseDocId != null ? caseDocId : "NEW"});
 
       validateCaseDocument(caseDocument);
@@ -1355,7 +1379,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeCaseDocument failed");
+      LOGGER.log(Level.SEVERE, "storeCaseDocument failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1365,7 +1389,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeCaseDocument caseDocumentId:{0}",
+      LOGGER.log(Level.INFO, "removeCaseDocument caseDocumentId:{0}",
         new Object[]{id});
 
       String[] pk = getSplitPk(id, 2);
@@ -1379,7 +1403,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeCaseDocument failed");
+      LOGGER.log(Level.SEVERE, "removeCaseDocument failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1389,7 +1413,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findCaseDocumentViews caseId:{0} docId:{1}",
+      LOGGER.log(Level.INFO, "findCaseDocumentViews caseId:{0} docId:{1}",
         new Object[]{filter.getCaseId(), filter.getDocId()});
 
       List<CaseDocumentView> caseDocumentViewList = new ArrayList();
@@ -1471,7 +1495,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findCaseDocumentViews failed");
+      LOGGER.log(Level.SEVERE, "findCaseDocumentViews failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1481,7 +1505,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findCaseVolumes caseId:{0}",
+      LOGGER.log(Level.INFO, "findCaseVolumes caseId:{0}",
         new Object[]{caseId});
 
       Query query = em.createNamedQuery("findCaseVolumes");
@@ -1490,7 +1514,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findCaseVolumes failed");
+      LOGGER.log(Level.SEVERE, "findCaseVolumes failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1525,7 +1549,8 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "loadCaseEvent caseEventId:{0}", new Object[]{caseEventId});
+      LOGGER.log(Level.INFO, "loadCaseEvent caseEventId:{0}", 
+        new Object[]{caseEventId});
 
       DBCaseEvent dbCaseEvent = null;
 
@@ -1542,7 +1567,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadCaseEvent failed");
+      LOGGER.log(Level.SEVERE, "loadCaseEvent failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1553,7 +1578,7 @@ public class CaseManager implements CaseManagerPort
     try
     {
       String caseEventId = caseEvent.getCaseEventId();
-      log.log(Level.INFO, "storeCaseEvent caseEventId:{0}",
+      LOGGER.log(Level.INFO, "storeCaseEvent caseEventId:{0}",
         new Object[]{caseEventId != null ? caseEventId : "NEW"});
 
       validateCaseEvent(caseEvent);
@@ -1574,7 +1599,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeCaseEvent failed");
+      LOGGER.log(Level.SEVERE, "storeCaseEvent failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1584,7 +1609,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeCaseEvent caseEventId:{0}",
+      LOGGER.log(Level.INFO, "removeCaseEvent caseEventId:{0}",
         new Object[]{caseEventId});
 
       DBCaseEvent dbCaseEvent = em.getReference(DBCaseEvent.class,
@@ -1600,7 +1625,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeCaseEvent failed");
+      LOGGER.log(Level.SEVERE, "removeCaseEvent failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1614,7 +1639,8 @@ public class CaseManager implements CaseManagerPort
       if (!StringUtils.isBlank(caseEventTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(caseEventTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(caseEventTypeId));
         filter.setCaseEventTypeId(type.getTypePath() + "%");
       }      
       return count("countCaseEvents", filter);
@@ -1630,7 +1656,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findCaseEventViews caseId:{0} eventId:{1}",
+      LOGGER.log(Level.INFO, "findCaseEventViews caseId:{0} eventId:{1}",
         new Object[]{filter.getCaseId(), filter.getEventId()});
 
       List<CaseEventView> caseEventViewList = new ArrayList();
@@ -1670,7 +1696,8 @@ public class CaseManager implements CaseManagerPort
           if (!filter.isExcludeMetadata())
           {          
             List<DBCaseEventProperty> dbProperties = 
-              loadDBProperties("loadCaseEventProperties", caseEventView.getCaseEventId());
+              loadDBProperties("loadCaseEventProperties", 
+                caseEventView.getCaseEventId());
             List<Property> properties = toProperties(dbProperties);
             caseEventView.getProperty().addAll(properties);
           }
@@ -1682,7 +1709,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findCaseEventViews failed");
+      LOGGER.log(Level.SEVERE, "findCaseEventViews failed");
         throw WSExceptionFactory.create(ex);
     }
   }  
@@ -1692,7 +1719,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "loadProblem caseProbId:{0}",
+      LOGGER.log(Level.INFO, "loadProblem caseProbId:{0}",
         new Object[]{caseProbId});
 
       DBProblem dbProblem = em.find(DBProblem.class, caseProbId);
@@ -1701,7 +1728,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadProblem failed");
+      LOGGER.log(Level.SEVERE, "loadProblem failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1711,7 +1738,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "storeProblem probId:{0}",
+      LOGGER.log(Level.INFO, "storeProblem probId:{0}",
         new Object[]{problem.getProbId() != null ?
           problem.getProbId() : "NEW"});
       validateProblem(problem);
@@ -1727,7 +1754,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeProblem failed");
+      LOGGER.log(Level.SEVERE, "storeProblem failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1737,7 +1764,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeProblem casePersonId:{0}",
+      LOGGER.log(Level.INFO, "removeProblem casePersonId:{0}",
         new Object[]{caseProbId});
 
       DBProblem dbProblem = em.getReference(DBProblem.class, caseProbId);
@@ -1748,7 +1775,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeProblem failed");
+      LOGGER.log(Level.SEVERE, "removeProblem failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1758,7 +1785,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findProblemViews caseId:{0} ",
+      LOGGER.log(Level.INFO, "findProblemViews caseId:{0} ",
         new Object[]{filter.getCaseId()});
 
       List<ProblemView> problemViewList = new ArrayList();
@@ -1828,7 +1855,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findProblemViews failed");
+      LOGGER.log(Level.SEVERE, "findProblemViews failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1851,7 +1878,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "loadDemand demandId:{0}",
+      LOGGER.log(Level.INFO, "loadDemand demandId:{0}",
         new Object[]{demandId});
 
       DBDemand dbDemand = em.find(DBDemand.class, demandId);
@@ -1860,7 +1887,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadDemand failed");
+      LOGGER.log(Level.SEVERE, "loadDemand failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1870,7 +1897,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "storeDemand caseDemandId:{0}",
+      LOGGER.log(Level.INFO, "storeDemand caseDemandId:{0}",
         new Object[]{caseDemand.getDemandId() != null ?
           caseDemand.getDemandId() : "NEW"});
 
@@ -1887,7 +1914,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeDemand failed");
+      LOGGER.log(Level.SEVERE, "storeDemand failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1897,7 +1924,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeDemand caseDemandId:{0}",
+      LOGGER.log(Level.INFO, "removeDemand caseDemandId:{0}",
         new Object[]{caseDemandId});
 
       DBDemand dbDemand = em.getReference(DBDemand.class, caseDemandId);
@@ -1908,7 +1935,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeDemand failed");
+      LOGGER.log(Level.SEVERE, "removeDemand failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1918,7 +1945,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findDemands caseId:{0}",
+      LOGGER.log(Level.INFO, "findDemands caseId:{0}",
         new Object[]{filter.getCaseId()});
 
       Query query = em.createNamedQuery("findDemands");
@@ -1936,7 +1963,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findDemands failed");
+      LOGGER.log(Level.SEVERE, "findDemands failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -1986,7 +2013,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadCaseCase failed");
+      LOGGER.log(Level.SEVERE, "loadCaseCase failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -2018,7 +2045,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeCaseCase failed");
+      LOGGER.log(Level.SEVERE, "storeCaseCase failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -2028,7 +2055,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeCaseCase caseCaseId:{0}",
+      LOGGER.log(Level.INFO, "removeCaseCase caseCaseId:{0}",
         new Object[]{caseCaseId});
       
       CaseCase caseCase = loadCaseCase(caseCaseId);
@@ -2046,7 +2073,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeCaseCase failed");
+      LOGGER.log(Level.SEVERE, "removeCaseCase failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -2058,14 +2085,16 @@ public class CaseManager implements CaseManagerPort
     {
       List<CaseCaseView> caseCaseViewList = new ArrayList<CaseCaseView>();
 
-      if (StringUtils.isBlank(filter.getCaseId()) && StringUtils.isBlank(filter.getRelCaseId()))
-        throw new Exception("FILTER_NOT_ALLOWED");    
+      if (StringUtils.isBlank(filter.getCaseId()) 
+        && StringUtils.isBlank(filter.getRelCaseId()))
+          throw new Exception("FILTER_NOT_ALLOWED");    
 
       String caseCaseTypeId = filter.getCaseCaseTypeId();
       if (!StringUtils.isBlank(caseCaseTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(caseCaseTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(caseCaseTypeId));
         filter.setCaseCaseTypeId(type.getTypePath() + "%");
       }      
 
@@ -2145,7 +2174,8 @@ public class CaseManager implements CaseManagerPort
               if (!filter.isExcludeMetadata())
               {
                 List<DBCaseCaseProperty> dbProperties = 
-                  loadDBProperties("loadCaseCaseProperties", dbCaseCase.getCaseCaseId());
+                  loadDBProperties("loadCaseCaseProperties", 
+                    dbCaseCase.getCaseCaseId());
                 List<Property> properties = toProperties(dbProperties);
                 caseCaseView.getProperty().addAll(properties);                
               }
@@ -2172,7 +2202,8 @@ public class CaseManager implements CaseManagerPort
       if (!StringUtils.isBlank(caseCaseTypeId))
       {
         ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = em.find(DBType.class, typeEntity.toLocalId(caseCaseTypeId));
+        org.matrix.dic.Type type = 
+          em.find(DBType.class, typeEntity.toLocalId(caseCaseTypeId));
         filter.setCaseCaseTypeId(type.getTypePath() + "%");
       }      
       return count("countCaseCases", filter);
@@ -2198,7 +2229,8 @@ public class CaseManager implements CaseManagerPort
         if (dbInterventionProblem != null)
         {
           interventionProblem = new InterventionProblem();
-          JPAUtils.copy((InterventionProblem)dbInterventionProblem, interventionProblem);
+          JPAUtils.copy((InterventionProblem)dbInterventionProblem, 
+            interventionProblem);
           interventionProblem.setIntProbId(intProbId);
         }
       }
@@ -2207,13 +2239,14 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "loadInterventionProblem failed");
+      LOGGER.log(Level.SEVERE, "loadInterventionProblem failed");
         throw WSExceptionFactory.create(ex);
     }
   }
 
   @Override
-  public InterventionProblem storeInterventionProblem(InterventionProblem interventionProblem)
+  public InterventionProblem storeInterventionProblem(InterventionProblem 
+    interventionProblem)
   {
     try
     {
@@ -2229,14 +2262,15 @@ public class CaseManager implements CaseManagerPort
       }
       else //update
       {
-        dbInterventionProblem = em.merge(new DBInterventionProblem(interventionProblem));
+        dbInterventionProblem = 
+          em.merge(new DBInterventionProblem(interventionProblem));
       }
 
       return dbInterventionProblem;
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeInterventionProblem failed");
+      LOGGER.log(Level.SEVERE, "storeInterventionProblem failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -2246,7 +2280,7 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeInterventionProblem intProbId:{0}",
+      LOGGER.log(Level.INFO, "removeInterventionProblem intProbId:{0}",
         new Object[]{intProbId});
 
       DBInterventionProblem dbInterventionProblem =
@@ -2260,7 +2294,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeInterventionProblem failed");
+      LOGGER.log(Level.SEVERE, "removeInterventionProblem failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -2271,8 +2305,9 @@ public class CaseManager implements CaseManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findInterventionProblemViews caseId:{0} personId:{1}",
-        new Object[]{filter.getIntId(), filter.getProbId()});
+      LOGGER.log(Level.INFO, 
+        "findInterventionProblemViews caseId:{0} personId:{1}",
+          new Object[]{filter.getIntId(), filter.getProbId()});
 
       List<InterventionProblemView> intProbViewList = new ArrayList();
 
@@ -2289,7 +2324,8 @@ public class CaseManager implements CaseManagerPort
       if (dbRowList != null && !dbRowList.isEmpty())
       {
         //Parse Query result and set row fields (View)
-        HashMap<String, List<InterventionProblemView>> personIdMap = new HashMap();
+        HashMap<String, List<InterventionProblemView>> personIdMap = 
+          new HashMap();
         for(DBInterventionProblem dbInterventionProblem : dbRowList)
         {
           InterventionProblemView intProbView = new InterventionProblemView();
@@ -2300,7 +2336,8 @@ public class CaseManager implements CaseManagerPort
           String probId = dbInterventionProblem.getProbId();
           if (intId != null) //Set InterventionView
           {
-            DBIntervention dbIntervention = dbInterventionProblem.getIntervention();
+            DBIntervention dbIntervention = 
+              dbInterventionProblem.getIntervention();
             Intervention intervention = new Intervention();
             intervention.setIntId(intId);
             dbIntervention.copyTo(intervention);
@@ -2323,7 +2360,7 @@ public class CaseManager implements CaseManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findInterventionProblemViews failed");
+      LOGGER.log(Level.SEVERE, "findInterventionProblemViews failed");
         throw WSExceptionFactory.create(ex);
     }
   }
@@ -2428,7 +2465,8 @@ public class CaseManager implements CaseManagerPort
         //Parse WS result and completes the rowlist of the return table
         for (Event event : eventList)
         {
-          if (!AgendaConstants.DELETED_EVENT_DATETIME.equals(event.getStartDateTime()))
+          if (!AgendaConstants.DELETED_EVENT_DATETIME.equals(
+            event.getStartDateTime()))
           {
             DBCaseEvent dbCaseEvent =
               (DBCaseEvent)ceMap.get(event.getEventId());
@@ -2549,7 +2587,8 @@ public class CaseManager implements CaseManagerPort
           String fieldName = 
             (methodName.startsWith("get") ? 
              methodName.substring(3) : methodName.substring(2));
-          fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+          fieldName = 
+            fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
           Object paramValue = methods[i].invoke(filter, new Object[]{});
           query.setParameter(fieldName, paramValue);
         }
@@ -2589,7 +2628,8 @@ public class CaseManager implements CaseManagerPort
     storeCaseProperties(caseObject, true);
   }
 
-  private void storeCaseProperties(Case caseObject, boolean isUpdate) throws Exception
+  private void storeCaseProperties(Case caseObject, boolean isUpdate) 
+    throws Exception
   {
     String caseId = caseObject.getCaseId();
 
@@ -2623,7 +2663,8 @@ public class CaseManager implements CaseManagerPort
 
   }
   
-  private void storeCaseCaseProperties(CaseCase caseCase, boolean isUpdate) throws Exception
+  private void storeCaseCaseProperties(CaseCase caseCase, boolean isUpdate) 
+    throws Exception
   {
     String caseCaseId = caseCase.getCaseCaseId();
 
@@ -2640,7 +2681,8 @@ public class CaseManager implements CaseManagerPort
     }
   }  
   
-  private void storeCaseEventProperties(CaseEvent caseEvent, boolean isUpdate) throws Exception
+  private void storeCaseEventProperties(CaseEvent caseEvent, boolean isUpdate) 
+    throws Exception
   {
     String caseEventId = caseEvent.getCaseEventId();
 
@@ -2657,7 +2699,8 @@ public class CaseManager implements CaseManagerPort
     }
   }
   
-  private void storeInterventionProperties(Intervention intervention, boolean isUpdate) throws Exception
+  private void storeInterventionProperties(Intervention intervention, 
+    boolean isUpdate) throws Exception
   {
     String intId = intervention.getIntId();
     
@@ -2752,8 +2795,8 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
-  private <T extends DBProperty> void persistProperty(EntityManager em, Class<T> dbClass, String parentId,
-    Property property) throws Exception
+  private <T extends DBProperty> void persistProperty(EntityManager em, 
+    Class<T> dbClass, String parentId, Property property) throws Exception
   {
      List<T> dbProperties = toDBProperties(dbClass, property);
      for (DBProperty dbProperty : dbProperties)
@@ -2783,7 +2826,8 @@ public class CaseManager implements CaseManagerPort
     removeProperties(em, "removeCaseEventProperties", caseEventId);
   }
   
-  private void removeProperties(EntityManager em, String queryName, String idValue)
+  private void removeProperties(EntityManager em, String queryName,
+    String idValue)
   {
     Query query =
       em.createNamedQuery(queryName);
@@ -2839,8 +2883,8 @@ public class CaseManager implements CaseManagerPort
     return query.getResultList();
   }  
   
-  private <T extends DBProperty> List<T> toDBProperties(Class<T> dbClass, Property property) 
-          throws Exception
+  private <T extends DBProperty> List<T> toDBProperties(Class<T> dbClass, 
+    Property property) throws Exception
   {
     int index = 0;
     List result = new ArrayList();
@@ -2855,7 +2899,8 @@ public class CaseManager implements CaseManagerPort
     return result;    
   }
 
-  private <T extends DBProperty> List<Property> toProperties(List<T> dbProperties)
+  private <T extends DBProperty> List<Property> toProperties(
+    List<T> dbProperties)
   {
     HashMap<String,Property> auxMap = new HashMap();
     List<Property> properties = new ArrayList();
@@ -2901,7 +2946,8 @@ public class CaseManager implements CaseManagerPort
 
   private boolean canUserCreateCase(User user, Case caseObject)
   {
-    return checkTypeACL(user.getRoles(), caseObject, DictionaryConstants.CREATE_ACTION);
+    return checkTypeACL(user.getRoles(), caseObject, 
+      DictionaryConstants.CREATE_ACTION);
   }
 
   private boolean canUserModifyCase(User user, Case caseObject)
@@ -2914,12 +2960,14 @@ public class CaseManager implements CaseManagerPort
     return canUserDoAction(user, caseObject, DictionaryConstants.DELETE_ACTION);
   }
 
-  private boolean checkTypeACL(Set<String> userRoles, Case caseObject, String action)
+  private boolean checkTypeACL(Set<String> userRoles, Case caseObject, 
+    String action)
   {
     String caseTypeId = caseObject.getCaseTypeId();
     try
     {
-      caseTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, caseTypeId);
+      caseTypeId = 
+        getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, caseTypeId);
       Type caseType = TypeCache.getInstance().getType(caseTypeId);
       return (caseType.canPerformAction(action, userRoles)
         || userRoles.contains(CaseConstants.CASE_ADMIN_ROLE));
@@ -2930,7 +2978,8 @@ public class CaseManager implements CaseManagerPort
     }
   }
 
-  private boolean checkCaseACL(Set<String> userRoles, Case caseObject, String action)
+  private boolean checkCaseACL(Set<String> userRoles, Case caseObject, 
+    String action)
   {
     List<AccessControl> acl = caseObject.getAccessControl();
     for (AccessControl ac : acl)
@@ -3000,8 +3049,9 @@ public class CaseManager implements CaseManagerPort
     //Remove typeCaseId entries
     for (int i = 0; i < caseObject.getProperty().size(); i++)
     {
-      if (CaseConstants.TYPECASEID.equals(caseObject.getProperty().get(i).getName()))
-        caseObject.getProperty().remove(i);
+      if (CaseConstants.TYPECASEID.equals(
+        caseObject.getProperty().get(i).getName()))
+          caseObject.getProperty().remove(i);
     }
 
     //Dictionary properties validation
@@ -3013,10 +3063,10 @@ public class CaseManager implements CaseManagerPort
   {
     if (caseAddress.getAddressId() == null || 
       caseAddress.getAddressId().equals(""))
-      throw new WebServiceException("cases:INVALID_CASE_ADDRESS");
+        throw new WebServiceException("cases:INVALID_CASE_ADDRESS");
     if (caseAddress.getStartDate() != null && caseAddress.getEndDate() != null &&
       caseAddress.getStartDate().compareTo(caseAddress.getEndDate()) > 0)
-      throw new WebServiceException("cases:INVALID_CASE_ADDRESS_DATE_RANGE");
+        throw new WebServiceException("cases:INVALID_CASE_ADDRESS_DATE_RANGE");
 
       Type type =
         TypeCache.getInstance().getType(DictionaryConstants.CASE_ADDRESS_TYPE);
@@ -3050,7 +3100,10 @@ public class CaseManager implements CaseManagerPort
     if (casePersonTypeId == null)
       casePersonTypeId = DictionaryConstants.CASE_PERSON_TYPE;
     else
-      casePersonTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, casePersonTypeId);
+    {
+      casePersonTypeId = 
+        getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, casePersonTypeId);
+    }
     Type type = TypeCache.getInstance().getType(casePersonTypeId);
     WSTypeValidator validator = new WSTypeValidator(type);
     validator.validate(casePerson, "casePersonId");
@@ -3067,7 +3120,10 @@ public class CaseManager implements CaseManagerPort
     if (intTypeId == null)
       intTypeId = DictionaryConstants.INTERVENTION_TYPE;
     else
-      intTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, intTypeId);
+    {
+      intTypeId = 
+        getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, intTypeId);
+    }
     Type type = TypeCache.getInstance().getType(intTypeId);
     WSTypeValidator validator = new WSTypeValidator(type);
     validator.validate(intervention, "intId");
@@ -3081,7 +3137,10 @@ public class CaseManager implements CaseManagerPort
 
     String demandTypeId = demand.getDemandTypeId();
     if (demandTypeId != null)
-      demandTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, demandTypeId);
+    {
+      demandTypeId = 
+        getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, demandTypeId);
+    }
     Type type = TypeCache.getInstance().getType(demandTypeId);
     WSTypeValidator validator = new WSTypeValidator(type);
     validator.validate(demand, "demandId");
@@ -3098,7 +3157,10 @@ public class CaseManager implements CaseManagerPort
 
     String probTypeId = problem.getProbTypeId();
     if (probTypeId != null)
-      probTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, probTypeId);
+    {
+      probTypeId = 
+        getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, probTypeId);
+    }
     Type type = TypeCache.getInstance().getType(probTypeId);
     WSTypeValidator validator = new WSTypeValidator(type);
     validator.validate(problem, "probId");
@@ -3159,12 +3221,15 @@ public class CaseManager implements CaseManagerPort
     validator.validate(caseCase, "caseCaseId");
   }
   
-  private void validateInterventionProblem(InterventionProblem interventionProblem)
+  private void validateInterventionProblem(InterventionProblem 
+    interventionProblem)
   {
-    if (interventionProblem.getProbId() == null || interventionProblem.getProbId().equals(""))
-      throw new WebServiceException("cases:INVALID_INTERVENTION_PROBLEM");
-    if (interventionProblem.getIntId() == null || interventionProblem.getIntId().equals(""))
-      throw new WebServiceException("cases:INVALID_INTERVENTION_PROBLEM");
+    if (interventionProblem.getProbId() == null 
+      || interventionProblem.getProbId().equals(""))
+        throw new WebServiceException("cases:INVALID_INTERVENTION_PROBLEM");
+    if (interventionProblem.getIntId() == null 
+      || interventionProblem.getIntId().equals(""))
+        throw new WebServiceException("cases:INVALID_INTERVENTION_PROBLEM");
   }
 
   private void validateInterventionFilter(InterventionFilter filter) 
@@ -3300,7 +3365,8 @@ public class CaseManager implements CaseManagerPort
     System.out.println("Case " + caseId);
     for (CaseEventView cev : cevList)
     {
-      System.out.println(" - Event " + cev.getEvent().getEventId() + " - " + cev.getEvent().getSummary());
+      System.out.println(" - Event " + cev.getEvent().getEventId() + " - " 
+        + cev.getEvent().getSummary());
     }
     
     //Searching event cases
@@ -3311,7 +3377,8 @@ public class CaseManager implements CaseManagerPort
     System.out.println("Event " + eventId);
     for (CaseEventView cev : cevList)
     {
-      System.out.println(" - Case " + cev.getCaseObject().getCaseId() + " - " + cev.getCaseObject().getTitle());
+      System.out.println(" - Case " + cev.getCaseObject().getCaseId() + " - " 
+        + cev.getCaseObject().getTitle());
     }
     
   }

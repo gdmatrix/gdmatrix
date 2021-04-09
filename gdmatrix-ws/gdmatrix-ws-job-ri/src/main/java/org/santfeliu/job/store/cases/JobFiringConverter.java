@@ -38,7 +38,7 @@ import org.matrix.job.ResponseType;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.job.service.JobFiring;
 
-import static org.santfeliu.job.store.cases.CasesJobStore.SUCCESS_INTERVENTION;
+import static org.santfeliu.job.store.cases.CasesJobStore.SUCCESS_INTERVENTION_TYPE;
 
 /**
  *
@@ -60,7 +60,7 @@ public class JobFiringConverter
       jobFiring.setEndDateTime(eDate);
       jobFiring.setMessage(intervention.getComments());
       String intTypeId = intervention.getIntTypeId();
-      ResponseType responseType = SUCCESS_INTERVENTION.equals(intTypeId) ?
+      ResponseType responseType = SUCCESS_INTERVENTION_TYPE.equals(intTypeId) ?
         ResponseType.SUCCESS : ResponseType.ERROR;
       jobFiring.setResponseType(responseType);
       
@@ -90,7 +90,7 @@ public class JobFiringConverter
       jobFiring.setEndDateTime(eDate);
       jobFiring.setMessage(intView.getComments());
       String intTypeId = intView.getIntTypeId();
-      ResponseType responseType = SUCCESS_INTERVENTION.equals(intTypeId) ?
+      ResponseType responseType = SUCCESS_INTERVENTION_TYPE.equals(intTypeId) ?
         ResponseType.SUCCESS : ResponseType.ERROR;
       jobFiring.setResponseType(responseType);  
       

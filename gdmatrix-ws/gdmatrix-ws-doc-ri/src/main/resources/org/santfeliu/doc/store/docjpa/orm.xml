@@ -146,50 +146,50 @@
       <id-class class="org.santfeliu.doc.store.docjpa.DBDocumentPK"/>            
       <attributes>
         <id name="docId">
-          <column name="DOCID" />
+          <column name="DOCID" precision="10" scale="0" />
           <generated-value strategy="TABLE" generator="doc.document"/>
           <table-generator name="doc.document" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE" 
             initial-value="0" allocation-size="1"/> 
         </id>
         <id name="version">
-          <column name="VERSION" />
+          <column name="VERSION" precision="8" scale="0" />
         </id>
         <basic name="title">
-          <column name="TITLE" />
+          <column name="TITLE" length="512" />
         </basic>
         <basic name="docTypeId">
-          <column name="DOCTYPEID" />
+          <column name="DOCTYPEID" length="64" />
         </basic>
         <basic name="state">
-          <column name="STATE" />
+          <column name="STATE" length="10" />
         </basic>
         <basic name="language">
-          <column name="LANGUAGE" />
+          <column name="LANGUAGE" length="2" />
         </basic>
         <basic name="captureDateTime">
-          <column name="CAPTUREDATE" />
+          <column name="CAPTUREDATE" length="10" />
         </basic>
         <basic name="captureUserId">
-          <column name="CAPTUREUSER" />
+          <column name="CAPTUREUSER" length="50" />
         </basic>
         <basic name="changeDateTime">
-          <column name="MODIFYDATE" />
+          <column name="MODIFYDATE" length="14" />
         </basic>
         <basic name="changeUserId">
-          <column name="MODIFYUSER" />
+          <column name="MODIFYUSER" length="50" />
         </basic>
         <basic name="lockUserId">
-          <column name="LOCKUSER" />
+          <column name="LOCKUSER" length="50" />
         </basic>
         <basic name="contentId">
-          <column name="CONTENTID" />
+          <column name="CONTENTID" length="36" />
         </basic>
         <basic name="creationDate">
-          <column name="CREATIONDATE" />
+          <column name="CREATIONDATE" length="8" />
         </basic>
         <basic name="lastVersion">
-          <column name="LASTVERSION" />
+          <column name="LASTVERSION" length="1" />
         </basic>
 <!--
         <many-to-one name="dbType">
@@ -207,28 +207,28 @@
       <id-class class="org.santfeliu.doc.store.docjpa.DBRelatedDocumentPK"/>                  
       <attributes>
         <id name="docId">
-          <column name="DOCID" />
+          <column name="DOCID" precision="10" scale="0" />
         </id>
         <id name="name">
-          <column name="RELNAME" />
+          <column name="RELNAME" length="255" />
         </id>
         <id name="relationType">
-          <column name="RELTYPE" />
+          <column name="RELTYPE" length="32" />
         </id>
         <id name="relDocId">
-          <column name="RELDOCID" />
+          <column name="RELDOCID" precision="10" scale="0" />
         </id>
         <basic name="captureDateTime">
-          <column name="CAPTUREDATE" />
+          <column name="CAPTUREDATE" length="14" />
         </basic>
         <basic name="captureUserId">
-          <column name="CAPTUREUSER" />
+          <column name="CAPTUREUSER" length="50" />
         </basic>
         <basic name="changeDateTime">
-          <column name="MODIFYDATE" />
+          <column name="MODIFYDATE" length="14" />
         </basic>
         <basic name="changeUserId">
-          <column name="MODIFYUSER" />
+          <column name="MODIFYUSER" length="50" />
         </basic>
       </attributes>
     </entity>
@@ -238,19 +238,19 @@
       <table name="DOM_METADATA" />
       <attributes>
         <id name="docId">
-          <column name="DOCID" />
+          <column name="DOCID" precision="10" scale="0" />
         </id>
         <id name="version">
-          <column name="VERSION" />
+          <column name="VERSION" precision="8" scale="0" />
         </id>
         <id name="name">
-          <column name="PROPNAME" />
+          <column name="PROPNAME" length="64" />
         </id>
         <id name="index">
-          <column name="INDX" />
+          <column name="INDX" precision="3" scale="0" />
         </id>
         <basic name="value">
-          <column name="VALUE" />
+          <column name="VALUE" length="4000" />
         </basic>
         <many-to-one name="document">
           <join-column name="DOCID" referenced-column-name="DOCID"
@@ -267,16 +267,16 @@
       <id-class class="org.santfeliu.doc.store.docjpa.DBAccessControlPK" />
       <attributes>
         <id name="docId">
-          <column name="DOCID" />
+          <column name="DOCID" precision="10" scale="0" />
         </id>
         <id name="version">
-          <column name="VERSION" />
+          <column name="VERSION" precision="8" scale="0" />
         </id>
         <id name="roleId">
-          <column name="ROLEID" />
+          <column name="ROLEID" length="50" />
         </id>
         <id name="action">
-          <column name="ACTION" />
+          <column name="ACTION" length="128" />
         </id>
       </attributes>
     </entity>

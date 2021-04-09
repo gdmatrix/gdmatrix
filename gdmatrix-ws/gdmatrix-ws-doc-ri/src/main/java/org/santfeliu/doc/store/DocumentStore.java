@@ -36,7 +36,7 @@ import org.matrix.util.WSEndpoint;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public interface DocumentStore
 {

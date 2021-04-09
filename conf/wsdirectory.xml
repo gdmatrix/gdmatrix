@@ -371,6 +371,7 @@
     wsdl="${base}/services/job?wsdl">
     <description>Job</description>
     <internal-entity name="Job" />
+    <internal-entity name="JobFiring" />
   </endpoint>  
 
 </directory>

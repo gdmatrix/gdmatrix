@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -93,7 +94,6 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.InternalValueConverter;
 import org.santfeliu.dic.util.WSTypeValidator;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.kernel.util.KernelUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
@@ -101,6 +101,8 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.audit.Auditor;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 
 /**
@@ -109,7 +111,7 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.kernel.KernelManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class KernelManager implements KernelManagerPort
 {
   @Resource
@@ -117,7 +119,7 @@ public class KernelManager implements KernelManagerPort
 
   @PersistenceContext(unitName="kernel_ri")
   public EntityManager entityManager;
-
+   
   private WSEndpoint endpoint;
 
   private static final String PERSON_CLAUPREF = "PERS    ";
@@ -131,6 +133,11 @@ public class KernelManager implements KernelManagerPort
   private static final String ADDRESS_CLAUDESC = "CONTADOR DE DIRECCIONES";
 
   static final String PK_SEPARATOR = ";";
+  
+  @Initializer
+  public void initialize(String endpointName)
+  {
+  }    
 
   public KernelMetaData getKernelMetaData()
   {

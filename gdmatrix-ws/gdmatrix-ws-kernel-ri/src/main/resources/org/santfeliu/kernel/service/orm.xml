@@ -351,26 +351,38 @@
       <id-class class="org.santfeliu.kernel.service.DBCounterPK" />
       <attributes>
         <id name="claupref">
-          <column name="CLAUPREF" />
+          <column name="CLAUPREF" length="8" />
         </id>
         <id name="claucod">
-          <column name="CLAUCOD" />
+          <column name="CLAUCOD" length="8" />
         </id>
         <id name="clauorigen">
-          <column name="CLAUORIGEN" />
+          <column name="CLAUORIGEN" length="4" />
         </id>
         <basic name="claudesc">
-          <column name="CLAUDESC" />
+          <column name="CLAUDESC" length="255" />
         </basic>
         <basic name="counter">
-          <column name="CLAUVNUM" />
+          <column name="CLAUVNUM" precision="10" scale="0" />
         </basic>
-        <basic name="stdugr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>
       </attributes>
     </entity>
 
@@ -378,71 +390,91 @@
       <table name="NCL_PERSONA" />
       <attributes>
         <id name="personId">
-          <column name="PERSCOD" />
+          <column name="PERSCOD" precision="8" scale="0" />
         </id>
         <basic name="name">
-            <column name="PERSNOM"/>
+            <column name="PERSNOM" length="255" />
         </basic>
         <basic name="firstSurname">
-            <column name="PERSCOG1"/>
+            <column name="PERSCOG1" length="25" />
         </basic>
         <basic name="secondSurname">
-            <column name="PERSCOG2"/>
+            <column name="PERSCOG2" length="25" />
         </basic>
         <basic name="firstParticle">
-            <column name="PERSPAR1"/>
+            <column name="PERSPAR1" length="6" />
         </basic>
         <basic name="secondParticle">
-            <column name="PERSPAR2"/>
+            <column name="PERSPAR2" length="6" />
         </basic>
          <basic name="nifnum">
-            <column name="NIFNUM"/>
+            <column name="NIFNUM" length="8" />
         </basic>
         <basic name="nifdc">
-            <column name="NIFDC"/>
+            <column name="NIFDC" length="1" />
         </basic>
         <basic name="sex">
-            <column name="PERSSEXE"/>
+            <column name="PERSSEXE" length="1" />
         </basic>
         <basic name="passport">
-            <column name="PERSPASSPORT"/>
+            <column name="PERSPASSPORT" length="20" />
         </basic>
         <basic name="birthDate">
-            <column name="PERSNDATA"/>
+            <column name="PERSNDATA" length="8" />
         </basic>
         <basic name="nationalityId">
-            <column name="PERSNACIONA"/>
+            <column name="PERSNACIONA" precision="3" scale="0" />
         </basic>
         <basic name="birthCountryId">
-            <column name="PAISCOD"/>
+            <column name="PAISCOD" precision="3" scale="0" />
         </basic>
         <basic name="birthProvinceId">
-            <column name="PROVCOD"/>
+            <column name="PROVCOD" precision="2" scale="0" />
         </basic>
         <basic name="birthCityId">
-            <column name="MUNICOD"/>
+            <column name="MUNICOD" precision="3" scale="0" />
         </basic>
         <basic name="fatherName">
-            <column name="PERSPARE"/>
+            <column name="PERSPARE" length="20" />
         </basic>
         <basic name="motherName">
-          <column name="PERSMARE"/>
+          <column name="PERSMARE" length="20" />
         </basic>
         <basic name="personTypeId">
-          <column name="NIFSW"/>
+          <column name="NIFSW" length="1" />
         </basic>
-        <basic name="stdapladd" />
-        <basic name="stdaplmod" />
-        <basic name="stdugr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
+        <basic name="stdapladd">
+          <column name="STDAPLADD" length="5" />
+        </basic>
+        <basic name="stdaplmod">
+          <column name="STDAPLMOD" length="5" />          
+        </basic>           
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>     
         <basic name="persvnum" />
         <basic name="contvnum" />
-        <basic name="baixasw" />
-        <basic name="valdata" />
+        <basic name="baixasw">
+          <column name="BAIXASW" length="1" />
+        </basic>
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
       </attributes>
     </entity>
 
@@ -460,17 +492,36 @@
         <basic name="persnd">
           <column name="PERSND"/>
         </basic>
-        <basic name="stdapladd" />
-        <basic name="stdaplmod" />
-        <basic name="stdugr" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="valdata" />
-        <basic name="baixasw" />
-
+        <basic name="stdapladd">
+          <column name="STDAPLADD" length="5" />
+        </basic>
+        <basic name="stdaplmod">
+          <column name="STDAPLMOD" length="5" />          
+        </basic>           
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="baixasw">
+          <column name="BAIXASW" length="1" />
+        </basic>
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
         <many-to-one name="person">
           <join-column name="PERSCOD" 
             referenced-column-name="PERSCOD" 
@@ -489,27 +540,41 @@
       <id-class class="org.santfeliu.kernel.service.DBTelecoPK"/>
       <attributes>
         <id name="personId">
-          <column name="PERSCOD"/>
+          <column name="PERSCOD" precision="8" scale="0" />
         </id>
         <id name="contactNumber">
-          <column name="NUMORDRE"/>
+          <column name="NUMORDRE" precision="2" scale="0" />
         </id>
         <basic name="contactTypeId">
-          <column name="TIPCONTACTE"/>
+          <column name="TIPCONTACTE" length="4" />
         </basic>
         <basic name="value">
-          <column name="CONTACTE"/>
+          <column name="CONTACTE" length="255" />
         </basic>
         <basic name="comments">
-          <column name="OBSERVACIONS"/>
+          <column name="OBSERVACIONS" length="255" />
         </basic>
-        <basic name="stdugr" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="valdata" />
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
       </attributes>
     </entity>
 
@@ -517,22 +582,38 @@
       <table name="NCL_SIGLASCARRER" />
       <attributes>
         <id name="streetTypeId">
-          <column name="CARSIG"/>
+          <column name="CARSIG" length="5" />
         </id>
         <basic name="description">
-          <column name="CARSIGDESC"/>
+          <column name="CARSIGDESC" length="50" />
         </basic>
         <basic name="abbreviation">
-          <column name="CARSIGABR" />
+          <column name="CARSIGABR" length="10" />
         </basic>
-        <basic name="stdugr" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="valdata" />
-        <basic name="baixasw" />
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="baixasw">
+          <column name="BAIXASW" length="1" />
+        </basic>
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
       </attributes>
     </entity>
     
@@ -548,14 +629,30 @@
         <basic name="paisvnum">
           <column name="PAISVNUM"/>
         </basic>
-        <basic name="stdugr" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="valdata" />
-        <basic name="baixasw" />
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="baixasw">
+          <column name="BAIXASW" length="1" />
+        </basic>
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
       </attributes>
     </entity>
 
@@ -564,24 +661,44 @@
       <id-class class="org.santfeliu.kernel.service.DBProvincePK"/>
       <attributes>
         <id name="countryId">
-          <column name="PAISCOD"/>
+          <column name="PAISCOD" precision="3" scale="0" />
         </id>
         <id name="provinceId">
-          <column name="PROVCOD"/>
+          <column name="PROVCOD" precision="2" scale="0" />
         </id>
         <basic name="name">
-          <column name="PROVDESC"/>
+          <column name="PROVDESC" length="50" />
         </basic>
-        <basic name="provvnum" />
-        <basic name="autocod" />
-        <basic name="stdugr" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="valdata" />
-        <basic name="baixasw" />
+        <basic name="provvnum">
+          <column name="PROVVNUM" precision="3" scale="0" />
+        </basic>
+        <basic name="autocod">
+          <column name="AUTOCOD" precision="2" scale="0" />
+        </basic>
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="baixasw">
+          <column name="BAIXASW" length="1" />
+        </basic>
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
 
         <many-to-one name="country">
           <join-column name="PAISCOD" referenced-column-name="PAISCOD"
@@ -595,34 +712,62 @@
       <id-class class="org.santfeliu.kernel.service.DBCityPK"/>
       <attributes>
         <id name="countryId">
-          <column name="PAISCOD"/>
+          <column name="PAISCOD" precision="3" scale="0" />
         </id>
         <id name="provinceId">
-          <column name="PROVCOD"/>
+          <column name="PROVCOD" precision="2" scale="0" />
         </id>
         <id name="cityId">
-          <column name="MUNICOD"/>
+          <column name="MUNICOD" precision="3" scale="0" />
         </id>
         <basic name="name">
-          <column name="MUNIDESC"/>
+          <column name="MUNIDESC" length="50" />
         </basic>
         <basic name="description">
-          <column name="MUNIDESC2"/>
+          <column name="MUNIDESC2" length="25" />
         </basic>
-        <basic name="munidc" />
-        <basic name="munivnum" />
-        <basic name="illavnum" />
-        <basic name="tramvnum" />
-        <basic name="comcod" />
-        <basic name="stdugr" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="valdata" />
-        <basic name="baixasw" />
-        <basic name="municps" />
+        <basic name="munidc">
+          <column name="MUNIDC" length="1" />
+        </basic>
+        <basic name="munivnum">
+          <column name="MUNIVNUM" precision="4" scale="0" />
+        </basic>
+        <basic name="illavnum">
+          <column name="ILLAVNUM" precision="6" scale="0" />
+        </basic>
+        <basic name="tramvnum">
+          <column name="TRAMVNUM" precision="6" scale="0" />
+        </basic>
+        <basic name="comcod">
+          <column name="COMCOD" precision="2" scale="0" />
+        </basic>
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="baixasw">
+          <column name="BAIXASW" length="1" />
+        </basic>
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
+        <basic name="municps">
+          <column name="MUNICPS" length="400" />
+        </basic>
 
         <many-to-one name="province">
           <join-column name="PAISCOD" referenced-column-name="PAISCOD"
@@ -638,37 +783,53 @@
       <id-class class="org.santfeliu.kernel.service.DBStreetPK"/>
       <attributes>
         <id name="countryId">
-          <column name="PAISCOD"/>
+          <column name="PAISCOD" precision="3" scale="0" />
         </id>
         <id name="provinceId">
-          <column name="PROVCOD"/>
+          <column name="PROVCOD" precision="2" scale="0" />
         </id>
         <id name="cityId">
-          <column name="MUNICOD"/>
+          <column name="MUNICOD" precision="3" scale="0" />
         </id>
         <id name="streetId">
-          <column name="CARCOD"/>
+          <column name="CARCOD" precision="5" scale="0" />
         </id>
         <basic name="streetTypeId">
-          <column name="CARSIG"/>
+          <column name="CARSIG" length="5" />
         </basic>
         <basic name="particle">
-          <column name="CARPAR"/>
+          <column name="CARPAR" length="6" />
         </basic>
         <basic name="name">
-          <column name="CARDESC"/>
+          <column name="CARDESC" length="50" />
         </basic>
         <basic name="description">
-          <column name="CARDESC2"/>
+          <column name="CARDESC2" length="25" />
         </basic>
-        <basic name="stdugr" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="valdata" />
-        <basic name="baixasw" />
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="baixasw">
+          <column name="BAIXASW" length="1" />
+        </basic>
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
 
         <many-to-one name="city">
           <join-column name="PAISCOD" referenced-column-name="PAISCOD"
@@ -685,82 +846,104 @@
         <table name="NCL_DOMICILI" />
         <attributes>
           <id name="addressId">
-            <column name="DOMCOD"/>
+            <column name="DOMCOD" precision="8" scale="0" />
           </id>         
           <basic name="countryId">
-            <column name="PAISCOD" />
+            <column name="PAISCOD" precision="3" scale="0"  />
           </basic>
           <basic name="provinceId">
-            <column name="PROVCOD"/>
+            <column name="PROVCOD" precision="2" scale="0" />
           </basic>
           <basic name="cityId">
-            <column name="MUNICOD"/>
+            <column name="MUNICOD" precision="3" scale="0" />
           </basic>
           <basic name="streetId">
-            <column name="CARCOD"/>
+            <column name="CARCOD" precision="5" scale="0" />
           </basic>
           <basic name="wayId">
-            <column name="PSEUDOCOD"/>
+            <column name="PSEUDOCOD" precision="5" scale="0" />
           </basic>
           <basic name="addressTypeId">
-            <column name="DOMTIP"/>
+            <column name="DOMTIP" length="4" />
           </basic>
           <basic name="gisReference">
-            <column name="GISCOD"/>
+            <column name="GISCOD" length="255" />
           </basic>
           <basic name="postalCode">
-            <column name="DOMCP"/>
+            <column name="DOMCP" length="20" />
           </basic>
           <basic name="postOfficeBox">
-            <column name="APCORREUS"/>
+            <column name="APCORREUS" precision="6" scale="0" />
           </basic>
           <basic name="entranceHall">
-            <column name="DOMPTAL"/>
+            <column name="DOMPTAL" length="2" />
           </basic>
           <basic name="door">
-            <column name="DOMPTA"/>
+            <column name="DOMPTA" length="4" />
           </basic>
           <basic name="comments">
-            <column name="DOMOBS"/>
+            <column name="DOMOBS" length="256" />
           </basic>
           <basic name="stair">
-            <column name="DOMESC"/>
+            <column name="DOMESC" length="2" />
           </basic>
           <basic name="number1">
-            <column name="DOMNUM"/>
+            <column name="DOMNUM" length="2" />
           </basic>
           <basic name="bis1">
-            <column name="DOMBIS"/>
+            <column name="DOMBIS" length="1"/>
           </basic>
           <basic name="number2">
-            <column name="DOMNUM2"/>
+            <column name="DOMNUM2" length="4" />
           </basic>
           <basic name="bis2">
-            <column name="DOMBIS2"/>
+            <column name="DOMBIS2" length="1" />
           </basic>
           <basic name="km">
-            <column name="DOMKM"/>
+            <column name="DOMKM" precision="4" scale="0" />
           </basic>
           <basic name="hm">
-            <column name="DOMHM"/>
+            <column name="DOMHM" precision="2" scale="0" />
           </basic>
           <basic name="block">
-            <column name="DOMBLOC"/>
+            <column name="DOMBLOC" length="2" />
           </basic>
           <basic name="floor">
-            <column name="DOMPIS"/>
+            <column name="DOMPIS" length="3" />
           </basic>
-          <basic name="domtloc" />
-          <basic name="stdapladd" />
-          <basic name="stdaplmod" />
-          <basic name="stdugr" />
-          <basic name="stdumod" />
-          <basic name="stddgr" />
-          <basic name="stddmod" />
-          <basic name="stdhgr" />
-          <basic name="stdhmod" />
-          <basic name="valdata" />
-          <basic name="baixasw" />
+          <basic name="domtloc">
+            <column name="DOMTLOC" length="1" />
+          </basic>
+        <basic name="stdapladd">
+          <column name="STDAPLADD" length="5" />
+        </basic>
+        <basic name="stdaplmod">
+          <column name="STDAPLMOD" length="5" />          
+        </basic>  
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="baixasw">
+          <column name="BAIXASW" length="1" />
+        </basic>
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
 
           <many-to-one name="street">
             <join-column name="PAISCOD" referenced-column-name="PAISCOD"
@@ -781,24 +964,38 @@
       <id-class class="org.santfeliu.kernel.service.DBPersonRepresentantPK" />
       <attributes>
         <id name="personId">
-          <column name="PERSCOD"/>
+          <column name="PERSCOD" precision="8" scale="0" />
         </id>
         <id name="representantId">
-          <column name="REPRCOD"/>
+          <column name="REPRCOD" precision="8" scale="0"/>
         </id>
         <basic name="representationTypeId">
-          <column name="REPRTIP"/>
+          <column name="REPRTIP" length="4" />
         </basic>
         <basic name="comments">
-          <column name="REPRNOTARI"/>
+          <column name="REPRNOTARI" length="255" />
         </basic>
-        <basic name="stdugr" />
-        <basic name="stdumod" />
-        <basic name="stddgr" />
-        <basic name="stddmod" />
-        <basic name="stdhgr" />
-        <basic name="stdhmod" />
-        <basic name="valdata" />
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
+        <basic name="valdata">
+          <column name="VALDATA" length="8" />
+        </basic>
         <many-to-one name="person">
           <join-column name="PERSCOD" 
             referenced-column-name="PERSCOD" 
@@ -817,29 +1014,45 @@
         <table name="NCL_TAULA" />
         <id-class class="org.santfeliu.kernel.service.DBKernelListItemPK" />
         <attributes>
-            <id name="listId">
-              <column name="TCCODI0" />
-            </id>
-            <id name="itemId">
-              <column name="TCCODI1" />
-            </id>
-            <basic name="auxItemId">
-              <column name="TCCODI2" />
-            </basic>
-            <basic name="label">
-              <column name="TCDESC"/>
-            </basic>
-            <basic name="description">
-              <column name="TCDESC2"/>
-            </basic>
-            <basic name="tcqual" />
-            <basic name="tcvnum" />
-            <basic name="stdugr" />
-            <basic name="stdumod" />
-            <basic name="stddgr" />
-            <basic name="stddmod" />
-            <basic name="stdhgr" />
-            <basic name="stdhmod" />
+        <id name="listId">
+          <column name="TCCODI0" length="4" />
+        </id>
+        <id name="itemId">
+          <column name="TCCODI1" length="10" />
+        </id>
+        <basic name="auxItemId">
+          <column name="TCCODI2" length="50" />
+        </basic>
+        <basic name="label">
+          <column name="TCDESC" length="255" />
+        </basic>
+        <basic name="description">
+          <column name="TCDESC2" length="255" />
+        </basic>
+        <basic name="tcqual">
+          <column name="TCQUAL" length="2" />
+        </basic>
+        <basic name="tcvnum">
+          <column name="TCVNUM" precision="10" scale="0" />
+        </basic>
+        <basic name="stdugr">
+          <column name="STDUGR" length="20"/>
+        </basic>
+        <basic name="stddmod">
+          <column name="STDDMOD" length="8" />
+        </basic>
+        <basic name="stdhgr">
+          <column name="STDHGR" length="6" />
+        </basic>
+        <basic name="stdhmod">
+          <column name="STDHMOD" length="6" />
+        </basic>
+        <basic name="stdumod">
+          <column name="STDUMOD" length="20" />
+        </basic>
+        <basic name="stddgr">
+          <column name="STDDGR" length="8" />
+        </basic>  
         </attributes>
      </entity>
 
@@ -852,34 +1065,35 @@
           <generated-value strategy="TABLE" generator="doc.docPerson"/>
           <table-generator name="doc.docPerson" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="doc.docPerson"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="docId">
-          <column name="DOCID" />
+          <column name="DOCID" precision="10" scale="0" />
         </basic>
         <basic name="version">
-          <column name="VERSION" />
+          <column name="VERSION" precision="8" scale="0" />
         </basic>
         <basic name="personId">
-          <column name="PERSONID" />
+          <column name="PERSONID" length="32" />
         </basic>
         <basic name="personDocTypeId">
-          <column name="DOCPERSONTYPEID" />
+          <column name="DOCPERSONTYPEID" length="64" />
         </basic>
         <basic name="comments" >
-          <column name="COMMENTS" />
+          <column name="COMMENTS" length="200" />
         </basic>
         <basic name="creationDateTime">
-            <column name="CREATIONDT" />
+            <column name="CREATIONDT" length="14" />
         </basic>
         <basic name="creationUserId">
-            <column name="CREATIONUSERID" />
+            <column name="CREATIONUSERID" length="50" />
         </basic>
         <basic name="changeDateTime">
-            <column name="CHANGEDT" />
+            <column name="CHANGEDT" length="14" />
         </basic>
         <basic name="changeUserId">
-            <column name="CHANGEUSERID" />
+            <column name="CHANGEUSERID" length="50" />
         </basic>
       </attributes>
     </entity>
@@ -896,16 +1110,16 @@
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="personId">
-          <column name="PERSONID" />
+          <column name="PERSONID" precision="10" scale="0" />
         </basic>
         <basic name="relPersonId">
-            <column name="RELPERSONID" />
+            <column name="RELPERSONID" precision="8" scale="0" />
         </basic>
         <basic name="personPersonTypeId">
-            <column name="PERSONPERSONTYPEID" />
+            <column name="PERSONPERSONTYPEID" length="64" />
         </basic>
         <basic name="comments">
-            <column name="COMMENTS" />
+            <column name="COMMENTS" length="200" />
         </basic>
       </attributes>
     </entity>
@@ -915,40 +1129,40 @@
       <id-class class="org.santfeliu.kernel.service.DBRoomPK" />
       <attributes>
         <id name="roomId">
-          <column name="SALACOD" />
+          <column name="SALACOD" precision="4" scale="0" />
         </id>
         <id name="addressId">
-          <column name="DOMCOD" />
+          <column name="DOMCOD" precision="8" scale="0" />
         </id>
         <basic name="name">
-            <column name="SALADESC" />
+            <column name="SALADESC" length="100" />
         </basic>
         <basic name="capacity">
-            <column name="CAPACITAT" />
+            <column name="CAPACITAT" precision="8" scale="0" />
         </basic>
         <basic name="roomTypeId">
-            <column name="ROOMTYPEID" />
+            <column name="ROOMTYPEID" length="64" />
         </basic>
         <basic name="area">
-            <column name="SUPERFICIE" />
+            <column name="SUPERFICIE" precision="10" scale="3" />
         </basic>
         <basic name="phone">
-            <column name="TELEFON" />
+            <column name="TELEFON" length="15" />
         </basic>
         <basic name="fax">
-            <column name="FAX" />
+            <column name="FAX" length="15" />
         </basic>
         <basic name="email">
-            <column name="EMAIL" />
+            <column name="EMAIL" length="100" />
         </basic>
         <basic name="schedule">
-            <column name="HORARI" />
+            <column name="HORARI" length="200" />
         </basic>
         <basic name="comments">
-            <column name="OBSERV" />
+            <column name="OBSERV" length="200" />
         </basic>
         <basic name="spaceId">
-            <column name="SPACEID" />
+            <column name="SPACEID" length="20" />
         </basic>          
       </attributes>
     </entity>
