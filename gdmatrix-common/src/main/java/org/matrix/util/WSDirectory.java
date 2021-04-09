@@ -53,18 +53,26 @@ public class WSDirectory
     Collections.synchronizedMap(new HashMap<URL, WSDirectory>());  
   static URL defaultInstanceURL;
 
-  final HashMap<String, WSEndpoint> endpointsByName =
-    new HashMap<String, WSEndpoint>();
-  final HashMap<QName, ArrayList<WSEndpoint>> endpointsByQName =
-    new HashMap<QName, ArrayList<WSEndpoint>>();
+  final HashMap<String, WSEndpoint> endpointsByName = new HashMap<>();
+  final HashMap<QName, ArrayList<WSEndpoint>> endpointsByQName = 
+    new HashMap<>();
 
   private URL url;
 
+  /**
+   * Gets the default WSDirectory instance
+   * @return the default instance
+   */
   public static WSDirectory getInstance()
   {
     return getInstance(defaultInstanceURL);
   }
 
+  /**
+   * Gets the WSDirectory instance for the given url
+   * @param url the wsdirectory url
+   * @return the WSDirectory instance
+   */
   public static WSDirectory getInstance(URL url)
   {
     WSDirectory directory = instances.get(url);
@@ -86,7 +94,7 @@ public class WSDirectory
     return defaultInstanceURL;
   }
 
-  public static WSDirectory createInstance(URL url)
+  static WSDirectory createInstance(URL url)
   {
     try
     {
@@ -110,9 +118,9 @@ public class WSDirectory
   }
 
   /**
-   * returns the qualified name of service serviceClass
-   * @param serviceClass
-   * @return
+   * Gets the qualified name of service serviceClass
+   * @param serviceClass the service class
+   * @return the qualified name of service serviceClass
    */
   public QName getServiceName(Class<? extends Service> serviceClass)
   {
@@ -127,9 +135,9 @@ public class WSDirectory
   }
 
   /**
-   * returns the endpoint named name
-   * @param endpointName
-   * @return
+   * Gets the endpoint named name
+   * @param endpointName the endpointName
+   * @return the endpoint named name
    */
   public WSEndpoint getEndpoint(String endpointName)
   {
@@ -139,9 +147,9 @@ public class WSDirectory
   }
 
   /**
-   * returns the default endpoint where service qualified name is serviceName
-   * @param serviceName
-   * @return
+   * Gets the default endpoint where service qualified name is serviceName
+   * @param serviceName the service qname
+   * @return the default endpoint where service qualified name is serviceName
    */
   public WSEndpoint getEndpoint(QName serviceName)
   {
@@ -158,9 +166,9 @@ public class WSDirectory
   }
 
   /**
-   * returns the default endpoint where service class is serviceClass
-   * @param serviceName
-   * @return
+   * Gets the default endpoint whose service class is serviceClass
+   * @param serviceClass the service class
+   * @return the default endpoint whose service class is serviceClass
    */
   public WSEndpoint getEndpoint(Class<? extends Service> serviceClass)
   {
@@ -169,9 +177,9 @@ public class WSDirectory
   }
 
   /**
-   * returns all endpoints where service qualified name is serviceName
-   * @param serviceName
-   * @return
+   * Gets all the endpoints whose service qualified name is serviceName
+   * @param serviceName the service qname
+   * @return the endpoints whose service qualified name is serviceName
    */
   public List<WSEndpoint> getEndpoints(QName serviceName)
   {
@@ -179,17 +187,22 @@ public class WSDirectory
   }
 
   /**
-   * returns all endpoints where service class is serviceName
-   * @param serviceName
-   * @return
+   * Gets all the endpoints whose service class is serviceClass
+   * @param serviceClass the service class
+   * @return the endpoints whose service class is serviceClass
    */
-  public List<WSEndpoint> getEndpoints(
-    Class<? extends Service> serviceClass)
+  public List<WSEndpoint> getEndpoints(Class<? extends Service> serviceClass)
   {
     QName serviceName = getServiceName(serviceClass);
     return getEndpoints(serviceName);
   }
 
+  /**
+   * Creates an endpoint with the given name and service name
+   * @param name the endpoint name
+   * @param serviceName the service qname
+   * @return the new endpoint
+   */
   public WSEndpoint newEndpoint(String name, QName serviceName)
   {
     WSEndpoint endpoint = new WSEndpoint(this, name, serviceName);
@@ -198,7 +211,7 @@ public class WSDirectory
     ArrayList<WSEndpoint> endpoints = endpointsByQName.get(serviceName);
     if (endpoints == null)
     {
-      endpoints = new ArrayList<WSEndpoint>();
+      endpoints = new ArrayList<>();
       endpointsByQName.put(serviceName, endpoints);
     }
     endpoints.add(endpoint);
@@ -206,10 +219,10 @@ public class WSDirectory
   }
 
   /**
-   *
-   * @param entityClass
-   * @param globalId
-   * @return
+   * Gets the internal entity of the given entity class and globalId
+   * @param entityClass the entity class
+   * @param globalId the globalId
+   * @return the InternalEntity associated to the given class and globalId
    */
   public InternalEntity getInternalEntity(Class entityClass, String globalId)
   {
@@ -217,10 +230,10 @@ public class WSDirectory
   }
 
   /**
-   *
-   * @param entityName
-   * @param globalId
-   * @return the entity object associated to globalId
+   * Gets the internal entity of the given name and globalId
+   * @param entityName the entity name
+   * @param globalId the globalId
+   * @return the InternalEntity associated to the given name and globalId
    */
   public InternalEntity getInternalEntity(String entityName, String globalId)
   {
@@ -245,29 +258,32 @@ public class WSDirectory
   }
 
   /**
-   *
-   * @param entityClass
-   * @param globalId
-   * @param serviceName
-   * @return
+   * Gets a list of the external entities that have a reference to the given 
+   *   entityClass and globalId
+   * @param entityClass the entity class
+   * @param globalId the globalId
+   * @param serviceName the serviceName to filter (may be null)
+   * @return the list of ExternalEntities that satisfy the search criteria
    */
   public List<ExternalEntity> getExternalEntities(Class entityClass,
     String globalId, QName serviceName)
   {
-    return getExternalEntities(entityClass.getSimpleName(), globalId, serviceName);
+    return getExternalEntities(entityClass.getSimpleName(), globalId, 
+      serviceName);
   }
   
   /**
-   * 
-   * @param entityName
-   * @param globalId
-   * @return the list of external entities that has a reference to
-   *   entityName/globalId
+   * Gets a list of the external entities that have a reference to the given 
+   *   entity name and globalId
+   * @param entityName the entity name
+   * @param globalId the globalId
+   * @param serviceName the serviceName to filter (may be null)
+   * @return the list of ExternalEntities that satisfy the search criteria
    */
   public List<ExternalEntity> getExternalEntities(String entityName,
     String globalId, QName serviceName)
   {
-    List<ExternalEntity> externalEntities = new ArrayList<ExternalEntity>();
+    List<ExternalEntity> externalEntities = new ArrayList<>();
     int index = globalId.indexOf(WSDirectory.PREFIX_SEPARATOR);
     String prefix = (index == -1) ? null : globalId.substring(0, index);
 
@@ -300,12 +316,24 @@ public class WSDirectory
     return externalEntities;
   }
 
+  /**
+   * Indicates if an entity id is local 
+   * @param entityName the entity name
+   * @param id the id
+   * @return true if local, false otherwise
+   */
   public boolean isLocalId(String entityName, String id)
   {
     if (id == null) return true;
     return !id.contains(PREFIX_SEPARATOR);
   }
 
+  /**
+   * Indicates if an entity id is global 
+   * @param entityName the entity name
+   * @param id the id
+   * @return true if global, false otherwise
+   */
   public boolean isGlobalId(String entityName, String id)
   {
     if (id == null) return true;

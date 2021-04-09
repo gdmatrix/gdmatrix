@@ -1192,11 +1192,8 @@ public class DocumentUploaderPanel extends DocumentPanel
     URL wsDirURL = new URL(wsDirectoryTextField.getText());
     String username = this.usernameTextField.getText();
     String password = new String(passwordField.getPassword());
-    WSDirectory wsDir = WSDirectory.createInstance(wsDirURL);
+    WSDirectory wsDir = WSDirectory.getInstance(wsDirURL);
     WSEndpoint endpoint = wsDir.getEndpoint(CaseManagerService.class);
     return endpoint.getPort(CaseManagerPort.class, username, password);
   }
-
-
-
 }
