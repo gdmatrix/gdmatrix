@@ -39,6 +39,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import org.santfeliu.util.FilterUtils;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.TextUtils;
 
 /**
  *
@@ -122,8 +123,9 @@ public abstract class QueryBuilder
       for (int i = from; i <= to; i++)
       {
         if (i != from) buffer.append(",");
-        buffer.append(paramPrefix).append(paramName).append(String.valueOf(i));
-        parameters.put(paramName + String.valueOf(i), values.get(i).toString());
+        String paramIndex = String.valueOf(i);
+        String paramValue = values.get(i).toString();
+        appendParameter(buffer, paramPrefix, paramName, paramIndex, paramValue);
       }
       buffer.append(")");
     }
@@ -167,9 +169,10 @@ public abstract class QueryBuilder
         }
         buffer.append(caseSensitive ? "" : "lower(").append(field).
           append(caseSensitive ? "" : ")").append(op);
-        buffer.append(paramPrefix).append(paramName).append(String.valueOf(i));
-        parameters.put(paramName + String.valueOf(i), 
-          ((caseSensitive || value == null) ? value : value.toLowerCase()));
+        String paramIndex = String.valueOf(i);
+        String paramValue = 
+          (caseSensitive || value == null) ? value : value.toLowerCase();
+        appendParameter(buffer, paramPrefix, paramName, paramIndex, paramValue);
       }
       buffer.append(")");
     }
@@ -185,8 +188,9 @@ public abstract class QueryBuilder
       {
         if (i != 0) buffer.append(" or ");
         buffer.append(field).append(" like ");
-        buffer.append(paramPrefix).append(paramName).append(String.valueOf(i));
-        parameters.put(paramName + String.valueOf(i), values.get(i).toString());
+        String paramIndex = String.valueOf(i);
+        String paramValue = values.get(i).toString();
+        appendParameter(buffer, paramPrefix, paramName, paramIndex, paramValue);
       }
       buffer.append(")");
     }
@@ -197,5 +201,14 @@ public abstract class QueryBuilder
     if (text == null) return null;
     if ("".equals(text)) return "";
     return FilterUtils.addWildcards(text.toLowerCase());
+  }
+  
+  protected void appendParameter(StringBuilder buffer, String paramPrefix, 
+    String paramName, String paramIndex, String value)
+  {
+    if (paramName != null)
+      paramName = TextUtils.normalizeName(paramName);
+    buffer.append(paramPrefix).append(paramName).append(paramIndex);
+    parameters.put(paramName + paramIndex, value);    
   }
 }

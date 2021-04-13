@@ -264,7 +264,9 @@ public class ScriptClient
     SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
     String dateTime = df.format(lastRefreshDate);
     
-    filter.setMetadataSearchExpression("d.modifydate > '" + dateTime + "'");
+    filter.setDateComparator("1"); //changeDateTime
+    filter.setStartDate(dateTime);
+
     return client.findDocuments(filter);
   }
   
