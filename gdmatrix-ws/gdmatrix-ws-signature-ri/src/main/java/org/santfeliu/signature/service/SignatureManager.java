@@ -31,10 +31,6 @@
 package org.santfeliu.signature.service;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-
-import java.security.KeyStore;
-import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -64,9 +60,11 @@ import org.santfeliu.signature.PropertyListConverter;
 import org.santfeliu.signature.SignedDocument;
 import org.santfeliu.signature.SignedDocumentStore;
 import org.santfeliu.signature.certificate.CertificateStore;
-import org.santfeliu.signature.certificate.MatrixConfigCertificateStore;
 import org.santfeliu.signature.xmldsig.ByteArrayOutputStream;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.ws.WSProperties;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.SingleInstance;
 
 
 /**
@@ -75,12 +73,13 @@ import org.santfeliu.util.MatrixConfig;
  */
 @WebService(endpointInterface = "org.matrix.signature.SignatureManagerPort")
 @HandlerChain(file="handlers.xml")
+@SingleInstance
 public class SignatureManager implements SignatureManagerPort
 {
   @Resource
   WebServiceContext wsContext;
 
-  protected static final Logger log = Logger.getLogger("Signature");
+  protected static final Logger LOGGER = Logger.getLogger("Signature");
 
   public static final String[][] documentTypes = new String[][]
   {
@@ -95,8 +94,6 @@ public class SignatureManager implements SignatureManagerPort
   public static final String USER_SIGN_HASH = "userSignHash";
   public static final String SYSTEM_SIGN_OID = "systemSignOID";
   public static final String SYSTEM_SIGN_HASH = "systemSignHash";
-
-
   
   // document properties
   public static final String SIGNED_DOCUMENT_TYPE = "type";
@@ -118,23 +115,22 @@ public class SignatureManager implements SignatureManagerPort
   private String systemSignOID;
   private String systemSignHash;
 
-  public SignatureManager()
+  @Initializer
+  public void initialize(String endpointName)
   {
     try
     {
-      log.info("SignatureManager init");    
-      String storeClassName =
-        MatrixConfig.getClassProperty(SignatureManager.class, STORE_CLASS_NAME);
-      validateCertificate = "true".equals(
-        MatrixConfig.getClassProperty(SignatureManager.class, VALIDATE_CERTIFICATE));
-      userSignOID = 
-        MatrixConfig.getClassProperty(SignatureManager.class, USER_SIGN_OID);
-      userSignHash = 
-        MatrixConfig.getClassProperty(SignatureManager.class, USER_SIGN_HASH);
-      systemSignOID = 
-        MatrixConfig.getClassProperty(SignatureManager.class, SYSTEM_SIGN_OID);
-      systemSignHash = 
-        MatrixConfig.getClassProperty(SignatureManager.class, SYSTEM_SIGN_HASH);
+      LOGGER.info("SignatureManager init");    
+      
+      WSProperties props =
+        new WSProperties(endpointName, SignatureManager.class);
+
+      String storeClassName = props.getString(STORE_CLASS_NAME);
+      validateCertificate = props.getBoolean(VALIDATE_CERTIFICATE, true);
+      userSignOID = props.getString(USER_SIGN_OID);
+      userSignHash = props.getString(USER_SIGN_HASH);
+      systemSignOID = props.getString(SYSTEM_SIGN_OID);
+      systemSignHash = props.getString(SYSTEM_SIGN_HASH);
       
       if (storeClassName == null)
         throw new Exception("UNDEFINED_STORE_CLASS_NAME");
@@ -144,7 +140,7 @@ public class SignatureManager implements SignatureManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "SignatureManager init failed", ex);
+      LOGGER.log(Level.SEVERE, "SignatureManager init failed", ex);
       throw new RuntimeException(ex);
     }
   }
@@ -154,7 +150,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "createDocument: docType:{0}", docType);
+      LOGGER.log(Level.INFO, "createDocument: docType:{0}", docType);
       // create SignedDocument
       SignedDocument document = createDocumentInstance(docType);
       document.newDocument();
@@ -177,7 +173,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "putDocument: docType:{0}", sdoc.getType());
+      LOGGER.log(Level.INFO, "putDocument: docType:{0}", sdoc.getType());
       String docType = sdoc.getType();
       byte[] data = sdoc.getData();
       Map properties = PropertyListConverter.toMap(sdoc.getProperties());
@@ -211,7 +207,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "getDocumentData: sigId:{0}", sigId);
+      LOGGER.log(Level.INFO, "getDocumentData: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
 
       ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -229,7 +225,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "getDocument: sigId:{0}", sigId);
+      LOGGER.log(Level.INFO, "getDocument: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
       Map properties = document.getProperties();
   
@@ -256,7 +252,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "setDocumentProperties: sigId:{0}", sigId);
+      LOGGER.log(Level.INFO, "setDocumentProperties: sigId:{0}", sigId);
       Map properties = PropertyListConverter.toMap(propertyList);
       if (properties != null)
       {
@@ -278,7 +274,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "addData: sigId:{0} dataType:{1}", 
+      LOGGER.log(Level.INFO, "addData: sigId:{0} dataType:{1}", 
         new Object[]{sigId, dataType});
       SignedDocument document = store.loadSignedDocument(sigId);
       Map properties = PropertyListConverter.toMap(propertyList);
@@ -313,7 +309,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "addSignature: sigId:{0}", sigId);
+      LOGGER.log(Level.INFO, "addSignature: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
   
       int signatureState = getSignatureState(document);
@@ -336,7 +332,7 @@ public class SignatureManager implements SignatureManagerPort
       {
         Map attributes = new HashMap();
         // validate in CATCert
-        log.log(Level.INFO, "validating certificate sigId:{0}", sigId);
+        LOGGER.log(Level.INFO, "validating certificate sigId:{0}", sigId);
         boolean valid = false;
 
         SecurityProvider provider = SecurityUtils.getSecurityProvider();
@@ -380,7 +376,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "endSignature: sigId:{0}", sigId);
+      LOGGER.log(Level.INFO, "endSignature: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
       
       int signatureState = getSignatureState(document);
@@ -426,7 +422,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "addSystemSignature: sigId:{0}", sigId);
+      LOGGER.log(Level.INFO, "addSystemSignature: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
   
       if (name == null) throw new RuntimeException("UNDEFINED_CERTIFICATE");
@@ -481,7 +477,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "abortSignature: sigId:{0}", sigId);  
+      LOGGER.log(Level.INFO, "abortSignature: sigId:{0}", sigId);  
       SignedDocument document = store.loadSignedDocument(sigId);
   
       int signatureState = getSignatureState(document);
@@ -505,7 +501,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "digestData: sigId:{0}", sigId);  
+      LOGGER.log(Level.INFO, "digestData: sigId:{0}", sigId);  
       SignedDocument document = store.loadSignedDocument(sigId);  
       return document.digestData();
     }
@@ -524,7 +520,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "addExternalSignature: sigId:{0}", sigId);  
+      LOGGER.log(Level.INFO, "addExternalSignature: sigId:{0}", sigId);  
       SignedDocument document = store.loadSignedDocument(sigId);
   
       int signatureState = getSignatureState(document);
@@ -552,7 +548,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "endDocument: sigId:{0}", sigId);    
+      LOGGER.log(Level.INFO, "endDocument: sigId:{0}", sigId);    
       Map properties = PropertyListConverter.toMap(propertyList);
       SignedDocument document = store.loadSignedDocument(sigId);
       if (properties != null)
@@ -592,7 +588,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      log.log(Level.INFO, "abortDocument: sigId:{0}", sigId);   
+      LOGGER.log(Level.INFO, "abortDocument: sigId:{0}", sigId);   
       store.deleteSignedDocument(sigId);
     
       return "document destroyed";
