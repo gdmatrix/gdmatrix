@@ -112,6 +112,7 @@ import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.audit.Auditor;
 import org.santfeliu.ws.WSExceptionFactory;
@@ -158,7 +159,7 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
   @Initializer
   public void initialize(String endpointName)
   {
-    //create emf
+    initEventIdCounter();
   }    
   
   @Override
@@ -1654,6 +1655,24 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       throw new RuntimeException(ex);
     }
   }
+  
+//  private SQLManagerPort getSQLManagerPort()
+//  {
+//    try
+//    {
+//      WSDirectory wsDirectory = WSDirectory.getInstance();
+//      WSEndpoint endpoint =
+//        wsDirectory.getEndpoint(SQLManagerService.class);
+//
+//      String userId = MatrixConfig.getProperty("adminCredentials.userId");
+//      String password = MatrixConfig.getProperty("adminCredential.password");
+//      return endpoint.getPort(SQLManagerPort.class, userId, password);
+//    }
+//    catch (Exception ex)
+//    {
+//      throw new RuntimeException(ex);
+//    }
+//  }  
 
   private List<EventPlaceView> createEventPlaceViews(
     List<DBEventPlace> dbEventPlaces)
@@ -1972,6 +1991,19 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       throw new Exception("FILTER_NOT_ALLOWED");    
   }
   
-  
 
+  private void initEventIdCounter()
+  {
+    String initValue = 
+      MatrixConfig.getClassProperty(getClass(), "eventIdInitialValue");
+    if (initValue != null)
+    {     
+      Query query = entityManager.createNamedQuery("initEventIdSequence");
+      query.setParameter("initValue", initValue);
+      query.executeUpdate();
+      entityManager.flush();
+      LOGGER.log(Level.INFO, "Event id sequence counter updated to value: {0}", 
+        initValue);
+    }    
+  }
 }

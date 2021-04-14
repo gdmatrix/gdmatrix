@@ -653,6 +653,10 @@
     <param-value>108</param-value>
   </context-param>
   <context-param>
+    <param-name>org.santfeliu.agenda.service.AgendaManager.eventIdInitialValue</param-name>
+    <param-value>0</param-value>
+  </context-param>  
+  <context-param>
     <param-name>addressDescTypeCaseId</param-name>
     <param-value>sf:Equipament</param-value>
   </context-param>

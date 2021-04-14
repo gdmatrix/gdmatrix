@@ -192,6 +192,13 @@
           AND CONCAT(e.datafinal, e.horafinal) &gt; CONCAT(e2.datainici, e2.horainici)
       </query>
     </named-query>
+    
+    <named-native-query name="initEventIdSequence">
+      <query>
+        UPDATE TABLESEQ SET VALUE = ?initValue 
+        WHERE COUNTER = 'AGD_ESDEVENIMENT' AND value &lt; ?initValue
+      </query>
+    </named-native-query>    
 
     <entity class="org.santfeliu.agenda.service.DBEvent"
       name="DBEvent">
