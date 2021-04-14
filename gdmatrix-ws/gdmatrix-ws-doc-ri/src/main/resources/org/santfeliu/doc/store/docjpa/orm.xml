@@ -150,6 +150,7 @@
           <generated-value strategy="TABLE" generator="doc.document"/>
           <table-generator name="doc.document" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE" 
+            pk-column-value="doc.document"
             initial-value="0" allocation-size="1"/> 
         </id>
         <id name="version">

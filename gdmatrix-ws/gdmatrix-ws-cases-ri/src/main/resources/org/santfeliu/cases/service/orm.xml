@@ -509,6 +509,7 @@
           <generated-value strategy="TABLE" generator="cases.casePerson"/>
           <table-generator name="cases.casePerson" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="cases.casePerson"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="caseId">
@@ -662,6 +663,7 @@
           <generated-value strategy="TABLE" generator="cases.caseProblem"/>
           <table-generator name="cases.caseProblem" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE" 
+            pk-column-value="cases.caseProblem"
             initial-value="0" allocation-size="1"/> 
         </id>
         <basic name="caseId">
@@ -704,6 +706,7 @@
           <generated-value strategy="TABLE" generator="cases.caseDemand"/>
           <table-generator name="cases.caseDemand" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE" 
+            pk-column-value="cases.caseDemand"
             initial-value="0" allocation-size="1"/> 
         </id>
         <basic name="caseId">
@@ -902,6 +905,7 @@
           <generated-value strategy="TABLE" generator="cases.intProb"/>
           <table-generator name="cases.intProb" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="cases.intProb"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="intId">
