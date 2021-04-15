@@ -97,9 +97,12 @@ public class SystemInfoBean extends FacesBean
 
   public List<String> getBootClassPath()
   {
-    String s = RUNTIME_MX_BEAN.getBootClassPath();
-    List<String> result = TextUtils.stringToList(s, ";");
-    if (result == null) result = new ArrayList<String>();
+    List<String> result = new ArrayList<String>();
+    if (RUNTIME_MX_BEAN.isBootClassPathSupported())
+    {
+      String s = RUNTIME_MX_BEAN.getBootClassPath();
+      result = TextUtils.stringToList(s, ";");
+    }
     return result;
   }
 

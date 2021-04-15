@@ -122,6 +122,11 @@
     <component-type>HtmlCommandMenu</component-type>
     <component-class>org.santfeliu.faces.component.HtmlCommandMenu</component-class>
   </component>     
+  
+  <component>
+    <component-type>HtmlSigner</component-type>
+    <component-class>org.santfeliu.faces.signer.HtmlSigner</component-class>
+  </component>      
         
   <converter>
     <converter-id>DateTimeConverter</converter-id>
