@@ -184,40 +184,40 @@
     <table name="DIC_TYPE" />
     <attributes>
       <id name="typeId">
-        <column name="TYPEID" />
+        <column name="TYPEID" length="64" />
       </id>
       <basic name="superTypeId">
-        <column name="SUPERTYPEID" />
+        <column name="SUPERTYPEID" length="64" />
       </basic>
       <basic name="description">
-        <column name="DESCRIPTION" />
+        <column name="DESCRIPTION" length="1000" />
       </basic>
       <basic name="instantiableValue">
-        <column name="INSTANTIABLE" />
+        <column name="INSTANTIABLE" length="1" />
       </basic>
       <basic name="restrictedValue">
-        <column name="RESTRICTED" />
+        <column name="RESTRICTED" length="1" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="MODIFYDT" />
+        <column name="MODIFYDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="MODIFYUSERID" />
+        <column name="MODIFYUSERID" length="20" />
       </basic>
       <basic name="removed">
-        <column name="REMOVED" />
+        <column name="REMOVED" length="1" />
       </basic>
       <basic name="typePath">
-        <column name="TYPEPATH" />
+        <column name="TYPEPATH" length="2000" />
       </basic>
       <basic name="detail">
-        <column name="DETAIL" />
+        <column name="DETAIL" length="2000" />
       </basic>
       <transient name="instantiable" />
       <transient name="restricted" />
@@ -227,42 +227,42 @@
   </entity>
 
   <entity class="org.santfeliu.dic.service.DBPropertyDefinition"
-    name="PropertyDefinition" access="PROPERTY"  >
+    name="PropertyDefinition" access="PROPERTY">
     <table name="DIC_PROPDEF" />
     <id-class class="org.santfeliu.dic.service.DBPropertyDefinitionPK" />
     <attributes>
       <id name="typeId">
-        <column name="TYPEID" />
+        <column name="TYPEID" length="64" />
       </id>
       <id name="name">
-        <column name="PROPNAME" />
+        <column name="PROPNAME" length="64" />
       </id>
       <basic name="description">
-        <column name="DESCRIPTION" />
+        <column name="DESCRIPTION" length="500" />
       </basic>
       <basic name="typeValue">
-        <column name="PROPTYPE" />
+        <column name="PROPTYPE" length="1" />
       </basic>
       <basic name="enumTypeId">
-        <column name="ENUMTYPEID" />
+        <column name="ENUMTYPEID" length="64" />
       </basic>
       <basic name="size">
-        <column name="PROPSIZE" />
+        <column name="PROPSIZE" precision="10" scale="0" />
       </basic>
       <basic name="minOccurs">
-        <column name="MINOCCURS" />
+        <column name="MINOCCURS" precision="10" scale="0" />
       </basic>
       <basic name="maxOccurs">
-        <column name="MAXOCCURS" />
+        <column name="MAXOCCURS" precision="10" scale="0" />
       </basic>
       <basic name="defaultValue">
-        <column name="DEFAULTVALUE" />
+        <column name="DEFAULTVALUE" length="2000" />
       </basic>
       <basic name="hiddenValue">
-        <column name="HIDDEN" />
+        <column name="HIDDEN" length="1" />
       </basic>
       <basic name="readOnlyValue">
-        <column name="READONLY" />
+        <column name="READONLY" length="1" />
       </basic>
       <transient name="type" />
       <transient name="hidden" />
@@ -276,13 +276,13 @@
     <id-class class="org.santfeliu.dic.service.DBAccessControlPK" />
     <attributes>
       <id name="typeId">
-        <column name="TYPEID" />
+        <column name="TYPEID" length="64" />
       </id>
       <id name="roleId">
-        <column name="ROLEID" />
+        <column name="ROLEID" length="20" />
       </id>
       <id name="action">
-        <column name="ACTION" />
+        <column name="ACTION" length="128" />
       </id>
     </attributes>
   </entity>
@@ -292,31 +292,31 @@
     <table name="DIC_ENUMTYPE" />
     <attributes>
       <id name="enumTypeId">
-        <column name="TYPEID" />
+        <column name="TYPEID" length="64" />
       </id>
       <basic name="superEnumTypeId">
-        <column name="SUPERTYPEID" />
+        <column name="SUPERTYPEID" length="64" />
       </basic>
       <basic name="name">
-        <column name="ENUMNAME" />
+        <column name="ENUMNAME" length="200" />
       </basic>
       <basic name="strItemType">
-        <column name="ITEMTYPE" />
+        <column name="ITEMTYPE" length="1" />
       </basic>
       <basic name="strSorted">
-        <column name="SORTED" />
+        <column name="SORTED" length="1" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="CHANGEUSERID" />
+        <column name="CHANGEUSERID" length="20" />
       </basic>
       <one-to-many name="enumTypeItems" mapped-by="enumType" />
     </attributes>
@@ -335,19 +335,19 @@
           initial-value="0" allocation-size="1" />
       </id>
       <basic name="enumTypeId">
-        <column name="TYPEID" />
+        <column name="TYPEID" length="64" />
       </basic>
       <basic name="index">
-        <column name="IDX" />
+        <column name="IDX" precision="5" scale="0" />
       </basic>
       <basic name="label">
-        <column name="LABEL" />
+        <column name="LABEL" length="1000" />
       </basic>
       <basic name="value">
-        <column name="VALUE" />
+        <column name="VALUE" length="200" />
       </basic>
       <basic name="description">
-        <column name="DESCRIPTION" />
+        <column name="DESCRIPTION" length="2000" />
       </basic>
       <many-to-one name="enumType">
         <join-column name="TYPEID" referenced-column-name="TYPEID"

@@ -44,7 +44,7 @@ public class InternalValueConverter implements Serializable
 {
   private static final String INTERNAL_VALUE_PROPERTY = "internalValue";
 
-  private String rootTypeId;
+  private final String rootTypeId;
 
   public InternalValueConverter(String rootTypeId)
   {

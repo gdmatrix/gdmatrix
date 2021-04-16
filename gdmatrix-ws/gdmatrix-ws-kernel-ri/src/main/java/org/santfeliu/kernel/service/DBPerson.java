@@ -67,7 +67,7 @@ public class DBPerson extends DBEntityBase
   private String baixasw;
   private String valdata;
 
-  private InternalValueConverter typeIdConverter =
+  private static final InternalValueConverter typeIdConverter =
     new InternalValueConverter(DictionaryConstants.PERSON_TYPE);
   
   public DBPerson()
