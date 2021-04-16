@@ -262,8 +262,6 @@
         <join-column name="REFWORKSPACEID" referenced-column-name="WORKSPACEID"
             insertable="false" updatable="false" />
       </many-to-one>
-      <one-to-many name="children" mapped-by="refWorkspace" />      
-      <one-to-many name="nodes" mapped-by="workspace" />      
     </attributes>
   </entity>
 
@@ -316,7 +314,6 @@
         <join-column name="PARENTNODEID" referenced-column-name="NODEID"
             insertable="false" updatable="false" />
       </many-to-one>
-      <one-to-many name="children" mapped-by="parentNode" />
       <one-to-many name="properties" mapped-by="node" />
       <transient name="property" />
     </attributes>

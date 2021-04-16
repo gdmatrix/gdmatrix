@@ -75,7 +75,6 @@
         <basic name="endDay">
           <column name="ENDDATE" length="8" />
         </basic>
-        <one-to-many name="answers" mapped-by="survey" />
       </attributes>
     </entity>
     

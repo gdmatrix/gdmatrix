@@ -84,7 +84,6 @@
       <transient name="text" />
       <transient name="translation" />
       <transient name="state" />
-      <one-to-many name="groups" mapped-by="translation" />
     </attributes>
   </entity>
 

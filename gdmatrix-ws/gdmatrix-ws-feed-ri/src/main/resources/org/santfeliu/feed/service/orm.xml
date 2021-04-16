@@ -181,7 +181,6 @@
         <join-column name="PARENTFOLDERID" referenced-column-name="FOLDERID"
             insertable="false" updatable="false" />
       </many-to-one>
-      <one-to-many name="children" mapped-by="parentFolder" />      
       <one-to-many name="feedFolders" mapped-by="folder" />
     </attributes>
   </entity>

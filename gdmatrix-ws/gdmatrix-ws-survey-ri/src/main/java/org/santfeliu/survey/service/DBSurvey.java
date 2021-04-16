@@ -30,7 +30,6 @@
  */
 package org.santfeliu.survey.service;
 
-import java.util.Collection;
 import org.matrix.survey.Survey;
 
 /**
@@ -43,8 +42,6 @@ public class DBSurvey extends Survey
   private String endDay;
   private String strOpen;
 
-  private Collection<DBAnswer> answers;
-    
   public DBSurvey()
   {
   }
@@ -78,14 +75,4 @@ public class DBSurvey extends Survey
   {
     return endDay;
   }
-
-  public Collection<DBAnswer> getAnswers() 
-  {
-    return answers;
-  }
-
-  public void setAnswers(Collection<DBAnswer> answers) 
-  {
-    this.answers = answers;
-  }  
 }

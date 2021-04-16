@@ -42,8 +42,7 @@ public class DBFolder extends Folder
 {
   private Collection<DBFeedFolder> feedFolders;  
   
-  private DBFolder parentFolder;
-  private Collection<DBFolder> children;  
+  private DBFolder parentFolder;  
 
   public DBFolder()
   {
@@ -72,16 +71,6 @@ public class DBFolder extends Folder
   public void setParentFolder(DBFolder parentFolder) 
   {
     this.parentFolder = parentFolder;
-  }
-
-  public Collection<DBFolder> getChildren() 
-  {
-    return children;
-  }
-
-  public void setChildren(Collection<DBFolder> children) 
-  {
-    this.children = children;
   }
 
   public void copyTo(Folder folder, WSEndpoint endpoint)

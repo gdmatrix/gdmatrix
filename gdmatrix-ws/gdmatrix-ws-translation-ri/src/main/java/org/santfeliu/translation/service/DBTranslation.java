@@ -30,7 +30,6 @@
  */
 package org.santfeliu.translation.service;
 
-import java.util.Collection;
 import org.matrix.translation.Translation;
 import org.matrix.translation.TranslationState;
 import org.santfeliu.jpa.JPAUtils;
@@ -50,8 +49,6 @@ public class DBTranslation extends Translation
   private String encodedTranslation;
   private String strState;
   
-  private Collection<DBTranslationGroup> groups;  
-
   public DBTranslation()
   {
   }
@@ -121,16 +118,6 @@ public class DBTranslation extends Translation
     this.strState = strState;
     this.state = COMPLETED.equals(strState) ?
       TranslationState.COMPLETED : TranslationState.DRAFT;
-  }
-
-  public Collection<DBTranslationGroup> getGroups() 
-  {
-    return groups;
-  }
-
-  public void setGroups(Collection<DBTranslationGroup> groups) 
-  {
-    this.groups = groups;
   }
 
   public void copyTo(Translation translation)

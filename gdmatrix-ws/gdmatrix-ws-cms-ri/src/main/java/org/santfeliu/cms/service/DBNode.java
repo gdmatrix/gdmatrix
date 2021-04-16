@@ -48,7 +48,6 @@ public class DBNode extends Node implements ChangeAuditable
   
   private DBWorkspace workspace;
   private DBNode parentNode;
-  private List<DBNode> children;
 
   public DBNode()
   {
@@ -97,16 +96,6 @@ public class DBNode extends Node implements ChangeAuditable
   public void setParentNode(DBNode parentNode) 
   {
     this.parentNode = parentNode;
-  }
-
-  public List<DBNode> getChildren() 
-  {
-    return children;
-  }
-
-  public void setChildren(List<DBNode> children) 
-  {
-    this.children = children;
   }
 
   public void copyTo(Node node, WSEndpoint endpoint)
