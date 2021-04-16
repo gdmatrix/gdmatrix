@@ -790,12 +790,24 @@
       <basic name="counter">
         <column name="CLAUVNUM" />
       </basic>
-      <basic name="stdugr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
     </attributes>
   </entity>
 
@@ -856,24 +868,60 @@
       <basic name="personType">
         <column name="NIFSW"/>
       </basic>
-      <basic name="stdapladd" />
-      <basic name="stdaplmod" />
-      <basic name="stdugr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="persvnum" />
-      <basic name="contvnum" />
-      <basic name="baixasw" />
-      <basic name="valdata" />
-      <basic name="persdcannif" />
-      <basic name="persdconnif" />
-      <basic name="nifnump" />
-      <basic name="niforig" />
-      <basic name="perscodold" />
-      <basic name="idiocod" />
+      <basic name="stdapladd">
+        <column name="STDAPLADD" />
+      </basic>
+      <basic name="stdaplmod">
+        <column name="STDAPLMOD" />
+      </basic>
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="persvnum">
+        <column name="PRESVNUM" />
+      </basic>  
+      <basic name="contvnum">
+        <column name="CONTVNUM" />
+      </basic>            
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
+      <basic name="persdcannif">
+        <column name="PERSDCANNIF" />
+      </basic>      
+      <basic name="persdconnif">
+        <column name="PERSDCONNIF" />
+      </basic>   
+      <basic name="nifnump">
+        <column name="NIFNUMP" />
+      </basic>  
+      <basic name="niforig">
+        <column name="NIFORIG" />
+      </basic>  
+      <basic name="perscodold">
+        <column name="PERSCODOLD" />
+      </basic>        
+      <basic name="idiocod">
+        <column name="IDIOCOD" />
+      </basic>  
 <!--            
             <one-to-one name="juristicPerson">
                   <join-column name="PERSCOD" referenced-column-name="PERSCOD"
@@ -882,8 +930,6 @@
 -->            
     </attributes>
   </entity>
-
-
 
   <entity name="PersonHistoric" class="DBPersonHistoric" access="PROPERTY" >
     <table name="NCL_PERSONA_HIST" />
@@ -1015,10 +1061,6 @@
     </attributes>
   </entity>
 
-
-
-
-
   <entity name="DBPersonAddress"
       class="DBPersonAddress" access="PROPERTY">
     <table name="NCL_PERSDOM" />
@@ -1033,16 +1075,36 @@
       <basic name="addressId">
         <column name="DOMCOD"/>
       </basic>
-      <basic name="stdapladd" />
-      <basic name="stdaplmod" />
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
-      <basic name="baixasw" />
+      <basic name="stdapladd">
+        <column name="STDAPLADD" />
+      </basic>
+      <basic name="stdaplmod">
+        <column name="STDAPLMOD" />
+      </basic>
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>
 
       <many-to-one name="person">
         <join-column name="PERSCOD"
@@ -1077,13 +1139,27 @@
       <basic name="comments">
         <column name="OBSERVACIONS"/>
       </basic>
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
     </attributes>
   </entity>
 
@@ -1099,14 +1175,30 @@
       <basic name="abbreviation">
         <column name="CARSIGABR" />
       </basic>
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
-      <basic name="baixasw" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>
     </attributes>
   </entity>
     
@@ -1122,14 +1214,30 @@
       <basic name="paisvnum">
         <column name="PAISVNUM"/>
       </basic>
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
-      <basic name="baixasw" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>
     </attributes>
   </entity>
 
@@ -1146,16 +1254,36 @@
       <basic name="name">
         <column name="PROVDESC"/>
       </basic>
-      <basic name="provvnum" />
-      <basic name="autocod" />
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
-      <basic name="baixasw" />
+      <basic name="provvnum">
+        <column name="PROVVNUM"/>
+      </basic>      
+      <basic name="autocod">
+        <column name="AUTOCOD"/>
+      </basic>           
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>
 
       <many-to-one name="country">
         <join-column name="PAISCOD" referenced-column-name="PAISCOD"
@@ -1183,22 +1311,49 @@
       <basic name="description">
         <column name="MUNIDESC2"/>
       </basic>
-      <basic name="munidc" />
-      <basic name="munivnum" />
-      <basic name="illavnum" />
-      <basic name="tramvnum" />
-      <basic name="comcod" />
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
-      <basic name="baixasw" />
-      <basic name="municps" />
-
-      <many-to-one name="province">
+      <basic name="munidc">
+        <column name="MUNIDC"/>
+      </basic>      
+      <basic name="munivnum">
+        <column name="MUNIVNUM"/>
+      </basic> 
+      <basic name="illavnum">
+        <column name="ILLAVNUM"/>
+      </basic>       
+      <basic name="tramvnum">
+        <column name="TRAMVNUM"/>
+      </basic> 
+      <basic name="comcod">
+        <column name="COMCOD"/>
+      </basic>       
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>
+      <basic name="municps">
+        <column name="MUNICPS" />
+      </basic>      
+      <many-to-one name="province" >
         <join-column name="PAISCOD" referenced-column-name="PAISCOD"
             insertable="false" updatable="false" />
         <join-column name="PROVCOD" referenced-column-name="PROVCOD"
@@ -1235,14 +1390,30 @@
       <basic name="description">
         <column name="CARDESC2"/>
       </basic>
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
-      <basic name="baixasw" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>
 
       <many-to-one name="city">
         <join-column name="PAISCOD" referenced-column-name="PAISCOD"
@@ -1330,16 +1501,36 @@
         <column name="DOMPIS"/>
       </basic>
       <basic name="domtloc" />
-      <basic name="stdapladd" />
-      <basic name="stdaplmod" />
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
-      <basic name="baixasw" />
+      <basic name="stdapladd">
+        <column name="STDAPLADD" />
+      </basic>
+      <basic name="stdaplmod">
+        <column name="STDAPLMOD" />
+      </basic>
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>
 
       <many-to-one name="street">
         <join-column name="PAISCOD" referenced-column-name="PAISCOD"
@@ -1371,13 +1562,27 @@
       <basic name="comments">
         <column name="REPRNOTARI"/>
       </basic>
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="valdata" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="valdata">
+        <column name="VALDATA" />
+      </basic>
       <many-to-one name="person">
         <join-column name="PERSCOD"
             referenced-column-name="PERSCOD" 
@@ -1411,14 +1616,30 @@
       <basic name="description">
         <column name="TCDESC2"/>
       </basic>
-      <basic name="tcqual" />
-      <basic name="tcvnum" />
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
+      <basic name="tcqual">
+        <column name="TCQUAL" />
+      </basic>
+      <basic name="tcvnum">
+        <column name="TCVNUM" />
+      </basic>
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
     </attributes>
   </entity>
 
@@ -1569,12 +1790,24 @@
         <column name="sdehreg" />
       </basic>
 
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
 
       <basic name="extrcod" >
         <column name="EXTRCOD" />

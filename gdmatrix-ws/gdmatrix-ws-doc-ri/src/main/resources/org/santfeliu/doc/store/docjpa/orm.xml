@@ -141,7 +141,7 @@
     </named-query>
 
     <entity class="org.santfeliu.doc.store.docjpa.DBDocument"
-      name="DBDocument">
+      name="DBDocument" access="FIELD">
       <table name="DOM_DOCUMENT" />
       <id-class class="org.santfeliu.doc.store.docjpa.DBDocumentPK"/>            
       <attributes>
@@ -169,7 +169,7 @@
           <column name="LANGUAGE" length="2" />
         </basic>
         <basic name="captureDateTime">
-          <column name="CAPTUREDATE" length="10" />
+          <column name="CAPTUREDATE" length="14" />
         </basic>
         <basic name="captureUserId">
           <column name="CAPTUREUSER" length="50" />
@@ -203,7 +203,7 @@
     </entity>
     
     <entity class="org.santfeliu.doc.store.docjpa.DBRelatedDocument" 
-      name="DBRelatedDocument">
+      name="DBRelatedDocument" access="FIELD">
       <table name="DOM_DOCDOC" />
       <id-class class="org.santfeliu.doc.store.docjpa.DBRelatedDocumentPK"/>                  
       <attributes>
@@ -235,7 +235,7 @@
     </entity>
     
     <entity class="org.santfeliu.doc.store.docjpa.DBProperty" 
-      name="DBProperty">
+      name="DBProperty" access="FIELD">
       <table name="DOM_METADATA" />
       <attributes>
         <id name="docId">
@@ -263,7 +263,7 @@
     </entity>
 
     <entity class="org.santfeliu.doc.store.docjpa.DBAccessControl"
-      name="DocAccessControl">
+      name="DocAccessControl" access="FIELD">
       <table name="DOM_ACL" />
       <id-class class="org.santfeliu.doc.store.docjpa.DBAccessControlPK" />
       <attributes>

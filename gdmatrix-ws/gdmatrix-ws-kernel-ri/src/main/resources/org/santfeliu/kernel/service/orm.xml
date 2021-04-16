@@ -346,7 +346,8 @@
       </query>
     </named-query>
     <!-- ****** Entities ****** -->
-    <entity class="org.santfeliu.kernel.service.DBCounter" name="DBCounter">
+    <entity class="org.santfeliu.kernel.service.DBCounter" name="DBCounter"
+      access="FIELD">
       <table name="NCL_CLAU" />
       <id-class class="org.santfeliu.kernel.service.DBCounterPK" />
       <attributes>
@@ -386,7 +387,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.kernel.service.DBPerson" name="DBPerson">
+    <entity class="org.santfeliu.kernel.service.DBPerson" name="DBPerson"
+      access="FIELD">
       <table name="NCL_PERSONA" />
       <attributes>
         <id name="personId">
@@ -467,8 +469,12 @@
         <basic name="stddgr">
           <column name="STDDGR" length="8" />
         </basic>     
-        <basic name="persvnum" />
-        <basic name="contvnum" />
+        <basic name="persvnum">
+          <column name="PERSVNUM" precision="2" scale="0" />
+        </basic>           
+        <basic name="contvnum">
+          <column name="CONTVNUM" precision="4" scale="0" />
+        </basic> 
         <basic name="baixasw">
           <column name="BAIXASW" length="1" />
         </basic>
@@ -479,7 +485,7 @@
     </entity>
 
     <entity name="DBPersonAddress"
-      class="org.santfeliu.kernel.service.DBPersonAddress">
+      class="org.santfeliu.kernel.service.DBPersonAddress" access="FIELD">
       <table name="NCL_PERSDOM"  />
       <id-class class="org.santfeliu.kernel.service.DBPersonAddressPK" />
       <attributes>
@@ -535,7 +541,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.kernel.service.DBTeleco" name="DBTeleco">
+    <entity class="org.santfeliu.kernel.service.DBTeleco" name="DBTeleco"
+      access="FIELD">
       <table name="NCL_TELECO"  />
       <id-class class="org.santfeliu.kernel.service.DBTelecoPK"/>
       <attributes>
@@ -578,7 +585,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.kernel.service.DBStreetType" name="DBStreetType">
+    <entity class="org.santfeliu.kernel.service.DBStreetType" 
+            name="DBStreetType" access="FIELD">
       <table name="NCL_SIGLASCARRER" />
       <attributes>
         <id name="streetTypeId">
@@ -617,7 +625,8 @@
       </attributes>
     </entity>
     
-    <entity class="org.santfeliu.kernel.service.DBCountry" name="DBCountry">
+    <entity class="org.santfeliu.kernel.service.DBCountry" name="DBCountry"
+      access="FIELD">
       <table name="NCL_PAIS"  />
       <attributes>
         <id name="countryId">
@@ -656,7 +665,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.kernel.service.DBProvince" name="DBProvince">
+    <entity class="org.santfeliu.kernel.service.DBProvince" name="DBProvince"
+      access="FIELD">
       <table name="NCL_PROVINCIA"  />
       <id-class class="org.santfeliu.kernel.service.DBProvincePK"/>
       <attributes>
@@ -707,7 +717,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.kernel.service.DBCity" name="DBCity">
+    <entity class="org.santfeliu.kernel.service.DBCity" name="DBCity"
+      access="FIELD">
       <table name="NCL_MUNICIPI"  />
       <id-class class="org.santfeliu.kernel.service.DBCityPK"/>
       <attributes>
@@ -778,7 +789,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.kernel.service.DBStreet" name="DBStreet">
+    <entity class="org.santfeliu.kernel.service.DBStreet" name="DBStreet"
+      access="FIELD">
       <table name="NCL_CARRER" />
       <id-class class="org.santfeliu.kernel.service.DBStreetPK"/>
       <attributes>
@@ -842,7 +854,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.kernel.service.DBAddress" name="DBAddress">
+    <entity class="org.santfeliu.kernel.service.DBAddress" name="DBAddress"
+      access="FIELD">
         <table name="NCL_DOMICILI" />
         <attributes>
           <id name="addressId">
@@ -959,7 +972,7 @@
     </entity>
 
     <entity class="org.santfeliu.kernel.service.DBPersonRepresentant"
-      name="DBPersonRepresentant">
+      name="DBPersonRepresentant" access="FIELD">
       <table name="NCL_REPRESENTANT"  />
       <id-class class="org.santfeliu.kernel.service.DBPersonRepresentantPK" />
       <attributes>
@@ -1010,7 +1023,7 @@
     </entity>
 
     <entity class="org.santfeliu.kernel.service.DBKernelListItem"
-      name="DBKernelListItem">
+      name="DBKernelListItem" access="FIELD">
         <table name="NCL_TAULA" />
         <id-class class="org.santfeliu.kernel.service.DBKernelListItemPK" />
         <attributes>
@@ -1057,7 +1070,7 @@
      </entity>
 
     <entity class="org.santfeliu.kernel.service.DBPersonDocument"
-      name="DBPersonDocument">
+      name="DBPersonDocument" access="FIELD">
       <table name="DOM_PERSON" />
       <attributes>
         <id name="personDocId">
@@ -1099,7 +1112,7 @@
     </entity>
 
     <entity class="org.santfeliu.kernel.service.DBPersonPerson"
-      name="DBPersonPerson">
+      name="DBPersonPerson" access="FIELD">
       <table name="NCL_PERSONPERSON" />
       <attributes>
         <id name="personPersonId">
@@ -1124,7 +1137,8 @@
       </attributes>
     </entity>
 
-    <entity class="org.santfeliu.kernel.service.DBRoom" name="DBRoom">
+    <entity class="org.santfeliu.kernel.service.DBRoom" name="DBRoom"
+      access="FIELD">
       <table name="NCL_SALA" />
       <id-class class="org.santfeliu.kernel.service.DBRoomPK" />
       <attributes>

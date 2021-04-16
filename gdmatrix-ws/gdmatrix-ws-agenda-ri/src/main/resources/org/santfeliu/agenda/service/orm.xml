@@ -201,7 +201,7 @@
     </named-native-query>    
 
     <entity class="org.santfeliu.agenda.service.DBEvent"
-      name="DBEvent">
+      name="DBEvent" access="FIELD">
       <table name="AGD_ESDEVENIMENT" />
       <attributes>
         <id name="eventId">
@@ -270,7 +270,7 @@
     </entity>
 
     <entity class="org.santfeliu.agenda.service.DBEventDocument"
-      name="DBEventDocument">
+      name="DBEventDocument" access="FIELD">
       <table name="AGD_DOCUMENT" />
       <attributes>
         <id name="eventDocId">
@@ -305,7 +305,7 @@
         <basic name="comments">
           <column name="COMMENTS" length="200" />
         </basic>
-        <many-to-one name="dbEvent">
+        <many-to-one name="dbEvent" target-entity="DBEvent">
           <join-column name="EVENTID" referenced-column-name="ESDEVCOD"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -313,7 +313,7 @@
     </entity>
 
     <entity class="org.santfeliu.agenda.service.DBEventPlace"
-      name="DBEventPlace">
+      name="DBEventPlace" access="FIELD">
       <table name="AGD_ESDEVLLOC" />
       <id-class class="org.santfeliu.agenda.service.DBEventPlacePK" />
       <attributes>
@@ -350,7 +350,7 @@
         <basic name="numero">
           <column name="NUMERO" precision="4" scale="0" />
         </basic>
-        <many-to-one name="dbEvent">
+        <many-to-one name="dbEvent" target-entity="DBEvent">
           <join-column name="ESDEVCOD" referenced-column-name="ESDEVCOD"
               insertable="false" updatable="false" />
         </many-to-one>    
@@ -358,7 +358,7 @@
     </entity>
 
     <entity class="org.santfeliu.agenda.service.DBAttendant"
-      name="DBAttendant">
+      name="DBAttendant" access="FIELD">
       <id-class class="org.santfeliu.agenda.service.DBAttendantPK" />
       <table name="AGD_ASSISTIR" />
       <attributes>
@@ -383,7 +383,7 @@
         <basic name="attended">
           <column name="PRESENTAT" length="1" />
         </basic>
-        <many-to-one name="dbEvent">
+        <many-to-one name="dbEvent" target-entity="DBEvent">
           <join-column name="ESDEVCOD" referenced-column-name="ESDEVCOD"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -391,7 +391,7 @@
     </entity>
 
     <entity class="org.santfeliu.agenda.service.DBTheme"
-      name="DBTheme">
+      name="DBTheme" access="FIELD" >
       <table name="AGD_TEMATICA" />
       <attributes>
         <id name="themeId">
@@ -409,7 +409,7 @@
     </entity>
 
     <entity class="org.santfeliu.agenda.service.DBEventTheme"
-      name="DBEventTheme">
+      name="DBEventTheme" access="FIELD">
       <table name="AGD_ESDEVTEMA" />
       <id-class class="org.santfeliu.agenda.service.DBEventThemePK" />
       <attributes>
@@ -426,7 +426,7 @@
     </entity>
 
     <entity class="org.santfeliu.agenda.service.DBEventProperty"
-      name="DBEventProperty">
+      name="DBEventProperty" access="FIELD">
       <table name="AGD_ATRIBESDEVENIMENT" />
       <id-class class="org.santfeliu.agenda.service.DBEventPropertyPK" />
       <attributes>

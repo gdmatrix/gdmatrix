@@ -403,12 +403,24 @@
         <column name="sdehreg" />
       </basic>
 
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>  
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
 
       <basic name="extrcod" >
         <column name="EXTRCOD" />
@@ -598,12 +610,24 @@
         <column name="GRUPCOD" />
       </basic>
 
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>  
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
 
       <basic name="description" >
         <column name="ESTATDESC" table="WKF_ESTAT" />
@@ -638,12 +662,24 @@
         <column name="GRUPCOD" />
       </basic>
 
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
     </attributes>
   </entity >
 
@@ -1071,12 +1107,24 @@
       <basic name="counter">
         <column name="CLAUVNUM" />
       </basic>
-      <basic name="stdugr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
     </attributes>
   </entity>
 
@@ -1316,14 +1364,30 @@
       <basic name="description">
         <column name="TCDESC2"/>
       </basic>
-      <basic name="tcqual" />
-      <basic name="tcvnum" />
-      <basic name="stdugr" />
-      <basic name="stdumod" />
-      <basic name="stddgr" />
-      <basic name="stddmod" />
-      <basic name="stdhgr" />
-      <basic name="stdhmod" />
+      <basic name="tcqual">
+        <column name="TCQUAL" />
+      </basic>
+      <basic name="tcvnum">
+        <column name="TCVNUM" />
+      </basic>
+      <basic name="stdugr">
+        <column name="STDUGR" />
+      </basic>
+      <basic name="stdumod">
+        <column name="STDUMOD" />
+      </basic>
+      <basic name="stddgr">
+        <column name="STDDGR" />
+      </basic>
+      <basic name="stddmod">
+        <column name="STDDMOD" />
+      </basic>
+      <basic name="stdhgr">
+        <column name="STDHGR" />
+      </basic>
+      <basic name="stdhmod">
+        <column name="STDHMOD" />
+      </basic>
     </attributes>
   </entity>
 
