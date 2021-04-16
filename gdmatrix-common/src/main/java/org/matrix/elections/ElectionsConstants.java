@@ -32,7 +32,7 @@ package org.matrix.elections;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ElectionsConstants
 {

@@ -32,11 +32,10 @@ package org.matrix.survey;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
  */
 public class SurveyConstants
 {
-
   public static final String SURVID = "survid";
   public static final String TEXT = "text";
   public static final String OPEN = "open";
@@ -46,6 +45,5 @@ public class SurveyConstants
   public static final String ANSWERID = "answerid";
   public static final String VOTES = "votes";  
   
-  public static final String STARTDATE = "startdate";
-  
+  public static final String STARTDATE = "startdate"; 
 }

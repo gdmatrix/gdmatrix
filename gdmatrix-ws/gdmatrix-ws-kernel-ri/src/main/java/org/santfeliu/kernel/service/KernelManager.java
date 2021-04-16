@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -139,6 +138,7 @@ public class KernelManager implements KernelManagerPort
   {
   }    
 
+  @Override
   public KernelMetaData getKernelMetaData()
   {
     KernelMetaData metaData = new KernelMetaData();
@@ -207,7 +207,7 @@ public class KernelManager implements KernelManagerPort
     Query query = entityManager.createNamedQuery("findPersons");
     setPersonFilterParameters(query, filter);
     List<DBPerson> dbPersons = query.getResultList();
-    List<Person> persons = new ArrayList<Person>();
+    List<Person> persons = new ArrayList<>();
     for (DBPerson dbPerson : dbPersons)
     {
       Person person = new Person();
@@ -232,7 +232,7 @@ public class KernelManager implements KernelManagerPort
     Query query = entityManager.createNamedQuery("findPersons");
     setPersonFilterParameters(query, filter);
     List<DBPerson> dbPersons = query.getResultList();
-    List<PersonView> personViews = new ArrayList<PersonView>();
+    List<PersonView> personViews = new ArrayList<>();
     for (DBPerson dbPerson : dbPersons)
     {
       PersonView personView = new PersonView();
@@ -353,7 +353,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public List<ContactView> findContactViews(ContactFilter filter)
   {
-    List<ContactView> contactViews = new ArrayList<ContactView>();
+    List<ContactView> contactViews = new ArrayList<>();
     String personId = filter.getPersonId();
     if ("".equals(personId)) personId = null;
     if (personId != null) // teleco1
@@ -467,7 +467,7 @@ public class KernelManager implements KernelManagerPort
       filter.getMaxResults() == 0)
       throw new WebServiceException("FILTER_NOT_ALLOWED");
 
-    List<AddressView> addressViews = new ArrayList<AddressView>();
+    List<AddressView> addressViews = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findAddresses");
 
     setAddressFilterParameters(query, filter);
@@ -589,8 +589,7 @@ public class KernelManager implements KernelManagerPort
         StringUtils.isBlank(filter.getPersonId()))
       throw new WebServiceException("FILTER_NOT_ALLOWED");
 
-    List<PersonAddressView> personAddressViews =
-      new ArrayList<PersonAddressView>();
+    List<PersonAddressView> personAddressViews = new ArrayList<>();
     String personId = filter.getPersonId();
     if (personId != null)
     {
@@ -740,8 +739,7 @@ public class KernelManager implements KernelManagerPort
   public List<PersonRepresentantView> findPersonRepresentantViews(
     PersonRepresentantFilter filter)
   {
-    List<PersonRepresentantView> personRepresentantViews =
-      new ArrayList<PersonRepresentantView>();
+    List<PersonRepresentantView> personRepresentantViews = new ArrayList<>();
     String personId = filter.getPersonId();
     if (personId != null)
     {
@@ -842,7 +840,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public List<PersonPersonView> findPersonPersonViews(PersonPersonFilter filter)
   {
-    List<PersonPersonView> personPersonViewList = new ArrayList<PersonPersonView>();
+    List<PersonPersonView> personPersonViewList = new ArrayList<>();
 
     if (filter.getPersonId() != null || filter.getRelPersonId() != null)
     {
@@ -873,8 +871,8 @@ public class KernelManager implements KernelManagerPort
         personPersonView.setRelPersonView(relPersonView);
         personPersonView.setPersonPersonId(dbPersonPerson.getPersonPersonId());
         String personPersonTypeId = dbPersonPerson.getPersonPersonTypeId();
-        personPersonView.setPersonPersonTypeId(personPersonTypeId != null ? personPersonTypeId :
-          DictionaryConstants.PERSON_PERSON_TYPE);
+        personPersonView.setPersonPersonTypeId(personPersonTypeId != null ? 
+          personPersonTypeId : DictionaryConstants.PERSON_PERSON_TYPE);
 
         personPersonViewList.add(personPersonView);
       }
@@ -1165,7 +1163,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public List<Province> findProvinces(ProvinceFilter filter)
   {
-    List<Province> provinces = new ArrayList<Province>();
+    List<Province> provinces = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findProvinces");
     query.setParameter("countryId", filter.getCountryId());
     String provinceName = filter.getProvinceName();
@@ -1260,7 +1258,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public List<City> findCities(CityFilter filter)
   {
-    List<City> cities = new ArrayList<City>();
+    List<City> cities = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findCities");
     String countryId = filter.getCountryId();
     String provinceId = filter.getProvinceId();
@@ -1360,7 +1358,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public List<Street> findStreets(StreetFilter filter)
   {
-    List<Street> streets = new ArrayList<Street>();
+    List<Street> streets = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findStreets");
     String countryId = filter.getCountryId();
     String provinceId = filter.getProvinceId();
@@ -1450,7 +1448,7 @@ public class KernelManager implements KernelManagerPort
   @Override
   public List<KernelListItem> listKernelListItems(KernelList list)
   {
-    List<KernelListItem> kernelListItems = new ArrayList<KernelListItem>();
+    List<KernelListItem> kernelListItems = new ArrayList<>();
 
     String listId = getKernelListId(list);
     int length = getKernelListSize(list);
@@ -1499,7 +1497,8 @@ public class KernelManager implements KernelManagerPort
 
     //Needs to load audit properties
     DBPersonDocument dbPersonDocument =
-      entityManager.getReference(DBPersonDocument.class, personDocument.getPersonDocId());
+      entityManager.getReference(DBPersonDocument.class, 
+        personDocument.getPersonDocId());
     dbPersonDocument.copyFrom(personDocument);
 
     Auditor.auditChange(dbPersonDocument, userId);
@@ -1527,7 +1526,7 @@ public class KernelManager implements KernelManagerPort
         StringUtils.isBlank(filter.getPersonId()))
       throw new WebServiceException("FILTER_NOT_ALLOWED");
 
-    List<PersonDocumentView> personDocViewList = new ArrayList();
+    List<PersonDocumentView> personDocViewList = new ArrayList<>();
     Query query = entityManager.createNamedQuery("findPersonDocuments");
     query.setFirstResult(filter.getFirstResult());
     query.setMaxResults(filter.getMaxResults());
@@ -1538,7 +1537,7 @@ public class KernelManager implements KernelManagerPort
     List<DBPersonDocument> dbPersonDocList = query.getResultList();
     if (dbPersonDocList != null && !dbPersonDocList.isEmpty())
     {
-      HashMap<String, List<PersonDocumentView>> personIdMap = new HashMap();
+      HashMap<String, List<PersonDocumentView>> personIdMap = new HashMap<>();
       for (DBPersonDocument dbPersonDoc : dbPersonDocList)
       {
         PersonDocumentView docPersView = new PersonDocumentView();
@@ -1549,7 +1548,7 @@ public class KernelManager implements KernelManagerPort
         String personId = dbPersonDoc.getPersonId();
         List<PersonDocumentView> dpvList = personIdMap.get(personId);
         if (dpvList == null)
-          dpvList = new ArrayList();
+          dpvList = new ArrayList<>();
         dpvList.add(docPersView);
         personIdMap.put(personId, dpvList);
 
@@ -1740,7 +1739,7 @@ public class KernelManager implements KernelManagerPort
   private String likePattern(String pattern)
   {
     if (pattern.length() == 0) return null;
-    StringBuffer buffer = new StringBuffer("% ");
+    StringBuilder buffer = new StringBuilder("% ");
     if (pattern.startsWith("\"") && pattern.endsWith("\""))
     {
       pattern = pattern.substring(1);
@@ -1796,7 +1795,7 @@ public class KernelManager implements KernelManagerPort
 
   private String describeAddress(DBAddress dbAddress, DBStreet dbStreet)
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     if (dbStreet != null)
     {
       buffer.append(dbStreet.getStreetTypeId());
@@ -2122,6 +2121,7 @@ public class KernelManager implements KernelManagerPort
         throw new WebServiceException("VALUE_MUST_BE_NUMBER");
       }
     }
+    
     if (address.getPostOfficeBox() != null &&
       address.getPostOfficeBox().length() > 0)
     {
@@ -2176,17 +2176,14 @@ public class KernelManager implements KernelManagerPort
     validator.validate(room, unvalidable);
   }
 
-
-
   private void validatePersonPerson(PersonPerson personPerson)
   {
-    if (personPerson.getRelPersonId() == null || personPerson.getRelPersonId().equals(""))
-      throw new WebServiceException("persons:INVALID_PERSON_PERSON");
-    if (personPerson.getPersonId() == null || personPerson.getPersonId().equals(""))
-      throw new WebServiceException("persons:INVALID_PERSON_PERSON");
-    if (personPerson.getPersonPersonTypeId() == null ||
-        personPerson.getPersonPersonTypeId().trim().length() == 0)
-      throw new WebServiceException("persons:INVALID_PERSON_PERSON_TYPE");
+    if (StringUtils.isBlank(personPerson.getRelPersonId()))
+      throw new WebServiceException("kernel:INVALID_PERSON_PERSON");
+    if (StringUtils.isBlank(personPerson.getPersonId()))
+      throw new WebServiceException("kernel:INVALID_PERSON_PERSON");
+    if (StringUtils.isBlank(personPerson.getPersonPersonTypeId()))
+      throw new WebServiceException("kernel:INVALID_PERSON_PERSON_TYPE");
 
     String typeId = personPerson.getPersonPersonTypeId();
     typeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, typeId);
@@ -2207,5 +2204,4 @@ public class KernelManager implements KernelManagerPort
         filter.getMaxResults() == 0)
       throw new WebServiceException("FILTER_NOT_ALLOWED");
   }
-
 }

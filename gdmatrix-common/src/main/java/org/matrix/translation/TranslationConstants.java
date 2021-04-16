@@ -32,7 +32,7 @@ package org.matrix.translation;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class TranslationConstants
 {

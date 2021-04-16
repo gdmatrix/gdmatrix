@@ -32,7 +32,7 @@ package org.matrix.agenda;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class AgendaConstants
 {

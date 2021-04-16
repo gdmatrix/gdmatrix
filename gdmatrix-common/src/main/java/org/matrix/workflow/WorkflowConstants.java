@@ -32,7 +32,7 @@ package org.matrix.workflow;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WorkflowConstants
 {

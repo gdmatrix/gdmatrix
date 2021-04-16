@@ -32,7 +32,7 @@ package org.matrix.kernel;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class KernelConstants
 {

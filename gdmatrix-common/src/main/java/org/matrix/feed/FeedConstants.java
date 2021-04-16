@@ -32,7 +32,7 @@ package org.matrix.feed;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
  */
 public class FeedConstants
 {

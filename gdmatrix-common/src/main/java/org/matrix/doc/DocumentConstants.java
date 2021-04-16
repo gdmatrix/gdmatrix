@@ -32,7 +32,7 @@ package org.matrix.doc;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class DocumentConstants
 {

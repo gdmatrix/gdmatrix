@@ -3042,13 +3042,12 @@ public class KernelManager implements KernelManagerPort
 
   private void validatePersonPerson(PersonPerson personPerson)
   {
-    if (personPerson.getRelPersonId() == null || personPerson.getRelPersonId().equals(""))
-      throw new WebServiceException("persons:INVALID_PERSON_PERSON");
-    if (personPerson.getPersonId() == null || personPerson.getPersonId().equals(""))
-      throw new WebServiceException("persons:INVALID_PERSON_PERSON");
-    if (personPerson.getPersonPersonTypeId() == null ||
-        personPerson.getPersonPersonTypeId().trim().length() == 0)
-      throw new WebServiceException("persons:INVALID_PERSON_PERSON_TYPE");
+    if (StringUtils.isBlank(personPerson.getRelPersonId()))
+      throw new WebServiceException("kernel:INVALID_PERSON_PERSON");
+    if (StringUtils.isBlank(personPerson.getPersonId()))
+      throw new WebServiceException("kernel:INVALID_PERSON_PERSON");
+    if (StringUtils.isBlank(personPerson.getPersonPersonTypeId()))
+      throw new WebServiceException("kernel:INVALID_PERSON_PERSON_TYPE");
 
     String typeId = personPerson.getPersonPersonTypeId();
     typeId = getEndpoint().toGlobalId(org.matrix.dic.Type.class, typeId);
@@ -3104,112 +3103,124 @@ public class KernelManager implements KernelManagerPort
    *   DBProvince dbProvince = (DBProvince) row[5];
    *   DBCountry dbCountry = (DBCountry) row[6];
    * */
-  private List<Object []> findFotosAdreces(AddressFilter filter)
+  private List<Object[]> findFotosAdreces(AddressFilter filter)
   {
-      int idsCount = filter.getAddressIdList().size();
-      Query query;
+    int idsCount = filter.getAddressIdList().size();
+    Query query;
 
-      query = entityManager.createNamedQuery("findAdrecesPersonaExpedient");
+    query = entityManager.createNamedQuery("findAdrecesPersonaExpedient");
+    setAddressFilterParameters(query, filter);
+    query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_PERSONDOM.getVersionTypeId() + "*");
+    List<Object[]> resultList = query.getResultList();
+
+    if (resultList.size() < idsCount)
+    {
+      query = entityManager.createNamedQuery("findAdrecesInteressatExpedient");
       setAddressFilterParameters(query, filter);
       query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_PERSONDOM.getVersionTypeId() + "*");
-      List<Object[]> resultList = query.getResultList();
+      resultList.addAll(query.getResultList());
+    }
 
-      if (resultList.size()<idsCount)
-      {
-        query = entityManager.createNamedQuery("findAdrecesInteressatExpedient");
-        setAddressFilterParameters(query, filter);
-        query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_PERSONDOM.getVersionTypeId() + "*");
-        resultList.addAll(query.getResultList());
-      }
+    if (resultList.size() < idsCount)
+    {
+      query = entityManager.createNamedQuery("findAdrecesRepresentantExpedient");
+      setAddressFilterParameters(query, filter);
+      query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_REPRESENTANTDOM.getVersionTypeId() + "*");
+      resultList.addAll(query.getResultList());
+    }
 
-      if (resultList.size()<idsCount)
-      {
-        query = entityManager.createNamedQuery("findAdrecesRepresentantExpedient");
-        setAddressFilterParameters(query, filter);
-        query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_REPRESENTANTDOM.getVersionTypeId() + "*");
-        resultList.addAll(query.getResultList());
-      }
+    if (resultList.size() < idsCount)
+    {
+      query = entityManager.createNamedQuery("findAdrecesRepresentantInteressatExpedient");
+      setAddressFilterParameters(query, filter);
+      query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_REPRESENTANTDOM.getVersionTypeId() + "*");
+      resultList.addAll(query.getResultList());
+    }
 
-      if (resultList.size()<idsCount)
-      {
-        query = entityManager.createNamedQuery("findAdrecesRepresentantInteressatExpedient");
-        setAddressFilterParameters(query, filter);
-        query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_REPRESENTANTDOM.getVersionTypeId() + "*");
-        resultList.addAll(query.getResultList());
-      }
-
-
-      return resultList;
+    return resultList;
   }
 
   private int countFotosAdreces(AddressFilter filter)
   {
-      int total = 0;
-      int idsCount = filter.getAddressIdList().size();
-      Query query;
+    int total = 0;
+    int idsCount = filter.getAddressIdList().size();
+    Query query;
 
-      query = entityManager.createNamedQuery("countAdrecesPersonaExpedient");
+    query = entityManager.createNamedQuery("countAdrecesPersonaExpedient");
+    setAddressFilterParameters(query, filter);
+    query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_PERSONDOM.getVersionTypeId() + "*");
+    Number num = (Number) query.getSingleResult();
+    total += num == null ? 0 : num.intValue();
+
+    if (total < idsCount || idsCount == 0)
+    {
+      query = entityManager.createNamedQuery("countAdrecesInteressatExpedient");
       setAddressFilterParameters(query, filter);
       query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_PERSONDOM.getVersionTypeId() + "*");
-      Number num =  (Number)query.getSingleResult();
-      total += num==null?0:num.intValue();
 
-      if (total<idsCount || idsCount==0)
-      {
-        query = entityManager.createNamedQuery("countAdrecesInteressatExpedient");
-        setAddressFilterParameters(query, filter);
-        query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_PERSONDOM.getVersionTypeId() + "*");
+      num = (Number) query.getSingleResult();
+      total += num == null ? 0 : num.intValue();
+    }
 
-        num =  (Number)query.getSingleResult();
-        total += num==null?0:num.intValue();
-      }
+    if (total < idsCount || idsCount == 0)
+    {
+      query = entityManager.createNamedQuery("countAdrecesRepresentantExpedient");
+      setAddressFilterParameters(query, filter);
+      query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_REPRESENTANTDOM.getVersionTypeId() + "*");
 
-      if (total<idsCount || idsCount==0)
-      {
-        query = entityManager.createNamedQuery("countAdrecesRepresentantExpedient");
-        setAddressFilterParameters(query, filter);
-        query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_REPRESENTANTDOM.getVersionTypeId() + "*");
+      num = (Number) query.getSingleResult();
+      total += num == null ? 0 : num.intValue();
+    }
 
-        num =  (Number)query.getSingleResult();
-        total += num==null?0:num.intValue();
-      }
+    if (total < idsCount || idsCount == 0)
+    {
+      query = entityManager.createNamedQuery("countAdrecesRepresentantInteressatExpedient");
+      setAddressFilterParameters(query, filter);
+      query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_REPRESENTANTDOM.getVersionTypeId() + "*");
 
-      if (total<idsCount || idsCount==0)
-      {
-        query = entityManager.createNamedQuery("countAdrecesRepresentantInteressatExpedient");
-        setAddressFilterParameters(query, filter);
-        query.setParameter("versionType", "$" + VersionType.FOTO_ADDRESS_CASE_REPRESENTANTDOM.getVersionTypeId() + "*");
-
-        num =  (Number)query.getSingleResult();
-        total += num==null?0:num.intValue();
-      }
-      return total;
+      num = (Number) query.getSingleResult();
+      total += num == null ? 0 : num.intValue();
+    }
+    return total;
   }
 
   private void checkCity(String id, User user) throws WebServiceException
   {
     // id can be a cityId or streetId
-    if (id == null) return;
-    if (user.getRoles().contains(KernelConstants.KERNEL_ADMIN_ROLE)) return;
+    if (id == null)
+    {
+      return;
+    }
+    if (user.getRoles().contains(KernelConstants.KERNEL_ADMIN_ROLE))
+    {
+      return;
+    }
 
-    String blockedCityId =
-      MatrixConfig.getProperty("KernelManager.blockedCityId");
-    if (blockedCityId == null) return;
+    String blockedCityId
+      = MatrixConfig.getProperty("KernelManager.blockedCityId");
+    if (blockedCityId == null)
+    {
+      return;
+    }
 
     if (id.startsWith(blockedCityId))
+    {
       throw new WebServiceException("NOT_AUTHORIZED");
+    }
   }
 
   private void validatePersonFilter(PersonFilter filter)
   {
-    if (filter.getPersonId().isEmpty() &&
-        StringUtils.isBlank(filter.getNif()) &&
-        StringUtils.isBlank(filter.getName()) &&
-        StringUtils.isBlank(filter.getFirstSurname()) &&
-        StringUtils.isBlank(filter.getSecondSurname()) &&
-        StringUtils.isBlank(filter.getFullName()) &&
-        StringUtils.isBlank(filter.getPassport()) &&
-        filter.getMaxResults() == 0)
+    if (filter.getPersonId().isEmpty()
+      && StringUtils.isBlank(filter.getNif())
+      && StringUtils.isBlank(filter.getName())
+      && StringUtils.isBlank(filter.getFirstSurname())
+      && StringUtils.isBlank(filter.getSecondSurname())
+      && StringUtils.isBlank(filter.getFullName())
+      && StringUtils.isBlank(filter.getPassport())
+      && filter.getMaxResults() == 0)
+    {
       throw new WebServiceException("FILTER_NOT_ALLOWED");
+    }
   }
 }

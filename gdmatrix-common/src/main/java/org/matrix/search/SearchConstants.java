@@ -32,7 +32,7 @@ package org.matrix.search;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class SearchConstants
 {
