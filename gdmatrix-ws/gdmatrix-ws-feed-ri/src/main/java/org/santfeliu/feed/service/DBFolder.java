@@ -40,7 +40,10 @@ import org.matrix.util.WSEndpoint;
  */
 public class DBFolder extends Folder
 {
-  private Collection<DBFeedFolder> feedFolders;
+  private Collection<DBFeedFolder> feedFolders;  
+  
+  private DBFolder parentFolder;
+  private Collection<DBFolder> children;  
 
   public DBFolder()
   {
@@ -59,6 +62,26 @@ public class DBFolder extends Folder
   public void setFeedFolders(Collection<DBFeedFolder> feedFolders)
   {
     this.feedFolders = feedFolders;
+  }
+
+  public DBFolder getParentFolder() 
+  {
+    return parentFolder;
+  }
+
+  public void setParentFolder(DBFolder parentFolder) 
+  {
+    this.parentFolder = parentFolder;
+  }
+
+  public Collection<DBFolder> getChildren() 
+  {
+    return children;
+  }
+
+  public void setChildren(Collection<DBFolder> children) 
+  {
+    this.children = children;
   }
 
   public void copyTo(Folder folder, WSEndpoint endpoint)

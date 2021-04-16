@@ -55,12 +55,13 @@ import org.matrix.feed.FeedFolderView;
 import org.matrix.feed.FeedManagerPort;
 import org.matrix.feed.Folder;
 import org.matrix.feed.FolderFilter;
-import org.santfeliu.jpa.JPA;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.enc.Unicode;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 /**
  *
@@ -68,21 +69,26 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.feed.FeedManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class FeedManager implements FeedManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("Feed");
+
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext
+  @PersistenceContext(unitName="feed_ri")
   public EntityManager entityManager;
 
-  protected static final Logger log = Logger.getLogger("Feed");
-
+  @Initializer
+  public void initialize(String endpointName)
+  {    
+  }
+  
   @Override
   public Folder loadFolder(String folderId)
   {
-    log.log(Level.INFO, "loadFolder {0}", new Object[]{folderId});
+    LOGGER.log(Level.INFO, "loadFolder {0}", new Object[]{folderId});
     if (folderId == null)
       throw new WebServiceException("feed:FOLDERID_IS_MANDATORY");
 
@@ -100,7 +106,7 @@ public class FeedManager implements FeedManagerPort
   public Folder storeFolder(Folder folder)
   {
     String folderId = folder.getFolderId();
-    log.log(Level.INFO, "storeFolder {0}", new Object[]{folderId});
+    LOGGER.log(Level.INFO, "storeFolder {0}", new Object[]{folderId});
     WSEndpoint endpoint = getWSEndpoint();
     if (isFolderCycleDetected(folder.getFolderId(), folder.getParentFolderId()))
       throw new WebServiceException("feed:FOLDER_CYCLE_DETECTED");
@@ -125,7 +131,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public boolean removeFolder(String folderId)
   {
-    log.log(Level.INFO, "removeFolder {0}", new Object[]{folderId});
+    LOGGER.log(Level.INFO, "removeFolder {0}", new Object[]{folderId});
     if (folderId == null)
       throw new WebServiceException("feed:FOLDERID_IS_MANDATORY");
 
@@ -152,7 +158,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public int countFolders(FolderFilter filter)
   {
-    log.log(Level.INFO, "countFolders");
+    LOGGER.log(Level.INFO, "countFolders");
     WSEndpoint endpoint = getWSEndpoint();
     Query query = entityManager.createNamedQuery("countFolders");
     applyFolderFilter(query, filter, endpoint);
@@ -163,7 +169,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public List<Folder> findFolders(FolderFilter filter)
   {
-    log.log(Level.INFO, "findFolders");
+    LOGGER.log(Level.INFO, "findFolders");
     WSEndpoint endpoint = getWSEndpoint();
     List<Folder> folderList = new ArrayList<Folder>();
     Query query = entityManager.createNamedQuery("findFolders");
@@ -183,7 +189,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public Feed loadFeed(String feedId)
   {
-    log.log(Level.INFO, "loadFeed {0}", new Object[]{feedId});
+    LOGGER.log(Level.INFO, "loadFeed {0}", new Object[]{feedId});
     if (feedId == null)
       throw new WebServiceException("feed:FEEDID_IS_MANDATORY");
 
@@ -200,7 +206,7 @@ public class FeedManager implements FeedManagerPort
   public Feed storeFeed(Feed feed)
   {
     String feedId = feed.getFeedId();
-    log.log(Level.INFO, "storeFeed {0}", new Object[]{feedId});
+    LOGGER.log(Level.INFO, "storeFeed {0}", new Object[]{feedId});
     WSEndpoint endpoint = getWSEndpoint();
     if (feedId == null) //insert
     {
@@ -225,7 +231,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public boolean removeFeed(String feedId)
   {
-    log.log(Level.INFO, "removeFeed {0}", new Object[]{feedId});
+    LOGGER.log(Level.INFO, "removeFeed {0}", new Object[]{feedId});
     if (feedId == null)
       throw new WebServiceException("feed:FEEDID_IS_MANDATORY");
 
@@ -254,7 +260,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public int countFeeds(FeedFilter filter)
   {
-    log.log(Level.INFO, "countFeeds");
+    LOGGER.log(Level.INFO, "countFeeds");
     WSEndpoint endpoint = getWSEndpoint();
     Query query = entityManager.createNamedQuery("countFeeds");
     applyFeedFilter(query, filter, endpoint);
@@ -265,7 +271,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public List<Feed> findFeeds(FeedFilter filter)
   {
-    log.log(Level.INFO, "findFeeds");
+    LOGGER.log(Level.INFO, "findFeeds");
     WSEndpoint endpoint = getWSEndpoint();
     List<Feed> feedList = new ArrayList<Feed>();
     Query query = entityManager.createNamedQuery("findFeeds");
@@ -285,7 +291,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public int countFeedFolders(FeedFolderFilter filter)
   {
-    log.log(Level.INFO, "countFeedFolders");
+    LOGGER.log(Level.INFO, "countFeedFolders");
     WSEndpoint endpoint = getWSEndpoint();
     Query query = entityManager.createNamedQuery("countFeedFolders");
     applyFeedFolderFilter(query, filter, endpoint);
@@ -296,7 +302,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public List<FeedFolder> findFeedFolders(FeedFolderFilter filter)
   {
-    log.log(Level.INFO, "findFeedFolders");
+    LOGGER.log(Level.INFO, "findFeedFolders");
     WSEndpoint endpoint = getWSEndpoint();
     List<FeedFolder> feedFolderList = new ArrayList<FeedFolder>();
     Query query = entityManager.createNamedQuery("findFeedFolders");
@@ -316,7 +322,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public List<FeedFolderView> findFeedFolderViews(FeedFolderFilter filter)
   {
-    log.log(Level.INFO, "findFeedFolderViews");
+    LOGGER.log(Level.INFO, "findFeedFolderViews");
     WSEndpoint endpoint = getWSEndpoint();
     List<FeedFolderView> feedFolderViewList = new ArrayList<FeedFolderView>();
     Query query = entityManager.createNamedQuery("findFeedFolderViews");
@@ -345,7 +351,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public FeedFolder loadFeedFolder(String feedFolderId)
   {
-    log.log(Level.INFO, "loadFeedFolder {0}", new Object[]{feedFolderId});
+    LOGGER.log(Level.INFO, "loadFeedFolder {0}", new Object[]{feedFolderId});
     if (feedFolderId == null)
       throw new WebServiceException("feed:FEEDFOLDERID_IS_MANDATORY");
 
@@ -363,7 +369,7 @@ public class FeedManager implements FeedManagerPort
   public FeedFolder storeFeedFolder(FeedFolder feedFolder)
   {
     String feedFolderId = feedFolder.getFeedFolderId();
-    log.log(Level.INFO, "storeFeedFolder {0}", new Object[]{feedFolderId});
+    LOGGER.log(Level.INFO, "storeFeedFolder {0}", new Object[]{feedFolderId});
     WSEndpoint endpoint = getWSEndpoint();
     if (feedFolderId == null) //insert
     {
@@ -388,7 +394,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public boolean removeFeedFolder(String feedFolderId)
   {
-    log.log(Level.INFO, "removeFeedFolder {0}", new Object[]{feedFolderId});
+    LOGGER.log(Level.INFO, "removeFeedFolder {0}", new Object[]{feedFolderId});
     if (feedFolderId == null)
       throw new WebServiceException("feed:FEEDFOLDERID_IS_MANDATORY");
 
@@ -414,7 +420,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public Entry loadEntry(String entryId)
   {
-    log.log(Level.INFO, "loadEntry {0}", new Object[]{entryId});
+    LOGGER.log(Level.INFO, "loadEntry {0}", new Object[]{entryId});
     if (entryId == null)
       throw new WebServiceException("feed:ENTRYID_IS_MANDATORY");
 
@@ -433,7 +439,7 @@ public class FeedManager implements FeedManagerPort
   public Entry storeEntry(Entry entry)
   {
     String entryId = entry.getEntryId();
-    log.log(Level.INFO, "storeEntry {0}", new Object[]{entryId});
+    LOGGER.log(Level.INFO, "storeEntry {0}", new Object[]{entryId});
     WSEndpoint endpoint = getWSEndpoint();
     encodeEntry(entry);
     if (entryId == null) //insert
@@ -457,7 +463,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public boolean removeEntry(String entryId)
   {
-    log.log(Level.INFO, "removeEntry {0}", new Object[]{entryId});
+    LOGGER.log(Level.INFO, "removeEntry {0}", new Object[]{entryId});
     if (entryId == null)
       throw new WebServiceException("feed:ENTRYID_IS_MANDATORY");
 
@@ -479,7 +485,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public int countEntries(EntryFilter filter)
   {
-    log.log(Level.INFO, "countEntries");
+    LOGGER.log(Level.INFO, "countEntries");
     WSEndpoint endpoint = getWSEndpoint();
     Query query = entityManager.createNamedQuery("countEntries");
     applyEntryFilter(query, filter, endpoint);
@@ -490,7 +496,7 @@ public class FeedManager implements FeedManagerPort
   @Override
   public List<Entry> findEntries(EntryFilter filter)
   {
-    log.log(Level.INFO, "findEntries");
+    LOGGER.log(Level.INFO, "findEntries");
     WSEndpoint endpoint = getWSEndpoint();
     List<Entry> entryList = new ArrayList<Entry>();
     Query query = entityManager.createNamedQuery("findEntries");

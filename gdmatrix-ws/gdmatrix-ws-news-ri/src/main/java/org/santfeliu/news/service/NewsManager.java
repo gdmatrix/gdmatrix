@@ -64,11 +64,12 @@ import org.matrix.news.Source;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.doc.client.DocumentManagerClient;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.HTMLNormalizer;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 /**
  *
@@ -76,16 +77,10 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.news.NewsManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class NewsManager implements NewsManagerPort
 {
-  @Resource
-  WebServiceContext wsContext;
-
-  @PersistenceContext
-  public EntityManager entityManager;
-  
-  public static final String PK_SEPARATOR = ";";
+  private static final Logger LOGGER = Logger.getLogger("News");  
 
   private static final int NEW_HEADLINE_MAX_SIZE = 1000;
   private static final int NEW_SUMMARY_MAX_SIZE = 4000;
@@ -93,9 +88,16 @@ public class NewsManager implements NewsManagerPort
   private static final int NEW_CUSTOM_URL_MAX_SIZE = 1000;
   private static final int NEW_SECTION_PRIORITY_MAX_SIZE = 6;
 
-  protected static final Logger log = Logger.getLogger("News");  
+  static final String PK_SEPARATOR = ";";
+
+  @Resource
+  WebServiceContext wsContext;
+
+  @PersistenceContext(unitName="news_ri")
+  public EntityManager entityManager;
   
-  public NewsManager()
+  @Initializer
+  public void initialize(String endpointName)
   {
   }
 
@@ -109,7 +111,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public New storeNew(New newObject, NewStoreOptions storeOptions)
   {
-    log.log(Level.INFO, "storeNew");
+    LOGGER.log(Level.INFO, "storeNew {0}", newObject.getNewId());
     validateNew(newObject);
     
     if (storeOptions.isCleanSummary())
@@ -153,7 +155,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public New loadNew(String newId)
   {
-    log.log(Level.INFO, "loadNew {0}", newId);        
+    LOGGER.log(Level.INFO, "loadNew {0}", newId);        
     New newObject = new New();
     DBNew dbNew = entityManager.find(DBNew.class, newId);
     if (dbNew == null) throw new WebServiceException("news:NEW_NOT_FOUND");
@@ -164,7 +166,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public int incrementNewCounter(String newId, String sectionId)
   {
-    log.log(Level.INFO, "incrementNewCounter newId {0} sectionId {1}",
+    LOGGER.log(Level.INFO, "incrementNewCounter newId {0} sectionId {1}",
       new String[]{newId, sectionId});
     int totalCounter = increaseTotalReadCount(newId);
     if (sectionId != null)
@@ -177,7 +179,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public int getTotalNewCounter(String newId)
   {
-    log.log(Level.INFO, "getTotalNewCounter {0}", newId);
+    LOGGER.log(Level.INFO, "getTotalNewCounter {0}", newId);
     DBNew dbNew = entityManager.find(DBNew.class, newId);
     return dbNew.getTotalReadingCount();
   }
@@ -187,7 +189,7 @@ public class NewsManager implements NewsManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeNew {0}", newId);
+      LOGGER.log(Level.INFO, "removeNew {0}", newId);
       DBNew dbNew = entityManager.getReference(DBNew.class, newId);
       // Sections
       Query query = entityManager.createNamedQuery("removeNewSections");
@@ -210,7 +212,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public int countNews(NewsFilter filter)
   {
-    log.log(Level.INFO, "countNews");
+    LOGGER.log(Level.INFO, "countNews");
     Query query = entityManager.createNamedQuery("countNews");
     setNewsFilterParameters(query, filter);
     return ((Number)query.getSingleResult()).intValue();
@@ -219,7 +221,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public List<New> findNews(NewsFilter filter)
   {
-    log.log(Level.INFO, "findNews");
+    LOGGER.log(Level.INFO, "findNews");
     List<New> result = new ArrayList<New>();
     Query query = entityManager.createNamedQuery("listNews");
     setNewsFilterParameters(query, filter);
@@ -275,7 +277,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public List<NewView> findNewViews(NewsFilter filter)
   {
-    log.log(Level.INFO, "findNewViews");
+    LOGGER.log(Level.INFO, "findNewViews");
     List<NewView> result = new ArrayList<NewView>();
     Query query = entityManager.createNamedQuery("listNews");
     setNewsFilterParameters(query, filter);
@@ -323,7 +325,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public NewSection storeNewSection(NewSection newSection)
   {
-    log.log(Level.INFO, "storeNewSection newId {0},sectionId {1}",
+    LOGGER.log(Level.INFO, "storeNewSection newId {0},sectionId {1}",
       new String[]{newSection.getNewId(), newSection.getSectionId()});
     validateNewSection(newSection);
     DBNewSection dbNewSection = new DBNewSection(newSection);    
@@ -352,7 +354,7 @@ public class NewsManager implements NewsManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeNewSection {0}", newSectionId);
+      LOGGER.log(Level.INFO, "removeNewSection {0}", newSectionId);
       DBNewSectionPK pk = new DBNewSectionPK(newSectionId);
       DBNewSection dbNewSection = 
         entityManager.getReference(DBNewSection.class, pk);
@@ -368,7 +370,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public List<NewSection> findNewSections(String newId)
   {
-    log.log(Level.INFO, "findNewSections newId:{0}", newId);
+    LOGGER.log(Level.INFO, "findNewSections newId:{0}", newId);
     List<NewSection> newSectionList = new ArrayList<NewSection>();
     Query query = entityManager.createNamedQuery("listNewSections");
     query.setParameter("newId", newId);
@@ -385,7 +387,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public NewDocument storeNewDocument(NewDocument newDocument)
   {
-    log.log(Level.INFO, "storeNewDocument newId {0},documentId {1}",
+    LOGGER.log(Level.INFO, "storeNewDocument newId {0},documentId {1}",
       new String[]{newDocument.getNewId(), newDocument.getDocumentId()});
     validateNewDocument(newDocument);
     WSEndpoint endpoint = getWSEndpoint();
@@ -409,7 +411,7 @@ public class NewsManager implements NewsManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeNewDocument {0}", newDocumentId);
+      LOGGER.log(Level.INFO, "removeNewDocument {0}", newDocumentId);
       DBNewDocumentPK pk = new DBNewDocumentPK(newDocumentId);
       DBNewDocument dbNewDocument =
         entityManager.getReference(DBNewDocument.class, pk);
@@ -425,7 +427,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public List<NewDocument> findNewDocuments(String newId, String docType)
   {
-    log.log(Level.INFO, "findNewDocuments newId:{0} docType:{1}",
+    LOGGER.log(Level.INFO, "findNewDocuments newId:{0} docType:{1}",
       new String[]{newId, docType});
     List<NewDocument> newDocumentList = new ArrayList<NewDocument>();
     newDocumentList = doListNewDocuments(newId, docType);
@@ -435,7 +437,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public NewSection loadNewSection(String newSectionId)
   {
-    log.log(Level.INFO, "loadNewSection {0}", newSectionId);        
+    LOGGER.log(Level.INFO, "loadNewSection {0}", newSectionId);        
     NewSection newSection = new NewSection();
     DBNewSection dbNewSection = entityManager.find(DBNewSection.class, 
       new DBNewSectionPK(newSectionId));
@@ -448,7 +450,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public List<Source> findSources()
   {
-    log.log(Level.INFO, "findSources");
+    LOGGER.log(Level.INFO, "findSources");
     Query query = entityManager.createNamedQuery("listSources");
     List<DBSource> list = query.getResultList();
     List<Source> resultList = new ArrayList<Source>();
@@ -464,7 +466,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public int countNewsBySection(SectionFilter filter)
   {
-    log.log(Level.INFO, "countNewsBySection");
+    LOGGER.log(Level.INFO, "countNewsBySection");
     int result = 0;
     for (int i = 0; i < filter.getSectionId().size(); i++)
     {
@@ -480,7 +482,7 @@ public class NewsManager implements NewsManagerPort
   @Override
   public List<SectionView> findNewsBySection(SectionFilter filter)
   {
-    log.log(Level.INFO, "findNewsBySection");
+    LOGGER.log(Level.INFO, "findNewsBySection");
     List<SectionView> result = new ArrayList<SectionView>();
     for (int i = 0; i < filter.getSectionId().size(); i++)
     {

@@ -60,7 +60,6 @@ import org.matrix.cms.Workspace;
 import org.matrix.cms.WorkspaceFilter;
 import org.matrix.cms.NodeChange;
 import org.matrix.cms.NodeChangeType;
-import org.santfeliu.jpa.JPA;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.cms.store.JPQLFindNodesPropertiesQueryBuilder;
@@ -68,10 +67,13 @@ import org.santfeliu.cms.store.JPQLFindNodesQueryBuilder;
 import org.santfeliu.jpa.JPAQuery;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
-import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.audit.Auditor;
+import org.santfeliu.ws.WSProperties;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
+import org.santfeliu.ws.annotations.State;
 
 /**
  *
@@ -79,27 +81,53 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.cms.CMSManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class CMSManager implements CMSManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("CMS");
+
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext
+  @PersistenceContext(unitName="cms_ri")
   public EntityManager entityManager;
+  
+  @State
+  Configuration config;  
 
-  protected static final Logger log = Logger.getLogger("CMS");
-
-  private static final long DB_REMOVED_NODE_LIFETIME =
-    getDBRemovedNodeLifetime();
-  private static final long DB_REMOVE_TIME =
-    getDBRemoveTime();
-  private static long lastDBRemoveMillis = System.currentTimeMillis();
+  public class Configuration
+  {
+    long dbRemovedNodeLifetime;
+    long dbRemoveTime;
+    long lastDBRemoveMillis;
+    
+    Configuration(String endpointName)
+    {
+      try
+      {
+        WSProperties props =
+          new WSProperties(endpointName, CMSManager.class);
+        dbRemovedNodeLifetime = getDBRemovedNodeLifetime(props);
+        dbRemoveTime = getDBRemoveTime(props);
+        lastDBRemoveMillis = System.currentTimeMillis();        
+      }
+      catch (Exception ex)
+      {
+        LOGGER.log(Level.WARNING, "Configuration error: {0}", ex.toString());
+      }
+    }
+  };
+  
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    config = new Configuration(endpointName);    
+  }
 
   @Override
   public Workspace loadWorkspace(String workspaceId)
   {
-    log.log(Level.INFO, "loadWorkspace {0}", new Object[]{workspaceId});
+    LOGGER.log(Level.INFO, "loadWorkspace {0}", new Object[]{workspaceId});
     if (workspaceId == null)
       throw new WebServiceException("cms:WORKSPACEID_IS_MANDATORY");
 
@@ -117,7 +145,7 @@ public class CMSManager implements CMSManagerPort
   public Workspace storeWorkspace(Workspace workspace)
   {
     String workspaceId = workspace.getWorkspaceId();
-    log.log(Level.INFO, "storeWorkspace {0}", new Object[]{workspaceId});
+    LOGGER.log(Level.INFO, "storeWorkspace {0}", new Object[]{workspaceId});
     WSEndpoint endpoint = getWSEndpoint();
     if (workspaceId == null) //insert
     {
@@ -149,8 +177,8 @@ public class CMSManager implements CMSManagerPort
   @Override
   public Workspace copyWorkspace(String fromWorkspaceId, String toWorkspaceId)
   {
-    log.log(Level.INFO, "copyWorkspace {0} {1}", new Object[]{fromWorkspaceId,
-      toWorkspaceId});
+    LOGGER.log(Level.INFO, "copyWorkspace {0} {1}", new Object[]{
+      fromWorkspaceId, toWorkspaceId});
     if (fromWorkspaceId == null)
       throw new WebServiceException("cms:FROMWORKSPACEID_IS_MANDATORY");
 
@@ -218,7 +246,7 @@ public class CMSManager implements CMSManagerPort
   @Override
   public boolean removeWorkspace(String workspaceId)
   {
-    log.log(Level.INFO, "removeWorkspace {0}", new Object[]{workspaceId});
+    LOGGER.log(Level.INFO, "removeWorkspace {0}", new Object[]{workspaceId});
     if (workspaceId == null)
       throw new WebServiceException("cms:WORKSPACEID_IS_MANDATORY");
 
@@ -247,7 +275,7 @@ public class CMSManager implements CMSManagerPort
   @Override
   public int countWorkspaces(WorkspaceFilter filter)
   {
-    log.log(Level.INFO, "countWorkspaces");
+    LOGGER.log(Level.INFO, "countWorkspaces");
     WSEndpoint endpoint = getWSEndpoint();
     Query query = entityManager.createNamedQuery("countWorkspaces");
     applyWorkspaceFilter(query, filter, endpoint);
@@ -258,7 +286,7 @@ public class CMSManager implements CMSManagerPort
   @Override
   public List<Workspace> findWorkspaces(WorkspaceFilter filter) 
   {
-    log.log(Level.INFO, "findWorkspaces");
+    LOGGER.log(Level.INFO, "findWorkspaces");
     WSEndpoint endpoint = getWSEndpoint();
     ArrayList<Workspace> workspaceList = new ArrayList<Workspace>();
     Query query = entityManager.createNamedQuery("findWorkspaces");
@@ -278,7 +306,7 @@ public class CMSManager implements CMSManagerPort
   @Override
   public Node loadNode(String workspaceId, String nodeId)
   {
-    log.log(Level.INFO, "loadNode workspace: {0}, node: {1}",
+    LOGGER.log(Level.INFO, "loadNode workspace: {0}, node: {1}",
       new Object[]{workspaceId, nodeId});
     if (workspaceId == null)
       throw new WebServiceException("cms:WORKSPACEID_IS_MANDATORY");
@@ -311,7 +339,7 @@ public class CMSManager implements CMSManagerPort
     {
       String workspaceId = node.getWorkspaceId();
       String nodeId = node.getNodeId();
-      log.log(Level.INFO, "storeNode workspace: {0}, node: {1}",
+      LOGGER.log(Level.INFO, "storeNode workspace: {0}, node: {1}",
         new Object[]{workspaceId, nodeId});
       if (workspaceId == null)
         throw new WebServiceException("cms:WORKSPACEID_IS_MANDATORY");
@@ -382,7 +410,7 @@ public class CMSManager implements CMSManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeNode", ex);
+      LOGGER.log(Level.SEVERE, "storeNode", ex);
       throw new WebServiceException(ex);
     }
   }
@@ -392,7 +420,7 @@ public class CMSManager implements CMSManagerPort
   {
     try
     {
-      log.log(Level.INFO, "removeNode workspace: {0}, node {1}",
+      LOGGER.log(Level.INFO, "removeNode workspace: {0}, node {1}",
         new Object[]{workspaceId, nodeId});
       if (workspaceId == null)
         throw new WebServiceException("cms:WORKSPACEID_IS_MANDATORY");
@@ -423,7 +451,7 @@ public class CMSManager implements CMSManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "removeNode", ex);
+      LOGGER.log(Level.SEVERE, "removeNode", ex);
       throw new WebServiceException(ex);
     }
   }
@@ -433,7 +461,7 @@ public class CMSManager implements CMSManagerPort
   {
     try
     {
-      log.log(Level.INFO, "countNodes");
+      LOGGER.log(Level.INFO, "countNodes");
       WSEndpoint endpoint = getWSEndpoint();
 
       JPQLFindNodesQueryBuilder queryBuilder = new JPQLFindNodesQueryBuilder();
@@ -445,7 +473,7 @@ public class CMSManager implements CMSManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "countNodes", ex);
+      LOGGER.log(Level.SEVERE, "countNodes", ex);
       throw new WebServiceException(ex);
     }
   }
@@ -455,7 +483,7 @@ public class CMSManager implements CMSManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findNodes");
+      LOGGER.log(Level.INFO, "findNodes");
       WSEndpoint endpoint = getWSEndpoint();
 
       List<Node> nodeList = new ArrayList<Node>();
@@ -559,7 +587,7 @@ public class CMSManager implements CMSManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findNodes", ex);
+      LOGGER.log(Level.SEVERE, "findNodes", ex);
       throw new WebServiceException(ex);
     }
   }
@@ -567,7 +595,7 @@ public class CMSManager implements CMSManagerPort
   @Override
   public List<Node> findModifiedNodes(String workspaceId, String dateTime)
   {
-    log.log(Level.INFO, "findModifiedNodes workspace: {0}, dateTime: {1}",
+    LOGGER.log(Level.INFO, "findModifiedNodes workspace: {0}, dateTime: {1}",
       new Object[]{workspaceId, dateTime});
     if (workspaceId == null)
       throw new WebServiceException("cms:WORKSPACEID_IS_MANDATORY");
@@ -595,8 +623,9 @@ public class CMSManager implements CMSManagerPort
   public List<NodeChange> findNodeChanges(String fromWorkspaceId,
     String toWorkspaceId, String baseNodeId)
   {
-    log.log(Level.INFO, "findNodeChanges fromWorkspace: {0}, toWorkspace: {1}",
-      new Object[]{fromWorkspaceId, toWorkspaceId});
+    LOGGER.log(Level.INFO, 
+      "findNodeChanges fromWorkspace: {0}, toWorkspace: {1}, baseNodeId: {2}",
+      new Object[]{fromWorkspaceId, toWorkspaceId, baseNodeId});
     if (fromWorkspaceId == null)
       throw new WebServiceException("cms:FROMWORKSPACEID_IS_MANDATORY");
     if (toWorkspaceId == null)
@@ -614,13 +643,7 @@ public class CMSManager implements CMSManagerPort
       localToWorkspaceId, baseNodeId, endpoint));
     nodeChangeList.addAll(findUpdatedNodes(localFromWorkspaceId,
       localToWorkspaceId, baseNodeId, endpoint));
-//    if (baseNodeId != null && baseNodeId.size() > 0)
-//    {
-//      String localBaseNodeId = endpoint.toLocalId(Node.class,
-//        baseNodeId);
-//      nodeChangeList = filterNodeChangeList(nodeChangeList, localBaseNodeId,
-//        localFromWorkspaceId);
-//    }
+
     return sortNodeChangeListByDepth(nodeChangeList);
   }
 
@@ -630,7 +653,7 @@ public class CMSManager implements CMSManagerPort
   {
     try
     {
-      log.log(Level.INFO, "syncNodes fromWorkspace: {0}, toWorkspace: {1}",
+      LOGGER.log(Level.INFO, "syncNodes fromWorkspace: {0}, toWorkspace: {1}",
         new Object[]{fromWorkspaceId, toWorkspaceId});
       if (fromWorkspaceId == null)
         throw new WebServiceException("cms:FROMWORKSPACEID_IS_MANDATORY");
@@ -722,7 +745,7 @@ public class CMSManager implements CMSManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "syncNodes", ex);
+      LOGGER.log(Level.SEVERE, "syncNodes", ex);
       throw new WebServiceException(ex);
     }
   }
@@ -1290,14 +1313,14 @@ public class CMSManager implements CMSManagerPort
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
         Date removeDate = df.parse(dbNode.getChangeDateTime());
         long lifeMillis = nowMillis - removeDate.getTime();
-        if (lifeMillis > DB_REMOVED_NODE_LIFETIME)
+        if (lifeMillis > config.dbRemovedNodeLifetime)
         {
           auxDBNodeList.add(dbNode);
         }
       }
       List<String> nodeIdList = getDBNodesRootList(auxDBNodeList);
       removeNodesAndDescendants(workspaceId, nodeIdList);
-      lastDBRemoveMillis = nowMillis;
+      config.lastDBRemoveMillis = nowMillis;
     }
   }
 
@@ -1328,7 +1351,7 @@ public class CMSManager implements CMSManagerPort
 
   private boolean mustRemoveDBNodes(long nowMillis)
   {
-    return nowMillis - lastDBRemoveMillis > DB_REMOVE_TIME;
+    return nowMillis - config.lastDBRemoveMillis > config.dbRemoveTime;
   }
 
   private void removeNodesAndDescendants(String workspaceId,
@@ -1362,10 +1385,9 @@ public class CMSManager implements CMSManagerPort
     query.executeUpdate();
   }
 
-  private static long getDBRemovedNodeLifetime()
+  private static long getDBRemovedNodeLifetime(WSProperties props)
   {
-    String value = MatrixConfig.getProperty(
-      "org.santfeliu.cms.service.CMSManager.dbRemovedNodeLifetime");
+    String value = props.getString("dbRemovedNodeLifetime");
     try
     {
       if (value != null)
@@ -1380,10 +1402,9 @@ public class CMSManager implements CMSManagerPort
     return 7 * 24 * 60 * 60 * 1000; //7 days
   }
 
-  private static long getDBRemoveTime()
+  private static long getDBRemoveTime(WSProperties props)
   {
-    String value = MatrixConfig.getProperty(
-      "org.santfeliu.cms.service.CMSManager.dbRemoveTime");
+    String value = props.getString("dbRemoveTime");    
     try
     {
       if (value != null)

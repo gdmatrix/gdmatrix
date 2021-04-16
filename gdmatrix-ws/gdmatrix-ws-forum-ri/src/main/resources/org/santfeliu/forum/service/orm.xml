@@ -89,59 +89,60 @@
     <table name="FRU_FORUM"  />
     <attributes>
       <id name="forumId">
-        <column name="FORUMID" />
+        <column name="FORUMID" precision="10" scale="0" />
         <generated-value strategy="TABLE" generator="FRU_FORUM"/>
         <table-generator name="FRU_FORUM" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="FRU_FORUM"
           initial-value="0" allocation-size="1"/>            
       </id>
       <basic name="startDateTime">
-        <column name="STARTDT" />
+        <column name="STARTDT" length="14" />
       </basic>
       <basic name="endDateTime">
-        <column name="ENDDT" />
+        <column name="ENDDT" length="14" />
       </basic>
       <basic name="name">
-        <column name="NAME" />
+        <column name="NAME" length="200" />
       </basic>
       <basic name="description">
-        <column name="DESCRIPTION" />
+        <column name="DESCRIPTION" length="4000" />
       </basic>
       <basic name="typeValue">
-        <column name="TYPE" />
+        <column name="TYPE" length="1" />
       </basic>
       <basic name="emailFrom">
-        <column name="EMAILFROM" />
+        <column name="EMAILFROM" length="100" />
       </basic>
       <basic name="emailTo">
-        <column name="EMAILTO" />
+        <column name="EMAILTO" length="100" />
       </basic>
       <basic name="lastInputIndex">
-        <column name="LASTINPUTINDEX" />
+        <column name="LASTINPUTINDEX" precision="10" scale="0" />
       </basic>
       <basic name="lastOutputIndex">
-        <column name="LASTOUTPUTINDEX" />
+        <column name="LASTOUTPUTINDEX" precision="10" scale="0" />
       </basic>
       <basic name="group">
-        <column name="GRP" />
+        <column name="GRP" length="50" />
       </basic>
       <basic name="adminRoleId">
-        <column name="ADMINROLE" />
+        <column name="ADMINROLE" length="50" />
       </basic>
       <basic name="maxQuestions">
-        <column name="MAXQUESTIONS" />
+        <column name="MAXQUESTIONS" precision="10" scale="0" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="CHANGEUSERID" />
+        <column name="CHANGEUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
       <one-to-many name="questions" mapped-by="questionForum" />
     </attributes>
@@ -152,47 +153,48 @@
     <table name="FRU_QUESTION"  />
     <attributes>
       <id name="questionId">
-        <column name="QUESTIONID" />
+        <column name="QUESTIONID" precision="10" scale="0" />
         <generated-value strategy="TABLE" generator="FRU_QUESTION"/>
         <table-generator name="FRU_QUESTION" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="FRU_QUESTION"          
           initial-value="0" allocation-size="1"/>
       </id>
       <basic name="forumId">
-        <column name="FORUMID" />
+        <column name="FORUMID" precision="10" scale="0" />
       </basic>
       <basic name="title">
-        <column name="TITLE" />
+        <column name="TITLE" length="1000" />
       </basic>
       <basic name="text">
-        <column name="TEXT" />
+        <column name="TEXT" length="4000" />
       </basic>
       <basic name="readCount">
-        <column name="READCOUNT" />
+        <column name="READCOUNT" precision="10" scale="0" />
       </basic>
       <basic name="strVisible">
-        <column name="VISIBLE" />
+        <column name="VISIBLE" length="1" />
       </basic>
       <basic name="inputIndex">
-        <column name="INPUTINDEX" />
+        <column name="INPUTINDEX" precision="10" scale="0" />
       </basic>
       <basic name="outputIndex">
-        <column name="OUTPUTINDEX" />
+        <column name="OUTPUTINDEX" precision="10" scale="0" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="CHANGEUSERID" />
+        <column name="CHANGEUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
       <basic name="activityDateTime">
-        <column name="ACTIVITYDT" />
+        <column name="ACTIVITYDT" length="14" />
       </basic>
       <many-to-one name="questionForum">
         <join-column name="FORUMID" referenced-column-name="FORUMID"
@@ -207,32 +209,33 @@
     <table name="FRU_ANSWER"  />
     <attributes>
       <id name="answerId">
-        <column name="ANSWERID" />
+        <column name="ANSWERID" precision="10" scale="0" />
         <generated-value strategy="TABLE" generator="FRU_ANSWER"/>
         <table-generator name="FRU_ANSWER" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="FRU_ANSWER"
           initial-value="0" allocation-size="1"/>
       </id>
       <basic name="questionId">
-        <column name="QUESTIONID" />
+        <column name="QUESTIONID" precision="10" scale="0" />
       </basic>
       <basic name="text">
-        <column name="TEXT" />
+        <column name="TEXT" length="4000" />
       </basic>
       <basic name="comments">
-        <column name="COMMENTS" />
+        <column name="COMMENTS" length="4000" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="CHANGEUSERID" />
+        <column name="CHANGEUSERID" length="20" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
       <many-to-one name="answerQuestion">
         <join-column name="QUESTIONID" referenced-column-name="QUESTIONID"

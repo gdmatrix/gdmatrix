@@ -236,27 +236,34 @@
     <table name="CMS_WORKSPACE"  />
     <attributes>
       <id name="workspaceId">
-        <column name="WORKSPACEID" />
+        <column name="WORKSPACEID" precision="10" scale="0" />
         <generated-value strategy="TABLE" generator="cms.workspace"/>
         <table-generator name="cms.workspace" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="cms.workspace"
           initial-value="0" allocation-size="1"/>            
       </id>
       <basic name="name">
-        <column name="NAME" />
+        <column name="NAME" length="100" />
       </basic>
       <basic name="description">
-        <column name="DESCRIPTION" />
+        <column name="DESCRIPTION" length="4000" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="creationUserId">
-        <column name="CREATIONUSERID" />
+        <column name="CREATIONUSERID" length="20" />
       </basic>
       <basic name="refWorkspaceId">
-        <column name="REFWORKSPACEID" />
+        <column name="REFWORKSPACEID" precision="10" scale="0" />
       </basic>
+      <many-to-one name="refWorkspace">
+        <join-column name="REFWORKSPACEID" referenced-column-name="WORKSPACEID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <one-to-many name="children" mapped-by="refWorkspace" />      
+      <one-to-many name="nodes" mapped-by="workspace" />      
     </attributes>
   </entity>
 
@@ -265,39 +272,51 @@
     <id-class class="org.santfeliu.cms.service.DBNodePK"/>
     <attributes>
       <id name="workspaceId">
-        <column name="WORKSPACEID" />
+        <column name="WORKSPACEID" precision="10" scale="0" />
       </id>
       <id name="nodeId">
-        <column name="NODEID" />
+        <column name="NODEID" precision="10" scale="0" />
         <generated-value strategy="TABLE" generator="cms.node"/>
         <table-generator name="cms.node" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="cms.node"
           initial-value="0" allocation-size="1"/>
       </id>
       <basic name="parentNodeId">
-        <column name="PARENTNODEID" />
+        <column name="PARENTNODEID" precision="10" scale="0" />
       </basic>
       <basic name="index">
-        <column name="IDX" />
+        <column name="IDX" precision="5" scale="0" />
       </basic>
       <basic name="name">
-        <column name="NAME" />
+        <column name="NAME" length="200" />
       </basic>
       <basic name="changeDateTime">
-        <column name="CHANGEDT" />
+        <column name="CHANGEDT" length="14" />
       </basic>
       <basic name="changeUserId">
-        <column name="CHANGEUSERID" />
+        <column name="CHANGEUSERID" length="20" />
       </basic>
       <basic name="syncDateTime">
-        <column name="SYNCDT" />
+        <column name="SYNCDT" length="14" />
       </basic>
       <basic name="syncUserId">
-        <column name="SYNCUSERID" />
+        <column name="SYNCUSERID" length="20" />
       </basic>
       <basic name="path">
-        <column name="PATH" />
+        <column name="PATH" length="1000" />
       </basic>
+      <many-to-one name="workspace">
+        <join-column name="WORKSPACEID" referenced-column-name="WORKSPACEID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <many-to-one name="parentNode">
+        <join-column name="WORKSPACEID" referenced-column-name="WORKSPACEID"
+            insertable="false" updatable="false" />
+        <join-column name="PARENTNODEID" referenced-column-name="NODEID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <one-to-many name="children" mapped-by="parentNode" />
       <one-to-many name="properties" mapped-by="node" />
       <transient name="property" />
     </attributes>
@@ -307,19 +326,19 @@
     <table name="CMS_PROPERTY"  />
     <attributes>
       <id name="workspaceId">
-        <column name="WORKSPACEID" />
+        <column name="WORKSPACEID" precision="10" scale="0" />
       </id>
       <id name="nodeId">
-        <column name="NODEID" />
+        <column name="NODEID" precision="10" scale="0" />
       </id>
       <id name="name">
-        <column name="NAME" />
+        <column name="NAME" length="100" />
       </id>
       <id name="index">
-        <column name="IDX" />
+        <column name="IDX" precision="5" scale="0" />
       </id>
       <basic name="value">
-        <column name="VALUE" />
+        <column name="VALUE" length="4000" />
       </basic>
       <many-to-one name="node">
         <join-column name="WORKSPACEID" referenced-column-name="WORKSPACEID"

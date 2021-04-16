@@ -64,7 +64,6 @@ import org.matrix.forum.QuestionView;
 import org.matrix.forum.ForumStatus;
 import org.matrix.forum.ForumType;
 import org.matrix.util.WSDirectory;
-import org.santfeliu.jpa.JPA;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.forum.store.JPQLFindForumsInfoQueryBuilder;
 import org.santfeliu.forum.store.JPQLFindQuestionsQueryBuilder;
@@ -76,6 +75,8 @@ import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.audit.Auditor;
 import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.ws.WSUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 /**
  *
@@ -83,36 +84,39 @@ import org.santfeliu.ws.WSUtils;
  */
 @WebService(endpointInterface = "org.matrix.forum.ForumManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class ForumManager implements ForumManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("Forum");
+
+  private static final int MAX_FORUM_NAME_LENGTH = 200;
+  private static final int MAX_FORUM_DESCRIPTION_LENGTH = 4000;
+  private static final int MAX_FORUM_EMAILFROM_LENGTH = 100;
+  private static final int MAX_FORUM_EMAILTO_LENGTH = 100;
+  private static final int MAX_FORUM_GROUP_LENGTH = 50;
+  private static final int MAX_FORUM_ADMIN_ROLE_LENGTH = 50;
+  private static final int MAX_QUESTION_TITLE_LENGTH = 1000;
+  private static final int MAX_QUESTION_TEXT_LENGTH = 4000;
+  private static final int MAX_ANSWER_TEXT_LENGTH = 4000;
+  private static final String SMTP_HOST = "mail.smtp.host";
+
+  static final int MAX_OUTPUT_INDEX = 999999999; // invisible index
+  
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext
+  @PersistenceContext(unitName="forum_ri")
   public EntityManager entityManager;
 
-  protected static final Logger log = Logger.getLogger("Forum");
-
-  static final int MAX_FORUM_NAME_LENGTH = 200;
-  static final int MAX_FORUM_DESCRIPTION_LENGTH = 4000;
-  static final int MAX_FORUM_EMAILFROM_LENGTH = 100;
-  static final int MAX_FORUM_EMAILTO_LENGTH = 100;
-  static final int MAX_FORUM_GROUP_LENGTH = 50;
-  static final int MAX_FORUM_ADMIN_ROLE_LENGTH = 50;
-  static final int MAX_QUESTION_TITLE_LENGTH = 1000;
-  static final int MAX_QUESTION_TEXT_LENGTH = 4000;
-  static final int MAX_ANSWER_TEXT_LENGTH = 4000;
+  @Initializer
+  public void initialize(String endpointName)
+  {
+  }  
   
-  static final int MAX_OUTPUT_INDEX = 999999999; // invisible index
-  static final String SMTP_HOST = "mail.smtp.host";
-
-  // Forums
-
   @Override
   public Forum loadForum(String forumId)
   {
-    log.log(Level.INFO, "loadForum {0}", new Object[]{forumId});
+    LOGGER.log(Level.INFO, "loadForum {0}", new Object[]{forumId});
     if (forumId == null)
       throw new WebServiceException("forum:FORUMID_IS_MANDATORY");
 
@@ -135,7 +139,7 @@ public class ForumManager implements ForumManagerPort
     User user = UserCache.getUser(wsContext);
     
     String localForumId = endpoint.toLocalId(Forum.class, forum.getForumId());
-    log.log(Level.INFO, "storeForum {0}", new Object[]{localForumId});
+    LOGGER.log(Level.INFO, "storeForum {0}", new Object[]{localForumId});
 
     checkForum(forum);
     
@@ -163,7 +167,7 @@ public class ForumManager implements ForumManagerPort
   @Override
   public boolean removeForum(String forumId)
   {
-    log.log(Level.INFO, "removeForum {0}", new Object[]{forumId});
+    LOGGER.log(Level.INFO, "removeForum {0}", new Object[]{forumId});
 
     WSEndpoint endpoint = getWSEndpoint();
     User user = UserCache.getUser(wsContext);
@@ -196,7 +200,7 @@ public class ForumManager implements ForumManagerPort
   @Override
   public int countForums(ForumFilter filter)
   {
-    log.log(Level.INFO, "countForums");
+    LOGGER.log(Level.INFO, "countForums");
     WSEndpoint endpoint = getWSEndpoint();
     Query query = entityManager.createNamedQuery("countForums");
     applyForumFilter(query, filter, endpoint);
@@ -206,7 +210,7 @@ public class ForumManager implements ForumManagerPort
   @Override
   public List<Forum> findForums(ForumFilter filter)
   {
-    log.log(Level.INFO, "findForums");
+    LOGGER.log(Level.INFO, "findForums");
     WSEndpoint endpoint = getWSEndpoint();
     List<DBForum> dbForumList = doFindForums(endpoint, filter);
     ArrayList<Forum> forumList = new ArrayList<Forum>();
@@ -224,7 +228,7 @@ public class ForumManager implements ForumManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findForumViews");
+      LOGGER.log(Level.INFO, "findForumViews");
       WSEndpoint endpoint = getWSEndpoint();
       User user = UserCache.getUser(wsContext);
       boolean userSuperAdmin = isUserSuperAdmin(user);
@@ -295,7 +299,7 @@ public class ForumManager implements ForumManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findForumViews", ex);
+      LOGGER.log(Level.SEVERE, "findForumViews", ex);
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -305,14 +309,14 @@ public class ForumManager implements ForumManagerPort
   @Override
   public Question loadQuestion(String questionId)
   {
-    log.log(Level.INFO, "loadQuestion {0}", new Object[]{questionId});
+    LOGGER.log(Level.INFO, "loadQuestion {0}", new Object[]{questionId});
     return doLoadQuestion(questionId, false);
   }
 
   @Override
   public Question readQuestion(String questionId)
   {
-    log.log(Level.INFO, "readQuestion {0}", new Object[]{questionId});
+    LOGGER.log(Level.INFO, "readQuestion {0}", new Object[]{questionId});
     return doLoadQuestion(questionId, true);
   }
 
@@ -320,7 +324,7 @@ public class ForumManager implements ForumManagerPort
   public Question storeQuestion(Question question)
   {
     String questionId = question.getQuestionId();
-    log.log(Level.INFO, "storeQuestion {0}", new Object[]{questionId});
+    LOGGER.log(Level.INFO, "storeQuestion {0}", new Object[]{questionId});
 
     WSEndpoint endpoint = getWSEndpoint();
     User user = UserCache.getUser(wsContext);
@@ -408,7 +412,7 @@ public class ForumManager implements ForumManagerPort
   @Override
   public boolean removeQuestion(String questionId)
   {
-    log.log(Level.INFO, "removeQuestion {0}", new Object[]{questionId});
+    LOGGER.log(Level.INFO, "removeQuestion {0}", new Object[]{questionId});
     if (questionId == null)
       throw new WebServiceException("forum:QUESTIONID_IS_MANDATORY");
 
@@ -452,7 +456,7 @@ public class ForumManager implements ForumManagerPort
   {
     try
     {
-      log.log(Level.INFO, "countQuestionViews");
+      LOGGER.log(Level.INFO, "countQuestionViews");
       WSEndpoint endpoint = getWSEndpoint();
       User user = UserCache.getUser(wsContext);
       String forumId = filter.getForumId();
@@ -478,7 +482,7 @@ public class ForumManager implements ForumManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "countQuestionViews", ex);
+      LOGGER.log(Level.SEVERE, "countQuestionViews", ex);
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -488,7 +492,7 @@ public class ForumManager implements ForumManagerPort
   {
     try
     {
-      log.log(Level.INFO, "findQuestionViews");
+      LOGGER.log(Level.INFO, "findQuestionViews");
       WSEndpoint endpoint = getWSEndpoint();
       // Questions query
       User user = UserCache.getUser(wsContext);
@@ -552,7 +556,7 @@ public class ForumManager implements ForumManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findQuestionViews", ex);
+      LOGGER.log(Level.SEVERE, "findQuestionViews", ex);
       throw WSExceptionFactory.create(ex);
     }
   }
@@ -562,7 +566,7 @@ public class ForumManager implements ForumManagerPort
   @Override
   public Answer loadAnswer(String answerId)
   {
-    log.log(Level.INFO, "loadAnswer {0}", new Object[]{answerId});
+    LOGGER.log(Level.INFO, "loadAnswer {0}", new Object[]{answerId});
     if (answerId == null)
       throw new WebServiceException("forum:ANSWERID_IS_MANDATORY");
 
@@ -590,7 +594,7 @@ public class ForumManager implements ForumManagerPort
   public Answer storeAnswer(Answer answer)
   {
     String answerId = answer.getAnswerId();
-    log.log(Level.INFO, "storeAnswer {0}", new Object[]{answerId});
+    LOGGER.log(Level.INFO, "storeAnswer {0}", new Object[]{answerId});
     checkAnswer(answer); 
     WSEndpoint endpoint = getWSEndpoint();
     User user = UserCache.getUser(wsContext);    
@@ -641,7 +645,7 @@ public class ForumManager implements ForumManagerPort
   @Override
   public boolean removeAnswer(String answerId)
   {
-    log.log(Level.INFO, "removeAnswer {0}", new Object[]{answerId});
+    LOGGER.log(Level.INFO, "removeAnswer {0}", new Object[]{answerId});
     if (answerId == null)
       throw new WebServiceException("forum:ANSWERID_IS_MANDATORY");
 

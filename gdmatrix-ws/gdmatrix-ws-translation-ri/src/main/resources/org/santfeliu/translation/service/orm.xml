@@ -52,38 +52,39 @@
     <table name="TRN_TRANSLATION" />
     <attributes>
       <id name="transId">
-        <column name="TRANSID" />
+        <column name="TRANSID" length="36" />
       </id>
       <basic name="language">
-        <column name="LANGUAGE" />
+        <column name="LANGUAGE" length="2" />
       </basic>
       <basic name="encodedText">
-        <column name="TEXT" />
+        <column name="TEXT" length="4000" />
       </basic>
       <basic name="encodedTranslation">
-        <column name="TRANSLATION" />
+        <column name="TRANSLATION" length="4000" />
       </basic>
       <basic name="strState">
-        <column name="STATE" />
+        <column name="STATE" length="1" />
       </basic>
       <basic name="group">
-        <column name="GRP" />
+        <column name="GRP" length="128" />
       </basic>
       <basic name="creationDateTime">
-        <column name="CREATIONDT" />
+        <column name="CREATIONDT" length="14" />
       </basic>
       <basic name="modifyDateTime">
-        <column name="MODIFYDT" />
+        <column name="MODIFYDT" length="14" />
       </basic>
       <basic name="readDateTime">
-        <column name="READDT" />
+        <column name="READDT" length="14" />
       </basic>
       <basic name="modifyUserId">
-        <column name="MODIFYUSERID" />
+        <column name="MODIFYUSERID" length="50" />
       </basic>
       <transient name="text" />
       <transient name="translation" />
       <transient name="state" />
+      <one-to-many name="groups" mapped-by="translation" />
     </attributes>
   </entity>
 
@@ -93,11 +94,15 @@
     <id-class class="DBTranslationGroupPK" />
     <attributes>
       <id name="transId">
-        <column name="TRANSID" />
+        <column name="TRANSID" length="36" />
       </id>
       <id name="group">
-        <column name="GRP" />
+        <column name="GRP" length="64" />
       </id>
+      <many-to-one name="translation">
+        <join-column name="TRANSID" referenced-column-name="TRANSID"
+            insertable="false" updatable="false" />
+      </many-to-one>
     </attributes>
   </entity>
 

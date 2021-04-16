@@ -40,6 +40,8 @@ public class DBTranslationGroup implements Serializable
 {
   private String transId;
   private String group;
+  
+  private DBTranslation translation;
 
   public String getTransId()
   {
@@ -59,5 +61,15 @@ public class DBTranslationGroup implements Serializable
   public void setGroup(String group)
   {
     this.group = group;
+  }
+
+  public DBTranslation getTranslation() 
+  {
+    return translation;
+  }
+
+  public void setTranslation(DBTranslation translation) 
+  {
+    this.translation = translation;
   }
 }

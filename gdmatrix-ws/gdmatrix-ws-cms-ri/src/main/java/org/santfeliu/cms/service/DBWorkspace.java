@@ -30,6 +30,7 @@
  */
 package org.santfeliu.cms.service;
 
+import java.util.Collection;
 import org.matrix.cms.Workspace;
 import org.matrix.security.User;
 import org.matrix.util.WSEndpoint;
@@ -41,6 +42,10 @@ import org.santfeliu.util.audit.CreationAuditable;
  */
 public class DBWorkspace extends Workspace implements CreationAuditable
 {   
+  private DBWorkspace refWorkspace;
+  private Collection<DBWorkspace> children;
+  
+  private Collection<DBNode> nodes;
   
   public DBWorkspace()
   {
@@ -49,6 +54,36 @@ public class DBWorkspace extends Workspace implements CreationAuditable
   public DBWorkspace(Workspace workspace, WSEndpoint endpoint)
   {
     copyFrom(workspace, endpoint);
+  }
+
+  public DBWorkspace getRefWorkspace() 
+  {
+    return refWorkspace;
+  }
+
+  public void setRefWorkspace(DBWorkspace refWorkspace) 
+  {
+    this.refWorkspace = refWorkspace;
+  }
+
+  public Collection<DBWorkspace> getChildren() 
+  {
+    return children;
+  }
+
+  public void setChildren(Collection<DBWorkspace> children) 
+  {
+    this.children = children;
+  }
+
+  public Collection<DBNode> getNodes() 
+  {
+    return nodes;
+  }
+
+  public void setNodes(Collection<DBNode> nodes) 
+  {
+    this.nodes = nodes;
   }
 
   public void copyTo(Workspace workspace, WSEndpoint endpoint)

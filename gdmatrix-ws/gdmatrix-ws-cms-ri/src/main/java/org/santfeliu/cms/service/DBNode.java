@@ -45,6 +45,10 @@ public class DBNode extends Node implements ChangeAuditable
 {
   private List<DBProperty> properties;  
   private String path;
+  
+  private DBWorkspace workspace;
+  private DBNode parentNode;
+  private List<DBNode> children;
 
   public DBNode()
   {
@@ -75,6 +79,36 @@ public class DBNode extends Node implements ChangeAuditable
     this.path = path;
   }
 
+  public DBWorkspace getWorkspace() 
+  {
+    return workspace;
+  }
+
+  public void setWorkspace(DBWorkspace workspace) 
+  {
+    this.workspace = workspace;
+  }
+
+  public DBNode getParentNode() 
+  {
+    return parentNode;
+  }
+
+  public void setParentNode(DBNode parentNode) 
+  {
+    this.parentNode = parentNode;
+  }
+
+  public List<DBNode> getChildren() 
+  {
+    return children;
+  }
+
+  public void setChildren(List<DBNode> children) 
+  {
+    this.children = children;
+  }
+
   public void copyTo(Node node, WSEndpoint endpoint)
   {
     node.setWorkspaceId(endpoint.toGlobalId(Workspace.class,
@@ -90,7 +124,6 @@ public class DBNode extends Node implements ChangeAuditable
     node.setSyncDateTime(this.getSyncDateTime());
     node.setSyncUserId(endpoint.toGlobalId(User.class,
       this.getSyncUserId()));
-    //node.setPath(getGlobalPath(this.getPath(), endpoint));
   }
 
   public void copyFrom(Node node, WSEndpoint endpoint)
@@ -104,42 +137,5 @@ public class DBNode extends Node implements ChangeAuditable
     setChangeUserId(endpoint.toLocalId(User.class, node.getChangeUserId()));
     setSyncDateTime(node.getSyncDateTime());
     setSyncUserId(endpoint.toLocalId(User.class, node.getSyncUserId()));
-    //setPath(getLocalPath(node.getPath(), endpoint));
   }
-
-/*
-  private String getLocalPath(String globalPath, WSEndpoint endpoint)
-  {
-    if (globalPath == null) return null;
-    StringBuilder sb = new StringBuilder();
-    sb.append("/");
-    for (String globalNodeId : globalPath.split("/"))
-    {
-      if (globalNodeId.length() > 0)
-      {
-        String localNodeId = endpoint.toLocalId(Node.class, globalNodeId);
-        sb.append(localNodeId);
-        sb.append("/");
-      }
-    }
-    return sb.toString();
-  }
-
-  private String getGlobalPath(String localPath, WSEndpoint endpoint)
-  {
-    if (localPath == null) return null;
-    StringBuilder sb = new StringBuilder();
-    sb.append("/");
-    for (String localNodeId : localPath.split("/"))
-    {
-      if (localNodeId.length() > 0)
-      {
-        String globalNodeId = endpoint.toGlobalId(Node.class, localNodeId);
-        sb.append(globalNodeId);
-        sb.append("/");
-      }
-    }
-    return sb.toString();
-  }
-*/
 }

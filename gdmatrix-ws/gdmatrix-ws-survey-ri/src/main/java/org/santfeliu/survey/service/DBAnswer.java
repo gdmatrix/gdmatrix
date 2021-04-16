@@ -40,6 +40,8 @@ public class DBAnswer extends Answer
 {
   private String surveyId;
 
+  private DBSurvey survey;  
+  
   public DBAnswer()
   {
   }
@@ -52,5 +54,15 @@ public class DBAnswer extends Answer
   public String getSurveyId()
   {
     return surveyId;
+  }
+
+  public DBSurvey getSurvey() 
+  {
+    return survey;
+  }
+
+  public void setSurvey(DBSurvey survey) 
+  {
+    this.survey = survey;
   }
 }

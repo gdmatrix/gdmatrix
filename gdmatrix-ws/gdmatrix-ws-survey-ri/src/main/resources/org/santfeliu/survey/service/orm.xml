@@ -37,17 +37,17 @@
     
     <named-query name="voteSurvey">
       <query>
-        UPDATE Answer
-        SET voteCount = voteCount + 1 
-        WHERE surveyId = :surveyId AND answerId = :answerId 
+        UPDATE Answer a
+        SET a.voteCount = a.voteCount + 1 
+        WHERE a.surveyId = :surveyId AND a.answerId = :answerId 
       </query>
     </named-query> 
     
     <named-query name="switchSurvey">
       <query>
-        UPDATE Survey 
-        SET strOpen = :open
-        WHERE surveyId = :surveyId
+        UPDATE Survey s
+        SET s.strOpen = :open
+        WHERE s.surveyId = :surveyId
       </query>
     </named-query>
         
@@ -56,24 +56,26 @@
       <table name="SUR_SURVEY" />
       <attributes>
         <id name="surveyId">
-          <column name="SURVID" />
+          <column name="SURVID" precision="10" scale="0" />
           <generated-value strategy="TABLE" generator="survey.survey"/>
           <table-generator name="survey.survey" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE"
+            pk-column-value="survey.survey"
             initial-value="0" allocation-size="1"/>
         </id>
         <basic name="text">
-            <column name="TEXT" />
+          <column name="TEXT" length="100" />
         </basic>
         <basic name="strOpen">
-            <column name="OPEN" />
+          <column name="OPEN" length="1" />
         </basic>
         <basic name="startDay">
-            <column name="STARTDATE" />
+          <column name="STARTDATE" length="8" />
         </basic>
         <basic name="endDay">
-            <column name="ENDDATE" />
+          <column name="ENDDATE" length="8" />
         </basic>
+        <one-to-many name="answers" mapped-by="survey" />
       </attributes>
     </entity>
     
@@ -82,17 +84,21 @@
       <table name="SUR_ANSWER" />
       <attributes>
         <id name="surveyId">
-          <column name="SURVID" />
+          <column name="SURVID" precision="10" scale="0" />
         </id>
         <id name="answerId">
-            <column name="ANSWERID" />
+          <column name="ANSWERID" precision="2" scale="0" />
         </id>
         <basic name="text">
-            <column name="TEXT" />
+          <column name="TEXT" length="100" />
         </basic>
         <basic name="voteCount">
-            <column name="VOTES" />
+          <column name="VOTES" precision="10" scale="0" />
         </basic>
+        <many-to-one name="survey">
+          <join-column name="SURVID" referenced-column-name="SURVID"
+              insertable="false" updatable="false" />
+        </many-to-one>        
       </attributes>
     </entity>
     

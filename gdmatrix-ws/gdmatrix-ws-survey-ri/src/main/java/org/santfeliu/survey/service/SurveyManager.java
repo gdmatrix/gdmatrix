@@ -57,8 +57,9 @@ import org.matrix.survey.SurveyTable;
 import org.matrix.survey.SurveyView;
 
 import org.matrix.survey.SurveyMetaData;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.ws.WSExceptionFactory;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
 
 /**
  *
@@ -66,27 +67,24 @@ import org.santfeliu.ws.WSExceptionFactory;
  */
 @WebService(endpointInterface = "org.matrix.survey.SurveyManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class SurveyManager implements SurveyManagerPort 
 {
+  private static final Logger LOGGER = Logger.getLogger("Survey");  
+  
+  private static final int ANSWER_TEXT_MAX_SIZE = 100;
+  private static final int SURVEY_TEXT_MAX_SIZE = 100;
+  
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext
+  @PersistenceContext(unitName="survey_ri")
   public EntityManager entityManager;
 
-  protected static final Logger log = Logger.getLogger("Survey");
-
-  private static final String SURVEY_CLAUPREF = "SURVEY  ";
-  private static final String SURVEY_CLAUCOD = "SURVEY  ";
-  private static final String SURVEY_CLAUORIGEN = "SUR ";
-
-  private static final int ANSWER_TEXT_MAX_SIZE = 100;
-  private static final int SURVEY_TEXT_MAX_SIZE = 100;
-
-  public SurveyManager()
+  @Initializer
+  public void initialize(String endpointName)
   {
-  }
+  }  
 
   @Override
   public SurveyMetaData getSurveyMetaData()
@@ -97,15 +95,13 @@ public class SurveyManager implements SurveyManagerPort
     return metaData;
   }
 
-// CREATE SURVEY
-
   @Override
   public String storeSurvey(String text, List<String> answers)
   {
     String surveyId = null;
     try 
     {
-      log.log(Level.INFO, "storeSurvey {0}", text);
+      LOGGER.log(Level.INFO, "storeSurvey {0}", text);
       validateSurvey(text, answers);
   
       DBSurvey dbSurvey = new DBSurvey();
@@ -130,55 +126,47 @@ public class SurveyManager implements SurveyManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "storeSurvey failed", ex);
+      LOGGER.log(Level.SEVERE, "storeSurvey failed", ex);
       throw WSExceptionFactory.create(ex);
     }    
     return surveyId;
   }
 
-// OPEN SURVEY
-
   @Override
   public void openSurvey(String surveyId)
   {
-    log.log(Level.INFO, "openSurvey {0}", surveyId);        
+    LOGGER.log(Level.INFO, "openSurvey {0}", surveyId);        
     Query query = entityManager.createNamedQuery("switchSurvey");
     query.setParameter("surveyId", surveyId);
     query.setParameter("open", "Y");
     query.executeUpdate();
   }
 
-// CLOSE SURVEY
-
   @Override
   public void closeSurvey(String surveyId)
   {
-    log.log(Level.INFO, "closeSurvey {0}", surveyId);        
+    LOGGER.log(Level.INFO, "closeSurvey {0}", surveyId);        
     Query query = entityManager.createNamedQuery("switchSurvey");
     query.setParameter("surveyId", surveyId);
     query.setParameter("open", "N");
     query.executeUpdate();
   }
 
-// VOTE SURVEY
-
   @Override
   public void voteSurvey(String surveyId, String answerId)
   {
-    log.log(Level.INFO, "voteSurvey {0}", surveyId);        
+    LOGGER.log(Level.INFO, "voteSurvey surveyId {0} answerId {1}", 
+      new String[]{surveyId, answerId});        
     Query query = entityManager.createNamedQuery("voteSurvey");
     query.setParameter("surveyId", surveyId);
     query.setParameter("answerId", answerId);
     query.executeUpdate();
   }
 
-// SELECT SURVEY
-
   @Override
   public Survey loadSurvey(String surveyId)
   {
-    log.log(Level.INFO, "loadSurvey {0}", surveyId);        
-    
+    LOGGER.log(Level.INFO, "loadSurvey {0}", surveyId);    
     Query surveyQuery = entityManager.createNamedQuery("findSurvey");
     surveyQuery.setParameter("surveyId", surveyId);
     Object[] obj = null;
@@ -209,14 +197,13 @@ public class SurveyManager implements SurveyManagerPort
     return survey;
   }    
 
-  // FIND SURVEYS
-
   @Override
   public SurveyTable findSurveys()
   {
     SurveyTable surveyTable = new SurveyTable();
     try
     {
+      LOGGER.log(Level.INFO, "findSurveys");    
       List<SurveyView> surveyRowList = surveyTable.getSurveyViewList();
       Query query = entityManager.createNamedQuery("findSurveys");
       List<Object[]> queryResult = query.getResultList();
@@ -233,7 +220,7 @@ public class SurveyManager implements SurveyManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "findSurveys failed", ex);
+      LOGGER.log(Level.SEVERE, "findSurveys failed", ex);
       throw WSExceptionFactory.create(ex);
     }
     return surveyTable;

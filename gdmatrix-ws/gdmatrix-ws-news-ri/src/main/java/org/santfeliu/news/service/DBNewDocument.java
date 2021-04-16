@@ -68,13 +68,11 @@ public class DBNewDocument extends NewDocument
       NewsManager.PK_SEPARATOR + this.getDocumentId());
     newDocument.setNewId(this.getNewId());
     newDocument.setDocumentId(this.getDocumentId());
-    //newDocument.setDocRole(this.getDocRole());
     newDocument.setNewDocTypeId(
       endpoint.toGlobalId(Type.class, this.getNewDocTypeId()));
     newDocument.setMimeType(this.getMimeType());
     newDocument.setTitle(this.getTitle());
     newDocument.setContentId(this.getContentId());
-//    newDocument.setLanguage(this.getLanguage());
   }
   
   public void copyFrom(NewDocument newDocument, WSEndpoint endpoint)
@@ -82,11 +80,9 @@ public class DBNewDocument extends NewDocument
     this.setNewDocumentId(newDocument.getNewDocumentId());
     this.setNewId(newDocument.getNewId());
     this.setDocumentId(newDocument.getDocumentId());
-    //this.setDocRole(newDocument.getDocRole());
     this.setNewDocTypeId(endpoint.toLocalId(Type.class, newDocument.getNewDocTypeId()));
     this.setMimeType(newDocument.getMimeType());
     this.setTitle(newDocument.getTitle());
     this.setContentId(newDocument.getContentId());
-//    this.setLanguage(newDocument.getLanguage());
   }
 }

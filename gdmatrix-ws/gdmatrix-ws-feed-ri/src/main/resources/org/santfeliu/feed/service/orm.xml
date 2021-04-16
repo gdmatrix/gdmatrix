@@ -152,30 +152,36 @@
     <table name="FED_FOLDER"  />
     <attributes>
       <id name="folderId">
-        <column name="FOLDERID" />
+        <column name="FOLDERID" precision="10" scale="0" />
         <generated-value strategy="TABLE" generator="feed.folder"/>
         <table-generator name="feed.folder" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="feed.folder"
           initial-value="0" allocation-size="1"/>            
       </id>
       <basic name="name">
-        <column name="NAME" />
+        <column name="NAME" length="1000" />
       </basic>
       <basic name="description">
-        <column name="DESCRIPTION" />
+        <column name="DESCRIPTION" length="4000" />
       </basic>
       <basic name="iconDocId">
-        <column name="ICONDOCID" />
+        <column name="ICONDOCID" precision="10" scale="0" />
       </basic>
       <basic name="alias">
-        <column name="ALIAS" />
+        <column name="ALIAS" length="100" />
       </basic>
       <basic name="parentFolderId">
-        <column name="PARENTFOLDERID" />
+        <column name="PARENTFOLDERID" precision="10" scale="0" />
       </basic>
       <basic name="defaultEntryCount">
-        <column name="DEFAULTENTRYCOUNT" />
+        <column name="DEFAULTENTRYCOUNT" precision="5" scale="0" />
       </basic>
+      <many-to-one name="parentFolder">
+        <join-column name="PARENTFOLDERID" referenced-column-name="FOLDERID"
+            insertable="false" updatable="false" />
+      </many-to-one>
+      <one-to-many name="children" mapped-by="parentFolder" />      
       <one-to-many name="feedFolders" mapped-by="folder" />
     </attributes>
   </entity>
@@ -185,35 +191,36 @@
     <table name="FED_FEED"  />
     <attributes>
       <id name="feedId">
-        <column name="FEEDID" />
+        <column name="FEEDID" precision="10" scale="0" />
         <generated-value strategy="TABLE" generator="feed.feed"/>
         <table-generator name="feed.feed" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="feed.feed"
           initial-value="0" allocation-size="1"/>
       </id>
       <basic name="name">
-        <column name="NAME" />
+        <column name="NAME" length="1000" />
       </basic>
       <basic name="url">
-        <column name="URL" />
+        <column name="URL" length="1000" />
       </basic>
       <basic name="internalUrl">
-        <column name="INTERNALURL" />
+        <column name="INTERNALURL" length="1000" />
       </basic>
       <basic name="type">
-        <column name="TYPE" />
+        <column name="TYPE" length="10" />
       </basic>
       <basic name="refreshInterval">
-        <column name="REFRESHINTERVAL" />
+        <column name="REFRESHINTERVAL" precision="10" scale="0" />
       </basic>
       <basic name="refreshDateTime">
-        <column name="REFRESHDT" />
+        <column name="REFRESHDT" length="14" />
       </basic>
       <basic name="entryLifeSpan">
-        <column name="ENTRYLIFESPAN" />
+        <column name="ENTRYLIFESPAN" precision="10" scale="0" />
       </basic>
       <basic name="iconUrl">
-        <column name="ICONURL" />
+        <column name="ICONURL" length="1000" />
       </basic>
       <one-to-many name="entries" mapped-by="entryFeed" />
       <one-to-many name="feedFolders" mapped-by="feed" />
@@ -225,33 +232,34 @@
     <table name="FED_ENTRY" />
     <attributes>
       <id name="entryId">
-        <column name="ENTRYID" />
+        <column name="ENTRYID" precision="10" scale="0" />
         <generated-value strategy="TABLE" generator="feed.entry"/>
         <table-generator name="feed.entry" table="TABLESEQ"
           pk-column-name="COUNTER" value-column-name="VALUE"
+          pk-column-value="feed.entry"
           initial-value="0" allocation-size="1"/>
       </id>
       <basic name="title">
-        <column name="TITLE" />
+        <column name="TITLE" length="4000" />
       </basic>
       <basic name="url">
-        <column name="URL" />
+        <column name="URL" length="1000" />
       </basic>
       <basic name="baDescription">
         <column name="DESCRIPTION" />
         <lob/>
       </basic>
       <basic name="pubDateTime">
-        <column name="PUBDT" />
+        <column name="PUBDT" length="14" />
       </basic>
       <basic name="feedId">
-        <column name="FEEDID" />
+        <column name="FEEDID" precision="10" scale="0" />
       </basic>
       <basic name="hash">
-        <column name="HASH" />
+        <column name="HASH" length="32" />
       </basic>
       <basic name="strVisible">
-        <column name="VISIBLE" />
+        <column name="VISIBLE" length="1" />
       </basic>
       <many-to-one name="entryFeed">
         <join-column name="FEEDID" referenced-column-name="FEEDID"
@@ -266,10 +274,10 @@
     <id-class class="org.santfeliu.feed.service.DBFeedFolderPK" />
     <attributes>
       <id name="feedId">
-        <column name="FEEDID" />
+        <column name="FEEDID" precision="10" scale="0" />
       </id>
       <id name="folderId">
-        <column name="FOLDERID" />
+        <column name="FOLDERID" precision="10" scale="0" />
       </id>
       <many-to-one name="feed">
         <join-column name="FEEDID" referenced-column-name="FEEDID"

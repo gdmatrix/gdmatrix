@@ -420,60 +420,61 @@
       <table name="INF_NEW" />
       <attributes>
         <id name="newId">
-          <column name="NEWID" />
+          <column name="NEWID" precision="8" scale="0" />
           <generated-value strategy="TABLE" generator="INF_NEW"/>
           <table-generator name="INF_NEW" table="TABLESEQ"
             pk-column-name="COUNTER" value-column-name="VALUE" 
+            pk-column-value="INF_NEW"
             initial-value="0" allocation-size="1" />                     
         </id>
         <basic name="headline">
-          <column name="HEADLINE" />
+          <column name="HEADLINE" length="1000" />
         </basic>
         <basic name="summary">
-          <column name="SUMMARY" />
+          <column name="SUMMARY" length="4000" />
         </basic>
         <basic name="baText">
           <column name="TEXT" />
           <lob/>
         </basic>
         <basic name="registerDate">
-          <column name="REGISTERDAY" />
+          <column name="REGISTERDAY" length="8" />
         </basic>
         <basic name="registerTime">
-          <column name="REGISTERHOUR" />
+          <column name="REGISTERHOUR" length="6" />
         </basic>
         <basic name="startDate">
-          <column name="STARTDAY" />
+          <column name="STARTDAY" length="8" />
         </basic>
         <basic name="startTime">
-          <column name="STARTHOUR" />
+          <column name="STARTHOUR" length="6" />
         </basic>
         <basic name="endDate">
-          <column name="ENDDAY" />
+          <column name="ENDDAY" length="8" />
         </basic>
         <basic name="endTime">
-          <column name="ENDHOUR" />
+          <column name="ENDHOUR" length="6" />
         </basic>
         <basic name="userId">
-          <column name="USERID" />
+          <column name="USERID" length="20" />
         </basic>
         <basic name="source">
-          <column name="SOURCEID" />
+          <column name="SOURCEID" length="2" />
         </basic>
         <basic name="strDraft">
-          <column name="DRAFT" />
+          <column name="DRAFT" length="1" />
         </basic>
         <basic name="totalReadingCount">
-          <column name="TOTALREADCOUNT" />
+          <column name="TOTALREADCOUNT" precision="7" scale="0" />
         </basic>
         <basic name="keywords">
-          <column name="KEYWORDS" />
+          <column name="KEYWORDS" length="1000" />
         </basic>
         <basic name="customUrl">
-          <column name="CUSTOMURL" />
+          <column name="CUSTOMURL" length="1000" />
         </basic>
         <basic name="customUrlTarget">
-          <column name="CUSTOMURLTARGET" />
+          <column name="CUSTOMURLTARGET" length="10" />
         </basic>
         <one-to-many name="newSections" mapped-by="nsNew" />
         <one-to-many name="newDocuments" mapped-by="ndNew" />
@@ -486,19 +487,19 @@
       <id-class class="org.santfeliu.news.service.DBNewSectionPK" />      
       <attributes>
         <id name="newId">
-          <column name="NEWID" />
+          <column name="NEWID" precision="8" scale="0" />
         </id>
         <id name="sectionId">
-          <column name="SECTIONID" />
+          <column name="SECTIONID" length="50" />
         </id>
         <basic name="priority">
-          <column name="PRIORITY" />
+          <column name="PRIORITY" precision="6" scale="0" />
         </basic>
         <basic name="readingCount">
-          <column name="READCOUNT" />
+          <column name="READCOUNT" precision="6" scale="0" />
         </basic>
         <basic name="strSticky">
-          <column name="STICKY" />
+          <column name="STICKY" length="1" />
         </basic>
         <many-to-one name="nsNew">
           <join-column name="NEWID" referenced-column-name="NEWID"
@@ -513,18 +514,13 @@
       <id-class class="org.santfeliu.news.service.DBNewDocumentPK" />      
       <attributes>
         <id name="newId">
-          <column name="NEWID" />
+          <column name="NEWID" precision="8" scale="0" />
         </id>
         <id name="documentId">
-          <column name="DOCID" />
+          <column name="DOCID" length="32" />
         </id>
-<!--
-        <basic name="docRole">
-          <column name="DOCROLE" />
-        </basic>
--->
         <basic name="newDocTypeId">
-            <column name="NEWDOCTYPEID" />
+          <column name="NEWDOCTYPEID" length="64" />
         </basic>        
         <many-to-one name="ndNew">
           <join-column name="NEWID" referenced-column-name="NEWID"
@@ -538,11 +534,11 @@
       <table name="INF_SOURCE" />
       <attributes>
         <id name="id">
-          <column name="SOURCEID" />
+          <column name="SOURCEID" length="2" />
         </id>
-        <id name="name">
-          <column name="NAME" />
-        </id>
+        <basic name="name">
+          <column name="NAME" length="100" />
+        </basic>
       </attributes>
     </entity>
     

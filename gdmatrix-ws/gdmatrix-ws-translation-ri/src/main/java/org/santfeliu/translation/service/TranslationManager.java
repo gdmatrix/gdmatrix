@@ -58,15 +58,17 @@ import org.matrix.translation.TranslationState;
 import org.matrix.translation.TranslationManagerPort;
 
 import org.matrix.translation.TranslationMetaData;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.translation.StringTranslator;
 import org.santfeliu.translation.TranslatorFactory;
 import org.santfeliu.translation.util.TranslationUtils;
 import org.santfeliu.util.enc.Unicode;
-import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.ws.WSProperties;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.MultiInstance;
+import org.santfeliu.ws.annotations.State;
 
 /**
  *
@@ -74,40 +76,53 @@ import org.santfeliu.util.TextUtils;
  */
 @WebService(endpointInterface = "org.matrix.translation.TranslationManagerPort")
 @HandlerChain(file="handlers.xml")
-@JPA
+@MultiInstance
 public class TranslationManager implements TranslationManagerPort
-{  
-  @Resource
-  WebServiceContext wsContext;
-
-  @PersistenceContext
-  public EntityManager entityManager;
-
-  private static StringTranslator stringTranslator;
+{
+  private static final Logger LOGGER = Logger.getLogger("Translation");
   
   private static final int TEXT_FIELD_MAX_SIZE = 4000;
   private static final int GROUP_FIELD_MAX_SIZE = 64;
   private static final int TRANSLATION_MAX_SIZE = 4000;
   private static final int MAX_GROUP_SIZE = 500;
   
-  protected static final Logger log = Logger.getLogger("Translation");
+  @Resource
+  WebServiceContext wsContext;
 
-  static
+  @PersistenceContext(unitName="translation_ri")
+  public EntityManager entityManager;
+
+  @State
+  Configuration config;   
+  
+  public class Configuration
   {
-    try
-    {
-      String value = MatrixConfig.getClassProperty(TranslationManager.class,
-        "stringTranslator");
-      if (value != null)
+    StringTranslator stringTranslator;
+        
+    Configuration(String endpointName)
+    {      
+      try
       {
-        stringTranslator = TranslatorFactory.getStringTranslator(value);
+        WSProperties props = new WSProperties(endpointName, 
+          TranslationManager.class);
+        String value = props.getString("stringTranslator");        
+        if (value != null)
+        {
+          stringTranslator = TranslatorFactory.getStringTranslator(value);
+        }
+      }
+      catch (Exception ex)
+      {
+        LOGGER.log(Level.WARNING, "Configuration error: {0}", ex.toString());
       }
     }
-    catch (Exception ex)
-    {
-      log.log(Level.SEVERE, "init failed", ex);
-    }
-  }
+  };
+  
+  @Initializer
+  public void initialize(String endpointName)
+  {
+    config = new Configuration(endpointName);    
+  }  
 
   @Override
   public TranslationMetaData getTranslationMetaData()
@@ -120,7 +135,7 @@ public class TranslationManager implements TranslationManagerPort
   @Override
   public Translation translate(String language, String text, String group)
   {
-    log.log(Level.INFO, "translate language:{0} text:{1} group:{2}",
+    LOGGER.log(Level.INFO, "translate language:{0} text:{1} group:{2}",
       new String[]{language, text, group});
 
     if (text == null || !isValidLanguage(language))
@@ -148,7 +163,7 @@ public class TranslationManager implements TranslationManagerPort
      String group)
   {
     List<Translation> result = new ArrayList<Translation>();
-    log.log(Level.INFO, "translateGroup language:{0} text:{1} group:{2}",
+    LOGGER.log(Level.INFO, "translateGroup language:{0} text:{1} group:{2}",
       new String[]{language, text, group});
 
     if (text == null || !isValidLanguage(language) || group == null)
@@ -184,6 +199,8 @@ public class TranslationManager implements TranslationManagerPort
   @Override
   public Translation loadTranslation(String transId)
   {
+    LOGGER.log(Level.INFO, "loadTranslation transId:{0}", 
+      new Object[]{transId});    
     DBTranslation dbTranslation = 
       entityManager.find(DBTranslation.class, transId);
     if (dbTranslation == null || 
@@ -195,6 +212,9 @@ public class TranslationManager implements TranslationManagerPort
   @Override
   public Translation storeTranslation(Translation translation)
   {
+    LOGGER.log(Level.INFO, "storeTranslation transId:{0}", 
+      new Object[]{translation.getTransId()}); 
+    
     User user = UserCache.getUser(wsContext);
     String dateTime = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
 
@@ -228,6 +248,9 @@ public class TranslationManager implements TranslationManagerPort
   @Override
   public boolean removeTranslation(String transId)
   {
+    LOGGER.log(Level.INFO, "removeTranslation transId:{0}", 
+      new Object[]{transId}); 
+    
     try
     {
       User user = UserCache.getUser(wsContext);
@@ -250,6 +273,7 @@ public class TranslationManager implements TranslationManagerPort
   @Override
   public int countTranslations(TranslationFilter filter)
   {
+    LOGGER.log(Level.INFO, "countTranslations");
     Query query = entityManager.createQuery(createQueryString(filter, true));
     setFilterParameters(query, filter);
     Number count = (Number)query.getSingleResult();
@@ -259,6 +283,7 @@ public class TranslationManager implements TranslationManagerPort
   @Override
   public List<Translation> findTranslations(TranslationFilter filter)
   {
+    LOGGER.log(Level.INFO, "findTranslations");
     Query query = entityManager.createQuery(createQueryString(filter, false));
     setFilterParameters(query, filter);
     if (filter.getFirstResult() > 0)
@@ -284,6 +309,7 @@ public class TranslationManager implements TranslationManagerPort
   {
     try
     {
+      LOGGER.log(Level.INFO, "listModifiedTranslations");
       Query query = entityManager.createNamedQuery("listModifiedTranslations");
       query.setParameter("language", language);
       query.setParameter("dateTime1", dateTime1);
@@ -292,7 +318,7 @@ public class TranslationManager implements TranslationManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "listModifiedTranslations", ex);
+      LOGGER.log(Level.SEVERE, "listModifiedTranslations", ex);
       throw new WebServiceException(ex);
     }
   }
@@ -300,6 +326,7 @@ public class TranslationManager implements TranslationManagerPort
   @Override
   public int setActiveTranslations(List<Translation> translations)
   {
+    LOGGER.log(Level.INFO, "setActiveTranslations");    
     int numUpdated = 0;
     try
     {
@@ -313,7 +340,7 @@ public class TranslationManager implements TranslationManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "setActiveTranslations", ex);
+      LOGGER.log(Level.SEVERE, "setActiveTranslations", ex);
       throw new WebServiceException(ex);
     }
     return numUpdated;
@@ -421,9 +448,9 @@ public class TranslationManager implements TranslationManagerPort
     String language, String text, String group)
   {
     String translation = null;
-    if (stringTranslator != null)
+    if (config.stringTranslator != null)
     {
-      translation = stringTranslator.translate(text, language, group);
+      translation = config.stringTranslator.translate(text, language, group);
     }
     if (translation == null)
     {
