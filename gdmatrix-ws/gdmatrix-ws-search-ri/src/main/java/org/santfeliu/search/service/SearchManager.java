@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.search.service;
@@ -47,8 +47,6 @@ import java.util.regex.Matcher;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
@@ -85,45 +83,39 @@ import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.news.client.NewsManagerClient;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.SingleInstance;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
  */
 @WebService(endpointInterface = "org.matrix.search.SearchManagerPort")
 @HandlerChain(file="handlers.xml")
+@SingleInstance
 public class SearchManager implements SearchManagerPort
 {
   @Resource
   WebServiceContext wsContext;
 
-  @PersistenceContext
-  public EntityManager entityManager;
+  private static final Logger LOGGER = Logger.getLogger("Search");
 
-  protected static final Logger log = Logger.getLogger("Search");
-  
   private static final int MIN_VALID_CHARS = 3;
   private static final int MIN_CONSONANTS_TO_CLEAN_VOWELS = 2;
 
-  public SearchManager()
+  @Initializer
+  public void initialize()
   {
-    try
-    {
-      log.info("SearchManager init");
-    }
-    catch (Exception ex)
-    {
-      log.log(Level.SEVERE, "SearchManager init failed", ex);
-      throw new RuntimeException(ex);
-    }
+    LOGGER.info("SearchManager init");
   }
 
+  @Override
   public GlobalSearchResults search(GlobalSearchFilter filter)
   {
     try
     {
-      log.log(Level.INFO, "Search");
-      GlobalSearchResults result = new GlobalSearchResults();      
+      LOGGER.log(Level.INFO, "Search");
+      GlobalSearchResults result = new GlobalSearchResults();
       List<String> textList = tokenizeString(filter.getText());
       if (filter.getAgendaFilter() != null)
       {
@@ -149,7 +141,7 @@ public class SearchManager implements SearchManagerPort
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "Search failed", ex);
+      LOGGER.log(Level.SEVERE, "Search failed", ex);
       throw new WebServiceException(ex);
     }
   }
@@ -157,13 +149,13 @@ public class SearchManager implements SearchManagerPort
   private List<Item> doAgendaSearch(List<String> textList,
     AgendaFilter filter) throws Exception
   {
-    Map<String, Item> elementMap = new HashMap<String, Item>();
+    Map<String, Item> elementMap = new HashMap<>();
     EventFilter eventFilter = new EventFilter();
     if (filter.getSearchDays() != null)
     {
       GregorianCalendar cal = new GregorianCalendar();
       cal.setTime(new Date());
-      cal.add(Calendar.DAY_OF_YEAR, -Integer.valueOf(filter.getSearchDays()));
+      cal.add(Calendar.DAY_OF_YEAR, -filter.getSearchDays());
       DatatypeFactory factory = DatatypeFactory.newInstance();
 //      eventFilter.setInitTime(factory.newXMLGregorianCalendar(cal));
       eventFilter.setStartDateTime(
@@ -174,7 +166,7 @@ public class SearchManager implements SearchManagerPort
     orderByProperty.setDescending(false);
     eventFilter.getOrderBy().add(orderByProperty);
     eventFilter.getThemeId().addAll(filter.getThemeList());
-    eventFilter.setMaxResults(Integer.valueOf(filter.getMaxRows()));
+    eventFilter.setMaxResults(filter.getMaxRows());
     for (String text : textList)
     {
       String searchString = getSearchString(text);
@@ -222,13 +214,13 @@ public class SearchManager implements SearchManagerPort
   private List<Item> doNewsSearch(List<String> textList,
     NewsFilter filter) throws Exception
   {
-    Map<String, Item> elementMap = new HashMap<String, Item>();
+    Map<String, Item> elementMap = new HashMap<>();
     org.matrix.news.NewsFilter newsFilter = new org.matrix.news.NewsFilter();
     newsFilter.getSectionId().addAll(filter.getSectionList());
     newsFilter.setExcludeDrafts(true);
     newsFilter.setExcludeNotPublished(true);
     newsFilter.setMinPubDateTime(getPriorDateString(filter.getSearchDays()));
-    newsFilter.setMaxResults(Integer.valueOf(filter.getMaxRows()));
+    newsFilter.setMaxResults(filter.getMaxRows());
     for (String text : textList)
     {
       String searchString = getSearchString(text);
@@ -236,7 +228,7 @@ public class SearchManager implements SearchManagerPort
       {
         String regEx = getVowelsRegEx(text);
         newsFilter.setContent(searchString);
-        List<NewView> newViewList = 
+        List<NewView> newViewList =
           getNewsPort().findNewViewsFromCache(newsFilter);
         for (NewView nv : newViewList)
         {
@@ -289,7 +281,7 @@ public class SearchManager implements SearchManagerPort
   private List<Item> doDocSearch(List<String> textList, DocFilter filter)
     throws Exception
   {
-    List<Item> itemList = new ArrayList<Item>();
+    List<Item> itemList = new ArrayList<>();
     DocumentFilter docFilter = new DocumentFilter();
     docFilter.setStartDate(getPriorDateString(filter.getSearchDays()));
     docFilter.setVersion(0);
@@ -297,7 +289,7 @@ public class SearchManager implements SearchManagerPort
     p.setName("searchable");
     p.getValue().add("true");
     docFilter.getProperty().add(p);
-    docFilter.setMaxResults(Integer.valueOf(filter.getMaxRows()));
+    docFilter.setMaxResults(filter.getMaxRows());
     docFilter.setIncludeContentMetadata(true);
     String searchExpression = "";
     for (int i = 0; i < textList.size(); i++)
@@ -346,12 +338,12 @@ public class SearchManager implements SearchManagerPort
   private List<Item> doWebSearch(List<String> textList, WebFilter filter)
     throws Exception
   {
-    Map<String, Item> elementMap = new HashMap<String, Item>();
+    Map<String, Item> elementMap = new HashMap<>();
     NodeFilter nodeFilter = new NodeFilter();
     nodeFilter.setChangeDateTime1(getPriorDateString(filter.getSearchDays()));
     nodeFilter.setPropertyCaseSensitive(false);
     nodeFilter.getWorkspaceId().add(filter.getWorkspaceId());
-    nodeFilter.setMaxResults(Integer.valueOf(filter.getMaxRows()));
+    nodeFilter.setMaxResults(filter.getMaxRows());
     for (String text : textList)
     {
       String searchString = getSearchString(text);
@@ -430,10 +422,10 @@ public class SearchManager implements SearchManagerPort
     SimpleDateFormat bigFormat = new SimpleDateFormat("yyyyMMddHHmmss");
     return bigFormat.format(cal.getTime());
   }
-  
+
   private List<String> tokenizeString(String text)
   {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     StringTokenizer tokenizer = new StringTokenizer(text, " '`´,.");
     while (tokenizer.hasMoreTokens())
     {
@@ -456,7 +448,7 @@ public class SearchManager implements SearchManagerPort
 
   private String removeRareChars(String text)
   {
-    StringBuffer sbResult = new StringBuffer();
+    StringBuilder sbResult = new StringBuilder();
     for (char c : text.toCharArray())
     {
       if (isVowel(c) ||
@@ -471,17 +463,17 @@ public class SearchManager implements SearchManagerPort
         sbResult.append(c);
       }
     }
-    return sbResult.toString().trim();        
+    return sbResult.toString().trim();
   }
-  
+
   private boolean isVowel(char cIn)
   {
     char c = Character.toLowerCase(cIn);
     if ((c == 'a') || (c == 'e') || (c == 'i') || (c == 'o') || (c == 'u') ||
-        (c == 'à') || (c == 'ä') || (c == 'á') || 
-        (c == 'è') || (c == 'ë') || (c == 'é') || 
-        (c == 'ì') || (c == 'ï') || (c == 'í') || 
-        (c == 'ò') || (c == 'ö') || (c == 'ó') || 
+        (c == 'à') || (c == 'ä') || (c == 'á') ||
+        (c == 'è') || (c == 'ë') || (c == 'é') ||
+        (c == 'ì') || (c == 'ï') || (c == 'í') ||
+        (c == 'ò') || (c == 'ö') || (c == 'ó') ||
         (c == 'ù') || (c == 'ü') || (c == 'ú'))
     {
       return true;
@@ -514,7 +506,7 @@ public class SearchManager implements SearchManagerPort
 
   private String cleanVowels(String text)
   {
-    StringBuffer sbResult = new StringBuffer();
+    StringBuilder sbResult = new StringBuilder();
     for (char c : text.toCharArray())
     {
       if (isVowel(c))
@@ -528,7 +520,7 @@ public class SearchManager implements SearchManagerPort
 
   private String getVowelsRegEx(String text)
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (char c : text.toCharArray())
     {
       if (!isVowel(c))
@@ -588,7 +580,7 @@ public class SearchManager implements SearchManagerPort
 
   private List<Item> sortElementMap(Map<String, Item> elementMap)
   {
-    List<Item> itemList = new ArrayList<Item>();
+    List<Item> itemList = new ArrayList<>();
     Iterator<Item> it = elementMap.values().iterator();
     while (it.hasNext())
     {
@@ -600,10 +592,10 @@ public class SearchManager implements SearchManagerPort
   private List<Item> sortItemListByScore(List<Item> itemList)
   {
     if (itemList == null || itemList.size() <= 1) return itemList;
-    List<Item> result = new ArrayList<Item>();
-    List<Item> lessAuxList = new ArrayList<Item>();
-    List<Item> equalAuxList = new ArrayList<Item>();
-    List<Item> greaterAuxList = new ArrayList<Item>();
+    List<Item> result = new ArrayList<>();
+    List<Item> lessAuxList = new ArrayList<>();
+    List<Item> equalAuxList = new ArrayList<>();
+    List<Item> greaterAuxList = new ArrayList<>();
     Item pivotItem = itemList.remove(0);
     equalAuxList.add(pivotItem);
     for (Item auxItem : itemList)
@@ -630,9 +622,9 @@ public class SearchManager implements SearchManagerPort
   private List<Item> sortItemListByDate(List<Item> itemList)
   {
     if (itemList == null || itemList.size() <= 1) return itemList;
-    List<Item> result = new ArrayList<Item>();
-    List<Item> lessAuxList = new ArrayList<Item>();
-    List<Item> greaterAuxList = new ArrayList<Item>();
+    List<Item> result = new ArrayList<>();
+    List<Item> lessAuxList = new ArrayList<>();
+    List<Item> greaterAuxList = new ArrayList<>();
     Item pivotItem = itemList.remove(0);
     for (Item auxItem : itemList)
     {
@@ -706,7 +698,7 @@ public class SearchManager implements SearchManagerPort
   private AgendaManagerClient getAgendaPort() throws Exception
   {
     User user = UserCache.getUser(wsContext);
-    
+
     return new AgendaManagerClient(user.getUserId(), user.getPassword());
   }
 
