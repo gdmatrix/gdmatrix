@@ -34,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.annotation.Resource;
@@ -61,14 +63,20 @@ import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.util.log.CSVLogger;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.handler.MessageContext;
+import org.santfeliu.ws.annotations.Disposer;
+import org.santfeliu.ws.annotations.Initializer;
+import org.santfeliu.ws.annotations.SingleInstance;
 
 /**
  *
  * @author realor
  */
 @WebService(endpointInterface = "org.matrix.report.ReportManagerPort")
+@SingleInstance
 public class ReportManager implements ReportManagerPort
 {
+  private static final Logger LOGGER = Logger.getLogger("Report");
+  
   @Resource
   WebServiceContext wsContext;
 
@@ -80,29 +88,42 @@ public class ReportManager implements ReportManagerPort
   protected static final String DEFAULT_TECHNOLOGY = "jasper";
   protected static long executionTimeout = 5 * 60 * 1000; // 5 minutes
 
-  static
+  @Initializer
+  public void initialize(String endpointName)
   {
-    String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
-    if (logConfig != null)
+    try
     {
-      csvLogger = CSVLogger.getInstance(logConfig);
+      LOGGER.log(Level.INFO, "ReportManager init");
+      
+      String logConfig = MatrixConfig.getPathProperty(LOG_CONFIG);
+      if (logConfig != null)
+      {
+        csvLogger = CSVLogger.getInstance(logConfig);
+      }
+      String value = MatrixConfig.getClassProperty(
+        ReportManager.class, "executionTimeout");
+      if (value != null)
+      {
+        try
+        {
+          executionTimeout = Long.parseLong(value);
+        }
+        catch (NumberFormatException ex)
+        {
+        }
+      }
     }
-    String value = MatrixConfig.getClassProperty(
-      ReportManager.class, "executionTimeout");
-    if (value != null)
+    catch (Exception ex)
     {
-      try
-      {
-        executionTimeout = Long.parseLong(value);
-      }
-      catch (NumberFormatException ex)
-      {
-      }
+      LOGGER.log(Level.SEVERE, "ReportManager init failed", ex);
+      throw new RuntimeException(ex);
     }
   }
-
-  public ReportManager()
+  
+  @Disposer
+  public void dispose(String endpointName)
   {
+    LOGGER.log(Level.INFO, "ReportManager disposed");
   }
 
   @Override
