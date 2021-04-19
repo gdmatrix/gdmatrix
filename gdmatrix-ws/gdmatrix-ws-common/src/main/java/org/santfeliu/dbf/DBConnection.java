@@ -611,6 +611,7 @@ public class DBConnection
           LOGGER.log(Level.FINEST, "Execute statement: {0}", 
             statement);
           executeUpdate(statement, Collections.EMPTY_MAP);
+          commit();
         }
       }
       catch (DBException ex)
@@ -618,6 +619,7 @@ public class DBConnection
         LOGGER.log(Level.FINEST, "Error executing statement: {0}", 
           ex.toString());
         
+        rollback();
         if (!ignoreErrors) throw ex;
         errors++;
       }
