@@ -43,7 +43,7 @@ import org.santfeliu.web.obj.PageFinder;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class RoleUsersBean extends PageBean
 {
@@ -92,6 +92,7 @@ public class RoleUsersBean extends PageBean
     return (getRows() == null ? 0 : getRows().size());
   }
 
+  @Override
   public String show()
   {
     return "role_users";

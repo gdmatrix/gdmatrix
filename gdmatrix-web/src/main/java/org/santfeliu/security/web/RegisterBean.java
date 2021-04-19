@@ -41,7 +41,7 @@ import org.santfeliu.web.UserSessionBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class RegisterBean extends FacesBean
 {

@@ -50,7 +50,7 @@ import org.santfeliu.web.WebBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class LoginBean extends WebBean implements Serializable
 {

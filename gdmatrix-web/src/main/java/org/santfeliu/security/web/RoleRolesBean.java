@@ -39,7 +39,7 @@ import org.santfeliu.web.obj.PageBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class RoleRolesBean extends PageBean
 {
@@ -92,6 +92,7 @@ public class RoleRolesBean extends PageBean
     return (getContainers() == null ? 0 : getContainers().size());
   }
   
+  @Override
   public String show()
   {
     return "role_roles";

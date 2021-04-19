@@ -30,8 +30,10 @@
  */
 package org.santfeliu.security.web;
 
+import java.util.Iterator;
 import java.util.List;
 import javax.faces.model.SelectItem;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.security.SecurityManagerPort;
 import org.matrix.security.User;
 import org.matrix.security.UserFilter;
@@ -40,7 +42,7 @@ import org.santfeliu.web.obj.PageBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class UserMainBean extends PageBean
 {
@@ -84,6 +86,7 @@ public class UserMainBean extends PageBean
   }
 
   //Actions  
+  @Override
   public String show()
   {
     return "user_main";
@@ -98,15 +101,22 @@ public class UserMainBean extends PageBean
       if (isNew())
       {
         String userId = user.getUserId();
-        if (userId != null && userId.trim().length() > 0)
+        if (!StringUtils.isBlank(userId))
         {
-          // check if user exists
+          // check if user already exists
+          userId = userId.trim();
           UserFilter filter = new UserFilter();
           filter.getUserId().add(userId);
-          if (port.countUsers(filter) > 0)
+          List<User> users = port.findUsers(filter);
+          Iterator<User> iter = users.iterator();
+          while (iter.hasNext())
           {
-            error("USER_ALREADY_EXISTS");
-            return show();
+            User existingUser = iter.next();
+            if (existingUser.getUserId().equals(userId))
+            {
+              error("USER_ALREADY_EXISTS");
+              return show();
+            }
           }
         }
       }

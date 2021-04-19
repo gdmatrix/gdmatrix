@@ -43,7 +43,7 @@ import org.santfeliu.web.obj.BasicSearchBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @CMSManagedBean
 public class RoleSearchBean extends BasicSearchBean
@@ -77,6 +77,7 @@ public class RoleSearchBean extends BasicSearchBean
     this.roleIdInput = roleIdInput;
   }
 
+  @Override
   public int countResults()
   {
     try

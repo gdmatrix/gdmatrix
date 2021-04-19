@@ -37,7 +37,7 @@ import org.santfeliu.web.obj.TypifiedPageBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class RoleMainBean extends TypifiedPageBean
 {

@@ -32,7 +32,7 @@ package org.santfeliu.security.web;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ProfileBean
 {

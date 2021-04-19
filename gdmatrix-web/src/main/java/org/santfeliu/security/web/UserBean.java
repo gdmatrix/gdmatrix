@@ -35,7 +35,7 @@ import org.santfeliu.web.obj.ObjectBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class UserBean extends ObjectBean
 {
@@ -43,11 +43,13 @@ public class UserBean extends ObjectBean
   {
   }
 
+  @Override
   public String getObjectTypeId()
   {
     return "User";
   }
 
+  @Override
   public String remove()
   {
     try
@@ -65,6 +67,7 @@ public class UserBean extends ObjectBean
     return getControllerBean().show();
   }
   
+  @Override
   public String getDescription()
   {
     UserMainBean userMainBean = (UserMainBean)getBean("userMainBean");
@@ -72,6 +75,7 @@ public class UserBean extends ObjectBean
     return getUserDescription(user);
   }   
   
+  @Override
   public String getDescription(String oid)
   {
     String description = "";
@@ -89,7 +93,7 @@ public class UserBean extends ObjectBean
   
   private String getUserDescription(User user)
   {
-    StringBuffer buffer = new StringBuffer();  
+    StringBuilder buffer = new StringBuilder();  
     if (user.getDisplayName() != null)
     {
       buffer.append(user.getDisplayName());

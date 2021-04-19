@@ -35,7 +35,7 @@ import org.santfeliu.web.obj.ObjectBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class RoleBean extends ObjectBean
 {
@@ -43,11 +43,13 @@ public class RoleBean extends ObjectBean
   {
   }
 
+  @Override
   public String getObjectTypeId()
   {
     return "Role";
   }
 
+  @Override
   public String remove()
   {
     try
@@ -65,6 +67,7 @@ public class RoleBean extends ObjectBean
     return getControllerBean().show();
   }
   
+  @Override
   public String getDescription()
   {
     RoleMainBean roleMainBean = (RoleMainBean)getBean("roleMainBean");
@@ -72,6 +75,7 @@ public class RoleBean extends ObjectBean
     return getRoleDescription(role);
   }   
   
+  @Override
   public String getDescription(String oid)
   {
     String description = "";
@@ -89,7 +93,7 @@ public class RoleBean extends ObjectBean
   
   private String getRoleDescription(Role role)
   {
-    StringBuffer buffer = new StringBuffer();  
+    StringBuilder buffer = new StringBuilder();  
     if (role.getName() != null)
     {
       buffer.append(role.getName());

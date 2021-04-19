@@ -39,7 +39,7 @@ import org.santfeliu.web.obj.BasicSearchBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @CMSManagedBean
 public class UserSearchBean extends BasicSearchBean
@@ -72,6 +72,7 @@ public class UserSearchBean extends BasicSearchBean
     this.userIdInput = userIdInput;
   }
   
+  @Override
   public int countResults()
   {
     try
@@ -86,6 +87,7 @@ public class UserSearchBean extends BasicSearchBean
     return 0;
   }
 
+  @Override
   public List getResults(int firstResult, int maxResults)
   {
     try
@@ -103,6 +105,7 @@ public class UserSearchBean extends BasicSearchBean
   }
 
   @CMSAction
+  @Override
   public String show()
   {
     return "user_search";

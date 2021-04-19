@@ -39,7 +39,7 @@ import org.santfeliu.web.UserSessionBean;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class PasswordBean extends FacesBean
 {
