@@ -70,7 +70,18 @@
       </t:div>
 
       <t:div styleClass="resultBar" rendered="#{personSearchBean.rows != null}">
-
+        <t:dataScroller for="data"
+          firstRowIndexVar="firstRow"
+          lastRowIndexVar="lastRow"
+          rowsCountVar="rowCount"
+          rendered="#{personSearchBean.rowCount > 0}">
+          <h:outputFormat value="#{objectBundle.resultRange}"
+            style="margin-top:10px;display:block">
+            <f:param value="#{firstRow}" />
+            <f:param value="#{lastRow}" />
+            <f:param value="#{rowCount}" />
+          </h:outputFormat>
+        </t:dataScroller>
         <h:outputText value="#{objectBundle.no_results_found}"
           rendered="#{personSearchBean.rowCount == 0}" />
       </t:div>
