@@ -37,7 +37,7 @@ import org.santfeliu.dic.util.InternalValueConverter;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBTeleco extends DBEntityBase
 {
@@ -48,7 +48,7 @@ public class DBTeleco extends DBEntityBase
   private String comments;
   private String valdata;
 
-  private InternalValueConverter typeIdConverter =
+  private static final InternalValueConverter typeIdConverter =
     new InternalValueConverter(DictionaryConstants.CONTACT_TYPE);
 
   public DBTeleco()

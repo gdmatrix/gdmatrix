@@ -435,7 +435,7 @@
         <basic name="changeUserId">
             <column name="changeUserId" length="50" />
         </basic>
-        <many-to-one name="caseType">
+        <many-to-one name="caseType" target-entity="org.santfeliu.dic.service.DBType">
           <join-column name="TYPE" referenced-column-name="TYPEID"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -491,7 +491,7 @@
         <basic name="caseAddressTypeId">
             <column name="CASEADDRESSTYPEID" length="64" />
         </basic>        
-        <many-to-one name="caseObject">
+        <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
         </many-to-one>   
@@ -569,7 +569,7 @@
         <basic name="representantContactId3">
             <column name="REPCONTACTID3" length="32" />
         </basic>
-        <many-to-one name="caseObject">
+        <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -622,7 +622,7 @@
         <basic name="comments">
           <column name="COMMENTS" length="2000" />
         </basic>
-        <many-to-one name="caseObject">
+        <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -690,7 +690,7 @@
         <basic name="priority">
             <column name="PRIORITY" precision="1" scale="0" />
         </basic>
-        <many-to-one name="caseObject">
+        <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -718,7 +718,7 @@
         <basic name="comments">
             <column name="COMMENTS" length="200" />
         </basic>
-        <many-to-one name="caseObject">
+        <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -757,7 +757,7 @@
         <basic name="volume">
             <column name="VOLUME" length="100" />
         </basic>
-        <many-to-one name="caseObject">
+        <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -788,7 +788,7 @@
         <basic name="comments">
           <column name="COMMENTS" length="1000" />
         </basic>                        
-        <many-to-one name="caseObject">
+        <many-to-one name="caseObject" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -866,7 +866,7 @@
         <basic name="endDate">
             <column name="ENDDATE" length="8" />
         </basic>
-        <many-to-one name="mainCase">
+        <many-to-one name="mainCase" target-entity="DBCase">
           <join-column name="CASEID" referenced-column-name="CASEID"
               insertable="false" updatable="false" />
         </many-to-one>
@@ -918,11 +918,11 @@
         <basic name="comments">
             <column name="COMMENTS" length="200" />
         </basic>
-        <many-to-one name="intervention">
+        <many-to-one name="intervention" target-entity="DBIntervention">
           <join-column name="INTERVENTIONID" referenced-column-name="INTERVENTIONID"
               insertable="false" updatable="false" />
         </many-to-one>
-        <many-to-one name="problem">
+        <many-to-one name="problem" target-entity="DBProblem">
           <join-column name="PROBLEMID" referenced-column-name="PROBLEMID"
               insertable="false" updatable="false" />
         </many-to-one>        

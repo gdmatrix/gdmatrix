@@ -36,7 +36,7 @@ import org.santfeliu.dic.util.InternalValueConverter;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBPersonRepresentant extends DBEntityBase
 {
@@ -48,7 +48,7 @@ public class DBPersonRepresentant extends DBEntityBase
   private DBPerson person;
   private DBPerson representant;
 
-  private InternalValueConverter typeIdConverter =
+  private static final InternalValueConverter typeIdConverter =
     new InternalValueConverter(DictionaryConstants.PERSON_REPRESENTANT_TYPE);
 
 

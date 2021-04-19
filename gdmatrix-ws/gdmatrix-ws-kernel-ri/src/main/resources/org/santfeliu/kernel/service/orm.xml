@@ -528,12 +528,12 @@
         <basic name="valdata">
           <column name="VALDATA" length="8" />
         </basic>
-        <many-to-one name="person">
+        <many-to-one name="person" target-entity="DBPerson">
           <join-column name="PERSCOD" 
             referenced-column-name="PERSCOD" 
             insertable="false" updatable="false" />
         </many-to-one>
-        <many-to-one name="address">
+        <many-to-one name="address" target-entity="DBAddress">
           <join-column name="DOMCOD" 
             referenced-column-name="DOMCOD"
             insertable="false" updatable="false" />
@@ -710,7 +710,7 @@
           <column name="VALDATA" length="8" />
         </basic>
 
-        <many-to-one name="country">
+        <many-to-one name="country" target-entity="DBCountry">
           <join-column name="PAISCOD" referenced-column-name="PAISCOD"
             insertable="false" updatable="false" />
          </many-to-one>          
@@ -780,7 +780,7 @@
           <column name="MUNICPS" length="400" />
         </basic>
 
-        <many-to-one name="province">
+        <many-to-one name="province" target-entity="DBProvince">
           <join-column name="PAISCOD" referenced-column-name="PAISCOD"
             insertable="false" updatable="false" />
           <join-column name="PROVCOD" referenced-column-name="PROVCOD"
@@ -843,7 +843,7 @@
           <column name="VALDATA" length="8" />
         </basic>
 
-        <many-to-one name="city">
+        <many-to-one name="city" target-entity="DBCity">
           <join-column name="PAISCOD" referenced-column-name="PAISCOD"
             insertable="false" updatable="false" />
           <join-column name="PROVCOD" referenced-column-name="PROVCOD"
@@ -927,38 +927,38 @@
           <basic name="domtloc">
             <column name="DOMTLOC" length="1" />
           </basic>
-        <basic name="stdapladd">
-          <column name="STDAPLADD" length="5" />
-        </basic>
-        <basic name="stdaplmod">
-          <column name="STDAPLMOD" length="5" />          
-        </basic>  
-        <basic name="stdugr">
-          <column name="STDUGR" length="20"/>
-        </basic>
-        <basic name="stddmod">
-          <column name="STDDMOD" length="8" />
-        </basic>
-        <basic name="stdhgr">
-          <column name="STDHGR" length="6" />
-        </basic>
-        <basic name="stdhmod">
-          <column name="STDHMOD" length="6" />
-        </basic>
-        <basic name="stdumod">
-          <column name="STDUMOD" length="20" />
-        </basic>
-        <basic name="stddgr">
-          <column name="STDDGR" length="8" />
-        </basic>  
-        <basic name="baixasw">
-          <column name="BAIXASW" length="1" />
-        </basic>
-        <basic name="valdata">
-          <column name="VALDATA" length="8" />
-        </basic>
+          <basic name="stdapladd">
+            <column name="STDAPLADD" length="5" />
+          </basic>
+          <basic name="stdaplmod">
+            <column name="STDAPLMOD" length="5" />          
+          </basic>  
+          <basic name="stdugr">
+            <column name="STDUGR" length="20"/>
+          </basic>
+          <basic name="stddmod">
+            <column name="STDDMOD" length="8" />
+          </basic>
+          <basic name="stdhgr">
+            <column name="STDHGR" length="6" />
+          </basic>
+          <basic name="stdhmod">
+            <column name="STDHMOD" length="6" />
+          </basic>
+          <basic name="stdumod">
+            <column name="STDUMOD" length="20" />
+          </basic>
+          <basic name="stddgr">
+            <column name="STDDGR" length="8" />
+          </basic>  
+          <basic name="baixasw">
+            <column name="BAIXASW" length="1" />
+          </basic>
+          <basic name="valdata">
+            <column name="VALDATA" length="8" />
+          </basic>
 
-          <many-to-one name="street">
+          <many-to-one name="street" target-entity="DBStreet">
             <join-column name="PAISCOD" referenced-column-name="PAISCOD"
               insertable="false" updatable="false" />
             <join-column name="PROVCOD" referenced-column-name="PROVCOD"
@@ -1009,12 +1009,12 @@
         <basic name="valdata">
           <column name="VALDATA" length="8" />
         </basic>
-        <many-to-one name="person">
+        <many-to-one name="person" target-entity="DBPerson">
           <join-column name="PERSCOD" 
             referenced-column-name="PERSCOD" 
             insertable="false" updatable="false" />
         </many-to-one>
-        <many-to-one name="representant">
+        <many-to-one name="representant" target-entity="DBPerson">
           <join-column name="REPRCOD" 
             referenced-column-name="PERSCOD" 
             insertable="false" updatable="false" />

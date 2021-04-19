@@ -39,7 +39,7 @@ import org.santfeliu.util.TextUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class DBAddress extends DBEntityBase
 {
@@ -73,7 +73,7 @@ public class DBAddress extends DBEntityBase
   
   private DBStreet street;
 
-  private InternalValueConverter typeIdConverter =
+  private static final InternalValueConverter typeIdConverter =
     new InternalValueConverter(DictionaryConstants.ADDRESS_TYPE);
   
   public DBAddress()

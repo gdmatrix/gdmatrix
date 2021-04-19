@@ -1106,12 +1106,12 @@
         <column name="BAIXASW" />
       </basic>
 
-      <many-to-one name="person">
+      <many-to-one name="person" target-entity="DBPerson">
         <join-column name="PERSCOD"
             referenced-column-name="PERSCOD" 
             insertable="false" updatable="false" />
       </many-to-one>
-      <many-to-one name="address">
+      <many-to-one name="address" target-entity="DBAddress">
         <join-column name="DOMCOD"
             referenced-column-name="DOMCOD"
             insertable="false" updatable="false" />
@@ -1285,7 +1285,7 @@
         <column name="BAIXASW" />
       </basic>
 
-      <many-to-one name="country">
+      <many-to-one name="country" target-entity="DBCountry">
         <join-column name="PAISCOD" referenced-column-name="PAISCOD"
             insertable="false" updatable="false" />
       </many-to-one>
@@ -1353,7 +1353,7 @@
       <basic name="municps">
         <column name="MUNICPS" />
       </basic>      
-      <many-to-one name="province" >
+      <many-to-one name="province" target-entity="DBProvince">
         <join-column name="PAISCOD" referenced-column-name="PAISCOD"
             insertable="false" updatable="false" />
         <join-column name="PROVCOD" referenced-column-name="PROVCOD"
@@ -1415,7 +1415,7 @@
         <column name="BAIXASW" />
       </basic>
 
-      <many-to-one name="city">
+      <many-to-one name="city" target-entity="DBCity">
         <join-column name="PAISCOD" referenced-column-name="PAISCOD"
             insertable="false" updatable="false" />
         <join-column name="PROVCOD" referenced-column-name="PROVCOD"
@@ -1424,7 +1424,7 @@
             insertable="false" updatable="false" /> 
       </many-to-one>
 
-      <many-to-one name="streetType">
+      <many-to-one name="streetType" target-entity="DBStreetType">
         <join-column name="CARSIG" referenced-column-name="CARSIG"
             insertable="false" updatable="false" />
       </many-to-one>
@@ -1532,7 +1532,7 @@
         <column name="BAIXASW" />
       </basic>
 
-      <many-to-one name="street">
+      <many-to-one name="street" target-entity="DBStreet">
         <join-column name="PAISCOD" referenced-column-name="PAISCOD"
               insertable="false" updatable="false" />
         <join-column name="PROVCOD" referenced-column-name="PROVCOD"
@@ -1583,7 +1583,7 @@
       <basic name="valdata">
         <column name="VALDATA" />
       </basic>
-      <many-to-one name="person">
+      <many-to-one name="person" target-entity="DBPerson">
         <join-column name="PERSCOD"
             referenced-column-name="PERSCOD" 
             insertable="false" updatable="false" />

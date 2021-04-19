@@ -198,7 +198,8 @@
               insertable="false" updatable="false" />
         </many-to-one>
 -->
-        <one-to-many name="properties" mapped-by="document" />
+        <one-to-many name="properties" mapped-by="document" 
+          target-entity="DBProperty" />
       </attributes>
     </entity>
     
@@ -253,7 +254,7 @@
         <basic name="value">
           <column name="VALUE" length="4000" />
         </basic>
-        <many-to-one name="document">
+        <many-to-one name="document" target-entity="DBDocument">
           <join-column name="DOCID" referenced-column-name="DOCID"
               insertable="false" updatable="false" />
           <join-column name="VERSION" referenced-column-name="VERSION"

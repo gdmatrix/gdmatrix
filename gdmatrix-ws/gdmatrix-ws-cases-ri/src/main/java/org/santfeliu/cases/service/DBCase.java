@@ -41,7 +41,7 @@ import org.santfeliu.util.audit.Auditable;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class DBCase extends Case implements Auditable
 {

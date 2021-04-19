@@ -882,11 +882,11 @@
       <basic name="stdhmod" >
         <column name="STDHMOD" />
       </basic>
-      <many-to-one name="mainCase">
+      <many-to-one name="mainCase" target-entity="DBCase">
         <join-column name="SDENUM" referenced-column-name="SDENUM"
             insertable="false" updatable="false" />
       </many-to-one>
-      <many-to-one name="relCase">
+      <many-to-one name="relCase" target-entity="DBCase">
         <join-column name="SDENUMREL" referenced-column-name="SDENUM"
             insertable="false" updatable="false" />
       </many-to-one>
@@ -987,7 +987,7 @@
       <basic name="stdhmod" >
         <column name="STDHMOD" />
       </basic>
-      <many-to-one name="caseObject">
+      <many-to-one name="caseObject" target-entity="DBCase">
         <join-column name="SDENUM" referenced-column-name="SDENUM"
             insertable="false" updatable="false" />
       </many-to-one>
@@ -1029,7 +1029,7 @@
       <basic name="stdhmod" >
         <column name="STDHMOD" updatable="false" />
       </basic>
-      <many-to-one name="caseObject">
+      <many-to-one name="caseObject" target-entity="DBCase">
         <join-column name="SDENUM" referenced-column-name="SDENUM"
             insertable="false" updatable="false" />
       </many-to-one>
