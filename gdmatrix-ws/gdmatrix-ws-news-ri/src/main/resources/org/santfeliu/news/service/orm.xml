@@ -501,7 +501,7 @@
         <basic name="strSticky">
           <column name="STICKY" length="1" />
         </basic>
-        <many-to-one name="nsNew">
+        <many-to-one name="nsNew" target-entity="DBNew">
           <join-column name="NEWID" referenced-column-name="NEWID"
               insertable="false" updatable="false" />
         </many-to-one>        
@@ -522,7 +522,7 @@
         <basic name="newDocTypeId">
           <column name="NEWDOCTYPEID" length="64" />
         </basic>        
-        <many-to-one name="ndNew">
+        <many-to-one name="ndNew" target-entity="DBNew">
           <join-column name="NEWID" referenced-column-name="NEWID"
               insertable="false" updatable="false" />
         </many-to-one>        

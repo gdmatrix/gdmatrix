@@ -258,7 +258,7 @@
       <basic name="refWorkspaceId">
         <column name="REFWORKSPACEID" precision="10" scale="0" />
       </basic>
-      <many-to-one name="refWorkspace">
+      <many-to-one name="refWorkspace" target-entity="DBWorkspace">
         <join-column name="REFWORKSPACEID" referenced-column-name="WORKSPACEID"
             insertable="false" updatable="false" />
       </many-to-one>
@@ -304,11 +304,11 @@
       <basic name="path">
         <column name="PATH" length="1000" />
       </basic>
-      <many-to-one name="workspace">
+      <many-to-one name="workspace" target-entity="DBWorkspace">
         <join-column name="WORKSPACEID" referenced-column-name="WORKSPACEID"
             insertable="false" updatable="false" />
       </many-to-one>
-      <many-to-one name="parentNode">
+      <many-to-one name="parentNode" target-entity="DBNode">
         <join-column name="WORKSPACEID" referenced-column-name="WORKSPACEID"
             insertable="false" updatable="false" />
         <join-column name="PARENTNODEID" referenced-column-name="NODEID"
@@ -337,7 +337,7 @@
       <basic name="value">
         <column name="VALUE" length="4000" />
       </basic>
-      <many-to-one name="node">
+      <many-to-one name="node" target-entity="DBNode">
         <join-column name="WORKSPACEID" referenced-column-name="WORKSPACEID"
             insertable="false" updatable="false" />
         <join-column name="NODEID" referenced-column-name="NODEID"

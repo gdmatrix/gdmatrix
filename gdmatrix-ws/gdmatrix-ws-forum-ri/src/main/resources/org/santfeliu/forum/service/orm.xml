@@ -196,7 +196,7 @@
       <basic name="activityDateTime">
         <column name="ACTIVITYDT" length="14" />
       </basic>
-      <many-to-one name="questionForum">
+      <many-to-one name="questionForum" target-entity="DBForum">
         <join-column name="FORUMID" referenced-column-name="FORUMID"
             insertable="false" updatable="false" />
       </many-to-one>
@@ -237,7 +237,7 @@
       <basic name="changeDateTime">
         <column name="CHANGEDT" length="14" />
       </basic>
-      <many-to-one name="answerQuestion">
+      <many-to-one name="answerQuestion" target-entity="DBQuestion">
         <join-column name="QUESTIONID" referenced-column-name="QUESTIONID"
             insertable="false" updatable="false" />
       </many-to-one>

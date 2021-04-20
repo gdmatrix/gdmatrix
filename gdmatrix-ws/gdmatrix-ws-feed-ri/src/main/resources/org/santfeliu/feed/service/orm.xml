@@ -177,7 +177,7 @@
       <basic name="defaultEntryCount">
         <column name="DEFAULTENTRYCOUNT" precision="5" scale="0" />
       </basic>
-      <many-to-one name="parentFolder">
+      <many-to-one name="parentFolder" target-entity="DBFolder">
         <join-column name="PARENTFOLDERID" referenced-column-name="FOLDERID"
             insertable="false" updatable="false" />
       </many-to-one>
@@ -260,7 +260,7 @@
       <basic name="strVisible">
         <column name="VISIBLE" length="1" />
       </basic>
-      <many-to-one name="entryFeed">
+      <many-to-one name="entryFeed" target-entity="DBFeed">
         <join-column name="FEEDID" referenced-column-name="FEEDID"
             insertable="false" updatable="false" />
       </many-to-one>
@@ -278,11 +278,11 @@
       <id name="folderId">
         <column name="FOLDERID" precision="10" scale="0" />
       </id>
-      <many-to-one name="feed">
+      <many-to-one name="feed" target-entity="DBFeed">
         <join-column name="FEEDID" referenced-column-name="FEEDID"
             insertable="false" updatable="false" />
       </many-to-one>
-      <many-to-one name="folder">
+      <many-to-one name="folder" target-entity="DBFolder">
         <join-column name="FOLDERID" referenced-column-name="FOLDERID"
             insertable="false" updatable="false" />
       </many-to-one>

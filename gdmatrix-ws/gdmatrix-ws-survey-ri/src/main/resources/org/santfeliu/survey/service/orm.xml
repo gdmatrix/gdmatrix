@@ -94,7 +94,7 @@
         <basic name="voteCount">
           <column name="VOTES" precision="10" scale="0" />
         </basic>
-        <many-to-one name="survey">
+        <many-to-one name="survey" target-entity="DBSurvey">
           <join-column name="SURVID" referenced-column-name="SURVID"
               insertable="false" updatable="false" />
         </many-to-one>        

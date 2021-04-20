@@ -98,7 +98,7 @@
       <id name="group">
         <column name="GRP" length="64" />
       </id>
-      <many-to-one name="translation">
+      <many-to-one name="translation" target-entity="DBTranslation">
         <join-column name="TRANSID" referenced-column-name="TRANSID"
             insertable="false" updatable="false" />
       </many-to-one>
