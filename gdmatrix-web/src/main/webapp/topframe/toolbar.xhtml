@@ -10,7 +10,8 @@
 
   <t:saveState value="#{cmsToolbarBean}" />
 
-  <t:div styleClass="bannerWrapper webtool" rendered="#{userSessionBean.administrator and userSessionBean.menuModel.browserType == 'desktop'}">  
+  <t:div styleClass="bannerWrapper webtool" rendered="#{(userSessionBean.administrator or userSessionBean.cmsAdministrator) 
+    and userSessionBean.menuModel.browserType == 'desktop'}">  
     <t:div styleClass="webtoolbar#{userSessionBean.selectedMenuItem.properties['webToolbar.fixed'] == 'false' ? '' : ' bannerFixed'}">
 
       <h:panelGroup styleClass="block1">

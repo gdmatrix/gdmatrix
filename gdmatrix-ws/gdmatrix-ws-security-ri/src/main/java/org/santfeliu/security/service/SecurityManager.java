@@ -58,6 +58,7 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.AgendaConstants;
 import org.matrix.cases.CaseConstants;
 import org.matrix.classif.ClassificationConstants;
+import org.matrix.cms.CMSConstants;
 import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.security.UserCache;
@@ -219,6 +220,8 @@ public class SecurityManager implements SecurityManagerPort
       "SQL administrator");
     createUserInRole(adminId, PresenceConstants.PRESENCE_ADMIN_ROLE, 
       "Presence administrator");
+    createUserInRole(adminId, CMSConstants.CMS_ADMIN_ROLE, 
+      "CMS administrator");
   }
   
   private void createUser(String userId)

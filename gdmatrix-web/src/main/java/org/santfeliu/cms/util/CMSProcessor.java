@@ -40,6 +40,7 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
 import org.matrix.cases.CaseManagerPort;
+import org.matrix.cms.CMSConstants;
 import org.matrix.cms.CMSManagerPort;
 import org.matrix.cms.CMSManagerService;
 import org.matrix.cms.Node;
@@ -154,7 +155,8 @@ public class CMSProcessor
         doc.getAccessControl().clear();
         for (String role : roles)
         {
-          if (!"WEBMASTER".equals(role) && !"CHONI".equals(role))
+          if (!CMSConstants.MENU_ADMIN_ROLE.equals(role) && 
+            !"CHONI".equals(role))
           {
             AccessControl ac = new AccessControl();
             ac.setRoleId(role);

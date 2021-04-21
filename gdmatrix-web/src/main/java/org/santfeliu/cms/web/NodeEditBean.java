@@ -2044,7 +2044,7 @@ public class NodeEditBean extends FacesBean implements Serializable
         document.getAccessControl().add(accessControl);
         accessControl = new AccessControl();
         accessControl.setAction(DictionaryConstants.WRITE_ACTION);
-        accessControl.setRoleId(UserSessionBean.MENU_ADMIN_ROLE);
+        accessControl.setRoleId(CMSConstants.MENU_ADMIN_ROLE);
         document.getAccessControl().add(accessControl);
         document = docClient.storeDocument(document);
         docId = document.getDocId();
@@ -2919,17 +2919,15 @@ public class NodeEditBean extends FacesBean implements Serializable
       newCursor = getCursor().getNext();
       if (newCursor.getMid() == null) //no next visible node -> go to parent
       {
-        return getCursor().getParent().getMid();
-      }
-      else
-      {
-        return newCursor.getMid();
+        newCursor = getCursor().getParent();
+        if (newCursor.getMid() == null)
+        {
+          String mid = UserSessionBean.getCurrentInstance().getSelectedMid();          
+          return getRootNodeId(mid);          
+        }
       }
     }
-    else
-    {
-      return newCursor.getMid();
-    }
+    return newCursor.getMid();
   }
 
   private void resetProperties()

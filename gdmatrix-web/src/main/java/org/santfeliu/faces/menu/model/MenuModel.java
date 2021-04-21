@@ -39,6 +39,7 @@ import java.util.Set;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
+import org.matrix.cms.CMSConstants;
 import org.santfeliu.cms.CNode;
 import org.santfeliu.cms.CWorkspace;
 import org.santfeliu.web.UserSessionBean;
@@ -237,7 +238,8 @@ public class MenuModel
 
   boolean isVisibleNode(CNode node) throws Exception
   {
-    if (roles != null && roles.contains("CMS_ADMIN")) return true;
+    if (roles != null && roles.contains(CMSConstants.CMS_ADMIN_ROLE))
+      return true;
     
     String enabledExpression = 
       getSingleValuedProperty(node, ENABLED + "." + getBrowserType());

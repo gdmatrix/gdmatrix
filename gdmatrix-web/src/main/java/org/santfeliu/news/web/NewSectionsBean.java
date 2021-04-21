@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeModelBase;
+import org.matrix.cms.CMSConstants;
 import org.matrix.cms.CMSManagerPort;
 import org.matrix.cms.Node;
 import org.matrix.cms.NodeFilter;
@@ -63,7 +64,7 @@ public class NewSectionsBean extends TypifiedPageBean
   
   public NewSectionsBean()
   {
-    super(DictionaryConstants.NEW_SECTION, "WEBMASTER");
+    super(DictionaryConstants.NEW_SECTION, CMSConstants.MENU_ADMIN_ROLE);
     load();
   }
 

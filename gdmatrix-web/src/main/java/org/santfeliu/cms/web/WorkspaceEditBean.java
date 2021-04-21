@@ -106,8 +106,9 @@ public class WorkspaceEditBean extends FacesBean implements Serializable
       {
         workspace.setRefWorkspaceId(null);
       }
-      CMSConfigBean.getPort().storeWorkspace(workspace);    
-      return "node_edit";      
+      CMSConfigBean.getPort().storeWorkspace(workspace); 
+      CMSToolbarBean.getCurrentInstance().setWorkspaceItems(null);
+      return "node_edit";
     }
     catch (Exception ex)
     {

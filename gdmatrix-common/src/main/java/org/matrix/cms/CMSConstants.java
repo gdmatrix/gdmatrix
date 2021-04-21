@@ -37,4 +37,7 @@ package org.matrix.cms;
 public class CMSConstants
 {
   public static final String NULL_PARENT_SYMBOL = "-";
+  
+  public static final String CMS_ADMIN_ROLE = "CMS_ADMIN";
+  public static final String MENU_ADMIN_ROLE = "WEBMASTER"; 
 }

@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.faces.model.SelectItem;
+import org.matrix.cms.CMSConstants;
 import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.dic.Type;
 import org.matrix.security.AccessControl;
@@ -77,7 +78,7 @@ public class NewDocumentsBean extends TypifiedPageBean
 
   public NewDocumentsBean()
   {
-    super(DictionaryConstants.NEW_DOCUMENT_TYPE, "WEBMASTER");
+    super(DictionaryConstants.NEW_DOCUMENT_TYPE, CMSConstants.MENU_ADMIN_ROLE);
     DocumentConfigBean configBean =
       (DocumentConfigBean)getBean("documentConfigBean");
     userDocTypes = configBean.getDocTypes();

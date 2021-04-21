@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.faces.model.SelectItem;
 import org.apache.myfaces.custom.tabbedpane.HtmlPanelTabbedPane;
+import org.matrix.cms.CMSConstants;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.news.New;
 import org.matrix.news.NewStoreOptions;
@@ -70,7 +71,7 @@ public class NewMainBean extends TypifiedPageBean
 
   public NewMainBean()
   {
-    super(DictionaryConstants.NEW_TYPE, "WEBMASTER");
+    super(DictionaryConstants.NEW_TYPE, CMSConstants.MENU_ADMIN_ROLE);
     load();
   }
 

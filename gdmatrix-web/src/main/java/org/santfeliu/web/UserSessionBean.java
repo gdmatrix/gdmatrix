@@ -55,6 +55,7 @@ import javax.faces.el.MethodBinding;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.matrix.cms.CMSConstants;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.agenda.client.AgendaManagerClient;
 import org.santfeliu.cms.CMSCache;
@@ -98,9 +99,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String DEFAULT_TEMPLATE = "default";
   public static final String DEFAULT_SECTION = "default";
   public static final String DEFAULT_THEME = "default";
-
-  public static final String MENU_ADMIN_ROLE = "WEBMASTER";
-  public static final String CMS_ADMIN_ROLE = "CMS_ADMIN";
 
   public static final String MATRIX_INFO_VIEW = "MATRIX_INFO";
   public static final String RENDER_VIEW = "RENDER";
@@ -628,12 +626,12 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public boolean isAdministrator()
   {
-    return roles.contains(MENU_ADMIN_ROLE);
+    return roles.contains(CMSConstants.MENU_ADMIN_ROLE);
   }
 
   public boolean isCmsAdministrator()
   {
-    return roles.contains(CMS_ADMIN_ROLE);
+    return roles.contains(CMSConstants.CMS_ADMIN_ROLE);
   }
 
   public boolean isIntranetUser()
@@ -1061,7 +1059,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     if (menuItem == null || menuItem.isNull())
       menuItem = getMenuModel().getRootMenuItem();
 
-    if (isAdministrator())
+    if (isAdministrator() || isCmsAdministrator())
     {
       FacesContext facesContext = getFacesContext();
       HttpServletRequest request =

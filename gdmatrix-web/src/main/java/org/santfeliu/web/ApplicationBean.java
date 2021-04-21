@@ -51,6 +51,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
+import org.matrix.cms.CMSManagerPort;
+import org.matrix.cms.Node;
+import org.matrix.cms.Property;
+import org.matrix.cms.Workspace;
+import org.matrix.cms.WorkspaceFilter;
 import org.matrix.util.WSDirectory;
 
 import org.santfeliu.cms.CMSCache;
@@ -133,6 +138,7 @@ public class ApplicationBean
         cmsCache = new CMSCache(WSDirectory.getInstance().getUrl(),
           userId, password);
       }
+      initCMS();
     }
     catch (Exception ex)
     {
@@ -177,15 +183,22 @@ public class ApplicationBean
   public String getStartMid(boolean isMobileAgent)
   {
     CWorkspace cWorkspace = cmsCache.getWorkspace(getDefaultWorkspaceId());
-    if (!isMobileAgent) // desktop agent
+    if (cWorkspace == null)
     {
-      return getDefaultNodeId(cWorkspace);
+      return null;
     }
-    else //mobile agent
+    else
     {
-      String auxNodeId = getMobileMainNodeId(cWorkspace);
-      if (auxNodeId == null) auxNodeId = getDefaultNodeId(cWorkspace);
-      return auxNodeId;
+      if (!isMobileAgent) // desktop agent
+      {
+        return getDefaultNodeId(cWorkspace);
+      }
+      else //mobile agent
+      {
+        String auxNodeId = getMobileMainNodeId(cWorkspace);
+        if (auxNodeId == null) auxNodeId = getDefaultNodeId(cWorkspace);
+        return auxNodeId;
+      }
     }
   }
 
@@ -267,7 +280,7 @@ public class ApplicationBean
 
   public String getDefaultWorkspaceId()
   {
-    return MatrixConfig.getProperty("org.santfeliu.web.defaultWorkspaceId");
+    return MatrixConfig.getProperty("org.santfeliu.web.defaultWorkspaceId");    
   }
 
   public CMSCache getCmsCache()
@@ -402,6 +415,33 @@ public class ApplicationBean
   private boolean mustClearMainNodes(long nowMillis)
   {
     return nowMillis - lastMainNodesClearMillis > MAIN_NODES_CLEAR_TIME;
+  }
+  
+  private void initCMS()
+  {
+    CMSManagerPort port = cmsCache.getPort();
+    WorkspaceFilter filter = new WorkspaceFilter();
+    int workspaceCount = port.countWorkspaces(filter);
+    if (workspaceCount == 0) //No workspaces found
+    {
+      //Create main workspace    
+      Workspace workspace = new Workspace();
+      workspace.setName("Main workspace");
+      workspace = port.storeWorkspace(workspace);
+      String workspaceId = workspace.getWorkspaceId();
+      //Create root node
+      Node node = new Node();
+      node.setWorkspaceId(workspaceId);
+      Property property = new Property();
+      property.setName("label");
+      property.getValue().add("Home");
+      node.getProperty().add(property);
+      property = new Property();
+      property.setName("action");
+      property.getValue().add("blank");
+      node.getProperty().add(property);    
+      port.storeNode(node);
+    }    
   }
 
   public class WebTranslator
