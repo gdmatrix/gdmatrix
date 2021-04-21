@@ -49,6 +49,7 @@ import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.DictionaryManagerPort;
 import org.matrix.dic.DictionaryManagerService;
+import org.matrix.dic.TypeFilter;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.job.Job;
@@ -409,7 +410,7 @@ public class CasesJobStore implements JobStore
   private DocumentManagerClient getDocumentManagerClient() 
     throws MalformedURLException
   {
-    DocumentManagerClient client = null;
+    DocumentManagerClient client;
 
     String wsDirectoryURL =
       MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
@@ -427,32 +428,37 @@ public class CasesJobStore implements JobStore
     return client;    
   }
   
-  private DictionaryManagerPort getDicManagerPort() throws MalformedURLException
+  private DictionaryManagerPort getDicManagerPort()
   {
-    DictionaryManagerPort port = null;
-
-    String wsDirectoryURL =
-      MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
-
-    if (wsDirectoryURL == null)
+    DictionaryManagerPort port = null;    
+    try
     {
-      String contextPath = MatrixConfig.getProperty("contextPath");
-      wsDirectoryURL = "http://localhost" + contextPath + "/wsdirectory";
+      String wsDirectoryURL =
+        MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
+      
+      if (wsDirectoryURL == null)
+      {
+        String contextPath = MatrixConfig.getProperty("contextPath");
+        wsDirectoryURL = "http://localhost" + contextPath + "/wsdirectory";
+      }
+      
+      WSDirectory wsDirectory =
+        WSDirectory.getInstance(new URL(wsDirectoryURL));
+      WSEndpoint endpoint = wsDirectory.getEndpoint(DictionaryManagerService.class);
+      port = endpoint.getPort(DictionaryManagerPort.class,
+        MatrixConfig.getProperty("adminCredentials.userId"),
+        MatrixConfig.getProperty("adminCredentials.password"));
     }
-
-    WSDirectory wsDirectory = 
-      WSDirectory.getInstance(new URL(wsDirectoryURL));      
-    WSEndpoint endpoint = wsDirectory.getEndpoint(DictionaryManagerService.class);
-    port = endpoint.getPort(DictionaryManagerPort.class,
-      MatrixConfig.getProperty("adminCredentials.userId"),
-      MatrixConfig.getProperty("adminCredentials.password"));      
-
+    catch (MalformedURLException ex)
+    {
+    }
+    
     return port;
   }  
   
   private CaseManagerPort getCaseManagerPort() throws MalformedURLException
   {
-    CaseManagerPort port = null;
+    CaseManagerPort port;
 
     String wsDirectoryURL =
       MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
@@ -474,9 +480,13 @@ public class CasesJobStore implements JobStore
   }
 
   private void createType(String typeId, String superTypeId, String description)
-  {
-    Type type = TypeCache.getInstance().getType(typeId);
-    if (type == null)
+  {    
+    DictionaryManagerPort port = getDicManagerPort();
+    TypeFilter filter = new TypeFilter();
+    filter.setTypeId(typeId);
+    filter.setSuperTypeId(superTypeId);
+    int counter = port.countTypes(filter);
+    if (counter == 0)
     {
       try 
       {
@@ -485,7 +495,7 @@ public class CasesJobStore implements JobStore
         t.setTypeId(typeId);
         t.setDescription(description);
         t.setInstantiable(true);
-        getDicManagerPort().storeType(t);
+        port.storeType(t);
       }
       catch (Exception ex) 
       {
