@@ -148,6 +148,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
         }
         List<String> readRoles = new ArrayList<>();
         List<String> updateRoles = new ArrayList<>();
+        List<String> executeRoles = new ArrayList<>();
 
         for (AccessControl ac : document.getAccessControl())
         {
@@ -161,9 +162,15 @@ public class SaveDocumentDialog extends javax.swing.JDialog
             String updateRole = ac.getRoleId();
             updateRoles.add(updateRole);
           }
+          else if (DictionaryConstants.EXECUTE_ACTION.equals(ac.getAction()))
+          {
+            String executeRole = ac.getRoleId();
+            executeRoles.add(executeRole);
+          }
         }
         readRolesTextField.setText(TextUtils.joinWords(readRoles, ","));
         updateRolesTextField.setText(TextUtils.joinWords(updateRoles, ","));
+        executeRolesTextField.setText(TextUtils.joinWords(executeRoles, ","));
       }
       catch (Exception ex)
       {
@@ -213,6 +220,8 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     docIdLabel = new javax.swing.JLabel();
     docIdValueLabel = new javax.swing.JLabel();
     newVersionCheckBox = new javax.swing.JCheckBox();
+    executeRolesLabel = new javax.swing.JLabel();
+    executeRolesTextField = new javax.swing.JTextField();
     southPanel = new javax.swing.JPanel();
     saveButton = new javax.swing.JButton();
     cancelButton = new javax.swing.JButton();
@@ -226,10 +235,14 @@ public class SaveDocumentDialog extends javax.swing.JDialog
 
     urlLabel.setText("URL:");
     gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(urlLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 0;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
@@ -238,11 +251,13 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     typeLabel.setText("Type:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(typeLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 1;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
@@ -251,11 +266,13 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     nameLabel.setText("Name:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(nameLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
@@ -265,11 +282,13 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     descriptionLabel.setText("Description:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(descriptionLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 3;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
@@ -279,11 +298,13 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     languageLabel.setText("Language:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(languageLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 4;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
@@ -292,11 +313,13 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     readRolesLabel.setText("Read roles:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(readRolesLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 5;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
@@ -306,11 +329,13 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     updateRolesLabel.setText("Update roles:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(updateRolesLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 6;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
     gridBagConstraints.weightx = 1.0;
@@ -320,6 +345,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     metadataLabel.setText("Metadata:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 8;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
@@ -332,6 +358,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
 
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 9;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
     gridBagConstraints.weighty = 1.0;
@@ -341,11 +368,13 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     docIdLabel.setText("DocId / version:");
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(docIdLabel, gridBagConstraints);
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 10;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
@@ -355,11 +384,28 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     newVersionCheckBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
     gridBagConstraints = new java.awt.GridBagConstraints();
     gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 11;
     gridBagConstraints.gridwidth = 2;
     gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
     propertiesPanel.add(newVersionCheckBox, gridBagConstraints);
+
+    executeRolesLabel.setText("Execute roles:");
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 0;
+    gridBagConstraints.gridy = 7;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+    propertiesPanel.add(executeRolesLabel, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.gridx = 1;
+    gridBagConstraints.gridy = 7;
+    gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+    propertiesPanel.add(executeRolesTextField, gridBagConstraints);
 
     getContentPane().add(propertiesPanel, java.awt.BorderLayout.CENTER);
 
@@ -403,6 +449,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
       String language = (String) languageComboBox.getSelectedItem();
       String readRolesString = readRolesTextField.getText();
       String updateRolesString = updateRolesTextField.getText();
+      String executeRolesString = executeRolesTextField.getText();
 
       DocumentType documentType = panel.getDocumentType();
       String propertyName = documentType.getPropertyName();
@@ -507,6 +554,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
       // add read & update roles to document
       Collection<String> readRoles = TextUtils.splitWords(readRolesString);
       Collection<String> updateRoles = TextUtils.splitWords(updateRolesString);
+      Collection<String> executeRoles = TextUtils.splitWords(executeRolesString);
       for (String readRole : readRoles)
       {
         AccessControl ac = new AccessControl();
@@ -520,6 +568,13 @@ public class SaveDocumentDialog extends javax.swing.JDialog
         ac.setRoleId(updateRole);
         ac.setAction(DictionaryConstants.WRITE_ACTION);
         document.getAccessControl().add(ac);
+      }
+      for (String executeRole : executeRoles)
+      {
+        AccessControl ac = new AccessControl();
+        ac.setRoleId(executeRole);
+        ac.setAction(DictionaryConstants.EXECUTE_ACTION);
+        document.getAccessControl().add(ac);        
       }
 
       // save document source into DataHandler
@@ -569,6 +624,8 @@ public class SaveDocumentDialog extends javax.swing.JDialog
   private javax.swing.JTextField descriptionTextField;
   private javax.swing.JLabel docIdLabel;
   private javax.swing.JLabel docIdValueLabel;
+  private javax.swing.JLabel executeRolesLabel;
+  private javax.swing.JTextField executeRolesTextField;
   private javax.swing.JComboBox<String> languageComboBox;
   private javax.swing.JLabel languageLabel;
   private javax.swing.JLabel metadataLabel;
