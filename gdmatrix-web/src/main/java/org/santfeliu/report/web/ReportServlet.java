@@ -67,12 +67,13 @@ import org.matrix.util.WSEndpoint;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.IOUtils;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class ReportServlet extends HttpServlet
 {
@@ -169,8 +170,10 @@ public class ReportServlet extends HttpServlet
   private void showForm(String reportId,
     HttpServletRequest request, HttpServletResponse response) throws Exception
   {
-    Credentials credentials = getCredentials(request);
-    ReportManagerPort port = getReportManagerPort(credentials);
+    String adminUserId = MatrixConfig.getProperty("adminCredentials.userId");
+    String adminPwd = MatrixConfig.getProperty("adminCredentials.password");
+    Credentials adminCredentials = new Credentials(adminUserId, adminPwd);
+    ReportManagerPort port = getReportManagerPort(adminCredentials);
     Report report = port.loadReport(reportId, false);
     List<ParameterDefinition> paramDefinitions =
       report.getParameterDefinition();
@@ -204,6 +207,7 @@ public class ReportServlet extends HttpServlet
     request.setAttribute("values", values);
     request.setAttribute("changeDate", getChangeDate(report));
     request.setAttribute("changeUserId", getChangeUserId(report));
+    Credentials credentials = getCredentials(request);
     request.setAttribute(SecurityConstants.USERID_PARAMETER,
       credentials.getUserId());
     request.setAttribute(SecurityConstants.PASSWORD_PARAMETER,

@@ -33,14 +33,17 @@ package org.santfeliu.dic.util;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
+import org.matrix.security.AccessControl;
+import org.santfeliu.security.User;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class DictionaryUtils
 {
@@ -284,7 +287,7 @@ public class DictionaryUtils
         if(!methodName.equals("getProperty") && (methodName.startsWith("get")
           || methodName.startsWith("is")))
         {
-          String propertyName = null;
+          String propertyName;
           if (methodName.startsWith("get"))
             propertyName = StringUtils.uncapitalize(methodName.substring(3));
           else
@@ -375,4 +378,19 @@ public class DictionaryUtils
       properties.add(property);
     }
   }
+  
+  public static boolean canUserDoAction(User user, String action,
+    List<AccessControl> acl)
+  {
+    boolean canDo = false;
+    Iterator<AccessControl> iter = acl.iterator();
+    while (iter.hasNext() && !canDo)
+    {
+      AccessControl ac = iter.next();
+      String roleId = ac.getRoleId();
+      String act = ac.getAction();
+      canDo = user.isInRole(roleId) && action.equals(act);
+    }
+    return canDo;
+  }  
 }

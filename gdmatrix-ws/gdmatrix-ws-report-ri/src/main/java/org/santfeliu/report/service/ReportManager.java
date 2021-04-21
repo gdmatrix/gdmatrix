@@ -63,6 +63,11 @@ import org.santfeliu.ws.WSExceptionFactory;
 import org.santfeliu.util.log.CSVLogger;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.handler.MessageContext;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.security.AccessControl;
+import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.security.User;
+import org.santfeliu.security.UserCache;
 import org.santfeliu.ws.annotations.Disposer;
 import org.santfeliu.ws.annotations.Initializer;
 import org.santfeliu.ws.annotations.SingleInstance;
@@ -179,8 +184,11 @@ public class ReportManager implements ReportManagerPort
       String parametersText = toText(parameters);
       logOperation("executeReport", "IN", reportId +
         "(" + parametersText + ")", userId);
-
-      Report report = internalLoadReport(reportId, credentials);
+      
+      String adminUserId = MatrixConfig.getProperty("adminCredentials.userId");
+      String adminPwd = MatrixConfig.getProperty("adminCredentials.password");
+      Credentials adminCredentials = new Credentials(adminUserId, adminPwd);
+      Report report = internalLoadReport(reportId, adminCredentials);
       if (report == null)
         throw new WebServiceException("report:REPORT_NOT_FOUND");
       
@@ -192,7 +200,10 @@ public class ReportManager implements ReportManagerPort
       Content content = report.getContent();
       String contentId = content.getContentId();
       DataSource dataSource = content.getData().getDataSource();
-
+      
+      if (!canUserExecuteReport(credentials, report))
+        throw new WebServiceException("report:NOT_AUTHORIZED");
+        
       ReportExecutor executor = new ReportExecutor(engine, reportId, contentId,
         dataSource, connectionName, parameters, exportOptions, credentials);
 
@@ -426,6 +437,17 @@ public class ReportManager implements ReportManagerPort
       report.setTechnology(technologyProp.getValue().get(0));
     }
     else report.setTechnology(DEFAULT_TECHNOLOGY);
+  }
+  
+  private boolean canUserExecuteReport(Credentials credentials, Report report)
+  {
+    User user = UserCache.getUser(credentials);
+    List<AccessControl> acl = report.getAccessControl();
+    String exeAction = DictionaryConstants.EXECUTE_ACTION;
+    String readAction = DictionaryConstants.READ_ACTION;
+    
+    return DictionaryUtils.canUserDoAction(user, exeAction, acl) 
+      || DictionaryUtils.canUserDoAction(user, readAction, acl);
   }
 }
 

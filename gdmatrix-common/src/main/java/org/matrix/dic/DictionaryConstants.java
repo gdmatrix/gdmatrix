@@ -104,6 +104,7 @@ public class DictionaryConstants
   public static final String PRINT_ACTION = "Print";
   public static final String DERIVE_DEFINITION_ACTION = "DeriveDefinition";
   public static final String MODIFY_DEFINITION_ACTION = "ModifyDefinition";
+  public static final String EXECUTE_ACTION = "Execute";
 
   /* agenda module */
   public static final String EVENT_TYPE =
@@ -372,5 +373,6 @@ public class DictionaryConstants
     standardActions.add(WRITE_ACTION);
     standardActions.add(DELETE_ACTION);
     standardActions.add(PRINT_ACTION);
+    standardActions.add(EXECUTE_ACTION);
   }
 }

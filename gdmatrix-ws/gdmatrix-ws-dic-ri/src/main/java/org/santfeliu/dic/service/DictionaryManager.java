@@ -42,7 +42,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,6 +60,7 @@ import org.matrix.dic.*;
 import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.dic.RootTypeFactory;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.MatrixConfig;
@@ -1203,33 +1203,10 @@ public class DictionaryManager implements DictionaryManagerPort
     return ac;
   }
 
-  private boolean canUserDoAction(User user, String action,
-    List<DBAccessControl> dbAccessControlList)
+  private boolean canUserDoAction(User user, String action, List acl)
   {
-    boolean canDo = false;
-    Iterator<DBAccessControl> iter = dbAccessControlList.iterator();
-    while (iter.hasNext() && !canDo)
-    {
-      DBAccessControl dbAccessControl = iter.next();
-      String roleId = dbAccessControl.getRoleId();
-      String act = dbAccessControl.getAction();
-      canDo = user.isInRole(roleId) && action.equals(act);
-    }
-    return canDo;
+    return DictionaryUtils.canUserDoAction(user, action, acl);
   }
-
-//  private boolean isValidTypeId(String typeId)
-//  {
-//    boolean valid = true;
-//    int i = 0;
-//    while (i < typeId.length())
-//    {
-//      char ch = typeId.charAt(i);
-//      if (!Character.isJavaIdentifierPart(ch)) valid = false;
-//      i++;
-//    }
-//    return valid;
-//  }
 
   private boolean isValidIdentifier(String id)
   {
