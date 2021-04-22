@@ -49,7 +49,7 @@ import org.santfeliu.signature.xmldsig.XMLSignedDocument;
  */
 public class Document
 {
-  private static final String DOCUMENT_WITHOUT_SIGNATURES_EXCEPTION = 
+  private static final String NO_SIGNATURES_EXCEPTION = 
     "DOCUMENT_WITHOUT_SIGNATURES";
   private static final String CANNOT_EXTRACT_SIGNATURES_EXCEPTION = 
     "CANNOT_EXTRACT_SIGNATURES";  
@@ -126,7 +126,7 @@ public class Document
   public List getSignatures() throws Exception
   {
     if (!isSigned())
-      throw new Exception(DOCUMENT_WITHOUT_SIGNATURES_EXCEPTION);    
+      throw new Exception(NO_SIGNATURES_EXCEPTION);    
     
     return this.signatures;
   }
@@ -148,8 +148,10 @@ public class Document
   
   boolean isXmlSignedDocument()
   {
-    return "text/xml".equals(contentType)
-      && DictionaryUtils.getPropertyValue(properties, "SignedDocumentClass") != null;
+    String signedDocClass = 
+      DictionaryUtils.getPropertyValue(properties, "SignedDocumentClass");
+    return ("text/xml".equals(contentType) || 
+      "application/xml".equals(contentType)) && signedDocClass != null;
   }
   
   boolean isPdf()

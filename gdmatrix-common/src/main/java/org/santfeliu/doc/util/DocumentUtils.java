@@ -56,7 +56,7 @@ import org.santfeliu.util.MimeTypeMap;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class DocumentUtils
 {
@@ -162,7 +162,7 @@ public class DocumentUtils
     List<Property> properties = document.getProperty();
     for (Property property : properties)
     {
-      String propName = new String(property.getName());
+      String propName = property.getName();
       List<String> values = new ArrayList();
       if (property.getValue() != null)
       {
@@ -409,7 +409,7 @@ public class DocumentUtils
       {
         Property p = new Property();
         p.setName(propertyName);
-        if (List.class.isAssignableFrom(value.getClass()))
+        if (value != null && List.class.isAssignableFrom(value.getClass()))
           p.getValue().addAll((List)value);
         else
           p.getValue().add(String.valueOf(value));
@@ -611,7 +611,7 @@ public class DocumentUtils
       {
         String digit = array[0];
         digit = digit.replaceAll("\\.", "");
-        size = Long.valueOf(digit).longValue();
+        size = Long.parseLong(digit);
 
         String unit = array[1];
         if ("KB".equalsIgnoreCase(unit))
@@ -627,7 +627,7 @@ public class DocumentUtils
 
   public static String getSizeString(long bytes)
   {
-    Long size = new Long(bytes);
+    Long size = bytes;
     String sizeUnit = " ";
     String strSize = String.valueOf(size.longValue());
     if (size < 1024)
@@ -637,13 +637,13 @@ public class DocumentUtils
     else if ((size >= 1024) && (size < 1024*1024))
     {
       sizeUnit += "KB";
-      float kbSize = (size.longValue()) / 1024f;
+      float kbSize = (size) / 1024f;
       strSize = String.valueOf(kbSize);
     }
     else if ((size >= 1024*1024) && (size < 1024*1024*1024))
     {
       sizeUnit += "MB";
-      float mbSize = (size.longValue()) / (1024f*1024f);
+      float mbSize = (size) / (1024f*1024f);
       strSize = String.valueOf(mbSize);
     }
     else
@@ -695,7 +695,7 @@ public class DocumentUtils
       return basePath + "html.gif";
     if (mimeType.equals("text/plain"))
       return basePath + "txt.gif";
-    if (mimeType.equals("text/xml"))
+    if (mimeType.equals("text/xml") || mimeType.equals("application/xml"))
       return basePath + "xml.gif";
     if (mimeType.equals("text/xhtml"))
       return basePath + "html.gif";
@@ -738,7 +738,7 @@ public class DocumentUtils
    */
   public static String getFilename(String title)
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < title.length(); i++)
     {
       char ch = title.charAt(i);
@@ -790,7 +790,7 @@ public class DocumentUtils
   public static String printDocument(Document document)
     throws Exception
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     Map<String,List<String>> map = DocumentUtils.getProperties(document);
     for (Map.Entry<String, List<String>> entry : map.entrySet())
     {
@@ -799,10 +799,10 @@ public class DocumentUtils
       if (values != null && values.size() > 0 &&
           values.get(0) != null && values.get(0).length() > 0)
       {
-        sb.append(name + "=[");
+        sb.append(name).append("=[");
         for (String value : values)
         {
-          sb.append(value + ",");
+          sb.append(value).append(",");
         }
         sb.deleteCharAt(sb.lastIndexOf(","));
         sb.append("];");
@@ -813,8 +813,9 @@ public class DocumentUtils
     Content content = document.getContent();
     if (content != null)
     {
-      sb.append("Content=[" + content.getContentId() + ";" +
-        content.getContentType() + ";" + content.getSize() + "]");
+      sb.append("Content=[").append(content.getContentId()).append(";")
+        .append(content.getContentType()).append(";").append(content.getSize())
+        .append("]");
     }
 
     return sb.toString();
@@ -822,11 +823,11 @@ public class DocumentUtils
 
   public static String printProperty(Property property)
   {
-    StringBuffer sb = new StringBuffer();
-    sb.append(property.getName() + "={");
+    StringBuilder sb = new StringBuilder();
+    sb.append(property.getName()).append("={");
     for (String value : property.getValue())
     {
-      sb.append(value + ",");
+      sb.append(value).append(",");
     }
     sb.deleteCharAt(sb.length() - 1);
     sb.append("}");
@@ -849,7 +850,6 @@ public class DocumentUtils
     }
     catch (Exception e)
     {
-      e.printStackTrace();
     }
   }  
 }

@@ -32,10 +32,6 @@ package org.santfeliu.doc.service;
 
 
 import java.io.File;
-import java.io.IOException;
-
-import java.net.URL;
-import java.net.URLConnection;
 
 import java.text.SimpleDateFormat;
 
@@ -1752,22 +1748,6 @@ public class DocumentManager implements DocumentManagerPort
     return userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE);
   }
   
-  private long getExternalContentLength(String url)
-  {
-    long length = 0;
-    URLConnection urlConnection;
-    try
-    {
-      urlConnection = new URL(url).openConnection();
-      length = urlConnection.getContentLength();
-    }
-    catch (IOException e)
-    {
-      length = -1;
-    }    
-    return length;
-  }
-
   private void describeContent(Content content)
   {
     if (droid != null)
@@ -1816,9 +1796,18 @@ public class DocumentManager implements DocumentManagerPort
     }
     content.setFormatId(format.getPUID());
     content.setFormatDescription(description);
-    if (format.getMimeType() != null)
+    String mimeType = format.getMimeType();
+    if (mimeType != null)
     {
-      content.setContentType(format.getMimeType());
+      //It could be a comma separated string of mimeTypes.
+      String[] mimeTypes = mimeType.split(",");
+      if (mimeTypes.length > 1)
+      {
+        mimeType = mimeTypes[mimeTypes.length - 1].trim();
+        content.setContentType(mimeType);
+      }
+      else
+        content.setContentType(mimeType.trim());
     }
   }
   
