@@ -40,10 +40,12 @@ import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class WSExceptionFactory
 {
@@ -88,7 +90,16 @@ public class WSExceptionFactory
         Iterator<DetailEntry> iter = detail.getDetailEntries();
         while (iter.hasNext())
         {
-          details.add(iter.next().getTextContent());
+          NodeList childNodes = iter.next().getChildNodes();
+          for (int i = 0; i < childNodes.getLength(); i++)
+          {
+            Node node = childNodes.item(i);
+            if (node.getNodeName().equals("message"))
+            {
+              details.add(node.getTextContent());
+              break;
+            }
+          }
         }
       }
     }

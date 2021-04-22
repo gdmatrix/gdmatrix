@@ -32,7 +32,6 @@ package org.santfeliu.faces;
 
 
 import java.util.*;
-import javax.el.ValueExpression;
 
 import javax.faces.FactoryFinder;
 import javax.faces.application.Application;
@@ -332,7 +331,8 @@ public abstract class FacesBean
   {
     if (details.size() > 0)
     {
-      for (String detail : details)
+      Set<String> detailSet = new HashSet<>(details);
+      for (String detail : detailSet)
       {
         String[] detailParts = detail.split("#");
         if (detailParts.length == 2)
