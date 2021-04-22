@@ -75,54 +75,20 @@ import org.santfeliu.util.MatrixConfig;
  */
 public class ApplicationBean
 {
+  private static final Logger LOGGER = Logger.getLogger("ApplicationBean");
+  
+  private static final String BEAN_NAME = "applicationBean";
+  private static final String PARAM_RESOURCES_VERSION = "resourcesVersion";
+
   private CMSCache cmsCache;
   private List<Locale> locales;
   private org.santfeliu.faces.Translator translator = new WebTranslator();
-  private String mainNodeId = null;
-  private String mobileMainNodeId = null;
-  private long lastMainNodesClearMillis = 0;
-
-  private static final long MAIN_NODES_CLEAR_TIME = 1 * 60 * 1000; // 1 min
-
-  private static final String BEAN_NAME = "applicationBean";
-
-  private static final String PARAM_DESKTOP_MAIN_NODE = "desktopMainNode";
-  private static final String PARAM_MOBILE_MAIN_NODE = "mobileMainNode";
-  private static final String PARAM_RESOURCES_VERSION = "resourcesVersion";
-
-  protected static final Logger log = Logger.getLogger("ApplicationBean");
-  protected static final String mobileAgentList[] =
-  {
-    "iphone",
-    "android",
-    "blackberry",
-    "nokia",
-    "opera mini",
-    "opera mobi",
-    "series60",
-    "symbian",
-    "iemobile",
-    "smartphone",
-    "ppc",
-    "mib",
-    "semc",
-    "mobile safari",
-    "blazer",
-    "bolt",
-    "fennec",
-    "minimo",
-    "netfront",
-    "skyfire",
-    "teashark",
-    "teleca",
-    "uzard"
-  };
 
   public ApplicationBean()
   {
     try
     {
-      log.info("ApplicationBean init");
+      LOGGER.info("ApplicationBean init");
       String userId =
         MatrixConfig.getProperty("adminCredentials.userId");
       String password =
@@ -142,7 +108,7 @@ public class ApplicationBean
     }
     catch (Exception ex)
     {
-      log.log(Level.SEVERE, "ApplicationBean init failed", ex);
+      LOGGER.log(Level.SEVERE, "ApplicationBean init failed", ex);
       throw new RuntimeException(ex);
     }
   }
@@ -195,8 +161,11 @@ public class ApplicationBean
       }
       else //mobile agent
       {
-        String auxNodeId = getMobileMainNodeId(cWorkspace);
-        if (auxNodeId == null) auxNodeId = getDefaultNodeId(cWorkspace);
+        String auxNodeId = cWorkspace.getMobileMainNodeId();
+        if (CWorkspace.NULL_MAIN_NODE.equals(auxNodeId))
+        {
+          auxNodeId = getDefaultNodeId(cWorkspace);
+        }
         return auxNodeId;
       }
     }
@@ -228,7 +197,7 @@ public class ApplicationBean
   {
     if (locales == null)
     {
-      locales = new ArrayList<Locale>();
+      locales = new ArrayList<>();
       Iterator iter = FacesContext.getCurrentInstance().
         getApplication().getSupportedLocales();
       while (iter.hasNext()) locales.add((Locale)iter.next());
@@ -370,51 +339,12 @@ public class ApplicationBean
 
   private String getDefaultNodeId(CWorkspace cWorkspace)
   {
-    String nodeId = getMainNodeId(cWorkspace);
-    if (nodeId == null) nodeId = cWorkspace.getSmallestRootNodeId();
+    String nodeId = cWorkspace.getMainNodeId();
+    if (CWorkspace.NULL_MAIN_NODE.equals(nodeId))
+    {
+      nodeId = cWorkspace.getSmallestRootNodeId();
+    }
     return nodeId;
-  }
-
-  private String getMainNodeId(CWorkspace cWorkspace)
-  {
-    long nowMillis = System.currentTimeMillis();
-    if (mustClearMainNodes(nowMillis))
-    {
-      clearMainNodes(nowMillis);
-    }
-    if (mainNodeId == null)
-    {
-      mainNodeId = cWorkspace.getNodeIdByProperty(PARAM_DESKTOP_MAIN_NODE,
-        "true");
-    }
-    return mainNodeId;
-  }
-
-  private String getMobileMainNodeId(CWorkspace cWorkspace)
-  {
-    long nowMillis = System.currentTimeMillis();
-    if (mustClearMainNodes(nowMillis))
-    {
-      clearMainNodes(nowMillis);
-    }
-    if (mobileMainNodeId == null)
-    {
-      mobileMainNodeId = cWorkspace.getNodeIdByProperty(PARAM_MOBILE_MAIN_NODE,
-        "true");
-    }
-    return mobileMainNodeId;
-  }
-
-  private void clearMainNodes(long nowMillis)
-  {
-    mainNodeId = null;
-    mobileMainNodeId = null;
-    lastMainNodesClearMillis = nowMillis;
-  }
-
-  private boolean mustClearMainNodes(long nowMillis)
-  {
-    return nowMillis - lastMainNodesClearMillis > MAIN_NODES_CLEAR_TIME;
   }
   
   private void initCMS()

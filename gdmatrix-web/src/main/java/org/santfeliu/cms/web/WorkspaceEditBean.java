@@ -76,7 +76,7 @@ public class WorkspaceEditBean extends FacesBean implements Serializable
 
   public SelectItem[] getRefWorkspaceItems()
   {
-    List<SelectItem> auxList = new ArrayList<SelectItem>();
+    List<SelectItem> auxList = new ArrayList<>();
     SelectItem noReferenceItem = new SelectItem();
     noReferenceItem.setLabel(getLocalizedText("noReferenceWorkspace"));
     noReferenceItem.setValue("");
@@ -108,6 +108,7 @@ public class WorkspaceEditBean extends FacesBean implements Serializable
       }
       CMSConfigBean.getPort().storeWorkspace(workspace); 
       CMSToolbarBean.getCurrentInstance().setWorkspaceItems(null);
+      getNodeEditBean().setToWorkspaceItems(null);
       return "node_edit";
     }
     catch (Exception ex)
@@ -124,7 +125,7 @@ public class WorkspaceEditBean extends FacesBean implements Serializable
 
   private String getLocalizedText(String text)
   {
-    String result = null;
+    String result;
     try
     {
       Locale locale =
@@ -142,6 +143,11 @@ public class WorkspaceEditBean extends FacesBean implements Serializable
   {
     return ResourceBundle.getBundle(
       "org.santfeliu.cms.web.resources.CMSBundle", locale);
+  }
+  
+  private NodeEditBean getNodeEditBean()
+  {
+    return (NodeEditBean)getBean("nodeEditBean");
   }
 
 }

@@ -55,19 +55,26 @@ public class CWorkspace
 {
   private static final long FAST_PURGE_TIME = 1 * 60 * 1000; // 1 minute
   private static final long PARENTS_PURGE_TIME = 10 * 60 * 1000; // 10 minutes
-
+  
+  private static final String PARAM_DESKTOP_MAIN_NODE = "desktopMainNode";
+  private static final String PARAM_MOBILE_MAIN_NODE = "mobileMainNode";
+  
   private final CMSCache cmsCache;
   private final Workspace workspace;
   private final Map cNodeMap;
   private String purgeDateTime = getInitDateTime();
   private long lastPurgeMillis = 0;
   private long lastParentsPurgeMillis = 0;
-  private Map<String, String> parentsMap =
-    Collections.synchronizedMap(new HashMap<String, String>());
-  private Map<String, List<String>> childrenMap =
-    Collections.synchronizedMap(new HashMap<String, List<String>>());
+  private final Map<String, String> parentsMap =
+    Collections.synchronizedMap(new HashMap<>());
+  private final Map<String, List<String>> childrenMap = 
+    Collections.synchronizedMap(new HashMap<>());
   private final int cacheMaxSize;
+  private String mainNodeId = null;
+  private String mobileMainNodeId = null;
 
+  public static final String NULL_MAIN_NODE = "-";
+  
   public CWorkspace(CMSCache cmsCache, Workspace workspace, int cacheMaxSize)
   {
     this.cmsCache = cmsCache;
@@ -131,7 +138,6 @@ public class CWorkspace
     return cNode;
   }
 
-  //TODO Comprobar cohesión con LRU
   public synchronized Map<String, CNode> getNodes(List<String> nodeIdList)
   {
     long nowMillis = System.currentTimeMillis();
@@ -140,8 +146,8 @@ public class CWorkspace
       purgeParentChildren(nowMillis);
     }
 
-    Map<String, CNode> result = new HashMap<String, CNode>();
-    List<String> pendantNodeIdList = new ArrayList<String>();
+    Map<String, CNode> result = new HashMap<>();
+    List<String> pendantNodeIdList = new ArrayList<>();
     for (String nodeId : nodeIdList)
     {
       CNode cNode = (CNode)cNodeMap.get(nodeId);
@@ -190,10 +196,6 @@ public class CWorkspace
     NodeFilter filter = new NodeFilter();
     filter.getWorkspaceId().add(workspace.getWorkspaceId());
     filter.setName(topic);
-//    Property property = new Property();
-//    property.setName(propertyName);
-//    property.getValue().add(propertyValue);
-//    filter.getProperty().add(property);
     List<Node> nodeList = getPort().findNodes(filter);
     if (nodeList.size() > 0)
     {
@@ -208,6 +210,8 @@ public class CWorkspace
     cNodeMap.clear();
     parentsMap.clear();
     childrenMap.clear();
+    mainNodeId = null;
+    mobileMainNodeId = null;    
   }
 
   public synchronized void fastPurge()
@@ -248,7 +252,8 @@ public class CWorkspace
     return cWorkspaceAux.getWorkspace().getWorkspaceId();
   }
 
-  public synchronized String getNodeIdByProperty(String propertyName, String propertyValue)
+  public synchronized String getNodeIdByProperty(String propertyName, 
+    String propertyValue)
   {
     NodeFilter nodeFilter = new NodeFilter();
     nodeFilter.getWorkspaceId().add(workspace.getWorkspaceId());
@@ -280,6 +285,26 @@ public class CWorkspace
     return String.valueOf(minValue);
   }
 
+  public String getMainNodeId()
+  {
+    if (mainNodeId == null)
+    {
+      mainNodeId = getNodeIdByProperty(PARAM_DESKTOP_MAIN_NODE, "true");
+      if (mainNodeId == null) mainNodeId = NULL_MAIN_NODE;
+    }
+    return mainNodeId;
+  }
+
+  public String getMobileMainNodeId()
+  {
+    if (mobileMainNodeId == null)
+    {
+      mobileMainNodeId = getNodeIdByProperty(PARAM_MOBILE_MAIN_NODE, "true");
+      if (mobileMainNodeId == null) mobileMainNodeId = NULL_MAIN_NODE;      
+    }
+    return mobileMainNodeId;
+  }
+  
   protected void putNode(CNode cNode, boolean force)
   {
     String nodeId = cNode.getNode().getNodeId();
@@ -336,7 +361,7 @@ public class CWorkspace
     String newParentNodeId = newNode.getParentNodeId();
     if (currentParentNodeId == null && newParentNodeId == null)
     {
-      return;
+      //nothing here
     }
     else
     {
@@ -356,7 +381,7 @@ public class CWorkspace
 
   protected List<String> getSiblings(String nodeId)
   {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     String parentNodeId = getParent(nodeId);
     if (parentNodeId != null)
     {
@@ -387,7 +412,7 @@ public class CWorkspace
 
   protected void initParentChildren(String parentNodeId)
   {
-    childrenMap.put(parentNodeId, new ArrayList<String>());
+    childrenMap.put(parentNodeId, new ArrayList<>());
   }
 
   private String getParent(String childNodeId)
@@ -410,7 +435,7 @@ public class CWorkspace
 
   private void purgeParentChildren(long nowMillis)
   {
-    List<String> parentNodeIdList = new ArrayList<String>();
+    List<String> parentNodeIdList = new ArrayList<>();
     parentNodeIdList.addAll(childrenMap.keySet());
     for (String parentNodeId : parentNodeIdList)
     {
@@ -426,7 +451,7 @@ public class CWorkspace
   {
     return nowMillis - lastParentsPurgeMillis > PARENTS_PURGE_TIME;
   }
-
+  
   CWorkspaceMBean getCacheMBean() throws NotCompliantMBeanException
   {
     return new CWorkspaceMBean();
@@ -440,21 +465,25 @@ public class CWorkspace
       super(CacheMBean.class);
     }
 
+    @Override
     public String getName()
     {
       return "CWorkspace(" + workspace.getWorkspaceId() + ")";
     }
 
+    @Override
     public long getMaxSize()
     {
       return cacheMaxSize;
     }
 
+    @Override
     public long getSize()
     {
       return cNodeMap.size();
     }
 
+    @Override
     public String getDetails()
     {
       return "cNodeMapSize=" + getSize() + "/" + getMaxSize() + "," +
@@ -462,11 +491,13 @@ public class CWorkspace
         "parentsMapSize=" + parentsMap.size();
     }
 
+    @Override
     public void clear()
     {
       CWorkspace.this.clear();
     }
 
+    @Override
     public void update()
     {
       purge();
