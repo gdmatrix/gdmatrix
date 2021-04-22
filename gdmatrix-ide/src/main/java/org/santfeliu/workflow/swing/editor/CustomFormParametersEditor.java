@@ -30,7 +30,9 @@
  */
 package org.santfeliu.workflow.swing.editor;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -54,6 +56,7 @@ public class CustomFormParametersEditor extends JPanel implements NodeEditor
 
   private FormNode formNode;
   private GridBagLayout gridBagLayout1 = new GridBagLayout();
+  private JLabel warningLabel = new JLabel();
   private JLabel typeLabel = new JLabel();
   private JComboBox typeComboBox = new JComboBox();
   private JLabel valueLabel = new JLabel();
@@ -138,19 +141,25 @@ public class CustomFormParametersEditor extends JPanel implements NodeEditor
   private void initComponents() throws Exception
   {
     this.setLayout(gridBagLayout1);
+    warningLabel.setText("This type of form is deprecated. Use 'dynamic' form instead.");
+    warningLabel.setForeground(Color.RED);
+    warningLabel.setFont(getFont().deriveFont(Font.BOLD));
     typeLabel.setText("Type:");
     valueLabel.setText("Value:");
+    this.add(warningLabel,
+      new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 20, 4), 0, 0));
     this.add(typeLabel,
-      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
-        new Insets(4, 4, 4, 4), 0, 0));
-    this.add(typeComboBox,
-      new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-        new Insets(4, 0, 4, 0), 0, 0));
-    this.add(valueLabel,
       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
         new Insets(4, 4, 4, 4), 0, 0));
+    this.add(typeComboBox,
+      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 0, 4, 0), 0, 0));
+    this.add(valueLabel,
+      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(4, 4, 4, 4), 0, 0));
     this.add(valueTextField,
-      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+      new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
         new Insets(4, 0, 4, 4), 0, 0));
 
     typeComboBox.addItem("HTML visual form");
