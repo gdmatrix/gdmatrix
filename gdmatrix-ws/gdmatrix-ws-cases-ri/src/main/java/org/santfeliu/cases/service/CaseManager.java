@@ -239,7 +239,6 @@ public class CaseManager implements CaseManagerPort
         Auditor.auditCreation(dbCase, user.getUserId());
 
         em.persist(dbCase);
-        caseId = dbCase.getCaseId();
         em.flush();
 
         addNominalRoles(user, dbCase);
@@ -518,7 +517,7 @@ public class CaseManager implements CaseManagerPort
 
       validateCasePerson(casePerson);
 
-      DBCasePerson dbCasePerson = null;
+      DBCasePerson dbCasePerson;
       if (casePersonId == null) //insert
       {
         dbCasePerson = new DBCasePerson(casePerson);
@@ -607,7 +606,7 @@ public class CaseManager implements CaseManagerPort
         }
         
         //findCases
-        if (allCaseIds != null && !allCaseIds.isEmpty())
+        if (!allCaseIds.isEmpty())
         {
           CaseFilter caseFilter = new CaseFilter();
           caseFilter.getCaseId().addAll(allCaseIds);
@@ -748,7 +747,7 @@ public class CaseManager implements CaseManagerPort
         }
         
         //findCases
-        if (allCaseIds != null && !allCaseIds.isEmpty())
+        if (!allCaseIds.isEmpty())
         {
           CaseFilter caseFilter = new CaseFilter();
           caseFilter.getCaseId().addAll(allCaseIds);
@@ -903,7 +902,7 @@ public class CaseManager implements CaseManagerPort
         }
         
         //findCases
-        if (allCaseIds != null && !allCaseIds.isEmpty())
+        if (!allCaseIds.isEmpty())
         {
           CaseFilter caseFilter = new CaseFilter();
           caseFilter.getCaseId().addAll(allCaseIds);
@@ -1024,7 +1023,7 @@ public class CaseManager implements CaseManagerPort
         }
         
         //findCases
-        if (allCaseIds != null && !allCaseIds.isEmpty())
+        if (!allCaseIds.isEmpty())
         {
           CaseFilter caseFilter = new CaseFilter();
           caseFilter.getCaseId().addAll(allCaseIds);
@@ -1335,7 +1334,7 @@ public class CaseManager implements CaseManagerPort
 
       validateCaseDocument(caseDocument);
 
-      DBCaseDocument dbCaseDocument = null;
+      DBCaseDocument dbCaseDocument;
 
       if (caseDocId == null) //insert
       {
@@ -1527,7 +1526,7 @@ public class CaseManager implements CaseManagerPort
       String caseId = filter.getCaseId();
       if (caseId != null) //Get documents
       {
-        List<CaseDocumentView> rows = new ArrayList();
+        List<CaseDocumentView> rows;
         //If a related document not exists then it isn't considered
         rows = getCaseDocumentRows(caseId, filter);
         if (rows != null)
@@ -2254,7 +2253,7 @@ public class CaseManager implements CaseManagerPort
 
       validateInterventionProblem(interventionProblem);
 
-      DBInterventionProblem dbInterventionProblem = null;
+      DBInterventionProblem dbInterventionProblem;
       if (intProbId == null) //insert
       {
         dbInterventionProblem = new DBInterventionProblem(interventionProblem);
@@ -2422,8 +2421,7 @@ public class CaseManager implements CaseManagerPort
           caseDocTypeId : DictionaryConstants.CASE_DOCUMENT_TYPE);
           caseDocumentView.setComments(dbCaseDocument.getComments());
           caseDocumentViewList.add(caseDocumentView);
-          if (caseDocumentView != null)
-            caseDocumentView.setDocument(document);
+          caseDocumentView.setDocument(document);
         }
       }
       catch (Exception e)
@@ -2553,7 +2551,7 @@ public class CaseManager implements CaseManagerPort
     
     if (keyElements != null)
     {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append(keyElements[0]);
       for (int i = 1; i < keyElements.length; i++)
       {
@@ -2573,23 +2571,23 @@ public class CaseManager implements CaseManagerPort
     {
       Class filterClass = filter.getClass();
       Method[] methods = filterClass.getDeclaredMethods();
-      for (int i = 0; i < methods.length; i++)
+      for (Method method : methods)
       {
-        String methodName = methods[i].getName();
+        String methodName = method.getName();
         if (methodName != null && 
-           (methodName.startsWith("get") || methodName.startsWith("is")) &&
-           (!"getFirstResult".equals(methodName) && 
-            !"getMaxResults".equals(methodName) &&
-            !"getTypeList".equals(methodName) &&
-            !"isExcludeMetadata".equals(methodName) &&
-            !"getOutputProperty".equals(methodName)))
-        {   
-          String fieldName = 
-            (methodName.startsWith("get") ? 
-             methodName.substring(3) : methodName.substring(2));
+          (methodName.startsWith("get") || methodName.startsWith("is")) &&
+          (!"getFirstResult".equals(methodName) &&
+          !"getMaxResults".equals(methodName) &&
+          !"getTypeList".equals(methodName) &&
+          !"isExcludeMetadata".equals(methodName) &&
+          !"getOutputProperty".equals(methodName)))
+        {
+          String fieldName =
+            (methodName.startsWith("get") ?
+            methodName.substring(3) : methodName.substring(2));
           fieldName = 
             fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
-          Object paramValue = methods[i].invoke(filter, new Object[]{});
+          Object paramValue = method.invoke(filter, new Object[]{});
           query.setParameter(fieldName, paramValue);
         }
       }
@@ -3046,6 +3044,12 @@ public class CaseManager implements CaseManagerPort
     if (type == null)
       throw new WebServiceException("cases:INVALID_CASE_TYPE");
 
+    String startDT = caseObject.getStartDate() + caseObject.getStartTime();
+    String endDT = caseObject.getEndDate() + caseObject.getEndTime();
+  
+    if (startDT.compareTo(endDT) > 0)
+      throw new WebServiceException("cases:INVALID_DATES");    
+
     //Remove typeCaseId entries
     for (int i = 0; i < caseObject.getProperty().size(); i++)
     {
@@ -3277,11 +3281,11 @@ public class CaseManager implements CaseManagerPort
     try
     {
       WSDirectory wsDirectory = WSDirectory.getInstance();
-      WSEndpoint endpoint =
+      WSEndpoint ep =
         wsDirectory.getEndpoint(KernelManagerService.class);
 
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
-      return endpoint.getPort(KernelManagerPort.class, credentials.getUserId(),
+      return ep.getPort(KernelManagerPort.class, credentials.getUserId(),
         credentials.getPassword());
     }
     catch (Exception ex)
@@ -3295,11 +3299,11 @@ public class CaseManager implements CaseManagerPort
     try
     {
       WSDirectory wsDirectory = WSDirectory.getInstance();
-      WSEndpoint endpoint =
+      WSEndpoint ep =
         wsDirectory.getEndpoint(DocumentManagerService.class);
 
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
-      return endpoint.getPort(DocumentManagerPort.class, credentials.getUserId(),
+      return ep.getPort(DocumentManagerPort.class, credentials.getUserId(),
         credentials.getPassword());
     }
     catch (Exception ex)
@@ -3313,11 +3317,11 @@ public class CaseManager implements CaseManagerPort
     try
     {
       WSDirectory wsDirectory = WSDirectory.getInstance();
-      WSEndpoint endpoint =
+      WSEndpoint ep =
         wsDirectory.getEndpoint(AgendaManagerService.class);
 
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
-      return endpoint.getPort(AgendaManagerPort.class, credentials.getUserId(),
+      return ep.getPort(AgendaManagerPort.class, credentials.getUserId(),
         credentials.getPassword());
     }
     catch (Exception ex)
@@ -3331,11 +3335,11 @@ public class CaseManager implements CaseManagerPort
     try
     {
       WSDirectory wsDirectory = WSDirectory.getInstance();
-      WSEndpoint endpoint =
+      WSEndpoint ep =
         wsDirectory.getEndpoint(CaseManagerService.class);
 
       Credentials credentials = SecurityUtils.getCredentials(wsContext);
-      return endpoint.getPort(CaseManagerPort.class, credentials.getUserId(),
+      return ep.getPort(CaseManagerPort.class, credentials.getUserId(),
         credentials.getPassword());
     }
     catch (Exception ex)
