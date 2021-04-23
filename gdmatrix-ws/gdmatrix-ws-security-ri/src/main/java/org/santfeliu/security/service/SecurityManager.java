@@ -196,6 +196,7 @@ public class SecurityManager implements SecurityManagerPort
 
     String adminId = MatrixConfig.getProperty(ADMIN_USERID);
     createUser(adminId);
+    createUserInRole(adminId, SecurityConstants.EVERYONE_ROLE, "Everyone");
     createUserInRole(adminId, SecurityConstants.SECURITY_ADMIN_ROLE, 
       "Security administrator");
     createUserInRole(adminId, DictionaryConstants.DIC_ADMIN_ROLE, 
