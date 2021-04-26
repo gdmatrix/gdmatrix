@@ -641,6 +641,14 @@
     <param-value>SELECT PERSCOD FROM HAB_MOVHABS WHERE PERSCOD = ? AND DATAFINAL = ' '</param-value>
   </context-param>
   <context-param>
+    <param-name>com.audifilm.matrix.kernel.readRole</param-name>
+    <param-value>KERNEL_CONSULTOR</param-value>
+  </context-param>  
+  <context-param>
+    <param-name>com.audifilm.matrix.kernel.writeRole</param-name>
+    <param-value>KERNEL_EDITOR</param-value>
+  </context-param>   
+  <context-param>
     <param-name>com.audifilm.matrix.security.adminRoleId</param-name>
     <param-value>CASE_ADMIN</param-value>
   </context-param>
