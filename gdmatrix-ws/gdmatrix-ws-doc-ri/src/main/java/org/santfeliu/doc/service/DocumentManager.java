@@ -76,9 +76,6 @@ import static org.matrix.doc.DocumentConstants.WRITE_ROLE;
 import static org.matrix.doc.DocumentConstants.DELETE_ROLE;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
-//import org.matrix.doc.DocumentPerson;
-//import org.matrix.doc.DocumentPersonFilter;
-//import org.matrix.doc.DocumentPersonView;
 import org.matrix.dic.Property;
 import org.matrix.doc.RelatedDocument;
 import org.matrix.doc.RelationType;
@@ -1756,7 +1753,8 @@ public class DocumentManager implements DocumentManagerPort
       if (formatId != null)
       {
         FileFormat format = droid.getFileFormat(formatId);
-        setContentFormat(content, format);
+        if (format != null)
+          setContentFormat(content, format);
       }
     }
   }

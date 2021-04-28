@@ -32,7 +32,6 @@ package org.santfeliu.doc.util.droid;
 
 import java.io.File;
 import uk.gov.nationalarchives.droid.core.interfaces.IdentificationResult;
-import uk.gov.nationalarchives.droid.core.signature.FileFormat;
 
 /**
  *

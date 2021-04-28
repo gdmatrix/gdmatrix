@@ -116,16 +116,19 @@ public class Droid
   public FileFormat getFileFormat(String PUID)
   {
     FileFormat format = null;
-          
-    int i = 0;
-    boolean found = false;
-    FFSignatureFile sigFile = 
-      resolvers.getBinaryResolver().getDroidCore().getSigFile();
-    while (i < sigFile.getNumFileFormats() && !found)
+    BinarySignatureResolver bResolver = resolvers.getBinaryResolver();
+    ContainerSignaturesResolver cResolver = bResolver.getContainerResolver();
+    if (!cResolver.isContainerFormat(PUID))
     {
-      format = sigFile.getFileFormat(i);
-      found = format.getPUID().equals(PUID);
-      i++;
+      int i = 0;
+      boolean found = false;         
+      FFSignatureFile sigFile = bResolver.getDroidCore().getSigFile();
+      while (i < sigFile.getNumFileFormats() && !found)
+      {
+        format = sigFile.getFileFormat(i);
+        found = format.getPUID().equals(PUID);
+        i++;
+      }
     }
     return format;
   }

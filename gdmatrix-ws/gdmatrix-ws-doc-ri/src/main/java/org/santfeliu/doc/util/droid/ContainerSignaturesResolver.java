@@ -137,4 +137,10 @@ public class ContainerSignaturesResolver implements Resolver
     return ResolverType.CONTAINER;
   }
   
+  public boolean isContainerFormat(String puid)
+  {
+    return containerFormatResolver != null && 
+      containerFormatResolver.forPuid(puid) != null;
+  }
+  
 }
