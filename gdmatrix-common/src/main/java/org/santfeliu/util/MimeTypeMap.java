@@ -216,6 +216,7 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("audio/x-wav", new String[]{"wav"});
     addMimeType("video/mpeg", new String[]{"mpg", "mpe"});
     addMimeType("video/quicktime", new String[]{"qt", "mov"});
+    addMimeType("video/x-flv", new String[]{"flv"});
     addMimeType("video/x-msvideo", new String[]{"avi"});
     addMimeType("video/x-ms-wmv", new String[]{"wmv"});    
   }

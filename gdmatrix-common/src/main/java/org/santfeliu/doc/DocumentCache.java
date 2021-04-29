@@ -46,6 +46,7 @@ import org.matrix.doc.RelationType;
 import org.matrix.security.AccessControl;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.jmx.CacheMBean;
 import org.santfeliu.jmx.JMXUtils;
@@ -228,29 +229,10 @@ public class DocumentCache
   {
     Set<String> userRoles = user.getRoles();
     Type type = TypeCache.getInstance().getType(docTypeId);
-
+    String action = DictionaryConstants.READ_ACTION;
+    
     return userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, type, DictionaryConstants.READ_ACTION)
-      || checkDocumentACL(userRoles, acl, DictionaryConstants.READ_ACTION);
-  }
-
-  private boolean checkTypeACL(Set<String> userRoles, Type type, String action)
-  {
-    if (type == null || type.getTypeId() == null)
-      return false;
-    else
-      return (type.canPerformAction(action, userRoles));
-  }
-
-  private boolean checkDocumentACL(Set<String> userRoles, 
-    List<AccessControl> acl,  String action)
-  {
-    for (AccessControl ac : acl)
-    {
-      if (ac.getAction().equals(action) && userRoles.contains(ac.getRoleId()))
-        return true;
-    }
-    return false;
+      || DictionaryUtils.canPerformAction(action, userRoles, acl, type);
   }
 
   private static String getKey(String docId, String language)

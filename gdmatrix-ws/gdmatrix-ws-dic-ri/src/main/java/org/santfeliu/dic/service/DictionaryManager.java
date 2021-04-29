@@ -1205,7 +1205,7 @@ public class DictionaryManager implements DictionaryManagerPort
 
   private boolean canUserDoAction(User user, String action, List acl)
   {
-    return DictionaryUtils.canUserDoAction(user, action, acl);
+    return DictionaryUtils.canPerformAction(action, user.getRoles(), acl);
   }
 
   private boolean isValidIdentifier(String id)

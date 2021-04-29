@@ -104,6 +104,7 @@ import org.matrix.util.WSEndpoint;
 
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.dic.util.WSTypeValidator;
 import org.santfeliu.jpa.JPAQuery;
 import org.santfeliu.jpa.JPAUtils;

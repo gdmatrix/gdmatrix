@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.activation.DataHandler;
@@ -64,7 +65,10 @@ import org.santfeliu.util.log.CSVLogger;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.handler.MessageContext;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.doc.DocumentConstants;
 import org.matrix.security.AccessControl;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
@@ -441,13 +445,16 @@ public class ReportManager implements ReportManagerPort
   
   private boolean canUserExecuteReport(Credentials credentials, Report report)
   {
-    User user = UserCache.getUser(credentials);
-    List<AccessControl> acl = report.getAccessControl();
     String exeAction = DictionaryConstants.EXECUTE_ACTION;
-    String readAction = DictionaryConstants.READ_ACTION;
+    String readAction = DictionaryConstants.READ_ACTION;    
+    User user = UserCache.getUser(credentials);
+    Set<String> roles = user.getRoles();
+    List<AccessControl> acl = report.getAccessControl();
+    Type type = TypeCache.getInstance().getType(report.getDocTypeId());
     
-    return DictionaryUtils.canUserDoAction(user, exeAction, acl) 
-      || DictionaryUtils.canUserDoAction(user, readAction, acl);
+    return roles.contains(DocumentConstants.DOC_ADMIN_ROLE)
+      || DictionaryUtils.canPerformAction(exeAction, roles, acl, type) 
+      || DictionaryUtils.canPerformAction(readAction, roles, acl, type);
   }
 }
 

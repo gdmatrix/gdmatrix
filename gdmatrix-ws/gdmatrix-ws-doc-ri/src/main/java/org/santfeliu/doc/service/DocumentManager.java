@@ -89,6 +89,7 @@ import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.dic.util.WSTypeValidator;
 import org.santfeliu.doc.store.ContentStore;
 import org.santfeliu.doc.store.ContentStoreConnection;
@@ -1819,10 +1820,10 @@ public class DocumentManager implements DocumentManagerPort
   private boolean canUserReadDocument(User user, Document document, Type type)
   {
     Set<String> userRoles = user.getRoles();
+    List<AccessControl> acl = document.getAccessControl();
 
     return userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, type, READ_ACTION)
-      || checkDocumentACL(userRoles, document, READ_ACTION);
+      || DictionaryUtils.canPerformAction(READ_ACTION, userRoles, acl, type);
   }
 
   private boolean canUserCreateDocument(User user, Type type)
@@ -1830,46 +1831,26 @@ public class DocumentManager implements DocumentManagerPort
     Set<String> userRoles = user.getRoles();
 
     return (userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, type, CREATE_ACTION));
+      || DictionaryUtils.canPerformAction(CREATE_ACTION, userRoles, type));
   }
 
   private boolean canUserModifyDocument(User user, 
-    Document currentDocument, Type currentType)
+    Document document, Type type)
   {
     Set<String> userRoles = user.getRoles();
+    List<AccessControl> acl = document.getAccessControl();    
 
     return (userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, currentType, WRITE_ACTION)
-      || checkDocumentACL(userRoles, currentDocument, WRITE_ACTION));
+      || DictionaryUtils.canPerformAction(WRITE_ACTION, userRoles, acl, type));
   }
 
   private boolean canUserDeleteDocument(User user, Document document, Type type)
   {
     Set<String> userRoles = user.getRoles();
+    List<AccessControl> acl = document.getAccessControl();    
 
     return (userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || checkTypeACL(userRoles, type, DELETE_ACTION)
-      || checkDocumentACL(userRoles, document, DELETE_ACTION));
-  }
-
-  private boolean checkTypeACL(Set<String> userRoles, Type type, String action)
-  {
-    if (type == null || type.getTypeId() == null)
-      return false;
-    else
-      return (type.canPerformAction(action, userRoles));
-  }
-
-  private boolean checkDocumentACL(Set<String> userRoles, Document document,
-    String action)
-  {
-    List<AccessControl> acl = document.getAccessControl();
-    for (AccessControl ac : acl)
-    {
-      if (ac.getAction().equals(action) && userRoles.contains(ac.getRoleId()))
-        return true;
-    }
-    return false;
+      || DictionaryUtils.canPerformAction(DELETE_ACTION, userRoles, acl, type));
   }
   
   private boolean isReverseRelation(RelationType relType)

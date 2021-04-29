@@ -39,10 +39,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.matrix.security.AccessControl;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.dic.util.ObjectPropertiesConverter;
 import org.santfeliu.dic.util.PropertyTypeChecker;
 import org.santfeliu.dic.util.PropertyTypeCheckerFactory;
@@ -247,20 +247,10 @@ public class Type extends org.matrix.dic.Type
     }
     return buffer.toString();
   }
-
+  
   public boolean canPerformAction(String action, Set<String> roles)
   {
-    boolean canPerformAction = false;
-    Iterator<AccessControl> curAccessControl = getAccessControl().iterator();
-    while (curAccessControl.hasNext() && !canPerformAction)
-    {
-      AccessControl ac = curAccessControl.next();
-      if (ac.getAction().equals(action) && roles.contains(ac.getRoleId()))
-      {
-        canPerformAction = true;
-      }
-    }
-    return canPerformAction;
+    return DictionaryUtils.canPerformAction(action, roles, getAccessControl());
   }
 
   public Set<String> getPropertyNames()

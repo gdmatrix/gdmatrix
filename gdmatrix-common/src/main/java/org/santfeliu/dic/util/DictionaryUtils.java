@@ -36,10 +36,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.security.AccessControl;
-import org.santfeliu.security.User;
+import org.santfeliu.dic.Type;
 
 /**
  *
@@ -378,19 +379,32 @@ public class DictionaryUtils
       properties.add(property);
     }
   }
-  
-  public static boolean canUserDoAction(User user, String action,
+   
+  public static boolean canPerformAction(String action, Set<String> roles, 
     List<AccessControl> acl)
   {
-    boolean canDo = false;
-    Iterator<AccessControl> iter = acl.iterator();
-    while (iter.hasNext() && !canDo)
+    boolean canPerformAction = false;
+    Iterator<AccessControl> it = acl.iterator();
+    while (it.hasNext() && !canPerformAction)
     {
-      AccessControl ac = iter.next();
-      String roleId = ac.getRoleId();
-      String act = ac.getAction();
-      canDo = user.isInRole(roleId) && action.equals(act);
+      AccessControl ac = it.next();
+      if (ac.getAction().equals(action) && roles.contains(ac.getRoleId()))
+        canPerformAction = true;
     }
-    return canDo;
-  }  
+    return canPerformAction;    
+  }
+  
+  public static boolean canPerformAction(String action, Set<String> roles, 
+    List<AccessControl> acl, Type type)
+  {
+    return DictionaryUtils.canPerformAction(action, roles, acl) || 
+      DictionaryUtils.canPerformAction(action, roles, type.getAccessControl());
+  }   
+  
+  public static boolean canPerformAction(String action, Set<String> roles, 
+    Type type)
+  {
+    List<AccessControl> acl = type.getAccessControl();
+    return DictionaryUtils.canPerformAction(action, roles, acl);
+  }   
 }
