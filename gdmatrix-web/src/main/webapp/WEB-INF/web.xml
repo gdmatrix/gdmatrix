@@ -642,11 +642,11 @@
   </context-param>
   <context-param>
     <param-name>com.audifilm.matrix.kernel.readRole</param-name>
-    <param-value>KERNEL_CONSULTOR</param-value>
+    <param-value>EVERYONE</param-value>
   </context-param>  
   <context-param>
     <param-name>com.audifilm.matrix.kernel.writeRole</param-name>
-    <param-value>KERNEL_EDITOR</param-value>
+    <param-value>EVERYONE</param-value>
   </context-param>   
   <context-param>
     <param-name>com.audifilm.matrix.security.adminRoleId</param-name>
