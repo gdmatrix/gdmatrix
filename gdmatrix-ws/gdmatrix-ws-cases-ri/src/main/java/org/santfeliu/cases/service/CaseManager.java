@@ -115,6 +115,7 @@ import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.PojoUtils;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.audit.Auditor;
@@ -3284,9 +3285,10 @@ public class CaseManager implements CaseManagerPort
       WSEndpoint ep =
         wsDirectory.getEndpoint(KernelManagerService.class);
 
-      Credentials credentials = SecurityUtils.getCredentials(wsContext);
-      return ep.getPort(KernelManagerPort.class, credentials.getUserId(),
-        credentials.getPassword());
+//      Credentials credentials = SecurityUtils.getCredentials(wsContext);
+      String userId = MatrixConfig.getProperty("adminCredentials.userId");
+      String password = MatrixConfig.getProperty("adminCredentials.password");
+      return ep.getPort(KernelManagerPort.class, userId, password);
     }
     catch (Exception ex)
     {

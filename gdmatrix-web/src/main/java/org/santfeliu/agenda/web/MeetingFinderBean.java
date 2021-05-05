@@ -745,7 +745,7 @@ public class MeetingFinderBean extends PageBean implements Serializable
     throws MessagingException
   {
     List<String> emails = new ArrayList();
-    KernelManagerPort port = KernelConfigBean.getPort();
+    KernelManagerPort port = KernelConfigBean.getPortAsAdmin();
     for (Attendant att : attendants)
     {
       ContactFilter filter = new ContactFilter();

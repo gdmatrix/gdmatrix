@@ -104,7 +104,6 @@ import org.matrix.util.WSEndpoint;
 
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.dic.util.WSTypeValidator;
 import org.santfeliu.jpa.JPAQuery;
 import org.santfeliu.jpa.JPAUtils;
@@ -1629,9 +1628,9 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
       WSEndpoint endpoint =
         wsDirectory.getEndpoint(KernelManagerService.class);
 
-      Credentials credentials = SecurityUtils.getCredentials(wsContext);
-      return endpoint.getPort(KernelManagerPort.class, credentials.getUserId(),
-        credentials.getPassword());
+      String userId = MatrixConfig.getProperty("adminCredentials.userId");
+      String password = MatrixConfig.getProperty("adminCredentials.password");
+      return endpoint.getPort(KernelManagerPort.class, userId, password);
     }
     catch (Exception ex)
     {

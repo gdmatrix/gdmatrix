@@ -39,6 +39,7 @@ import org.matrix.kernel.KernelMetaData;
 
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 
 /**
@@ -55,11 +56,22 @@ public class KernelConfigBean implements Serializable
 
   public static KernelManagerPort getPort()
   {
+    return getPort(UserSessionBean.getCurrentInstance().getUsername(),
+      UserSessionBean.getCurrentInstance().getPassword());
+  }
+  
+  public static KernelManagerPort getPortAsAdmin()
+  {
+    String userId = MatrixConfig.getProperty("adminCredentials.userId");
+    String password = MatrixConfig.getProperty("adminCredentials.password");
+    return getPort(userId, password);
+  }
+  
+  public static KernelManagerPort getPort(String username, String password)
+  {
     WSDirectory wsDirectory = WSDirectory.getInstance();
     WSEndpoint endpoint = wsDirectory.getEndpoint(KernelManagerService.class);
-    return endpoint.getPort(KernelManagerPort.class,
-      UserSessionBean.getCurrentInstance().getUsername(),
-      UserSessionBean.getCurrentInstance().getPassword());
+    return endpoint.getPort(KernelManagerPort.class, username, password);    
   }
   
   public KernelMetaData getMetaData() throws Exception

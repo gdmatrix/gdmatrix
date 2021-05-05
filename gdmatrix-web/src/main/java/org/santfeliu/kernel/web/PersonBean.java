@@ -44,11 +44,13 @@ public class PersonBean extends ObjectBean
   {
   }
 
+  @Override
   public String getObjectTypeId()
   {
     return "Person";
   }
 
+  @Override
   public String getDescription()
   {
     PersonMainBean personMainBean = (PersonMainBean)getBean("personMainBean");
@@ -56,13 +58,14 @@ public class PersonBean extends ObjectBean
     return getDescription(person);
   }
   
+  @Override
   public String getDescription(String objectId)
   {
     try
     {
       if (objectId != null && objectId.contains(";")) //objectId contains description
         return objectId;
-      Person person = KernelConfigBean.getPort().loadPerson(objectId);
+      Person person = KernelConfigBean.getPortAsAdmin().loadPerson(objectId);
       return getDescription(person);
     }
     catch (Exception ex)
@@ -72,6 +75,7 @@ public class PersonBean extends ObjectBean
     return objectId;
   }
   
+  @Override
   public String remove()
   {
     try
@@ -92,7 +96,7 @@ public class PersonBean extends ObjectBean
   private String getDescription(Person person)
   {
     if (person == null) return "";
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     buffer.append(person.getName());
     if (person.getFirstParticle() != null)
     {

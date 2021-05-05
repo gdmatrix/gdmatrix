@@ -679,7 +679,7 @@ public class CasePersonsBean extends TypifiedPageBean implements ExternalEditabl
   {
     PersonAddressFilter filter = new PersonAddressFilter();
     filter.setPersonId(personId);
-    return KernelConfigBean.getPort().findPersonAddressViews(filter);
+    return KernelConfigBean.getPortAsAdmin().findPersonAddressViews(filter);
   }
   
   private List<String> getCurrentCaseAddressesList()
@@ -751,7 +751,7 @@ public class CasePersonsBean extends TypifiedPageBean implements ExternalEditabl
       filter.setPersonId(personId);
 
       List<ContactView> contacts =
-        KernelConfigBean.getPort().findContactViews(filter);
+        KernelConfigBean.getPortAsAdmin().findContactViews(filter);
 
       // look for contactIds in contacts list
       for (String contactId : contactIds)
@@ -762,7 +762,7 @@ public class CasePersonsBean extends TypifiedPageBean implements ExternalEditabl
           Contact contact = null;
           try
           {
-            contact = KernelConfigBean.getPort().loadContact(contactId);
+            contact = KernelConfigBean.getPortAsAdmin().loadContact(contactId);
           }
           catch (Exception ex)
           {
@@ -877,7 +877,7 @@ public class CasePersonsBean extends TypifiedPageBean implements ExternalEditabl
     if (personId != null && personId.length() > 0 &&
         addressId != null && addressId.length() > 0)
     {
-      KernelManagerPort port = KernelConfigBean.getPort();
+      KernelManagerPort port = KernelConfigBean.getPortAsAdmin();
       PersonAddressFilter filter = new PersonAddressFilter();
       filter.setPersonId(personId);
       filter.setAddressId(addressId);
@@ -910,7 +910,7 @@ public class CasePersonsBean extends TypifiedPageBean implements ExternalEditabl
         {
           // contact do not exists in kernel
           contact.setPersonId(personId);
-          Contact newContact = KernelConfigBean.getPort().storeContact(contact);
+          Contact newContact = KernelConfigBean.getPortAsAdmin().storeContact(contact);
           contactId = newContact.getContactId();
         }
         else

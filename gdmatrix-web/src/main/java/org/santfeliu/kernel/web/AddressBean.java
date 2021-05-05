@@ -73,7 +73,7 @@ public class AddressBean extends ObjectBean
       AddressFilter filter = new AddressFilter();
       filter.getAddressIdList().add(objectId);
       List<AddressView> addressViews = 
-        KernelConfigBean.getPort().findAddressViews(filter);
+        KernelConfigBean.getPortAsAdmin().findAddressViews(filter);
       if (addressViews.size() > 0)
       {
         AddressView addressView = addressViews.get(0);
@@ -102,7 +102,7 @@ public class AddressBean extends ObjectBean
       PersonAddressFilter filter = new PersonAddressFilter();
       filter.setPersonId(personId);
       List<PersonAddressView> personAddressViews =
-        KernelConfigBean.getPort().findPersonAddressViews(filter);
+        KernelConfigBean.getPortAsAdmin().findPersonAddressViews(filter);
       for (PersonAddressView personAddressView : personAddressViews)
       {
         AddressView addressView = personAddressView.getAddress();

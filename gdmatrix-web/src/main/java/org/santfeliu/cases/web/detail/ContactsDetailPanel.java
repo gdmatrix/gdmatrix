@@ -244,7 +244,7 @@ public class ContactsDetailPanel extends TabulatedDetailPanel
     filter.setPersonId(personId);
 
     List<ContactView> contacts =
-      KernelConfigBean.getPort().findContactViews(filter);
+      KernelConfigBean.getPortAsAdmin().findContactViews(filter);
 
     // look for contactIds in contacts list
     for (String contactId : contactIds)

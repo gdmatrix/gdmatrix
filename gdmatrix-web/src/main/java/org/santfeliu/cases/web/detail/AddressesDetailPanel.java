@@ -166,7 +166,7 @@ public class AddressesDetailPanel extends TabulatedDetailPanel
     String imageFormat = getProperty(IMAGE_FORMAT_PROPERTY, "image/png");
 
     String addressId = caseAddressView.getAddressView().getAddressId();
-    Address address = KernelConfigBean.getPort().loadAddress(addressId);
+    Address address = KernelConfigBean.getPortAsAdmin().loadAddress(addressId);
     String gisReference = address.getGisReference();
     String query = "RF like '" + gisReference + "'";
 

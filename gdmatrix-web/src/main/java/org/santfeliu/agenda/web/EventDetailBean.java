@@ -546,7 +546,7 @@ public class EventDetailBean extends ShareableWebBean implements Savable,
             if (mapURL.indexOf("reference") > 0)
             {
               Address address =
-                KernelConfigBean.getPort().loadAddress(addressId);
+                KernelConfigBean.getPortAsAdmin().loadAddress(addressId);
               String gisReference = address.getGisReference();
               String streetName = "";
               String streetNumber = "";

@@ -30,6 +30,7 @@
  */
 package org.santfeliu.kernel.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.matrix.dic.DictionaryConstants;
@@ -44,13 +45,12 @@ import org.santfeliu.web.obj.TypifiedPageBean;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class PersonContactsBean extends TypifiedPageBean
 {
   private ContactView editingRow;
   private List<ContactView> rows;
-//  private transient List<SelectItem> contactTypeSelectItems;
 
   public PersonContactsBean()
   {
@@ -63,40 +63,25 @@ public class PersonContactsBean extends TypifiedPageBean
     this.rows = rows;
   }
 
+  @Override
   public List<ContactView> getRows()
   {
     return rows;
   }
 
-//  public List<SelectItem> getContactTypeSelectItems()
-//  {
-//    if (contactTypeSelectItems == null)
-//    {
-//      try
-//      {
-//        contactTypeSelectItems = FacesUtils.getListSelectItems(
-//          KernelConfigBean.getPort().listKernelListItems(
-//          KernelList.CONTACT_TYPE),
-//          "itemId", "label", false);
-//      }
-//      catch (Exception ex)
-//      {
-//        error(ex);
-//      }
-//    }
-//    return contactTypeSelectItems;
-//  }
-
+  @Override
   public boolean isModified()
   {
     return true;
   }
 
+  @Override
   public String show()
   {
     return "person_contacts";
   }
 
+  @Override
   public String store()
   {
     if (editingRow != null)
@@ -117,6 +102,8 @@ public class PersonContactsBean extends TypifiedPageBean
   
   public String addContact()
   {
+    if (rows == null)
+      rows = new ArrayList();
     ContactView contactView = new ContactView();
     rows.add(contactView); // empty row
     editingRow = contactView;
@@ -191,8 +178,6 @@ public class PersonContactsBean extends TypifiedPageBean
         filter.setPersonId(getObjectId());
 
         rows = KernelConfigBean.getPort().findContactViews(filter);
-        //ContactView contactView = new ContactView();
-        //rows.add(contactView); // empty row
       }
     }
     catch (Exception ex)

@@ -44,13 +44,13 @@ import org.matrix.cases.CaseManagerService;
 import org.matrix.kernel.AddressFilter;
 import org.matrix.kernel.AddressView;
 import org.matrix.kernel.KernelManagerPort;
-import org.matrix.kernel.KernelManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.jmx.CacheMBean;
 import org.santfeliu.jmx.JMXUtils;
+import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.MatrixConfig;
 
@@ -119,8 +119,9 @@ public class AddressDescriptionCache
           {
             AddressFilter addressFilter = new AddressFilter();
             addressFilter.getAddressIdList().add(addressId);
+            KernelManagerPort port = KernelConfigBean.getPortAsAdmin();
             List<AddressView> addressViews =
-              getKernelPort().findAddressViews(addressFilter);
+              port.findAddressViews(addressFilter);
             if (addressViews != null && !addressViews.isEmpty())
               description = addressViews.get(0).getDescription();
           }
@@ -198,23 +199,6 @@ public class AddressDescriptionCache
       throw new RuntimeException(ex);
     }
   }
-
-  private KernelManagerPort getKernelPort()
-  {
-    try
-    {
-      WSDirectory wsDirectory = WSDirectory.getInstance();
-      WSEndpoint endpoint =
-        wsDirectory.getEndpoint(KernelManagerService.class);
-      return endpoint.getPort(KernelManagerPort.class,
-        credentials.getUserId(), credentials.getPassword());
-    }
-    catch (Exception ex)
-    {
-      throw new RuntimeException(ex);
-    }
-  }
-
 
   private AddressCacheMBean getCacheMBean()
   {
