@@ -31,59 +31,31 @@
 package org.santfeliu.util;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.activation.FileTypeMap;
+import javax.activation.MimetypesFileTypeMap;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
  * @author blanquepa
  */
 public class MimeTypeMap extends FileTypeMap
+
 {
-  private static final String MIMEMAPFILE = "mimetypesmap.properties";
-  private static final String DEFAULT_TYPE = "application/octet-stream";
-  private static final Mapping mapping = new Mapping();
+  private final Map<String,String> extensionsMap; 
+  private final MimetypesFileTypeMap mimetypesMap;  
   
   public MimeTypeMap()
   {
-    if (mapping.isEmpty())
-    {
-      loadDefaultMimeTypes();      
-      
-      //Override default mapping from properties file located in conf folder
-      java.util.Properties mimeProperties = new java.util.Properties();    
-      File mapFile = new File(MatrixConfig.getDirectory(), MIMEMAPFILE);
-      if (mapFile.exists())
-      {
-        try (InputStream is = new FileInputStream(mapFile))
-        {
-          mimeProperties.load(is);
-          synchronized(mapping)
-          {
-            for (Object key : mimeProperties.keySet())
-            {
-              String extStr = (String) mimeProperties.get(key);
-              String[] extArray = extStr.split(",");
-              addMimeType((String) key, extArray);
-            }
-          }
-        }
-        catch (Exception ex)  
-        {
-          Logger.getLogger(MimeTypeMap.class.getName()).log(
-            Level.WARNING, null, ex);      
-        }
-      }
-    }
+    mimetypesMap = new MimetypesFileTypeMap();      
+    extensionsMap = new HashMap<String,String>(); 
+    loadMimeTypes();
   }
-    
+        
   @Override
   public String getContentType(File file)
   {
@@ -93,19 +65,19 @@ public class MimeTypeMap extends FileTypeMap
   @Override
   public String getContentType(String filename)
   {
-    int index = filename.lastIndexOf(".");
-    if (index == -1) return DEFAULT_TYPE;
-    String extension = filename.substring(index + 1).toLowerCase();
-    String mimeType = mapping.getMimeType(extension);
-    return mimeType == null ? DEFAULT_TYPE : mimeType;
+    return mimetypesMap.getContentType(filename);
   }
   
   public String getExtension(String mimeType)
   {
-    if (mimeType != null)
+    String extension = null;
+    if (!StringUtils.isBlank(mimeType))
+    {
       mimeType = mimeType.toLowerCase();
-    return mapping.getExtension(mimeType);
-  }  
+      extension = extensionsMap.get(mimeType);
+    }
+    return extension;    
+  }
   
   public static MimeTypeMap getMimeTypeMap()
   {
@@ -120,28 +92,32 @@ public class MimeTypeMap extends FileTypeMap
     {
       mimeMap = new MimeTypeMap();
     }
-    return mimeMap;
+    return mimeMap;     
   }
-  
-  public static void refresh()
+      
+  protected void addMimeType(String mimeType, String[] extensions)
   {
-    synchronized(mapping)
-    {    
-      mapping.clear();
-    }
-  }
-  
-  private void addMimeType(String mimeType, String[] extensions)
-  {
-    for (int i = 0; i < extensions.length; i++)
-    {
-      String extension = extensions[i].toLowerCase().trim();      
-      mapping.putToExtMap(extension, mimeType);
-    }
-    mapping.putToMimeMap(mimeType, extensions[0].toLowerCase().trim());
+    putMimeType(mimeType, extensions);
+    putExtension(mimeType, extensions[0].toLowerCase().trim());
   }  
   
-  private synchronized void loadDefaultMimeTypes()
+  protected void putExtension(String mimeType, String extension)
+  {
+    extensionsMap.put(mimeType, extension);
+  }
+
+  protected void putMimeType(String mimeType, String[] extensions)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append(mimeType);
+    for (String extension1 : extensions)
+    {
+      sb.append(" ").append(extension1);
+    }      
+    mimetypesMap.addMimeTypes(sb.toString());
+  }  
+  
+  private synchronized void loadMimeTypes()
   {
     addMimeType("text/html", new String[]{"htm", "html"});
     addMimeType("text/plain", new String[]{"txt", "text", "java", "log"});
@@ -156,7 +132,7 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("image/svg+xml", new String[]{"svg"});
     addMimeType("application/postscript", new String[]{"ai", "eps", "ps"});
     addMimeType("application/rtf", new String[]{"rtf"});
-    addMimeType("application/msword", new String[]{"doc"});
+    addMimeType("application/msword", new String[]{"doc", "dot"});
     addMimeType("application/vnd.ms-excel", new String[]{"xls"});   
     addMimeType("application/vnd.ms-powerpoint", new String[]{"ppt", "pps"});
     addMimeType("application/x-msaccess", new String[]{"mdb", "accdb"});
@@ -208,7 +184,9 @@ public class MimeTypeMap extends FileTypeMap
       new String[]{"ppsx"});
     addMimeType("application/vnd.visio", new String[]{"vsd", "vsdx"});    
     addMimeType("application/tcq", new String[]{"tcq"});
-    addMimeType("application/octet-stream", new String[]{"bin", "exe"});                           
+    addMimeType("application/octet-stream", new String[]{"bin", "exe"});     
+    addMimeType("application/mp4", new String[]{"mp4"}); 
+    addMimeType("application/vnd.ms-outlook", new String[]{"msg"}); 
     addMimeType("audio/basic", new String[]{"au"});
     addMimeType("audio/midi", new String[]{"mid", "midi"});
     addMimeType("audio/mpeg", new String[]{"mp3", "mp2"});        
@@ -218,44 +196,7 @@ public class MimeTypeMap extends FileTypeMap
     addMimeType("video/quicktime", new String[]{"qt", "mov"});
     addMimeType("video/x-flv", new String[]{"flv"});
     addMimeType("video/x-msvideo", new String[]{"avi"});
-    addMimeType("video/x-ms-wmv", new String[]{"wmv"});    
-  }
-  
-  public static class Mapping
-  {
-    private Map<String,String> extMap = new HashMap<String,String>();
-    private Map<String,String> mimeMap = new HashMap<String,String>(); 
-    
-    public boolean isEmpty()
-    {
-      return (extMap.isEmpty() && mimeMap.isEmpty());
-    }
-    
-    public void putToMimeMap(String mimeType, String extension)
-    {
-      mimeMap.put(mimeType, extension);
-    }
-    
-    public void putToExtMap(String extension, String mimeType)
-    {
-      extMap.put(extension, mimeType);
-    }
-    
-    public String getMimeType(String extension)
-    {
-      return extMap.get(extension);
-    }
-    
-    public String getExtension(String mimeType)
-    {
-      return mimeMap.get(mimeType);
-    }
-    
-    public void clear()
-    {
-      mimeMap.clear();
-      extMap.clear();
-    }
-  }
-   
+    addMimeType("video/x-ms-wmv", new String[]{"wmv"});
+    addMimeType("video/mp4", new String[]{"mp4"});    
+  }   
 }

@@ -32,6 +32,7 @@ package org.santfeliu.doc.util.droid;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import uk.gov.nationalarchives.droid.core.interfaces.IdentificationResult;
@@ -45,11 +46,10 @@ import uk.gov.nationalarchives.droid.core.signature.droid6.FFSignatureFile;
  */
 public class Droid
 {
- 
   private final File baseDir;
   private SignatureResolvers resolvers;
   private SignatureFileManagers signatureFileManagers;
-  private final DroidUpdateService updateService;
+  private static DroidUpdateService updateService;
 
   public Droid(File baseDir)
   {
@@ -151,7 +151,7 @@ public class Droid
       {
         FileFormatCollection fileFormatCollection
           = resolver.getDroidCore().getSigFile().getFileFormatCollection();
-        result = fileFormatCollection.getFormatForPUID(idenResult.getPuid());  
+        result = fileFormatCollection.getFormatForPUID(idenResult.getPuid());
       }
     }
     catch (Exception ex)
@@ -160,6 +160,27 @@ public class Droid
     }
           
     return result;
+  }
+  
+  public String getExtension(String mimeType)
+  {
+    String extension = null;    
+    if (mimeType == null)
+      return extension;
+    
+    FFSignatureFile sigFile = getSignatureFile();
+    if (sigFile != null)
+    {
+      FileFormatCollection ffc = sigFile.getFileFormatCollection();
+      List<FileFormat> fileFormats = ffc.getFileFormats();
+      for (FileFormat fileFormat : fileFormats)
+      {
+        if (mimeType.equals(fileFormat.getMimeType()) 
+          && fileFormat.getNumExtensions() > 0)
+            return fileFormat.getExtension(0);
+      }
+    }
+    return extension;    
   }
 
   /**
@@ -186,7 +207,8 @@ public class Droid
         Path sigFile = manager.getCurrentFile(dir);
         if (sigFile == null)
           sigFile = manager.downloadFile(dir);
-        resolver.readSignatureFile(sigFile.toFile());        
+        if (sigFile != null)
+          resolver.readSignatureFile(sigFile.toFile());        
       }
            
       return true;
@@ -198,17 +220,4 @@ public class Droid
     }
   }   
  
-  public static void main(String args[])
-  {
-    try
-    {
-      Droid droid = new Droid(new File("C:/gdmatrix/conf"));  
-      FileFormat format = droid.identify("c:/tmp/container-test/apache-tomcat-6.0.47.zip");
-      System.out.println("VSD PUID: " + format.getPUID() + " " + 
-        format.getName() + " " + format.getVersion());        
-    }
-    catch (Exception ex)
-    {
-    }
-  }
 }

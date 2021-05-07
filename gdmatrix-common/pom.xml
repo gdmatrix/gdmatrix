@@ -190,12 +190,21 @@
       <version>r938</version>
     </dependency>
     
+    <!-- Droid -->
+    <dependency>
+      <groupId>uk.gov.nationalarchives</groupId>
+      <artifactId>droid-container</artifactId>
+      <version>6.5</version>              
+    </dependency>          
+    
     <!-- Transient dependencies declared direct to avoid conflicts -->
     <dependency>
       <groupId>javax.xml.stream</groupId>
       <artifactId>stax-api</artifactId>
       <version>1.0-2</version>
     </dependency>
+    
+ 
   </dependencies>
 
   <build>
@@ -263,6 +272,27 @@
           <generateGitPropertiesFilename>${basedir}/target/classes/org/santfeliu/matrix/MatrixInfo.properties</generateGitPropertiesFilename>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>wsimport_PRONOM</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <keep>true</keep>
+              <wsdlDirectory>src/main/resources/org/santfeliu/doc/util/droid</wsdlDirectory>
+              <wsdlFiles>
+                <wsdlFile>PRONOM.wsdl</wsdlFile>           
+              </wsdlFiles>
+            </configuration>            
+          </execution>        
+        </executions>
+      </plugin>       
     </plugins>
   </build>
 </project>

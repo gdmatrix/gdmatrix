@@ -107,6 +107,7 @@ import org.santfeliu.util.TemporaryDataSource;
 import org.santfeliu.ws.WSExceptionFactory;
 
 import org.santfeliu.doc.util.droid.Droid;
+import org.santfeliu.doc.util.droid.DroidMimeTypeMap;
 import org.santfeliu.security.User;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.MimeTypeMap;
@@ -1007,6 +1008,8 @@ public class DocumentManager implements DocumentManagerPort
   {
     File baseDir = MatrixConfig.getDirectory();
     droid = new Droid(baseDir);
+    MimeTypeMap mimeTypeMap = DroidMimeTypeMap.getMimeTypeMap(droid);
+    MimeTypeMap.setDefaultFileTypeMap(mimeTypeMap);
   }
 
   private Document createDocument(DocumentStoreConnection docConn,
@@ -1647,8 +1650,9 @@ public class DocumentManager implements DocumentManagerPort
       {
         if (content.getContentType() != null)
         {
+          MimeTypeMap mimeTypeMap = DroidMimeTypeMap.getMimeTypeMap(droid);
           String ext = 
-            MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());
+            mimeTypeMap.getExtension(content.getContentType());
           dataFile = File.createTempFile("stream", "." + ext);
           dataFile.deleteOnExit();
           IOUtils.writeToFile(ds.getInputStream(), dataFile);
@@ -1796,7 +1800,7 @@ public class DocumentManager implements DocumentManagerPort
     content.setFormatId(format.getPUID());
     content.setFormatDescription(description);
     String mimeType = format.getMimeType();
-    if (mimeType != null)
+    if (!StringUtils.isBlank(mimeType))
     {
       //It could be a comma separated string of mimeTypes.
       String[] mimeTypes = mimeType.split(",");
@@ -1807,6 +1811,16 @@ public class DocumentManager implements DocumentManagerPort
       }
       else
         content.setContentType(mimeType.trim());
+    }
+    else if (format.getNumExtensions() > 0)
+    {
+      //Try get mimeType from identifed extension.
+      String filename = "filename." + format.getExtension(0);
+      mimeType = DroidMimeTypeMap.getMimeTypeMap().getContentType(filename);
+      if (!StringUtils.isBlank(mimeType))
+      {
+        content.setContentType(mimeType);
+      }
     }
   }
   
