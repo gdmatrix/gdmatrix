@@ -10,7 +10,6 @@
   <packaging>jar</packaging>
      
   <dependencies>
-    <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=C:\gdmatrix\lib\droid.jar -DgroupId=uk.gov.nationalarchives -DartifactId=droid -Dversion=3.0.0 -Dpackaging=jar -DlocalRepositoryPath=C:\gdmatrix\m2 -DpomFile=C:\gdmatrix\lib\droid.pom -->             
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gdmatrix-ws-dic-ri</artifactId>
@@ -21,6 +20,12 @@
       <artifactId>gdmatrix-ws-common</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Droid -->
+    <dependency>
+      <groupId>uk.gov.nationalarchives</groupId>
+      <artifactId>droid-container</artifactId>
+      <version>6.5</version>              
+    </dependency>      
   </dependencies>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>

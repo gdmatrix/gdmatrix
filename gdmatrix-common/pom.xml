@@ -190,13 +190,7 @@
       <version>r938</version>
     </dependency>
     
-    <!-- Droid -->
-    <dependency>
-      <groupId>uk.gov.nationalarchives</groupId>
-      <artifactId>droid-container</artifactId>
-      <version>6.5</version>              
-    </dependency>          
-    
+           
     <!-- Transient dependencies declared direct to avoid conflicts -->
     <dependency>
       <groupId>javax.xml.stream</groupId>
