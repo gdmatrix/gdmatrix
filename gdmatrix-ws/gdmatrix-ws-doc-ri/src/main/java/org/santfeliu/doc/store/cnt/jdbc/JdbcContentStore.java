@@ -48,7 +48,7 @@ import org.santfeliu.util.MatrixConfig;
  *
  * @author blanquepa
  */
-public abstract class JdbcContentStore implements ContentStore
+public class JdbcContentStore implements ContentStore
 {
   private final Properties config = new Properties();
   
@@ -124,6 +124,9 @@ public abstract class JdbcContentStore implements ContentStore
     }
   }
   
-  protected abstract JdbcContentStoreConnection getContentStoreConnection(
-    Connection conn, Properties config);
+  protected JdbcContentStoreConnection getContentStoreConnection(
+    Connection conn, Properties config)
+  {
+    return new JdbcContentStoreConnection(conn, config);     
+  }
 }

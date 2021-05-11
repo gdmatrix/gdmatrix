@@ -30,24 +30,14 @@
  */
 package org.santfeliu.doc.store.cnt.jdbc.postgresql;
 
-import java.sql.Connection;
-import java.util.Properties;
 import org.santfeliu.doc.store.cnt.jdbc.JdbcContentStore;
-import org.santfeliu.doc.store.cnt.jdbc.JdbcContentStoreConnection;
 
 /**
  * It only differs with JdbcContentStore in creating CNT_INTERNAL table 
- * caused by BLOB data field (BYTEA in PostgreSQL).
+ * caused by BLOB data field (BYTEA in PostgreSQL). Defined in jdbc.properties
  * 
  * @author blanquepa
  */
 public class PostgreSQLContentStore extends JdbcContentStore
 {
-
-  @Override
-  protected JdbcContentStoreConnection getContentStoreConnection(Connection conn, 
-    Properties config)
-  {
-    return new JdbcContentStoreConnection(conn, config); 
-  }
 }
