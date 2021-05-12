@@ -33,20 +33,24 @@ package org.santfeliu.form.builder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.matrix.dic.DictionaryManagerPort;
 import org.matrix.dic.DictionaryManagerService;
 import org.matrix.dic.EnumType;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
+import org.matrix.doc.ContentInfo;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.Type;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.OrderByProperty;
+import org.matrix.security.AccessControl;
 import org.matrix.util.WSDirectory;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.form.Field;
 import org.santfeliu.form.Form;
@@ -56,6 +60,8 @@ import org.santfeliu.form.type.html.HtmlField;
 import org.santfeliu.form.type.html.HtmlForm;
 import org.santfeliu.form.type.html.HtmlSelectView;
 import org.santfeliu.form.type.html.HtmlView;
+import org.santfeliu.security.User;
+import org.santfeliu.security.UserCache;
 
 /**
  *
@@ -72,8 +78,10 @@ public class TypeFormBuilder extends MatrixFormBuilder
   public static final String SEARCH_TYPE_PROPERTY = "searchTypeId";
   public static final String VIEW_TYPE_PROPERTY = "viewTypeId";
   public static final String AUTOMATIC_FORM_PROPERTY = "_automaticFormEnabled";
-  public static final String AUTOMATIC_SEARCH_FORM_PROPERTY = "_automaticSearchFormEnabled";
-  public static final String AUTOMATIC_VIEW_FORM_PROPERTY = "_automaticViewFormEnabled";
+  public static final String AUTOMATIC_SEARCH_FORM_PROPERTY = 
+    "_automaticSearchFormEnabled";
+  public static final String AUTOMATIC_VIEW_FORM_PROPERTY = 
+    "_automaticViewFormEnabled";
   public static final int LABEL_COLUMN_WIDTH = 19; // percertage
 
   public static enum FormMode
@@ -83,6 +91,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
     VIEW
   }
 
+  @Override
   public List<FormDescriptor> findForms(String selector)
   {
     SelectorParser parser = new SelectorParser(selector);
@@ -91,11 +100,8 @@ public class TypeFormBuilder extends MatrixFormBuilder
     {
       try
       {
-        DocumentManagerClient docClient = 
-          getDocumentManagerClient(parser.getUserId(), parser.getPassword());
-
         List<FormDescriptor> descriptors = new ArrayList();
-        addUserForms(type, parser.getFormMode(), descriptors, docClient);
+        addUserForms(type, descriptors, parser);
         Collections.reverse(descriptors);
 
         addAutoForm(type, parser.getFormMode(), descriptors);
@@ -109,6 +115,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
     return Collections.EMPTY_LIST;
   }
 
+  @Override
   public Form getForm(String selector)
   {
     SelectorParser parser = new SelectorParser(selector);
@@ -152,7 +159,8 @@ public class TypeFormBuilder extends MatrixFormBuilder
       HtmlField field = new HtmlField();
       field.setReference(property.getName());
       field.setLabel(property.getDescription());
-      field.setMinOccurs(formMode.equals(FormMode.SEARCH) ? 0 : property.getMinOccurs());
+      field.setMinOccurs(formMode.equals(FormMode.SEARCH) ? 0 :
+        property.getMinOccurs());
       field.setMaxOccurs(property.getMaxOccurs());
       if (!formMode.equals(FormMode.SEARCH))
         field.setReadOnly(property.isReadOnly());
@@ -308,22 +316,32 @@ public class TypeFormBuilder extends MatrixFormBuilder
     }
   }
 
-  protected void addUserForms(Type type, FormMode formMode,
-    List<FormDescriptor> descriptors, DocumentManagerClient docClient)
+  void addUserForms(Type type, List<FormDescriptor> descriptors, 
+    SelectorParser parser)
     throws Exception
   {
+    FormMode formMode = parser.getFormMode();
+    DocumentManagerClient docClient = getDocumentManagerClient();
     if (type != null)
     {
       DocumentFilter filter = new DocumentFilter();
       filter.setVersion(0);
       filter.setDocTypeId(FORM_TYPEID);
       Property property = new Property();
-      if (FormMode.SEARCH.equals(formMode))
-        property.setName(SEARCH_TYPE_PROPERTY);
-      else if (FormMode.VIEW.equals(formMode))
-        property.setName(VIEW_TYPE_PROPERTY);
-      else
+      if (null == formMode)
         property.setName(TYPE_PROPERTY);
+      else switch (formMode)
+      {
+        case SEARCH:
+          property.setName(SEARCH_TYPE_PROPERTY);
+          break;
+        case VIEW:
+          property.setName(VIEW_TYPE_PROPERTY);
+          break;
+        default:
+          property.setName(TYPE_PROPERTY);
+          break;
+      }
       property.getValue().add(type.getTypeId());
       filter.getProperty().add(property);
 
@@ -335,20 +353,32 @@ public class TypeFormBuilder extends MatrixFormBuilder
 
       for (Document document : documents)
       {
-        FormDescriptor descriptor = new FormDescriptor();
-        String title = document.getTitle();
-        int index = title.indexOf(":"); // remove form name.
-        if (index != -1)
+        document = 
+          docClient.loadDocument(document.getDocId(), 0, ContentInfo.ID);
+        List<AccessControl> acl = document.getAccessControl();
+        User user = UserCache.getUser(parser.getUserId(), parser.getPassword());
+        Set<String> roles = user.getRoles();
+        boolean canExecuteForm = 
+          DictionaryUtils.canPerformAction("Execute", roles, acl, type) ||    
+          DictionaryUtils.canPerformAction("Read", roles, acl, type) ||
+          roles.contains(DocumentConstants.DOC_ADMIN_ROLE);
+        if (canExecuteForm)
         {
-          title = title.substring(index + 1);          
+          FormDescriptor descriptor = new FormDescriptor();
+          String title = document.getTitle();
+          int index = title.indexOf(":"); // remove form name.
+          if (index != -1)
+          {
+            title = title.substring(index + 1);          
+          }
+          if (title.length() == 0) title = type.getTypeId();
+          descriptor.setTitle(title);
+          descriptor.setSelector(
+            DocumentFormBuilder.PREFIX + ":" + document.getDocId());
+          descriptors.add(descriptor);
         }
-        if (title.length() == 0) title = type.getTypeId();
-        descriptor.setTitle(title);
-        descriptor.setSelector(
-          DocumentFormBuilder.PREFIX + ":" + document.getDocId());
-        descriptors.add(descriptor);
       }
-      addUserForms(type.getSuperType(), formMode, descriptors, docClient);
+      addUserForms(type.getSuperType(), descriptors, parser);
     }
   }
 
@@ -394,7 +424,8 @@ public class TypeFormBuilder extends MatrixFormBuilder
     {
       WSDirectory wsDir = WSDirectory.getInstance();
       WSEndpoint endpoint = wsDir.getEndpoint(DictionaryManagerService.class);
-      DictionaryManagerPort port = endpoint.getPort(DictionaryManagerPort.class);
+      DictionaryManagerPort port = 
+        endpoint.getPort(DictionaryManagerPort.class);
       return port.loadEnumType(enumTypeId);
     }
     catch (Exception ex)
