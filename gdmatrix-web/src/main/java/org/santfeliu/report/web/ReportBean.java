@@ -520,7 +520,10 @@ public class ReportBean extends ObjectBean implements Serializable
 
   private DocumentManagerClient getDocumentManagerClient() throws Exception
   {
-    DocumentManagerClient client = new DocumentManagerClient();
+    Credentials credentials = ReportConfigBean.getReportAdminCredentials();
+    String userId = credentials.getUserId();
+    String password = credentials.getPassword();
+    DocumentManagerClient client = new DocumentManagerClient(userId, password);
     return client;
   }
 

@@ -58,7 +58,8 @@ public class ReportDetailPanel extends DetailPanel
 {
   public static final String SHOW_IN_IFRAME_PROPERTY = "showInIFrame";  
   public static final String REPORT_NAME_PROPERTY = "reportName";
-  public static final String SPREAD_REQUEST_PARAMETERS_PROPERTY = "spreadRequestParameters"; 
+  public static final String SPREAD_REQUEST_PARAMETERS_PROPERTY = 
+    "spreadRequestParameters"; 
   public static final String ALLOWED_TAGS_PROPERTY = "allowedHtmlTags";
   private static final String STORED_PARAMS = "storedParams";
   

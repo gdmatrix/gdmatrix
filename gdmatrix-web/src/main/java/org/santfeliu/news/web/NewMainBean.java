@@ -52,7 +52,7 @@ import org.santfeliu.web.obj.TypifiedPageBean;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
  */
 public class NewMainBean extends TypifiedPageBean
 {  
@@ -181,6 +181,7 @@ public class NewMainBean extends TypifiedPageBean
     this.customUrlTargetBlank = customUrlTargetBlank;
   }
 
+  @Override
   public String show()
   {
     try
@@ -259,6 +260,7 @@ public class NewMainBean extends TypifiedPageBean
     return show();
   }
   
+  @Override
   public String store()
   {
     try
@@ -298,11 +300,8 @@ public class NewMainBean extends TypifiedPageBean
       newStoreOptions.setCleanSummary(cleanSummary);
       newStoreOptions.setCleanText(cleanText);
       
-      //Correcció dels atributs aria-label als enllaços
       String scriptName = MatrixConfig.getProperty("htmlFixer.script");
-      String userId = MatrixConfig.getProperty("adminCredentials.userId");
-      String password = MatrixConfig.getProperty("adminCredentials.password");
-      HtmlFixer htmlFixer = new HtmlFixer(scriptName, userId, password);
+      HtmlFixer htmlFixer = new HtmlFixer(scriptName);
       newObject.setSummary(htmlFixer.fixCode(newObject.getSummary()));
       newObject.setText(htmlFixer.fixCode(newObject.getText()));
 

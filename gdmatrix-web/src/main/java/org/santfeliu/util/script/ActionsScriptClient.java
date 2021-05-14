@@ -30,7 +30,9 @@
  */
 package org.santfeliu.util.script;
 
+import java.util.logging.Level;
 import org.santfeliu.util.MatrixConfig;
+import static org.santfeliu.util.script.ScriptClient.LOGGER;
 
 /**
  *
@@ -43,21 +45,14 @@ public class ActionsScriptClient extends ScriptClient
   public ActionsScriptClient()
   {
     super();
-    this.userId = MatrixConfig.getProperty("adminCredentials.userId");
-    this.password = MatrixConfig.getProperty("adminCredentials.password");
   }
-  
-  public ActionsScriptClient(String userId, String password)
-  {
-    super(userId, password);
-  }  
   
   /* Put objects into scope */
   @Override
   public void put(String key, Object object)
   {
     if (scope == null)
-      scope = new WebScriptableBase(context);
+      scope = new WebScriptableBase(getContext());
 
     scope.put(key, scope, object);
   } 
@@ -65,7 +60,7 @@ public class ActionsScriptClient extends ScriptClient
   @Override
   public Object executeScript(String action)
     throws Exception
-  {
+  {    
     Object result = null;
     if (action != null)
     {

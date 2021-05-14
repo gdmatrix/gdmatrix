@@ -53,36 +53,38 @@ import org.santfeliu.util.MatrixConfig;
  */
 public class PropertyConverter
 {
-  private Type type;
+  private final Type type;
  
   public static Object toObject(PropertyType type, String svalue)
   {
     Object value = null;
     if (svalue != null)
     {
-      if (PropertyType.TEXT.equals(type))
+      if (null != type)
+      switch (type)
       {
-        value = svalue;
-      }
-      else if (PropertyType.NUMERIC.equals(type))
-      {
-        try
-        {
-          value = Double.valueOf(svalue);
-        }
-        catch (NumberFormatException ex)
-        {
-          value = null;
-        }
-      }
-      else if (PropertyType.BOOLEAN.equals(type))
-      {
-        value = Boolean.valueOf(svalue);
-      }
-      else if (PropertyType.DATE.equals(type))
-      {
-        // dates are always internally represented as yyyyMMddHHmmss
-        value = svalue;
+        case TEXT:
+          value = svalue;
+          break;
+        case NUMERIC:
+          try
+          {
+            value = Double.valueOf(svalue);
+          }
+          catch (NumberFormatException ex)
+          {
+            value = null;
+          } 
+          break;
+        case BOOLEAN:
+          value = Boolean.valueOf(svalue);
+          break;
+        case DATE:
+          // dates are always internally represented as yyyyMMddHHmmss
+          value = svalue;
+          break;
+        default:
+          break;
       }
     }
     return value;
@@ -204,9 +206,7 @@ public class PropertyConverter
       String scriptName = MatrixConfig.getProperty("htmlFixer.script");
       if (scriptName != null)
       {
-        String userId = MatrixConfig.getProperty("adminCredentials.userId");
-        String password = MatrixConfig.getProperty("adminCredentials.password");
-        HtmlFixer htmlFixer = new HtmlFixer(scriptName, userId, password);
+        HtmlFixer htmlFixer = new HtmlFixer(scriptName);
         return htmlFixer.fixCode(svalue);
       }
       else

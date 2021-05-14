@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import static org.matrix.dic.DictionaryConstants.EXECUTE_ACTION;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import org.matrix.dic.DictionaryManagerPort;
 import org.matrix.dic.DictionaryManagerService;
 import org.matrix.dic.EnumType;
@@ -359,8 +361,8 @@ public class TypeFormBuilder extends MatrixFormBuilder
         User user = UserCache.getUser(parser.getUserId(), parser.getPassword());
         Set<String> roles = user.getRoles();
         boolean canExecuteForm = 
-          DictionaryUtils.canPerformAction("Execute", roles, acl, type) ||    
-          DictionaryUtils.canPerformAction("Read", roles, acl, type) ||
+          DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, type) ||    
+          DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, type) ||
           roles.contains(DocumentConstants.DOC_ADMIN_ROLE);
         if (canExecuteForm)
         {

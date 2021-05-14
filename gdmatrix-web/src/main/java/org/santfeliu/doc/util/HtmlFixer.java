@@ -49,14 +49,10 @@ import org.w3c.tidy.Tidy;
 public class HtmlFixer
 {
   private final String scriptName;
-  private final String userId;
-  private final String password;
     
-  public HtmlFixer(String scriptName, String userId, String password)
+  public HtmlFixer(String scriptName)
   {
     this.scriptName = scriptName;
-    this.userId = userId;
-    this.password = password;
   }
   
   public String fixCode(String s)
@@ -107,7 +103,7 @@ public class HtmlFixer
     if (node instanceof Element)
     {
       Element element = (Element)node;
-      ScriptClient scriptClient = new ScriptClient(userId, password);
+      ScriptClient scriptClient = new ScriptClient();
       scriptClient.put("element", element);
       scriptClient.executeScript(scriptName);
     }
@@ -117,10 +113,10 @@ public class HtmlFixer
   {
     try
     {
-      HtmlFixer fixer = new HtmlFixer("html_fixer", "admin", "****");
+      HtmlFixer fixer = new HtmlFixer("html_fixer");
 
-      FileInputStream in = new FileInputStream(new File("c:/Users/realor/Desktop/test.html"));
-      FileOutputStream out = new FileOutputStream(new File("c:/Users/realor/Desktop/test_out.html"));
+      FileInputStream in = new FileInputStream(new File("test.html"));
+      FileOutputStream out = new FileOutputStream(new File("test_out.html"));
       Tidy tidy = new Tidy();
       tidy.setOnlyErrors(true);
       tidy.setTidyMark(false); 

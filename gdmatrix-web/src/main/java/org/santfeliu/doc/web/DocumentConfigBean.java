@@ -45,17 +45,26 @@ import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.web.DictionaryConfigBean;
 import org.santfeliu.doc.client.CachedDocumentManagerClient;
+import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class DocumentConfigBean implements Serializable
 {
   public DocumentConfigBean()
   {
+  }
+  
+  public static CachedDocumentManagerClient getClient(String userId, 
+    String password) throws Exception
+  {
+    CachedDocumentManagerClient client = 
+      new CachedDocumentManagerClient(userId, password);
+    return client;
   }
   
   public static CachedDocumentManagerClient getClient() throws Exception
@@ -66,14 +75,33 @@ public class DocumentConfigBean implements Serializable
     return client;
   }
   
-  public static DocumentManagerPort getPort() throws Exception
+  public static CachedDocumentManagerClient getClientAsAdmin() throws Exception
+  {  
+    CachedDocumentManagerClient client = new CachedDocumentManagerClient(
+      MatrixConfig.getProperty("adminCredentials.userId"),
+      MatrixConfig.getProperty("adminCredentials.password"));
+    return client;
+  }  
+      
+  public static DocumentManagerPort getPort(String userId, String password) 
+    throws Exception
   {
     WSDirectory wsDirectory = WSDirectory.getInstance();
     WSEndpoint endpoint = wsDirectory.getEndpoint(DocumentManagerService.class);
-    return endpoint.getPort(DocumentManagerPort.class,
-      UserSessionBean.getCurrentInstance().getUsername(),
+    return endpoint.getPort(DocumentManagerPort.class, userId, password);    
+  }    
+  
+  public static DocumentManagerPort getPort() throws Exception
+  {
+    return getPort(UserSessionBean.getCurrentInstance().getUsername(),
       UserSessionBean.getCurrentInstance().getPassword());
   }
+    
+  public static DocumentManagerPort getPortAsAdmin() throws Exception
+  {
+    return getPort(MatrixConfig.getProperty("adminCredentials.userId"),
+      MatrixConfig.getProperty("adminCredentials.password"));
+  }  
 
   public static String toObjectId(String docId, int version)
   {

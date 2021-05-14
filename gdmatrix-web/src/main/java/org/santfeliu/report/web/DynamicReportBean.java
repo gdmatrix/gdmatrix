@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.faces.context.ExternalContext;
@@ -41,12 +42,19 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.report.Report;
 import org.matrix.report.ReportManagerPort;
+import org.matrix.security.AccessControl;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.beansaver.Savable;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.form.Form;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.security.util.Credentials;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSProperty;
@@ -244,7 +252,7 @@ public class DynamicReportBean extends WebBean implements Savable
     {
       String defaultFormSelector = getProperty(FORM_SELECTOR_PROPERTY);
       String[] pairs = reports.split(",");
-      Credentials credentials = ReportConfigBean.getExecutionCredentials();
+      Credentials credentials = ReportConfigBean.getReportAdminCredentials();
       ReportManagerPort port = 
         ReportConfigBean.getReportManagerPort(credentials);
       for (String pair : pairs)
@@ -257,14 +265,17 @@ public class DynamicReportBean extends WebBean implements Savable
         try
         {
           Report report = port.loadReport(iReportId, false);
-          ReportSelectItem item = new ReportSelectItem();
-          item.setReportId(iReportId);
-          String title = report.getTitle();
-          index = title.indexOf(":");
-          if (index != -1) title = title.substring(index + 1);
-          item.setLabel(title);
-          item.setFormSelector(iFormSelector);
-          reportSelectItems.add(item);
+          if (ReportConfigBean.canUserExecuteReport(report))
+          {
+            ReportSelectItem item = new ReportSelectItem();
+            item.setReportId(iReportId);
+            String title = report.getTitle();
+            index = title.indexOf(":");
+            if (index != -1) title = title.substring(index + 1);
+            item.setLabel(title);
+            item.setFormSelector(iFormSelector);
+            reportSelectItems.add(item);
+          }
         }
         catch (Exception ex)
         {
@@ -277,7 +288,7 @@ public class DynamicReportBean extends WebBean implements Savable
       }
     }
   }
-
+  
   public class ReportSelectItem extends SelectItem implements Serializable
   {
     private String formSelector;

@@ -55,7 +55,6 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.DynamicTypifiedPageBean;
-import org.santfeliu.ws.WSExceptionFactory;
 
 /**
  *
@@ -110,7 +109,7 @@ public class EventMainBean extends DynamicTypifiedPageBean
   public boolean isOnlyAttendants()
   {
     if (event != null && event.isOnlyAttendants() != null)
-      return event.isOnlyAttendants().booleanValue();
+      return event.isOnlyAttendants();
     else
       return false;
   }
@@ -150,17 +149,14 @@ public class EventMainBean extends DynamicTypifiedPageBean
     acls.addAll(currentType.getAccessControl());
     acls.addAll(event.getAccessControl());
 
-    if (acls != null)
+    for (AccessControl acl : acls)
     {
-      for (AccessControl acl : acls)
+      String action = acl.getAction();
+      if (DictionaryConstants.WRITE_ACTION.equals(action))
       {
-        String action = acl.getAction();
-        if (DictionaryConstants.WRITE_ACTION.equals(action))
-        {
-          String roleId = acl.getRoleId();
-          if (UserSessionBean.getCurrentInstance().isUserInRole(roleId))
-            return true;
-        }
+        String roleId = acl.getRoleId();
+        if (UserSessionBean.getCurrentInstance().isUserInRole(roleId))
+          return true;
       }
     }
 
@@ -184,6 +180,7 @@ public class EventMainBean extends DynamicTypifiedPageBean
   }
 
   //Actions
+  @Override
   public String show()
   {
     return "event_main";
@@ -273,9 +270,7 @@ public class EventMainBean extends DynamicTypifiedPageBean
       
       //Correcció dels atributs aria-label als enllaços
       String scriptName = MatrixConfig.getProperty("htmlFixer.script");
-      String userId = MatrixConfig.getProperty("adminCredentials.userId");
-      String password = MatrixConfig.getProperty("adminCredentials.password");
-      HtmlFixer htmlFixer = new HtmlFixer(scriptName, userId, password);
+      HtmlFixer htmlFixer = new HtmlFixer(scriptName);
       event.setDetail(htmlFixer.fixCode(event.getDetail()));
 
       event = AgendaConfigBean.getPort().storeEvent(event);
@@ -303,7 +298,7 @@ public class EventMainBean extends DynamicTypifiedPageBean
             autoAttendantType = autoAttendantPD.getValue().get(0);
         }
         attendant.setAttendantTypeId(autoAttendantType);        
-        attendant = AgendaConfigBean.getPort().storeAttendant(attendant);
+        AgendaConfigBean.getPort().storeAttendant(attendant);
       }
 
       Date startDate = TextUtils.parseInternalDate(event.getStartDateTime());
@@ -328,6 +323,7 @@ public class EventMainBean extends DynamicTypifiedPageBean
     modified = true;
   }
 
+  @Override
   protected void load()
   {
     if (isNew())

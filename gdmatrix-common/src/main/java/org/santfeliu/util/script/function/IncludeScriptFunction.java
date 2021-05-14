@@ -84,10 +84,8 @@ public class IncludeScriptFunction extends BaseFunction
         else
         {
           jsName = reference;
-        }
-        String userId = MatrixConfig.getProperty("adminCredentials.userId");
-        String password = MatrixConfig.getProperty("adminCredentials.password");          
-        ScriptClient client = new ScriptClient(userId, password);
+        }       
+        ScriptClient client = new ScriptClient();
         client.executeScript(jsName, scope);
       }
     }

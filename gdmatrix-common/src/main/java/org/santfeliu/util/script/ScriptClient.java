@@ -39,9 +39,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.LRUMap;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
@@ -59,11 +60,12 @@ import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.jmx.CacheMBean;
 import org.santfeliu.jmx.JMXUtils;
-import org.santfeliu.util.IOUtils;
+import org.santfeliu.util.MatrixConfig;
 
 
 /**
- * Client class to read and execute script documents.
+ * Client class to read and execute script documents. 
+ * Scripts executed with adminCredentials defined in MatrixConfig.
  * 
  * @author blanquepa
  */
@@ -74,32 +76,29 @@ public class ScriptClient
   private static final long REFRESH_TIME = 60 * 1000; //60 seconds
   
   public static final String SCRIPT_DOCUMENT_TYPE  = "CODE";
-  public static final String SCRIPT_PROPERTY_NAME  = "workflow.js";  
+  public static final String SCRIPT_PROPERTY_NAME  = "workflow.js"; 
+  protected static final Logger LOGGER = Logger.getLogger("ScriptClient");  
   
   private static final Map cache = 
     Collections.synchronizedMap(new LRUMap(MAX_CACHE_SIZE));
   
-  protected String userId;
-  protected String password;
-  protected Scriptable scope;
+  private final Context context;
   
-  protected final Context context;
+  protected Scriptable scope;
   
   static
   {
     JMXUtils.registerMBean("ScriptClientCache", getCacheMBean());
   }
-  
+     
   public ScriptClient()
   {
     context = ContextFactory.getGlobal().enterContext();  
   }
-  
-  public ScriptClient(String userId, String password)
+
+  protected Context getContext()
   {
-    context = ContextFactory.getGlobal().enterContext();      
-    this.userId = userId;
-    this.password = password;
+    return context;
   }
 
   /* Put objects into scope */
@@ -119,40 +118,8 @@ public class ScriptClient
       return null;
   }
   
-  private void clearCache(long now)
-  {
-    //get scripts modified since last refresh
-    List<Document> documents = getModifiedScripts();
-    if (documents != null && !documents.isEmpty())
-    {
-      for (Document document : documents)
-      {
-        String docScriptName = DocumentUtils.getPropertyValue(document, SCRIPT_PROPERTY_NAME);
-        cache.remove(docScriptName);
-      }
-    }
-    lastCacheRefresh = now;     
-  }
-  
-  private Script getScript(String scriptName) throws IOException
-  {
-    Script script = (Script) cache.get(scriptName);
-    if (script == null)
-    {
-      ScriptData scriptData = getScriptData(scriptName);
-
-      File scriptFile = scriptData.scriptFile;
-      InputStreamReader reader =
-        new InputStreamReader(new FileInputStream(scriptFile), "UTF-8");
-
-      script = context.compileReader(reader, scriptName, 0, null);
-      cache.put(scriptName, script);
-    }
-    return script;
-  }
-  
   public Object executeScript(String scriptName) throws Exception
-  {
+  {   
     if (scope == null)
       scope = new ScriptableBase(context);
 
@@ -162,6 +129,8 @@ public class ScriptClient
   public Object executeScript(String scriptName, Scriptable scope)
     throws Exception
   {
+    LOGGER.log(Level.INFO, "Executing {0} script.", new Object[]{scriptName});
+    
     Script script;
     
     long now = System.currentTimeMillis();
@@ -192,28 +161,36 @@ public class ScriptClient
     }
 
     return result;
-  }
+  }  
   
-  public void writeScript(String scriptName, HttpServletResponse response) 
-    throws IOException
+  private Script getScript(String scriptName) throws Exception
   {
-    ScriptData scriptData = getScriptData(scriptName);
+    Script script = (Script) cache.get(scriptName);
+    if (script == null)
+    {
+      ScriptData scriptData = getScriptData(scriptName);
 
-    response.setContentType(scriptData.contentType);
-    response.setCharacterEncoding("UTF-8");
-    File scriptFile = scriptData.scriptFile;
-    IOUtils.writeToStream(new FileInputStream(scriptFile),
-      response.getOutputStream());    
+      File scriptFile = scriptData.scriptFile;
+      InputStreamReader reader =
+        new InputStreamReader(new FileInputStream(scriptFile), "UTF-8");
+
+      script = context.compileReader(reader, scriptName, 0, null);
+      cache.put(scriptName, script);
+    }
+    return script;
   }
-  
-  private ScriptData getScriptData(String scriptName) throws IOException
+    
+  private ScriptData getScriptData(String scriptName) throws Exception
   {
     ScriptData scriptData = null;
-    DocumentManagerClient client = null;
-    if (userId != null && password != null)
-      client = new CachedDocumentManagerClient(userId, password);
-    else // to download (only public scripts)
-      client = new DocumentManagerClient();
+    
+    String userId = MatrixConfig.getProperty("adminCredentials.userId");
+    String password = MatrixConfig.getProperty("adminCredentials.password");
+    if (userId == null)
+      LOGGER.warning("Trying to execute without administrator credentials");
+    
+    DocumentManagerClient client = 
+      new CachedDocumentManagerClient(userId, password);
     
     DocumentFilter filter = new DocumentFilter();
     filter.setDocTypeId(SCRIPT_DOCUMENT_TYPE);
@@ -243,33 +220,55 @@ public class ScriptClient
     return scriptData;
   }  
   
-  private List<Document> getModifiedScripts()
+  private void clearCache(long now)
   {
-    DocumentManagerClient client = null;
-    if (userId != null && password != null)
-      client = new CachedDocumentManagerClient(userId, password);
-    else // to download (only public scripts)
-      client = new DocumentManagerClient();
+    //get scripts modified since last refresh
+    String userId = MatrixConfig.getProperty("adminCredentials.userId");
+    String password = MatrixConfig.getProperty("adminCredentials.password");
     
-    DocumentFilter filter = new DocumentFilter();
-    filter.setDocTypeId(SCRIPT_DOCUMENT_TYPE);
-    filter.setIncludeContentMetadata(true);
-    Property property = new Property();
-    property.setName(SCRIPT_PROPERTY_NAME);
-    property.getValue().add("%");
-    filter.getProperty().add(property);
-    filter.getOutputProperty().add(SCRIPT_PROPERTY_NAME);
+    if (userId != null)
+    {
+      DocumentManagerClient client = 
+        new CachedDocumentManagerClient(userId, password); 
     
-    Date lastRefreshDate = new Date(lastCacheRefresh);
-    SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-    String dateTime = df.format(lastRefreshDate);
+      DocumentFilter filter = new DocumentFilter();
+      filter.setDocTypeId(SCRIPT_DOCUMENT_TYPE);
+      filter.setIncludeContentMetadata(true);
+      Property property = new Property();
+      property.setName(SCRIPT_PROPERTY_NAME);
+      property.getValue().add("%");
+      filter.getProperty().add(property);
+      filter.getOutputProperty().add(SCRIPT_PROPERTY_NAME);
     
-    filter.setDateComparator("1"); //changeDateTime
-    filter.setStartDate(dateTime);
+      Date lastRefreshDate = new Date(lastCacheRefresh);
+      SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+      String dateTime = df.format(lastRefreshDate);
 
-    return client.findDocuments(filter);
+      filter.setDateComparator("1"); //changeDateTime
+      filter.setStartDate(dateTime);
+
+      List<Document> documents = client.findDocuments(filter);
+      if (documents != null && !documents.isEmpty())
+      {
+        for (Document document : documents)
+        {
+          String docScriptName = 
+            DocumentUtils.getPropertyValue(document, SCRIPT_PROPERTY_NAME);
+          cache.remove(docScriptName);
+        }
+      }      
+    } 
+    else
+    {
+      //If it's not executed by user with admin rights it is not guaranted that 
+      //script document is found to be refreshed then keep cache clear.
+      cache.clear();
+    }
+    lastCacheRefresh = now;     
   }
   
+
+   
   private static ScriptClientCacheMBean getCacheMBean()
   {
     try
@@ -281,45 +280,51 @@ public class ScriptClient
       return null;
     }
   }  
-  
-  public static class ScriptClientCacheMBean extends StandardMBean implements CacheMBean
+
+  public static class ScriptClientCacheMBean extends StandardMBean 
+    implements CacheMBean
   {
     public ScriptClientCacheMBean() throws NotCompliantMBeanException
     {
       super(CacheMBean.class);
     }
 
+    @Override
     public String getName()
     {
       return "ScriptClientCache";
     }
 
+    @Override
     public long getMaxSize()
     {
       return MAX_CACHE_SIZE;
     }
 
+    @Override
     public long getSize()
     {
       return cache.size();
     }
 
+    @Override
     public String getDetails()
     {
       return "scriptCacheSize=" + getSize() + "/" + getMaxSize();
     }
 
+    @Override
     public void clear()
     {
       cache.clear();
     }
 
+    @Override
     public void update()
     {
     }
   }  
 
-  
   private class ScriptData
   {
     String scriptName;
@@ -327,6 +332,4 @@ public class ScriptClient
     File scriptFile;
     String contentType;
   }
-  
-  
 }

@@ -38,7 +38,7 @@ import java.util.Set;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 import org.apache.commons.collections.LRUMap;
-import org.matrix.dic.DictionaryConstants;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
 import org.matrix.doc.RelatedDocument;
@@ -229,10 +229,9 @@ public class DocumentCache
   {
     Set<String> userRoles = user.getRoles();
     Type type = TypeCache.getInstance().getType(docTypeId);
-    String action = DictionaryConstants.READ_ACTION;
     
     return userRoles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || DictionaryUtils.canPerformAction(action, userRoles, acl, type);
+      || DictionaryUtils.canPerformAction(READ_ACTION, userRoles, acl, type);
   }
 
   private static String getKey(String docId, String language)

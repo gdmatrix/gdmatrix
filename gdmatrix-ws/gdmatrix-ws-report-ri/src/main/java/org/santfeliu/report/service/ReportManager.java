@@ -75,6 +75,8 @@ import org.santfeliu.security.UserCache;
 import org.santfeliu.ws.annotations.Disposer;
 import org.santfeliu.ws.annotations.Initializer;
 import org.santfeliu.ws.annotations.SingleInstance;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
+import static org.matrix.dic.DictionaryConstants.EXECUTE_ACTION;
 
 /**
  *
@@ -444,17 +446,15 @@ public class ReportManager implements ReportManagerPort
   }
   
   private boolean canUserExecuteReport(Credentials credentials, Report report)
-  {
-    String exeAction = DictionaryConstants.EXECUTE_ACTION;
-    String readAction = DictionaryConstants.READ_ACTION;    
+  {   
     User user = UserCache.getUser(credentials);
     Set<String> roles = user.getRoles();
     List<AccessControl> acl = report.getAccessControl();
     Type type = TypeCache.getInstance().getType(report.getDocTypeId());
     
     return roles.contains(DocumentConstants.DOC_ADMIN_ROLE)
-      || DictionaryUtils.canPerformAction(exeAction, roles, acl, type) 
-      || DictionaryUtils.canPerformAction(readAction, roles, acl, type);
+      || DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, type) 
+      || DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, type);
   }
 }
 

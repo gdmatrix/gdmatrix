@@ -254,11 +254,10 @@ public class DocumentEditor implements Serializable
 
   private String readDocument(DataSource dataSource) throws IOException
   {
-    String result = null;
-    InputStream is = dataSource.getInputStream();
-    try
+    String result;
+    try (InputStream is = dataSource.getInputStream()) 
     {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       int numRead;
       byte[] bytes = new byte[1024];
       while ((numRead = is.read(bytes)) != -1)
@@ -267,10 +266,6 @@ public class DocumentEditor implements Serializable
       }
       result = sb.toString();
     }
-    finally
-    {
-      is.close();
-    }
     return result;
   }
 
@@ -278,18 +273,17 @@ public class DocumentEditor implements Serializable
     String contentType)
     throws Exception
   {
-    InputStream in = IOUtils.toInputStream(documentData);
-    File file = File.createTempFile("htmleditor",".tmp");
-    FileOutputStream out = new FileOutputStream(file);
-    
-    //Correcció dels atributs aria-label als enllaços
-    String scriptName = MatrixConfig.getProperty("htmlFixer.script");
-    String userId = MatrixConfig.getProperty("adminCredentials.userId");
-    String password = MatrixConfig.getProperty("adminCredentials.password");
-    HtmlFixer htmlFixer = new HtmlFixer(scriptName, userId, password);
-    htmlFixer.fixCode(in, out); 
-
-    in.close();
+    File file;
+    FileOutputStream out;
+    try (InputStream in = IOUtils.toInputStream(documentData))
+    {
+      file = File.createTempFile("htmleditor",".tmp");
+      out = new FileOutputStream(file);
+      //Correcció dels atributs aria-label als enllaços
+      String scriptName = MatrixConfig.getProperty("htmlFixer.script");
+      HtmlFixer htmlFixer = new HtmlFixer(scriptName);
+      htmlFixer.fixCode(in, out);
+    }
     out.close();
 
     TemporaryDataSource dataSource = new TemporaryDataSource(file, contentType);
@@ -322,7 +316,7 @@ public class DocumentEditor implements Serializable
   
   public class DocumentLockedByUser extends Exception
   {
-    private String userId;
+    private final String userId;
     
     private DocumentLockedByUser(String lockuser)
     {

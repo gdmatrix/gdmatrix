@@ -1603,7 +1603,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
     if (action != null)
     {
-      ActionsScriptClient client = new ActionsScriptClient(userId, password);
+      ActionsScriptClient client = new ActionsScriptClient();
       client.put("userSessionBean", this);
       client.put("facesContext", getFacesContext());
       client.put("externalContext", getExternalContext());

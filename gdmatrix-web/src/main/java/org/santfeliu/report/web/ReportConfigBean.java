@@ -39,10 +39,20 @@ import org.matrix.report.ReportManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import com.sun.xml.ws.developer.JAXWSProperties;
+import java.util.List;
+import java.util.Set;
+import org.matrix.doc.DocumentConstants;
+import org.matrix.report.Report;
+import org.matrix.security.AccessControl;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
+import static org.matrix.dic.DictionaryConstants.EXECUTE_ACTION;
 
 /**
  *
@@ -63,12 +73,13 @@ public class ReportConfigBean implements Serializable
 
     return port;
   }
-
+  
   public static Credentials getExecutionCredentials()
   {
     Credentials credentials;
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor cursor = userSessionBean.getMenuModel().getSelectedMenuItem();
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();
     if ("true".equals(cursor.getProperty(ReportBean.RUN_AS_ADMIN_PROPERTY)))
     {
       credentials = ReportConfigBean.getReportAdminCredentials();
@@ -88,4 +99,19 @@ public class ReportConfigBean implements Serializable
       MatrixConfig.getProperty("adminCredentials.password");
     return new Credentials(userId, password);
   }
+  
+  public static boolean canUserExecuteReport(Report report)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance(); 
+    MenuItemCursor cursor = 
+      userSessionBean.getMenuModel().getSelectedMenuItem();      
+    Set<String> roles = userSessionBean.getRoles();
+    List<AccessControl> acl = report.getAccessControl();
+    Type type = TypeCache.getInstance().getType(report.getDocTypeId()); 
+
+    return roles.contains(DocumentConstants.DOC_ADMIN_ROLE)
+      || DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, type)
+      || DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, type)
+      || "true".equals(cursor.getProperty(ReportBean.RUN_AS_ADMIN_PROPERTY));
+  }  
 }

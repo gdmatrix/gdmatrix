@@ -47,7 +47,7 @@ import org.santfeliu.web.UserSessionBean;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class CaseConfigBean implements Serializable
 {
@@ -55,10 +55,18 @@ public class CaseConfigBean implements Serializable
   {
   }
   
+  public static CaseManagerPort getPort(String userId, String password)
+  {
+    WSDirectory wsDirectory = WSDirectory.getInstance();
+    WSEndpoint endpoint = wsDirectory.getEndpoint(CaseManagerService.class);
+    
+    return endpoint.getPort(CaseManagerPort.class, userId, password);    
+  }
+  
   public static CaseManagerPort getPort() throws Exception
   {
     String userId;
-    String password;      
+    String password;  
     if (isFindAsAdmin())
     {
        userId = MatrixConfig.getProperty("adminCredentials.userId");
@@ -69,9 +77,14 @@ public class CaseConfigBean implements Serializable
       userId = UserSessionBean.getCurrentInstance().getUsername();
       password = UserSessionBean.getCurrentInstance().getPassword();
     }
-    WSDirectory wsDirectory = WSDirectory.getInstance();
-    WSEndpoint endpoint = wsDirectory.getEndpoint(CaseManagerService.class);
-    return endpoint.getPort(CaseManagerPort.class, userId, password);
+    
+    return getPort( userId, password);
+  }
+  
+  public static CaseManagerPort getPortAsAdmin()
+  {
+    return getPort(MatrixConfig.getProperty("adminCredentials.userId"),
+      MatrixConfig.getProperty("adminCredentials.password"));
   }
   
   public String getCaseTypeDescription(String typeName)

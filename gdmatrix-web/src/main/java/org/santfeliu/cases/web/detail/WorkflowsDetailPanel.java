@@ -38,10 +38,14 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
 import org.matrix.dic.DictionaryConstants;
+import static org.matrix.dic.DictionaryConstants.EXECUTE_ACTION;
+import static org.matrix.dic.DictionaryConstants.READ_ACTION;
 import org.matrix.dic.Property;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
+import org.matrix.security.AccessControl;
+import org.matrix.workflow.WorkflowConstants;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.cms.CMSListener;
 import org.santfeliu.dic.Type;
@@ -107,7 +111,7 @@ public class WorkflowsDetailPanel extends TabulatedDetailPanel
       CaseDocumentFilter filter = new CaseDocumentFilter();
       filter.setCaseId(caseId);
       List<CaseDocumentView> docs =
-        CaseConfigBean.getPort().findCaseDocumentViews(filter);
+        CaseConfigBean.getPortAsAdmin().findCaseDocumentViews(filter);
       for (CaseDocumentView doc : docs)
       {
         String caseDocTypeId = doc.getCaseDocTypeId();
@@ -115,10 +119,13 @@ public class WorkflowsDetailPanel extends TabulatedDetailPanel
           isAllowedTypeId(caseDocTypeId))
         {
           String docId = doc.getDocument().getDocId();
-          Document document =
-            DocumentConfigBean.getPort().loadDocument(docId, 0, ContentInfo.METADATA);
-          doc.setDocument(document);
-          caseDocuments.add(doc);
+          Document document = DocumentConfigBean.getPortAsAdmin()
+            .loadDocument(docId, 0, ContentInfo.METADATA);
+          if (canUserExecuteWorkflow(document))
+          {
+            doc.setDocument(document);
+            caseDocuments.add(doc);
+          }
         }
       }
 
@@ -573,5 +580,15 @@ public class WorkflowsDetailPanel extends TabulatedDetailPanel
     }
     return false;
   }
-
+  
+  private boolean canUserExecuteWorkflow(Document workflow)
+  {
+    Set<String> roles  = UserSessionBean.getCurrentInstance().getRoles();
+    if (roles == null)
+      return false;
+    List<AccessControl> acl = workflow.getAccessControl();
+    return roles.contains(WorkflowConstants.WORKFLOW_ADMIN_ROLE) ||
+      DictionaryUtils.canPerformAction(READ_ACTION, roles, acl) ||
+      DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl);
+  }
 }

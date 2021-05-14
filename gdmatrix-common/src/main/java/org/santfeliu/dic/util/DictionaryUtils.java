@@ -285,7 +285,7 @@ public class DictionaryUtils
       for (Method docClassMethod : docClassMethods)
       {
         String methodName = docClassMethod.getName();
-        if(!methodName.equals("getProperty") && (methodName.startsWith("get")
+        if (!methodName.equals("getProperty") && (methodName.startsWith("get")
           || methodName.startsWith("is")))
         {
           String propertyName;
