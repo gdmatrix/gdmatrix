@@ -224,7 +224,7 @@ public class UploadDocumentsFormBean extends FormBean implements Serializable
     {
       error(e.getMessage());
     }
-    return "upload_documents";
+    return "upload_documents_form";
   }
 
   public String deleteDocument()
@@ -241,7 +241,7 @@ public class UploadDocumentsFormBean extends FormBean implements Serializable
     {
       this.error(e.getMessage());
     }
-    return "upload_documents";
+    return "upload_documents_form";
   }
 
   public Map submit()
