@@ -158,7 +158,7 @@ public class UserPreferences implements Serializable
   {
     try
     {
-      return SecurityConfigBean.getPort();
+      return SecurityConfigBean.getPort(true);
     }
     catch (Exception ex)
     {
