@@ -76,6 +76,7 @@ import org.santfeliu.ws.annotations.Initializer;
 import org.santfeliu.ws.annotations.MultiInstance;
 import org.santfeliu.ws.annotations.State;
 import static org.matrix.dic.DictionaryConstants.ROLE_TYPE;
+import org.matrix.dic.Property;
 import org.matrix.doc.DocumentConstants;
 import org.matrix.forum.ForumConstants;
 import org.matrix.job.JobConstants;
@@ -95,6 +96,10 @@ import org.matrix.workflow.WorkflowConstants;
 public class SecurityManager implements SecurityManagerPort
 {
   private static final Logger LOGGER = Logger.getLogger("Security");
+
+  private static final int USER_PROPERTY_NAME_MAX_SIZE = 100;
+  private static final int USER_PROPERTY_VALUES_MAX_ITEMS = 99999;
+  private static final int USER_PROPERTY_VALUE_MAX_SIZE = 100;
 
   // internal constants
   public static final String PK_SEPARATOR = ";";
@@ -1140,8 +1145,212 @@ public class SecurityManager implements SecurityManagerPort
     return new ArrayList(UserCache.getRoleInRoles(roleId));
   }
 
+  @Override
+  public List<Property> findUserProperties(String userId, String name, 
+    String value)
+  {
+    try
+    {
+      LOGGER.log(Level.INFO, "findUserProperties userId:{0} " + 
+        "name:{1} value:{2}", new Object[]{userId, name, value});
+
+      if (userId == null || userId.trim().isEmpty()) 
+        throw new WebServiceException("security:USERID_IS_MANDATORY");
+
+      List<DBUserProperty> dbUserPropertyList = 
+        doFindUserProperties(userId, name, value);    
+      return toProperties(dbUserPropertyList);
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "findUserProperties", ex);
+      throw WSExceptionFactory.create(ex);
+    }
+  }
+
+  @Override
+  public int storeUserProperties(String userId, List<Property> property, 
+    boolean incremental) 
+  {
+    int storeCount = 0;
+    try
+    {
+      LOGGER.log(Level.INFO, "storeUserProperties userId:{0} incremental:{1}", 
+        new Object[]{userId, incremental});
+
+      if (userId == null || userId.trim().isEmpty()) 
+        throw new WebServiceException("security:USERID_IS_MANDATORY");
+      if (property == null || property.isEmpty()) 
+        throw new WebServiceException("security:PROPERTY_IS_MANDATORY");      
+      validateUserProperties(property);
+      
+      for (Property auxProperty : property)
+      {
+        storeCount += persistProperty(userId, auxProperty, incremental);
+      }
+      return storeCount;
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "storeUserProperties", ex);
+      throw WSExceptionFactory.create(ex);
+    }
+  }
+  
+  @Override
+  public boolean removeUserProperties(String userId, String name, String value) 
+  {
+    try
+    {
+      LOGGER.log(Level.INFO, "removeUserProperties userId:{0} name:{1} " + 
+        "value:{2}", new Object[]{userId, name, value});
+      
+      if (userId == null || userId.trim().isEmpty()) 
+        throw new WebServiceException("security:USERID_IS_MANDATORY");
+      
+      return doRemoveUserProperties(userId, name, value);
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "removeUserProperties", ex);
+      throw WSExceptionFactory.create(ex);
+    }
+  }
+
   /**** private methods ****/
 
+  private int persistProperty(String userId, Property property, 
+    boolean incremental) throws Exception
+  {
+    int count = 0;
+    int maxIndex = 0;
+    if (!incremental)
+    {
+      if (doRemoveUserProperties(userId, property.getName(), null))
+      {
+        entityManager.flush();
+      }
+    }
+    else
+    {
+      maxIndex = getUserPropertyMaxIndex(userId, property.getName());
+    }
+    List<DBUserProperty> dbUserPropertyList = toDBProperties(property, 
+      maxIndex + 1, userId);
+    for (DBUserProperty dbUserProperty : dbUserPropertyList)
+    {
+      entityManager.persist(dbUserProperty);
+      count++;
+    }
+    return count;
+  }
+  
+  private boolean doRemoveUserProperties(String userId, String name, 
+    String value)
+  {
+    List<DBUserProperty> dbUserPropertyList = doFindUserProperties(userId, 
+      name, value);
+    if (dbUserPropertyList.isEmpty()) return false;
+    for (DBUserProperty dbUserProperty : dbUserPropertyList)
+    {
+      Query query = entityManager.createNamedQuery("removeUserProperty");
+      query.setParameter("userId", dbUserProperty.getUserId().trim());
+      query.setParameter("name", dbUserProperty.getName());
+      query.setParameter("index", dbUserProperty.getIndex());
+      query.executeUpdate();
+    }
+    return true;
+  }
+  
+  private int getUserPropertyMaxIndex(String userId, String name)
+  {
+    List<DBUserProperty> dbUserPropertyList = 
+      doFindUserProperties(userId, name, null);
+    if (!dbUserPropertyList.isEmpty())
+    {
+      return dbUserPropertyList.get(dbUserPropertyList.size() - 1).getIndex();
+    }
+    return 0;
+  }
+  
+  private List<DBUserProperty> doFindUserProperties(String userId, String name, 
+    String value)
+  {
+    Query query = entityManager.createNamedQuery("findUserProperties");
+    query.setParameter("userId", userId.trim());
+    query.setParameter("name", name);
+    query.setParameter("value", value);
+    return query.getResultList();
+  }
+  
+  private void validateUserProperties(List<Property> propertyList)
+  {
+    for (Property property : propertyList)
+    {
+      validateUserProperty(property);
+    }
+  }
+
+  private void validateUserProperty(Property property)
+  {
+    if (property.getName() == null || property.getName().length() == 0)
+      throw new WebServiceException("security:USER_PROPERTY_NAME_NULL");    
+    
+    if (property.getName().length() > USER_PROPERTY_NAME_MAX_SIZE)
+      throw new WebServiceException("security:USER_PROPERTY_NAME_TOO_LARGE");
+    
+    if (property.getValue() == null || property.getValue().isEmpty())
+      throw new WebServiceException("security:USER_PROPERTY_VALUES_NULL");    
+    
+    if (property.getValue().size() > USER_PROPERTY_VALUES_MAX_ITEMS)
+      throw new WebServiceException("security:USER_PROPERTY_VALUES_TOO_LARGE");    
+    
+    for (String value : property.getValue())
+    {
+      if (value == null || value.length() == 0)
+        throw new WebServiceException("security:USER_PROPERTY_VALUE_NULL");    
+      
+      if (value.length() > USER_PROPERTY_VALUE_MAX_SIZE)
+        throw new WebServiceException("security:USER_PROPERTY_VALUE_TOO_LARGE");      
+    }
+  }
+  
+  private List<Property> toProperties(List<DBUserProperty> dbUserPropertyList)
+  {
+    HashMap<String, Property> auxMap = new HashMap();
+    List<Property> result = new ArrayList();
+    for (DBUserProperty dbUserProperty : dbUserPropertyList)
+    {
+      Property property = auxMap.get(dbUserProperty.getName());
+      if (property == null)
+      {
+        property = new Property();
+        property.setName(dbUserProperty.getName());
+        auxMap.put(dbUserProperty.getName(), property);
+        result.add(property);
+      }
+      property.getValue().add(dbUserProperty.getValue());
+    }
+    return result;
+  }
+
+  private List<DBUserProperty> toDBProperties(Property property, 
+    int baseIndex, String userId) throws Exception
+  {
+    int i = baseIndex;
+    List result = new ArrayList();
+    for(String v : property.getValue())
+    {
+      DBUserProperty dbUserProperty = new DBUserProperty();
+      dbUserProperty.setUserId(userId);
+      dbUserProperty.setName(property.getName());
+      dbUserProperty.setIndex(i++);
+      dbUserProperty.setValue(v);
+      result.add(dbUserProperty);
+    }
+    return result;
+  }
+  
   private DBUser selectUser(String userId)
   {
     try

@@ -321,6 +321,26 @@
     </query>
   </named-query>
 
+  <named-query name="findUserProperties">
+    <query>
+      SELECT p
+      FROM UserProperty p
+      WHERE (trim(p.userId) = :userId)
+        AND (:name is null or p.name like :name)
+        AND (:value is null or p.value like :value)
+      ORDER BY p.name, p.index
+    </query>
+  </named-query>
+
+  <named-query name="removeUserProperty">
+    <query>
+       DELETE FROM UserProperty p
+       WHERE trim(p.userId) = :userId
+         AND p.name = :name
+         AND p.index = :index
+    </query>
+  </named-query>
+
   <entity class="org.santfeliu.security.service.DBUser" name="User"
     access="PROPERTY">
     <!-- Synonym of GENESYS5.ORG_USUARI -->
@@ -427,6 +447,25 @@
       <id name="includedRoleId">
         <column name="INROLCOD" length="20" />
       </id>
+    </attributes>
+  </entity>
+
+  <entity class="org.santfeliu.security.service.DBUserProperty" 
+    name="UserProperty" access="PROPERTY">
+    <table name="USER_PREFERENCES" />
+    <attributes>
+      <id name="userId">
+        <column name="USRCOD" length="20" />
+      </id>        
+      <id name="name">
+        <column name="NAME" length="100" />
+      </id>
+      <id name="index">
+        <column name="IDX" precision="5" scale="0" />
+      </id>
+      <basic name="value">
+        <column name="VALUE" length="100" />
+      </basic>
     </attributes>
   </entity>
 

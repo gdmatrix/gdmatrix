@@ -31,20 +31,13 @@
 package org.santfeliu.web;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.matrix.sql.QueryParameter;
-import org.matrix.sql.QueryParameters;
-import org.matrix.sql.QueryRow;
-import org.matrix.sql.QueryTable;
-import org.matrix.sql.SQLManagerPort;
-import org.matrix.sql.SQLManagerService;
-import org.matrix.util.WSDirectory;
-import org.matrix.util.WSEndpoint;
-import org.santfeliu.util.MatrixConfig;
+import org.matrix.dic.Property;
+import org.matrix.security.SecurityManagerPort;
+import org.santfeliu.security.web.SecurityConfigBean;
 import org.santfeliu.util.RandomUtils;
 
 /**
@@ -57,16 +50,10 @@ public class UserPreferences implements Serializable
   public static String DEFAULT_THEME_PROPERTY = "defaultTheme";
   public static String RECENT_PAGES_SIZE_PROPERTY = "recentPagesSize";
 
-  private static String DB_ALIAS = MatrixConfig.getClassProperty(
-    UserPreferences.class, "dbAlias");
-  private static String DB_USERNAME = MatrixConfig.getClassProperty(
-    UserPreferences.class, "dbUsername");
-  private static String DB_PASSWORD = MatrixConfig.getClassProperty(
-    UserPreferences.class, "dbPassword");
-  private static float PURGE_PROBABILITY = 0.05f;
+  private final static float PURGE_PROBABILITY = 0.05f;
 
   private Boolean purgePreferences;
-  private String userId;
+  private final String userId;
   private Map<String, List<String>> preferencesMap;
 
   public UserPreferences(String userId)
@@ -100,95 +87,24 @@ public class UserPreferences implements Serializable
 
   public void storePreference(String name, String value)
   {
-    SQLManagerPort port = getSQLPort();
-    String sql = "select max(idx) from web_preferences where " +
-      "trim(usrcod) = trim({usrcod}) and name = {name}";
-    QueryParameters parameters = new QueryParameters();
-    QueryParameter param = new QueryParameter();
-    param.setName("usrcod");
-    param.setValue(userId);
-    parameters.getParameters().add(param);
-    param = new QueryParameter();
-    param.setName("name");
-    param.setValue(name);
-    parameters.getParameters().add(param);
-    QueryTable table = port.executeAliasQuery(sql, parameters, DB_ALIAS,
-      DB_USERNAME, DB_PASSWORD);
-    List<QueryRow> rows = table.getQueryRow();
-    String maxIndex = "1";
-    if (rows != null && rows.size() > 0)
-    {
-      Object maxValue = rows.get(0).getValues().get(0);
-      if (maxValue != null)
-      {
-        int iMaxIndex = ((BigDecimal)maxValue).intValue();
-        maxIndex = String.valueOf(iMaxIndex + 1);
-      }
-    }
-    sql = "insert into web_preferences(usrcod,name,idx,value) "
-      + "values({usrcod},{name},{idx},{value})";
-    parameters = new QueryParameters();
-    param = new QueryParameter();
-    param.setName("usrcod");
-    param.setValue(userId);
-    parameters.getParameters().add(param);
-    param = new QueryParameter();
-    param.setName("name");
-    param.setValue(name);
-    parameters.getParameters().add(param);
-    param = new QueryParameter();
-    param.setName("idx");
-    param.setValue(maxIndex);
-    parameters.getParameters().add(param);
-    param = new QueryParameter();
-    param.setName("value");
-    param.setValue(value);
-    parameters.getParameters().add(param);
-    port.executeAliasUpdate(sql, parameters, DB_ALIAS, DB_USERNAME, DB_PASSWORD);
+    Property property = new Property();
+    property.setName(name);
+    property.getValue().add(value);
+    List<Property> propertyList = new ArrayList();
+    propertyList.add(property);
+    getSecurityPort().storeUserProperties(userId, propertyList, true);
     preferencesMap = null;
   }
 
   public void removePreference(String name)
-  {    
-    QueryParameters parameters = new QueryParameters();
-    QueryParameter param = new QueryParameter();
-    String sql = "delete from web_preferences where "
-      + "trim(usrcod) = trim({usrcod}) and name={name}";
-    parameters = new QueryParameters();
-    param = new QueryParameter();
-    param.setName("usrcod");
-    param.setValue(userId);
-    parameters.getParameters().add(param);
-    param = new QueryParameter();
-    param.setName("name");
-    param.setValue(name);
-    parameters.getParameters().add(param);
-    getSQLPort().executeAliasUpdate(sql, parameters, DB_ALIAS, DB_USERNAME,
-      DB_PASSWORD);
+  {
+    getSecurityPort().removeUserProperties(userId, name, null);
     preferencesMap = null;
-  }  
+  }
 
   public void removePreference(String name, String value)
   {
-    QueryParameters parameters = new QueryParameters();
-    QueryParameter param = new QueryParameter();
-    String sql = "delete from web_preferences where "
-      + "trim(usrcod) = trim({usrcod}) and name={name} and value={value}";
-    parameters = new QueryParameters();
-    param = new QueryParameter();
-    param.setName("usrcod");
-    param.setValue(userId);
-    parameters.getParameters().add(param);
-    param = new QueryParameter();
-    param.setName("name");
-    param.setValue(name);
-    parameters.getParameters().add(param);
-    param = new QueryParameter();
-    param.setName("value");
-    param.setValue(value);
-    parameters.getParameters().add(param);
-    getSQLPort().executeAliasUpdate(sql, parameters, DB_ALIAS, DB_USERNAME,
-      DB_PASSWORD);
+    getSecurityPort().removeUserProperties(userId, name, value);
     preferencesMap = null;
   }
 
@@ -226,42 +142,28 @@ public class UserPreferences implements Serializable
   {
     if (preferencesMap == null)
     {
-      preferencesMap = new HashMap<String, List<String>>();
-      String sql =
-        "select name,value from web_preferences where "
-        + "trim(usrcod) = trim({usrcod}) order by name,idx";
-      QueryParameters parameters = new QueryParameters();
-      QueryParameter param = new QueryParameter();
-      param.setName("usrcod");
-      param.setValue(userId);
-      parameters.getParameters().add(param);
-      QueryTable table = getSQLPort().executeAliasQuery(sql, parameters,
-        DB_ALIAS, DB_USERNAME, DB_PASSWORD);
-      List<QueryRow> rows = table.getQueryRow();
-      for (QueryRow row : rows)
+      preferencesMap = new HashMap();
+      List<Property> propertyList = 
+        getSecurityPort().findUserProperties(userId, null, null);
+      for (Property property : propertyList)
       {
-        String name = (String)row.getValues().get(0);
-        String value = (String)row.getValues().get(1);
-        if (!preferencesMap.containsKey(name))
-        {
-          preferencesMap.put(name, new ArrayList<String>());
-        }
-        preferencesMap.get(name).add(value);
+        preferencesMap.put(property.getName(), 
+          new ArrayList(property.getValue()));
       }
     }
     return preferencesMap;
   }
 
-  private SQLManagerPort getSQLPort()
+  private SecurityManagerPort getSecurityPort()
   {
-    String adminUserId = 
-      MatrixConfig.getProperty("adminCredentials.userId");
-    String adminPassword = 
-      MatrixConfig.getProperty("adminCredentials.password");
-
-    WSDirectory dir = WSDirectory.getInstance();
-    WSEndpoint endpoint = dir.getEndpoint(SQLManagerService.class);
-    return endpoint.getPort(SQLManagerPort.class, adminUserId, adminPassword);
-  }
+    try
+    {
+      return SecurityConfigBean.getPort();
+    }
+    catch (Exception ex)
+    {
+      throw new RuntimeException(ex);
+    }
+  }  
 
 }

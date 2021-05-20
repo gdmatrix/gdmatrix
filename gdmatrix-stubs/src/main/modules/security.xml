@@ -14,7 +14,7 @@
       namespace="http://base.matrix.org/"
      location="matrix.xsd" />
     <import module="kernel" virtual="true" />
-    <import module="dic" virtual="true" />
+    <import module="dic" />
   </imports>
 
   <types>
@@ -387,6 +387,41 @@
       </parameter>
       <response name="role" type="xs:string"
         minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+  
+    <operation name="findUserProperties">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <parameter name="name" type="xs:string">
+      </parameter>
+      <parameter name="value" type="xs:string">
+      </parameter>
+      <response name="userProperty" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+  
+    <operation name="storeUserProperties">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <parameter name="property" type="dic:Property" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <parameter name="incremental" type="xs:boolean">
+      </parameter>
+      <response name="storeCount" type="xs:int">        
+      </response>
+    </operation>
+
+    <operation name="removeUserProperties">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <parameter name="name" type="xs:string">
+      </parameter>
+      <parameter name="value" type="xs:string">
+      </parameter>
+      <response name="removed" type="xs:boolean">        
       </response>
     </operation>
 
