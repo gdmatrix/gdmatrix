@@ -107,6 +107,11 @@ public class TypeMainBean extends PageBean
       DictionaryManagerPort port = DictionaryConfigBean.getPort();
       if (isNew())
       {
+        if (type.getTypeId() == null || type.getTypeId().trim().isEmpty())
+        {
+          error("dform.REQUIRED_VALUE", new Object[]{"typeId"});
+          return null;
+        }
         TypeFilter filter = new TypeFilter();
         filter.setTypeId(type.getTypeId());
         if (port.countTypes(filter) > 0)
