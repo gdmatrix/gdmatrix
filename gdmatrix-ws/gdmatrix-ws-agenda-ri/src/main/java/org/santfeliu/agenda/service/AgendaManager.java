@@ -275,9 +275,13 @@ public class AgendaManager implements org.matrix.agenda.AgendaManagerPort
         throw new WebServiceException("agenda:ACTION_DENIED");
 
       dbEvent.merge(curDbEvent);
-      PropertyDefinition pd = eventType.getPropertyDefinition("tipesdevcod");
-      String tipesdevcod = pd.getValue().get(0);
-      dbEvent.setTipesdevcod(tipesdevcod);
+      PropertyDefinition pd = eventType.getPropertyDefinition("tipesdevcod"); 
+      if (pd != null)
+      {
+        String tipesdevcod = pd.getValue().get(0);
+        if (tipesdevcod != null)
+          dbEvent.setTipesdevcod(tipesdevcod);
+      }
 
       Auditor.auditChange(dbEvent, user.getUserId());
 
