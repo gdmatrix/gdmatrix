@@ -39,6 +39,7 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.dic.Property;
+import org.matrix.doc.Content;
 import org.matrix.doc.State;
 import org.matrix.report.ParameterDefinition;
 import org.matrix.report.Report;
@@ -161,8 +162,9 @@ public class ReportBean extends ObjectBean implements Serializable
         List<Document> documents = client.findDocuments(documentFilter);
         if (documents.size() > 0)
         {
-          String docId = documents.get(0).getDocId();
-          url = getConnectionBase() + "/documents/" + docId;
+          Content content = documents.get(0).getContent();
+          if (content != null)
+            url = getConnectionBase() + "/documents/" + content.getContentId();
         }
       }
       catch (Exception ex)
