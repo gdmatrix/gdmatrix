@@ -74,7 +74,7 @@
                          rendered="#{row.eventId != null and row.eventId != eventBean.objectId}"
                          styleClass="showButton" value="#{objectBundle.show}"
                          image="#{userSessionBean.icons.show}"
-                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />                   
                     </h:panelGroup>
                   </t:column>
 
@@ -118,26 +118,40 @@
 
               </t:buffer>
               <h:outputText value="#{table}" escape="false"/>
-
             </t:div>
-            <t:div styleClass="actionBar">
-              <h:commandButton action="#{eventRecurrencesBean.deleteFutureRecurrences()}"
-                 alt="#{objectBundle.eventRecurrences_deleteFutureRecurrences}"
-                 title="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}"
-                 value="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}"
-                 rendered="#{!empty eventRecurrencesBean.rows}"
-                 disabled="#{!eventBean.editable}"
-                 styleClass="removeButton"
-                 onclick="return confirm('#{agendaBundle.eventRecurrences_confirmDeleteFutureRecurrences}');" />              
-              <h:commandButton action="#{eventRecurrencesBean.deleteAllRecurrences}"
-                 alt="#{objectBundle.eventRecurrences_deleteAllRecurrences}"
-                 title="#{agendaBundle.eventRecurrences_deleteAllRecurrences}"
-                 value="#{agendaBundle.eventRecurrences_deleteAllRecurrences}"
-                 rendered="#{!empty eventRecurrencesBean.rows}"
-                 disabled="#{!eventBean.editable}"
-                 styleClass="removeButton"
-                 onclick="return confirm('#{agendaBundle.eventRecurrences_confirmDeleteAllRecurrences}');" />
-            </t:div>
+            
+            <t:div rendered="#{!empty eventRecurrencesBean.rows}">
+              <t:div styleClass="containerTitle" style="margin-top:5px">
+                <h:outputLabel value="#{agendaBundle.eventRecurrences_deleteTitle}"/>
+              </t:div>          
+              <h:panelGrid styleClass="actionsContainer">
+                <t:selectOneRadio id="deleteRecurrencesRadio" value="#{eventRecurrencesBean.deleteMode}"
+                    layout="spread" converter="#{Integer}" style="vertical-align:top">
+                  <f:selectItem itemValue="0" itemLabel="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}: " />
+                  <f:selectItem itemValue="1" itemLabel="#{agendaBundle.eventRecurrences_deleteAllRecurrences}" />
+                </t:selectOneRadio>
+                <h:panelGroup>
+                  <t:radio for="deleteRecurrencesRadio" index="0" />
+                  <sf:calendar value="#{eventRecurrencesBean.deleteDateTime}"
+                    styleClass="calendarBox"
+                    externalFormat="dd/MM/yyyy"
+                    internalFormat="yyyyMMddHHmmss"
+                    buttonStyleClass="calendarButton"
+                    style="width:70px" />
+                </h:panelGroup>
+                <t:radio for="deleteRecurrencesRadio" index="1" />
+              </h:panelGrid>            
+              <t:div styleClass="actionBar">
+                <h:commandButton action="#{eventRecurrencesBean.deleteRecurrences}"
+                   alt="#{objectBundle.eventRecurrences_deleteRecurrences}"
+                   title="#{agendaBundle.eventRecurrences_deleteRecurrences}"
+                   value="#{agendaBundle.eventRecurrences_deleteRecurrences}"
+                   rendered="#{!empty eventRecurrencesBean.rows}"
+                   disabled="#{!eventBean.editable}"
+                   styleClass="removeButton"
+                   onclick="return confirm('#{agendaBundle.eventRecurrences_confirmDeleteRecurrences}');" />
+              </t:div>
+            </t:div>              
           </t:collapsiblePanel>
 
         </t:div>

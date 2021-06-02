@@ -661,6 +661,16 @@ div.schedule-detailed-default div.entry-selected div.text a:hover span.title
   margin-top: 5px;
 }
 
+.eventRecurrences .actionsContainer
+{
+  background-color:#ffffff;
+  border-style:solid;
+  border-width:1px;
+  text-align:left;
+  padding:4px;
+  width:100%;    
+}
+
 .eventRecurrences .selected
 {
   color: gray;

@@ -54,11 +54,33 @@ public class EventRecurrencesBean extends PageBean
 
   private boolean currentCollapsed = false;
   private boolean newCollapsed = true;
+  private String deleteDateTime;
+  private String deleteMode = "0";
 
   public EventRecurrencesBean()
   {
     load();
   }
+  
+  public String getDeleteMode()
+  {
+    return deleteMode;
+  }
+
+  public void setDeleteMode(String deleteMode)
+  {
+    this.deleteMode = deleteMode;
+  }  
+
+  public String getDeleteDateTime()
+  {
+    return deleteDateTime;
+  }
+
+  public void setDeleteDateTime(String deleteDateTime)
+  {
+    this.deleteDateTime = deleteDateTime;
+  }  
 
   @Override
   public String show()
@@ -149,49 +171,28 @@ public class EventRecurrencesBean extends PageBean
     else
       return null;
   }
-
-  public String deleteFutureRecurrences()
-  {
-    try
-    {
-      if (rows != null && !rows.isEmpty())
-      {
-        deleteRecurrences(rows, true);        
-        load();
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-
-    return null;    
-  }
   
-  public String deleteAllRecurrences()
+  public String deleteRecurrences()
   {
     try
     {
-      if (rows != null && !rows.isEmpty())
+      if (deleteMode.equals("1"))
+        deleteAllRecurrences();
+      else if (deleteMode.equals("0"))
       {
-        deleteRecurrences(rows, false);
-        
-        //if current event isn't the master then change it to master
-        if (!isMasterEvent())
-        {
-          Event event = getEvent();
-          DictionaryUtils.setProperty(event, MASTER_EVENTID_PROPERTY, event.getEventId());
-          AgendaConfigBean.getPort().storeEvent(event);
-        }
-        
-        load();
+        if (deleteDateTime == null)
+          error("INVALID_DATE");
+        else
+          deleteFutureRecurrences(deleteDateTime);
       }
     }
     catch (Exception ex)
     {
       error(ex);
     }
-
+    
+    load();
+    
     return null;
   }
 
@@ -219,8 +220,6 @@ public class EventRecurrencesBean extends PageBean
 
     return show();
   }
-
-
 
   private Event getEvent()
   {
@@ -327,6 +326,9 @@ public class EventRecurrencesBean extends PageBean
         }
         //Start a new recurrences schedule
         newSchedule();
+        
+        if (deleteDateTime == null)
+          deleteDateTime = getEvent().getStartDateTime();
       }
     }
     catch (Exception ex)
@@ -335,23 +337,52 @@ public class EventRecurrencesBean extends PageBean
     }
   }
   
-  private void deleteRecurrences(List<Event> events, boolean onlyFuture) 
+  private void deleteFutureRecurrences(String deleteDateTime)
     throws Exception
   {
-    Date now = new Date();
+    if (rows != null && !rows.isEmpty())
+    {
+      deleteRecurrences(rows, deleteDateTime);        
+    }
+  }
+  
+  private void deleteAllRecurrences()
+    throws Exception
+  {
+    if (rows != null && !rows.isEmpty())
+    {
+      deleteRecurrences(rows);
+
+      //if current event isn't the master then change it to master
+      if (!isMasterEvent())
+      {
+        Event event = getEvent();
+        DictionaryUtils.setProperty(event, MASTER_EVENTID_PROPERTY, 
+          event.getEventId());
+        AgendaConfigBean.getPort().storeEvent(event);
+      }
+    }
+  }
+  
+  private void deleteRecurrences(List<Event> events)
+    throws Exception
+  {
+    deleteRecurrences(events, null);
+  }
+  
+  private void deleteRecurrences(List<Event> events, String sdt) 
+    throws Exception
+  {
     for (Event event : events)
     {
       if (!event.getEventId().equals(getObjectId()))
       {
-        boolean delete = !onlyFuture;   
-        if (onlyFuture)
+        boolean delete = (sdt == null);
+        if (sdt != null)
         {
-          String sdt = event.getStartDateTime();    
-          if (sdt != null)
-          {
-            Date eventDate = TextUtils.parseInternalDate(sdt);
-            delete = now.before(eventDate);
-          }
+          Date eventDate = TextUtils.parseInternalDate(event.getStartDateTime());
+          Date startDate = TextUtils.parseInternalDate(sdt);
+          delete = startDate.before(eventDate);
         }
           
         if (delete)  
