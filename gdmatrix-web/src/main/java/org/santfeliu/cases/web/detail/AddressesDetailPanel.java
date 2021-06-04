@@ -31,6 +31,7 @@
 package org.santfeliu.cases.web.detail;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import org.matrix.kernel.Address;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.misc.mapviewer.util.MapImageGenerator;
+import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.template.WebTemplate;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.DetailBean;
@@ -72,7 +74,7 @@ public class AddressesDetailPanel extends TabulatedDetailPanel
   {
     resultsManager =
       new ResultsManager(
-          "org.santfeliu.cases.web.resources.CaseBundle", "caseAddresses_");
+        "org.santfeliu.cases.web.resources.CaseBundle", "caseAddresses_");
     resultsManager.addDefaultColumn("addressView.description");
   }
 
@@ -101,7 +103,9 @@ public class AddressesDetailPanel extends TabulatedDetailPanel
       for (CaseAddressView address : addresses)
       {
         String filterComments = getProperty(FILTER_COMMENTS);
-        if (filterComments == null || filterComments.equals(address.getComments()))
+        boolean matchComments = filterComments == null || 
+           filterComments.equals(address.getComments());
+        if (!isFormerAddress(address) && matchComments)
         {
           caseAddresses.add(address);
         }
@@ -192,11 +196,27 @@ public class AddressesDetailPanel extends TabulatedDetailPanel
   {
     String localCityName = getProperty(LOCAL_CITY_NAME);
     String city = caseAddressView.getAddressView().getCity();
-    if (city == null || (city != null && city.equalsIgnoreCase(localCityName)))
+    if (city == null || city.equalsIgnoreCase(localCityName))
       return mergeProperties(caseAddressView, getProperty(LOCAL_MAP_CODE));
     else
       return mergeProperties(caseAddressView, getProperty(EXTERNAL_MAP_CODE));
   }
+  
+  public String sort()
+  {
+    resultsManager.sort(caseAddresses);
+    return null;
+  }
+
+  public boolean isLocalAddress()
+  {
+    CaseAddressView caseAddressView = (CaseAddressView)getValue("#{row}");
+    if (caseAddressView == null)
+      return false;
+    String city = caseAddressView.getAddressView().getCity();
+    String localCityName = getProperty(LOCAL_CITY_NAME);
+    return (city != null && city.equalsIgnoreCase(localCityName));
+  }  
 
   private String mergeProperties(CaseAddressView caseAddressView,
     String templateString)
@@ -228,22 +248,6 @@ public class AddressesDetailPanel extends TabulatedDetailPanel
     return WebTemplate.create(templateString).merge(properties);
   }
 
-  public String sort()
-  {
-    resultsManager.sort(caseAddresses);
-    return null;
-  }
-
-  public boolean isLocalAddress()
-  {
-    CaseAddressView caseAddressView = (CaseAddressView)getValue("#{row}");
-    if (caseAddressView == null)
-      return false;
-    String city = caseAddressView.getAddressView().getCity();
-    String localCityName = getProperty(LOCAL_CITY_NAME);
-    return (city != null && city.equalsIgnoreCase(localCityName));
-  }
-
   private String[] getAddressParts(String address)
   {
     String[] parts = address.split("\\s\\d");
@@ -254,4 +258,11 @@ public class AddressesDetailPanel extends TabulatedDetailPanel
     }
     return parts;
   }
+  
+  private boolean isFormerAddress(CaseAddressView caseAddress)
+  {
+    String endDate = caseAddress.getEndDate();
+    String now = TextUtils.formatDate(new Date(), "yyyyMMdd");
+    return endDate != null && now.compareTo(endDate) > 0;
+  }  
 }
