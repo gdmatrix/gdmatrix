@@ -42,6 +42,7 @@ import javax.swing.table.DefaultTableModel;
 import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseManagerPort;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.santfeliu.doc.client.DocumentManagerClient;
@@ -107,7 +108,9 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
       }
       catch (Exception ex)
       {
-        docInfo.getFile().getUploadInfo().setError(ex);
+        UploadInfo uploadInfo = docInfo.getFile().getUploadInfo();
+        uploadInfo.setError(ex);
+        uploadInfo.write();
         errorCount++;
       }
       publish(docInfo);
@@ -203,6 +206,11 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
     String caseId = (String)metadata.get("caseId");
     if (caseId != null)
     {
+      String caseDocTypeId = (String)metadata.get("caseDocTypeId");
+      if (caseDocTypeId == null)
+      {
+        caseDocTypeId = DictionaryConstants.CASE_DOCUMENT_TYPE;
+      }
       CaseDocumentFilter filter = new CaseDocumentFilter();
       filter.setCaseId(caseId);
       filter.setDocId(docId);
@@ -210,6 +218,7 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
       {
         CaseDocument caseDocument = new CaseDocument();
         caseDocument.setCaseId(caseId);
+        caseDocument.setCaseDocTypeId(caseDocTypeId);
         caseDocument.setDocId(document.getDocId());
         casePort.storeCaseDocument(caseDocument);
         uploadInfo.setCaseId(caseId);
