@@ -1687,7 +1687,7 @@ public class KernelManager implements KernelManagerPort
     {
       Query query = entityManager.createNamedQuery("countPersons");
       PersonFilter filter = new PersonFilter();
-      filter.setNif(person.getNif());
+      filter.setNif(person.getNif().trim());
       setPersonFilterParameters(query, filter);
       int count = ((Number)query.getSingleResult()).intValue();
       if (count > 0) throw new WebServiceException("kernel:DUPLICATED_NIF");
