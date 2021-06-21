@@ -333,7 +333,8 @@ public class CasesJobStore implements JobStore
     {
       CaseManagerPort port = getCaseManagerPort();
       
-      InterventionFilter filter = new InterventionFilter();    
+      InterventionFilter filter = new InterventionFilter(); 
+      filter.setDateComparator("1");
       filter.setCaseId(jobId);
       if (fromDate != null)
         filter.setFromDate(fromDate);
@@ -393,18 +394,28 @@ public class CasesJobStore implements JobStore
   public JobFiring getLastJobFiring(String jobId) throws JobException
   {
     List<JobFiring> firings = findJobFirings(jobId, null, null);
-    JobFiring lastFiring = firings.get(0);
-    return loadJobFiring(lastFiring.getJobFiringId());
+    if (firings != null && !firings.isEmpty())
+    {
+      JobFiring lastFiring = firings.get(0);
+      return loadJobFiring(lastFiring.getJobFiringId());
+    }
+    else
+      return null;
   }
   
   private Document getLastLogDocument(String jobId) throws Exception
   {
     List<JobFiring> firings = findJobFirings(jobId, null, null);
-    JobFiring lastFiring = firings.get(0);
-    String docId = lastFiring.getLogId();
+    if (firings != null && !firings.isEmpty())
+    {    
+      JobFiring lastFiring = firings.get(0);
+      String docId = lastFiring.getLogId();
     
-    DocumentManagerClient client = getDocumentManagerClient();
-    return client.loadDocument(docId);
+      DocumentManagerClient client = getDocumentManagerClient();
+      return client.loadDocument(docId);
+    }
+    else 
+      return null;
   }
   
   private DocumentManagerClient getDocumentManagerClient() 
