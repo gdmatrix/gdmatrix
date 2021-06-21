@@ -54,7 +54,7 @@ public class XmlPanel extends TextPanel
   @Override
   protected String getCharset()
   {
-    return "utf8";
+    return "utf-8";
   }
 
   protected String getNewDocument()
