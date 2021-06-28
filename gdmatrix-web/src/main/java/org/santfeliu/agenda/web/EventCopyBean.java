@@ -89,6 +89,7 @@ public class EventCopyBean extends PageBean implements Serializable
 
   private List<EventRow> rows;
   private EventRow editingRow;
+  private EventRow editedRow;
 
   private int selectedIndex;
   private int frequencyMode;
@@ -648,6 +649,10 @@ public class EventCopyBean extends PageBean implements Serializable
   public String editEvent()
   {
     editingRow = (EventRow)getValue("#{row}");
+    Event e = new Event();
+    PojoUtils.copy(editingRow.getEvent(), e);
+    editedRow = new EventRow(e);
+
     return null;
   }
 
@@ -672,6 +677,8 @@ public class EventCopyBean extends PageBean implements Serializable
 
   public String cancelEvent()
   {
+    int index = rows.indexOf(editingRow);
+    rows.set(index, editedRow);
     editingRow = null;
     return null;
   }

@@ -399,13 +399,11 @@
                          rendered="#{eventCopyBean.editingRow != row}"
                          styleClass="editButton"/>
         <h:commandButton value="#{objectBundle.store}"
-                         image="#{userSessionBean.icons.store}"
                          alt="#{objectBundle.store}" title="#{objectBundle.store}"
                          action="#{eventCopyBean.storeEvent}"
                          rendered="#{eventCopyBean.editingRow == row}"
                          styleClass="storeButton"/>
         <h:commandButton value="#{objectBundle.cancel}"
-                         image="#{userSessionBean.icons.cancel}"
                          alt="#{objectBundle.cancel}" title="#{objectBundle.cancel}"
                          action="#{eventCopyBean.cancelEvent}"
                          rendered="#{eventCopyBean.editingRow == row}"
