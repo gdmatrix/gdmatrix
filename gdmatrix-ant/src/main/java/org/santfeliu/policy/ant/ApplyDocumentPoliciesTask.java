@@ -59,6 +59,7 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
   //Output
   private String docPol1Var;
   private String docPol2Var;
+  private String keepDocPolVar;
 
   private ArrayList<Task> tasks = new ArrayList();
 
@@ -100,6 +101,16 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
   public void setDocPol2Var(String docPol2Var)
   {
     this.docPol2Var = docPol2Var;
+  }
+
+  public String getKeepDocPolVar()
+  {
+    return keepDocPolVar;
+  }
+
+  public void setKeepDocPolVar(String keepDocPolVar)
+  {
+    this.keepDocPolVar = keepDocPolVar;
   }
 
   @Override
@@ -183,6 +194,8 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
 
       // remove docPolicies
       removeDocumentPolicies(port, toRemove);
+      
+      setVariable(keepDocPolVar, toKeep);
     }
   }
 
