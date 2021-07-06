@@ -351,7 +351,7 @@ public class KernelManager implements KernelManagerPort
       return false;
     }
     
-    if (!isKernelAdmin() && !isUserInRole(writeRole)) 
+    if (!isKernelAdmin()) 
       throw new WebServiceException(NOT_AUTHORIZED);
     
     DBPerson dbPerson = 
