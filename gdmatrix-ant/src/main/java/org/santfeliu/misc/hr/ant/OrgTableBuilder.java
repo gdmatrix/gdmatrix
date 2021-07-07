@@ -56,18 +56,17 @@ public class OrgTableBuilder
 {
   private enum PersonType {INT_ESTR, INT_NO_ESTR, EXT, REGI, NONE};
 
-  private String rootCaseId; //Unit root caseId
-  private Connection conn;
-  private CaseManagerPort port;
+  private final String rootCaseId; //Unit root caseId
+  private final Connection conn;
+  private final CaseManagerPort port;
 
   //<caseId, LlocTreball>
-  private Map<String, LlocTreball> llocTreballMap =
-    new HashMap<String, LlocTreball>();
+  private final Map<String, LlocTreball> llocTreballMap = new HashMap<>();
 
   //<caseId, Person>
-  private Map<String, Person> personMap = new HashMap<String, Person>();
+  private final Map<String, Person> personMap = new HashMap<>();
 
-  private List<String> log = new ArrayList<String>();
+  private final List<String> log = new ArrayList<>();
 
   public OrgTableBuilder(String rootCaseId, Connection conn, 
     CaseManagerPort port)
@@ -188,7 +187,10 @@ public class OrgTableBuilder
           {
             person.setType(PersonType.INT_NO_ESTR);
             person.setLlocTreball(llocTreball);            
-            person.setBoss(llocTreball.isBoss());            
+            person.setBoss(llocTreball.isBoss());
+            String modality = getPropertyValue(caseCaseView.getProperty(), 
+              "modalitat");
+            person.setModality(modality);
           }
         }
         else if ("sf:TrebExtLlocTreball".equals(
@@ -199,7 +201,8 @@ public class OrgTableBuilder
           {
             person.setType(PersonType.EXT);
             person.setLlocTreball(llocTreball);            
-            person.setBoss(llocTreball.isBoss());            
+            person.setBoss(llocTreball.isBoss());
+            person.setModality(null);            
           }
         }
       }
@@ -217,6 +220,7 @@ public class OrgTableBuilder
             person.setType(PersonType.REGI);
             person.setLlocTreball(llocTreball);
             person.setBoss(llocTreball.isBoss());
+            person.setModality(null);            
           }
         }
       }
@@ -250,6 +254,7 @@ public class OrgTableBuilder
                 person.setType(relPerson.getType());
                 person.setLlocTreball(relPerson.getLlocTreball());
                 person.setBoss(relPerson.isBoss());
+                person.setModality(null);
                 person.setSubstitutes(relPerson.getPersonFullName());
                 relPerson.setSubstitutedBy(person.getPersonFullName());
               }
@@ -375,7 +380,7 @@ public class OrgTableBuilder
     {
       String sql = "insert into org_trebunitat(perscod, unit1, unit2, unit3, "
         + "unit4, unit5, unit6, unit7, unit8, unittype, idcard, personfullname, workercaseid, persontype, "
-        + "jobcaseid, unitboss, substitutes, substitutedby, placecaseid, unitcaseid) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        + "jobcaseid, unitboss, substitutes, substitutedby, placecaseid, unitcaseid, modality) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
       pStmt = conn.prepareStatement(sql);
       for (Person person : personMap.values())
       {
@@ -423,6 +428,7 @@ public class OrgTableBuilder
         pStmt.setString(16, person.isBoss() ? "Y" : "N");
         pStmt.setString(17, person.getSubstitutes());
         pStmt.setString(18, person.getSubstitutedBy());
+        pStmt.setString(21, person.getModality());
         result += pStmt.executeUpdate();
       }
       return result;
@@ -493,7 +499,7 @@ public class OrgTableBuilder
   class LlocTreball
   {
     private String caseId;
-    private List<String> unitList = new ArrayList();
+    private final List<String> unitList = new ArrayList();
     private String unitType;
     private String unitCaseId;
     private boolean boss;
@@ -584,6 +590,7 @@ public class OrgTableBuilder
     private boolean politician;
     private String substitutes;
     private String substitutedBy;
+    private String modality;
 
     public String getIdCard()
     {
@@ -693,7 +700,17 @@ public class OrgTableBuilder
     public void setSubstitutedBy(String substitutedBy)
     {
       this.substitutedBy = substitutedBy;
-    }   
+    }
+
+    public String getModality() 
+    {
+      return modality;
+    }
+
+    public void setModality(String modality) 
+    {
+      this.modality = modality;
+    }
   }
   
 }
