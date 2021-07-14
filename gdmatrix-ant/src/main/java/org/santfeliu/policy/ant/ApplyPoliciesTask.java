@@ -95,11 +95,18 @@ public abstract class ApplyPoliciesTask extends WSTask
       for (int i = classIds.size() - 1; i >= 0; i--)
       {
         String classId = classIds.get(i);
-        List<String> classPath = getClassPath(classId);
-        for (int j = 0; j < classPath.size(); j++)
+        try
         {
-          int weight = j + 1000 / (i + 1);
-          findPoliciesForClassId(classPath.get(j), policies, weight);
+          List<String> classPath = getClassPath(classId);
+          for (int j = 0; j < classPath.size(); j++)
+          {
+            int weight = j + 1000 / (i + 1);
+            findPoliciesForClassId(classPath.get(j), policies, weight);
+          }
+        }
+        catch (Exception ex)
+        {
+          //Avoid CLASS_NOT_FOUND interrumpt when class doesn't exists.
         }
       }
     }
