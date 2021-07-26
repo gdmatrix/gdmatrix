@@ -12,6 +12,8 @@
            CaseProperty cp
          WHERE
            cp.id = :id
+         ORDER BY 
+           cp.name,cp.index        
       </query>
     </named-query>
 
@@ -309,6 +311,8 @@
            CaseCaseProperty ccp
          WHERE
            ccp.id = :id
+         ORDER BY 
+           ccp.name,ccp.index
       </query>
     </named-query>
     
@@ -327,6 +331,8 @@
            CaseEventProperty cep
          WHERE
            cep.id = :id
+         ORDER BY 
+           cep.name,cep.index
       </query>
     </named-query>
     
