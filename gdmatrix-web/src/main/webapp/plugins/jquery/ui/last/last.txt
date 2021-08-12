@@ -1,0 +1,2 @@
+This folder contains the last version of jquery-ui plugin to allow change version without modify sources.
+This one is a copy of "1.12.1" version.

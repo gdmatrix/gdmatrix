@@ -51,15 +51,14 @@ import org.santfeliu.web.UserSessionBean;
 public class JQueryUIRenderUtils 
 {
   public static final String DEFAULT_THEME = "custom";  
-  public static final String JQUERY_VERSION = "1.10.2";
-  public static final String JQUERY_UI_VERSION = "1.11.4"; 
+  public static final String JQUERY_UI_VERSION = "last"; 
   public static final String JQUERYUI_ENCODED = "_JQUERYUI_ENCODED_";  
   public static final String JS_CALENDAR_ENCODED = "_JS_CALENDAR_ENCODED_";  
   
-  private UIComponent component;
+  private final UIComponent component;
   private String theme;
   private Boolean renderLibraries = true;
-  private ResourceBundle bundle;
+  private final ResourceBundle bundle;
 
   public JQueryUIRenderUtils(UIComponent component)
   {
@@ -344,7 +343,7 @@ public class JQueryUIRenderUtils
   
   public String getJQueryVersion()
   {
-    return JQUERY_VERSION;
+    return JQueryRenderUtils.JQUERY_VERSION;
   }
   
   public String getDefaultTheme()

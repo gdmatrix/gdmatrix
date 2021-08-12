@@ -3012,7 +3012,7 @@ input::-moz-focus-inner
 
 .ui-datatable .ui-state-default .ui-icon 
 {
-  background-image: url("/plugins/jquery/ui/1.11.4/themes/custom/images/ui-icons_222222_256x240.png");  
+  background-image: url("/plugins/jquery/ui/last/themes/custom/images/ui-icons_222222_256x240.png");  
 }
 
 .ui-datatable .ui-sortable-column-icon 

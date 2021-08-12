@@ -43,7 +43,7 @@ import javax.faces.context.ResponseWriter;
  */
 public class JQueryRenderUtils
 {
-  public static final String JQUERY_VERSION = "1.10.2";
+  public static final String JQUERY_VERSION = "last";
   public static final String JQUERY_ENCODED = "JQUERY_ENCODED";  
   
   public static void encodeLibraries(FacesContext context, 
@@ -57,7 +57,7 @@ public class JQueryRenderUtils
       requestMap.put(JQUERY_ENCODED, "true");
       writer.startElement("script", component);
       writer.writeAttribute("src", contextPath + "/plugins/jquery/jquery-" 
-        + JQUERY_VERSION + ".js", null);
+        + JQUERY_VERSION + ".min.js", null);
       writer.endElement("script");
     }    
   }  

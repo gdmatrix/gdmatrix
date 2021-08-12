@@ -128,7 +128,7 @@ public class HtmlEditorFunction extends BaseFunction
       buffer.append("</script>");
       if (!JQueryRenderUtils.isJQueryPresent())
       {
-        buffer.append("<script src=\"/plugins/jquery/jquery-1.10.2.js\">");
+        buffer.append("<script src=\"/plugins/jquery/jquery-last.min.js\">");
         buffer.append("</script>");
       }
       buffer.append("<script>");

@@ -50,9 +50,9 @@ public class DateTimePickerForFunction extends BaseFunction
 
     StringBuilder buffer = new StringBuilder();
 
-    buffer.append("&lt;link rel=\"stylesheet\" href=\"/plugins/jquery/ui/1.11.4/themes/smoothness/jquery-ui.css\"&gt;");
-    buffer.append("<script src=\"/plugins/jquery/jquery-1.10.2.js\"></script>");
-    buffer.append("<script src=\"/plugins/jquery/ui/1.11.4/jquery-ui.js\"></script>");
+    buffer.append("&lt;link rel=\"stylesheet\" href=\"/plugins/jquery/ui/last/themes/smoothness/jquery-ui.css\"&gt;");
+    buffer.append("<script src=\"/plugins/jquery/jquery-last.min.js\"></script>");
+    buffer.append("<script src=\"/plugins/jquery/ui/last/jquery-ui.js\"></script>");
     buffer.append("<script src=\"/plugins/jquery/datepicker/datepicker-ca.js\"></script>");
     buffer.append("<script src=\"/plugins/jquery/datepicker/datepicker-es.js\"></script>");
     buffer.append("<script src=\"/plugins/jquery/timepicker/jquery-ui-timepicker-addon.js\"></script>");    
