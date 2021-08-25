@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.form.type.html;
@@ -65,7 +65,7 @@ public class HtmlForm implements Form
   WebTemplate template;
   Map<String, Object> properties = new HashMap();
   ArrayList<Field> fields = new ArrayList();
-  HtmlView rootView;  
+  HtmlView rootView;
   Map<String, HtmlView> viewsByRef = new HashMap();
   Map context;
   long expires = 0;
@@ -75,17 +75,19 @@ public class HtmlForm implements Form
   public static final String DATE_FORMAT = "date";
   public static final String TIME_FORMAT = "time";
   public static final String DATETIME_FORMAT = "datetime";
-  
+
   public HtmlForm()
   {
     id = UUID.randomUUID().toString();
   }
 
+  @Override
   public String getId()
   {
     return id;
   }
-  
+
+  @Override
   public String getTitle()
   {
     return title;
@@ -96,6 +98,7 @@ public class HtmlForm implements Form
     this.title = title;
   }
 
+  @Override
   public String getLanguage()
   {
     return language;
@@ -121,16 +124,19 @@ public class HtmlForm implements Form
     properties.put(name, value);
   }
 
+  @Override
   public Object getProperty(String name)
   {
     return properties.get(name);
   }
 
+  @Override
   public Collection<String> getPropertyNames()
   {
     return properties.keySet();
   }
 
+  @Override
   public Collection<Field> getFields()
   {
     return fields;
@@ -146,6 +152,7 @@ public class HtmlForm implements Form
     this.encoding = encoding;
   }
 
+  @Override
   public Field getField(String reference)
   {
     if (reference == null) return null;
@@ -191,6 +198,7 @@ public class HtmlForm implements Form
     return field;
   }
 
+  @Override
   public View getRootView()
   {
     return rootView;
@@ -201,16 +209,18 @@ public class HtmlForm implements Form
     this.rootView = rootView;
   }
 
+  @Override
   public View getView(String reference)
   {
     return viewsByRef.get(reference);
   }
 
+  @Override
   public boolean validate(String reference, Object value, List errors,
     Locale locale)
   {
     boolean valid = true;
-    Field field = getField(reference); 
+    Field field = getField(reference);
     String label = cleanLabel(field.getLabel());
     if (field != null && !field.isReadOnly())
     {
@@ -235,8 +245,8 @@ public class HtmlForm implements Form
       {
         // multi valued property
         valid = false;
-        String message = "El camp " + label + 
-          " té una cardinalitat incorrecta.";        
+        String message = "El camp " + label +
+          " té una cardinalitat incorrecta.";
         System.out.println(" [" + message + "] ");
         errors.add(message);
       }
@@ -308,6 +318,7 @@ public class HtmlForm implements Form
     return valid;
   }
 
+  @Override
   public boolean validate(Map data, List errors, Locale locale)
   {
     boolean valid = true;
@@ -321,6 +332,7 @@ public class HtmlForm implements Form
     return valid;
   }
 
+  @Override
   public Form evaluate(Map context) throws Exception
   {
     if (this.context != null) return this; // already evaluated
@@ -336,9 +348,9 @@ public class HtmlForm implements Form
     {
       // clone View tree
       evaluatedForm.viewsByRef = new HashMap();
-      evaluatedForm.rootView = 
+      evaluatedForm.rootView =
         cloneViewTree(rootView, evaluatedForm.viewsByRef);
-      
+
       // clone fields
       for (Field field : fields)
       {
@@ -355,7 +367,7 @@ public class HtmlForm implements Form
       HtmlParser parser = new HtmlParser(evaluatedForm);
       parser.parse(new StringReader(writer.toString()));
 
-      // put variables into evaluation context of evaluatedForm and 
+      // put variables into evaluation context of evaluatedForm and
       // add them as read only fields
       Set<String> variables = template.getReferencedVariables();
       for (String variable : variables)
@@ -369,11 +381,13 @@ public class HtmlForm implements Form
     return evaluatedForm;
   }
 
+  @Override
   public Map getContext()
   {
     return context;
   }
 
+  @Override
   public boolean isOutdated()
   {
     if (context == null) return false; // non evaluated form (*)
@@ -383,14 +397,16 @@ public class HtmlForm implements Form
     // (*) TODO: implement strategy to detect source changes
   }
 
+  @Override
   public void submit(Map data)
   {
   }
 
+  @Override
   public Map read(InputStream is) throws IOException
   {
     StringWriter writer = new StringWriter();
-    template = 
+    template =
       WebTemplate.create(new InputStreamReader(is, encoding));
     template.write(writer);
 
@@ -411,10 +427,11 @@ public class HtmlForm implements Form
       }
     }
     context = null;
-    
+
     return null;
   }
 
+  @Override
   public void write(OutputStream os, Map data) throws IOException
   {
     HtmlPrinter printer = new HtmlPrinter(this);
@@ -469,7 +486,7 @@ public class HtmlForm implements Form
       }
     }
   }
-  
+
   private String cleanLabel(String label)
   {
     String result = label;

@@ -135,7 +135,7 @@ public class HtmlSelectView extends HtmlView
           }
           HtmlView optionValue = new HtmlView();
           optionValue.tag = "#text";
-          optionValue.setViewType(View.LABEL);
+          optionValue.setViewType(View.TEXT);
           optionValue.setProperty("text",
             String.valueOf(result.getElementAt(i, 1)));
           option.getChildren().add(optionValue);

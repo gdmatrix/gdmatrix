@@ -83,7 +83,7 @@ public class EditableFormRenderer implements FormRenderer
     {
       writeChildren(view, form, data, writer);
     }
-    else if (View.LABEL.equals(view.getViewType()))
+    else if (View.TEXT.equals(view.getViewType()))
     {
       writeLabel(view, form, data, writer);
     }

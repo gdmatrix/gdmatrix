@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.matrix.workflow;
@@ -63,10 +63,11 @@ public class WorkflowConstants
   public static final String FAIL_ICON = "FAIL_ICON";
   public static final String INVOKER_INSTANCE_ID = "INVOKER_INSTANCE_ID";
   public static final String INVOKER_NODE_ID = "INVOKER_NODE_ID";
+  public static final String FORM_RENDERERS = "FORM_RENDERERS";
 
   // variable prefixes
   public static final String FORM_PREFIX = "FORM_";
-  public static final String INVOCATION_PREFIX = "INVOKE_"; 
+  public static final String INVOCATION_PREFIX = "INVOKE_";
   public static final String WAIT_PREFIX = "WAIT_";
   public static final String ERROR_PREFIX = "ERROR_";
   public static final String READ_ACCESS_PREFIX = "ACCESS_READ_";
@@ -75,7 +76,7 @@ public class WorkflowConstants
 
   // variable values
   public static final String ANY_AGENT = "ANY_AGENT";
-  
+
   // Form specific contants
   public static final String SHOW_STATE = "show";
   public static final String FORWARD_STATE = "forward";
@@ -83,7 +84,7 @@ public class WorkflowConstants
   public static final String FORWARD_BUTTON_ENABLED = "F";
   public static final String BACKWARD_BUTTON_ENABLED = "B";
   public static final String FORM_PARAMETERS_SEPARATOR = " :: ";
-  
+
   // roles
   public static final String WORKFLOW_ADMIN_ROLE = "WF_ADMIN";
   public static final String WORKFLOW_AGENT_ROLE = "WF_AGENT";

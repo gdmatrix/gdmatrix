@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.form.type.html;
@@ -54,9 +54,9 @@ import org.w3c.tidy.Tidy;
  */
 public class HtmlParser
 {
-  private HtmlForm form;
-  private Map<String, String> labelById = new HashMap();
-  private Map<String, HtmlField> fieldById = new HashMap();
+  private final HtmlForm form;
+  private final Map<String, String> labelById = new HashMap<>();
+  private final Map<String, HtmlField> fieldById = new HashMap<>();
 
   static final String[][] viewTypesByTag =
   {
@@ -107,7 +107,7 @@ public class HtmlParser
       tidy.setInputEncoding(form.getEncoding());
       Properties props = new Properties();
       props.put("new-blocklevel-tags", "style");
-      tidy.setConfigurationFromProps(props);      
+      tidy.setConfigurationFromProps(props);
       Document dom = tidy.parseDOM(reader, null);
       parseDOM(dom);
       updateFieldLabels();
@@ -132,7 +132,7 @@ public class HtmlParser
     // reset data
     form.fields.clear();
     form.viewsByRef.clear();
-    
+
     form.rootView = new HtmlView();
     form.rootView.setViewType(View.GROUP);
     populateView(node, form.rootView, null);
@@ -145,7 +145,7 @@ public class HtmlParser
     {
       HtmlView view = new HtmlView();
       populateView(node, view, parentView);
-      view.setViewType(View.LABEL);
+      view.setViewType(View.TEXT);
       String text = node.getNodeValue();
       view.setProperty("text", text);
     }
@@ -162,15 +162,15 @@ public class HtmlParser
         String type = element.getAttribute("type");
         if (type == null || type.length() == 0) type = "text";
         type = type.toLowerCase();
-        
-        HtmlField field = getField(element);        
+
+        HtmlField field = getField(element);
         if (field != null)
         {
           HtmlView view;
           if (type.equals("text"))
           {
             view = new HtmlInputTextView();
-            view.setViewType(View.TEXTFIELD);            
+            view.setViewType(View.TEXTFIELD);
           }
           else if (type.equals("password"))
           {
@@ -212,7 +212,7 @@ public class HtmlParser
       }
       else if (tag.equals("select"))
       {
-        HtmlSelectView view = new HtmlSelectView();        
+        HtmlSelectView view = new HtmlSelectView();
         populateView(node, view, parentView);
         view.setViewType(View.SELECT);
         HtmlField field = getField(element);
@@ -236,7 +236,7 @@ public class HtmlParser
       {
         HtmlView view = new HtmlView();
         populateView(node, view, parentView);
-        view.setViewType(View.GROUP);
+        view.setViewType(View.LABEL);
         String id = element.getAttribute("for");
         if (id != null)
         {

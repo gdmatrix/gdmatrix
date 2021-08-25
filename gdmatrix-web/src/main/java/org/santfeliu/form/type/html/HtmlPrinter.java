@@ -88,13 +88,13 @@ public class HtmlPrinter
 
   private void printView(HtmlView view, PrintWriter writer, int indent)
   {
-    if (View.LABEL.equals(view.getViewType()))
+    if (View.TEXT.equals(view.getViewType()))
     {
       String text = (String)view.getProperty("text");
       if (text != null) writer.println(HtmlEncoder.encode(text));
     }
     else if (view.getChildren().size() == 1 &&
-      View.LABEL.equals(view.getChildren().get(0).getViewType()))
+      View.TEXT.equals(view.getChildren().get(0).getViewType()))
     {
       View label = view.getChildren().get(0);
       printIndent(writer, indent);

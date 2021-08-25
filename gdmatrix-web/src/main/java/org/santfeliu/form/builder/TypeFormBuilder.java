@@ -174,7 +174,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
 
       HtmlView col1View = new HtmlView("td", View.GROUP);
       rowView.getChildren().add(col1View);
-      HtmlView labelView = new HtmlView("#text", View.LABEL);
+      HtmlView labelView = new HtmlView("#text", View.TEXT);
       col1View.getChildren().add(labelView);
       col1View.setProperty("style", "width:" + LABEL_COLUMN_WIDTH + "%");
       String label = field.getLabel();
@@ -444,7 +444,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
     option.setProperty("value", value);
     HtmlView optionValue = new HtmlView();
     optionValue.setNativeViewType("#text");
-    optionValue.setViewType(View.LABEL);
+    optionValue.setViewType(View.TEXT);
     optionValue.setProperty("text", label);
     option.getChildren().add(optionValue);
     return option;

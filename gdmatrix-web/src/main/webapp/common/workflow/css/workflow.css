@@ -897,3 +897,27 @@ ul.messages li
 .workflowInstance .body table.css_file
 {
 }
+
+.workflowInstance .responsive_form .row
+{
+  margin: 4px;
+  box-sizing: border-box;
+}
+
+.workflowInstance .responsive_form .row label
+{
+  width: 25%;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 100px;
+}
+
+.workflowInstance .responsive_form .row input,
+.workflowInstance .responsive_form .row select,
+.workflowInstance .responsive_form .row textarea
+{
+  width: 75%;
+  box-sizing: border-box;
+  display: inline-block;
+}

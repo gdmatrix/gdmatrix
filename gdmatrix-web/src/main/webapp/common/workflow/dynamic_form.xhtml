@@ -13,7 +13,7 @@
 
       <sf:dynamicForm
         form="#{dynamicFormBean.form}"
-        rendererTypes="HtmlFormRenderer,GenericFormRenderer"
+        rendererTypes="#{instanceBean.formRenderers}"
         value="#{dynamicFormBean.data}"
         action="#{dynamicFormBean.buttonPressed}" 
         translator="#{instanceBean.translationEnabled ? 

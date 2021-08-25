@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.web;
@@ -85,8 +85,8 @@ public class InstanceBean extends FacesBean implements Serializable
 
   private String instanceId;
   private Map variables;
-  
-  private boolean debugModeEnabled;  
+
+  private boolean debugModeEnabled;
   private boolean formEnabled;
   private boolean forwardEnabled;
   private boolean backwardEnabled;
@@ -95,12 +95,12 @@ public class InstanceBean extends FacesBean implements Serializable
   private List pendentForms = new ArrayList();
 
   private transient HtmlInputText inputText;
-  
+
   public String getInstanceId()
   {
     return instanceId;
   }
-  
+
   public void setInstanceId(String instanceId)
   {
     this.instanceId = instanceId;
@@ -110,7 +110,7 @@ public class InstanceBean extends FacesBean implements Serializable
   {
     return variables;
   }
-  
+
   public void setVariables(Map variables)
   {
     this.variables = variables;
@@ -151,13 +151,13 @@ public class InstanceBean extends FacesBean implements Serializable
   {
     return pendentForms;
   }
-  
+
   public boolean isShowPendentForms()
   {
     if (pendentForms == null) return false;
     return pendentForms.size() > 1;
   }
-    
+
   public String getVariableIcon()
   {
     String icon = null;
@@ -183,13 +183,13 @@ public class InstanceBean extends FacesBean implements Serializable
       {
         styleClass = "formVar";
       }
-      else if (variable.startsWith(WorkflowConstants.ERROR_PREFIX) || 
+      else if (variable.startsWith(WorkflowConstants.ERROR_PREFIX) ||
         variable.equals(WorkflowConstants.ERRORS))
       {
         styleClass = "errorVar";
       }
       else if (variable.startsWith(WorkflowConstants.READ_ACCESS_PREFIX) ||
-        variable.startsWith(WorkflowConstants.WRITE_ACCESS_PREFIX) || 
+        variable.startsWith(WorkflowConstants.WRITE_ACCESS_PREFIX) ||
         variable.startsWith(WorkflowConstants.UPDATE_ONLY_PREFIX))
       {
         styleClass = "accessVar";
@@ -251,7 +251,7 @@ public class InstanceBean extends FacesBean implements Serializable
   {
     this.formEnabled = formEnabled;
   }
-  
+
   public boolean isExitEnabled()
   {
     boolean exitEnabled = true; // true by default
@@ -274,10 +274,23 @@ public class InstanceBean extends FacesBean implements Serializable
       Object value = variables.get(WorkflowConstants.DESTROY_BUTTON_ENABLED);
       if (value instanceof Boolean)
       {
-        destroyEnabled = ((Boolean)value).booleanValue();
+        destroyEnabled = ((Boolean)value);
       }
     }
-    return destroyEnabled; 
+    return destroyEnabled;
+  }
+
+  public String getFormRenderers()
+  {
+    if (variables != null)
+    {
+      Object value = variables.get(WorkflowConstants.FORM_RENDERERS);
+      if (value instanceof String)
+      {
+        return (String)value;
+      }
+    }
+    return "HtmlFormRenderer,GenericFormRenderer";
   }
 
   public boolean isHelpEnabled()
@@ -302,9 +315,9 @@ public class InstanceBean extends FacesBean implements Serializable
   public boolean isAnyFooterButtonEnabled()
   {
     return isWorkflowAdmin() || isHelpEnabled() || isDestroyEnabled() ||
-       (formEnabled && (forwardEnabled || backwardEnabled));    
+       (formEnabled && (forwardEnabled || backwardEnabled));
   }
-  
+
   public boolean isHeaderFormEnabled()
   {
     return variables.containsKey(WorkflowConstants.HEADER_FORM);
@@ -318,7 +331,7 @@ public class InstanceBean extends FacesBean implements Serializable
       String selector = (String)value;
       try
       {
-        org.santfeliu.form.FormFactory formFactory = 
+        org.santfeliu.form.FormFactory formFactory =
           org.santfeliu.form.FormFactory.getInstance();
         if (getFacesContext().getRenderResponse())
         {
@@ -332,7 +345,7 @@ public class InstanceBean extends FacesBean implements Serializable
     }
     return null;
   }
-  
+
   public boolean isTranslationEnabled()
   {
     boolean translationEnabled = false; // false by default
@@ -344,7 +357,7 @@ public class InstanceBean extends FacesBean implements Serializable
         translationEnabled = ((Boolean)value).booleanValue();
       }
     }
-    return translationEnabled; 
+    return translationEnabled;
   }
 
   public boolean isDebugModeEnabled()
@@ -435,7 +448,7 @@ public class InstanceBean extends FacesBean implements Serializable
     }
     return url;
   }
-  
+
   public boolean isWorkflowAdmin()
   {
     return UserSessionBean.getCurrentInstance().
@@ -455,7 +468,7 @@ public class InstanceBean extends FacesBean implements Serializable
   public Object[] getVariablesArray()
   {
     if (variables == null) return null;
-    
+
     TreeMap map = new TreeMap();
     Set set = variables.entrySet();
     Iterator iter = set.iterator();
@@ -470,7 +483,7 @@ public class InstanceBean extends FacesBean implements Serializable
   }
 
   //************** action methods ****************
-  
+
   public String exitInstance()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -506,7 +519,7 @@ public class InstanceBean extends FacesBean implements Serializable
     {
       WorkflowManagerPort port = getWorkflowManagerPort();
       port.destroyInstance(instanceId);
-      InstanceListBean instanceListBean = 
+      InstanceListBean instanceListBean =
         (InstanceListBean)getBean("instanceListBean");
       return instanceListBean.findInstances();
     }
@@ -525,18 +538,18 @@ public class InstanceBean extends FacesBean implements Serializable
       Map formVariables = null;
       if (selectedForm != null)
       {
-        FormBean formBean = 
+        FormBean formBean =
           (FormBean)getBean(selectedForm.getType() + "FormBean");
         formVariables = formBean.submit();
         if (formVariables != null)
         {
-          formVariables.put(selectedForm.getVariable(), 
+          formVariables.put(selectedForm.getVariable(),
             WorkflowConstants.FORWARD_STATE);
         }
       }
       WorkflowManagerPort port = getWorkflowManagerPort();
       this.variables = VariableListConverter.toMap(
-        port.processInstance(instanceId, 
+        port.processInstance(instanceId,
         VariableListConverter.toList(formVariables), true));
       loadPendentForms();
       return updateForm();
@@ -559,7 +572,7 @@ public class InstanceBean extends FacesBean implements Serializable
   public String backward()
   {
     try
-    {      
+    {
       Map formVariables = null;
       if (selectedForm != null)
       {
@@ -569,7 +582,7 @@ public class InstanceBean extends FacesBean implements Serializable
       }
       WorkflowManagerPort port = getWorkflowManagerPort();
       this.variables = VariableListConverter.toMap(
-        port.processInstance(instanceId, 
+        port.processInstance(instanceId,
         VariableListConverter.toList(formVariables), true));
       loadPendentForms();
       return updateForm();
@@ -585,7 +598,7 @@ public class InstanceBean extends FacesBean implements Serializable
       {
         error(ex);
         return null;
-      }  
+      }
     }
   }
 
@@ -594,7 +607,7 @@ public class InstanceBean extends FacesBean implements Serializable
     try
     {
       WorkflowManagerPort port = getWorkflowManagerPort();
-      this.variables = 
+      this.variables =
         VariableListConverter.toMap(port.getVariables(instanceId));
       loadPendentForms();
       return updateForm();
@@ -628,7 +641,7 @@ public class InstanceBean extends FacesBean implements Serializable
 
   public String selectForm()
   {
-    selectedForm = (Form)getRequestMap().get("form");  
+    selectedForm = (Form)getRequestMap().get("form");
     return updateForm();
   }
 
@@ -654,18 +667,18 @@ public class InstanceBean extends FacesBean implements Serializable
     {
       if (selectedForm != null)
       {
-        formEnabled = isFormEnabled(selectedForm); 
+        formEnabled = isFormEnabled(selectedForm);
         forwardEnabled = selectedForm.isForwardEnabled();
         backwardEnabled = selectedForm.isBackwardEnabled();
-        
+
         Object bean = getBean(selectedForm.getType() + "FormBean");
         if (bean instanceof FormBean)
         {
           FormBean formBean = (FormBean)bean;
           String error = selectedForm.getError();
           if (error.length() > 0) // show error
-          {            
-            String trnError = 
+          {
+            String trnError =
               UserSessionBean.getCurrentInstance().translate(error);
             error("INVALID_INPUT_DATA", new Object[]{trnError});
           }
@@ -689,17 +702,17 @@ public class InstanceBean extends FacesBean implements Serializable
     // nothing to do
     forwardEnabled = false;
     backwardEnabled = false;
-    
+
     return "nothing_to_do";
   }
-  
+
   public String doStep()
   {
     try
     {
       WorkflowManagerPort port = getWorkflowManagerPort();
       port.doStep(instanceId);
-      this.variables = 
+      this.variables =
         VariableListConverter.toMap(port.getVariables(instanceId));
       loadPendentForms();
       return updateForm();
@@ -717,7 +730,7 @@ public class InstanceBean extends FacesBean implements Serializable
     {
       WorkflowManagerPort port = getWorkflowManagerPort();
       port.undoStep(instanceId);
-      this.variables = 
+      this.variables =
         VariableListConverter.toMap(port.getVariables(instanceId));
       loadPendentForms();
       return updateForm();
@@ -736,11 +749,11 @@ public class InstanceBean extends FacesBean implements Serializable
       String setList = String.valueOf(inputText.getLocalValue());
       Properties newVariables = new Properties();
       newVariables.loadFromString(setList);
-      
+
       WorkflowManagerPort port = getWorkflowManagerPort();
-      port.setVariables(instanceId, 
+      port.setVariables(instanceId,
         VariableListConverter.toList(newVariables));
-      this.variables = 
+      this.variables =
         VariableListConverter.toMap(port.getVariables(instanceId));
       loadPendentForms();
       return updateForm();
@@ -759,18 +772,18 @@ public class InstanceBean extends FacesBean implements Serializable
   {
     return createInstance(workflowName, description, false, null);
   }
-  
-  public String createInstance(String workflowName, 
+
+  public String createInstance(String workflowName,
     String description, boolean simulation) throws Exception
   {
     return createInstance(workflowName, description, simulation, null);
   }
 
-  public String createInstance(String workflowName, 
+  public String createInstance(String workflowName,
     String description, boolean simulation, Map parameters) throws Exception
   {
     this.selectedForm = null;
-    
+
     WorkflowManagerPort port = getWorkflowManagerPort();
 
     if (parameters == null) parameters = new HashMap();
@@ -800,7 +813,7 @@ public class InstanceBean extends FacesBean implements Serializable
     {
       WorkflowManagerPort port = getWorkflowManagerPort(true);
       Map vars = VariableListConverter.toMap(port.getVariables(instanceId));
-      return (String)vars.get(ACCESS_TOKEN);    
+      return (String)vars.get(ACCESS_TOKEN);
     }
     catch (Exception ex)
     {
@@ -821,10 +834,10 @@ public class InstanceBean extends FacesBean implements Serializable
     {
     }
   }
-  
-  /* 
+
+  /*
      Logs the current user into a started instance and forwards the given form.
-     That instance is showing the form specified by formName. 
+     That instance is showing the form specified by formName.
   */
   public void login(String formName) throws Exception
   {
@@ -838,17 +851,17 @@ public class InstanceBean extends FacesBean implements Serializable
       wsDirectory.getEndpoint(WorkflowManagerService.class);
     WorkflowManagerPort port =
       endpoint.getPort(WorkflowManagerPort.class, adminUserId, adminPassword);
-    
+
     HashMap newVariables = new HashMap();
     addCreatorVariables(newVariables);
-    
+
     newVariables.put(formName, WorkflowConstants.FORWARD_STATE);
     port.setVariables(instanceId,
       VariableListConverter.toList(newVariables));
   }
-  
+
   //********* private methods **********
-  
+
   private void loadPendentForms()
   {
     String group = null;
@@ -891,13 +904,13 @@ public class InstanceBean extends FacesBean implements Serializable
       selectedForm = (Form)pendentForms.get(0);
     }
   }
- 
+
   private boolean isFormEnabled(Form selectedForm)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    if (userSessionBean.isUserInRole(WorkflowConstants.WORKFLOW_ADMIN_ROLE)) 
+    if (userSessionBean.isUserInRole(WorkflowConstants.WORKFLOW_ADMIN_ROLE))
       return true;
-    
+
     Set roles = userSessionBean.getRoles();
 
     String formVariable = selectedForm.getVariable();
@@ -919,7 +932,7 @@ public class InstanceBean extends FacesBean implements Serializable
     }
     return editable;
   }
-  
+
   private String findInvokedInstance()
   {
     String invokedInstanceId = null;
@@ -942,7 +955,7 @@ public class InstanceBean extends FacesBean implements Serializable
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     String userId = userSessionBean.getUsername();
-    
+
     map.put(USERNAME, userId);
     map.put(CREATOR_USERID, userId);
     map.put(CREATOR_NAME, userSessionBean.getGivenName());
@@ -954,7 +967,7 @@ public class InstanceBean extends FacesBean implements Serializable
       if (idx != -1)
       {
         map.put(CREATOR_SURNAME1, surname.substring(0, idx));
-        map.put(CREATOR_SURNAME2, 
+        map.put(CREATOR_SURNAME2,
           surname.substring(idx + 1, surname.length()));
       }
       else
@@ -969,13 +982,13 @@ public class InstanceBean extends FacesBean implements Serializable
     map.put(CREATOR_EMAIL, userSessionBean.getEmail());
     map.put(CREATOR_LANGUAGE, FacesUtils.getViewLanguage());
   }
-  
+
   private WorkflowManagerPort getWorkflowManagerPort()
     throws Exception
   {
     return getWorkflowManagerPort(false);
   }
-  
+
   private WorkflowManagerPort getWorkflowManagerPort(boolean asAdmin)
     throws Exception
   {
@@ -987,12 +1000,12 @@ public class InstanceBean extends FacesBean implements Serializable
     if (asAdmin)
     {
       userId = MatrixConfig.getProperty("adminCredentials.userId");
-      password = MatrixConfig.getProperty("adminCredentials.password");      
+      password = MatrixConfig.getProperty("adminCredentials.password");
     }
     else
     {
       userId = userSessionBean.getUsername();
-      password = userSessionBean.getPassword();            
+      password = userSessionBean.getPassword();
     }
     return endpoint.getPort(WorkflowManagerPort.class, userId, password);
   }

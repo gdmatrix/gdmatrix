@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.dynamicform.render;
@@ -74,10 +74,10 @@ import org.santfeliu.util.TextUtils;
 	rendererType="HtmlFormRenderer")
 public class HtmlFormRenderer extends FormRenderer
 {
-  private static final String DEFAULT_NUMBER_FORMAT = "0.############";
-  private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
-  private static final String DEFAULT_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
-  private static final Set specialAttributes = new HashSet();
+  protected static final String DEFAULT_NUMBER_FORMAT = "0.############";
+  protected static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+  protected static final String DEFAULT_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+  protected static final Set specialAttributes = new HashSet();
 
   static
   {
@@ -93,6 +93,7 @@ public class HtmlFormRenderer extends FormRenderer
     specialAttributes.add("dataref");
     specialAttributes.add("renderer");
     specialAttributes.add("translate");
+    specialAttributes.add("data-outputorder");
   }
 
   @Override
@@ -101,8 +102,8 @@ public class HtmlFormRenderer extends FormRenderer
     DynamicForm dynamicForm = (DynamicForm)component;
     Form form = dynamicForm.getForm();
     if (form == null) return;
-    
-    Map<String, String[]> submittedData = new HashMap<String, String[]>();
+
+    Map<String, String[]> submittedData = new HashMap<>();
     dynamicForm.setSubmittedValue(submittedData);
 
     Map parameters = context.getExternalContext().getRequestParameterValuesMap();
@@ -162,7 +163,7 @@ public class HtmlFormRenderer extends FormRenderer
       {
         String[] stringValues = (String[])submittedData.get(name);
         Object convertedFieldValue = convertFieldValue(dynamicForm, form,
-          field, stringValues);        
+          field, stringValues);
         convertedData.put(name, convertedFieldValue);
       }
     }
@@ -189,7 +190,7 @@ public class HtmlFormRenderer extends FormRenderer
     else if (form instanceof HtmlForm)
     {
       String clientId = component.getClientId(context);
-      HtmlForm htmlForm = (HtmlForm)form;      
+      HtmlForm htmlForm = (HtmlForm)form;
       HtmlView rootView = (HtmlView)form.getRootView();
       encodeHtmlView(rootView, htmlForm, dynamicForm, clientId, writer);
       Map resquestMap = context.getExternalContext().getRequestMap();
@@ -205,7 +206,7 @@ public class HtmlFormRenderer extends FormRenderer
 
   /***** non public methods *****/
 
-  private String getFieldId(String clientId, String name)
+  protected String getFieldId(String clientId, String name)
   {
     return clientId + ":" + name;
   }
@@ -280,7 +281,7 @@ public class HtmlFormRenderer extends FormRenderer
             if (view != null)
             {
               String format = view.getProperty("format");
-              if (format != null && 
+              if (format != null &&
                 format.startsWith(HtmlForm.DATE_FORMAT + ":"))
               {
                 datePattern = format.substring(HtmlForm.DATE_FORMAT.length() + 1);
@@ -306,10 +307,10 @@ public class HtmlFormRenderer extends FormRenderer
             if (view != null)
             {
               String format = view.getProperty("format");
-              if (format != null && 
+              if (format != null &&
                 format.startsWith(HtmlForm.DATETIME_FORMAT + ":"))
               {
-                dateTimePattern = 
+                dateTimePattern =
                   format.substring(HtmlForm.DATETIME_FORMAT.length() + 1);
               }
             }
@@ -334,7 +335,7 @@ public class HtmlFormRenderer extends FormRenderer
             {
               dynamicForm.setValid(false);
               FacesUtils.addMessage(DynamicForm.INVALID_VALUE,
-                new Object[]{label}, FacesMessage.SEVERITY_ERROR);              
+                new Object[]{label}, FacesMessage.SEVERITY_ERROR);
             }
             else valueList.add(timeString); // internal time repr: HHmmss
           }
@@ -408,18 +409,18 @@ public class HtmlFormRenderer extends FormRenderer
                   if (format.startsWith(HtmlForm.DATETIME_FORMAT))
                   {
                     Date date = TextUtils.parseInternalDate(value.toString());
-                    String dateTimePattern = 
+                    String dateTimePattern =
                       (format.startsWith(HtmlForm.DATETIME_FORMAT + ":")) ?
-                      format.substring(HtmlForm.DATETIME_FORMAT.length() + 1) : 
+                      format.substring(HtmlForm.DATETIME_FORMAT.length() + 1) :
                       DEFAULT_DATETIME_FORMAT;
                     stringList.add(TextUtils.formatDate(date, dateTimePattern));
                   }
                   else if (format.startsWith(HtmlForm.DATE_FORMAT))
                   {
                     Date date = TextUtils.parseInternalDate(value.toString());
-                    String datePattern = 
+                    String datePattern =
                       (format.startsWith(HtmlForm.DATE_FORMAT + ":")) ?
-                      format.substring(HtmlForm.DATE_FORMAT.length() + 1) : 
+                      format.substring(HtmlForm.DATE_FORMAT.length() + 1) :
                       DEFAULT_DATE_FORMAT;
                     stringList.add(TextUtils.formatDate(date, datePattern));
                   }
@@ -457,9 +458,9 @@ public class HtmlFormRenderer extends FormRenderer
     {
       encodeChildren(view, form, component, clientId, writer);
     }
-    else if (View.LABEL.equals(view.getViewType()))
+    else if (View.TEXT.equals(view.getViewType()))
     {
-      encodeLabel(view, form, component, clientId, writer);
+      encodeText(view, form, component, clientId, writer);
     }
     else if (tag.equals("input"))
     {
@@ -475,7 +476,7 @@ public class HtmlFormRenderer extends FormRenderer
     }
     else if (tag.equals("script"))
     {
-      encodeScript(view, form, component, clientId, writer);      
+      encodeScript(view, form, component, clientId, writer);
     }
     else
     {
@@ -503,10 +504,10 @@ public class HtmlFormRenderer extends FormRenderer
 
     renderViewAttributes(view, writer);
     encodeChildren(view, form, component, clientId, writer);
-    
+
     writer.endElement(tag);
   }
-  
+
   protected void encodeScript(HtmlView view, HtmlForm form,
     DynamicForm component, String clientId, ResponseWriter writer)
     throws IOException
@@ -519,13 +520,13 @@ public class HtmlFormRenderer extends FormRenderer
     for (View childView : childViews)
     {
       String text = ((HtmlView)childView).getProperty("text");
-      if (text != null) writer.writeText(text, null);      
-    }    
-    
+      if (text != null) writer.writeText(text, null);
+    }
+
     writer.endElement(tag);
   }
 
-  protected void encodeLabel(HtmlView view, HtmlForm form,
+  protected void encodeText(HtmlView view, HtmlForm form,
     DynamicForm component, String clientId, ResponseWriter writer)
     throws IOException
   {
@@ -559,7 +560,7 @@ public class HtmlFormRenderer extends FormRenderer
       else if (formValue != null && formValue.equals(value))
         writer.writeAttribute("checked", "true", null);
       renderViewAttributes(view, writer, "name", "checked");
-      writer.endElement(tag); 
+      writer.endElement(tag);
     }
     else if ("checkbox".equals(type))
     {
@@ -594,7 +595,7 @@ public class HtmlFormRenderer extends FormRenderer
       for (int i = 0; i < stringValues.length; i++)
       {
         writer.startElement(tag, component);
-        String name = view.getProperty("name");        
+        String name = view.getProperty("name");
           String formValue = view.getProperty("value");
           writer.writeAttribute("name", getFieldId(clientId, name), null);
 
@@ -610,8 +611,8 @@ public class HtmlFormRenderer extends FormRenderer
             writer.writeAttribute("maxlength", maxLength, null);
           }
           writer.endElement(tag);
-        
-        //encode datepicker component 
+
+        //encode datepicker component
         String renderer = view.getProperty("renderer");
         if (renderer == null || renderer.equals("datePicker"))
           encodeDatePicker(view, form, component, clientId, writer);
@@ -637,14 +638,14 @@ public class HtmlFormRenderer extends FormRenderer
     DynamicForm component, String clientId, ResponseWriter writer)
     throws IOException
   {
-    String renderer = view.getProperty("renderer");      
+    String renderer = view.getProperty("renderer");
     if (renderer != null && renderer.equalsIgnoreCase("htmlEditor"))
     {
       String style = view.getProperty("style");
       writer.startElement("div", component);
-      writer.writeAttribute("style", style, null);   
-    } 
-    
+      writer.writeAttribute("style", style, null);
+    }
+
     String tag = view.getNativeViewType();
     writer.startElement(tag, component);
 
@@ -664,8 +665,8 @@ public class HtmlFormRenderer extends FormRenderer
 
     if (renderer != null && renderer.equalsIgnoreCase("htmlEditor"))
     {
-      encodeHtmlEditor(view, component, clientId, writer);    
-      writer.endElement("div");  
+      encodeHtmlEditor(view, component, clientId, writer);
+      writer.endElement("div");
     }
   }
 
@@ -713,14 +714,14 @@ public class HtmlFormRenderer extends FormRenderer
   }
 
   protected void encodeOptions(HtmlView view, HtmlForm form,
-    DynamicForm component, String clientId, ResponseWriter writer, 
+    DynamicForm component, String clientId, ResponseWriter writer,
     String[] stringValues) throws IOException
   {
     Translator translator = component.getTranslator();
     String translate = view.getProperty("translate");
     boolean needsTranslation = Boolean.valueOf(translate);
-     
-    
+
+
     List<View> items = view.getChildren();
     for (View item : items)
     {
@@ -771,7 +772,7 @@ public class HtmlFormRenderer extends FormRenderer
         String itemTitle = (String)item.getProperty("title");
         if (itemTitle != null)
         {
-          writer.writeAttribute("title", itemTitle, null);          
+          writer.writeAttribute("title", itemTitle, null);
         }
         String id = nameAttr + "_" + index;
         index++;
@@ -792,7 +793,7 @@ public class HtmlFormRenderer extends FormRenderer
           writer.writeAttribute("checked", "true", null);
         }
         writer.endElement("input");
-        
+
         String itemText = null;
         if (!item.getChildren().isEmpty())
         {
@@ -808,81 +809,81 @@ public class HtmlFormRenderer extends FormRenderer
       }
     }
   }
-  
+
   protected void encodeDatePicker(HtmlView view, HtmlForm form,
-    DynamicForm component, String clientId, ResponseWriter writer) 
+    DynamicForm component, String clientId, ResponseWriter writer)
     throws IOException
   {
     String format = view.getProperty("format");
     if (format != null)
     {
-      if (format.startsWith(HtmlForm.DATE_FORMAT + ":") || 
+      if (format.startsWith(HtmlForm.DATE_FORMAT + ":") ||
           format.startsWith(HtmlForm.DATETIME_FORMAT + ":") ||
           format.equals(HtmlForm.DATE_FORMAT) ||
           format.equals(HtmlForm.DATETIME_FORMAT))
-      {       
-        JQueryUIRenderUtils jqUtils = new JQueryUIRenderUtils(component);        
-        FacesContext context = FacesContext.getCurrentInstance();       
-        jqUtils.encodeLibraries(context, writer); 
-        jqUtils.encodeDatePickerLibraries(context, writer);        
-        
-        String name = view.getProperty("name");
-        String fieldName = getFieldId(clientId, name); 
+      {
+        JQueryUIRenderUtils jqUtils = new JQueryUIRenderUtils(component);
+        FacesContext context = FacesContext.getCurrentInstance();
+        jqUtils.encodeLibraries(context, writer);
+        jqUtils.encodeDatePickerLibraries(context, writer);
 
-        boolean isDateTimeFormat = 
-          format.startsWith(HtmlForm.DATETIME_FORMAT + ":") 
+        String name = view.getProperty("name");
+        String fieldName = getFieldId(clientId, name);
+
+        boolean isDateTimeFormat =
+          format.startsWith(HtmlForm.DATETIME_FORMAT + ":")
           || format.equals(HtmlForm.DATETIME_FORMAT);
-        
-        String style = view.getProperty("style");         
-        
+
+        String style = view.getProperty("style");
+
         if (isDateTimeFormat)
         {
           String dateTimePattern = DEFAULT_DATETIME_FORMAT;
           if (!format.equals(HtmlForm.DATETIME_FORMAT))
-            dateTimePattern = 
+            dateTimePattern =
               format.substring(HtmlForm.DATETIME_FORMAT.length() + 1);
           String[] pattern = dateTimePattern.split(" ");
           String datePattern = pattern.length == 2 ? pattern[0] : "dd/mm/yy";
-          String timePattern = pattern.length == 2 ? pattern[1] : "HH:mm";              
+          String timePattern = pattern.length == 2 ? pattern[1] : "HH:mm";
 
-          jqUtils.encodeDateTimePicker(writer, fieldName, datePattern, 
+          jqUtils.encodeDateTimePicker(writer, fieldName, datePattern,
             timePattern, null, style);
         }
         else
         {
           String datePattern = DEFAULT_DATE_FORMAT;
           if (!format.equals(HtmlForm.DATE_FORMAT))
-            datePattern = format.substring(HtmlForm.DATE_FORMAT.length() + 1);                  
-          
-          jqUtils.encodeDatePicker(writer, fieldName, datePattern, null, style);         
-        }     
+            datePattern = format.substring(HtmlForm.DATE_FORMAT.length() + 1);
+
+          jqUtils.encodeDatePicker(writer, fieldName, datePattern, null, style);
+        }
       }
     }
   }
-  
-  protected void encodeHtmlEditor(HtmlView view, DynamicForm component, 
+
+  protected void encodeHtmlEditor(HtmlView view, DynamicForm component,
     String clientId, ResponseWriter writer) throws IOException
   {
     //Initial Configuration
     FacesContext context = FacesContext.getCurrentInstance();
     String contextPath = context.getExternalContext().getRequestContextPath();
-    
+
     //Initial JS link
     writer.startElement("script", component);
-    writer.writeAttribute("src", 
-                          contextPath + "/plugins/ckeditor/ckeditor.js", 
+    writer.writeAttribute("src",
+                          contextPath + "/plugins/ckeditor/ckeditor.js",
                           null);
     writer.endElement("script");
 
     JQueryRenderUtils.encodeLibraries(context, writer, component);
-    
+
     writer.startElement("script", component);
 
     Map configMap = new HashMap();
     configMap.put("toolbarCanCollapse", "true");
     configMap.put("language",  FacesUtils.getViewLanguage());
 
-    String style = view.getProperty("style");    
+    String style = view.getProperty("style");
     String height = null;
     Pattern pattern = Pattern.compile("height:(.*?)px");
     Matcher matcher = pattern.matcher(style);
@@ -898,9 +899,9 @@ public class HtmlFormRenderer extends FormRenderer
       }
       if (height != null)
         configMap.put("height", height);
-      
+
     }
-    
+
     configMap.put("width", "100%");
     configMap.put("removeButtons", "Scayt,About,A11ychecker,Find,Replace,Anchor,Superscript,Subscript,RemoveFormat,Outdent,Indent,Blockquote,Styles,Format,SpecialChar,HorizontalRule");
     configMap.put("removePlugins", "scayt,elementspath,resize");
@@ -919,43 +920,21 @@ public class HtmlFormRenderer extends FormRenderer
       "{ name: 'colors', groups: [ 'colors' ] }," +
       "{ name: 'about', groups: [ 'about' ] }" +
       "]");
-    String config = toString(configMap);       
+    String config = toString(configMap);
     String name = view.getProperty("name");
-    String js = "CKEDITOR.replace( '" + getFieldId(clientId, name) + "' , " + config + " );";
+    String js = "CKEDITOR.replace( '" + getFieldId(clientId, name) +
+      "' , " + config + " );";
 
     writer.writeText(js, null);
-    writer.endElement("script"); 
-    
-
+    writer.endElement("script");
   }
-  
-  private String toString(Map map)
-  {
-    StringBuilder buffer = new StringBuilder();
-    buffer.append("{");
-    for (Object key : map.keySet())
-    {
-      buffer.append(key);
-      buffer.append(": ");
-      String value = (String)map.get(key);
-      if (!value.startsWith("[")) 
-        buffer.append("\"");
-      buffer.append(value);
-      if (!value.startsWith("["))       
-        buffer.append("\"");
-      buffer.append(",");
-    }
-    buffer.deleteCharAt(buffer.length()-1);
-    buffer.append("}");
-    return buffer.toString();
-  }    
-  
+
   protected void renderViewAttributes(View view, ResponseWriter writer,
     String ... excluded) throws IOException
   {
     for (String propertyName : view.getPropertyNames())
     {
-      boolean isExcluded = 
+      boolean isExcluded =
         specialAttributes.contains(propertyName.toLowerCase());
       int i = 0;
       while (!isExcluded && i < excluded.length)
@@ -977,7 +956,7 @@ public class HtmlFormRenderer extends FormRenderer
     }
   }
 
-  private void printMap(Map convertedData)
+  protected void printMap(Map convertedData)
   {
     for (Object key : convertedData.keySet())
     {
@@ -996,8 +975,29 @@ public class HtmlFormRenderer extends FormRenderer
     }
   }
 
-  private void renderHtmlText(String text,
-    ResponseWriter writer, Translator translator, DynamicForm component) 
+  protected String toString(Map map)
+  {
+    StringBuilder buffer = new StringBuilder();
+    buffer.append("{");
+    for (Object key : map.keySet())
+    {
+      buffer.append(key);
+      buffer.append(": ");
+      String value = (String)map.get(key);
+      if (!value.startsWith("["))
+        buffer.append("\"");
+      buffer.append(value);
+      if (!value.startsWith("["))
+        buffer.append("\"");
+      buffer.append(",");
+    }
+    buffer.deleteCharAt(buffer.length()-1);
+    buffer.append("}");
+    return buffer.toString();
+  }
+
+  protected void renderHtmlText(String text,
+    ResponseWriter writer, Translator translator, DynamicForm component)
     throws IOException
   {
     if (translator != null)

@@ -1,49 +1,48 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.node;
 
 import org.santfeliu.util.Properties;
 import org.santfeliu.workflow.WorkflowNode;
-import java.util.List;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class FormNode extends WorkflowNode
 {
   public static final String FORWARD_OUTCOME = "forward";
   public static final String BACKWARD_OUTCOME = "backward";
   public static final String FORM_FORWARD = "forward";
-  
+
   protected String formType = "";
   protected String group = "0";
   protected boolean forwardEnabled = true;
@@ -57,11 +56,12 @@ public class FormNode extends WorkflowNode
   protected String cancelExpression;
   protected String outcomeExpression;
   protected String actorVariable;
-  
+
   public FormNode()
   {
   }
 
+  @Override
   public String getType()
   {
     return "Form";
@@ -71,7 +71,7 @@ public class FormNode extends WorkflowNode
   {
     this.formType = formType;
   }
-  
+
   public String getFormType()
   {
     return formType;
@@ -146,7 +146,7 @@ public class FormNode extends WorkflowNode
   {
     this.actorVariable = actorVariable;
   }
-  
+
   public String getViewRoles()
   {
     return viewRoles;
@@ -156,7 +156,7 @@ public class FormNode extends WorkflowNode
   {
     this.viewRoles = viewRoles;
   }
-  
+
   public String getEditRoles()
   {
     return editRoles;
@@ -166,7 +166,7 @@ public class FormNode extends WorkflowNode
   {
     this.editRoles = editRoles;
   }
-  
+
   public void setCheckExpression(String checkExpression)
   {
     this.checkExpression = checkExpression;
@@ -176,7 +176,7 @@ public class FormNode extends WorkflowNode
   {
     return checkExpression;
   }
-  
+
   public void setCancelExpression(String cancelExpression)
   {
     this.cancelExpression = cancelExpression;
@@ -186,7 +186,7 @@ public class FormNode extends WorkflowNode
   {
     return cancelExpression;
   }
-  
+
   public void setOutcomeExpression(String outcomeExpression)
   {
     this.outcomeExpression = outcomeExpression;
@@ -196,7 +196,7 @@ public class FormNode extends WorkflowNode
   {
     return outcomeExpression;
   }
-  
+
   @Override
   public Object clone() throws CloneNotSupportedException
   {
@@ -204,5 +204,5 @@ public class FormNode extends WorkflowNode
     newNode.parameters = (Properties)this.parameters.clone();
     return newNode;
   }
-   
+
 }
