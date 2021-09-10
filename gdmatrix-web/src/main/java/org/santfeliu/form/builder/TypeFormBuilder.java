@@ -360,10 +360,12 @@ public class TypeFormBuilder extends MatrixFormBuilder
         List<AccessControl> acl = document.getAccessControl();
         User user = UserCache.getUser(parser.getUserId(), parser.getPassword());
         Set<String> roles = user.getRoles();
+        String docTypeId = document.getDocTypeId();
+        Type docType = TypeCache.getInstance().getType(docTypeId);
         boolean canExecuteForm = 
-          DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, type) ||    
-          DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, type) ||
-          roles.contains(DocumentConstants.DOC_ADMIN_ROLE);
+          DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, docType)     
+          || DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, docType) 
+          || roles.contains(DocumentConstants.DOC_ADMIN_ROLE);
         if (canExecuteForm)
         {
           FormDescriptor descriptor = new FormDescriptor();
