@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.report.web;
@@ -81,11 +81,11 @@ public class ReportServlet extends HttpServlet
   public static final String CONNECTION_NAME_PARAMETER = "connectionName";
   public static final String FORMAT_PARAMETER = "format";
   private static final String DATE_FORMAT = "dd/MM/yyyy HH:mm:ss";
-  
+
   public ReportServlet()
   {
   }
-  
+
   @Override
   public void init(ServletConfig config)
   {
@@ -144,14 +144,14 @@ public class ReportServlet extends HttpServlet
       }
     }
   }
-  
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
     throws IOException
   {
-    doGet(request, response);    
+    doGet(request, response);
   }
-  
+
   private void showInfo(HttpServletResponse response)
     throws IOException
   {
@@ -166,7 +166,7 @@ public class ReportServlet extends HttpServlet
       writer.close();
     }
   }
-  
+
   private void showForm(String reportId,
     HttpServletRequest request, HttpServletResponse response) throws Exception
   {
@@ -197,7 +197,7 @@ public class ReportServlet extends HttpServlet
         pd.setDescription(name);
         pd.setForPrompting(false);
         pd.setDefaultValue(value);
-        paramDefinitions.add(pd);        
+        paramDefinitions.add(pd);
       }
     }
 
@@ -219,11 +219,11 @@ public class ReportServlet extends HttpServlet
     response.setHeader("Pragma","no-cache");
     response.setDateHeader("Expires", -1);
 
-    RequestDispatcher dispatcher = 
+    RequestDispatcher dispatcher =
       request.getRequestDispatcher("/common/report/form.jsp");
     dispatcher.forward(request, response);
   }
-  
+
   private void showReportSource(String reportId,
     HttpServletRequest request, HttpServletResponse response) throws Exception
   {
@@ -233,13 +233,13 @@ public class ReportServlet extends HttpServlet
     DataHandler dh = report.getContent().getData();
     sendData(dh, response, null);
   }
-  
+
   private void executeReport(String reportId, String format,
     HttpServletRequest request, HttpServletResponse response) throws Exception
   {
     Credentials credentials = getCredentials(request);
-    ReportManagerPort port = getReportManagerPort(credentials);    
-    List<Parameter> parameters = new ArrayList<Parameter>();
+    ReportManagerPort port = getReportManagerPort(credentials);
+    List<Parameter> parameters = new ArrayList<>();
     Enumeration enu = request.getParameterNames();
     while (enu.hasMoreElements())
     {
@@ -322,7 +322,7 @@ public class ReportServlet extends HttpServlet
       response.setContentLength((int)file.length());
     }
   }
-  
+
   private ReportManagerPort getReportManagerPort(Credentials credentials)
     throws Exception
   {
@@ -338,7 +338,7 @@ public class ReportServlet extends HttpServlet
 
     return port;
   }
-  
+
   private void sendData(DataHandler dh, HttpServletResponse response,
     String filename) throws IOException
   {
@@ -349,17 +349,17 @@ public class ReportServlet extends HttpServlet
     {
       response.setHeader("Content-disposition",
         "attachment; filename=" + filename);
-    }    
+    }
     OutputStream os = response.getOutputStream();
     IOUtils.writeToStream(dh, os);
   }
-  
+
   private String getChangeUserId(Document document)
   {
     return document.getChangeUserId() == null ?
       document.getCaptureUserId() : document.getChangeUserId();
   }
-  
+
   private String getChangeDate(Document document) throws Exception
   {
     String sdate = document.getChangeDateTime();

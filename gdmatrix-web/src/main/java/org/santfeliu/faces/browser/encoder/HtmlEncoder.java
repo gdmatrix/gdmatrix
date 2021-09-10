@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.browser.encoder;
@@ -33,7 +33,6 @@ package org.santfeliu.faces.browser.encoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -43,14 +42,11 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Properties;
-
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-
 import org.santfeliu.faces.Translator;
 import org.santfeliu.faces.browser.HtmlBrowser;
 import org.santfeliu.util.net.HttpClient;
-
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,19 +58,20 @@ import org.w3c.tidy.Tidy;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class HtmlEncoder extends ContentEncoder
 {
   public HtmlEncoder()
   {
   }
-  
-  public void encode(HtmlBrowser browser, HttpClient httpClient, 
+
+  @Override
+  public void encode(HtmlBrowser browser, HttpClient httpClient,
     ResponseWriter writer, Translator translator, String translationGroup)
     throws IOException
   {
-    InputStream input = null;
+    InputStream input;
 
     String charset = httpClient.getContentEncoding();
     if (charset == null) charset = Charset.defaultCharset().name();
@@ -102,7 +99,7 @@ public class HtmlEncoder extends ContentEncoder
       props.put("new-blocklevel-tags", allowedTags);
       tidy.setConfigurationFromProps(props);
     }
-      
+
     tidy.setInputEncoding(charset);
     ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
     PrintWriter errorWriter = new PrintWriter(errorStream, true);
@@ -117,14 +114,14 @@ public class HtmlEncoder extends ContentEncoder
     //writeErrors(browser, errorStream.toByteArray(), writer);
   }
 
-  private void writeDocumentBody(HtmlBrowser browser, Document document, 
+  private void writeDocumentBody(HtmlBrowser browser, Document document,
     ResponseWriter writer, String actionURL)
     throws IOException
   {
     // look for html element
     Node html = findNode(document.getFirstChild(), "html");
     if (html == null) throw new IOException("Invalid html document.");
-    
+
     // look for head element
     if (browser.isHeadTagAllowed())
     {
@@ -137,10 +134,10 @@ public class HtmlEncoder extends ContentEncoder
         {
           writeNode(browser, node, writer, actionURL);
           node = node.getNextSibling();
-        }    
+        }
       }
     }
-    
+
     // look for body element
     Node body = findNode(html.getFirstChild(), "body");
     if (body == null) throw new IOException("Invalid html document.");
@@ -153,7 +150,7 @@ public class HtmlEncoder extends ContentEncoder
       node = node.getNextSibling();
     }
   }
-  
+
   private Node findNode(Node node, String nodeName)
   {
     Node foundNode = null;
@@ -170,7 +167,7 @@ public class HtmlEncoder extends ContentEncoder
     return foundNode;
   }
 
-  private void writeNode(HtmlBrowser browser, Node node, 
+  private void writeNode(HtmlBrowser browser, Node node,
     ResponseWriter writer, String actionURL) throws IOException
   {
     if (node instanceof Text)
@@ -201,7 +198,7 @@ public class HtmlEncoder extends ContentEncoder
       else if (tag.equals("a")) // it's a link
       {
         String href = element.getAttribute("href");
-        if (!href.startsWith("javascript:") && 
+        if (!href.startsWith("javascript:") &&
             !href.startsWith("mailto:") &&
             !href.startsWith("mms:") &&
             !href.startsWith("ftp:") &&
@@ -215,7 +212,7 @@ public class HtmlEncoder extends ContentEncoder
           }
           else
           {
-            element.setAttribute("href", 
+            element.setAttribute("href",
               browser.getAbsoluteHRef(href, false, false));
           }
         }
@@ -247,7 +244,7 @@ public class HtmlEncoder extends ContentEncoder
       child = child.getNextSibling();
     }
   }
-  
+
   private void writeAttributes(Element element, ResponseWriter writer)
     throws IOException
   {

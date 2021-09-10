@@ -1,56 +1,51 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.browser;
 
 import java.io.IOException;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.el.ValueExpression;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-
-import javax.faces.el.ValueBinding;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
 import org.santfeliu.faces.browser.encoder.ContentEncoder;
@@ -59,24 +54,26 @@ import org.santfeliu.web.HttpUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @FacesComponent(value = "HtmlBrowser")
 public class HtmlBrowser extends UIComponentBase
 {
-  public static final String[][] mimeTypes = 
+  public static final Logger LOGGER = Logger.getLogger("HtmlBrowseer");
+
+  public static final String[][] mimeTypes =
   {
     {"text/html", "org.santfeliu.faces.browser.encoder.HtmlEncoder"},
-    {"text/xhtml", "org.santfeliu.faces.browser.encoder.HtmlEncoder"},    
+    {"text/xhtml", "org.santfeliu.faces.browser.encoder.HtmlEncoder"},
     {"text/plain", "org.santfeliu.faces.browser.encoder.TextEncoder"},
     {"image/jpeg", "org.santfeliu.faces.browser.encoder.ImageEncoder"},
     {"image/gif", "org.santfeliu.faces.browser.encoder.ImageEncoder"},
     {"image/png", "org.santfeliu.faces.browser.encoder.ImageEncoder"},
     {"image/tiff", "org.santfeliu.faces.browser.encoder.ImageEncoder"}
   };
-  
+
   private static final int DEFAULT_READ_TIMEOUT = 60000;
-  
+
   private String _url;
   private String _port;
   private String _submittedUrl;
@@ -91,7 +88,8 @@ public class HtmlBrowser extends UIComponentBase
   public HtmlBrowser()
   {
   }
-  
+
+  @Override
   public String getFamily()
   {
     return "Browser";
@@ -128,15 +126,16 @@ public class HtmlBrowser extends UIComponentBase
 
   public void setIframe(boolean iframe)
   {
-    _iframe = Boolean.valueOf(iframe);
+    _iframe = iframe;
   }
 
   public boolean isIframe()
   {
-    if (_iframe != null) return _iframe.booleanValue();
+    if (_iframe != null) return _iframe;
     ValueExpression ve = getValueExpression("iframe");
-    Boolean v = ve != null ? (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
-    return v != null ? v.booleanValue() : false;
+    Boolean v = ve != null ?
+      (Boolean)ve.getValue(getFacesContext().getELContext()) : null;
+    return v != null ? v : false;
   }
 
   public void setWidth(String width)
@@ -148,7 +147,8 @@ public class HtmlBrowser extends UIComponentBase
   {
     if (_width != null) return _width;
     ValueExpression ve = getValueExpression("width");
-    return ve != null ? (String)ve.getValue(getFacesContext().getELContext())  : null;
+    return ve != null ?
+      (String)ve.getValue(getFacesContext().getELContext())  : null;
   }
 
   public void setHeight(String height)
@@ -160,14 +160,16 @@ public class HtmlBrowser extends UIComponentBase
   {
     if (_height != null) return _height;
     ValueExpression ve = getValueExpression("height");
-    return ve != null ? (String)ve.getValue(getFacesContext().getELContext())  : null;
+    return ve != null ?
+      (String)ve.getValue(getFacesContext().getELContext())  : null;
   }
 
   public Integer getReadTimeout()
   {
     if (_readTimeout != null) return _readTimeout;
     ValueExpression ve = getValueExpression("readTimeout");
-    return ve != null ? (Integer)ve.getValue(getFacesContext().getELContext()) : null;
+    return ve != null ?
+      (Integer)ve.getValue(getFacesContext().getELContext()) : null;
   }
 
   public void setReadTimeout(Integer _readTimeout)
@@ -179,38 +181,40 @@ public class HtmlBrowser extends UIComponentBase
   {
     this._translator = translator;
   }
-  
+
   public Translator getTranslator()
   {
     if (_translator != null) return _translator;
     ValueExpression ve = getValueExpression("translator");
-    return ve != null ? (Translator)ve.getValue(getFacesContext().getELContext()) : null;
+    return ve != null ?
+      (Translator)ve.getValue(getFacesContext().getELContext()) : null;
   }
 
   public void setTranslationGroup(String translationGroup)
   {
     this._translationGroup = translationGroup;
   }
-  
+
   public String getTranslationGroup()
   {
     if (_translationGroup != null) return _translationGroup;
     ValueExpression ve = getValueExpression("translationGroup");
-    return ve != null ? (String)ve.getValue(getFacesContext().getELContext())  : null;
+    return ve != null ?
+      (String)ve.getValue(getFacesContext().getELContext())  : null;
   }
 
   public String getAllowedHtmlTags()
   {
     if (_allowedHtmlTags != null) return _allowedHtmlTags;
     ValueExpression ve = getValueExpression("allowedHtmlTags");
-    return ve != null ? (String)ve.getValue(getFacesContext().getELContext())  : null;    
+    return ve != null ? (String)ve.getValue(getFacesContext().getELContext())  : null;
   }
 
   public void setAllowedHtmlTags(String _allowedHtmlTags)
   {
     this._allowedHtmlTags = _allowedHtmlTags;
   }
-  
+
   @Override
   public void decode(FacesContext context)
   {
@@ -223,7 +227,7 @@ public class HtmlBrowser extends UIComponentBase
 
       _submittedUrl = null;
       String href = (String)parameterMap.get(clientId + ":href");
-      
+
       if (href != null && href.length() > 0)
       {
         char type = href.charAt(0);
@@ -245,7 +249,7 @@ public class HtmlBrowser extends UIComponentBase
               Map.Entry entry = (Map.Entry)iter.next();
               String parameter = (String)entry.getKey();
               String value = (String)entry.getValue();
-              if (!parameter.startsWith(clientId) && 
+              if (!parameter.startsWith(clientId) &&
                   !(parameter.equals("com.sun.faces.VIEW") ||
                     parameter.equals("javax.faces.ViewState")) &&
                   !parameter.startsWith(formId))
@@ -256,7 +260,7 @@ public class HtmlBrowser extends UIComponentBase
           }
           if (_submittedUrl.endsWith("&"))
           {
-            _submittedUrl = 
+            _submittedUrl =
               _submittedUrl.substring(0, _submittedUrl.length() - 1);
           }
           _submittedUrl = _submittedUrl.replace(' ', '+');
@@ -268,7 +272,7 @@ public class HtmlBrowser extends UIComponentBase
       context.renderResponse();
     }
   }
-  
+
   @Override
   public void processValidators(FacesContext context)
   {
@@ -281,7 +285,7 @@ public class HtmlBrowser extends UIComponentBase
       _submittedUrl = null;
     }
   }
-  
+
   @Override
   public void processUpdates(FacesContext context)
   {
@@ -318,15 +322,17 @@ public class HtmlBrowser extends UIComponentBase
   @Override
   public void encodeBegin(FacesContext context) throws IOException
   {
-    String url = null;
+    String url;
     if (!isRendered()) return;
     ResponseWriter writer = context.getResponseWriter();
     try
     {
       url = getSubmittedUrl();
       if (url == null) url = getUrl();
-      if (isIframe())
+      if (isIframe()) // show document in iframe
       {
+        LOGGER.log(Level.INFO, "IFRAME URL: {0}", url);
+
         writer.startElement("iframe", this);
         writer.writeAttribute("src", url, null);
         String w = getWidth();
@@ -343,12 +349,14 @@ public class HtmlBrowser extends UIComponentBase
         writer.endElement("iframe");
       }
       else // embed document
-      {  
-        if (url.startsWith("/"))
+      {
+        if (url != null && url.startsWith("/"))
         {
           url = "http://localhost" + url;
         }
         String userLanguage = getUserLanguage();
+        LOGGER.log(Level.INFO, "EMBED URL: {0}, Language: {1}",
+          new String[]{url, userLanguage});
 
         HttpClient httpClient = new HttpClient();
         httpClient.setURL(url);
@@ -360,10 +368,12 @@ public class HtmlBrowser extends UIComponentBase
         httpClient.setRequestProperty("Accept-Charset", "utf-8");
         httpClient.setRequestProperty("Accept-Language", userLanguage);
         Integer readTimeout = getReadTimeout();
-        httpClient.setReadTimeout(readTimeout != null ? 
+        httpClient.setReadTimeout(readTimeout != null ?
           readTimeout : DEFAULT_READ_TIMEOUT);
         httpClient.connect();
-        url = httpClient.getLastURL();
+        httpClient.getLastURL();
+        byte[] content = httpClient.getContent();
+        int contentLength = content == null ? 0 : content.length;
 
         String mimeType = httpClient.getContentType();
         if (mimeType == null) throw new IOException("Connection error");
@@ -380,6 +390,10 @@ public class HtmlBrowser extends UIComponentBase
           translator = getTranslator();
           translationGroup = getTranslationGroup();
         }
+        LOGGER.log(Level.INFO,
+          "MimeType: {0}, ContentLanguage: {1}, ContentLength: {2}, Encoder: {3}",
+          new Object[]{mimeType, contentLanguage, contentLength, encoderClassName});
+
         encoder.encode(this, httpClient, writer, translator, translationGroup);
         String browserId = getClientId(context);
         writeHidden(writer, browserId + ":href", "");
@@ -387,8 +401,8 @@ public class HtmlBrowser extends UIComponentBase
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
-      FacesUtils.addMessage(this, "CAN_NOT_SHOW_DOCUMENT", null, 
+      LOGGER.log(Level.SEVERE, ex.toString());
+      FacesUtils.addMessage(this, "CAN_NOT_SHOW_DOCUMENT", null,
         FacesMessage.SEVERITY_ERROR);
     }
   }
@@ -398,8 +412,8 @@ public class HtmlBrowser extends UIComponentBase
     FacesContext context = FacesContext.getCurrentInstance();
     String formId = FacesUtils.getParentFormId(this, context);
     String browserId = getClientId(context);
-  
-    return "document.forms['" + formId + "']['" + browserId + 
+
+    return "document.forms['" + formId + "']['" + browserId +
            ":href'].value='L:" + href + "'; document.forms['" + formId +
            "'].submit(); return false;";
   }
@@ -409,13 +423,13 @@ public class HtmlBrowser extends UIComponentBase
     FacesContext context = FacesContext.getCurrentInstance();
     String formId = FacesUtils.getParentFormId(this, context);
     String browserId = getClientId(context);
-  
-    return "document.forms['" + formId + "']['" + browserId + 
+
+    return "document.forms['" + formId + "']['" + browserId +
            ":href'].value='F:" + href + "'; document.forms['" + formId +
            "'].submit(); return false;";
   }
 
-  public String getAbsoluteHRef(String href, 
+  public String getAbsoluteHRef(String href,
     boolean removeParameters, boolean removeHost)
   {
     if (href.startsWith("#")) return href;
@@ -448,7 +462,7 @@ public class HtmlBrowser extends UIComponentBase
         u = new URL(url);
         u = new URL(u, href);
 
-        HttpServletRequest request = 
+        HttpServletRequest request =
           (HttpServletRequest) FacesContext.getCurrentInstance().
           getExternalContext().getRequest();
         if (removeHost &&
@@ -474,12 +488,12 @@ public class HtmlBrowser extends UIComponentBase
     }
     return url;
   }
-  
+
   public boolean hasAllowedTags()
   {
     return getAllowedHtmlTags() != null;
   }
-  
+
   public boolean isHeadTagAllowed()
   {
     return (hasAllowedTags() && getAllowedHtmlTags().contains("head"));
@@ -536,11 +550,11 @@ public class HtmlBrowser extends UIComponentBase
       if (mimeType.startsWith(t)) className = mimeTypes[i][1];
       else i++;
     }
-    return className == null ? 
+    return className == null ?
       "org.santfeliu.faces.browser.encoder.LinkEncoder" : className;
   }
 
-  private void writeHidden(ResponseWriter writer, 
+  private void writeHidden(ResponseWriter writer,
     String browserId, String actionURL) throws IOException
   {
     writer.startElement("input", this);
