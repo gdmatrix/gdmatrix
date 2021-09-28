@@ -302,6 +302,12 @@ main#sf_main_content
   display:block;
 }
 
+.topBar #loginPanel .organization
+{
+  font-style: italic;
+  color: #440010;
+}
+
 .topBar #loginPanel .loginButton:hover,
 .topBar #loginPanel .loginButton:focus
 {

@@ -1,45 +1,42 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.web;
 
 import cat.aoc.valid.DocumentToSign;
 import cat.aoc.valid.ValidClient;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONObject;
 import org.matrix.signature.DataHash;
@@ -53,6 +50,13 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.Properties;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.workflow.form.Form;
+import static org.santfeliu.security.web.ValidServlet.ACCESS_TOKEN_ATTRIBUTE;
+import static org.santfeliu.security.web.ValidServlet.ACTION_ATTRIBUTE;
+import static org.santfeliu.security.web.ValidServlet.RETURN_PARAMS_ATTRIBUTE;
+import static org.santfeliu.security.web.ValidServlet.SIGID_ATTRIBUTE;
+import static org.santfeliu.security.web.ValidServlet.SIGN_ACTION;
+import static org.santfeliu.security.web.ValidServlet.WF_FORM_VAR_ATTRIBUTE;
+import static org.santfeliu.security.web.ValidServlet.WF_INSTANCE_ATTRIBUTE;
 
 
 /**
@@ -68,7 +72,8 @@ public class SignatureFormBean extends FormBean
   private String sigId; // sigId of document to sign
   private String result;
   private boolean IFrame;
-  
+  private String formVariable;
+
   private SignatureMatrixClientModel model;
 
   public SignatureFormBean()
@@ -139,6 +144,7 @@ public class SignatureFormBean extends FormBean
   @Override
   public String show(Form form)
   {
+    formVariable = form.getVariable();
     Properties parameters = form.getParameters();
 
     InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
@@ -147,7 +153,7 @@ public class SignatureFormBean extends FormBean
 
     browser = new HtmlBrowser();
     browser.setUrl(null);
-    
+
     Object value;
     value = parameters.get("message");
     if (value != null) message = String.valueOf(value);
@@ -164,6 +170,8 @@ public class SignatureFormBean extends FormBean
   @Override
   public Map submit()
   {
+    System.out.println("\n\n\nSUBMIT>>>>>>" + result);
+
     HashMap variables = new HashMap();
     variables.put("result", result);
     return variables;
@@ -172,19 +180,18 @@ public class SignatureFormBean extends FormBean
   // Applet method
   public String sign()
   {
-    if (result.indexOf(ERROR_PREFIX) == -1) // NO ERROR: OK or CANCEL
+    if (!result.contains(ERROR_PREFIX)) // NO ERROR: OK or CANCEL
     {
       InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
-      return instanceBean.forward();    
+      return instanceBean.forward();
     }
     else
     {
-      String message = result.substring(ERROR_PREFIX.length());
-      error(message);
+      error(result.substring(ERROR_PREFIX.length()));
     }
     return null;
   }
-    
+
   // MatrixClient methods
   public SignatureMatrixClientModel getModel()
   {
@@ -195,7 +202,7 @@ public class SignatureFormBean extends FormBean
   {
     this.model = model;
   }
-  
+
   public String documentSigned()
   {
     try
@@ -204,7 +211,7 @@ public class SignatureFormBean extends FormBean
       if (result != null)
       {
         InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
-        return instanceBean.forward();         
+        return instanceBean.forward();
       }
     }
     catch (Exception ex)
@@ -214,16 +221,16 @@ public class SignatureFormBean extends FormBean
     return null;
   }
 
-  /* cancel signature */ 
+  /* cancel signature */
   public String cancelSignature()
   {
     result = "CANCEL";
     InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
-    return instanceBean.forward(); 
+    return instanceBean.forward();
   }
-  
+
   // VALid methods
-  public String signValid()
+  public String signValidDirect()
   {
     try
     {
@@ -234,7 +241,7 @@ public class SignatureFormBean extends FormBean
         throw new Exception("NOT_LOGGED_WITH_VALID");
 
       // gets hashes of docsToSign
-      ArrayList<DocumentToSign> docsToSign = new ArrayList<DocumentToSign>();
+      ArrayList<DocumentToSign> docsToSign = new ArrayList<>();
       SignatureManagerPort port = getSignatureManagerPort();
       List<DataHash> dataHashes = port.digestData(sigId);
       for (DataHash dataHash : dataHashes)
@@ -270,11 +277,77 @@ public class SignatureFormBean extends FormBean
     }
     return null;
   }
-  
+
+  public String signValid()
+  {
+    try
+    {
+      // get VALid accessToken from session
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      String accessToken =
+        (String)userSessionBean.getAttribute(ACCESS_TOKEN_ATTRIBUTE);
+      if (accessToken == null)
+        throw new Exception("NOT_LOGGED_WITH_VALID");
+
+      // gets hashes of docsToSign
+      ArrayList<DocumentToSign> docsToSign = new ArrayList<>();
+      SignatureManagerPort port = getSignatureManagerPort();
+      List<DataHash> dataHashes = port.digestData(sigId);
+      for (DataHash dataHash : dataHashes)
+      {
+        DocumentToSign docToSign = new DocumentToSign();
+        docToSign.setName(dataHash.getName());
+        docToSign.setHash(new String(Base64.encodeBase64(dataHash.getHash())));
+        docToSign.setAlgorithm(dataHash.getAlgorithm());
+        docsToSign.add(docToSign);
+      }
+      // create basic signature of docsToSign with VALid
+      ValidClient client = new ValidClient();
+      client.setBaseUrl(MatrixConfig.getProperty("valid.baseUrl"));
+      client.setClientId(MatrixConfig.getProperty("valid.clientId"));
+      client.setClientSecret(MatrixConfig.getProperty("valid.clientSecret"));
+      client.setRedirectUrl(MatrixConfig.getProperty("valid.redirectUrl"));
+      JSONObject initResult = client.initBasicSignature(accessToken,
+        docsToSign);
+      System.out.println("\n\nVALID initSign>>> InitSignResult: " +
+        JSONObject.toJSONString(initResult));
+
+      String status = (String)initResult.get("status");
+      if ("ko".equals(status))
+        throw new Exception((String)initResult.get("error"));
+
+      InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
+      String instanceId = instanceBean.getInstanceId();
+      String wfAccessToken = UUID.randomUUID().toString();
+      instanceBean.setAccessToken(wfAccessToken);
+
+      String mid = userSessionBean.getSelectedMid();
+      String returnParams = "xmid=" + mid + "&" +
+        InstanceListBean.INSTANCEID_PARAM + "=" + instanceId + "&" +
+        InstanceListBean.ACCESS_TOKEN_PARAM + "=" + wfAccessToken;
+
+      String signatureCode = (String)initResult.get("signature_code");
+      System.out.println("\n\nVALID signform>>> SignatureCode: " + signatureCode);
+      userSessionBean.setAttribute(ACTION_ATTRIBUTE, SIGN_ACTION);
+      userSessionBean.setAttribute(SIGID_ATTRIBUTE, sigId);
+      userSessionBean.setAttribute(WF_INSTANCE_ATTRIBUTE, instanceId);
+      userSessionBean.setAttribute(WF_FORM_VAR_ATTRIBUTE, formVariable);
+      userSessionBean.setAttribute(RETURN_PARAMS_ATTRIBUTE, returnParams);
+
+      String url = client.generateBasicSignatureUrl(signatureCode);
+      getExternalContext().redirect(url);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;
+  }
+
   private SignatureManagerPort getSignatureManagerPort()
   {
     WSDirectory dir = WSDirectory.getInstance();
     WSEndpoint endpoint = dir.getEndpoint(SignatureManagerService.class);
     return endpoint.getPort(SignatureManagerPort.class);
-  }  
+  }
 }

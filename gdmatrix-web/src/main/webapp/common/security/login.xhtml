@@ -66,11 +66,11 @@
               </h:outputLink>
 
               <!-- VALid -->
-              <h:outputLink value="#{validBean.loginURL}" styleClass="button valid fixed"
+              <h:commandLink action="#{validBean.login}" styleClass="button valid fixed"
                 rendered="#{loginBean.requestedAuthenticationLevel lt 3 and loginBean.requestedSignatureLevel lt 3 and 
                            (userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true')}">
                 <h:outputText value="VALid" />
-              </h:outputLink>
+              </h:commandLink>
 
             </h:panelGroup>
 

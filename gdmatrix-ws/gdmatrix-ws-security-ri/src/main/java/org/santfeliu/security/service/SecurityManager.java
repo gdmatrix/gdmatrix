@@ -43,8 +43,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -103,7 +101,6 @@ public class SecurityManager implements SecurityManagerPort
 
   // internal constants
   public static final String PK_SEPARATOR = ";";
-  public static final String REPRESENTANT_PATTERN = "\\(R: (\\w+)\\)";
   public static final int ROLE_DESCRIPTION_MAX_SIZE = 400;
   public static final int ROLE_ID_MAX_SIZE = 20;
   public static final int ROLE_NAME_MAX_SIZE = 100;
@@ -144,7 +141,7 @@ public class SecurityManager implements SecurityManagerPort
   public static final String LDAP_ADMIN_PASSWORD = "ldap.adminPassword";
   /* default personId for a user */
   public static final String DEFAULT_PERSONID = "defaultPersonId";
-  
+
   @Resource
   WebServiceContext wsContext;
 
@@ -202,34 +199,34 @@ public class SecurityManager implements SecurityManagerPort
     String adminId = MatrixConfig.getProperty(ADMIN_USERID);
     createUser(adminId);
     createUserInRole(adminId, SecurityConstants.EVERYONE_ROLE, "Everyone");
-    createUserInRole(adminId, SecurityConstants.SECURITY_ADMIN_ROLE, 
+    createUserInRole(adminId, SecurityConstants.SECURITY_ADMIN_ROLE,
       "Security administrator");
-    createUserInRole(adminId, DictionaryConstants.DIC_ADMIN_ROLE, 
+    createUserInRole(adminId, DictionaryConstants.DIC_ADMIN_ROLE,
       "Dictionary administrator");
-    createUserInRole(adminId, KernelConstants.KERNEL_ADMIN_ROLE, 
+    createUserInRole(adminId, KernelConstants.KERNEL_ADMIN_ROLE,
       "Kernel administrator");
-    createUserInRole(adminId, DocumentConstants.DOC_ADMIN_ROLE, 
+    createUserInRole(adminId, DocumentConstants.DOC_ADMIN_ROLE,
       "Document administrator");
-    createUserInRole(adminId, CaseConstants.CASE_ADMIN_ROLE, 
+    createUserInRole(adminId, CaseConstants.CASE_ADMIN_ROLE,
       "Case administrator");
-    createUserInRole(adminId, ClassificationConstants.CLASSIF_ADMIN_ROLE, 
+    createUserInRole(adminId, ClassificationConstants.CLASSIF_ADMIN_ROLE,
       "Classification administrator");
-    createUserInRole(adminId, AgendaConstants.AGENDA_ADMIN_ROLE, 
+    createUserInRole(adminId, AgendaConstants.AGENDA_ADMIN_ROLE,
       "Agenda administrator");
-    createUserInRole(adminId, JobConstants.JOB_ADMIN_ROLE, 
+    createUserInRole(adminId, JobConstants.JOB_ADMIN_ROLE,
       "Job administrator");
-    createUserInRole(adminId, ForumConstants.FORUM_ADMIN_ROLE, 
+    createUserInRole(adminId, ForumConstants.FORUM_ADMIN_ROLE,
       "Forum administrator");
-    createUserInRole(adminId, WorkflowConstants.WORKFLOW_ADMIN_ROLE, 
+    createUserInRole(adminId, WorkflowConstants.WORKFLOW_ADMIN_ROLE,
       "Workflow administrator");
-    createUserInRole(adminId, SQLConstants.SQL_ADMIN_ROLE, 
+    createUserInRole(adminId, SQLConstants.SQL_ADMIN_ROLE,
       "SQL administrator");
-    createUserInRole(adminId, PresenceConstants.PRESENCE_ADMIN_ROLE, 
+    createUserInRole(adminId, PresenceConstants.PRESENCE_ADMIN_ROLE,
       "Presence administrator");
-    createUserInRole(adminId, CMSConstants.CMS_ADMIN_ROLE, 
+    createUserInRole(adminId, CMSConstants.CMS_ADMIN_ROLE,
       "CMS administrator");
   }
-  
+
   private void createUser(String userId)
   {
     Query query = entityManager.createNamedQuery("selectUser");
@@ -244,7 +241,7 @@ public class SecurityManager implements SecurityManagerPort
       entityManager.flush();
     }
   }
-  
+
   private void createUserInRole(String userId, String roleId, String roleDesc)
   {
     DBRole role = entityManager.find(DBRole.class, roleId);
@@ -259,7 +256,7 @@ public class SecurityManager implements SecurityManagerPort
 
     Query query = entityManager.createNamedQuery("selectUserInRole");
     query.setParameter("userId", userId);
-    query.setParameter("roleId", roleId);    
+    query.setParameter("roleId", roleId);
     if (query.getResultList().isEmpty())
     {
       DBUserInRole userInRole = new DBUserInRole();
@@ -328,7 +325,7 @@ public class SecurityManager implements SecurityManagerPort
   public User loadUser(String userId)
   {
     LOGGER.log(Level.INFO, "loadUser userId:{0}", userId);
-    
+
     // checkRoles
     DBUser dbUser = selectUser(userId);
     if (dbUser == null)
@@ -542,11 +539,12 @@ public class SecurityManager implements SecurityManagerPort
         NIF = (String)attributes.get(SecurityProvider.NIF);
         CIF = (String)attributes.get(SecurityProvider.CIF);
 
-        displayName = (String)attributes.get(SecurityProvider.COMMON_NAME);
+        String commonName =
+          (String)attributes.get(SecurityProvider.COMMON_NAME);
         if (CIF != null)
         {
-          String rep = extractRepresentant(displayName);
-          representant = rep != null && CIF.equalsIgnoreCase(rep);
+          String repCIF = SecurityUtils.getRepresentantCIF(commonName);
+          representant = repCIF != null && CIF.equalsIgnoreCase(repCIF);
         }
 
         if (NIF != null)
@@ -577,7 +575,6 @@ public class SecurityManager implements SecurityManagerPort
         NIF = (String)attributes.get("SERIALNUMBER");
         if (NIF == null) throw new Exception("INVALID_CERTIFICATE");
 
-        displayName = (String)attributes.get("CN");
         givenName = (String)attributes.get("GIVENNAME");
         surname = (String)attributes.get("SURNAME");
         email = (String)attributes.get("SAN-1");
@@ -585,6 +582,14 @@ public class SecurityManager implements SecurityManagerPort
 
         userId = SecurityConstants.AUTH_USER_PREFIX + NIF;
       }
+      displayName = givenName;
+      if (surname != null)
+      {
+        int index = surname.indexOf("-");
+        if (index != -1) surname = surname.substring(0, index);
+        displayName += " " + surname;
+      }
+
       user = new User();
       user.setUserId(userId.trim());
       user.setPassword(getAuthUserPassword(userId));
@@ -1146,19 +1151,19 @@ public class SecurityManager implements SecurityManagerPort
   }
 
   @Override
-  public List<Property> findUserProperties(String userId, String name, 
+  public List<Property> findUserProperties(String userId, String name,
     String value)
   {
     try
     {
-      LOGGER.log(Level.INFO, "findUserProperties userId:{0} " + 
+      LOGGER.log(Level.INFO, "findUserProperties userId:{0} " +
         "name:{1} value:{2}", new Object[]{userId, name, value});
 
-      if (userId == null || userId.trim().isEmpty()) 
+      if (userId == null || userId.trim().isEmpty())
         throw new WebServiceException("security:USERID_IS_MANDATORY");
 
-      List<DBUserProperty> dbUserPropertyList = 
-        doFindUserProperties(userId, name, value);    
+      List<DBUserProperty> dbUserPropertyList =
+        doFindUserProperties(userId, name, value);
       return toProperties(dbUserPropertyList);
     }
     catch (Exception ex)
@@ -1169,21 +1174,21 @@ public class SecurityManager implements SecurityManagerPort
   }
 
   @Override
-  public int storeUserProperties(String userId, List<Property> property, 
-    boolean incremental) 
+  public int storeUserProperties(String userId, List<Property> property,
+    boolean incremental)
   {
     int storeCount = 0;
     try
     {
-      LOGGER.log(Level.INFO, "storeUserProperties userId:{0} incremental:{1}", 
+      LOGGER.log(Level.INFO, "storeUserProperties userId:{0} incremental:{1}",
         new Object[]{userId, incremental});
 
-      if (userId == null || userId.trim().isEmpty()) 
+      if (userId == null || userId.trim().isEmpty())
         throw new WebServiceException("security:USERID_IS_MANDATORY");
-      if (property == null || property.isEmpty()) 
-        throw new WebServiceException("security:PROPERTY_IS_MANDATORY");      
+      if (property == null || property.isEmpty())
+        throw new WebServiceException("security:PROPERTY_IS_MANDATORY");
       validateUserProperties(property);
-      
+
       for (Property auxProperty : property)
       {
         storeCount += persistProperty(userId, auxProperty, incremental);
@@ -1196,18 +1201,18 @@ public class SecurityManager implements SecurityManagerPort
       throw WSExceptionFactory.create(ex);
     }
   }
-  
+
   @Override
-  public boolean removeUserProperties(String userId, String name, String value) 
+  public boolean removeUserProperties(String userId, String name, String value)
   {
     try
     {
-      LOGGER.log(Level.INFO, "removeUserProperties userId:{0} name:{1} " + 
+      LOGGER.log(Level.INFO, "removeUserProperties userId:{0} name:{1} " +
         "value:{2}", new Object[]{userId, name, value});
-      
-      if (userId == null || userId.trim().isEmpty()) 
+
+      if (userId == null || userId.trim().isEmpty())
         throw new WebServiceException("security:USERID_IS_MANDATORY");
-      
+
       return doRemoveUserProperties(userId, name, value);
     }
     catch (Exception ex)
@@ -1219,7 +1224,7 @@ public class SecurityManager implements SecurityManagerPort
 
   /**** private methods ****/
 
-  private int persistProperty(String userId, Property property, 
+  private int persistProperty(String userId, Property property,
     boolean incremental) throws Exception
   {
     int count = 0;
@@ -1235,7 +1240,7 @@ public class SecurityManager implements SecurityManagerPort
     {
       maxIndex = getUserPropertyMaxIndex(userId, property.getName());
     }
-    List<DBUserProperty> dbUserPropertyList = toDBProperties(property, 
+    List<DBUserProperty> dbUserPropertyList = toDBProperties(property,
       maxIndex + 1, userId);
     for (DBUserProperty dbUserProperty : dbUserPropertyList)
     {
@@ -1244,11 +1249,11 @@ public class SecurityManager implements SecurityManagerPort
     }
     return count;
   }
-  
-  private boolean doRemoveUserProperties(String userId, String name, 
+
+  private boolean doRemoveUserProperties(String userId, String name,
     String value)
   {
-    List<DBUserProperty> dbUserPropertyList = doFindUserProperties(userId, 
+    List<DBUserProperty> dbUserPropertyList = doFindUserProperties(userId,
       name, value);
     if (dbUserPropertyList.isEmpty()) return false;
     for (DBUserProperty dbUserProperty : dbUserPropertyList)
@@ -1261,10 +1266,10 @@ public class SecurityManager implements SecurityManagerPort
     }
     return true;
   }
-  
+
   private int getUserPropertyMaxIndex(String userId, String name)
   {
-    List<DBUserProperty> dbUserPropertyList = 
+    List<DBUserProperty> dbUserPropertyList =
       doFindUserProperties(userId, name, null);
     if (!dbUserPropertyList.isEmpty())
     {
@@ -1272,8 +1277,8 @@ public class SecurityManager implements SecurityManagerPort
     }
     return 0;
   }
-  
-  private List<DBUserProperty> doFindUserProperties(String userId, String name, 
+
+  private List<DBUserProperty> doFindUserProperties(String userId, String name,
     String value)
   {
     Query query = entityManager.createNamedQuery("findUserProperties");
@@ -1282,7 +1287,7 @@ public class SecurityManager implements SecurityManagerPort
     query.setParameter("value", value);
     return query.getResultList();
   }
-  
+
   private void validateUserProperties(List<Property> propertyList)
   {
     for (Property property : propertyList)
@@ -1294,27 +1299,27 @@ public class SecurityManager implements SecurityManagerPort
   private void validateUserProperty(Property property)
   {
     if (property.getName() == null || property.getName().length() == 0)
-      throw new WebServiceException("security:USER_PROPERTY_NAME_NULL");    
-    
+      throw new WebServiceException("security:USER_PROPERTY_NAME_NULL");
+
     if (property.getName().length() > USER_PROPERTY_NAME_MAX_SIZE)
       throw new WebServiceException("security:USER_PROPERTY_NAME_TOO_LARGE");
-    
+
     if (property.getValue() == null || property.getValue().isEmpty())
-      throw new WebServiceException("security:USER_PROPERTY_VALUES_NULL");    
-    
+      throw new WebServiceException("security:USER_PROPERTY_VALUES_NULL");
+
     if (property.getValue().size() > USER_PROPERTY_VALUES_MAX_ITEMS)
-      throw new WebServiceException("security:USER_PROPERTY_VALUES_TOO_LARGE");    
-    
+      throw new WebServiceException("security:USER_PROPERTY_VALUES_TOO_LARGE");
+
     for (String value : property.getValue())
     {
       if (value == null || value.length() == 0)
-        throw new WebServiceException("security:USER_PROPERTY_VALUE_NULL");    
-      
+        throw new WebServiceException("security:USER_PROPERTY_VALUE_NULL");
+
       if (value.length() > USER_PROPERTY_VALUE_MAX_SIZE)
-        throw new WebServiceException("security:USER_PROPERTY_VALUE_TOO_LARGE");      
+        throw new WebServiceException("security:USER_PROPERTY_VALUE_TOO_LARGE");
     }
   }
-  
+
   private List<Property> toProperties(List<DBUserProperty> dbUserPropertyList)
   {
     HashMap<String, Property> auxMap = new HashMap();
@@ -1334,7 +1339,7 @@ public class SecurityManager implements SecurityManagerPort
     return result;
   }
 
-  private List<DBUserProperty> toDBProperties(Property property, 
+  private List<DBUserProperty> toDBProperties(Property property,
     int baseIndex, String userId) throws Exception
   {
     int i = baseIndex;
@@ -1350,7 +1355,7 @@ public class SecurityManager implements SecurityManagerPort
     }
     return result;
   }
-  
+
   private DBUser selectUser(String userId)
   {
     try
@@ -1728,18 +1733,5 @@ public class SecurityManager implements SecurityManagerPort
          ldapUrl, ldapDomain, ldapBase, userId, password);
     }
     return connector;
-  }
-
-  private String extractRepresentant(String displayName)
-  {
-    String cif = null;
-    if (displayName != null)
-    {
-      Pattern pattern = Pattern.compile(REPRESENTANT_PATTERN);
-      Matcher matcher = pattern.matcher(displayName);
-      if (matcher.find())
-        cif = matcher.group(1);
-    }
-    return cif;
   }
 }

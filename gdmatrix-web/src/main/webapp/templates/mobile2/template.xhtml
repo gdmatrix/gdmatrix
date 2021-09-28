@@ -308,9 +308,9 @@
 
             <t:div styleClass="loginButtonDiv valid"
               rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true')}">
-              <h:outputLink value="#{validBean.loginURL}" styleClass="loginButton">
+              <h:commandLink action="#{validBean.login}" styleClass="loginButton">
                 <h:outputText value="VALid"  />
-              </h:outputLink>   
+              </h:commandLink>   
             </t:div>
 
             <t:div rendered="#{loginBean.loginMessage != null}" styleClass="errorMessageDiv" id="errorMessageDiv" forceId="true">

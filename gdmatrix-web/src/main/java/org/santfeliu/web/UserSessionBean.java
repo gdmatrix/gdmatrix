@@ -330,7 +330,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     {
       String language = MatrixConfig.getProperty(
         "org.santfeliu.translation.defaultLanguage");
-      viewLocale = new Locale(language);      
+      viewLocale = new Locale(language);
     }
     return viewLocale;
   }
@@ -1180,7 +1180,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       "org.santfeliu.security.authUserPasswordCipher.secret");
     StringCipher cipher = new StringCipher(secret);
     password = cipher.encrypt(userId);
-    
+
     User user = UserCache.login(userId, password);
     loadProfile(user);
     getMenuModel().setRoles(roles);
@@ -1481,7 +1481,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
     try
     {
-      String language;    
+      String language;
       try
       {
         language = getUserPreferences().getDefaultLanguage();
@@ -1494,7 +1494,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       setLastPageLanguage(language);
     }
     catch (Exception ex) { } //no default language defined
-    
+
     try
     {
       setTheme(getUserPreferences().getDefaultTheme());
@@ -1524,6 +1524,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
     out.writeObject(email);
     out.writeObject(roles);
     out.writeObject(attributes);
+    out.writeObject(loginMethod);
+    out.writeObject(logoutAction);
     out.writeObject(theme);
     out.writeObject(lastPageLanguage);
     out.writeObject(workspaceId);
@@ -1551,13 +1553,15 @@ public final class UserSessionBean extends FacesBean implements Serializable
     email = (String)in.readObject();
     roles = (Set)in.readObject();
     attributes = (Map)in.readObject();
+    loginMethod = (String)in.readObject();
+    logoutAction = (String)in.readObject();
     theme = (String)in.readObject();
     lastPageLanguage = (String)in.readObject();
     workspaceId = (String)in.readObject();
     selectedMid = (String)in.readObject(); // lazy loading
   }
 
-  //Action executed from showObject command in common_script.js 
+  //Action executed from showObject command in common_script.js
   public String jumpToObject()
   {
     String outcome = null;
@@ -1572,9 +1576,9 @@ public final class UserSessionBean extends FacesBean implements Serializable
     return null;
   }
 
-  //Value set in showObject command in common_script.js 
+  //Value set in showObject command in common_script.js
   public void setJumpCommand(String jumpCommand)
-  { 
+  {
   }
 
   //Script actions

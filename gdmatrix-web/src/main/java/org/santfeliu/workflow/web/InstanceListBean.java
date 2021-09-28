@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.web;
@@ -53,6 +53,7 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.workflow.VariableListConverter;
 
 /**
  *
@@ -79,7 +80,7 @@ public class InstanceListBean extends WebBean implements Serializable
   private VariableFilter[] variables;
   private String startDate;
   private String endDate;
-  
+
   private String instanceId;
   private String workflowName;
   private List<InstanceView> instanceList;
@@ -215,25 +216,31 @@ public class InstanceListBean extends WebBean implements Serializable
     {
       Map parameters = new HashMap();
       parameters.putAll(getExternalContext().getRequestParameterMap());
-      String workflowName = (String)parameters.get(
+      System.out.println("\n\n\nmain>>>parameters" + parameters);
+      String extWorkflowName = (String)parameters.remove(
         ProcedureCatalogueBean.WORKFLOW);
-      String instanceId = (String)parameters.get(INSTANCEID_PARAM);
-      if (workflowName != null)
+      String extInstanceId = (String)parameters.remove(INSTANCEID_PARAM);
+      if (extWorkflowName != null)
       {
+        // create new instance passing parameters as variables
         InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
-        return instanceBean.createInstance(workflowName, null, false, parameters);
+        return instanceBean.createInstance(extWorkflowName,
+          null, false, parameters);
       }
-      else if (instanceId != null)
+      else if (extInstanceId != null)
       {
+        // enter existing instance
         String outcome;
         InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
-        instanceBean.setInstanceId(instanceId);
+        instanceBean.setInstanceId(extInstanceId);
         String accessToken = instanceBean.getAccessToken();
         if (accessToken != null)
         {
-          if (!accessToken.equals(parameters.get(ACCESS_TOKEN_PARAM)))
+          // check workflow accessToken
+          if (!accessToken.equals(parameters.remove(ACCESS_TOKEN_PARAM)))
             throw new Exception("INVALID_INSTANCE_TOKEN");
 
+          // special login case <token>$<form_variable>
           int index = accessToken.indexOf(LOGIN_ACCESS_TOKEN_SEPARATOR);
           if (index != -1)
           {
@@ -245,7 +252,7 @@ public class InstanceListBean extends WebBean implements Serializable
         else if (!UserSessionBean.getCurrentInstance().isAnonymousUser())
         {
           // allow access if user is logged in, for backward compatibility
-          outcome = instanceBean.forward();          
+          outcome = instanceBean.forward();
         }
         else // anonymous users can not access an instance without access token
         {
@@ -286,7 +293,7 @@ public class InstanceListBean extends WebBean implements Serializable
     if (showCatalogueMid != null)
     {
       menuModel.setSelectedMid(showCatalogueMid);
-      ProcedureCatalogueBean procedureCatalogueBean = 
+      ProcedureCatalogueBean procedureCatalogueBean =
         (ProcedureCatalogueBean)getBean("procedureCatalogueBean");
       return procedureCatalogueBean.showCatalogue();
     }
@@ -329,11 +336,11 @@ public class InstanceListBean extends WebBean implements Serializable
     instanceBean.setInstanceId(instanceId);
     return instanceBean.forward();
   }
-  
+
   public String destroyInstance()
   {
     InstanceView instanceView = (InstanceView)getRequestMap().get("instance");
-    String instanceId = instanceView.getInstanceId();    
+    String instanceId = instanceView.getInstanceId();
     InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
     instanceBean.setInstanceId(instanceId);
     return instanceBean.destroyInstance();
@@ -347,7 +354,7 @@ public class InstanceListBean extends WebBean implements Serializable
   }
 
   // private methods
-    
+
   private WorkflowManagerPort getWorkflowManagerPort()
     throws Exception
   {
@@ -355,10 +362,10 @@ public class InstanceListBean extends WebBean implements Serializable
     WSEndpoint endpoint = dir.getEndpoint(WorkflowManagerService.class);
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     String userId = userSessionBean.getUsername();
-    String password = userSessionBean.getPassword(); 
+    String password = userSessionBean.getPassword();
     return endpoint.getPort(WorkflowManagerPort.class, userId, password);
   }
-  
+
   private void loadInstanceList() throws Exception
   {
     instanceList = null;

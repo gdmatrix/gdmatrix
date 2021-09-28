@@ -233,10 +233,17 @@
                 </t:div>                
                 <t:div rendered="#{userSessionBean.anonymousUser}">
                   <t:div>
+                    <!--
                     <sf:outputLink value="#{validBean.loginURL}" styleClass="loginButton"
                                    ariaLabel="#{webBundle.buttonSigninValid}">
                       <h:outputText value="#{webBundle.buttonSignin}" />
                     </sf:outputLink>
+                    -->
+                    <h:commandLink action="#{validBean.login}" styleClass="loginButton"
+                                   title="#{webBundle.buttonSigninValid}">
+                      <h:outputText value="#{webBundle.buttonSignin}" />
+                    </h:commandLink>
+
                   </t:div>
                   <t:div rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url != null}">
                     <sf:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url}" 
@@ -252,8 +259,20 @@
                 </t:div>
               </t:div>
 
-              <!-- logout button -->
+              <t:div styleClass="loginBox info" 
+                rendered="#{userSessionBean.NIF != null}">
+                <div><h:outputText value="NIF: #{userSessionBean.NIF}" style="display:block" /></div>
+                <h:panelGroup rendered="#{userSessionBean.CIF != null}">
+                  <div><h:outputText value="CIF: #{userSessionBean.CIF}" /></div>
+                  <h:panelGroup rendered="#{userSessionBean.isRepresentant()}">
+                    <div><h:outputText value="#{webBundle.represents}:" /></div>
+                  </h:panelGroup>
+                  <div><h:outputText value="#{userSessionBean.organizationName}" class="organization" /></div>
+                </h:panelGroup>
+              </t:div>
+
               <t:div styleClass="loginBox logout" rendered="#{not userSessionBean.anonymousUser}">
+                <!-- logout button -->
                 <t:div>
                   <h:commandLink action="#{loginBean.logout}"                 
                                  immediate="true" styleClass="loginButton">
