@@ -40,11 +40,6 @@
   <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
-  <managed-bean-name>objectController</managed-bean-name>
-  <managed-bean-class>org.santfeliu.web.object.ObjectController</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
    <managed-bean-name>controllerBean</managed-bean-name>
    <managed-bean-class>org.santfeliu.web.obj.ControllerBean</managed-bean-class>
    <managed-bean-scope>request</managed-bean-scope>
