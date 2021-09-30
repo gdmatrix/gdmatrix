@@ -49,6 +49,7 @@ import java.util.Set;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
+import javax.faces.application.Resource;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.el.MethodBinding;
@@ -115,6 +116,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public static final String LOGIN_PASSWORD = "PASSWORD";
   public static final String LOGIN_CERTIFICATE = "CERTIFICATE";
+  
+  public static final String DEFAULT_PRIMEFACES_THEME = "smoothness";
 
   private static List<String> intranetRoles;
 
@@ -1308,6 +1311,86 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     changeBrowserTypeTo("mobile");
   }
+  
+  public String getPrimefacesTheme()
+  {
+    String pfTheme = getSelectedMenuItem().getProperty("primefacesTheme");
+    if (pfTheme != null)
+    {
+      try
+      {
+        String library = "primefaces-" + pfTheme;
+        Resource resource = getFacesContext().getApplication()
+          .getResourceHandler().createResource("theme.css", library); 
+        if (resource != null)
+          return pfTheme;
+      }
+      catch (Exception ex)
+      {
+        return DEFAULT_PRIMEFACES_THEME;
+      }    
+    }
+    
+    return DEFAULT_PRIMEFACES_THEME;
+  }    
+  
+  //Action executed from showObject command in common_script.js
+  public String jumpToObject()
+  {
+    String outcome = null;
+    PageBean pageBean = ControllerBean.getCurrentInstance().getPageBean();
+    if (pageBean != null)
+      outcome = pageBean.jshow();
+    return outcome;
+  }
+
+  public String getJumpCommand()
+  {
+    return null;
+  }
+
+  //Value set in showObject command in common_script.js
+  public void setJumpCommand(String jumpCommand)
+  {
+  }
+
+  //Script actions
+  String actionToExecute;
+
+  public String getActionToExecute()
+  {
+    return actionToExecute;
+  }
+
+  public void setActionToExecute(String actionToExecute)
+  {
+    this.actionToExecute = actionToExecute;
+  }
+
+  public void executeAction()
+  {
+    if (this.actionToExecute != null)
+      executeAction(actionToExecute);
+  }
+
+  public Object executeScriptAction(String action)
+    throws Exception
+  {
+    Object result = null;
+
+    if (action != null)
+    {
+      ActionsScriptClient client = new ActionsScriptClient();
+      client.put("userSessionBean", this);
+      client.put("facesContext", getFacesContext());
+      client.put("externalContext", getExternalContext());
+      client.put("request", getExternalContext().getRequest());
+      client.put("application", getApplication());
+      result = client.executeScript(action);
+    }
+
+    return result;
+  }
 
   /**** private methods ****/
 
@@ -1561,61 +1644,5 @@ public final class UserSessionBean extends FacesBean implements Serializable
     selectedMid = (String)in.readObject(); // lazy loading
   }
 
-  //Action executed from showObject command in common_script.js
-  public String jumpToObject()
-  {
-    String outcome = null;
-    PageBean pageBean = ControllerBean.getCurrentInstance().getPageBean();
-    if (pageBean != null)
-      outcome = pageBean.jshow();
-    return outcome;
-  }
 
-  public String getJumpCommand()
-  {
-    return null;
-  }
-
-  //Value set in showObject command in common_script.js
-  public void setJumpCommand(String jumpCommand)
-  {
-  }
-
-  //Script actions
-  String actionToExecute;
-
-  public String getActionToExecute()
-  {
-    return actionToExecute;
-  }
-
-  public void setActionToExecute(String actionToExecute)
-  {
-    this.actionToExecute = actionToExecute;
-  }
-
-  public void executeAction()
-  {
-    if (this.actionToExecute != null)
-      executeAction(actionToExecute);
-  }
-
-  public Object executeScriptAction(String action)
-    throws Exception
-  {
-    Object result = null;
-
-    if (action != null)
-    {
-      ActionsScriptClient client = new ActionsScriptClient();
-      client.put("userSessionBean", this);
-      client.put("facesContext", getFacesContext());
-      client.put("externalContext", getExternalContext());
-      client.put("request", getExternalContext().getRequest());
-      client.put("application", getApplication());
-      result = client.executeScript(action);
-    }
-
-    return result;
-  }
 }

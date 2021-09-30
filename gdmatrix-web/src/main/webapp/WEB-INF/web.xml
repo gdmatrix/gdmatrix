@@ -27,7 +27,7 @@
   </context-param>
   <context-param>
     <param-name>primefaces.THEME</param-name>
-    <param-value>#{userSessionBean.selectedMenuItem.properties.primefacesTheme != null ? userSessionBean.selectedMenuItem.properties.primefacesTheme : 'smoothness'}</param-value>
+    <param-value>#{userSessionBean.primefacesTheme}</param-value>
   </context-param>
   <context-param>
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
