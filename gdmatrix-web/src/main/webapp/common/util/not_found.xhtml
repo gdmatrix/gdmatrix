@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"      
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"      
+      lang="#{userSessionBean.viewLanguage}">
+  <f:view locale="#{userSessionBean.viewLocale}">
+    <f:loadBundle basename="org.santfeliu.web.resources.WebBundle" var="webBundle" />
+    <h:head>
+      <title><h:outputText value="#{webBundle.pageNotFoundTitle}" /></title>
+    </h:head>
+    <h:body>
+      <script type="text/javascript">
+        let pathname = document.location.pathname;
+        if (pathname.indexOf("/not_found") === -1)
+        {
+          document.location = "#{userSessionBean.contextURL}/not_found"; 
+        }
+      </script>
+      <h:outputText value="#{webBundle.pageNotFoundMessage}" />
+    </h:body>    
+  </f:view>
+</html>
+

@@ -1039,6 +1039,10 @@
     <res-auth>Container</res-auth>
   </resource-ref> 
   <error-page>
+     <error-code>404</error-code>
+     <location>/common/util/not_found.xhtml</location>
+   </error-page>
+  <error-page>
     <exception-type>javax.faces.application.ViewExpiredException</exception-type>
     <location>/common/util/error_view.xhtml</location>
   </error-page>
