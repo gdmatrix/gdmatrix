@@ -96,6 +96,90 @@
               <t:div id="errorMessage" forceId="true" style="display:none">
                 <h:outputText value="#{loginBean.loginMessage}" />
               </t:div>
+
+              <t:div styleClass="loginBox valid" 
+                     rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true' and 
+                                 userSessionBean.anonymousUser or userSessionBean.loginMethod == 'VALID'}">
+                <sf:heading level="3" styleClass="element-invisible">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid == null ? 
+                                 'VALid' : userSessionBean.selectedMenuItem.properties.login_valid}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </sf:heading>
+                <t:div styleClass="headerLine">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid == null ? 
+                                 'VALid' : userSessionBean.selectedMenuItem.properties.login_valid}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </t:div>
+                <t:div styleClass="subHeaderLine" rendered="#{userSessionBean.anonymousUser}">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid_info}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </t:div>                
+                <t:div rendered="#{userSessionBean.anonymousUser}">
+                  <t:div>
+                    <h:commandLink action="#{validBean.login}" styleClass="loginButton"
+                                   title="#{webBundle.buttonSigninValid}">
+                      <h:outputText value="#{webBundle.buttonSignin}" />
+                    </h:commandLink>
+
+                  </t:div>
+                  <t:div rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url != null}">
+                    <sf:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url}" 
+                                   styleClass="loginButton" target="valid"
+                                   ariaLabel="#{userSessionBean.selectedMenuItem.properties.login_valid_register_text_aria}"
+                                   translator="#{userSessionBean.translator}"
+                                   translationGroup="login">
+                      <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_text}" 
+                                     translator="#{userSessionBean.translator}"
+                                     translationGroup="login" />
+                    </sf:outputLink>
+                  </t:div>
+                </t:div>
+              </t:div>
+
+              <t:div styleClass="loginBox certificate" 
+                     rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true' and 
+                                 userSessionBean.anonymousUser or userSessionBean.loginMethod == 'CERTIFICATE'}">
+                <sf:heading level="3" styleClass="element-invisible">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </sf:heading>
+                <t:div styleClass="headerLine">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate}" 
+                                 translator="#{userSessionBean.translator}"
+                                 translationGroup="login" />
+                </t:div>
+                <t:div styleClass="subHeaderLine" rendered="#{userSessionBean.anonymousUser}">
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate_info}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </t:div>                
+                <t:div rendered="#{userSessionBean.anonymousUser}">
+                  <t:div>
+                    <sf:secureCommandLink
+                      action="#{loginBean.loginCertificate}" immediate="true"
+                      scheme="https" port="#{applicationBean.clientSecurePort}" 
+                      styleClass="loginButton"
+                      ariaLabel="#{webBundle.certificateAuthentication}">
+                      <h:outputText value="#{webBundle.certificateAuthentication}"  />
+                    </sf:secureCommandLink>
+                  </t:div>
+                  <t:div rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_url != null}">
+                    <sf:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_url}" 
+                                  styleClass="loginButton"
+                                  ariaLabel="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_text}"
+                                  translator="#{userSessionBean.translator}"
+                                  translationGroup="login">
+                      <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_text}" 
+                                     translator="#{userSessionBean.translator}"
+                                     translationGroup="login" />
+                    </sf:outputLink>
+                  </t:div>
+                </t:div>
+              </t:div>
               
               <t:div styleClass="loginBox password" 
                      rendered="#{userSessionBean.anonymousUser or userSessionBean.loginMethod == 'PASSWORD'}">
@@ -169,93 +253,6 @@
                                      translationGroup="login" />
                     </h:outputLink>
                   </t:div>          
-                </t:div>
-              </t:div>
-
-              <t:div styleClass="loginBox certificate" 
-                     rendered="#{userSessionBean.anonymousUser or userSessionBean.loginMethod == 'CERTIFICATE'}">
-                <sf:heading level="3" styleClass="element-invisible">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate}" 
-                                 translator="#{userSessionBean.translator}" 
-                                 translationGroup="login" />
-                </sf:heading>
-                <t:div styleClass="headerLine">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate}" 
-                                 translator="#{userSessionBean.translator}"
-                                 translationGroup="login" />
-                </t:div>
-                <t:div styleClass="subHeaderLine" rendered="#{userSessionBean.anonymousUser}">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate_info}" 
-                                 translator="#{userSessionBean.translator}" 
-                                 translationGroup="login" />
-                </t:div>                
-                <t:div rendered="#{userSessionBean.anonymousUser}">
-                  <t:div>
-                    <sf:secureCommandLink
-                      action="#{loginBean.loginCertificate}" immediate="true"
-                      scheme="https" port="#{applicationBean.clientSecurePort}" 
-                      styleClass="loginButton"
-                      ariaLabel="#{webBundle.certificateAuthentication}">
-                      <h:outputText value="#{webBundle.certificateAuthentication}"  />
-                    </sf:secureCommandLink>
-                  </t:div>
-                  <t:div rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_url != null}">
-                    <sf:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_url}" 
-                                  styleClass="loginButton"
-                                  ariaLabel="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_text}"
-                                  translator="#{userSessionBean.translator}"
-                                  translationGroup="login">
-                      <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_certificate_get_text}" 
-                                     translator="#{userSessionBean.translator}"
-                                     translationGroup="login" />
-                    </sf:outputLink>
-                  </t:div>
-                </t:div>
-              </t:div>
-
-              <t:div styleClass="loginBox valid" 
-                     rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true') and 
-                                 userSessionBean.anonymousUser or userSessionBean.loginMethod == 'VALID'}">
-                <sf:heading level="3" styleClass="element-invisible">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid}" 
-                                 translator="#{userSessionBean.translator}" 
-                                 translationGroup="login" />
-                </sf:heading>
-                <t:div styleClass="headerLine">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid}" 
-                                 translator="#{userSessionBean.translator}"
-                                 translationGroup="login" />
-                </t:div>
-                <t:div styleClass="subHeaderLine" rendered="#{userSessionBean.anonymousUser}">
-                  <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid_info}" 
-                                 translator="#{userSessionBean.translator}" 
-                                 translationGroup="login" />
-                </t:div>                
-                <t:div rendered="#{userSessionBean.anonymousUser}">
-                  <t:div>
-                    <!--
-                    <sf:outputLink value="#{validBean.loginURL}" styleClass="loginButton"
-                                   ariaLabel="#{webBundle.buttonSigninValid}">
-                      <h:outputText value="#{webBundle.buttonSignin}" />
-                    </sf:outputLink>
-                    -->
-                    <h:commandLink action="#{validBean.login}" styleClass="loginButton"
-                                   title="#{webBundle.buttonSigninValid}">
-                      <h:outputText value="#{webBundle.buttonSignin}" />
-                    </h:commandLink>
-
-                  </t:div>
-                  <t:div rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url != null}">
-                    <sf:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_url}" 
-                                   styleClass="loginButton" target="valid"
-                                   ariaLabel="#{userSessionBean.selectedMenuItem.properties.login_valid_register_text_aria}"
-                                   translator="#{userSessionBean.translator}"
-                                   translationGroup="login">
-                      <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid_register_text}" 
-                                     translator="#{userSessionBean.translator}"
-                                     translationGroup="login" />
-                    </sf:outputLink>
-                  </t:div>
                 </t:div>
               </t:div>
 

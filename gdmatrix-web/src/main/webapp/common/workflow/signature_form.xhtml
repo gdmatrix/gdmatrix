@@ -28,10 +28,12 @@
          width="100%" height="400px" />
 
       <!-- signature with VALid -->
-      <t:div rendered="#{userSessionBean.loginMethod == 'VALID'}">
-        <h:graphicImage url="/common/workflow/images/valid.png" alt="VALID" title="VALID" 
-          style="margin:8px;display:block;" />
-        <t:div styleClass="buttonBar">
+      <t:div rendered="#{userSessionBean.loginMethod == 'VALID'}" styleClass="buttonBar">
+        <h:outputText value="#{workflowBundle.signingWithVALID}" />
+        <div style="text-align: center">
+          <h:graphicImage url="/common/workflow/images/valid.png" alt="VALID" title="VALID" />
+        </div>
+        <t:div>
           <h:commandButton value="#{workflowBundle.sign}"
             action="#{signatureFormBean.signValid}"
             alt="#{workflowBundle.sign}" title="#{workflowBundle.sign}"
@@ -47,9 +49,13 @@
 
       <!-- signature with certificate -->  
       <t:div rendered="#{userSessionBean.loginMethod != 'VALID'}" styleClass="buttonBar">
-
+        <h:outputText value="#{workflowBundle.signingWithGDMatrix}" />
+        <div style="text-align: center">
+          <h:graphicImage url="/common/workflow/images/gdmatrix_client.png" alt="GDMatrix" title="GDMatrix" />
+        </div>
+        
         <!-- signature with matrix client -->
-        <h:panelGroup rendered="#{userSessionBean.matrixClientEnabled}">
+        <t:div>
           <h:commandButton value="#{workflowBundle.sign}"
              alt="#{workflowBundle.sign}" title="#{workflowBundle.sign}"
              styleClass="workflowButton"
@@ -63,15 +69,7 @@
             model="#{signatureFormBean.model}"
             function="signDocument"
             helpUrl="#{matrixClientBean.helpUrl}"/>
-        </h:panelGroup>
-
-        <!-- signature with applets -->
-        <h:panelGroup rendered="#{not userSessionBean.matrixClientEnabled}">
-          <sf:signer action="#{signatureFormBean.sign}"
-            document="#{signatureFormBean.document}"
-            result="#{signatureFormBean.result}"
-            port="#{applicationBean.serverSecurePort}"/>
-        </h:panelGroup>
+        </t:div>
       </t:div>
 
     </ui:define>

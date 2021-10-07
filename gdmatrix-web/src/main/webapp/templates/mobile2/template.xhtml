@@ -262,7 +262,24 @@
             <sf:outputText value="#{webBundle.identification}" />
           </sf:heading>      
           <t:div rendered="#{userSessionBean.anonymousUser}" styleClass="loginArea">
-
+            
+            <t:div styleClass="loginLinksDiv">
+              <h:commandLink action="#{validBean.login}" styleClass="loginButton"
+                             rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true'}">
+                <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid == null ? 
+                               'VALid' : userSessionBean.selectedMenuItem.properties.login_valid}" 
+                               translator="#{userSessionBean.translator}" 
+                               translationGroup="login" />
+              </h:commandLink>   
+              
+              <sf:secureCommandLink 
+                rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true'}"
+                action="#{loginBean.loginCertificate}" immediate="true"
+                scheme="https" port="#{applicationBean.clientSecurePort}" styleClass="loginButton">
+                <h:outputText value="#{webBundle.certificateAuthentication}"  />
+              </sf:secureCommandLink>
+            </t:div>
+                        
             <t:div styleClass="loginUserDiv">
               <t:div styleClass="labelDiv">
                 <h:outputLabel for="userBox"
@@ -296,21 +313,6 @@
                 port="#{applicationBean.serverSecurePort}" scheme="https">
                 <h:outputText value="#{webBundle.buttonSignin}" />
               </sf:secureCommandLink>
-            </t:div>
-
-            <t:div styleClass="loginButtonDiv certificate">
-              <sf:secureCommandLink
-                action="#{loginBean.loginCertificate}" immediate="true"
-                scheme="https" port="#{applicationBean.clientSecurePort}" styleClass="loginButton">
-                <h:outputText value="#{webBundle.certificateAuthentication}"  />
-              </sf:secureCommandLink>          
-            </t:div>
-
-            <t:div styleClass="loginButtonDiv valid"
-              rendered="#{(userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true')}">
-              <h:commandLink action="#{validBean.login}" styleClass="loginButton">
-                <h:outputText value="VALid"  />
-              </h:commandLink>   
             </t:div>
 
             <t:div rendered="#{loginBean.loginMessage != null}" styleClass="errorMessageDiv" id="errorMessageDiv" forceId="true">
