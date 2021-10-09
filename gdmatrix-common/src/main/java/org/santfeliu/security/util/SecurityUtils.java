@@ -32,6 +32,7 @@ package org.santfeliu.security.util;
 
 import java.security.MessageDigest;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -189,13 +190,16 @@ public class SecurityUtils
     String subjectDN = certificate.getSubjectDN().getName();
     parseAttributes(subjectDN, attributes);
     // parse subject alternative names
-
-    for (List list : certificate.getSubjectAlternativeNames())
+    Collection<List<?>> names = certificate.getSubjectAlternativeNames();
+    if (names != null)
     {
-      Integer key = (Integer)list.get(0);
-      String value = String.valueOf(list.get(1));
+      for (List list : names)
+      {
+        Integer key = (Integer)list.get(0);
+        String value = String.valueOf(list.get(1));
 
-      attributes.put("SAN-" + key, value);
+        attributes.put("SAN-" + key, value);
+      }
     }
     return attributes;
   }
