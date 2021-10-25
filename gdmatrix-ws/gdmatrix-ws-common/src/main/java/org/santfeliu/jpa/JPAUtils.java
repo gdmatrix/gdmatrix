@@ -63,6 +63,8 @@ public class JPAUtils
 {
   private static final String TOPLINK_PROVIDER =
     "oracle.toplink.essentials.PersistenceProvider";
+  private static final String ECLIPSELINK_PROVIDER =
+    "org.eclipse.persistence.jpa.PersistenceProvider";
 
   static final Logger LOGGER  = Logger.getLogger("JPAUtils");
 
@@ -232,7 +234,27 @@ public class JPAUtils
 
     return queryText;
   }
-
+  
+  public static void enableDDLGeneration(EntityManager em)
+  {
+    String enableDDLGeneration = 
+      MatrixConfig.getProperty("enableDDLGeneration");
+    if ("true".equalsIgnoreCase(enableDDLGeneration))
+    {
+      try
+      {
+        if (getPresistenceProviders().contains(ECLIPSELINK_PROVIDER))
+          EclipseLinkUtils.enableDDLGeneration(em);
+        else
+          LOGGER.log(Level.INFO, "DDL Generation enabling not supported");
+      }
+      catch (IOException ex)
+      {
+        LOGGER.log(Level.SEVERE, "DDL Generation error", ex);
+      }
+    }
+  }
+    
   private static Set getPresistenceProviders()
         throws IOException
   {

@@ -177,6 +177,7 @@ public class WSController
           }
           else
           {
+            enableDDLGeneration(endpointName);
             invokeJPA(instance, initializerMethod, endpointName);
           }
           LOGGER.log(Level.INFO, "Endpoint {0} initialized.", endpointName);
@@ -331,4 +332,12 @@ public class WSController
     }
     return result;
   }
+  
+  private void enableDDLGeneration(String endpointName)
+  {
+    String unit = StringUtils.isBlank(unitName) ? endpointName : unitName;
+    EntityManager em = JPAUtils.createEntityManager(unit, endpointName); 
+    JPAUtils.enableDDLGeneration(em);      
+  }
+  
 }
