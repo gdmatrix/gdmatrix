@@ -269,6 +269,12 @@
           Llista d'identificadors de <i>Node</i> pare a cercar.
         </documentation>
       </property>
+      <property name="pathNodeId" type="xs:string" minOccurs="0" 
+        maxOccurs="unbounded" nillable="true" references="cms:Node">
+        <documentation language="ca">
+          Llista d'identificadors de <i>Node</i> superior a cercar.
+        </documentation>
+      </property>
       <property name="name" type="xs:string" minOccurs="0">
         <documentation language="ca">
           Nom descriptiu de node a cercar.

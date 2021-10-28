@@ -197,7 +197,7 @@ public class CMSManager implements CMSManagerPort
       dbFromWorkspace.copyTo(workspace, endpoint);
       newDBWorkspace = new DBWorkspace(workspace, endpoint);
       newDBWorkspace.setWorkspaceId(null);
-      newDBWorkspace.setName("New workspace");
+      newDBWorkspace.setName(dbFromWorkspace.getName() + " - Copy");
       newDBWorkspace.setRefWorkspaceId(dbFromWorkspace.getWorkspaceId());
       User user = UserCache.getUser(wsContext);
       String localUserId = endpoint.toLocalId(User.class, user.getUserId());
@@ -871,6 +871,8 @@ public class CMSManager implements CMSManagerPort
       filter.getWorkspaceId()));
     result.getNodeId().addAll(endpoint.toLocalIds(Node.class,
       filter.getNodeId()));
+    result.getPathNodeId().addAll(endpoint.toLocalIds(Node.class,
+      filter.getPathNodeId()));
     result.getParentNodeId().addAll(endpoint.toLocalIds(Node.class,
       filter.getParentNodeId()));
     result.getChangeUserId().addAll(endpoint.toLocalIds(User.class,

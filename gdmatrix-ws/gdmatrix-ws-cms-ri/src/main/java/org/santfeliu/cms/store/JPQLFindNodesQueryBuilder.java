@@ -65,6 +65,7 @@ public class JPQLFindNodesQueryBuilder extends FindNodesQueryBuilder
     appendIndexFilter(whereBuffer);
     appendWorkspaceIdFilter(whereBuffer);
     appendNodeIdFilter(whereBuffer);
+    appendPathNodeIdFilter(whereBuffer);
     appendParentNodeIdFilter(whereBuffer);
     appendChangeUserIdFilter(whereBuffer);
     appendPropertiesFilter(whereBuffer);
@@ -130,12 +131,23 @@ public class JPQLFindNodesQueryBuilder extends FindNodesQueryBuilder
       appendOperator(buffer, "AND");
       appendInOperator(buffer, "n.nodeId", ":", "nodeId", nodeIds);
     }
+  }  
+  
+  private void appendPathNodeIdFilter(StringBuilder buffer)
+  {
+    List<String> pathNodeIds = filter.getPathNodeId();
+    if (pathNodeIds.size() > 0)
+    {
+      appendOperator(buffer, "AND");
+      appendLikeOperator(buffer, "n.path", ":", "path", 
+        stringListToPathItemList(pathNodeIds));
+    }
   }
 
   private void appendParentNodeIdFilter(StringBuilder buffer)
   {
     List<String> parentNodeIds = filter.getParentNodeId();
-    List<String> auxParentNodeIds = new ArrayList<String>();
+    List<String> auxParentNodeIds = new ArrayList();
     boolean rootSearch = false;
     for (String parentNodeId : parentNodeIds)
     {
@@ -285,10 +297,20 @@ public class JPQLFindNodesQueryBuilder extends FindNodesQueryBuilder
 
   private List<String> stringListToUpperCase(List<String> list)
   {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList();
     for (String s : list)
     {
       result.add(s.toUpperCase());
+    }
+    return result;
+  }
+
+  private List<String> stringListToPathItemList(List<String> list)
+  {
+    List<String> result = new ArrayList();
+    for (String s : list)
+    {
+      result.add("%/" + s + "/%");      
     }
     return result;
   }
