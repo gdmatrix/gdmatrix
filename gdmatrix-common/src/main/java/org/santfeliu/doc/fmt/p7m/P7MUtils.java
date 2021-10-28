@@ -59,9 +59,8 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.ASN1UTCTime;
-import org.bouncycastle.asn1.DERBoolean;
-import org.bouncycastle.asn1.DERInteger;
-import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Boolean;
+import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cmp.PKIStatusInfo;
@@ -206,8 +205,8 @@ public class P7MUtils
       AttributeTable unsignedAttributes = si.getUnsignedAttributes();
       printAttributeTable(unsignedAttributes);
 
-      DERObjectIdentifier tsId =
-        new DERObjectIdentifier("1.2.840.113549.1.9.16.2.14");
+      ASN1ObjectIdentifier tsId =
+        new ASN1ObjectIdentifier("1.2.840.113549.1.9.16.2.14");
       Attribute att = unsignedAttributes == null ?
         null : unsignedAttributes.get(tsId);
       if (att == null)
@@ -286,8 +285,8 @@ public class P7MUtils
     TimeStampReq request = new TimeStampReq(
       imprint,
       timestampPolicy != null ? new ASN1ObjectIdentifier(timestampPolicy) : null,
-      nonce != null ? new DERInteger(nonce.getBytes()) : null,
-      new DERBoolean(requireCert),
+      nonce != null ? new ASN1Integer(nonce.getBytes()) : null,
+      ASN1Boolean.getInstance(requireCert),
       extensions);
     return request;
   }
@@ -322,9 +321,9 @@ public class P7MUtils
       String time = utcTime.getAdjustedTime();
       System.out.println(time);
     }
-    else if (der instanceof DERObjectIdentifier)
+    else if (der instanceof ASN1ObjectIdentifier)
     {
-      DERObjectIdentifier id = (DERObjectIdentifier)der;
+      ASN1ObjectIdentifier id = (ASN1ObjectIdentifier)der;
       System.out.println(id.getId());
     }
   }

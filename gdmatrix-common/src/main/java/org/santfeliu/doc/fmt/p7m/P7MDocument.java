@@ -55,9 +55,9 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.ASN1UTCTime;
-import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
@@ -77,7 +77,7 @@ import org.bouncycastle.util.encoders.Base64;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class P7MDocument
 {
@@ -157,7 +157,7 @@ public class P7MDocument
 
       // signingTime
       Attribute attrib = (Attribute)attributes.get(
-        new DERObjectIdentifier("1.2.840.113549.1.9.5"));
+        new ASN1ObjectIdentifier("1.2.840.113549.1.9.5"));
       if (attrib != null)
       {
         ASN1UTCTime time = (ASN1UTCTime)attrib.getAttrValues().getObjectAt(0);
@@ -169,7 +169,7 @@ public class P7MDocument
       // filename
       DEROctetString octet;
       attrib = (Attribute) attributes.get(
-        new DERObjectIdentifier("1.3.6.1.4.1.311.88.2.1"));
+        new ASN1ObjectIdentifier("1.3.6.1.4.1.311.88.2.1"));
       if (attrib != null)
       {
         octet = (DEROctetString) attrib.getAttrValues().getObjectAt(0);
@@ -181,7 +181,7 @@ public class P7MDocument
 
       // decretNumber
       attrib = (Attribute) attributes.get(
-        new DERObjectIdentifier("1.3.6.1.4.1.311.88.2.2"));
+        new ASN1ObjectIdentifier("1.3.6.1.4.1.311.88.2.2"));
       if (attrib != null)
       {
         octet = (DEROctetString) attrib.getAttrValues().getObjectAt(0);
@@ -198,10 +198,10 @@ public class P7MDocument
         attributes = table.toHashtable();
         // timeStampToken
         attrib = (Attribute)attributes.get(
-          new DERObjectIdentifier("1.2.840.113549.1.9.16.2.14"));
+          new ASN1ObjectIdentifier("1.2.840.113549.1.9.16.2.14"));
         if (attrib != null)
         {
-          DERSequence seq = (DERSequence)attrib.getAttrValues().getObjectAt(0);
+          ASN1Sequence seq = (ASN1Sequence)attrib.getAttrValues().getObjectAt(0);
           ContentInfo timeStampToken = ContentInfo.getInstance(seq);
           SignedData sd = SignedData.getInstance(timeStampToken.getContent());
           ASN1Set certificates = sd.getCertificates();

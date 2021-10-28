@@ -21,9 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
+import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
-import java.security.KeyStore.PrivateKeyEntry;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
@@ -48,6 +47,7 @@ import org.apache.pdfbox.examples.signature.cert.CertificateVerificationExceptio
 import org.apache.pdfbox.examples.signature.cert.OcspHelper;
 import org.apache.pdfbox.examples.signature.cert.RevokedCertificateException;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
@@ -57,18 +57,24 @@ import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.tsp.TSPException;
+import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.tsp.TimeStampTokenInfo;
 
 /**
- * Copied from PDFBox 2.0.17 examples, initial version:
- * https://svn.apache.org/viewvc/pdfbox/trunk/examples/src/main/java/org/apache/pdfbox/examples/signature/validation/AddValidationInformation.java?view=co
- *
  * An example for adding Validation Information to a signed PDF, inspired by
  * ETSI TS 102 778-4 V1.1.2 (2009-12), Part 4: PAdES Long Term - PAdES-LTV
  * Profile. This procedure appends the Validation Information of the last
  * signature (more precise its signer(s)) to a copy of the document. The
  * signature and the signed data will not be touched and stay valid.
+ * <p>
+ * See also <a href="http://eprints.hsr.ch/id/eprint/616">Bachelor thesis (in
+ * German) about LTV</a>
  *
  * @author Alexis Suter
+ * validateSignature method modified to allow output stream as parameter.
  */
 public class AddValidationInformation
 {
@@ -83,13 +89,13 @@ public class AddValidationInformation
   private COSArray crls;
   private COSArray certs;
   private PDDocument document;
-  private final Set<BigInteger> foundRevocationInformation = new HashSet<>();
+  private final Set<X509Certificate> foundRevocationInformation = new HashSet<X509Certificate>();
   private Calendar signDate;
-  
-  public AddValidationInformation()
-  {
-  }
-  
+  private final Set<X509Certificate> ocspChecked = new HashSet<X509Certificate>();
+  //TODO foundRevocationInformation and ocspChecked have a similar purpose. One of them should likely
+  // be removed and the code improved. When doing so, keep in mind that ocspChecked was added last,
+  // because of a problem with freetsa.
+
   /**
    * Signs the given PDF file.
    *
@@ -99,41 +105,46 @@ public class AddValidationInformation
    */
   public void validateSignature(File inFile, File outFile) throws IOException
   {
-    if (inFile == null || !inFile.exists())
-      throw new FileNotFoundException("Document for signing does not exist");
-
-    try (PDDocument doc = PDDocument.load(inFile);
-      FileOutputStream fos = new FileOutputStream(outFile))
+    try(FileOutputStream fos = new FileOutputStream(outFile))
     {
-      document = doc;
-      doValidation(inFile.getAbsolutePath(), fos);
+      validateSignature(inFile, fos);
     }
   }
 
-  /**
-   * Signs the given PDF file.
-   *
-   * @param inFile input PDF file
-   * @param os output stream
-   * @throws IOException if the input file could not be read
-   */
   public void validateSignature(File inFile, OutputStream os) throws IOException
   {
     if (inFile == null || !inFile.exists())
-      throw new FileNotFoundException("Document for signing does not exist");
-
-    try (PDDocument doc = PDDocument.load(inFile))
     {
-      document = doc;
-      doValidation(inFile.getAbsolutePath(), os);
+      String err = "Document for signing ";
+      if (null == inFile)
+      {
+        err += "is null";
+      }
+      else
+      {
+        err += "does not exist: " + inFile.getAbsolutePath();
+      }
+      throw new FileNotFoundException(err);
     }
+
+    PDDocument doc = PDDocument.load(inFile);
+    int accessPermissions = SigUtils.getMDPPermission(doc);
+    if (accessPermissions == 1)
+    {
+      System.out.println("PDF is certified to forbid changes, "
+        + "some readers may report the document as invalid despite that "
+        + "the PDF specification allows DSS additions");
+    }
+    document = doc;
+    doValidation(inFile.getAbsolutePath(), os);
+    os.close();
+    doc.close();
   }
 
   /**
    * Fetches certificate information from the last signature of the document and
    * appends a DSS with the validation information to the document.
    *
-   * @param document containing the Signature
    * @param filename in file to extract signature
    * @param output where to write the changed document
    * @throws IOException
@@ -149,13 +160,28 @@ public class AddValidationInformation
       {
         certInfo = certInformationHelper.getLastCertInfo(signature, filename);
         signDate = signature.getSignDate();
+        if ("ETSI.RFC3161".equals(signature.getSubFilter()))
+        {
+          byte[] contents = signature.getContents();
+          TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
+          TimeStampTokenInfo timeStampInfo = timeStampToken.getTimeStampInfo();
+          signDate = Calendar.getInstance();
+          signDate.setTime(timeStampInfo.getGenTime());
+        }
       }
     }
     catch (CertificateProccessingException e)
     {
       throw new IOException("An Error occurred processing the Signature", e);
     }
-    
+    catch (CMSException e)
+    {
+      throw new IOException("An Error occurred processing the Signature", e);
+    }
+    catch (TSPException e)
+    {
+      throw new IOException("An Error occurred processing the Signature", e);
+    }
     if (certInfo == null)
     {
       throw new IOException(
@@ -220,10 +246,29 @@ public class AddValidationInformation
         {
           result = clazz.getDeclaredConstructor().newInstance();
         }
-        catch (ReflectiveOperationException | SecurityException e)
+        catch (InstantiationException ex)
         {
-          LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), e);
-          return null;
+          throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+          throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+        }
+        catch (NoSuchMethodException ex)
+        {
+          throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+        }
+        catch (SecurityException ex)
+        {
+          throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+        }
+        catch (IllegalArgumentException ex)
+        {
+          throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+        }
+        catch (InvocationTargetException ex)
+        {
+          throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
         }
         result.setDirect(false);
         parent.setItem(COSName.getPDFName(name), result);
@@ -264,17 +309,15 @@ public class AddValidationInformation
    * @throws IOException when failed to fetch an revocation data.
    */
   private void addRevocationDataRecursive(CertSignatureInformation certInfo) throws IOException
-  {   
-  
+  {
     if (certInfo.isSelfSigned())
     {
       return;
     }
     // To avoid getting same revocation information twice.
-    boolean isRevocationInfoFound = foundRevocationInformation
-      .contains(certInfo.getCertificate().getSerialNumber());
+    boolean isRevocationInfoFound = foundRevocationInformation.contains(certInfo.getCertificate());
     if (!isRevocationInfoFound)
-    {      
+    {
       if (certInfo.getOcspUrl() != null && certInfo.getIssuerCertificate() != null)
       {
         isRevocationInfoFound = fetchOcspData(certInfo);
@@ -324,7 +367,17 @@ public class AddValidationInformation
       addOcspData(certInfo);
       return true;
     }
-    catch (OCSPException | CertificateProccessingException | IOException e)
+    catch (OCSPException e)
+    {
+      LOG.warn("Failed fetching Ocsp", e);
+      return false;
+    }
+    catch (CertificateProccessingException e)
+    {
+      LOG.warn("Failed fetching Ocsp", e);
+      return false;
+    }
+    catch (IOException e)
     {
       LOG.warn("Failed fetching Ocsp", e);
       return false;
@@ -332,7 +385,7 @@ public class AddValidationInformation
     catch (RevokedCertificateException e)
     {
       throw new IOException(e);
-    } 
+    }
   }
 
   /**
@@ -348,7 +401,22 @@ public class AddValidationInformation
     {
       addCrlRevocationInfo(certInfo);
     }
-    catch (GeneralSecurityException | IOException | RevokedCertificateException | CertificateVerificationException e)
+    catch (GeneralSecurityException e)
+    {
+      LOG.warn("Failed fetching CRL", e);
+      throw new IOException(e);
+    }
+    catch (RevokedCertificateException e)
+    {
+      LOG.warn("Failed fetching CRL", e);
+      throw new IOException(e);
+    }
+    catch (IOException e)
+    {
+      LOG.warn("Failed fetching CRL", e);
+      throw new IOException(e);
+    }
+    catch (CertificateVerificationException e)
     {
       LOG.warn("Failed fetching CRL", e);
       throw new IOException(e);
@@ -364,21 +432,23 @@ public class AddValidationInformation
    * @throws CertificateProccessingException
    * @throws RevokedCertificateException
    */
-  private void addOcspData(CertSignatureInformation certInfo) throws 
-    IOException, OCSPException, CertificateProccessingException, 
-    RevokedCertificateException
+  private void addOcspData(CertSignatureInformation certInfo) throws IOException, OCSPException,
+    CertificateProccessingException, RevokedCertificateException
   {
+    if (ocspChecked.contains(certInfo.getCertificate()))
+    {
+      // This certificate has been OCSP-checked before
+      return;
+    }
     OcspHelper ocspHelper = new OcspHelper(
       certInfo.getCertificate(),
-      (signDate != null ? signDate.getTime() : null),
+      signDate.getTime(),
       certInfo.getIssuerCertificate(),
-      new HashSet<>(certInformationHelper.getCertificateSet()),
+      new HashSet<X509Certificate>(certInformationHelper.getCertificateSet()),
       certInfo.getOcspUrl());
     OCSPResp ocspResp = ocspHelper.getResponseOcsp();
+    ocspChecked.add(certInfo.getCertificate());
     BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
-    if (basicResponse == null)
-      throw new OCSPException("Can not process OCSP Response");
-    
     X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
     certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
     byte[] signatureHash;
@@ -415,7 +485,7 @@ public class AddValidationInformation
     {
       correspondingOCSPs.add(ocspStream);
     }
-    foundRevocationInformation.add(certInfo.getCertificate().getSerialNumber());
+    foundRevocationInformation.add(certInfo.getCertificate());
   }
 
   /**
@@ -444,7 +514,7 @@ public class AddValidationInformation
       }
     }
     crl.verify(issuerCertificate.getPublicKey(), SecurityProvider.getProvider().getName());
-    CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), (signDate != null ? signDate.getTime() : null), certInfo.getCrlUrl());
+    CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), signDate.getTime(), certInfo.getCrlUrl());
     COSStream crlStream = writeDataToStream(crl.getEncoded());
     crls.add(crlStream);
     if (correspondingCRLs != null)
@@ -486,7 +556,7 @@ public class AddValidationInformation
         correspondingCRLs = savedCorrespondingCRLs;
       }
     }
-    foundRevocationInformation.add(certInfo.getCertificate().getSerialNumber());
+    foundRevocationInformation.add(certInfo.getCertificate());
   }
 
   private void updateVRI(CertSignatureInformation certInfo, COSDictionary vri) throws IOException
@@ -567,9 +637,15 @@ public class AddValidationInformation
   private COSStream writeDataToStream(byte[] data) throws IOException
   {
     COSStream stream = document.getDocument().createCOSStream();
-    try (OutputStream os = stream.createOutputStream(COSName.FLATE_DECODE))
+    OutputStream os = null;
+    try
     {
+      os = stream.createOutputStream(COSName.FLATE_DECODE);
       os.write(data);
+    }
+    finally
+    {
+      IOUtils.closeQuietly(os);
     }
     return stream;
   }
@@ -614,7 +690,7 @@ public class AddValidationInformation
     String name = inFile.getName();
     String substring = name.substring(0, name.lastIndexOf('.'));
 
-    File outFile = new File(inFile.getParent(), substring + "_ocsp.pdf");
+    File outFile = new File(inFile.getParent(), substring + "_LTV.pdf");
     addOcspInformation.validateSignature(inFile, outFile);
   }
 

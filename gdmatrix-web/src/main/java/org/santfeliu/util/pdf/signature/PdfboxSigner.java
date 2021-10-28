@@ -259,9 +259,8 @@ public class PdfboxSigner extends PDFSigner
       document.saveIncremental(fos);
       fos.close();
 
-      AddValidationInformation avi = new AddValidationInformation();
+      AddValidationInformation avi = new AddValidationInformation();  
       avi.validateSignature(vFile, os);   
-    
     }
     finally
     {

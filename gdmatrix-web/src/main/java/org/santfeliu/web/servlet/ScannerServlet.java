@@ -184,6 +184,10 @@ public class ScannerServlet extends HttpServlet
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
               "DOCUMENT_NOT_CREATED");
         }
+        catch (Throwable ex)
+        {
+          ex.printStackTrace();
+        }
         finally
         {
           is.close();
