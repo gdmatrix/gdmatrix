@@ -109,6 +109,10 @@ public class ShortcutFilter implements Filter
     {
       try
       {
+        if (!url.startsWith("http")) //docId
+        {
+          url = "http://localhost/documents/" + url;
+        }
         shortcutsUrl = new URL(url);
         String num = servletContext.getInitParameter(UPDATE_INTERVAL_PARAM);
         if (num != null)
