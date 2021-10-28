@@ -31,7 +31,11 @@
 package org.santfeliu.cms.web;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -52,7 +56,7 @@ import org.santfeliu.web.UserSessionBean;
 
 /**
  *
- * @author unknown
+ * @author lopezrj-sf
  */
 public class CMSToolbarBean extends FacesBean implements Serializable
 {
@@ -72,19 +76,31 @@ public class CMSToolbarBean extends FacesBean implements Serializable
     {
       try
       {
+        Map<String, List<Workspace>> workspaceMap = new HashMap();
         CMSManagerPort port = getCMSManagerPort();
         WorkspaceFilter filter = new WorkspaceFilter();
         List<Workspace> workspaceList = port.findWorkspaces(filter);
         workspaceItems = new SelectItem[workspaceList.size()];
         if (workspaceList.size() > 0)
         {
-          int i = 0;
           for (Workspace w : workspaceList)
           {
-            SelectItem item = new SelectItem();
-            item.setLabel(w.getWorkspaceId() + " (" + w.getName() + ")");
-            item.setValue(w.getWorkspaceId());
-            workspaceItems[i++] = item;
+            if (w.getRefWorkspaceId() == null)
+            {
+              if (!workspaceMap.containsKey("ROOT"))
+              {
+                workspaceMap.put("ROOT", new ArrayList());
+              }
+              workspaceMap.get("ROOT").add(w);
+            }
+            else
+            {
+              if (!workspaceMap.containsKey(w.getRefWorkspaceId()))
+              {
+                workspaceMap.put(w.getRefWorkspaceId(), new ArrayList());
+              }
+              workspaceMap.get(w.getRefWorkspaceId()).add(w);              
+            }
             //Now we update the workspaces in the cache
             CMSCache cmsCache =
               ApplicationBean.getCurrentInstance().getCmsCache();
@@ -95,7 +111,14 @@ public class CMSToolbarBean extends FacesBean implements Serializable
               cWorkspace.getWorkspace().setDescription(w.getDescription());
               cWorkspace.getWorkspace().setRefWorkspaceId(
                 w.getRefWorkspaceId());
-            }
+            }            
+          }
+          List<SelectItem> itemList = 
+            getWorkspaceItemList(workspaceMap, "ROOT", 0);          
+          int i = 0;
+          for (SelectItem item : itemList)
+          {
+            workspaceItems[i++] = item;
           }
         }
       }
@@ -236,5 +259,32 @@ public class CMSToolbarBean extends FacesBean implements Serializable
       userSessionBean.getUsername(),
       userSessionBean.getPassword());
   }
+  
+  private List<SelectItem> getWorkspaceItemList(
+    Map<String, List<Workspace>> map, String refWorkspaceId, int depth)
+  {
+    List<SelectItem> result = new ArrayList();
+    if (map.containsKey(refWorkspaceId))
+    {
+      String itemPrefix = "";
+      if (depth > 0)
+      {
+        char[] prefix = new char[depth];
+        Arrays.fill(prefix, '.');
+        itemPrefix = new String(prefix);
+      }      
+      List<Workspace> workspaceList = map.get(refWorkspaceId);
+      for (Workspace w : workspaceList)
+      {
+        SelectItem item = new SelectItem();
+        item.setLabel(itemPrefix + w.getWorkspaceId() + " (" + w.getName() + 
+          ")");
+        item.setValue(w.getWorkspaceId());
+        result.add(item);
+        result.addAll(getWorkspaceItemList(map, w.getWorkspaceId(), depth + 3));
+      }      
+    }
+    return result;
+  }  
 
 }
