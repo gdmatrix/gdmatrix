@@ -44,7 +44,7 @@ import org.santfeliu.web.UserSessionBean;
 
 /**
  *
- * @author unknown
+ * @author lopezrj-sf
  */
 public class WorkspaceEditBean extends FacesBean implements Serializable
 {
@@ -109,6 +109,7 @@ public class WorkspaceEditBean extends FacesBean implements Serializable
       CMSConfigBean.getPort().storeWorkspace(workspace); 
       CMSToolbarBean.getCurrentInstance().setWorkspaceItems(null);
       getNodeEditBean().setToWorkspaceItems(null);
+      getNodeEditBean().resetSyncPanel();
       return "node_edit";
     }
     catch (Exception ex)

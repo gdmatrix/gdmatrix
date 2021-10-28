@@ -1,541 +1,78 @@
-/* EDIT view styles */
-html
+/* CMS MODULE STYLES */
+
+/* Common styles */
+
+form#mainform
 {
-  overflow: auto;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.cmsCurrentPathPanel
+form#mainform .webtool
 {
-  font-family: Arial;
-  font-size:12px;
-  display:inline-block;
-  background:#C0C0C0;
-  width:100%;
-  padding-top:4px;
-  padding-bottom:4px;
-  border-top: solid 1px gray;
-  border-bottom: solid 1px gray;
-  position: relative;
-  min-height: 25px;
+  flex-grow: 0;
 }
 
-.cmsCurrentPathPanel .currentPath
-{
-  position: absolute;
-  left: 0px;
-  line-height: 25px;
-}
-
-.itemPath
-{
-  text-decoration:none;
-  padding-left:4px;
-  padding-right:2px;
-  font-weight:bold;
-  color:#404040;
-  display:inline-block;
-  border-left:1px solid black;
-}
-
-.itemPath:hover
-{
-  color:black;
-}
-
-.itemPath:first-child
-{
-  border:none;
-}
-
-.cmsEditPanel
-{
-  display:block;
-  margin-top:10px;
-}
-
-.nodeTree
-{
-  margin-left:1%;
-  width:30%;
-  float: left;
-  position: relative;
-}
-
-.nodeTree .nodeSearch
-{
-  display: block;
-  margin-bottom: 8px;
-}
-
-.nodeTree .subtoolbar
-{
-  margin-bottom: 10px;
-}
-
-.nodeTree .collapseAllLink
-{
-  text-decoration: none;
-  font-weight: normal;
-  color: black;
-  margin-left: 4px;
-}
-
-.nodeProperties, .nodeCSS, .nodeSync, .nodeSearchPanel
-{
-  margin-left:1%;
-  width:65%;
-  float:left;
-  position:relative;
-}
-
-.nodeName
-{
-  display: block;
-  margin-bottom: 8px;
-  float: right;
-}
-
-.nodeNameLabel, .nodeSearchLabel
-{
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
-.nodeNameValue, .nodeSearchValue
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size:12px;
-  border:solid 1px #A0A0A0;
-  background: #F8F8F8;
-  vertical-align:middle;
-}
-
-.propertyTable
-{
-  width:100%;
-  border-collapse: collapse;
-  padding:0;
-  margin:0;
-}
-
-.propertyTable TR
-{
-  padding:2px;
-}
-
-.propertyTable TR TD.col1
-{
-  padding:2px;
-  width:30%;
-}
-
-.propertyTable TR TD.col2
-{
-  padding:2px;
-  width:60%;
-}
-
-.propertyTable TR TD.col3
-{
-  padding:2px;
-  width:5%;
-  text-align:right;
-}
-
-.propertyTable TR TD.col4
-{
-  padding:2px;
-  width:5%;
-  text-align:left;
-}
-
-.subtoolbar
-{
-  display:block;
-}
-
-.nodeProperties .subtoolbar
-{
-  position: relative;
-  margin-bottom: 10px;
-}
-
-.nodeProperties .subtoolbar .nodeName
-{
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.nodeProperties .nodeActionTitleLayer
-{
-  font-weight: bold;
-  margin-top: 6px;
-  margin-bottom: 6px;
-}
-
-.nodeProperties .userPropertiesTitleLayer
-{
-  margin-top: 20px;
-  margin-bottom: 6px;
-}
-
-.nodeProperties .userPropertiesTitle
-{
-  font-weight: bold;
-}
-
-.nodeProperties .helpCaptionTable
+form#mainform .page
 {  
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #EEEEEE;
+  padding: 8px;
 }
 
-.nodeProperties .noPropertiesLabel
+.page .buttonsPanel
 {
-  font-weight: bold;
-  display: block;
-  font-size: 12px;
-  margin-top: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.propertyTable A.imageButton,
-.subtoolbar A.imageButton,
-.subtoolbar A.showHelpImageButton
+a.imageButton
 {
-  border:none;
   margin:1px;
 }
 
-.propertyTable A.imageButton img,
-.subtoolbar A.imageButton img
+a.imageButton img
 {
-  background: #C0C0C0;
-  border:1px solid #A0A0A0;
-}
-
-.subtoolbar A.showHelpImageButton img
-{
-  background: #D0D000;
-  border:1px solid #A0A0A0;
-}
-
-.propertyTable A.imageButton img:hover,
-.subtoolbar A.imageButton img:hover
-{
-  background: #D0D000;
-}
-
-.propertyTable TR TD
-{
-  border-top: dashed 1px #A0A0A0;
-  vertical-align:top;
-}
-
-INPUT.propertyName,
-INPUT.propertyValue
-{
-  width:98%;
-  border:solid 1px #A0A0A0;
-  background: #F8F8F8;
-  display:block;
-  vertical-align:middle;
-}
-
-.propertyName,
-.propertyValue
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size:12px;
-}
-
-.propertyTip
-{
-  font-family: Tahoma, Calibri;
-  font-size: 11px;
-}
-
-INPUT.directAnnotatedPropertyName
-{
-  width:98%;
-  border:solid 1px #A0A0A0;
-  background: #F8F8F8;
-  display:block;
-  vertical-align:middle;
-}
-
-.directAnnotatedPropertyName
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size:12px;
-  font-weight: bold;
-}
-
-INPUT.inheritedAnnotatedPropertyName
-{
-  width:98%;
-  border:solid 1px #A0A0A0;
-  background: #F8F8F8;
-  display:block;
-  vertical-align:middle;
-}
-
-.inheritedAnnotatedPropertyName
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size:12px;
-  font-weight: bold;
-  color: Blue;
-}
-
-input.foundProperty
-{
-  background-color: greenyellow;
-}
-
-/* CSS page styles */
-.nodeCSS
-{
-
-}
-
-.nodeCSS .noCSSLabel
-{
-  line-height:23px;
-  margin-left:8px;
-  vertical-align:top;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-.nodeCSS .subtoolbar
-{
-  margin-bottom: 10px;
-}
-
-.nodeCSS .textArea
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 12px;
-  color: black;
-  width:98%;
-}
-
-.nodeCSS .buttonText
-{
-  font-family: Arial;
-  font-size: 10px;
-  color: black;
-}
-
-.rootSelection .menuItem
-{
-  list-style-type: none;
-  list-style-position: outside;
-  vertical-align: middle;
-  display: block;
-  margin-left:0px;
-  padding:1px;
-}
-
-.rootSelection .found
-{
-  background: greenyellow;
-}
-
-.rootSelection .cut
-{
-  color: red;
-}
-
-.rootSelection .copy
-{
-  color: blue;
-}
-
-.rootSelection .midBox
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #D0D000;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.rootSelection .midBoxUpdatedByMe
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #00C000;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.rootSelection .midBoxUpdatedByOther
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #FF4040;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.rootSelection .midBoxDeleted
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #CCCCCC;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.rootSelection img.css
-{
-  margin-left:2px;
-  vertical-align:middle;
-  border:0;
-}
-
-.rootSelection a
-{
-  text-decoration: none;
-  color:black;
-}
-
-.cmsEditPanel .tree
-{
-}
-
-.cmsEditPanel .tree > ul:first-child
-{
-  margin-top:0;
-}
-
-.cmsEditPanel .tree ul
-{
-  list-style-type: none;
-  list-style-position: outside;
-  vertical-align: middle;
-  display: block;
-  margin-left:20px;
-  padding:1px;
-}
-
-.cmsEditPanel .tree li
-{
-  list-style-type: none;
-  list-style-position: outside;
-  vertical-align: middle;
-  display: block;
-  margin:0;
-  padding:1px;
-}
-
-.cmsEditPanel .tree li a
-{
+  border: 0;
   vertical-align: middle;
 }
 
-.cmsEditPanel .tree li input.toggler
+a.imageButton img:hover
 {
-  margin:0 3px 0 -12px;
-  vertical-align:middle;
-  border:0;  
+  background: #EEEEEE;
 }
 
-.cmsEditPanel .tree li .menuItem
+.ui-growl
 {
-  vertical-align:middle;
+  top: 40px;
 }
 
-.cmsEditPanel .tree li .menuItem .found
+/* node_edit.xhtml styles */
+
+.page .topPanel
 {
-  background: greenyellow;
+  flex-grow: 0;  
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
-.cmsEditPanel .tree li .menuItem .cut
+.topPanel .cmsCurrentPathPanel
 {
-  color: red;
+  display: flex;
+  flex-direction: row;
+  align-items: center;  
+  flex-wrap: wrap;
 }
 
-.cmsEditPanel .tree li .menuItem .copy
-{
-  color: blue;
-}
-
-.cmsEditPanel .tree li .midBox
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #D0D000;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.cmsEditPanel .tree li .midBoxUpdatedByMe
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #00C000;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.cmsEditPanel .tree li .midBoxUpdatedByOther
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #FF4040;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.cmsEditPanel .tree li .midBoxDeleted
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #CCCCCC;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.cmsEditPanel .tree li img.css
-{
-  margin-left:2px;
-  vertical-align:middle;
-  border:0;
-}
-
-.cmsEditPanel .tree A
-{
-  text-decoration: none;
-  color:black;
-}
-
-.cmsEditPanel .separator
-{
-  width: 2px;
-  background: #999999;
-  float: left;
-  margin-left: 1%;
-  position: relative;
-}
-
-.cmsCurrentPathPanel ul
+.topPanel .cmsCurrentPathPanel ul
 {
   float: right;
   padding: 0;
@@ -543,268 +80,701 @@ input.foundProperty
   margin-right: 10px;
 }
 
-.cmsCurrentPathPanel .infoMessage,
-.cmsCurrentPathPanel .warnMessage,
-.cmsCurrentPathPanel .errorMessage,
-.cmsCurrentPathPanel .fatalMessage
+.topPanel .cmsCurrentPathPanel .ui-breadcrumb
 {
-  font-weight: bold;
-  display:block;
-  line-height: 25px;
+  border: 0;
+  background: none;
+  padding: 0;
 }
 
-.cmsCurrentPathPanel .infoMessage
+.topPanel .cmsCurrentPathPanel .item
 {
-  color: green;
+  text-decoration:none;
 }
 
-.cmsCurrentPathPanel .warnMessage
+.topPanel .cmsCurrentPathPanel .item .ui-icon
 {
-  color: #FF9900;
+  display: inline-block;
 }
 
-.cmsCurrentPathPanel .errorMessage
+.topPanel .cmsCurrentPathPanel .item .ui-menuitem-text
 {
-  color: red;
+  vertical-align: top;
+  font-weight: normal;
 }
 
-.cmsCurrentPathPanel .fatalMessage
+.topPanel .cmsCurrentPathPanel .item:hover
 {
-  color: red;
+  color:black;
 }
 
-.cmsEditPanel .rootSelection
+.topPanel .cmsCurrentPathPanel .item:first-child .ui-icon
 {
-  display: block;
-  vertical-align:middle;
+  border:none;
 }
 
-.cmsEditPanel .rootSelection .label
+.page .cmsEditPanel
 {
-  font-weight: bold;
-  display: block;
-  font-size: 14px;
-  vertical-align:middle;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  margin-top: 8px;
 }
 
-.cmsEditPanel .rootSelection .button
+.cmsEditPanel .ui-splitter-panel:first-child
 {
-  margin-left: 2px;
-  background: #C0C0C0;
-  font-size:12px;
-  vertical-align:middle;
-  width:auto;
-  overflow:visible;
-  border:1px solid #A0A0A0;
+  padding: 8px;
 }
 
-.cmsEditPanel .rootSelection .button:hover
-{
-  background: #D0D000;
+.cmsEditPanel .leftPanel
+{  
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 320px;
 }
 
-.cmsRootSelection
+.leftPanel > div
 {
-  width: 100%;
+  flex-grow: 0;
+  margin-top: 4px;
 }
 
-.cmsRootSelection .title
+.leftPanel .fastSearchPanel
 {
-  font-weight: bold;
-  display: block;
-  font-size: 14px;  
+  display: flex;
+  flex-direction: row;
+  align-items: center;  
+  flex-wrap: wrap;
 }
 
-.cmsRootSelection .rootTable
+.fastSearchPanel > *
 {
-  margin-left: 5px;
+  flex-grow: 0;
 }
 
-.cmsRootSelection .rootTable .col1
+.fastSearchPanel .fsLabel
 {
-  width: 20%;
+  margin-right: 4px;
 }
 
-.cmsRootSelection .rootTable .col2
+.fastSearchPanel .collapseAllPanel
 {
-  width: 80%;
+  flex-grow: 1;
+  text-align: right;
+  margin-left: 8px;
 }
 
-.cmsRootSelection .rootTable .midBox
-{
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #D0D000;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
-}
-
-.cmsRootSelection .rootTable .rootLink
+.fastSearchPanel .collapseAllPanel a
 {
   text-decoration: none;
 }
 
-.cmsRootSelection .rootTable .rootLabel
+.leftPanel .rootSelectionPanel
 {
-  color: black;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.cmsSyncSelection
+.rootSelectionPanel > *
 {
+  flex-grow: 0;
+  margin-right: 4px;  
+}
+
+.rootSelectionPanel a
+{
+  text-decoration: none;
+  color:black;
+}
+
+.leftPanel .treePanel
+{
+  flex-grow: 1;
   width: 100%;
+  overflow: auto;
+  position: relative;
+  background-color: white;
+  border: 1px solid #A0A0A0;
 }
 
-.cmsSyncSelection .syncNodeTable
+.treePanel .tree
+{  
+  position: absolute;
+  width: auto;
+  border: 0;
+}
+
+.tree > ul:first-child
 {
-  width: 100%;
+  margin-top:0;
 }
 
-.cmsSyncSelection .syncNodeTable .header
+.tree .ui-tree-container
+{
+  background-color: white;
+}
+
+.tree li .menuItem
+{
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+}
+
+.tree li .menuItem .selected
+{
+  font-weight: bold;
+}
+
+.tree li .menuItem .found
+{
+  background: greenyellow;
+}
+
+.tree li .menuItem .cut
+{
+  color: red;
+}
+
+.tree li .menuItem .copy
+{
+  color: blue;
+}
+
+.tree li .menuItem > div
+{
+  flex-grow: 0;
+  line-height: 18px;
+  margin-right: 4px;
+}
+
+.tree li .midBox
+{
+  border: solid 1px gray;
+  margin-right: 4px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.tree li .midBox.updatedByMe
+{
+  background: #00C000;
+}
+
+.tree li .midBox.updatedByOther
+{
+  background: #FF4040;
+}
+
+.tree li .midBox.deleted
+{
+  background: #CCCCCC;
+}
+
+.tree li img.css
+{
+  margin-left:2px;
+  vertical-align:middle;
+  border:0;
+}
+
+.tree A
+{
+  text-decoration: none;
+  color:black;
+}
+
+.cmsEditPanel .rightPanel
+{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.rightPanel .ui-tabs
+{
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.rightPanel .ui-tabs .ui-tabs-nav
+{
+  flex-grow: 0; 
+}
+
+.rightPanel .ui-tabs .ui-tabs-panels
+{
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;  
+}
+
+.rightPanel .ui-tabs .ui-tabs-panels .ui-tabs-panel
+{
+  flex-grow: 1;
+}
+
+.rightPanel .contentPanel
+{
+  display: flex;
+  flex-direction: column;
+  height: 100%;  
+}
+
+.rightPanel .contentPanel > div
+{
+  flex-grow: 0;
+  margin-top: 8px;
+}
+
+.rightPanel .contentPanel > div.expand
+{
+  flex-grow: 1;
+  position: relative;
+  overflow: auto;
+}
+
+.rightPanel .contentPanel > div.expand > table,
+.rightPanel .contentPanel > div.expand > div
+{
+  position: absolute;
+}
+
+.rightPanel .propertyTable
+{
+  width:100%;
+  padding:0;
+  margin:0;
+}
+
+.rightPanel .propertyTable th
 {
   text-align: left;
 }
 
-.cmsSyncSelection .syncNodeTable .col1
+.rightPanel .propertyTable TR.property TD
 {
-  width: 4%;
+  vertical-align:top;
 }
 
-.cmsSyncSelection .syncNodeTable .col2
+.rightPanel .propertyTable TR.property TD.col1
 {
-  width: 6%;
+  width:30%;
 }
 
-.cmsSyncSelection .syncNodeTable .col3
+.rightPanel .propertyTable TR.property TD.col2
 {
-  width: 13%;
+  max-width:99%;
 }
 
-.cmsSyncSelection .syncNodeTable .col4
+.rightPanel .propertyTable TR.property TD.col3
 {
-  width: 77%;
+  width:25px;
 }
 
-.cmsSyncSelection .syncNodeTable .title
+.rightPanel .propertyTable TR.property TD.col4
+{
+  width:25px;
+}
+
+.rightPanel .propertyTable TR.property TD.col3 img,
+.rightPanel .propertyTable TR.property TD.col4 img
+{
+  margin-top:5px;
+}
+
+.rightPanel input.propertyName,
+.rightPanel input.propertyValue
+{
+  width:98%;
+}
+
+.rightPanel .flexRowPanel
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;  
+  justify-content: flex-start;
+  flex-wrap: wrap;  
+}
+
+.rightPanel .flexRowPanel.wide
+{
+  justify-content: space-between;
+}
+
+/* properties.xhtml styles */
+
+.nodePropertiesPanel .nodeNamePanel .label 
+{
+  margin-right: 4px;
+}
+
+.nodePropertiesPanel .nodeActionPanel .flexRowPanel > *
+{
+  margin-right: 4px;
+  margin-top: 4px;
+}
+
+.nodePropertiesPanel .nodeActionPanel .flexRowPanel .beanNamePanel,
+.nodePropertiesPanel .nodeActionPanel .flexRowPanel .beanActionPanel
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;  
+}
+
+.nodePropertiesPanel .nodeActionPanel .title
 {
   font-weight: bold;
-  display: block;
-  font-size: 14px;  
 }
 
-.cmsSyncSelection .syncNodeTable .checkAllLink
+.nodePropertiesPanel .nodeActionPanel .label
+{
+  margin-right: 4px;
+}
+
+.nodePropertiesPanel .nodeActionPanel .select
+{
+  margin-right: 16px;
+}
+
+.nodePropertiesPanel .userPropertiesTitlePanel
+{
+  font-weight: bold;  
+}
+
+.nodePropertiesPanel .userPropertyListPanel
+{
+  overflow: auto;
+}
+
+.nodePropertiesPanel .noPropertiesLabel
+{
+  margin-top: 8px;
+}
+
+.nodePropertiesPanel .buttonsPanel
+{
+  position: relative;
+}
+
+.nodePropertiesPanel .buttonsPanel span
+{
+  margin-top: 1px;
+}
+
+.nodePropertiesPanel a.showHelpImageButton
+{
+  border: 0;
+  margin: 1px;
+}
+
+.nodePropertiesPanel a.showHelpImageButton img
+{
+  background: #EEEEEE;
+  border: 0;
+}
+
+.nodePropertiesPanel .buttonsPanel .ui-dialog
+{
+  position: absolute;
+  top: 0px !important;
+  left: 160px !important;  
+}
+
+.nodePropertiesPanel .buttonsPanel .ui-dialog .helpCaptionTable
+{
+  width: 200px; 
+}
+
+.nodePropertiesPanel .propertyTip
+{
+  font-family: Tahoma, Calibri;
+  font-size: 11px;
+}
+
+.nodePropertiesPanel .inheritedAnnotated
+{
+  color: Blue;  
+}
+
+.nodePropertiesPanel .directAnnotated
+{
+  font-weight: bold;  
+}
+
+.nodePropertiesPanel input.found
+{
+  background-color: greenyellow;
+}
+
+/* css.xhtml styles */
+
+.nodeCSSPanel .noCSSLabel
+{
+  line-height:23px;
+  margin-left:8px;
+}
+
+.nodeCSSPanel .CodeMirror
+{
+  font-family: "Courier New", Courier, Monospaced;
+  font-size: 12px;
+  color: black;
+  width: 98%;
+  height: 98%;
+}
+
+/* sync.xhtml styles */
+
+.nodeSyncPanel .noNodesLabel, 
+.nodeSyncPanel .noWorkspacesPanel
+{
+  font-weight: bold;
+}
+
+.nodeSyncPanel .buttonsPanel
+{
+  margin-bottom: 10px;  
+}
+
+.nodeSyncPanel .workspaceSelectionPanel
+{
+  width: 100%;
+}
+
+.nodeSyncPanel .workspaceSelectionPanel > *
+{
+  margin-right: 4px;
+}
+
+.nodeSyncPanel .nodeSyncTitlePanel .title
+{
+  font-weight: bold;
+}
+
+.nodeSyncPanel .nodeSyncTitlePanel .checkAllLink
 {
   text-decoration: none;
   font-weight: normal;
   color: black;
 }
 
-.cmsSyncSelection .syncNodeTable .nodeId
+.nodeSyncPanel .syncNodeListPanel
 {
-  font-family: "Courier New", Courier, Monospaced;
-  font-size: 11px;
-  background: #D0D060;
-  border: solid 1px gray;
-  padding-left:1px;
-  padding-right:1px;
-  margin:0 2px 0 0px;
+  overflow: auto;
 }
 
-.cmsSyncSelection .syncNodeTable .nodeChangeType
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable
 {
-
+  width: 100%;
 }
 
-.cmsSyncSelection .syncNodeTable .nodeLabel
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable tr.ui-state-highlight
 {
-
+  border: inherit;
+  background: inherit;
+  color: inherit;
 }
 
-.nodeSync .noNodesLabel, .nodeSync .noWorkspacesLabel
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable th
 {
-  font-weight: bold;
-  display: block;
-  font-size: 12px;
-  margin-top: 8px;
+  text-align: left;
 }
 
-.nodeSync .subtoolbar
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable .colChecked
 {
-  margin-bottom: 10px;
+  width: 16px;
+  text-align: center;
 }
+
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable .colNodeId
+{
+  width: 3rem;
+}
+
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable .colLabel
+{
+  width: 30%;
+}
+
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable .colType
+{
+  width: 6rem;
+}
+
+.nodeSyncPanel .syncNodeListPanel .syncNodeTable .colFields
+{
+  width: auto;
+}
+
+/* search.xhtml styles */
 
 .nodeSearchPanel
 {
   overflow: auto;
 }
 
-.nodeSearchPanel .searchCountLayer
+.nodeSearchPanel .nodeSearchTitlePanel
 {
-  margin-top: 6px;
-  margin-bottom: 6px;
-  margin-left: 2px;
-}
-
-.nodeSearchPanel .searchCountText
-{
-  color: Black;
   font-weight: bold;
 }
 
-.nodeSearchPanel .nodeList
+.nodeSearchPanel .searchNodeListPanel
 {
   width: 100%;
   overflow: auto;
 }
 
-.nodeSearchPanel .nodeList .item
+.nodeSearchPanel .searchNodeListPanel .item
 {   
   min-height: 20px;
   line-height: 20px;
   margin-left: 2px;
 }
 
-.nodeSearchPanel .nodeList .item > div
+.nodeSearchPanel .searchNodeListPanel .item > div
 {   
   display: inline-block;
   vertical-align: top;
 }
 
-.nodeSearchPanel .nodeList .item .nodeId
+.nodeSearchPanel .searchNodeListPanel th
 {
-  width: 50px;  
+  text-align: left;
 }
 
-.nodeSearchPanel .nodeList .item .label
+.nodeSearchPanel .searchNodeListPanel th.nodeId
 {
-  width: 200px;
+  width: 3rem;
 }
 
-.nodeSearchPanel .nodeList .item .path
+.nodeSearchPanel .searchNodeListPanel th.label
 {
-  margin-left: 10px;
+  width: 30%;
 }
 
-/* Tomahawk popup component */
-
-.popup
+.nodeSearchPanel .searchNodeListPanel th.path
 {
-    background-color:rgb(255,255,225);
-    color: #000000;
-    border: 1px solid #CCCCCC;
-    font-size:smaller;
-    padding: 2px;
-    font-family: Verdana;
+  width: auto;
 }
 
-.popup table
+/* redir_edit.xhtml styles */
+
+.redirFilePanel
 {
-    font-size:smaller;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.popup table TR TD {
-    border-top: 0;
-    vertical-align: top;
+.redirFilePanel .buttonsPanel
+{
+  flex-grow: 0;
+}
+
+.redirFilePanel .fileContentPanel
+{
+  flex-grow: 1;
+}
+
+.redirFilePanel .fileContentPanel textarea
+{
+  width: 98%;
+  height: 98%;  
+}
+
+.redirFilePanel a.imageButton img
+{  
+}
+
+/* PrimeFaces saga theme */
+
+body .ui-widget,
+body .ui-inputfield
+{
+  font-size: 0.8rem;
+}
+
+body .ui-inputfield
+{
+  padding: 0.3rem;
+}
+
+body .ui-selectonemenu .ui-selectonemenu-label
+{
+  min-height: auto;
+}
+
+body .ui-datatable .ui-paginator
+{
+  padding: 0.5rem;
+}
+
+body .ui-datatable thead th
+{
+  padding: 0.5rem;
+}
+
+body .ui-datatable .ui-datatable-data > tr > td
+{
+  padding: 0.5rem;
+  white-space: normal;  
+}
+
+body .ui-chkbox,
+body .ui-chkbox .ui-chkbox-box
+{
+  width: 1rem;
+  height: 1rem;
+}
+
+body .ui-chkbox .ui-chkbox-box .ui-chkbox-icon.ui-icon-check
+{
+  font-size: 0.8rem;
+}
+
+body .ui-chkbox .ui-chkbox-box .ui-chkbox-icon
+{
+  margin-left: -0.4rem;
+  margin-top: -0.4rem;
+}
+
+body .ui-tree
+{
+  padding: 0.5rem;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode
+{
+  padding: 0;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler
+{
+  width: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon
+{
+  width: 1rem;
+  height: 1rem;
+}
+
+body .loading-icon-container .ui-dialog-content
+{
+  padding: 1rem;
+}
+
+body .loading-icon 
+{
+  font-size: 4rem;
 }
 

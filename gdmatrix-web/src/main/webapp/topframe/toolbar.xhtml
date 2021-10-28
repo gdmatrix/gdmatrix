@@ -16,26 +16,21 @@
 
       <h:panelGroup styleClass="block1">
         <h:graphicImage url="/images/gdmatrix/icon_text_white.svg" alt="gdmatrix" styleClass="gdmatrix_logo" />
-        <h:commandLink value="#{applicationBean.version}" 
-                       disabled="#{userSessionBean.renderDisabled}"
-                       styleClass="tb_button #{userSessionBean.matrixInfoViewSelected ? 'selected' : ''} info"
-                       action="#{userSessionBean.showMatrixInfoView}" immediate="true" />
-        <h:commandLink value="Render" disabled="#{userSessionBean.renderDisabled}"
-                       styleClass="tb_button #{userSessionBean.renderViewSelected ? 'selected' : ''}"
-                       action="#{userSessionBean.showRenderView}" immediate="true" />
+        <t:div forceId="true" id="toolbarRenderingButtons">
+          <h:commandLink value="#{applicationBean.version}" 
+                         disabled="#{userSessionBean.renderDisabled}"
+                         styleClass="tb_button #{userSessionBean.matrixInfoViewSelected ? 'selected' : ''} info"
+                         action="#{userSessionBean.showMatrixInfoView}" immediate="true" />
+          <h:commandLink value="Render" disabled="#{userSessionBean.renderDisabled}"
+                         styleClass="tb_button #{userSessionBean.renderViewSelected ? 'selected' : ''}"
+                         action="#{userSessionBean.showRenderView}" immediate="true" />
+        </t:div>
         <h:commandLink value="Edit" 
                        styleClass="tb_button #{userSessionBean.editViewSelected ? 'selected' : ''}"
                        action="#{userSessionBean.showEditView}" immediate="true" />
-        <h:commandLink value="CSS" 
-                       styleClass="tb_button #{userSessionBean.cssViewSelected ? 'selected' : ''}"
-                       action="#{userSessionBean.showCssView}" immediate="true" />
-        <h:commandLink value="Sync" 
-                       styleClass="tb_button #{userSessionBean.syncViewSelected ? 'selected' : ''}"
-                       action="#{userSessionBean.showSyncView}" immediate="true"
-                       rendered="#{userSessionBean.cmsAdministrator}" />
-        <h:commandLink value="Search" 
-                       styleClass="tb_button #{userSessionBean.searchViewSelected ? 'selected' : ''}"
-                       action="#{userSessionBean.showSearchView}" immediate="true" />
+        <h:commandLink value="Redirections" 
+                       styleClass="tb_button #{userSessionBean.redirViewSelected ? 'selected' : ''}"
+                       action="#{userSessionBean.showRedirView}" immediate="true" />
         <h:commandLink value="#{applicationBean.serverName}" 
                        styleClass="tb_button #{userSessionBean.systemInfoViewSelected ? 'selected' : ''} info"
                        action="#{userSessionBean.showSystemInfoView}" immediate="true" />

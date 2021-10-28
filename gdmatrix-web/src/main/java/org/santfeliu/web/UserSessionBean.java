@@ -104,10 +104,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String MATRIX_INFO_VIEW = "MATRIX_INFO";
   public static final String RENDER_VIEW = "RENDER";
   public static final String EDIT_VIEW = "EDIT";
-  public static final String CSS_VIEW = "CSS";
-  public static final String SYNC_VIEW = "SYNC";
-  public static final String SEARCH_VIEW = "SEARCH";
   public static final String SYSTEM_INFO_VIEW = "SYSTEM_INFO";
+  public static final String REDIR_VIEW = "REDIR";  
 
   public static final String VIEW_MODE_PARAM = "viewMode";
   public static final String VIEW_MODE_EDIT = "edit";
@@ -118,6 +116,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String LOGIN_CERTIFICATE = "CERTIFICATE";
   
   public static final String DEFAULT_PRIMEFACES_THEME = "smoothness";
+  public static final String EDIT_PRIMEFACES_THEME = "saga";
 
   private static List<String> intranetRoles;
 
@@ -933,30 +932,18 @@ public final class UserSessionBean extends FacesBean implements Serializable
     view = EDIT_VIEW;
     return "node_edit";
   }
-
-  public String showCssView()
-  {
-    view = CSS_VIEW;
-    return "node_edit";
-  }
-
-  public String showSyncView()
-  {
-    view = SYNC_VIEW;
-    return "node_edit";
-  }
-
-  public String showSearchView()
-  {
-    view = SEARCH_VIEW;
-    return "node_edit";
-  }
-
+  
   public String showSystemInfoView()
   {
     view = SYSTEM_INFO_VIEW;
     return "system_info";
   }
+  
+  public String showRedirView()
+  {
+    view = REDIR_VIEW;
+    return "redir_edit";
+  }  
 
   public boolean isMatrixInfoViewSelected()
   {
@@ -972,26 +959,16 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     return EDIT_VIEW.equals(view);
   }
-
-  public boolean isCssViewSelected()
-  {
-    return CSS_VIEW.equals(view);
-  }
-
-  public boolean isSyncViewSelected()
-  {
-    return SYNC_VIEW.equals(view);
-  }
-
-  public boolean isSearchViewSelected()
-  {
-    return SEARCH_VIEW.equals(view);
-  }
-
+  
   public boolean isSystemInfoViewSelected()
   {
     return SYSTEM_INFO_VIEW.equals(view);
   }
+  
+  public boolean isRedirViewSelected()
+  {
+    return REDIR_VIEW.equals(view);
+  }  
 
   /**** special methods ****/
 
@@ -1314,7 +1291,15 @@ public final class UserSessionBean extends FacesBean implements Serializable
   
   public String getPrimefacesTheme()
   {
-    String pfTheme = getSelectedMenuItem().getProperty("primefacesTheme");
+    String pfTheme;
+    if (isEditViewSelected() || isRedirViewSelected())
+    {
+      pfTheme = EDIT_PRIMEFACES_THEME;
+    }
+    else
+    {
+      pfTheme = getSelectedMenuItem().getProperty("primefacesTheme");
+    }
     if (pfTheme != null)
     {
       try

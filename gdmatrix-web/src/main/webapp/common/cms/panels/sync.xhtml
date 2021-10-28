@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:p="http://primefaces.org/ui">
+
+  <t:div styleClass="nodeSyncPanel contentPanel" 
+         rendered="#{nodeEditBean.syncTabSelected}">
+    <t:div styleClass="noWorkspacesPanel" rendered="#{!nodeEditBean.syncNodeEnabled}">
+      <h:outputLabel value="#{cmsBundle.noWorkspacesToSync}" />
+    </t:div>
+    <t:div forceId="true" id="workspaceSelectionPanel" 
+           styleClass="workspaceSelectionPanel flexRowPanel" 
+           rendered="#{nodeEditBean.syncNodeEnabled}">
+      <p:outputLabel value="#{cmsBundle.syncTo}:" for="toWorkspaceSelector" />
+      <p:selectOneMenu id="toWorkspaceSelector"
+                       value="#{nodeEditBean.toWorkspaceId}"
+                       styleClass="select">
+        <p:ajax update="@this mainform:tree rightPanel" listener="#{nodeEditBean.switchToWorkspace}" />                
+        <f:selectItems value="#{nodeEditBean.toWorkspaceItems}" />
+      </p:selectOneMenu>
+      <p:commandButton id="syncNodeButton"
+                       value="#{cmsBundle.sync}"  
+                       actionListener="#{nodeEditBean.syncNode}"
+                       styleClass="imageButton"
+                       ajax="true" update="@this mainform:tree rightPanel messagesPanel"
+                       rendered="#{not nodeEditBean.nodeChangeItemListEmpty}" />
+    </t:div>
+    <t:div rendered="#{nodeEditBean.syncNodeEnabled and nodeEditBean.nodeChangeItemListEmpty}">
+      <h:outputText value="#{cmsBundle.noNodesToSync}" styleClass="noNodesLabel" />      
+    </t:div>
+    <t:div styleClass="nodeSyncTitlePanel flexRowPanel" 
+           rendered="#{nodeEditBean.syncNodeEnabled and not nodeEditBean.nodeChangeItemListEmpty}">
+      <h:outputText value="#{cmsBundle.nodesToSync}: #{nodeEditBean.nodeChangeItemList.size()}" styleClass="title" />
+    </t:div>
+    <t:div forceId="true" id="syncNodeListPanel" 
+           styleClass="syncNodeListPanel expand" 
+           rendered="#{nodeEditBean.syncNodeEnabled and not nodeEditBean.nodeChangeItemListEmpty}">
+      <p:dataTable rowIndexVar="index"
+                   value="#{nodeEditBean.nodeChangeItemList}"
+                   first="#{nodeEditBean.syncFirstRowIndex}" 
+                   rows="50"
+                   var="nodeChangeRow"
+                   rowStyleClass="item"
+                   styleClass="syncNodeTable"
+                   paginator="true" paginatorPosition="top"
+                   paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                   lazy="false"
+                   emptyMessage="#{objectBundle.no_results_found}"
+                   widgetVar="syncDataTable"
+                   resizableColumns="false"
+                   rendered="#{!nodeEditBean.nodeChangeItemListEmpty}"
+                   rowKey="#{nodeChangeRow.id}"
+                   selectionPageOnly="false"
+                   selection="#{nodeEditBean.selectedNodeChangeItemList}">
+        <p:ajax event="page" global="false" />        
+        <p:column styleClass="colChecked" selectionMode="multiple" />        
+        <p:column styleClass="colNodeId" headerText="#{cmsBundle.node}">
+          <h:outputText value="#{nodeChangeRow.nodeId}" styleClass="nodeId" />
+        </p:column>
+        <p:column styleClass="colLabel" headerText="#{cmsBundle.label}">
+          <h:outputText value="#{nodeChangeRow.label}" styleClass="nodeLabel" />
+        </p:column>
+        <p:column styleClass="colType" headerText="#{cmsBundle.type}">
+          <h:outputText value="#{nodeChangeRow.type}" styleClass="nodeChangeType" />
+        </p:column>
+        <p:column styleClass="colFields" headerText="#{cmsBundle.fields}">
+          <h:outputText value="#{nodeChangeRow.changedPropertiesText}" styleClass="nodeLabel" />
+        </p:column>
+      </p:dataTable>        
+
+    </t:div>
+  </t:div>
+
+</ui:composition>  

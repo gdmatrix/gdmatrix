@@ -21,6 +21,11 @@ body
   min-height: 28px;
 }
 
+.webtoolbar div#toolbarRenderingButtons
+{
+  display: inline-block;
+}
+
 .webtoolbar .workspace
 {
   color: white;

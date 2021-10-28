@@ -3,7 +3,6 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:sf="http://faces.santfeliu.org"
       xmlns:t="http://myfaces.apache.org/tomahawk">
 
   <ui:composition template="/topframe/topframe.xhtml">
@@ -14,534 +13,246 @@
 
       <t:saveState value="#{nodeEditBean}" />
       <t:saveState value="#{cmsToolbarBean}" />
+      
+      <t:div forceId="true" id="messagesPanel" styleClass="messagesPanel">
+        <p:growl id="messages" showDetail="false" />
+      </t:div>        
 
-      <t:inputHidden id="tScroll"/>
-      <t:inputHidden id="pScroll"/>
-      <t:inputHidden id="sScroll"/>
+      <t:div forceId="true" id="topPanel" styleClass="topPanel">        
+        <t:div styleClass="cmsCurrentPathPanel">
+          <p:breadCrumb model="#{nodeEditBean.nodePathModel}" homeDisplay="text">
+          </p:breadCrumb>
+        </t:div>        
+      </t:div>      
 
-      <h:panelGroup styleClass="cmsCurrentPathPanel">
-        <h:panelGroup styleClass="currentPath">
-          <t:dataList id="navPath" var="item"
-                      value="#{userSessionBean.menuModel.selectedMenuItem.cursorPath}">
-            <h:commandLink
-              action="#{nodeEditBean.selectMenuItem}" styleClass="itemPath">
-              <sf:outputText value="#{nodeEditBean.menuItemLabel}" />
-            </h:commandLink>
-          </t:dataList>
-        </h:panelGroup>
-
-        <h:messages rendered="#{userSessionBean.facesMessagesQueued}" 
-                  showSummary="true"
-                  infoClass="infoMessage"
-                  warnClass="warnMessage"
-                  errorClass="errorMessage"
-                  fatalClass="fatalMessage" />
-
-      </h:panelGroup>
-
-      <h:panelGroup styleClass="cmsEditPanel">
-
-        <h:panelGroup styleClass="nodeTree">
-
-          <h:panelGroup styleClass="nodeSearch">
-            <h:outputLabel value="#{cmsBundle.search}:" styleClass="nodeSearchLabel" />
-            <t:inputText value="#{nodeEditBean.inputSearch}" styleClass="nodeSearchValue"
-                         onkeypress="inputTextKeyCheck(event, 'mainform:nodeSearchButton');"/>
-            <h:commandButton id="nodeSearchButton"
-                             action="#{nodeEditBean.fastSearch}"
-                             style="display:none;" />
-          </h:panelGroup>
-
-          <h:panelGroup styleClass="subtoolbar">
-            <h:commandLink action="#{nodeEditBean.appendNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.appendNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.appendNode}" url="/common/cms/images/add.png" title="#{cmsBundle.appendNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.insertBeforeNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.insertBeforeNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.insertBeforeNode}" url="/common/cms/images/insbefore.png" title="#{cmsBundle.insertBeforeNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.insertAfterNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.insertAfterNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.insertAfterNode}" url="/common/cms/images/insafter.png" title="#{cmsBundle.insertAfterNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.moveNodeUp}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.moveNodeUpEnabled}">
-              <t:graphicImage alt="#{cmsBundle.moveUp}" url="/common/cms/images/move_up.png" title="#{cmsBundle.moveUp}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.moveNodeDown}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.moveNodeDownEnabled}">
-              <t:graphicImage alt="#{cmsBundle.moveDown}" url="/common/cms/images/move_down.png" title="#{cmsBundle.moveDown}" />
-            </h:commandLink>
-            <t:commandLink action="#{nodeEditBean.removeNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.removeNodeEnabled}" onclick="if(!confirm('#{cmsBundle.confirmRemove} #{nodeEditBean.selectedNodeId}?')) return false;">
-              <t:graphicImage alt="#{cmsBundle.removeNode}" url="/common/cms/images/remove.png" title="#{cmsBundle.removeNode}" />
-            </t:commandLink>
-            <h:commandLink action="#{nodeEditBean.cutNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.cutNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.cutNode}" url="/common/cms/images/cut.png" title="#{cmsBundle.cutNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.copyNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.copyNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.copyNode}" url="/common/cms/images/copy.png" title="#{cmsBundle.copyNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.copySingleNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.copyNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.copySingleNode}" url="/common/cms/images/copysingle.png" title="#{cmsBundle.copySingleNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.pasteAsRootNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.pasteAsRootNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.pasteAsRootNode}" url="/common/cms/images/asroot.png" title="#{cmsBundle.pasteAsRootNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.pasteInsideNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.pasteInsideNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.pasteInsideNode}" url="/common/cms/images/inside.png" title="#{cmsBundle.pasteInsideNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.pasteBeforeNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.pasteBeforeNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.pasteBeforeNode}" url="/common/cms/images/before.png" title="#{cmsBundle.pasteBeforeNode}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.pasteAfterNode}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.pasteAfterNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.pasteAfterNode}" url="/common/cms/images/after.png" title="#{cmsBundle.pasteAfterNode}" />
-            </h:commandLink>
-          </h:panelGroup>
-          <t:div id="treeLayer" style="overflow:auto;width:100%;">
-            <h:panelGroup styleClass="rootSelection">
-              <h:outputText value="#{nodeEditBean.rootNodeId}" styleClass="#{nodeEditBean.rootBoxStyleClass}" />
-              <h:commandLink value="#{nodeEditBean.rootLabel}"
-                             action="#{nodeEditBean.selectRootMenuItem}"
-                             style="#{nodeEditBean.rootSelected ? 'font-weight:bold' : null}"
-                             styleClass="#{nodeEditBean.rootStyleClass}" />
-              <t:graphicImage alt="CSS" url="/common/cms/images/css.png" title="CSS" styleClass="css"
-                              rendered="#{nodeEditBean.customRootCSS}" />
-              <h:commandButton action="#{nodeEditBean.showRootSelection}"
-                               value="#{cmsBundle.changeRoot}" styleClass="button" />
-              <h:commandLink action="#{nodeEditBean.collapseAllNodes}" styleClass="collapseAllLink">
-                <h:outputText value="[#{cmsBundle.collapseAll}]" styleClass="collapseAllLabel"/>
-              </h:commandLink>          
-            </h:panelGroup>
-
-            <sf:treeMenu id="tree" styleClass="tree" var="item" baseMid="#{nodeEditBean.rootNodeId}"
-                         expandedMenuItems="#{nodeEditBean.expandedMenuItems}"
-                         expandImageUrl="/images/expand.gif"
-                         collapseImageUrl="/images/collapse.gif">
-              <f:facet name="data">
-                <h:panelGroup styleClass="menuItem">
-                  <h:outputText value="#{nodeEditBean.menuItemBoxText}"
-                                styleClass="#{nodeEditBean.menuItemBoxStyleClass}" />
-                  <h:commandLink value="#{nodeEditBean.menuItemLabel}"
-                                 action="#{nodeEditBean.selectMenuItem}"
-                                 style="#{nodeEditBean.menuItemSelected ? 'font-weight:bold' : null}"
-                                 styleClass="#{nodeEditBean.menuItemStyleClass}" />
-                  <t:graphicImage alt="CSS" url="/common/cms/images/css.png" title="CSS" styleClass="css"
-                                  rendered="#{nodeEditBean.customCSS}" />
-                </h:panelGroup>
-              </f:facet>
-            </sf:treeMenu>
-          </t:div>
-
-        </h:panelGroup>
-
-        <t:div id="cmsEditSeparator" styleClass="separator" />
-
-        <h:panelGroup styleClass="nodeProperties" rendered="#{userSessionBean.editViewSelected}">
-
-          <h:panelGroup styleClass="subtoolbar">
-            <h:commandLink action="#{nodeEditBean.addProperty}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.addPropertyEnabled}">
-              <t:graphicImage alt="#{cmsBundle.addProperty}" url="/common/cms/images/add.png" title="#{cmsBundle.addProperty}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.saveProperties}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.savePropertiesEnabled}">
-              <t:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.revertProperties}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.addPropertyEnabled}">
-              <t:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.completeProperties}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.completePropertiesEnabled}">
-              <t:graphicImage alt="#{cmsBundle.completeProperties}" url="/common/cms/images/complete.png" title="#{cmsBundle.completeProperties}" />
-            </h:commandLink>
-            <t:popup closePopupOnExitingElement="true"
-                     closePopupOnExitingPopup="true"
-                     displayAtDistanceX="-480"
-                     displayAtDistanceY="-60"
-                     styleClass="popup">
-              <h:commandLink action="#{nodeEditBean.switchPropertyHelp}"
-                             styleClass="#{nodeEditBean.helpButtonStyleClass}"
-                             rendered="#{nodeEditBean.completePropertiesEnabled}">
-                <t:graphicImage alt="Help" url="/common/cms/images/help.png"/>
-              </h:commandLink>
-              <f:facet name="popup">
-                <h:panelGrid columns="1" styleClass="helpCaptionTable">
-                  <h:outputText styleClass="inheritedAnnotatedPropertyName"
-                                value="#{cmsBundle.inheritedAnnotatedProperties} " />
-                  <h:outputText styleClass="directAnnotatedPropertyName"
-                                value="#{cmsBundle.ownAnnotatedProperties} " />
-                  <h:outputText styleClass="propertyName"
-                                value="#{cmsBundle.additionalProperties}" />
-                </h:panelGrid>
-              </f:facet>
-            </t:popup>
-            <h:panelGroup styleClass="nodeName">
-              <h:outputLabel value="#{cmsBundle.name}:" styleClass="nodeNameLabel" />
-              <h:inputText value="#{nodeEditBean.nodeName}" styleClass="nodeNameValue" />
-            </h:panelGroup>
-
-          </h:panelGroup>
-
-          <t:div id="propertiesLayer" style="overflow:auto;width:100%;">
-
-            <t:div styleClass="nodeActionTitleLayer">
-                <h:outputText value="#{cmsBundle.nodeActionUpper}" />
+      <p:splitter styleClass="cmsEditPanel">
+        
+        <p:splitterPanel size="25" styleClass="ui-widget ui-widget-content ui-corner-all">
+          
+          <t:div forceId="true" id="leftPanel" styleClass="leftPanel">
+          
+            <t:div forceId="true" id="rootSelectionPanel" styleClass="rootSelectionPanel">
+              <p:outputLabel value="#{cmsBundle.changeRoot ? cmsBundle.changeRoot : 'Arrel'}:" 
+                             for="rootNodeSelector" />
+              <p:selectOneMenu id="rootNodeSelector" value="#{nodeEditBean.rootNodeId}">
+                <p:ajax update="@this toolbarRenderingButtons topPanel leftPanel rightPanel" 
+                        listener="#{nodeEditBean.changeRootNode}" />
+                <f:selectItems value="#{nodeEditBean.rootNodeList}" var="root" 
+                               itemLabel="#{root.nodeId}: #{nodeEditBean.getNodeLabel(root)}" 
+                               itemValue="#{root.nodeId}"/>
+              </p:selectOneMenu>            
+              <p:commandLink actionListener="#{nodeEditBean.createRootNode}" styleClass="imageButton"
+                             ajax="true" update="@this topPanel leftPanel rightPanel messagesPanel">
+                <t:graphicImage url="/common/cms/images/add.png" title="#{cmsBundle.createRoot}"
+                                alt="#{cmsBundle.createRoot}" />
+              </p:commandLink>            
             </t:div>
-
-            <t:div>
-
-                <h:panelGrid columns="2">
-                  <h:outputText value="beanName" styleClass="propertyName" />
-                  <sf:commandMenu action="#{nodeEditBean.changeBeanName}"
-                                      value="#{nodeEditBean.beanNameProperty.value[0]}"
-                                      style="margin-left:2px;">
-                    <f:selectItems value="#{nodeEditBean.beanNames}" />
-                  </sf:commandMenu>
-                  <h:outputText rendered="#{nodeEditBean.beanActionsRender}" value="beanAction" styleClass="propertyName" />
-                  <t:selectOneListbox rendered="#{nodeEditBean.beanActionsRender}" value="#{nodeEditBean.beanActionProperty.value[0]}"
-                                  style="margin-left:2px;">
-                    <f:selectItems value="#{nodeEditBean.beanActions}" />
-                  </t:selectOneListbox>
-                </h:panelGrid>
-
+            
+            <t:div forceId="true" id="nodeToolsPanel" styleClass="buttonsPanel"> 
+              <p:commandLink actionListener="#{nodeEditBean.appendNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.appendNodeEnabled}"
+                             update="@this topPanel mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
+                <t:graphicImage alt="#{cmsBundle.appendNode}" url="/common/cms/images/add.png" title="#{cmsBundle.appendNode}" />
+              </p:commandLink>
+              <p:commandLink actionListener="#{nodeEditBean.insertBeforeNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.insertBeforeNodeEnabled}"
+                             update="@this topPanel mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
+                <t:graphicImage alt="#{cmsBundle.insertBeforeNode}" url="/common/cms/images/insbefore.png" title="#{cmsBundle.insertBeforeNode}" />
+              </p:commandLink>
+              <p:commandLink actionListener="#{nodeEditBean.insertAfterNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.insertAfterNodeEnabled}"
+                             update="@this topPanel mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
+                <t:graphicImage alt="#{cmsBundle.insertAfterNode}" url="/common/cms/images/insafter.png" title="#{cmsBundle.insertAfterNode}" />
+              </p:commandLink>
+              <p:commandLink actionListener="#{nodeEditBean.moveNodeUp}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.moveNodeUpEnabled}"
+                             update="@this mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
+                <t:graphicImage alt="#{cmsBundle.moveUp}" url="/common/cms/images/move_up.png" title="#{cmsBundle.moveUp}" />
+              </p:commandLink>
+              <p:commandLink actionListener="#{nodeEditBean.moveNodeDown}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.moveNodeDownEnabled}"
+                             update="@this mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
+                <t:graphicImage alt="#{cmsBundle.moveDown}" url="/common/cms/images/move_down.png" title="#{cmsBundle.moveDown}" />
+              </p:commandLink>
+              <p:commandLink id="removeNodeButton"
+                             actionListener="#{nodeEditBean.removeNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.removeNodeEnabled}" onclick="if(!confirm('#{cmsBundle.confirmRemove} #{nodeEditBean.selectedNodeId}?')) return false;"
+                             update="@this toolbarRenderingButtons topPanel mainform:tree rootSelectionPanel nodeToolsPanel rightPanel messagesPanel" ajax="true">
+                <t:graphicImage alt="#{cmsBundle.removeNode}" url="/common/cms/images/remove.png" title="#{cmsBundle.removeNode}" />
+              </p:commandLink>
+              <p:commandLink actionListener="#{nodeEditBean.cutNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.cutNodeEnabled}"
+                             update="@this mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
+                <t:graphicImage alt="#{cmsBundle.cutNode}" url="/common/cms/images/cut.png" title="#{cmsBundle.cutNode}" />
+              </p:commandLink>
+              <p:commandLink actionListener="#{nodeEditBean.copyNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.copyNodeEnabled}"
+                             update="@this mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
+                <t:graphicImage alt="#{cmsBundle.copyNode}" url="/common/cms/images/copy.png" title="#{cmsBundle.copyNode}" />
+              </p:commandLink>
+              <p:commandLink actionListener="#{nodeEditBean.copySingleNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.copyNodeEnabled}"
+                             update="@this mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
+                <t:graphicImage alt="#{cmsBundle.copySingleNode}" url="/common/cms/images/copysingle.png" title="#{cmsBundle.copySingleNode}" />
+              </p:commandLink>
+              <p:commandLink id="pasteAsRootNodeButton"
+                             actionListener="#{nodeEditBean.pasteAsRootNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.pasteAsRootNodeEnabled}"
+                             update="@this topPanel leftPanel rightPanel messagesPanel" ajax="true">
+                <t:graphicImage alt="#{cmsBundle.pasteAsRootNode}" url="/common/cms/images/asroot.png" title="#{cmsBundle.pasteAsRootNode}" />
+              </p:commandLink>
+              <p:commandLink id="pasteInsideNodeButton"
+                             actionListener="#{nodeEditBean.pasteInsideNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.pasteInsideNodeEnabled}"
+                             update="@this topPanel mainform:tree nodeToolsPanel rootSelectionPanel rightPanel messagesPanel" ajax="true">
+                <t:graphicImage alt="#{cmsBundle.pasteInsideNode}" url="/common/cms/images/inside.png" title="#{cmsBundle.pasteInsideNode}" />
+              </p:commandLink>
+              <p:commandLink id="pasteBeforeNodeButton"
+                             actionListener="#{nodeEditBean.pasteBeforeNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.pasteBeforeNodeEnabled}"
+                             update="@this topPanel mainform:tree nodeToolsPanel rootSelectionPanel rightPanel messagesPanel" ajax="true">
+                <t:graphicImage alt="#{cmsBundle.pasteBeforeNode}" url="/common/cms/images/before.png" title="#{cmsBundle.pasteBeforeNode}" />
+              </p:commandLink>
+              <p:commandLink id="pasteAfterNodeButton"
+                             actionListener="#{nodeEditBean.pasteAfterNode}" styleClass="imageButton"
+                             rendered="#{nodeEditBean.pasteAfterNodeEnabled}"
+                             update="@this topPanel mainform:tree nodeToolsPanel rootSelectionPanel rightPanel messagesPanel" ajax="true">
+                <t:graphicImage alt="#{cmsBundle.pasteAfterNode}" url="/common/cms/images/after.png" title="#{cmsBundle.pasteAfterNode}" />
+              </p:commandLink>
             </t:div>
-
-            <t:div styleClass="userPropertiesTitleLayer">
-              <h:outputText styleClass="userPropertiesTitle"
-                value="#{cmsBundle.userPropertiesUpper}" />
+            
+            <t:div styleClass="treePanel">
+              <p:tree id="tree"
+                    styleClass="tree" value="#{nodeEditBean.treeRoot}" var="node" dynamic="true" cache="false"
+                    selectionMode="single">
+                <p:ajax event="expand" listener="#{nodeEditBean.onNodeExpand}" global="false" /> 
+                <p:ajax event="collapse" listener="#{nodeEditBean.onNodeCollapse}" global="false" />
+                <p:ajax event="select" update="@this toolbarRenderingButtons topPanel nodeToolsPanel rightPanel" listener="#{nodeEditBean.onNodeSelect}" global="false" />
+                <p:treeNode type="Node">
+                  <t:div styleClass="menuItem">
+                    <t:div styleClass="#{node.boxStyleClass}">
+                      <h:outputText value="#{node.boxText}" />
+                    </t:div>
+                    <t:div styleClass="#{node.styleClass}">
+                      <h:outputText value="#{node.label}" />
+                    </t:div>
+                    <t:div styleClass="css" rendered="#{node.customCSS}">
+                      <t:graphicImage url="/common/cms/images/css.png" 
+                                      alt="CSS" title="CSS" />
+                    </t:div>
+                  </t:div>
+                </p:treeNode>
+              </p:tree>            
             </t:div>
-
-            <t:div>
-              <h:dataTable styleClass="propertyTable"
-                           columnClasses="col1,col2,col3,col4"
-                           value="#{nodeEditBean.userPropertyList}"
-                           var="property"
-                           rendered="#{!nodeEditBean.userPropertyListEmpty}">
-                <h:column>
-                  <h:inputText value="#{property.name}" styleClass="#{nodeEditBean.propertyNameStyleClass}" />
-                </h:column>
-                <h:column>
-                  <t:dataList value="#{nodeEditBean.propertyValues}" var="propertyValue">
-                    <t:inputText value="#{propertyValue.value}" styleClass="#{nodeEditBean.propertyValueStyleClass}" />
-                  </t:dataList>
-                  <h:outputText rendered="#{nodeEditBean.showPropertyHelp and nodeEditBean.propertyTipRender}"
-                                value="#{nodeEditBean.propertyTip}"
-                                styleClass="propertyTip"/>
-                </h:column>
-                <h:column>
-                  <h:commandLink action="#{nodeEditBean.addPropertyValue}" styleClass="imageButton"
-                                 rendered="#{nodeEditBean.addPropertyValueEnabled}">
-                    <t:graphicImage alt="" url="/common/cms/images/add_mini.png" title="#{cmsBundle.addPropertyValue}" />
-                  </h:commandLink>
-                </h:column>
-                <h:column>
-                  <h:commandLink action="#{nodeEditBean.removeProperty}" styleClass="imageButton"
-                                 rendered="#{nodeEditBean.removePropertyEnabled}">
-                    <t:graphicImage alt="" url="/common/cms/images/close_mini.png" title="#{cmsBundle.removeProperty}" />
-                  </h:commandLink>
-                </h:column>
-              </h:dataTable>
-
-              <h:outputLabel styleClass="noPropertiesLabel"
-                           rendered="#{nodeEditBean.userPropertyListEmpty}"
-                           value="#{cmsBundle.noProperties}" />
-            </t:div>
-
-          </t:div>
-
-        </h:panelGroup>
-
-        <h:panelGroup styleClass="nodeCSS" rendered="#{userSessionBean.cssViewSelected}">
-          <h:panelGroup styleClass="subtoolbar">
-            <h:commandLink action="#{nodeEditBean.saveCSS}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.appendNodeEnabled}">
-              <t:graphicImage alt="#{cmsBundle.saveCSS}" url="/common/cms/images/save.png" title="#{cmsBundle.saveCSS}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.revertCSS}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.appendNodeEnabled and nodeEditBean.customCSS}">
-              <t:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.syncCSS}" styleClass="imageButton"
-                           rendered="#{nodeEditBean.syncCssButtonRender}">
-              <t:graphicImage alt="#{cmsBundle.sync}" url="/common/cms/images/sync_css.png" title="#{cmsBundle.sync}" />
-            </h:commandLink>
-            <h:outputLabel styleClass="noCSSLabel" rendered="#{not nodeEditBean.customCSS}" value="#{cmsBundle.noCustomCSS}" />
-          </h:panelGroup>
-          <t:div id="cssLayer">
-            <h:inputTextarea id="cssTextArea" value="#{nodeEditBean.cssText}" styleClass="textArea" />
-          </t:div>
-        </h:panelGroup>
-
-        <h:panelGroup styleClass="nodeSync" rendered="#{userSessionBean.syncViewSelected}">
-          <t:div styleClass="cmsSyncSelection" rendered="#{nodeEditBean.syncNodeEnabled}">
-            <h:panelGroup styleClass="subtoolbar">
-              <h:commandLink action="#{nodeEditBean.syncNode}"
-                             styleClass="imageButton">
-                <t:graphicImage alt="#{cmsBundle.ok}" url="/common/cms/images/ok.png" title="#{cmsBundle.ok}" />
-              </h:commandLink>
-            </h:panelGroup>
-            <t:div id="syncLayer" style="overflow:auto;">
-              <h:panelGroup>
-                <h:outputText value="#{cmsBundle.syncTo}:" />
-                <sf:commandMenu action="#{nodeEditBean.switchToWorkspace}" 
-                                value="#{nodeEditBean.toWorkspaceIdInput}"
-                                style="margin-left:2px;">
-                  <f:selectItems value="#{nodeEditBean.toWorkspaceItems}" />
-                </sf:commandMenu>
-              </h:panelGroup>
-              <h:outputText value="#{cmsBundle.noNodesToSync}"
-                            rendered="#{nodeEditBean.syncNodeChangeListEmpty}"
-                            styleClass="noNodesLabel" />
-              <h:dataTable value="#{nodeEditBean.syncNodeChangeList}" var="nodeChangeRow"
-                           columnClasses="col1,col2,col3,col4" styleClass="syncNodeTable"
-                           headerClass="header" rendered="#{!nodeEditBean.syncNodeChangeListEmpty}">
-                <f:facet name="header">
-                  <h:panelGrid columns="2">
-                    <h:outputText value="#{cmsBundle.nodesToSync}" styleClass="title" />
-                    <h:commandLink action="#{nodeEditBean.checkAllSyncNodes}" styleClass="checkAllLink">
-                      <h:outputText value="[#{cmsBundle.checkAll}]" styleClass="checkAllLabel"/>
-                    </h:commandLink>
-                  </h:panelGrid>
-                </f:facet>
-                <h:column>
-                  <h:selectBooleanCheckbox value="#{nodeChangeRow.checked}" />
-                </h:column>
-                <h:column>
-                  <h:outputText value="#{nodeChangeRow.nodeId}" styleClass="nodeId" />
-                </h:column>
-                <h:column>
-                  <h:outputText value="#{nodeChangeRow.type}" styleClass="nodeChangeType" />
-                </h:column>
-                <h:column>
-                  <h:outputText value="#{nodeEditBean.nodeChangeRowLabel}" styleClass="nodeLabel" />
-                </h:column>
-              </h:dataTable>
-            </t:div>
-          </t:div>
-          <h:outputLabel styleClass="noWorkspacesLabel"
-                         rendered="#{!nodeEditBean.syncNodeEnabled}"
-                         value="#{cmsBundle.noWorkspacesToSync}" />
-        </h:panelGroup>
-
-        <h:panelGroup styleClass="nodeSearchPanel" style="height:auto" rendered="#{userSessionBean.searchViewSelected}">
-
-          <h:panelGroup styleClass="subtoolbar">
-            <h:commandLink action="#{nodeEditBean.addSearchProperty}" styleClass="imageButton">
-              <t:graphicImage alt="#{cmsBundle.addSearchProperty}" url="/common/cms/images/add.png" title="#{cmsBundle.addSearchProperty}" />
-            </h:commandLink>
-            <h:commandLink action="#{nodeEditBean.resetSearch}" styleClass="imageButton">
-              <t:graphicImage alt="#{cmsBundle.resetSearch}" url="/common/cms/images/revert.png" title="#{cmsBundle.resetSearch}" />
-            </h:commandLink>
-          </h:panelGroup>
-
-          <t:div id="searchLayer" rendered="#{!nodeEditBean.searchPropertyListEmpty}">
-
-            <t:dataTable rowIndexVar="propertyRowIndex" styleClass="propertyTable"
-                         columnClasses="col1,col2,col3,col4"
-                         value="#{nodeEditBean.searchPropertyList}"
-                         var="property">
-              <h:column>
-                <h:inputText value="#{property.name}" styleClass="propertyName"
-                             onkeypress="inputTextKeyCheck(event, 'mainform:nodeSearchButton2');" />            
-                <h:outputText rendered="#{nodeEditBean.andLabelRender}" value="#{cmsBundle.andUpper}" />
-              </h:column>
-              <h:column>
-                <t:dataList rowIndexVar="valueRowIndex"
-                            value="#{nodeEditBean.propertyValues}" var="propertyValue">
-                  <h:inputText value="#{propertyValue.value}" styleClass="propertyValue"
-                               onkeypress="inputTextKeyCheck(event, 'mainform:nodeSearchButton2');" />
-                  <h:outputText rendered="#{nodeEditBean.orLabelRender}" value="#{cmsBundle.orUpper}"/>
-                </t:dataList>
-              </h:column>
-              <h:column>
-                <h:commandLink action="#{nodeEditBean.addPropertyValue}" styleClass="imageButton">
-                  <t:graphicImage alt="#{cmsBundle.addPropertyValue}" url="/common/cms/images/add_mini.png" title="#{cmsBundle.addPropertyValue}" />
-                </h:commandLink>
-              </h:column>
-              <h:column>
-                <h:commandLink action="#{nodeEditBean.removeSearchProperty}" styleClass="imageButton">
-                  <t:graphicImage alt="#{cmsBundle.removeProperty}" url="/common/cms/images/close_mini.png" title="#{cmsBundle.removeProperty}" />
-                </h:commandLink>
-              </h:column>
-            </t:dataTable>
-
-          </t:div>
-
-          <h:commandButton id="nodeSearchButton2" value="#{cmsBundle.search}" action="#{nodeEditBean.fullSearch}" />
-
-          <t:div styleClass="searchCountLayer">
-            <h:outputText value="#{cmsBundle.foundNodes}: #{nodeEditBean.searchCount}"
-                          rendered="#{nodeEditBean.searchDone}"
-                          styleClass="searchCountText" />
-          </t:div>
-
-          <t:div id="searchNodeList" styleClass="nodeList">
-            <t:dataList value="#{nodeEditBean.nodeSearchItemList}" var="nodeSearchItem">
-              <t:div styleClass="item">
-                <t:div styleClass="nodeId">
-                  <h:commandLink action="#{nodeEditBean.selectMenuItem}">
-                    <h:outputText value="#{nodeSearchItem.nodeId}" />
-                  </h:commandLink>              
-                </t:div>
-                <t:div styleClass="label">
-                  <h:outputText value="#{nodeSearchItem.label}" />
-                </t:div>
-                <t:div styleClass="path">
-                  <h:outputText value="#{nodeSearchItem.nodeIdPathString}" />                
-                </t:div>  
+                 
+            <t:div forceId="true" id="fastSearchPanel" styleClass="fastSearchPanel">              
+              <p:outputLabel value="#{cmsBundle.search}:" styleClass="fsLabel" />
+              <p:remoteCommand id="fastSearchCommand"
+                               name="fastSearch" actionListener="#{nodeEditBean.fastSearch}" 
+                               update="@this leftPanel rightPanel"
+                               oncomplete="treeScrollToFound()"/>
+              <p:inputText value="#{nodeEditBean.inputSearch}" styleClass="fsInput" 
+                           onkeypress="if (event.keyCode == 13) { fastSearch(); return false; }">
+              </p:inputText>
+              <t:div class="collapseAllPanel">
+                <p:commandButton id="collapseAllButton"
+                                 actionListener="#{nodeEditBean.collapseAllNodes}" 
+                                 ajax="true" global="false"
+                                 update="@this mainform:tree"
+                                 styleClass="collapseAllLink"
+                                 value="#{cmsBundle.collapseAll}" />
               </t:div>
-            </t:dataList>
+            </t:div>
+            
           </t:div>
+          
+        </p:splitterPanel>  
 
-        </h:panelGroup>
+        <p:splitterPanel size="75">
+          
+          <t:div forceId="true" id="rightPanel" styleClass="rightPanel">
 
-      </h:panelGroup>
-      <script type="text/javascript">
+            <p:tabView activeIndex="#{nodeEditBean.activeTabIndex}">        
+              <p:ajax event="tabChange" listener="#{nodeEditBean.onTabChange}" update="@this mainform:tree rightPanel" />            
 
-            var viewportwidth;
-            var viewportheight;
+              <p:tab id="propertiesTab" title="#{cmsBundle.propertiesTab}">
+                <ui:include src="./panels/properties.xhtml" />  
+              </p:tab>
 
-            if (typeof window.innerWidth != 'undefined')
-            {
-              viewportwidth = window.innerWidth;
-              viewportheight = window.innerHeight;
-            }
-            else if (
-              (typeof document.documentElement != 'undefined') &amp;&amp;
-              (typeof document.documentElement.clientWidth != 'undefined') &amp;&amp;
-              (document.documentElement.clientWidth != 0))
-            {
-              viewportwidth = document.documentElement.clientWidth;
-              viewportheight = document.documentElement.clientHeight;
-            }
-            else // older versions of IE
-            {
-              viewportwidth = document.body.clientWidth;
-              viewportheight = document.body.clientHeight;
-            }
+              <p:tab id="cssTab" title="#{cmsBundle.cssTab}">
+                <ui:include src="./panels/css.xhtml" />                
+              </p:tab>
+
+              <p:tab id="syncTab" title="#{cmsBundle.syncTab}" rendered="#{userSessionBean.cmsAdministrator}">
+                <ui:include src="./panels/sync.xhtml" />                
+              </p:tab>
+
+              <p:tab id="searchTab" title="#{cmsBundle.searchTab}">
+                <ui:include src="./panels/search.xhtml" />                
+              </p:tab>
+
+            </p:tabView>  
             
-            var msgHeight = 25;
-            try
-            {
-              msgHeight = document.getElementsByClassName('cmsCurrentPathPanel')
-                [0].offsetHeight;
-            }
-            catch(err)
-            {
-
-            }
-            
-            document.getElementById('mainform:cmsEditSeparator').style.height = 
-              (viewportheight - 55 - msgHeight) + 'px';
-            document.getElementById('mainform:treeLayer').style.height = 
-              (viewportheight - 125 - msgHeight) + 'px';
-            try
-            {
-              document.getElementById('mainform:propertiesLayer').style.height = 
-                (viewportheight - 95 - msgHeight) + 'px';
-            }
-            catch(err)
-            {
-
-            }
-            try
-            {
-              document.getElementById('mainform:cssTextArea').style.height = 
-                (viewportheight - 100 - msgHeight) + 'px';
-            }
-            catch(err)
-            {
-
-            }
-            try
-            {
-              document.getElementById('mainform:syncLayer').style.height = 
-                (viewportheight - 95 - msgHeight) + 'px';
-            }
-            catch(err)
-            {
-
-            }
-            try
-            {
-              document.getElementsByClassName('nodeSearchPanel')[0].style.
-                height = (viewportheight - 55 - msgHeight) + 'px';
-            }
-            catch(err)
-            {
-
-            }
-
-            function treeScroll()
-            {
-              document.getElementById('mainform:tScroll').value =
-                document.getElementById('mainform:treeLayer').scrollTop;
-            }
-
-            function propertiesScroll()
-            {
-              document.getElementById('mainform:pScroll').value =
-                document.getElementById('mainform:propertiesLayer').scrollTop;
-            }
-
-            function syncScroll()
-            {
-              document.getElementById('mainform:sScroll').value =
-                document.getElementById('mainform:syncLayer').scrollTop;
-            }
-
-            function treeScrollMove()
-            {
-              var vTreeScroll = document.getElementById('mainform:tScroll');
-              if (!vTreeScroll.value) vTreeScroll.value = 0;
-              document.getElementById('mainform:treeLayer').scrollTop = vTreeScroll.value;
-            }
-
-            function propertiesScrollMove()
-            {
-              var vPropScroll = document.getElementById('mainform:pScroll');
-              if (!vPropScroll.value) vPropScroll.value = 0;
-              document.getElementById('mainform:propertiesLayer').scrollTop = vPropScroll.value;
-            }
-
-            function syncScrollMove()
-            {
-              var vSyncScroll = document.getElementById('mainform:sScroll');
-              if (!vSyncScroll.value) vSyncScroll.value = 0;
-              document.getElementById('mainform:syncLayer').scrollTop = vSyncScroll.value;
-            }
-
-            document.getElementById('mainform:treeLayer').onscroll = treeScroll;
-            treeScrollMove();
-            try
-            {
-              document.getElementById('mainform:propertiesLayer').onscroll = propertiesScroll;
-              propertiesScrollMove();
-            }
-            catch(err)
-            {
-
-            }
-            try
-            {
-              document.getElementById('mainform:syncLayer').onscroll = syncScroll;
-              syncScrollMove();
-            }
-            catch(err)
-            {
-
-            }
-
+          </t:div>
+          
+        </p:splitterPanel>
+        
+      </p:splitter>
+      
+      <p:ajaxStatus onstart="PF('statusDialog').show()" 
+                    onsuccess="PF('statusDialog').hide()"
+                    delay="1000" />
+      <p:dialog widgetVar="statusDialog" modal="true" draggable="false" 
+                closable="false" resizable="false" showHeader="false"
+                styleClass="loading-icon-container">
+        <div class="p-text-center">
+          <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
+        </div>
+      </p:dialog>      
+      
+      <script>
+        function getTreePanel()
+        {
+          return $('.treePanel').first();
+        }
+        
+        function treeScrollToClassName(className)
+        {
+          var position = getTreePanel().find(className).position();
+          if (typeof position != 'undefined')
+          {
+            getTreePanel().scrollTop(position.top);
+            updateStoredTreeScroll();
+          }
+        }
+                
+        function treeScrollToSelected()
+        {
+          treeScrollToClassName('.selected');
+        }
+        
+        function treeScrollToFound()
+        {
+          treeScrollToClassName('.found');
+        }
+        
+        function updateStoredTreeScroll()
+        {
+          sessionStorage.setItem('cmsTreeScroll', getTreePanel().scrollTop());          
+        }
+        
+        function treeScrollInit()
+        {
+          getTreePanel().scroll(updateStoredTreeScroll);
+          if (sessionStorage.getItem('cmsTreeScroll') == null)
+          {
+            sessionStorage.setItem('cmsTreeScroll', 0);
+          }
+          getTreePanel().scrollTop(
+            sessionStorage.getItem('cmsTreeScroll'));
+        }
+        
+        treeScrollInit();
       </script>
             
     </ui:define>
