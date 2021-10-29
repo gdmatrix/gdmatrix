@@ -16,11 +16,13 @@ public class PersonType extends EnumeratedDicType<Person>
 {
   final static public String PREFIX = "P" + DicType.PREFIX_SEPARATOR;
 
+  @Override
   public TypeEnumElement getElement(String id)
   {
     return Types.getType(id);
   }
 
+  @Override
   public TypeEnumElement[] getElements()
   {
     return Types.values();
