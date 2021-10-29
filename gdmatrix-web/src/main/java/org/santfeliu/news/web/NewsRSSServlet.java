@@ -98,6 +98,7 @@ public class NewsRSSServlet extends HttpServlet
     "Error al generar contingut RSS";
 
   private static final String LANGUAGE_PARAM = "language";
+  private static final String IMG_PARAM = "img";
   
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -147,6 +148,7 @@ public class NewsRSSServlet extends HttpServlet
     String serverURL = getServerURL(request);
     String dateTime = getDateTime();
     String language = getLanguage(request);
+    String imagePriority = getImagePriority(request);
     response.setContentType("text/xml");
     response.setCharacterEncoding("UTF-8");
     PrintWriter writer = response.getWriter();
@@ -201,7 +203,7 @@ public class NewsRSSServlet extends HttpServlet
       for (NewView newView : newViewList)
       {
         writeItemRSS(writer, newView, serverURL, language, node.getNodeId(), 
-          inheritedProperties.getIncludeImages());
+          inheritedProperties.getIncludeImages(), imagePriority);
       }
       writer.print("</channel>");
       writer.print("</rss>");
@@ -258,7 +260,8 @@ public class NewsRSSServlet extends HttpServlet
   }
 
   private void writeItemRSS(PrintWriter writer, NewView newView,
-    String serverURL, String language, String newsNodeId, boolean includeImages)
+    String serverURL, String language, String newsNodeId, boolean includeImages, 
+    String imagePriority)
   {
     writer.println("<item>");
     writer.println("<title>" +
@@ -278,7 +281,7 @@ public class NewsRSSServlet extends HttpServlet
     String imageTag = "";
     if (includeImages)
     {
-      String docId = getNewImageDocId(newView);
+      String docId = getNewImageDocId(newView, imagePriority);
       if (docId != null && !docId.isEmpty())
       {            
         String imageURL = serverURL + "/documents/" + docId;
@@ -415,6 +418,28 @@ public class NewsRSSServlet extends HttpServlet
     return language;
   }
 
+  private String getImagePriority(HttpServletRequest request)
+  {
+    String imagePriority = request.getParameter(IMG_PARAM);
+    if (!validateImagePriority(imagePriority))
+    {
+      imagePriority = "ldc"; //default priority
+    }
+    return imagePriority;
+  }
+
+  private boolean validateImagePriority(String imagePriority)
+  {
+    if (imagePriority == null || imagePriority.isEmpty()) return false;
+    if (imagePriority.length() > 3) return false;
+    char[] arrImagePriority = imagePriority.toCharArray();
+    for (char c : arrImagePriority)
+    {
+      if (c != 'c' && c != 'd' && c != 'l') return false; 
+    }
+    return true;
+  }
+  
   private String getNewViewDateTime(NewView newView)
   {
     try
@@ -432,19 +457,28 @@ public class NewsRSSServlet extends HttpServlet
     return "";
   }
   
-  private String getNewImageDocId(NewView newView)
-  {
-    String docId = NewsConfigBean.getListImageDocId(newView);
-    if (docId == null)
+  private String getNewImageDocId(NewView newView, String imagePriority)
+  {    
+    char[] arrImagePriority = imagePriority.toCharArray();    
+    for (char imageType : arrImagePriority)
     {
-      docId = NewsConfigBean.getDetailsImageDocId(newView);
+      String docId = null;      
+      if (imageType == 'l')
+      {
+        docId = NewsConfigBean.getListImageDocId(newView);
+      }
+      else if (imageType == 'd')
+      {
+        docId = NewsConfigBean.getDetailsImageDocId(newView);
+      }
+      else if (imageType == 'c')
+      {
+        docId = NewsConfigBean.getCarouselImageDocId(newView);
+      }
+      if (docId != null) return docId;
     }
-    if (docId == null)
-    {
-      docId = NewsConfigBean.getCarouselImageDocId(newView);
-    }
-    return docId;
-  }  
+    return null;
+  }
   
   private String getNonParsedText(String text)
   {
