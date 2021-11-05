@@ -168,7 +168,12 @@
       <component-family>javax.faces.SelectOne</component-family>
       <renderer-type>org.apache.myfaces.Menu</renderer-type>
       <renderer-class>org.santfeliu.faces.render.myfaces.menu.HtmlMenuRenderer</renderer-class>
-    </renderer>      
+    </renderer>
+    <renderer>
+      <component-family>org.primefaces.component</component-family>
+      <renderer-type>org.primefaces.component.DataTableRenderer</renderer-type>
+      <renderer-class>org.santfeliu.faces.render.primefaces.DataTableRenderer</renderer-class>
+    </renderer>          
   </render-kit>
                         
 </faces-config>
