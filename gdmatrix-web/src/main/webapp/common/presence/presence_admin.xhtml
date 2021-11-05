@@ -1022,7 +1022,7 @@
         <p:dataTable id="parameters" value="#{presenceAdminBean.parameters}" var="parameter"
           rowStyleClass="#{parameter == presenceAdminBean.editingParameter ? 'selected': null}" 
           styleClass="presence_table" tableStyleClass="#{empty presenceAdminBean.parameters ? 'empty' : null}">
-          <p:column sortBy="true" style="width:30%">
+          <p:column sortBy="#{parameter.parameterId}" style="width:30%">
             <f:facet name="header">
               <h:outputText value="#{presenceBundle.id}" />
             </f:facet>
