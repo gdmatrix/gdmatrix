@@ -443,7 +443,7 @@
           <column name="PERSMARE" length="20" />
         </basic>
         <basic name="personTypeId">
-          <column name="NIFSW" length="1" />
+          <column name="PERSONTYPEID" length="64" />
         </basic>
         <basic name="stdapladd">
           <column name="STDAPLADD" length="5" />
@@ -480,7 +480,7 @@
         </basic>
         <basic name="valdata">
           <column name="VALDATA" length="8" />
-        </basic>
+        </basic>       
       </attributes>
     </entity>
 
