@@ -63,105 +63,117 @@ import x0Assertion.oasisNamesTcSAML2.SubjectType;
  */
 public class SamlInterceptor implements ClientInterceptor
 {
+
   private String userName;
   private String organizationAlias;
   private String fonsAlias;
   private String memberOf;
 
-	public boolean handleFault(MessageContext arg0)
+  @Override
+  public boolean handleFault(MessageContext arg0)
     throws WebServiceClientException
   {
-		return false;
-	}
+    return false;
+  }
 
-	public boolean handleRequest(MessageContext messageContext)
+  @Override
+  public boolean handleRequest(MessageContext messageContext)
     throws WebServiceClientException
   {
-		QName qn = new QName("http://soap.iarxiu/headers","Context","ish");
-		
-		SoapMessage soapMessage = ((SoapMessage)messageContext.getRequest());
-		
-		SoapHeaderElement wsh = soapMessage.getSoapHeader().addHeaderElement(qn);
-		wsh.setMustUnderstand(true);
-		
-		AssertionDocument assertion = createAssertion();
+    QName qn = new QName("http://soap.iarxiu/headers", "Context", "ish");
 
-		Map<String,String> ns = new HashMap<String,String>();
-		ns.put("urn:oasis:names:tc:SAML:2.0:assertion", "saml2");
-		
-		XmlOptions xmlOptions = new XmlOptions();
-		xmlOptions.setSaveSuggestedPrefixes(ns);
-		xmlOptions.setSaveAggressiveNamespaces();
-		
-		XmlBeansMarshaller marshaller = new XmlBeansMarshaller();
-		marshaller.setXmlOptions(xmlOptions);
-		
-		try
+    SoapMessage soapMessage = ((SoapMessage) messageContext.getRequest());
+
+    SoapHeaderElement wsh = soapMessage.getSoapHeader().addHeaderElement(qn);
+    wsh.setMustUnderstand(true);
+
+    AssertionDocument assertion = createAssertion();
+
+    Map<String, String> ns = new HashMap<String, String>();
+    ns.put("urn:oasis:names:tc:SAML:2.0:assertion", "saml2");
+
+    XmlOptions xmlOptions = new XmlOptions();
+    xmlOptions.setSaveSuggestedPrefixes(ns);
+    xmlOptions.setSaveAggressiveNamespaces();
+
+    XmlBeansMarshaller marshaller = new XmlBeansMarshaller();
+    marshaller.setXmlOptions(xmlOptions);
+
+    try
     {
-			marshaller.marshal(assertion, wsh.getResult());
-		} 
-    catch(IOException e)
+      marshaller.marshal(assertion, wsh.getResult());
+    }
+    catch (IOException e)
     {
-			throw new SaajSoapHeaderException("Error creating SAML Header", e);
-		}
+      throw new SaajSoapHeaderException("Error creating SAML Header", e);
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	public boolean handleResponse(MessageContext messageContext)
+  @Override
+  public boolean handleResponse(MessageContext messageContext)
     throws WebServiceClientException
   {
-		return false;
-	}
-	
-	protected AssertionDocument createAssertion()
+    return false;
+  }
+  
+  @Override
+  public void afterCompletion(MessageContext mc, Exception excptn)
+    throws WebServiceClientException
   {
-		AssertionDocument assertionDocument = AssertionDocument.Factory.newInstance();
-		AssertionType assertion;
-		
-		assertion = assertionDocument.addNewAssertion();
-		
-		assertion.setVersion("2.0");
-		assertion.setID("AssertId-" + System.currentTimeMillis());
-		assertion.setIssueInstant( Calendar.getInstance() );
-		
-		NameIDType issuerName = assertion.addNewIssuer();
-		issuerName.setStringValue("iArxiuClient");
-		
-		SubjectType subject = assertion.addNewSubject();
-		
-		SubjectConfirmationType subjectConfirmation =
-      subject.addNewSubjectConfirmation();
-		subjectConfirmation.setMethod("urn:oasis:names:tc:SAML:2.0:cm:sender-vouches");
-		
-		NameIDType subjectName = subjectConfirmation.addNewNameID();
-		subjectName.setStringValue(this.userName);
-		
-		AttributeStatementType attributeStatement =
-      assertion.addNewAttributeStatement();
-		
-		addAttribute(attributeStatement,
+  }  
+
+  protected AssertionDocument createAssertion()
+  {
+    AssertionDocument assertionDocument = 
+      AssertionDocument.Factory.newInstance();
+    AssertionType assertion;
+
+    assertion = assertionDocument.addNewAssertion();
+
+    assertion.setVersion("2.0");
+    assertion.setID("AssertId-" + System.currentTimeMillis());
+    assertion.setIssueInstant(Calendar.getInstance());
+
+    NameIDType issuerName = assertion.addNewIssuer();
+    issuerName.setStringValue("iArxiuClient");
+
+    SubjectType subject = assertion.addNewSubject();
+
+    SubjectConfirmationType subjectConfirmation
+      = subject.addNewSubjectConfirmation();
+    subjectConfirmation
+      .setMethod("urn:oasis:names:tc:SAML:2.0:cm:sender-vouches");
+
+    NameIDType subjectName = subjectConfirmation.addNewNameID();
+    subjectName.setStringValue(this.userName);
+
+    AttributeStatementType attributeStatement
+      = assertion.addNewAttributeStatement();
+
+    addAttribute(attributeStatement,
       "urn:iarxiu:2.0:names:organizationAlias", this.organizationAlias);
-		addAttribute(attributeStatement,
+    addAttribute(attributeStatement,
       "urn:iarxiu:2.0:names:fondsAlias", this.fonsAlias);
-		addAttribute(attributeStatement,
+    addAttribute(attributeStatement,
       "urn:iarxiu:2.0:names:member-of", this.memberOf);
-		
-		return assertionDocument;
-	}
-	
-	private void addAttribute(
-			final AttributeStatementType attributeStatement,
-			final String name,
-			final String value )
+
+    return assertionDocument;
+  }
+
+  private void addAttribute(
+    final AttributeStatementType attributeStatement,
+    final String name,
+    final String value)
   {
-		AttributeType attribute = attributeStatement.addNewAttribute();
-		attribute.setName(name);
-		XmlObject xmlNode = attribute.addNewAttributeValue();
-		Node node = xmlNode.getDomNode();
-		Text text = node.getOwnerDocument().createTextNode(value);
-		node.appendChild(text);
-	}
+    AttributeType attribute = attributeStatement.addNewAttribute();
+    attribute.setName(name);
+    XmlObject xmlNode = attribute.addNewAttributeValue();
+    Node node = xmlNode.getDomNode();
+    Text text = node.getOwnerDocument().createTextNode(value);
+    node.appendChild(text);
+  }
 
   public String getFonsAlias()
   {
@@ -202,4 +214,6 @@ public class SamlInterceptor implements ClientInterceptor
   {
     this.userName = userName;
   }
+
+
 }
