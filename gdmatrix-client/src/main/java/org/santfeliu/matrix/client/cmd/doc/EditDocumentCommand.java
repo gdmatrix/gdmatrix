@@ -63,11 +63,13 @@ public class EditDocumentCommand extends DocumentCommand
   {
   }
   
+  @Override
   protected void init() throws MalformedURLException
   {
     super.init();
     docId = (String)properties.get("docId");
-  }  
+    userId = (String)properties.get("userId");    
+  }
     
   @Override
   public void doWork() throws Exception
