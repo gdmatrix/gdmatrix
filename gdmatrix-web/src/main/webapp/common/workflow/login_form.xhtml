@@ -20,7 +20,6 @@
       <t:div style="margin-top:20px;margin-bottom:20px;text-align: center;"
         rendered="#{userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true'}">
         <h:commandLink action="#{loginFormBean.loginValid}" 
-                    rendered="#{loginFormBean.loginByValid}"
                     styleClass="workflowCommandLink" style="min-width:200px">
           <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.login_valid == null ? 
                          'VALid' : userSessionBean.selectedMenuItem.properties.login_valid}" 
@@ -32,7 +31,6 @@
       <t:div style="margin-top:20px;margin-bottom:20px;text-align: center;"
         rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true'}">
         <sf:secureCommandLink action="#{loginFormBean.loginCertificate}"
-         rendered="#{loginFormBean.loginByCertificate}"
          scheme="https" port="#{applicationBean.clientSecurePort}"
          styleClass="workflowCommandLink" style="min-width:200px">
           <sf:outputText value="#{webBundle.certificateAuthentication}"
