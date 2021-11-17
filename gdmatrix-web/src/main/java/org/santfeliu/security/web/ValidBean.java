@@ -57,8 +57,8 @@ public class ValidBean extends FacesBean
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     ExternalContext extContext = getExternalContext();
-    HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
-    String returnParams = request.getQueryString();
+    String returnParams =
+      (String)extContext.getRequestParameterMap().get("return_params");
     try
     {
       ValidClient client = new ValidClient();

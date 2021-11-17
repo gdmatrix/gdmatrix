@@ -61,7 +61,8 @@
 
               <!-- Certificate -->
               <h:outputLink styleClass="button certificate fixed"
-                value="#{loginBean.loginCertificateURL}">
+                value="#{loginBean.loginCertificateURL}" 
+                rendered="#{userSessionBean.selectedMenuItem.properties.login_certificate_enabled == 'true'}">
                 <h:outputText value="#{webBundle.certificateAuthentication}"/>
               </h:outputLink>
 
@@ -69,8 +70,12 @@
               <h:commandLink action="#{validBean.login}" styleClass="button valid fixed"
                 rendered="#{loginBean.requestedAuthenticationLevel lt 3 and loginBean.requestedSignatureLevel lt 3 and 
                            (userSessionBean.intranetUser or userSessionBean.selectedMenuItem.properties.login_valid_enabled == 'true')}">
-                <h:outputText value="VALid" />
+                <sf:outputText value="VALID-AOC"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="login" />
               </h:commandLink>
+              
+              <input type="hidden" name="return_params" value="#{request.queryString}" />
 
             </h:panelGroup>
 
