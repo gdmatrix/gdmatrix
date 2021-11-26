@@ -30,14 +30,9 @@
  */
 package org.santfeliu.job.scheduler.quartz;
 
-import org.santfeliu.job.service.LogFormatter;
-import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.job.Job;
@@ -59,7 +54,6 @@ import org.quartz.impl.matchers.EverythingMatcher;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.job.scheduler.Scheduler;
 import org.santfeliu.job.service.JobException;
-import org.santfeliu.job.service.JobFiring;
 
 import org.santfeliu.job.store.JobStore;
 import org.santfeliu.util.MatrixConfig;
@@ -172,12 +166,12 @@ public class QuartzScheduler implements Scheduler
         MatrixConfig.getClassProperty(QuartzScheduler.class, LOCK_ENABLED);      
       if (lockEnabledProp != null && lockEnabledProp.equalsIgnoreCase("true"))
       {
-        TriggerListener lockListener = new LockTriggerListener(jobStore);
-        scheduler.getListenerManager().addTriggerListener(lockListener,
+        TriggerListener startJobListener = new StartJobListener(jobStore);
+        scheduler.getListenerManager().addTriggerListener(startJobListener,
           EverythingMatcher.allTriggers());
         
-        JobListener unlockListener = new UnlockJobListener(jobStore);
-        scheduler.getListenerManager().addJobListener(unlockListener,
+        JobListener endJobListener = new EndJobListener(jobStore);
+        scheduler.getListenerManager().addJobListener(endJobListener,
           EverythingMatcher.allJobs());        
       }
       
@@ -256,53 +250,13 @@ public class QuartzScheduler implements Scheduler
     }    
     
     if (job.isAudit() != null && job.isAudit())
-    {
-      File logFile = null;
-      boolean appendLog = logType != null && LogType.CONTINUOUS.equals(logType);
-      
-      if (appendLog)
-      {
-        JobFiring jobFiring = jobStore.getLastJobFiring(job.getJobId());
-        if (jobFiring != null)
-          logFile = jobFiring.getLogFile();
-      }
-      
-      if (logFile == null)
-        logFile = File.createTempFile("Job", ".log");
+    {   
+      //Created without handler
+      LogUtils.createNewLogger(job.getJobId(), logVerbosity);
 
-      Logger logger = Logger.getLogger(logFile.getName()); 
-      
-      FileHandler fh = new FileHandler(logFile.getAbsolutePath(), appendLog);
-      LogFormatter formatter = new LogFormatter(logFormat);  
-      fh.setFormatter(formatter);        
-      logger.addHandler(fh);            
-      
-      if (logVerbosity != null)
-      {
-        if ("SEVERE".equalsIgnoreCase(logVerbosity))
-          logger.setLevel(Level.SEVERE);
-        else if ("WARNING".equalsIgnoreCase(logVerbosity))
-          logger.setLevel(Level.WARNING);
-        else if ("INFO".equalsIgnoreCase(logVerbosity))
-          logger.setLevel(Level.INFO);
-        else if ("FINE".equalsIgnoreCase(logVerbosity))
-          logger.setLevel(Level.FINE);
-        else if ("FINER".equalsIgnoreCase(logVerbosity))
-         logger.setLevel(Level.FINER);
-        else if ("FINEST".equalsIgnoreCase(logVerbosity))
-          logger.setLevel(Level.FINEST);    
-        else if ("ALL".equalsIgnoreCase(logVerbosity))
-          logger.setLevel(Level.ALL);           
-      }
-      else
-        logger.setLevel(Level.INFO); 
-
- 
-      
       JobDataMap jobDataMap = new JobDataMap();
-      jobDataMap.put("logger", logger);
-      jobDataMap.put("logFile", logFile);
       jobDataMap.put("logType", logType);
+      jobDataMap.put("logFormat", logFormat);     
       jobBuilder.usingJobData(jobDataMap);
     }
 
