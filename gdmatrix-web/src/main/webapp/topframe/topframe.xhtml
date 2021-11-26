@@ -21,12 +21,22 @@
         <meta name="viewport" content="width=device-width" />
       </c:if>
       <title>
-        <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.pageTitlePrefix} 
-        #{userSessionBean.selectedMenuItem.properties.pageTitle == null ? 
-        userSessionBean.selectedMenuItem.properties.label : 
-        userSessionBean.selectedMenuItem.properties.pageTitle}"
-          translator="#{userSessionBean.translator}"
-          translationGroup="#{userSessionBean.translationGroup}" />
+        <c:choose>
+          <c:when test="${userSessionBean.editViewSelected}">
+            <sf:outputText value="#{webBundle.cmsEditor}" />
+          </c:when>
+          <c:when test="${userSessionBean.redirViewSelected}">
+            <sf:outputText value="#{webBundle.redirEditor}" />
+          </c:when>
+          <c:otherwise>
+            <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.pageTitlePrefix} 
+                #{userSessionBean.selectedMenuItem.properties.pageTitle == null ? 
+                userSessionBean.selectedMenuItem.properties.label : 
+                userSessionBean.selectedMenuItem.properties.pageTitle}"
+              translator="#{userSessionBean.translator}"
+              translationGroup="#{userSessionBean.translationGroup}" />            
+          </c:otherwise>
+        </c:choose>
       </title>
       <link rel="stylesheet" type="text/css"
         href="${pageContext.request.contextPath}/topframe/css/topframe.css?v=${applicationBean.resourcesVersion}" />
