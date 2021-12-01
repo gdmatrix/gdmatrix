@@ -30,7 +30,6 @@
  */
 package org.santfeliu.job.scheduler.quartz;
 
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.quartz.JobDataMap;
@@ -44,7 +43,7 @@ import org.quartz.JobExecutionException;
 public abstract class AbstractJob implements org.quartz.Job
 {
   protected Logger logger; 
-  protected File logFile;
+//  protected File logFile;
   protected Boolean audit;
   protected String logFormat;
   protected String logVerbosity;
@@ -66,8 +65,9 @@ public abstract class AbstractJob implements org.quartz.Job
       audit = params.getBoolean("audit");
       if (audit)
       {
-        logger = (Logger) params.get("logger");
-        logFile = (File) params.get("logFile");
+        String jobId = (String) params.get("jobId");
+        logger = Logger.getLogger(jobId);        
+//        logger = (Logger) params.get("logger");
       }
       
       doExecute(context);  
@@ -78,8 +78,8 @@ public abstract class AbstractJob implements org.quartz.Job
     } 
     finally
     {
-      if (audit && logFile != null)
-        context.getJobDetail().getJobDataMap().put("logFile", logFile);      
+      if (audit && logger != null)
+        context.getJobDetail().getJobDataMap().put("logger", logger);      
     }
   }
   

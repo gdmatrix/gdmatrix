@@ -38,10 +38,10 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
-import org.santfeliu.job.service.JobException;
 import org.santfeliu.job.service.JobFiring;
 import org.matrix.job.LogType;
 import org.matrix.job.ResponseType;
+import org.santfeliu.job.service.JobException;
 import org.santfeliu.job.store.JobStore;
 import org.santfeliu.util.TextUtils;
 
@@ -49,143 +49,119 @@ import org.santfeliu.util.TextUtils;
  *
  * @author blanquepa
  */
-  public class QuartzJobListener implements JobListener
+public class QuartzJobListener implements JobListener
+{
+
+  private final JobStore jobStore;
+  private Date startDate;
+
+  public QuartzJobListener(JobStore jobStore)
   {
+    this.jobStore = jobStore;
+  }
 
-    private final JobStore jobStore;
-    private Date startDate;
+  @Override
+  public String getName()
+  {
+    return "QuartzJobListener";
+  }
 
-    public QuartzJobListener(JobStore jobStore)
+  @Override
+  public void jobToBeExecuted(JobExecutionContext context)
+  {
+    this.startDate = new Date();
+  }
+
+  @Override
+  public void jobExecutionVetoed(JobExecutionContext context)
+  {
+    JobDataMap params = context.getJobDetail().getJobDataMap();
+    String jobId = params.getString("jobId");
+    Logger.getLogger(QuartzJobListener.class.getName()).log(
+      Level.INFO, "{0} job execution locked", jobId);
+
+    Boolean audit = params.getBoolean("audit");
+    if (audit)
     {
-      this.jobStore = jobStore;
-    }
-
-    @Override
-    public String getName()
-    {
-      return "QuartzJobListener";
-    }
-
-    @Override
-    public void jobToBeExecuted(JobExecutionContext context)
-    {
-      this.startDate = new Date();           
-    }
-
-    @Override
-    public void jobExecutionVetoed(JobExecutionContext context)
-    {
-      JobDataMap params = context.getJobDetail().getJobDataMap();
-      String jobId = params.getString("jobId");
-      Logger.getLogger(QuartzJobListener.class.getName()).log(
-        Level.INFO, "{0} job execution locked", jobId);
-      
-      Boolean audit = params.getBoolean("audit");
-      if (audit)
-      {
-        String startDateTime
-          = TextUtils.formatDate(this.startDate, "yyyyMMddHHmmss");
-        String endDateTime
-          = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-        JobFiring jobFiring = new JobFiring();
-        jobFiring.setJobId(jobId);
-        jobFiring.setStartDateTime(startDateTime);
-        jobFiring.setEndDateTime(endDateTime);  
-        jobFiring.setMessage("JOB_EXECUTION_LOCKED");
-        try
-        {
-          jobFiring.setResponseType(ResponseType.ERROR);
-          
-          File logFile = (File) params.get("logFile");
-          if (logFile != null)
-            jobFiring.setLogFile(logFile);
-          
-          String sLogType = params.getString("logType");
-          LogType logType = 
-            sLogType != null ? LogType.valueOf(sLogType.toUpperCase()) : 
-              LogType.MULTIPLE;
-          
-          jobFiring.setLogType(logType);        
-          
-          jobStore.storeJobFiring(jobFiring);
-          
-          if (logFile != null)
-            logFile.delete();          
-        }
-        catch (JobException ex)
-        {
-          Logger.getLogger(
-            QuartzJobListener.class.getName()).log(Level.SEVERE, null, ex);
-        }
-      }
-    }
-
-    @Override
-    public void jobWasExecuted(JobExecutionContext context,
-      JobExecutionException jobException)
-    {
-      
-      if (jobException != null)
-        Logger.getLogger(QuartzJobListener.class.getName()).log(
-          Level.SEVERE, null, jobException);  
-      else
-        Logger.getLogger(QuartzJobListener.class.getName()).log(
-          Level.INFO, "Successful job execution");
-        
-      JobDataMap params = context.getJobDetail().getJobDataMap();
-      Boolean audit = params.getBoolean("audit");
-      
       try
       {
-        if (audit)
-        {
-          String startDateTime
-            = TextUtils.formatDate(this.startDate, "yyyyMMddHHmmss");
-          String endDateTime
-            = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-          String jobId = params.getString("jobId");
-          JobFiring jobFiring = new JobFiring();
-          jobFiring.setJobId(jobId);
-          jobFiring.setStartDateTime(startDateTime);
-          jobFiring.setEndDateTime(endDateTime);
-          if (jobException != null)
-          {
-            jobFiring.setMessage("JOB_EXECUTION_FAILED"
-              + ":" + jobException.getMessage());
-            jobFiring.setResponseType(ResponseType.ERROR);
-          }
-          else
-          {
-            String message = context.getResult() != null ? 
-              ":" + context.getResult() : "";
-            jobFiring.setMessage("SUCCESSFUL_JOB_EXECUTION" 
-              + message);
-            jobFiring.setResponseType(ResponseType.SUCCESS);
-          }
-          
-          File logFile = (File) params.get("logFile");
-          if (logFile != null)
-            jobFiring.setLogFile(logFile);
-          
-          LogType logType = (LogType) params.get("logType");
-          if (logType == null)
-            logType = LogType.MULTIPLE;   
-          jobFiring.setLogType(logType);      
-                  
-          jobStore.storeJobFiring(jobFiring);
-          
-          if (logFile != null)
-            logFile.delete();
-        }
+        storeJobFiring(params, ResponseType.ERROR, "JOB_EXECUTION_LOCKED");
       }
       catch (JobException ex)
       {
         Logger.getLogger(
           QuartzJobListener.class.getName()).log(Level.SEVERE, null, ex);
-      }        
-      
+      }
     }
-    
-
-    
   }
+
+  @Override
+  public void jobWasExecuted(JobExecutionContext context,
+    JobExecutionException jobException)
+  {
+    JobDataMap params = context.getJobDetail().getJobDataMap();
+    
+    if (jobException != null)
+      Logger.getLogger(QuartzJobListener.class.getName()).log(
+        Level.SEVERE, null, jobException);
+    else
+      Logger.getLogger(QuartzJobListener.class.getName()).log(
+        Level.INFO, "Successful job execution");
+
+    Boolean audit = params.getBoolean("audit");
+    if (audit)
+    {    
+      try
+      {
+        ResponseType responseType = null;
+        String message = "";
+        if (jobException != null)
+        {
+          message = "JOB_EXECUTION_FAILED" + ":" + jobException.getMessage();
+          responseType = ResponseType.ERROR;
+        }
+        else
+        {
+          message = "SUCCESSFUL_JOB_EXECUTION" + (context.getResult() != null ? 
+            ":" + context.getResult() : "");
+          responseType = ResponseType.SUCCESS;
+        }
+        storeJobFiring(params, responseType, message);
+      }
+      catch (JobException ex)
+      {
+        Logger.getLogger(
+          QuartzJobListener.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+  }
+  
+  private void storeJobFiring(JobDataMap params, ResponseType responseType, 
+    String message) throws JobException
+  {
+    String jobId = params.getString("jobId");    
+    String startDateTime
+      = TextUtils.formatDate(this.startDate, "yyyyMMddHHmmss");
+    String endDateTime
+      = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
+
+    JobFiring jobFiring = new JobFiring();
+    jobFiring.setJobId(jobId);
+    jobFiring.setStartDateTime(startDateTime);
+    jobFiring.setEndDateTime(endDateTime);
+    
+    jobFiring.setMessage(message);
+    jobFiring.setResponseType(responseType);    
+
+    LogType logType = (LogType) params.get("logType");
+    if (logType == null)
+      logType = LogType.MULTIPLE;
+    jobFiring.setLogType(logType);        
+
+    File logFile = LogUtils.getLogFile(jobId);
+    jobFiring.setLogFile(logFile);
+    
+    jobStore.storeJobFiring(jobFiring);      
+  }
+  
+}
