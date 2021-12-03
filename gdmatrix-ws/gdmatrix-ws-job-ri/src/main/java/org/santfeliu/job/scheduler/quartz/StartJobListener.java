@@ -85,8 +85,22 @@ public class StartJobListener implements TriggerListener
     {
       if (!(context.getJobInstance() instanceof InitSchedulerJob))
       {
-        setLogger(context);
-        lock(context);
+        JobDataMap map = context.getJobDetail().getJobDataMap();
+        String jobId = (String) map.get("jobId"); 
+        Job job = jobStore.loadJob(jobId);   
+        if (job.isLocked())
+        {
+          context.put("lock", true); //put in context to veto execution
+          LogUtils.log(jobId, "Job was already locked", Level.INFO);            
+        }
+        else //set lock
+        {     
+          job.setLocked(true);
+          jobStore.storeJob(job);
+          Boolean audit = map.getBoolean("audit");
+          if (audit)
+            setLogger(map);              
+        }  
       }
     }
     catch (JobException ex)
@@ -106,50 +120,27 @@ public class StartJobListener implements TriggerListener
     Trigger.CompletedExecutionInstruction triggerInstructionCode)
   {
   }
-  
-  private void lock(JobExecutionContext context) throws JobException
+    
+  private void setLogger(JobDataMap params) throws JobException
   {
-    JobDataMap map = context.getJobDetail().getJobDataMap();
-    String jobId = (String) map.get("jobId"); 
-    Job job = jobStore.loadJob(jobId);
-    if (job.isLocked())
+    String jobId = params.getString("jobId");      
+    LogType logType = (LogType) params.get("logType");
+    String logFormat = (String) params.get("logFormat");
+    File logFile = null;
+    if (LogType.CONTINUOUS.equals(logType))
     {
-      context.put("lock", true); //already locked
-      LogUtils.log(jobId, "Job already locked", Level.INFO);      
+      JobFiring jobFiring = jobStore.getLastJobFiring(jobId);
+      if (jobFiring != null)
+        logFile = jobFiring.getLogFile();
     }
-    else
+    try      
     {
-      job.setLocked(true);
-      jobStore.storeJob(job);  
-      LogUtils.log(jobId, "Job locked", Level.INFO);
-    } 
-  } 
-  
-  private void setLogger(JobExecutionContext context) throws JobException
-  {
-    JobDataMap params = context.getJobDetail().getJobDataMap();
-    Boolean audit = params.getBoolean("audit");
-    if (audit)    
+      LogUtils.setHandler(jobId, logFile, logFormat, logType);
+      LogUtils.log(jobId, "Job execution initialized", Level.INFO);
+    }
+    catch (IOException ex)
     {
-      String jobId = params.getString("jobId");      
-      LogType logType = (LogType) params.get("logType");
-      String logFormat = (String) params.get("logFormat");
-      File logFile = null;
-      if (LogType.CONTINUOUS.equals(logType))
-      {
-        JobFiring jobFiring = jobStore.getLastJobFiring(jobId);
-        if (jobFiring != null)
-          logFile = jobFiring.getLogFile();
-      }
-      try      
-      {
-        LogUtils.setHandler(jobId, logFile, logFormat, logType);
-        LogUtils.log(jobId, "Job execution logger initialized", Level.INFO);
-      }
-      catch (IOException ex)
-      {
-        throw new JobException(ex); 
-      }
+      throw new JobException(ex); 
     }
   }
   

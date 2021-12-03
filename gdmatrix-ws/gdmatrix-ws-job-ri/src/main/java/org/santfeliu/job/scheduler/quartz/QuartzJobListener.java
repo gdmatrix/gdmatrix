@@ -159,7 +159,8 @@ public class QuartzJobListener implements JobListener
     jobFiring.setLogType(logType);        
 
     File logFile = LogUtils.getLogFile(jobId);
-    jobFiring.setLogFile(logFile);
+    if (logFile != null)
+      jobFiring.setLogFile(logFile);
     
     jobStore.storeJobFiring(jobFiring);      
   }

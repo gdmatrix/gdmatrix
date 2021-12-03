@@ -69,9 +69,13 @@ public class EndJobListener implements JobListener
   {
     if (!(context.getJobInstance() instanceof InitSchedulerJob))
     {
-      JobDataMap map = context.getJobDetail().getJobDataMap();
-      String jobId = (String) map.get("jobId");        
-      LogUtils.removeHandler(jobId);   
+      Boolean lock = (Boolean)context.get("lock");
+      if (!lock)
+      {
+        JobDataMap map = context.getJobDetail().getJobDataMap();
+        String jobId = (String) map.get("jobId");        
+        LogUtils.removeHandler(jobId); 
+      }
     }
   }
 

@@ -410,9 +410,13 @@ public class CasesJobStore implements JobStore
     {    
       JobFiring lastFiring = firings.get(0);
       String docId = lastFiring.getLogId();
-    
-      DocumentManagerClient client = getDocumentManagerClient();
-      return client.loadDocument(docId);
+      if (docId != null)
+      {
+        DocumentManagerClient client = getDocumentManagerClient();
+        return client.loadDocument(docId);
+      }
+      else
+        return null;
     }
     else 
       return null;
