@@ -17,16 +17,19 @@
   </dependencySets>
   <fileSets>
     <fileSet>
-      <directory>target/</directory>
-      <outputDirectory />
-      <includes>
-        <include>**/*.jar</include>
-      </includes>
+      <directory>.</directory>
+      <outputDirectory>certificates</outputDirectory>
+      <excludes>
+        <exclude>*/**</exclude>
+      </excludes>
     </fileSet>
-  </fileSets>
+  </fileSets>  
   <files>
     <file>
       <source>src/main/resources/ant.bat</source>
+    </file>
+    <file>
+      <source>src/main/resources/iarxiu_config.xml</source>
     </file>
   </files>  
 </assembly>

@@ -10,6 +10,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  */
 public class CheckIngestPITCommand extends ClientPITCommand
 {
+  @Override
   public void execute() throws Exception
   {
     String ticket = (String)getVariable(ticketVar);

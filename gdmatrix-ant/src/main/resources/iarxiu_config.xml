@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="messageFactory"
+        class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+    <property name="messageFactory">
+      <bean
+        class="com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl">
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="crypto" class="org.springframework.ws.soap.security.wss4j.support.CryptoFactoryBean">
+    <property name="keyStoreType" value="pkcs12"/>
+    <property name="keyStoreLocation" value="./certificates/tramitacio.p12"/>
+    <property name="keyStorePassword" value="password"/>
+  </bean>
+  
+  <bean id="samlInterceptor" class="org.santfeliu.util.iarxiu.client.SamlInterceptor">
+    <property name="userName" value="_NIF_" />
+    <property name="organizationAlias" value="aj_Sant_Feliu_Llobregat" />
+    <property name="fonsAlias" value="Fons_Ajuntament" />
+    <property name="memberOf" value="archivists" />
+  </bean>  
+  
+  <bean id="wssInterceptor" class="org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor">
+    <property name="securementActions" value="Signature Timestamp"/>
+    <property name="securementUsername" value="tramitacio"/>
+    <property name="securementPassword" value="password"/>
+    <property name="securementSignatureCrypto" ref="crypto"/>
+    <property name="securementSignatureKeyIdentifier" value="DirectReference"/>
+    <property name="securementSignatureParts">
+      <value>{}{http://schemas.xmlsoap.org/soap/envelope/}Body;{}{http://soap.iarxiu/headers}Context;</value>
+    </property>
+  </bean>       
+              
+  <bean id="proxyClient" class="org.santfeliu.util.iarxiu.client.ProxyClient">
+    <property name="defaultUri" 
+                  value="http://www.iarxiu.eacat.cat/core/soap/"/>
+    <property name="messageFactory" ref="messageFactory"/> 
+    <property name="interceptors">
+      <list>
+        <ref bean="samlInterceptor"/>
+        <ref bean="wssInterceptor"/>
+      </list>
+    </property>
+  </bean>
+   
+  <bean id="ingestClient" class="org.santfeliu.util.iarxiu.client.IngestClient">
+    <property name="uploadServletUrl"
+              value="http://www.iarxiu.eacat.cat/core/servlet/upload"/>
+    <property name="proxyClient">
+      <ref bean="proxyClient" />
+    </property>
+  </bean>
+   
+</beans>
