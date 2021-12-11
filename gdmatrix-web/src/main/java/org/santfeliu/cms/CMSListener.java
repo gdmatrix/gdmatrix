@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.cms;
@@ -68,43 +68,43 @@ public class CMSListener implements PhaseListener
   public static final String TOPIC_PARAM = "topic";
   public static final String SMID_PARAM = "smid";
   public static final String XMID_PARAM = "xmid";
-  public static final String WORKSPACEID_PARAM = "workspaceid";  
-  public static final String BROWSER_TYPE_PARAM = "btype"; 
+  public static final String WORKSPACEID_PARAM = "workspaceid";
+  public static final String BROWSER_TYPE_PARAM = "btype";
   public static final String LANGUAGE_PARAM = "language";
 
   public static final String PAGE_USERID_PARAM = "_userid_";
   // Replace by RequestDispatcher.FORWARD_REQUEST_URI in servlet spec 3.0
-  public static final String FORWARD_REQUEST_URI = 
-    "javax.servlet.forward.request_uri";   
+  public static final String FORWARD_REQUEST_URI =
+    "javax.servlet.forward.request_uri";
   public static final String CHARSET_ATTR = "javax.faces.request.charset";
   public static final String SECURE_SESSION_ATTR =
     "org.santfeliu.web.SecureSession";
-  
+
   public static final String NEXT_MENU_ITEM_ATTR =
-    "org.santfeliu.web.nextMenuItem";  
-  
+    "org.santfeliu.web.nextMenuItem";
+
   public static final String FORCED_LANGUAGE_PROP =
-    "org.santfeliu.web.forcedLanguage";  
+    "org.santfeliu.web.forcedLanguage";
   public static final String CLIENT_SECURE_PORT_PROP =
-    "org.santfeliu.web.clientSecurePort";  
+    "org.santfeliu.web.clientSecurePort";
   public static final String REDIRECTION_LIMIT_PROP =
     "org.santfeliu.web.redirectionLimit";
-  
+
   public static final String GO_URI = "/go.faces";
-  public static final String LOGIN_URI = "/login.faces"; 
-  
+  public static final String LOGIN_URI = "/login.faces";
+
   public static final String BLANK_VIEWID = "/common/util/blank.faces";
-  
-  private static final String REDIR_COUNT_PARAM = "_redircount";  
-  
-  private Application application;  
-  
+
+  private static final String REDIR_COUNT_PARAM = "_redircount";
+
+  private Application application;
+
   private String forcedLanguage;
   private Integer redirectionLimit;
-  private int clientSecurePort;  
-  private final WebAuditor webAuditor = new WebAuditor();  
+  private int clientSecurePort;
+  private final WebAuditor webAuditor = new WebAuditor();
   private final HashSet<String> pathExceptions = new HashSet<String>();
-  
+
   public CMSListener()
   {
     //Set paths that shouldn't go through CMS lifecycle (full servletPath)
@@ -112,14 +112,14 @@ public class CMSListener implements PhaseListener
     pathExceptions.add("/apps/client.faces");
     pathExceptions.add("/apps/elections.faces");
   }
-  
+
   @Override
   public void beforePhase(PhaseEvent pe)
   {
     if (pe.getPhaseId().equals(PhaseId.RESTORE_VIEW))
-    {    
+    {
       forcedLanguage = MatrixConfig.getProperty(FORCED_LANGUAGE_PROP);
-      if (forcedLanguage == null) forcedLanguage = "ca"; 
+      if (forcedLanguage == null) forcedLanguage = "ca";
 
       try
       {
@@ -132,82 +132,74 @@ public class CMSListener implements PhaseListener
       }
 
       String value = MatrixConfig.getProperty(CLIENT_SECURE_PORT_PROP);
-      if (value != null) clientSecurePort = Integer.parseInt(value);    
+      if (value != null) clientSecurePort = Integer.parseInt(value);
 
       FacesContext context = FacesContext.getCurrentInstance();
       ExternalContext externalContext = context.getExternalContext();
-      application = context.getApplication(); 
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();  
+      application = context.getApplication();
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
 
       HttpServletRequest request =
         (HttpServletRequest)externalContext.getRequest();
       HttpSession session = request.getSession();
-      
+
       try
       {
-        
         // restore request charset encoding
         String charset = (String)session.getAttribute(CHARSET_ATTR);
         if (charset != null) request.setCharacterEncoding(charset);
 
         // securize session
-        enterSecureSession(session, request);      
+        enterSecureSession(session, request);
 
         MenuItemCursor mic = getRequestedMenuItem(request, userSessionBean);
         if (mic != null)
         {
           redirectByUrl(context, userSessionBean, mic);
-          if (context.getResponseComplete() || context.getRenderResponse()) 
+          if (context.getResponseComplete() || context.getRenderResponse())
             return;
 
           loginFromParameters(context, userSessionBean);
-          if (context.getResponseComplete() || context.getRenderResponse()) 
+          if (context.getResponseComplete() || context.getRenderResponse())
             return;
 
           loginFromCertificate(context, userSessionBean);
-          if (context.getResponseComplete() || context.getRenderResponse()) 
+          if (context.getResponseComplete() || context.getRenderResponse())
             return;
 
           redirectSecure(context, userSessionBean, mic);
-          if (context.getResponseComplete() || context.getRenderResponse()) 
-            return;        
+          if (context.getResponseComplete() || context.getRenderResponse())
+            return;
 
           requestAuthentication(context, userSessionBean, mic);
-          if (context.getResponseComplete() || context.getRenderResponse()) 
+          if (context.getResponseComplete() || context.getRenderResponse())
             return;
-          
+
           executeRequestedMenuItem(context, userSessionBean, mic);
         }
         else
         {
           //Normal faces lifecycle
           userChangeDetection(context, userSessionBean);
-          if (context.getResponseComplete()) return;    
         }
-
       }
       catch (Exception ex)
       {
-        //TODO: Manage exceptions
         userSessionBean.getMenuModel().setAllVisible(false);
       }
-      finally
-      {
-
-      }         
     }
     else if (pe.getPhaseId().equals(PhaseId.RENDER_RESPONSE))
     {
       FacesContext context = FacesContext.getCurrentInstance();
       if (!context.getResponseComplete())
       {
-        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();  
+        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
         ExternalContext externalContext = context.getExternalContext();
         HttpServletResponse response =
-          (HttpServletResponse)externalContext.getResponse();      
+          (HttpServletResponse)externalContext.getResponse();
         response.setHeader(HttpUtils.X_USER_HEADER, userSessionBean.getUserId());
         System.out.println("\n>>>> Render ---------------------------------\n");
-      }      
+      }
     }
   }
 
@@ -219,10 +211,10 @@ public class CMSListener implements PhaseListener
       FacesContext context = FacesContext.getCurrentInstance();
       if (!context.getResponseComplete())
       {
-        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();  
+        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
         userSessionBean.setLastPageLanguage(
-          context.getViewRoot().getLocale().getLanguage());      
-        webAuditor.logRequest(userSessionBean, context);      
+          context.getViewRoot().getLocale().getLanguage());
+        webAuditor.logRequest(userSessionBean, context);
       }
     }
   }
@@ -232,7 +224,7 @@ public class CMSListener implements PhaseListener
   {
     return PhaseId.ANY_PHASE;
   }
-  
+
   public boolean isSupportedLanguage(String language)
   {
     boolean supported = false;
@@ -243,8 +235,8 @@ public class CMSListener implements PhaseListener
       supported = locale.getLanguage().equals(language);
     }
     return supported;
-  } 
-  
+  }
+
   private HttpSession enterSecureSession(HttpSession session,
     HttpServletRequest request)
   {
@@ -255,7 +247,7 @@ public class CMSListener implements PhaseListener
       {
         if (!session.isNew())
         {
-          HashMap<String, Object> attributes = new HashMap<String, Object>();
+          HashMap<String, Object> attributes = new HashMap<>();
           Enumeration enu = session.getAttributeNames();
           while (enu.hasMoreElements())
           {
@@ -280,8 +272,8 @@ public class CMSListener implements PhaseListener
       session.removeAttribute(SECURE_SESSION_ATTR);
     }
     return session;
-  }  
-  
+  }
+
   private MenuItemCursor getRequestedMenuItem(
     HttpServletRequest request, UserSessionBean userSessionBean)
     throws Exception
@@ -326,7 +318,7 @@ public class CMSListener implements PhaseListener
     }
     else // by mid
     {
-      mid = (String)request.getParameter(XMID_PARAM);      
+      mid = (String)request.getParameter(XMID_PARAM);
       if (mid == null)
       {
         String method = request.getMethod();
@@ -384,7 +376,7 @@ public class CMSListener implements PhaseListener
     }
     else context.responseComplete();
   }
-  
+
   private void createView(FacesContext context,
     UserSessionBean userSessionBean, HttpServletRequest request)
   {
@@ -399,21 +391,21 @@ public class CMSListener implements PhaseListener
         language = forcedLanguage;
       }
     }
-    
+
     // create view
     ViewHandler viewHandler = application.getViewHandler();
-    UIViewRoot viewRoot = viewHandler.createView(context, BLANK_VIEWID);    
+    UIViewRoot viewRoot = viewHandler.createView(context, BLANK_VIEWID);
     context.setViewRoot(viewRoot);
-    userSessionBean.setViewLanguage(language);    
+    userSessionBean.setViewLanguage(language);
   }
-  
+
   private void restoreView(FacesContext context)
   {
     RestoreViewPhase restorePhase = new RestoreViewPhase();
     restorePhase.execute(context);
   }
-  
-  private void loginFromParameters(FacesContext context, 
+
+  private void loginFromParameters(FacesContext context,
     UserSessionBean userSessionBean) throws Exception
   {
     ExternalContext externalContext = context.getExternalContext();
@@ -462,7 +454,7 @@ public class CMSListener implements PhaseListener
       context.responseComplete();
     }
   }
-  
+
   private String getUserId(HttpServletRequest request)
   {
     return request.getParameter(SecurityConstants.USERID_PARAMETER);
@@ -472,7 +464,7 @@ public class CMSListener implements PhaseListener
   {
     return request.getParameter(SecurityConstants.PASSWORD_PARAMETER);
   }
-  
+
   private void loginFromCertificate(FacesContext context,
      UserSessionBean userSessionBean) throws Exception
   {
@@ -505,7 +497,7 @@ public class CMSListener implements PhaseListener
     }
   }
 
-  private void redirectSecure(FacesContext context, 
+  private void redirectSecure(FacesContext context,
     UserSessionBean userSessionBean, MenuItemCursor menuItem) throws Exception
   {
     userSessionBean.getMenuModel().setAllVisible(true);
@@ -537,7 +529,7 @@ public class CMSListener implements PhaseListener
     }
     userSessionBean.getMenuModel().setAllVisible(false);
   }
-    
+
   private void requestAuthentication(FacesContext context,
     UserSessionBean userSessionBean, MenuItemCursor menuItem) throws Exception
   {
@@ -563,7 +555,7 @@ public class CMSListener implements PhaseListener
       else
       {
         // redirect to secure mode
-        String url = HttpUtils.getServerSecureURL(request, 
+        String url = HttpUtils.getServerSecureURL(request,
           request.getRequestURI(), request.getQueryString());
         response.sendRedirect(url);
         context.responseComplete();
@@ -571,7 +563,7 @@ public class CMSListener implements PhaseListener
     }
     userSessionBean.getMenuModel().setAllVisible(false);
   }
-  
+
   private boolean mustLogin(HttpServletRequest request,
     UserSessionBean userSessionBean, MenuItemCursor menuItem)
   {
@@ -586,8 +578,8 @@ public class CMSListener implements PhaseListener
     {
       return !isAccessibleMenuItem(menuItem, userSessionBean);
     }
-  }  
-  
+  }
+
   private boolean isAccessibleMenuItem(MenuItemCursor menuItem,
     UserSessionBean userSessionBean)
   {
@@ -596,29 +588,29 @@ public class CMSListener implements PhaseListener
       userSessionBean.isCmsAdministrator() ||
       userSessionBean.isUserInRole(accessRoles);
   }
-  
-  private void redirectByUrl(FacesContext context, 
+
+  private void redirectByUrl(FacesContext context,
     UserSessionBean userSessionBean, MenuItemCursor menuItem) throws Exception
   {
     ExternalContext externalContext = context.getExternalContext();
     HttpServletRequest request =
       (HttpServletRequest)externalContext.getRequest();
-        
-    int redirectionCount = getRedirectionCount(request);    
-    if (redirectionCount >= redirectionLimit) return; 
+
+    int redirectionCount = getRedirectionCount(request);
+    if (redirectionCount >= redirectionLimit) return;
     //no more redirections allowed
-    
+
     userSessionBean.getMenuModel().setAllVisible(true);
     String action = menuItem.getAction();
     if (MenuUtils.URL_ACTION.equals(action))
     {
       String url = menuItem.getURL();
-      if (url != null && (url.startsWith("/") || url.startsWith("http://") || 
+      if (url != null && (url.startsWith("/") || url.startsWith("http://") ||
         url.startsWith("https://")))
       {
         url = getRedirectionUrl(url, redirectionCount + 1);
         HttpServletResponse response =
-          (HttpServletResponse)externalContext.getResponse();        
+          (HttpServletResponse)externalContext.getResponse();
         response.sendRedirect(url);
         context.responseComplete();
       }
@@ -631,7 +623,7 @@ public class CMSListener implements PhaseListener
     try
     {
       String redirectionCount = request.getParameter(REDIR_COUNT_PARAM);
-      return (redirectionCount != null ? 
+      return (redirectionCount != null ?
         Math.max(0, Integer.valueOf(redirectionCount)) : 0);
     }
     catch (NumberFormatException ex)
@@ -646,12 +638,12 @@ public class CMSListener implements PhaseListener
     {
       return url + "&" + REDIR_COUNT_PARAM + "=" + redirectionCount;
     }
-    else    
+    else
     {
       return url + "?" + REDIR_COUNT_PARAM + "=" + redirectionCount;
     }
   }
-  
+
   private void userChangeDetection(FacesContext context,
     UserSessionBean userSessionBean)
   {
@@ -665,8 +657,8 @@ public class CMSListener implements PhaseListener
       // user changed due to session lost, session recreation or relogin
       userSessionBean.redirectSelectedMenuItem();
     }
-  } 
-  
+  }
+
   private boolean isPathException(HttpServletRequest request)
   {
     String servletPath = request.getServletPath();
@@ -675,5 +667,4 @@ public class CMSListener implements PhaseListener
     else
       return false;
   }
-  
 }

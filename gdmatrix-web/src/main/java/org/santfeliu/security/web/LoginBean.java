@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.security.web;
@@ -47,6 +47,7 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.HttpUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
+import static javax.faces.render.ResponseStateManager.VIEW_STATE_PARAM;
 
 /**
  *
@@ -65,11 +66,11 @@ public class LoginBean extends WebBean implements Serializable
   private String queryString;
   private int requestedAuthenticationLevel = 0;
   private int requestedSignatureLevel = 0;
-  
+
   // embedded login fields
   private transient HtmlInputText usernameInputText = new HtmlInputText();
   private transient HtmlInputSecret passwordInputSecret = new HtmlInputSecret();
-  
+
   // login message
   private transient String loginMessage;
 
@@ -106,7 +107,7 @@ public class LoginBean extends WebBean implements Serializable
   {
     return passwordInputSecret;
   }
-  
+
   public void setLoginMessage(String loginMessage)
   {
     this.loginMessage = loginMessage;
@@ -127,16 +128,16 @@ public class LoginBean extends WebBean implements Serializable
     return queryString;
   }
 
-  public int getRequestedAuthenticationLevel() 
+  public int getRequestedAuthenticationLevel()
   {
     return requestedAuthenticationLevel;
   }
-  
+
   public int getRequestedSignatureLevel()
   {
     return requestedSignatureLevel;
   }
-  
+
   public String getLoginURL()
   {
     ExternalContext extContext = getExternalContext();
@@ -144,7 +145,7 @@ public class LoginBean extends WebBean implements Serializable
 
     String url = HttpUtils.getServerSecureURL(request,
       CMSListener.LOGIN_URI, request.getQueryString());
-    
+
     return url;
   }
 
@@ -158,7 +159,7 @@ public class LoginBean extends WebBean implements Serializable
     return HttpUtils.getClientSecureURL(request, CMSListener.GO_URI,
       request.getQueryString());
   }
-  
+
   public String getExitURL()
   {
     return getCancelURL();
@@ -177,7 +178,7 @@ public class LoginBean extends WebBean implements Serializable
       menuItem = userSessionBean.getMenuModel().getRootMenuItem();
     }
     String requestQueryString = CMSListener.XMID_PARAM + "=" + menuItem.getMid();
-    return HttpUtils.getServerSecureURL(request, CMSListener.GO_URI, 
+    return HttpUtils.getServerSecureURL(request, CMSListener.GO_URI,
       requestQueryString);
   }
 
@@ -190,7 +191,7 @@ public class LoginBean extends WebBean implements Serializable
       MatrixConfig.getProperty("org.santfeliu.web.clientSecurePort");
     return port.equals(String.valueOf(HttpUtils.getServerPort(request)));
   }
-  
+
   // **** action methods ****
 
   // login from page with username/password
@@ -233,10 +234,10 @@ public class LoginBean extends WebBean implements Serializable
           (HttpServletRequest)context.getExternalContext().getRequest();
         HttpServletResponse response =
           (HttpServletResponse)context.getExternalContext().getResponse();
-        
+
         String url = HttpUtils.getServerSecureURL(request,
           CMSListener.GO_URI, queryString);
-        
+
         response.sendRedirect(url);
         context.responseComplete();
       }
@@ -274,7 +275,7 @@ public class LoginBean extends WebBean implements Serializable
     }
     return null;
   }
-  
+
   // logout from page
   public String logout()
   {
@@ -285,7 +286,7 @@ public class LoginBean extends WebBean implements Serializable
     userSessionBean.logout(); // redirect
     return null;
   }
-  
+
   public String showLogin()
   {
     ExternalContext extContext = getExternalContext();
@@ -301,51 +302,64 @@ public class LoginBean extends WebBean implements Serializable
     if (loginTitle == null)
       loginTitle = MatrixConfig.getProperty("org.santfeliu.web.loginTitle");
     loginImage = menuItem.getProperty(LOGIN_IMAGE_PROP);
-    
+
     String userId = request.getParameter(SecurityConstants.USERID_PARAMETER);
     if (userId != null && !userSessionBean.getUserId().equals(userId))
       usernameInputText.setValue(userId);
 
     return "login";
   }
-  
+
   private void readParameters(HttpServletRequest request)
   {
     StringBuilder buffer = new StringBuilder();
-    Enumeration names = request.getParameterNames();
-    while (names.hasMoreElements())
+    String method = request.getMethod();
+    if ("GET".equals(method))
     {
-      String name = (String)names.nextElement();
-      String value = request.getParameter(name);
-      if (AUTHENTICATION_LEVEL_PARAM.equals(name))
+      Enumeration names = request.getParameterNames();
+      while (names.hasMoreElements())
       {
-        try
+        String name = (String)names.nextElement();
+        String value = request.getParameter(name);
+        if (AUTHENTICATION_LEVEL_PARAM.equals(name))
         {
-          requestedAuthenticationLevel = Integer.parseInt(value);
+          try
+          {
+            requestedAuthenticationLevel = Integer.parseInt(value);
+          }
+          catch (Exception ex)
+          {
+            requestedAuthenticationLevel = 0;
+          }
         }
-        catch (Exception ex)
-        {          
-          requestedAuthenticationLevel = 0;
+        else if (SIGNATURE_LEVEL_PARAM.equals(name))
+        {
+          try
+          {
+            requestedSignatureLevel = Integer.parseInt(value);
+          }
+          catch (Exception ex)
+          {
+            requestedSignatureLevel = 0;
+          }
+        }
+        else
+        {
+          if (buffer.length() > 0)
+          {
+            buffer.append("&");
+          }
+          buffer.append(name).append("=").append(value);
         }
       }
-      else if (SIGNATURE_LEVEL_PARAM.equals(name))
+    }
+    else // POST
+    {
+      String mid = request.getParameter(CMSListener.XMID_PARAM);
+      if (mid == null) request.getParameter(CMSListener.SMID_PARAM);
+      if (mid != null)
       {
-        try
-        {
-          requestedSignatureLevel = Integer.parseInt(value);
-        }
-        catch (Exception ex)
-        {
-          requestedSignatureLevel = 0;
-        }
-      }
-      else
-      {
-        if (buffer.length() > 0)
-        {
-          buffer.append("&");
-        }
-        buffer.append(name).append("=").append(value);
+        buffer.append(CMSListener.XMID_PARAM + "=").append(mid);
       }
     }
     if (buffer.length() > 0)

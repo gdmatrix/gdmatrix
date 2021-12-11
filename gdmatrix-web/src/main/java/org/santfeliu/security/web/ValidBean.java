@@ -33,7 +33,6 @@ package org.santfeliu.security.web;
 import cat.aoc.valid.ValidClient;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
-import javax.servlet.http.HttpServletRequest;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
@@ -57,8 +56,8 @@ public class ValidBean extends FacesBean
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     ExternalContext extContext = getExternalContext();
-    String returnParams =
-      (String)extContext.getRequestParameterMap().get("return_params");
+    LoginBean loginBean = (LoginBean)getBean("loginBean");
+    String returnParams = loginBean.getQueryString();
     try
     {
       ValidClient client = new ValidClient();
