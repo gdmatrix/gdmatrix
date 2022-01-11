@@ -108,6 +108,7 @@
       WHERE
         (cs.caseId = :caseId)
         AND (cs.endDate IS NULL OR cs.stateId = '9999')
+        AND cs.stateId NOT LIKE '@%'
       ORDER BY cs.startDate desc, cs.startTime desc
     </query>
   </named-query>
