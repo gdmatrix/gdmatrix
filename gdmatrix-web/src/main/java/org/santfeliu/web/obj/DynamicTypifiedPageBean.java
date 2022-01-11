@@ -81,7 +81,8 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
     this(rootTypeId, adminRole, true);
   }
 
-  public DynamicTypifiedPageBean(String rootTypeId, String adminRole, boolean forceLoad)
+  public DynamicTypifiedPageBean(String rootTypeId, String adminRole, 
+    boolean forceLoad)
   {
     super(rootTypeId, adminRole);
     if (forceLoad) load();
@@ -302,8 +303,32 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
   {
     return getSelectedTypeItems().size() > 1;
   }
-
+  
+  public boolean isPropertyHidden(String propName)
+  {
+    return isPropertyHidden(getCurrentTypeId(), propName);
+  }  
+  
   // Internal methods
+  private boolean isPropertyHidden(String typeId, String propName)
+  {
+    Type type = TypeCache.getInstance().getType(typeId);
+    if (type != null)
+    {
+      List<PropertyDefinition> pds = type.getPropertyDefinition();
+      for (PropertyDefinition pd : pds)
+      {
+        if (pd.getName().equals(propName))
+        {
+          return pd.isHidden();
+        }
+      }
+      String superTypeId = type.getSuperTypeId();
+      if (superTypeId != null)
+        return isPropertyHidden(superTypeId, propName);
+    }
+    return true;    
+  }    
 
   @Override
   protected org.santfeliu.dic.Type getSelectedType()
@@ -380,7 +405,8 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
           SelectItem selectItem = new SelectItem();
 //          String label = (String)getValue("#{objectBundle.property_editor}");
           Locale locale = getFacesContext().getViewRoot().getLocale();
-          ResourceBundle bundle = ResourceBundle.getBundle("org.santfeliu.web.obj.resources.ObjectBundle", locale);
+          ResourceBundle bundle = ResourceBundle.getBundle(
+              "org.santfeliu.web.obj.resources.ObjectBundle", locale);
           String label = bundle.getString("property_editor");
           selectItem.setLabel(label.toUpperCase());
           selectItem.setValue(PROPERTY_EDITOR_SELECTOR);
@@ -399,7 +425,8 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
   {
     String propertyPrefix = "script:";            
     if (groupBy != null && groupBy.startsWith(propertyPrefix))
-      return new ScriptPropertyGroupExtractor(groupBy.substring(propertyPrefix.length()));
+      return new ScriptPropertyGroupExtractor(
+        groupBy.substring(propertyPrefix.length()));
     else
       return super.getGroupExtractor();
   }
@@ -470,12 +497,14 @@ public abstract class DynamicTypifiedPageBean extends TypifiedPageBean
     getViewPropertiesMap().clear();
   }
 
-  public void addViewProperty(String rowId, String name, String description, String value)
+  public void addViewProperty(String rowId, String name, String description, 
+    String value)
   {
     addViewProperty(rowId, name, description, value, true);
   } 
   
-  public void addViewProperty(String rowId, String name, String description, String value, boolean visible)
+  public void addViewProperty(String rowId, String name, String description, 
+    String value, boolean visible)
   {    
     if (!getViewPropertiesMap().containsKey(rowId))
     {
@@ -558,23 +587,23 @@ public class ScriptPropertyComparator extends PropertyComparator
     }
   }  
   
-  public class ScriptPropertyGroupExtractor extends DefaultGroupExtractor
+public class ScriptPropertyGroupExtractor extends DefaultGroupExtractor
+{
+  public ScriptPropertyGroupExtractor(String scriptPropertyName)
   {
-    public ScriptPropertyGroupExtractor(String scriptPropertyName)
-    {
-      super(scriptPropertyName);
-    }
-
-    @Override
-    protected String getName(Object view)
-    {   
-      String rowId = getRowId(view);      
-      if (rowId != null)
-      {
-        return getViewPropertyValue(rowId, super.propertyName);
-      }
-      return null;
-    }
+    super(scriptPropertyName);
   }
+
+  @Override
+  protected String getName(Object view)
+  {   
+    String rowId = getRowId(view);      
+    if (rowId != null)
+    {
+      return getViewPropertyValue(rowId, super.propertyName);
+    }
+    return null;
+  }
+}
   
 }

@@ -150,6 +150,17 @@
           onkeypress="checkMaxLength(this, #{caseMainBean.propertySize.description})"
           readonly="#{not caseBean.editable}"/>
       </t:div>
+      
+      <t:div rendered="#{!caseMainBean.isPropertyHidden('comments')}">
+        <h:outputText value="#{caseBundle.case_comments}:" styleClass="textBox"
+          style="width:18%; vertical-align:top" />
+        <h:inputTextarea value="#{caseMainBean.getCase().comments}" 
+          style="width:79%" rows="4"
+          styleClass="inputBox"
+          valueChangeListener="#{caseMainBean.valueChanged}"
+          onkeypress="checkMaxLength(this, #{caseMainBean.propertySize.comments})"
+          readonly="#{not caseBean.editable}"/>
+      </t:div>      
 
       <t:div rendered="#{caseMainBean.propertyEditorVisible || caseMainBean.renderFormSelector}">
         <h:outputText value="#{caseBundle.case_form}:"
