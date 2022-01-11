@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.signature.xmldsig;
@@ -33,8 +33,6 @@ package org.santfeliu.signature.xmldsig;
 import com.sun.org.apache.xml.internal.security.utils.UnsyncBufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -44,13 +42,13 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.commons.io.IOUtils;
 import org.apache.xml.security.algorithms.MessageDigestAlgorithm;
 import org.apache.xml.security.keys.KeyInfo;
 import org.apache.xml.security.keys.content.X509Data;
@@ -61,10 +59,8 @@ import org.apache.xml.security.signature.XMLSignature;
 import org.apache.xml.security.signature.XMLSignatureInput;
 import org.apache.xml.security.transforms.TransformationException;
 import org.apache.xml.security.transforms.Transforms;
-import org.apache.xml.security.utils.Base64;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xml.security.utils.DigesterOutputStream;
-import org.apache.xml.security.utils.IdResolver;
 import org.apache.xml.security.utils.XMLUtils;
 import org.apache.xml.security.utils.resolver.ResourceResolver;
 import org.matrix.signature.DataHash;
@@ -74,29 +70,30 @@ import org.santfeliu.signature.SignedDocument;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class XMLSignedDocument implements SignedDocument
-{ 
+{
   private Document doc;
   private Element root;
   private String BaseURI;
   private final ArrayList datas = new ArrayList();
   private final ArrayList signatures = new ArrayList();
   private final Map properties = new HashMap();
-  
+
   static final String CHARSET = "UTF-8";
-  
+
   static final String VERSION = "1.1";
   static final String TAG_SIGNED_DOCUMENT = "SignedDocument";
   static final String TAG_DATA = "Data";
   static final String TAG_CONTENT = "Content";
   static final String TAG_PROPERTIES = "Properties";
-  
+
   static final String MATRIX_URI = "http://gdmatrix.org/xmldsig";
   static final String MATRIX_NS = "mx";
   static final String TAG_MATRIX_DOCUMENTS = "documents";
@@ -104,14 +101,14 @@ public class XMLSignedDocument implements SignedDocument
   static final String TAG_MATRIX_NAME = "name";
   static final String TAG_MATRIX_HASH = "hash";
   static final String TAG_MATRIX_ALGORITHM = "algorithm";
-  
+
   static final String XADES_URI = "http://uri.etsi.org/01903/v1.2.2#";
   static final String XMLDSIG_NS = "ds";
   static final String XADES_NS = "xades";
   static final String TAG_QUALIFYING_PROPERTIES = "QualifyingProperties";
   static final String TAG_SIGNED_PROPERTIES = "SignedProperties";
   static final String TAG_UNSIGNED_PROPERTIES = "UnsignedProperties";
-  static final String TAG_SIGNED_SIGNATURE_PROPERTIES = 
+  static final String TAG_SIGNED_SIGNATURE_PROPERTIES =
     "SignedSignatureProperties";
   static final String TAG_SIGNING_TIME = "SigningTime";
   static final String TAG_SIGNING_CERTIFICATE = "SigningCertificate";
@@ -119,19 +116,19 @@ public class XMLSignedDocument implements SignedDocument
   static final String TAG_CERT_DIGEST = "CertDigest";
   static final String TAG_ISSUER_SERIAL = "IssuerSerial";
 
-  static final String TAG_SIGNATURE_POLICY_IDENTIFIER = 
+  static final String TAG_SIGNATURE_POLICY_IDENTIFIER =
     "SignaturePolicyIdentifier";
   static final String TAG_SIGNATURE_POLICY_IMPLIED = "SignaturePolicyImplied";
   static final String TAG_SIGNATURE_POLICY_ID = "SignaturePolicyId";
   static final String TAG_SIG_POLICY_ID = "SigPolicyId";
   static final String TAG_SIG_POLICY_HASH = "SigPolicyHash";
-  
-  static final String TAG_UNSIGNED_SIGNATURE_PROPERTIES = 
+
+  static final String TAG_UNSIGNED_SIGNATURE_PROPERTIES =
     "UnsignedSignatureProperties";
   static final String TAG_SIGNATURE_TIMESTAMP = "SignatureTimeStamp";
   static final String TAG_INCLUDE = "Include";
   static final String TAG_XML_TIMESTAMP = "XMLTimeStamp";
-  
+
   static final String ATT_VERSION = "version";
 
   static boolean createTimeStamp = true; // XAdES T
@@ -152,23 +149,23 @@ public class XMLSignedDocument implements SignedDocument
     root = doc.createElement(TAG_SIGNED_DOCUMENT);
     root.setAttribute(ATT_VERSION, VERSION);
     doc.appendChild(root);
-    BaseURI = new File("c:/signature.xml").toURL().toString();      
+    BaseURI = new File("c:/signature.xml").toURL().toString();
     datas.clear();
     signatures.clear();
   }
-  
+
   @Override
   public void parseDocument(InputStream is) throws Exception
   {
     datas.clear();
     signatures.clear();
-    
+
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
     javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
     doc = db.parse(is);
     root = (Element)doc.getFirstChild();
-    
+
     Node sdocNode = findNode(doc.getFirstChild(), TAG_SIGNED_DOCUMENT);
     // load Data sections
     Node dfNode = findNode(sdocNode.getFirstChild(), TAG_DATA);
@@ -176,18 +173,32 @@ public class XMLSignedDocument implements SignedDocument
     {
       Data data = new Data((Element)dfNode, BaseURI);
       datas.add(data);
-      IdResolver.registerElementById(data.getElement(), data.getId());
       dfNode = findNode(dfNode.getNextSibling(), TAG_DATA);
     }
     // load Signatures
-    Node sigNode = findNode(sdocNode.getFirstChild(), 
+    Node sigNode = findNode(sdocNode.getFirstChild(),
       XMLDSIG_NS + ":" + Constants._TAG_SIGNATURE);
     while (sigNode != null)
     {
       XMLSignature signature = new XMLSignature((Element)sigNode, BaseURI);
       signatures.add(signature);
-      sigNode = findNode(sigNode.getNextSibling(), 
+      sigNode = findNode(sigNode.getNextSibling(),
         XMLDSIG_NS + ":" + Constants._TAG_SIGNATURE);
+    }
+
+    // set Id attributes
+    NodeList nodes = doc.getElementsByTagName("*");
+    for (int index = 0; index < nodes.getLength(); index++)
+    {
+      Node node = nodes.item(index);
+      if (node instanceof Element)
+      {
+        Element element = (Element)node;
+        if (element.hasAttribute("Id"))
+        {
+          element.setIdAttribute("Id", true);
+        }
+      }
     }
     System.out.println("Datas: " + datas.size());
     System.out.println("Signatures: " + signatures.size());
@@ -205,12 +216,12 @@ public class XMLSignedDocument implements SignedDocument
     dataSection.setProperties(doc, properties);
     root.appendChild(dataSection.getElement());
     datas.add(dataSection);
-    IdResolver.registerElementById(dataSection.getElement(), id);
+    dataSection.getElement().setIdAttribute("Id", true);
     return id;
   }
 
   @Override
-  public byte[] addSignature(X509Certificate cert, 
+  public byte[] addSignature(X509Certificate cert,
     String policyId, String policyDigest) throws Exception
   {
     // Create signature
@@ -219,13 +230,13 @@ public class XMLSignedDocument implements SignedDocument
     root.appendChild(signature.getElement());
     String signatureId = getUniqueId();
     signature.setId(signatureId);
-    IdResolver.registerElementById(signature.getElement(), signatureId);
-        
+    signature.getElement().setIdAttribute("Id", true);
+
     Transforms transforms = getTransforms();
-    
+
     // adding keyInfo:X509Data
     X509Data X509Data = new X509Data(doc);
-    X509Data.addIssuerSerial(cert.getIssuerDN().getName(), 
+    X509Data.addIssuerSerial(cert.getIssuerDN().getName(),
       cert.getSerialNumber());
     X509Data.addSubjectName(cert);
     X509Data.addCertificate(cert);
@@ -236,7 +247,7 @@ public class XMLSignedDocument implements SignedDocument
 
     // add XAdES object
     String signedPropertiesId = getUniqueId();
-    ObjectContainer obj = createXAdESObject(cert, 
+    ObjectContainer obj = createXAdESObject(cert,
       signatureId, signedPropertiesId, policyId, policyDigest);
     signature.appendObject(obj);
     signature.addDocument("#" + signedPropertiesId,
@@ -247,31 +258,31 @@ public class XMLSignedDocument implements SignedDocument
     String documentsId = getUniqueId();
     ObjectContainer docCont = createDocumentObject(documentsId);
     signature.appendObject(docCont);
-    signature.addDocument("#" + documentsId, transforms, 
+    signature.addDocument("#" + documentsId, transforms,
       Constants.ALGO_ID_DIGEST_SHA1);
-    
+
     // adding signature to XMLSignedDocument
     signatures.add(signature);
- 
+
     // calculate digest
     SignedInfo signedInfo = signature.getSignedInfo();
     signedInfo.generateDigestValues();
 
     // get data to sign
-    org.santfeliu.signature.xmldsig.ByteArrayOutputStream bos = 
+    org.santfeliu.signature.xmldsig.ByteArrayOutputStream bos =
       new org.santfeliu.signature.xmldsig.ByteArrayOutputStream();
-    signedInfo.signInOctectStream(bos);
+    signedInfo.signInOctetStream(bos);
     byte[] dataToSign = bos.toByteArray();
 
     return dataToSign;
   }
-  
+
   @Override
   public void setSignatureValue(byte[] signatureData)
     throws Exception
   {
     // get last signature
-    XMLSignature signature = 
+    XMLSignature signature =
       (XMLSignature)signatures.get(signatures.size() - 1);
 
     // ------------- adding signatureData --------------
@@ -292,7 +303,7 @@ public class XMLSignedDocument implements SignedDocument
     {
       signatureValueElem.removeChild(signatureValueElem.getFirstChild());
     }
-    String base64codedValue = Base64.encode(signatureData);
+    String base64codedValue = Base64.getEncoder().encodeToString(signatureData);
 
     if (base64codedValue.length() > 76)
     {
@@ -306,7 +317,7 @@ public class XMLSignedDocument implements SignedDocument
       addTimeStamp(Constants.ALGO_ID_DIGEST_SHA1);
     }
   }
-  
+
   @Override
   public void removeSignature() throws Exception
   {
@@ -322,7 +333,7 @@ public class XMLSignedDocument implements SignedDocument
   @Override
   public List<DataHash> digestData() throws Exception
   {
-    ArrayList<DataHash> dataHashList = new ArrayList<DataHash>();
+    ArrayList<DataHash> dataHashList = new ArrayList<>();
     for (int i = 0; i < datas.size(); i++)
     {
       Data data = (Data)datas.get(i);
@@ -347,7 +358,7 @@ public class XMLSignedDocument implements SignedDocument
           while (n != -1)
           {
             n = is.read(buffer);
-            if (n > 0) 
+            if (n > 0)
             {
               messageDigest.update(buffer, 0, n);
             }
@@ -380,14 +391,14 @@ public class XMLSignedDocument implements SignedDocument
     if (!documentElement.getNodeName().
       equals(XMLDSIG_NS + ":" + Constants._TAG_SIGNATURE))
       throw new Exception("INVALID_SIGNATURE_FORMAT");
-    
+
     Element signatureElement = (Element)doc.importNode(documentElement, true);
     doc.getDocumentElement().appendChild(signatureElement);
-    
-    XMLSignature signature = new XMLSignature(signatureElement, BaseURI);    
+
+    XMLSignature signature = new XMLSignature(signatureElement, BaseURI);
     signatures.add(signature);
   }
-  
+
   @Override
   public boolean verifyDocument() throws Exception
   {
@@ -416,7 +427,7 @@ public class XMLSignedDocument implements SignedDocument
     Element elem = (Element)doc.getFirstChild();
     elem.setAttribute("Id", id);
   }
-  
+
   @Override
   public String getId()
   {
@@ -429,7 +440,7 @@ public class XMLSignedDocument implements SignedDocument
   {
     return "text/xml";
   }
-  
+
   @Override
   public Map getProperties()
   {
@@ -437,17 +448,17 @@ public class XMLSignedDocument implements SignedDocument
   }
 
   //*****************************************************************
-    
+
   public Data getData(int index)
   {
     return (Data)datas.get(index);
   }
-  
+
   public XMLSignature getSignature(int index)
   {
     return (XMLSignature)signatures.get(index);
   }
-  
+
   public boolean verifySignature(int index) throws Exception
   {
     XMLSignature signature = (XMLSignature)signatures.get(index);
@@ -459,7 +470,7 @@ public class XMLSignedDocument implements SignedDocument
       String uri = ref.getURI();
       System.out.println("Validating reference " + uri + ": " + ref.verify());
     }
-    
+
     KeyInfo keyInfo = signature.getKeyInfo();
     if (keyInfo != null)
     {
@@ -502,24 +513,24 @@ public class XMLSignedDocument implements SignedDocument
   {
     return signatures.size();
   }
-  
+
   public byte[] toByteArray() throws Exception
   {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     writeDocument(os);
     return os.toByteArray();
   }
-  
+
   public Document getDOM()
   {
     return doc;
   }
-  
+
   private String getUniqueId()
   {
     return "id-" + UUID.randomUUID().toString();
   }
-  
+
   private Node findNode(Node node, String name)
   {
     boolean stop = false;
@@ -544,50 +555,51 @@ public class XMLSignedDocument implements SignedDocument
     int index = contentType.indexOf(";");
     return (index == -1) ? contentType : contentType.substring(0, index);
   }
-  
+
   private ObjectContainer createXAdESObject(X509Certificate cert,
-    String signatureId, String signedPropertiesId, 
+    String signatureId, String signedPropertiesId,
     String policyId, String policyDigest) throws Exception
   {
     Document doc = getDOM();
     ObjectContainer obj = new ObjectContainer(doc);
 
-    Element qualPropElement = 
+    Element qualPropElement =
       doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_QUALIFYING_PROPERTIES);
     obj.appendChild(qualPropElement);
-    qualPropElement.setAttributeNS(Constants.NamespaceSpecNS, 
+    qualPropElement.setAttributeNS(Constants.NamespaceSpecNS,
       "xmlns:" + XADES_NS, XADES_URI);
-    qualPropElement.setAttribute("Target", "#" + signatureId);    
-    
-    Element sigPropElement = 
-      doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNED_PROPERTIES);
-    qualPropElement.appendChild(sigPropElement);    
-    sigPropElement.setAttribute("Id", signedPropertiesId);
-    IdResolver.registerElementById(sigPropElement, signedPropertiesId);
+    qualPropElement.setAttribute("Target", "#" + signatureId);
 
-    Element signaturePropElement = 
+    Element sigPropElement =
+      doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNED_PROPERTIES);
+    qualPropElement.appendChild(sigPropElement);
+    sigPropElement.setAttribute("Id", signedPropertiesId);
+
+    sigPropElement.setIdAttribute("Id", true);
+
+    Element signaturePropElement =
       doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNED_SIGNATURE_PROPERTIES);
     sigPropElement.appendChild(signaturePropElement);
-    
-    Element sigTimeElement = 
+
+    Element sigTimeElement =
       doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNING_TIME);
     signaturePropElement.appendChild(sigTimeElement);
 
-    SimpleDateFormat dateFormat = 
+    SimpleDateFormat dateFormat =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     Calendar calendar = Calendar.getInstance();
     String stime = dateFormat.format(calendar.getTime());
     stime = stime.substring(0, 22) + ":" + stime.substring(22);
     sigTimeElement.appendChild(doc.createTextNode(stime));
-    
-    Element sigCertElement = 
+
+    Element sigCertElement =
       doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNING_CERTIFICATE);
     signaturePropElement.appendChild(sigCertElement);
-    
+
     Element certElement = doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_CERT);
     sigCertElement.appendChild(certElement);
 
-    Element certDigestElement = 
+    Element certDigestElement =
       doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_CERT_DIGEST);
     certElement.appendChild(certDigestElement);
 
@@ -600,22 +612,23 @@ public class XMLSignedDocument implements SignedDocument
     MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
     byte[] digest = messageDigest.digest(cert.getEncoded());
 
-    Element digestValueElement = 
+    Element digestValueElement =
       doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_DIGESTVALUE);
     certDigestElement.appendChild(digestValueElement);
-    digestValueElement.appendChild(doc.createTextNode(Base64.encode(digest)));
-    
-    Element issuerSerialElement = 
+    digestValueElement.appendChild(doc.createTextNode(
+      Base64.getEncoder().encodeToString(digest)));
+
+    Element issuerSerialElement =
       doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_ISSUER_SERIAL);
     certElement.appendChild(issuerSerialElement);
 
-    Element issuerNameElement = 
+    Element issuerNameElement =
       doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_X509ISSUERNAME);
     issuerSerialElement.appendChild(issuerNameElement);
     issuerNameElement.appendChild(
       doc.createTextNode(cert.getIssuerDN().getName()));
 
-    Element issuerSNElement = 
+    Element issuerSNElement =
       doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_X509SERIALNUMBER);
     issuerSerialElement.appendChild(issuerSNElement);
     issuerSNElement.appendChild(
@@ -623,38 +636,38 @@ public class XMLSignedDocument implements SignedDocument
 
     if (policy)
     {
-      Element sigPolElement = doc.createElementNS(XADES_URI, 
+      Element sigPolElement = doc.createElementNS(XADES_URI,
         XADES_NS + ":" + TAG_SIGNATURE_POLICY_IDENTIFIER);
       signaturePropElement.appendChild(sigPolElement);
 
       if (policyImplied)
       {
-        Element polElement = doc.createElementNS(XADES_URI, 
+        Element polElement = doc.createElementNS(XADES_URI,
           XADES_NS + ":" + TAG_SIGNATURE_POLICY_IMPLIED);
         sigPolElement.appendChild(polElement);
       }
       else
       {
-        Element sigPolIdElement = doc.createElementNS(XADES_URI, 
+        Element sigPolIdElement = doc.createElementNS(XADES_URI,
           XADES_NS + ":" + TAG_SIGNATURE_POLICY_ID);
         sigPolElement.appendChild(sigPolIdElement);
-  
-        Element sigIdElement = doc.createElementNS(XADES_URI, 
+
+        Element sigIdElement = doc.createElementNS(XADES_URI,
           XADES_NS + ":" + TAG_SIG_POLICY_ID);
         sigPolIdElement.appendChild(sigIdElement);
         sigIdElement.appendChild(doc.createTextNode(policyId));
-  
-        Element sigHashElement = doc.createElementNS(XADES_URI, 
+
+        Element sigHashElement = doc.createElementNS(XADES_URI,
           XADES_NS + ":" + TAG_SIG_POLICY_HASH);
         sigPolIdElement.appendChild(sigHashElement);
-  
-        Element policyDigestMethodElement = 
+
+        Element policyDigestMethodElement =
           doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_DIGESTMETHOD);
         sigHashElement.appendChild(policyDigestMethodElement);
         policyDigestMethodElement.setAttribute("Algorithm",
           Constants.ALGO_ID_DIGEST_SHA1);
-  
-        Element policyDigestValueElement = 
+
+        Element policyDigestValueElement =
           doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_DIGESTVALUE);
         sigHashElement.appendChild(policyDigestValueElement);
         policyDigestValueElement.appendChild(doc.createTextNode(policyDigest));
@@ -662,7 +675,7 @@ public class XMLSignedDocument implements SignedDocument
     }
     return obj;
   }
-  
+
   private ObjectContainer createDocumentObject(String documentsId)
     throws Exception
   {
@@ -671,9 +684,9 @@ public class XMLSignedDocument implements SignedDocument
 
     Element element = obj.getElement();
     element.setAttribute("Id", documentsId);
-    IdResolver.registerElementById(element, documentsId);
+    element.setIdAttribute("Id", true);
 
-    Element documentsElement = 
+    Element documentsElement =
       doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_DOCUMENTS);
     documentsElement.setAttribute("xmlns:" + MATRIX_NS, MATRIX_URI);
     element.appendChild(documentsElement);
@@ -681,24 +694,25 @@ public class XMLSignedDocument implements SignedDocument
     List<DataHash> dataHashes = digestData();
     for (DataHash dataHash : dataHashes)
     {
-      Element documentElement = 
+      Element documentElement =
         doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_DOCUMENT);
       documentsElement.appendChild(documentElement);
 
-      Element nameElement = 
+      Element nameElement =
         doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_NAME);
       nameElement.setTextContent(dataHash.getName());
       documentElement.appendChild(nameElement);
 
-      Element hashElement = 
+      Element hashElement =
         doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_HASH);
-      hashElement.setTextContent(Base64.encode(dataHash.getHash()));
+      hashElement.setTextContent(
+        Base64.getEncoder().encodeToString(dataHash.getHash()));
       documentElement.appendChild(hashElement);
 
-      Element algorithmElement = 
+      Element algorithmElement =
         doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_ALGORITHM);
       algorithmElement.setTextContent(dataHash.getAlgorithm());
-      documentElement.appendChild(algorithmElement);      
+      documentElement.appendChild(algorithmElement);
     }
     return obj;
   }
@@ -711,26 +725,26 @@ public class XMLSignedDocument implements SignedDocument
     Element objectElement = (Element)(findNode(
       signature.getElement().getFirstChild(),
       XMLDSIG_NS + ":" + Constants._TAG_OBJECT));
-    
+
     Element qualPropElement = (Element)objectElement.getFirstChild();
 
-    Element unsigPropElement = doc.createElementNS(XADES_URI, 
+    Element unsigPropElement = doc.createElementNS(XADES_URI,
       XADES_NS + ":" + TAG_UNSIGNED_PROPERTIES);
     qualPropElement.appendChild(unsigPropElement);
 
-    Element unsigSignaturePropElement = doc.createElementNS(XADES_URI, 
+    Element unsigSignaturePropElement = doc.createElementNS(XADES_URI,
       XADES_NS + ":" + TAG_UNSIGNED_SIGNATURE_PROPERTIES);
     unsigPropElement.appendChild(unsigSignaturePropElement);
 
-    Element signatureTimeStamp = 
-      doc.createElementNS(XADES_URI, 
+    Element signatureTimeStamp =
+      doc.createElementNS(XADES_URI,
       XADES_NS + ":" + TAG_SIGNATURE_TIMESTAMP);
     signatureTimeStamp.setAttribute("Id", getUniqueId());
     unsigSignaturePropElement.appendChild(signatureTimeStamp);
 
     // Include
     Element signatureValue = (Element)findNode(
-      signature.getElement().getFirstChild(), 
+      signature.getElement().getFirstChild(),
       XMLDSIG_NS + ":" + Constants._TAG_SIGNATUREVALUE);
     String signatureValueId = signatureValue.getAttribute("Id");
     Element include = doc.createElementNS(
@@ -741,16 +755,16 @@ public class XMLSignedDocument implements SignedDocument
 
     // CanonicalizationMethod
     Element canonicalizationMethod = doc.createElementNS(
-      Constants.SignatureSpecNS, 
+      Constants.SignatureSpecNS,
       XMLDSIG_NS + ":" + Constants._TAG_CANONICALIZATIONMETHOD);
-    canonicalizationMethod.setAttribute("Algorithm", 
+    canonicalizationMethod.setAttribute("Algorithm",
       "http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
     signatureTimeStamp.appendChild(canonicalizationMethod);
 
     // XMLTimeStamp
     Element XMLTimeStamp = doc.createElementNS(
       XADES_URI, XADES_NS + ":" + TAG_XML_TIMESTAMP);
-    XMLTimeStamp.setAttribute("xmlns:dss", 
+    XMLTimeStamp.setAttribute("xmlns:dss",
       "urn:oasis:names:tc:dss:1.0:core:schema");
     signatureTimeStamp.appendChild(XMLTimeStamp);
 
@@ -769,51 +783,24 @@ public class XMLSignedDocument implements SignedDocument
     transforms.addTransform(Transforms.TRANSFORM_C14N_WITH_COMMENTS);
     return transforms;
   }
-  
-  private byte[] calculateSignatureDigest(XMLSignature signature, 
+
+  private byte[] calculateSignatureDigest(XMLSignature signature,
     String hashAlgorithmURN) throws Exception
   {
     Element signatureValue = (Element)findNode(
-      signature.getElement().getFirstChild(), 
+      signature.getElement().getFirstChild(),
       XMLDSIG_NS + ":" + Constants._TAG_SIGNATUREVALUE);
-  
+
     MessageDigestAlgorithm mda = MessageDigestAlgorithm.getInstance(
       signature.getDocument(), hashAlgorithmURN);
 
     mda.reset();
     DigesterOutputStream diOs = new DigesterOutputStream(mda);
     OutputStream os = new UnsyncBufferedOutputStream(diOs);
-    XMLSignatureInput output = new XMLSignatureInput(signatureValue);         
+    XMLSignatureInput output = new XMLSignatureInput(signatureValue);
     output.updateOutputStream(os);
     os.flush();
     return diOs.getDigestValue();
-  }
-
-  public static void main(String[] args)
-  {
-    try
-    {
-      XMLSignedDocument sdoc = new XMLSignedDocument();
-
-      sdoc.newDocument();
-      sdoc.addData("xml", "<b>HOLA</b>".getBytes(), null);
-      
-      List<DataHash> digestData = sdoc.digestData();
-      byte[] hash = digestData.get(0).getHash();
-      byte[] signature = IOUtils.toByteArray(new FileInputStream("c:/signatura.xml"));
-      sdoc.addExternalSignature(signature);
-      sdoc.verifyDocument();
-
-      sdoc.writeDocument(new FileOutputStream("c:/result.xml"));
-      
-      sdoc.parseDocument(new FileInputStream("c:/result.xml"));
-      XMLUtils.outputDOM(sdoc.getDOM(), System.out, true);
-      sdoc.verifyDocument();
-    }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-    }
   }
 
   static
