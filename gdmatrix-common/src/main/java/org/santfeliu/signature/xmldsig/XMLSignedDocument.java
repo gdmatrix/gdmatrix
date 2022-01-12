@@ -48,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.xml.security.algorithms.MessageDigestAlgorithm;
 import org.apache.xml.security.keys.KeyInfo;
@@ -72,6 +74,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import static org.apache.xml.security.algorithms.MessageDigestAlgorithm.ALGO_ID_DIGEST_SHA256;
 
 /**
  *
@@ -79,6 +82,8 @@ import org.w3c.dom.Text;
  */
 public class XMLSignedDocument implements SignedDocument
 {
+  static final Logger LOGGER = Logger.getLogger("XMLSignedDocument");
+
   private Document doc;
   private Element root;
   private String BaseURI;
@@ -88,7 +93,7 @@ public class XMLSignedDocument implements SignedDocument
 
   static final String CHARSET = "UTF-8";
 
-  static final String VERSION = "1.1";
+  static final String VERSION = "1.2";
   static final String TAG_SIGNED_DOCUMENT = "SignedDocument";
   static final String TAG_DATA = "Data";
   static final String TAG_CONTENT = "Content";
@@ -131,9 +136,15 @@ public class XMLSignedDocument implements SignedDocument
 
   static final String ATT_VERSION = "version";
 
+  /* algorithms */
+  static final String HASH_ALGO_ID = ALGO_ID_DIGEST_SHA256;
+  static final String HASH_ALGO = "SHA-256";
+  static final String SIGN_ALGO_ID = XMLSignature.ALGO_ID_SIGNATURE_RSA;
+
   static boolean createTimeStamp = true; // XAdES T
   static boolean policy = true;
   static boolean policyImplied = true;
+
 
   public XMLSignedDocument()
   {
@@ -149,7 +160,7 @@ public class XMLSignedDocument implements SignedDocument
     root = doc.createElement(TAG_SIGNED_DOCUMENT);
     root.setAttribute(ATT_VERSION, VERSION);
     doc.appendChild(root);
-    BaseURI = new File("c:/signature.xml").toURL().toString();
+    BaseURI = new File("c:/signature.xml").toURI().toURL().toString();
     datas.clear();
     signatures.clear();
   }
@@ -200,8 +211,8 @@ public class XMLSignedDocument implements SignedDocument
         }
       }
     }
-    System.out.println("Datas: " + datas.size());
-    System.out.println("Signatures: " + signatures.size());
+    LOGGER.log(Level.FINE, "Datas: {0}", datas.size());
+    LOGGER.log(Level.FINE, "Signatures: {0}", signatures.size());
   }
 
   @Override
@@ -225,8 +236,7 @@ public class XMLSignedDocument implements SignedDocument
     String policyId, String policyDigest) throws Exception
   {
     // Create signature
-    XMLSignature signature = new XMLSignature(doc, BaseURI,
-                             XMLSignature.ALGO_ID_SIGNATURE_RSA);
+    XMLSignature signature = new XMLSignature(doc, BaseURI, SIGN_ALGO_ID);
     root.appendChild(signature.getElement());
     String signatureId = getUniqueId();
     signature.setId(signatureId);
@@ -251,15 +261,13 @@ public class XMLSignedDocument implements SignedDocument
       signatureId, signedPropertiesId, policyId, policyDigest);
     signature.appendObject(obj);
     signature.addDocument("#" + signedPropertiesId,
-      transforms, Constants.ALGO_ID_DIGEST_SHA1, getUniqueId(),
-      XADES_URI + "SignedProperties");
+      transforms, HASH_ALGO_ID, getUniqueId(), XADES_URI + "SignedProperties");
 
     // add Documents object
     String documentsId = getUniqueId();
     ObjectContainer docCont = createDocumentObject(documentsId);
     signature.appendObject(docCont);
-    signature.addDocument("#" + documentsId, transforms,
-      Constants.ALGO_ID_DIGEST_SHA1);
+    signature.addDocument("#" + documentsId, transforms, HASH_ALGO_ID);
 
     // adding signature to XMLSignedDocument
     signatures.add(signature);
@@ -290,12 +298,6 @@ public class XMLSignedDocument implements SignedDocument
       signature.getElement().getFirstChild(),
       XMLDSIG_NS + ":" + Constants._TAG_SIGNATUREVALUE);
 
-    /*
-    XMLUtils.selectDsNode(
-      signature.getElement().getFirstChild(),
-      Constants._TAG_SIGNATUREVALUE, 0);
-    */
-
     // set signatureValueId
     signatureValueElem.setAttribute("Id", getUniqueId());
 
@@ -314,7 +316,7 @@ public class XMLSignedDocument implements SignedDocument
 
     if (createTimeStamp)
     {
-      addTimeStamp(Constants.ALGO_ID_DIGEST_SHA1);
+      addTimeStamp(HASH_ALGO_ID);
     }
   }
 
@@ -339,19 +341,19 @@ public class XMLSignedDocument implements SignedDocument
       Data data = (Data)datas.get(i);
       DataHash dataHash = new DataHash();
       dataHash.setName(data.getId());
-      dataHash.setHash(data.digest(Constants.ALGO_ID_DIGEST_SHA1));
-      dataHash.setAlgorithm("SHA-1");
+      dataHash.setHash(data.digest(HASH_ALGO_ID));
+      dataHash.setAlgorithm(HASH_ALGO);
       dataHashList.add(dataHash);
       if ("url".equals(data.getType()))
       {
+        // add additional DataHash for the external content referenced by url
         String url = data.getText();
         URL docUrl = new URL(url);
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+        MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGO);
         URLConnection conn = docUrl.openConnection();
         conn.setConnectTimeout(3600000); // 1 hour
         conn.setReadTimeout(3600000); // 1 hour
-        InputStream is = conn.getInputStream();
-        try
+        try (InputStream is = conn.getInputStream())
         {
           int n = 0;
           byte[] buffer = new byte[8192];
@@ -367,12 +369,8 @@ public class XMLSignedDocument implements SignedDocument
           dataHash = new DataHash();
           dataHash.setName(url);
           dataHash.setHash(hash);
-          dataHash.setAlgorithm("SHA-1");
+          dataHash.setAlgorithm(HASH_ALGO);
           dataHashList.add(dataHash);
-        }
-        finally
-        {
-          is.close();
         }
       }
     }
@@ -406,7 +404,7 @@ public class XMLSignedDocument implements SignedDocument
     for (int i = 0; i < signatures.size(); i++)
     {
       boolean r = verifySignature(i);
-      System.out.println("Verifing signature " + i + ": " + r);
+      LOGGER.log(Level.FINE, "Verifing signature {0}: {1}", new Object[]{i, r});
       valid = valid && r;
     }
     return valid;
@@ -468,7 +466,8 @@ public class XMLSignedDocument implements SignedDocument
     {
       Reference ref = signedInfo.item(i);
       String uri = ref.getURI();
-      System.out.println("Validating reference " + uri + ": " + ref.verify());
+      LOGGER.log(Level.FINE, "Validating reference {0}: {1}",
+        new Object[]{uri, ref.verify()});
     }
 
     KeyInfo keyInfo = signature.getKeyInfo();
@@ -477,12 +476,12 @@ public class XMLSignedDocument implements SignedDocument
       X509Certificate cert = keyInfo.getX509Certificate();
       if (cert != null)
       {
-        System.out.println("Certificate found");
+        LOGGER.info("Certificate found");
         return signature.checkSignatureValue(cert);
       }
       else
       {
-        System.out.println("Did not find a Certificate");
+        LOGGER.warning("Did not find a Certificate");
         PublicKey pk = signature.getKeyInfo().getPublicKey();
         if (pk != null)
         {
@@ -490,7 +489,7 @@ public class XMLSignedDocument implements SignedDocument
         }
         else
         {
-          System.out.println(
+          LOGGER.warning(
             "Did not find a public key, so I can't check the signature");
           return false;
         }
@@ -498,7 +497,7 @@ public class XMLSignedDocument implements SignedDocument
     }
     else
     {
-      System.out.println(
+      LOGGER.warning(
         "Did not find key info, so I can't check the signature");
       return false;
     }
@@ -606,10 +605,9 @@ public class XMLSignedDocument implements SignedDocument
     Element digestMethodElement =
       doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_DIGESTMETHOD);
     certDigestElement.appendChild(digestMethodElement);
-    digestMethodElement.setAttribute("Algorithm",
-      Constants.ALGO_ID_DIGEST_SHA1);
+    digestMethodElement.setAttribute("Algorithm", HASH_ALGO_ID);
 
-    MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+    MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGO);
     byte[] digest = messageDigest.digest(cert.getEncoded());
 
     Element digestValueElement =
@@ -664,8 +662,7 @@ public class XMLSignedDocument implements SignedDocument
         Element policyDigestMethodElement =
           doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_DIGESTMETHOD);
         sigHashElement.appendChild(policyDigestMethodElement);
-        policyDigestMethodElement.setAttribute("Algorithm",
-          Constants.ALGO_ID_DIGEST_SHA1);
+        policyDigestMethodElement.setAttribute("Algorithm", HASH_ALGO_ID);
 
         Element policyDigestValueElement =
           doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_DIGESTVALUE);
@@ -771,7 +768,8 @@ public class XMLSignedDocument implements SignedDocument
     // Add XML TimeStamp: <ds:signature>
     SecurityProvider provider = SecurityUtils.getSecurityProvider();
     byte[] digestTst = calculateSignatureDigest(signature, digestMethod);
-    Element sigTimeStamp = provider.createXMLTimeStamp(digestTst, digestMethod, null);
+    Element sigTimeStamp =
+      provider.createXMLTimeStamp(digestTst, digestMethod, null);
     XMLTimeStamp.appendChild(XMLTimeStamp.getOwnerDocument().importNode(
       sigTimeStamp, true));
   }
@@ -806,10 +804,17 @@ public class XMLSignedDocument implements SignedDocument
   static
   {
     // init apache lib
-    org.apache.xml.security.Init.init();
-    ResourceResolver.registerAtStart(
-      "org.santfeliu.signature.xmldsig.HTTPResolver");
-    ResourceResolver.registerAtStart(
-      "org.santfeliu.signature.xmldsig.DetachedResolver");
+    try
+    {
+      org.apache.xml.security.Init.init();
+      ResourceResolver.registerAtStart(
+        "org.santfeliu.signature.xmldsig.HTTPResolver");
+      ResourceResolver.registerAtStart(
+        "org.santfeliu.signature.xmldsig.DetachedResolver");
+    }
+    catch (Exception ex)
+    {
+      LOGGER.warning(ex.toString());
+    }
   }
 }

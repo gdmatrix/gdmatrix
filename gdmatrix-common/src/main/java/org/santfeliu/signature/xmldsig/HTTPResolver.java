@@ -45,8 +45,8 @@ import org.w3c.dom.Attr;
 /**
  * A simple ResourceResolver for HTTP requests.
  *
- * This resolver is only used in SignedDocument version 1.0.
- * Newer SignedDocument versions have not references with http URIs.
+ * This resolver is only used in XMLSignedDocument version 1.0.
+ * Newer XMLSignedDocument versions have not references with http URIs.
  */
 /**
  *
@@ -57,20 +57,6 @@ public class HTTPResolver extends ResourceResolverSpi
   /** {@link org.apache.commons.logging} logging facility */
   static org.apache.commons.logging.Log log =
     org.apache.commons.logging.LogFactory.getLog(HTTPResolver.class.getName());
-  /** Field properties[] */
-  private static final String properties[] = {};
-
-  @Override
-  public boolean engineIsThreadSafe()
-  {
-    return true;
-  }
-
-  @Override
-  public String[] engineGetPropertyKeys()
-  {
-    return (String[])HTTPResolver.properties.clone();
-  }
 
   /**
    * Method resolve
