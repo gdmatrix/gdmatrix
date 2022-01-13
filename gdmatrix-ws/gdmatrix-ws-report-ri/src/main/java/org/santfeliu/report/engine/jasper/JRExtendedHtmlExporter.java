@@ -1,36 +1,37 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.report.engine.jasper;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Locale;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPrintImage;
@@ -44,7 +45,6 @@ import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.type.LineSpacingEnum;
 import net.sf.jasperreports.engine.xml.JRPrintImageSourceObject;
 import net.sf.jasperreports.renderers.ResourceRenderer;
-import org.apache.xml.security.utils.Base64;
 
 /**
  *
@@ -54,14 +54,14 @@ public class JRExtendedHtmlExporter extends JRHtmlExporter
 {
 
   @Override
-  protected void exportImage(JRPrintImage image, JRExporterGridCell gridCell) 
+  protected void exportImage(JRPrintImage image, JRExporterGridCell gridCell)
     throws JRException, IOException
   {
     try
     {
       String imageSrc = null;
       if (image.getRenderer() != null)
-      {    
+      {
         if (image.getRenderer() instanceof ResourceRenderer)
         {
           imageSrc = ((ResourceRenderer)image.getRenderer()).
@@ -72,14 +72,14 @@ public class JRExtendedHtmlExporter extends JRHtmlExporter
           byte[] source = image.getRenderable().getImageData();
           if (source != null && source.length > 0)
           {
-            String encodedSource = Base64.encode(source);                
+            String encodedSource = Base64.getEncoder().encodeToString(source);
             imageSrc = "data:image/png;base64," + encodedSource;
           }
         }
       }
       if (imageSrc != null)
       {
-        JRPrintImageSourceObject imageSource = 
+        JRPrintImageSourceObject imageSource =
           new JRPrintImageSourceObject(true);
         imageSource.setEmbedded(false);
         imageSource.setPrintImage(image);
@@ -88,14 +88,14 @@ public class JRExtendedHtmlExporter extends JRHtmlExporter
       }
     }
     catch (Exception ex)
-    { 
+    {
     }
   }
-  
+
   protected void exportText(JRPrintText text, JRExporterGridCell gridCell)
           throws IOException
   {
-    JRStyledText styledText = getStyledText(text);    
+    JRStyledText styledText = getStyledText(text);
 
     int textLength = 0;
 
@@ -120,7 +120,7 @@ public class JRExtendedHtmlExporter extends JRHtmlExporter
       {
         verticalAlignment = HTML_VERTICAL_ALIGN_MIDDLE;
         break;
-      }      
+      }
       case TOP:
       default:
       {
@@ -147,8 +147,8 @@ public class JRExtendedHtmlExporter extends JRHtmlExporter
       styleClass = style.getName();
       writer.write(" class=\"" + styleClass + "\"");
     }
-    
-    StringBuilder styleBuffer = new StringBuilder();      
+
+    StringBuilder styleBuffer = new StringBuilder();
     appendBackcolorStyle(gridCell, styleBuffer);
     appendBorderStyle(gridCell.getBox(), styleBuffer);
 
@@ -268,5 +268,5 @@ public class JRExtendedHtmlExporter extends JRHtmlExporter
     {
       writer.write("</span>");
     }
-  }  
+  }
 }

@@ -35,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.RequestDispatcher;
@@ -43,7 +44,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONObject;
 import org.matrix.signature.SignatureManagerPort;
 import org.matrix.signature.SignatureManagerService;
@@ -172,7 +172,7 @@ public class ValidServlet extends HttpServlet
           }
           if (certBase64 != null)
           {
-            byte[] bytes = Base64.decodeBase64(certBase64.getBytes());
+            byte[] bytes = Base64.getDecoder().decode(certBase64);
 
             CertificateFactory cf = CertificateFactory.getInstance("X509");
             X509Certificate certificate = (X509Certificate)
@@ -214,8 +214,8 @@ public class ValidServlet extends HttpServlet
         }
         else // ok
         {
-          String evidence = (String)signResult.get("evidence");
-          byte[] bytes = Base64.decodeBase64(evidence.getBytes());
+          String evidenceBase64 = (String)signResult.get("evidence");
+          byte[] bytes = Base64.getDecoder().decode(evidenceBase64);
 
           // complete signature
           String sigId =

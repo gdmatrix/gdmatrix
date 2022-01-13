@@ -32,6 +32,7 @@ package org.santfeliu.security.util;
 
 import java.security.MessageDigest;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Collection;
 
 import java.util.HashMap;
@@ -44,7 +45,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
-import org.apache.commons.codec.binary.Base64;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.util.MatrixConfig;
@@ -165,7 +165,7 @@ public class SecurityUtils
     {
       MessageDigest md5 = MessageDigest.getInstance("MD5");
       md5.update(text.getBytes());
-      return new String(Base64.encodeBase64(md5.digest()));
+      return Base64.getEncoder().encodeToString(md5.digest());
     }
     catch (Exception e)
     {

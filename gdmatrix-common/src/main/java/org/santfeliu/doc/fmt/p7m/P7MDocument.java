@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.fmt.p7m;
@@ -44,6 +44,7 @@ import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -73,7 +74,6 @@ import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Store;
-import org.bouncycastle.util.encoders.Base64;
 
 /**
  *
@@ -98,7 +98,7 @@ public class P7MDocument
     CMSProcessable data = cms.getSignedContent();
     return (byte[])data.getContent();
   }
-  
+
   public byte[] getEncoded() throws IOException
   {
     return cms.getEncoded();
@@ -117,13 +117,13 @@ public class P7MDocument
       CMSProcessable data = cms.getSignedContent();
       data.write(out);
       return true;
-    } 
+    }
     catch (CMSException ex)
     {
       return false;
     }
   }
-    
+
   public List<P7MSignature> getSignatures() throws Exception
   {
     ArrayList<P7MSignature> signatures = new ArrayList();
@@ -139,17 +139,17 @@ public class P7MDocument
 
       Collection certCollection = certStore.getMatches(signer.getSID());
 //      Collection certCollection = certStore.getCertificates(certSelector);
-      X509CertificateHolder certificateHolder = 
+      X509CertificateHolder certificateHolder =
         (X509CertificateHolder)certCollection.iterator().next();
-      X509Certificate certificate = 
+      X509Certificate certificate =
         new JcaX509CertificateConverter().setProvider( "BC" )
-        .getCertificate(certificateHolder);      
+        .getCertificate(certificateHolder);
       signature.setCertificate(certificate);
 
       signature.loadProperties();
 
       signature.setSignature(
-        new String(Base64.encode(signer.getSignature())).toUpperCase());
+        Base64.getEncoder().encodeToString(signer.getSignature()).toUpperCase());
 
       // **** signed attributes ****
       AttributeTable table = signer.getSignedAttributes();
@@ -165,7 +165,7 @@ public class P7MDocument
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss'GMT+'00:00");
         signature.setSigningDate(df.parse(timeString));
       }
-      
+
       // filename
       DEROctetString octet;
       attrib = (Attribute) attributes.get(
@@ -215,13 +215,13 @@ public class P7MDocument
           ASN1Encodable content = sd.getEncapContentInfo().getContent();
 //          TSTInfo tstInfo = new TSTInfo((ASN1Sequence)
 //            new ASN1InputStream(((ASN1OctetString)content).getOctets()).readObject());
-          TSTInfo tstInfo = TSTInfo.getInstance(((ASN1OctetString)content).getOctets());          
+          TSTInfo tstInfo = TSTInfo.getInstance(((ASN1OctetString)content).getOctets());
           signature.setTimeStampDate(tstInfo.getGenTime().getDate());
         }
       }
-      
+
       // signature validation
-      
+
       signature.setValid(
         signer.verify(new JcaSimpleSignerInfoVerifierBuilder()
           .setProvider("BC").build(signature.getCertificate()))
@@ -230,7 +230,7 @@ public class P7MDocument
     Collections.sort(signatures);
     return signatures;
   }
-  
+
   public boolean checkSignaturesAndTimeStamps(boolean log) throws Exception
   {
     boolean valid = true;
@@ -242,7 +242,7 @@ public class P7MDocument
       Date tsDate = s.getTimeStampDate();
       Date tsInvalidityDate = null;
       if (log)
-      {        
+      {
         System.out.println("Subject: " + s.getSubjectName());
         System.out.println("Signed: " + s.getSigningDate());
         System.out.println("TimeStamp: " + tsDate);
@@ -257,9 +257,9 @@ public class P7MDocument
           certInvalidityDate.after(tsDate) && tsInvalidityDate.after(now);
         System.out.println("Signature Valid: " + validSig);
         valid = valid && validSig;
-          
+
       }
-      else 
+      else
       {
         System.out.println("TS is missing.");
         valid = false;

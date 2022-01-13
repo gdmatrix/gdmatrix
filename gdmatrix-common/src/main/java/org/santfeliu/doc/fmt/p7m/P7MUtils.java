@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.fmt.p7m;
@@ -46,10 +46,10 @@ import java.security.Security;
 import java.security.cert.CertSelector;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -173,7 +173,7 @@ public class P7MUtils
     CMSSignedData signedData) throws Exception
   {
     CMSSignedData newSignedData;
-    
+
     SignerInformationStore sigStore = signedData.getSignerInfos();
     ArrayList siList = new ArrayList();
     for (Object o : sigStore.getSigners())
@@ -186,7 +186,7 @@ public class P7MUtils
       JcaX509CertSelectorConverter converter = new JcaX509CertSelectorConverter();
       CertSelector certSelector = converter.getCertSelector(sigId);
       Collection certCollection = store.getMatches((Selector) certSelector);
-      
+
 //      Collection certCollection = certStore.getCertificates(sigId);
       X509Certificate certificate =
         (X509Certificate)certCollection.iterator().next();
@@ -212,7 +212,7 @@ public class P7MUtils
       if (att == null)
       {
         System.out.println("creating timeStamp...");
-        ASN1EncodableVector tsVector = new ASN1EncodableVector();        
+        ASN1EncodableVector tsVector = new ASN1EncodableVector();
         ContentInfo timeStampToken = createTimeStamp(serviceURI, signature);
         tsVector.add(timeStampToken);
         DERSet attributeValues = new DERSet(tsVector);
@@ -246,7 +246,7 @@ public class P7MUtils
   {
     ContentInfo ts = createTimeStamp(serviceURI, message);
     byte[] tsBytes = ts.getEncoded();
-    return new String(Base64.encodeBase64(tsBytes));
+    return Base64.getEncoder().encodeToString(tsBytes);
   }
 
   public static ContentInfo createTimeStamp(String serviceURI, byte[] message)
@@ -335,7 +335,7 @@ public class P7MUtils
     ASN1Encodable content = sd.getEncapContentInfo().getContent();
 //    TSTInfo tstInfo = new TSTInfo((ASN1Sequence)
 //     new ASN1InputStream(((DEROctetString)content).getOctets()).readObject());
-    TSTInfo tstInfo = TSTInfo.getInstance(((ASN1OctetString)content).getOctets());              
+    TSTInfo tstInfo = TSTInfo.getInstance(((ASN1OctetString)content).getOctets());
     return tstInfo;
   }
 
@@ -375,7 +375,7 @@ public class P7MUtils
       timeStampToken = ContentInfo.getInstance(e.nextElement());
     }
     TimeStampResp tspResp = new TimeStampResp(pkiStatusInfo, timeStampToken);
-    
+
     return tspResp;
   }
 

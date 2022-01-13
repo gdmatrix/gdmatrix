@@ -33,11 +33,11 @@ package org.santfeliu.workflow.web;
 import cat.aoc.valid.DocumentToSign;
 import cat.aoc.valid.ValidClient;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.commons.codec.binary.Base64;
 import org.json.simple.JSONObject;
 import org.matrix.signature.DataHash;
 import org.matrix.signature.SignatureManagerPort;
@@ -248,7 +248,7 @@ public class SignatureFormBean extends FormBean
       {
         DocumentToSign docToSign = new DocumentToSign();
         docToSign.setName(dataHash.getName());
-        docToSign.setHash(new String(Base64.encodeBase64(dataHash.getHash())));
+        docToSign.setHash(Base64.getEncoder().encodeToString(dataHash.getHash()));
         docToSign.setAlgorithm(dataHash.getAlgorithm());
         docsToSign.add(docToSign);
       }
@@ -263,8 +263,8 @@ public class SignatureFormBean extends FormBean
       if ("ko".equals(status))
         throw new Exception((String)signResult.get("error"));
 
-      String evidence = (String)signResult.get("evidence");
-      byte[] bytes = Base64.decodeBase64(evidence.getBytes());
+      String evidenceBase64 = (String)signResult.get("evidence");
+      byte[] bytes = Base64.getDecoder().decode(evidenceBase64);
       port.addExternalSignature(sigId, bytes);
 
       result = "OK";
@@ -297,7 +297,7 @@ public class SignatureFormBean extends FormBean
       {
         DocumentToSign docToSign = new DocumentToSign();
         docToSign.setName(dataHash.getName());
-        docToSign.setHash(new String(Base64.encodeBase64(dataHash.getHash())));
+        docToSign.setHash(Base64.getEncoder().encodeToString(dataHash.getHash()));
         docToSign.setAlgorithm(dataHash.getAlgorithm());
         docsToSign.add(docToSign);
       }

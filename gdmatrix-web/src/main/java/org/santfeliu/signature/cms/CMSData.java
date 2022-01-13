@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.signature.cms;
@@ -45,6 +45,7 @@ import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -71,7 +72,6 @@ import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.Store;
-import org.bouncycastle.util.encoders.Base64;
 
 /**
  *
@@ -97,7 +97,7 @@ public class CMSData
     CMSProcessable data = cms.getSignedContent();
     return (byte[])data.getContent();
   }
-  
+
   public byte[] getEncoded() throws IOException
   {
     return cms.getEncoded();
@@ -116,13 +116,13 @@ public class CMSData
       CMSProcessable data = cms.getSignedContent();
       data.write(out);
       return true;
-    } 
+    }
     catch (CMSException ex)
     {
       return false;
     }
   }
-    
+
   public List<CMSSignature> getSignatures() throws Exception
   {
     ArrayList<CMSSignature> signatures = new ArrayList();
@@ -137,18 +137,18 @@ public class CMSData
 
       org.bouncycastle.cms.SignerId sid = signer.getSID();
       Collection certCollection = certStore.getMatches(sid);
-      X509CertificateHolder certificateHolder = 
+      X509CertificateHolder certificateHolder =
         (X509CertificateHolder)certCollection.iterator().next();
-      X509Certificate certificate = 
+      X509Certificate certificate =
         new JcaX509CertificateConverter().setProvider( "BC" )
-        .getCertificate(certificateHolder);         
+        .getCertificate(certificateHolder);
       signature.setCertificate(certificate);
 
       String signerName = certificate.getSubjectDN().getName();
       signature.loadProperties(signerName);
 
       signature.setSignature(
-        new String(Base64.encode(signer.getSignature())).toUpperCase());
+        Base64.getEncoder().encodeToString(signer.getSignature()).toUpperCase());
 
       // **** signed attributes ****
       AttributeTable table = signer.getSignedAttributes();
@@ -164,7 +164,7 @@ public class CMSData
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss'GMT+'00:00");
         signature.setSigningDate(df.parse(timeString));
       }
-      
+
       // filename
       DEROctetString octet;
       attrib = (Attribute) attributes.get(
@@ -206,27 +206,27 @@ public class CMSData
           ASN1Encodable content = sd.getEncapContentInfo().getContent();
 //          TSTInfo tstInfo = new TSTInfo((ASN1Sequence)
 //            new ASN1InputStream(((DEROctetString)content).getOctets()).readObject());
-          TSTInfo tstInfo = 
-            TSTInfo.getInstance(((ASN1OctetString)content).getOctets());                        
+          TSTInfo tstInfo =
+            TSTInfo.getInstance(((ASN1OctetString)content).getOctets());
           signature.setTimeStampDate(tstInfo.getGenTime().getDate());
         }
       }
-      
+
       // signature validation
 //      signature.setValid(signer.verify(signature.getCertificate(), "BC"));
       signature.setValid(
         signer.verify(new JcaSimpleSignerInfoVerifierBuilder()
-          .setProvider("BC").build(signature.getCertificate())));      
+          .setProvider("BC").build(signature.getCertificate())));
     }
     Collections.sort(signatures);
     return signatures;
   }
-  
+
   public static void main(String [] args)
     throws CMSException
   {
     File f = new File("C:/Temp/content2.p7s");
-    
+
     InputStream in;
     try
     {
@@ -244,11 +244,11 @@ public class CMSData
       List<CMSSignature> signatures = parser.getSignatures();
       for( CMSSignature s : signatures )
       {
-        System.out.println( s.getSigningTime() + " " + s.getCertificateName() 
+        System.out.println( s.getSigningTime() + " " + s.getCertificateName()
           + " " + s.getCertificateProperties());
       }
     }
-    catch(Exception ex) 
+    catch(Exception ex)
     {
       System.err.println("ERROR 1:" + ex.getMessage());
       ex.printStackTrace();
@@ -261,8 +261,8 @@ public class CMSData
       out.write(signedContent);
       out.flush();
       out.close();
-    } 
-    catch(Exception ex) 
+    }
+    catch(Exception ex)
     {
       System.err.println("ERROR 2:" + ex.getMessage());
       ex.printStackTrace();
