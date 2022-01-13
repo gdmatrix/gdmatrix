@@ -52,6 +52,7 @@ public class MatrixInfo
   private static final String VERSION = "git.build.version";
   private static final String REVISION = "git.total.commit.count";
   private static final String TAGS = "git.tags";
+  private static final String CLOSEST_TAG = "git.closest.tag.name";
 
   private static final String[][] TEAM =
   {
@@ -68,8 +69,8 @@ public class MatrixInfo
 
   public static String getFullVersion()
   {
-    String tags = getTags();
-    String version = StringUtils.isBlank(tags)? getVersion() : tags;
+    String tag = getClosestTag();
+    String version = StringUtils.isBlank(tag)? getVersion() : tag;
     return version + "-r" + getRevision();
   }
 
@@ -86,6 +87,11 @@ public class MatrixInfo
   public static String getTags()
   {
     return properties.getProperty(TAGS, null);
+  }
+
+  public static String getClosestTag()
+  {
+    return properties.getProperty(CLOSEST_TAG, null);
   }
 
   public static String getLicense()
