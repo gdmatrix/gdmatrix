@@ -81,9 +81,13 @@ public class BinarySignatureResolver implements Resolver
   @Override
   public IdentificationResult identify(String filename) throws Exception
   {
-    IdentificationRequest idenRequest = setUpIdentificationRequest(filename);
-    IdentificationResult idenResult = matchBinarySignatures(idenRequest);   
-    return containerResolver.identifyPuid(idenRequest, idenResult);
+    IdentificationResult idenResult;
+    try (IdentificationRequest idenRequest = setUpIdentificationRequest(filename))
+    {
+      idenResult = matchBinarySignatures(idenRequest);
+      idenResult = containerResolver.identifyPuid(idenRequest, idenResult);
+    }
+    return idenResult;
   }
   
   private IdentificationResult matchBinarySignatures(
