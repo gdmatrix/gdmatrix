@@ -380,6 +380,12 @@ select.input_value
   opacity: 1;
 }
 
+input#max_results
+{
+  width: 50px;
+  margin-left: 4px;
+}
+
 select.instance_description
 {
   width: 360px;
@@ -519,7 +525,8 @@ input.instance_description
 }
 
 #predicate_label,
-#output_label
+#output_label,
+#output_description
 {
   width:100%;
   box-sizing: border-box;
@@ -572,6 +579,11 @@ input.instance_description
   height:200px;
 }
 
+.edit_panel.outputs
+{
+  height: 276px;
+}
+
 .edit_panel .left
 {
   position:absolute;
@@ -605,8 +617,13 @@ input.instance_description
 
 .edit_panel a.selected
 {
-  background-color: #606060;
+  background-color: #BBBBBB;
   color: white;
+}
+
+.edit_panel a.inherited
+{
+  color: blue;  
 }
 
 .edit_panel a:hover
@@ -616,8 +633,7 @@ input.instance_description
 
 .edit_panel a.selected:hover
 {
-  background-color: #606060;
-  color: white;  
+  background-color: #BBBBBB;  
 }
 
 #classification_panel .output_label
@@ -659,4 +675,20 @@ input.instance_description
 .small_button:hover
 {
   background-color: #F0FF80;
+}
+
+div.createNewVersionDiv
+{
+  height: 30px;
+}
+
+div.createNewVersionDiv input[type=checkbox]
+{
+  vertical-align: middle;
+}
+
+div.createNewVersionDiv label
+{
+  line-height: 30px;
+  cursor: pointer;
 }

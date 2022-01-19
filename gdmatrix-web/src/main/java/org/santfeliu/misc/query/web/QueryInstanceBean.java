@@ -92,7 +92,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
   private int id = 0;
   private Integer scroll;
   private String selectedInstanceName;
-  private String selectedInstanceDescription;
+  private String selectedInstanceDescription;  
   private transient List<SelectItem> instanceSelectItems;
   private transient List<SelectItem> availableOutputSelectItems;
   private transient List<SelectItem> selectedOutputSelectItems;
@@ -284,7 +284,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
   {
     if (instanceSelectItems == null)
     {
-      instanceSelectItems = new ArrayList<SelectItem>();
+      instanceSelectItems = new ArrayList();
       List<QueryInstance> instances = getQuery().getInstances();
       for (QueryInstance instance : instances)
       {
@@ -328,7 +328,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
   {
     if (availableOutputSelectItems == null)
     {
-      availableOutputSelectItems = new ArrayList<SelectItem>();
+      availableOutputSelectItems = new ArrayList();
       List<Query.Output> outputs = getQuery().getOutputs();
       for (Query.Output output : outputs)
       {
@@ -340,7 +340,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
           selectItem.setDescription(output.getLabel());
           availableOutputSelectItems.add(selectItem);
         }
-      }
+      }      
     }
     return availableOutputSelectItems;
   }
@@ -349,7 +349,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
   {
     if (selectedOutputSelectItems == null)
     {
-      selectedOutputSelectItems = new ArrayList<SelectItem>();
+      selectedOutputSelectItems = new ArrayList();
       List<QueryInstance.Output> outputInstances =
         selectedInstance.getOutputs();
       for (QueryInstance.Output outputInstance : outputInstances)
@@ -392,9 +392,15 @@ public class QueryInstanceBean extends FacesBean implements Savable
 
   public void addOutputs()
   {
+    int position = selectedInstance.getOutputs().size();
+    if (outputsToRemove.length > 0)
+    {
+      String firstOutputToRemove = outputsToRemove[0];
+      position = selectedInstance.indexOfOutput(firstOutputToRemove);
+    }
     for (String outputName : outputsToAdd)
     {
-      selectedInstance.addOutput(outputName);
+      selectedInstance.addOutput(outputName, position++);
     }
     clearSelectItems();
   }
@@ -846,6 +852,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
     selectedInstance = query.addInstance();
     selectedInstance.setName(selectedInstanceName);
     selectedInstance.setDescription("Instància " + num);
+    selectedInstance.setMaxResults(QueryInstance.DEFAULT_MAX_RESULTS);
     clearSelectItems();
     scroll = 0;
     return "query_instance";
@@ -902,8 +909,17 @@ public class QueryInstanceBean extends FacesBean implements Savable
     sqlWebBean.setTitle(query.getTitle());
     sqlWebBean.setSql(selectedInstance.generateSql());
     sqlWebBean.setEditMode(queryBean.isEditionEnabled());
-    sqlWebBean.setMaxRows(1000);
+    sqlWebBean.setMaxRows(selectedInstance.getMaxResults());
     sqlWebBean.setAutoExecute(true);
+    for (QueryInstance.Output output : selectedInstance.getOutputs())
+    {
+      String label = output.getOutput().getLabel();
+      String description = output.getOutput().getDescription();
+      if (description != null && !description.isEmpty())
+      {
+        sqlWebBean.getColumnDescriptionMap().put(label, description);
+      }
+    }
     return sqlWebBean.showFullscreen();
   }
 

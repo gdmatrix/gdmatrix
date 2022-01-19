@@ -41,7 +41,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSManagedBean;
@@ -75,7 +77,8 @@ public class SqlWebBean extends WebBean implements Savable
   private int updateCount = -1;
   private long duration = 0;
   private String exception;
-  private transient boolean autoExecute;
+  private Map<String, String> columnDescriptionMap;
+  private transient boolean autoExecute;  
 
   public SqlWebBean()
   {
@@ -174,6 +177,15 @@ public class SqlWebBean extends WebBean implements Savable
     this.maxRows = maxRows;
   }
 
+  public Map<String, String> getColumnDescriptionMap() 
+  {
+    if (columnDescriptionMap == null)
+    {
+      columnDescriptionMap = new HashMap();
+    }
+    return columnDescriptionMap;
+  }
+
   public boolean isAutoExecute()
   {
     return autoExecute;
@@ -236,7 +248,7 @@ public class SqlWebBean extends WebBean implements Savable
                 metaData.getColumnName(i),
                 metaData.getColumnTypeName(i));
               }
-              rows = new ArrayList<Object[]>();
+              rows = new ArrayList();
               while (rs.next())
               {
                 Object[] row = new Object[columnCount];
@@ -390,6 +402,11 @@ public class SqlWebBean extends WebBean implements Savable
     public String getType()
     {
       return type;
+    }
+    
+    public String getDescription()
+    {
+      return getColumnDescriptionMap().get(name);
     }
   }
 }

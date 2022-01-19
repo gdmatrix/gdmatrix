@@ -54,8 +54,8 @@ public class QueryEditorBean extends FacesBean implements Savable
   private transient List<SelectItem> formatSelectItems;
   private transient List<SelectItem> queryScopeSelectItems;
   private transient List<SelectItem> queryObjectSelectItems;
-  private transient List<SelectItem> queryTypeSelectItems;
-  
+  private transient List<SelectItem> queryTypeSelectItems;  
+
   public QueryEditorBean()
   {    
   }
@@ -103,10 +103,37 @@ public class QueryEditorBean extends FacesBean implements Savable
     editingParameter.setFormat(Parameter.TEXT);
   }
   
+  public void moveParameterUp()
+  {
+    getQuery().moveParameter(editingParameter, -1);
+  }
+  
+  public void moveParameterDown()
+  {
+    getQuery().moveParameter(editingParameter, +1);
+  }    
+
   public void removeParameter()
   {
     getQuery().removeParameter(editingParameter);
     editingParameter = null;
+  }
+
+  public boolean isRenderMoveParameterUpButton()
+  {
+    return isRenderMoveElementUpButton(getQuery().getParameters(), 
+      editingParameter);    
+  }
+
+  public boolean isRenderMoveParameterDownButton()
+  {
+    return isRenderMoveElementDownButton(getQuery().getParameters(), 
+      editingParameter);    
+  }  
+  
+  public boolean isRenderRemoveParameterButton()
+  {
+    return isRenderRemoveElementButton(editingParameter);
   }
   
   public void editPredicate()
@@ -136,6 +163,23 @@ public class QueryEditorBean extends FacesBean implements Savable
     editingPredicate = null;
   }
     
+  public boolean isRenderMovePredicateUpButton()
+  {
+    return isRenderMoveElementUpButton(getQuery().getPredicates(), 
+      editingPredicate);    
+  }
+
+  public boolean isRenderMovePredicateDownButton()
+  {
+    return isRenderMoveElementDownButton(getQuery().getPredicates(), 
+      editingPredicate);    
+  }  
+  
+  public boolean isRenderRemovePredicateButton()
+  {
+    return isRenderRemoveElementButton(editingPredicate);
+  }
+  
   public void editOutput()
   {
     editingOutput = (Query.Output)getValue("#{output}");
@@ -163,11 +207,28 @@ public class QueryEditorBean extends FacesBean implements Savable
     editingOutput = null;
   }
   
+  public boolean isRenderMoveOutputUpButton()
+  {
+    return isRenderMoveElementUpButton(getQuery().getOutputs(), 
+      editingOutput);
+  }
+  
+  public boolean isRenderMoveOutputDownButton()
+  {
+    return isRenderMoveElementDownButton(getQuery().getOutputs(), 
+      editingOutput);
+  }
+  
+  public boolean isRenderRemoveOutputButton()
+  {
+    return isRenderRemoveElementButton(editingOutput);
+  }
+  
   public List<SelectItem> getFormatSelectItems()
   {
     if (formatSelectItems == null)
     {
-      formatSelectItems = new ArrayList<SelectItem>();
+      formatSelectItems = new ArrayList();
       formatSelectItems.add(new SelectItem(Parameter.TEXT, "TEXT"));
       formatSelectItems.add(new SelectItem(Parameter.NUMBER, "NUMBER"));
       formatSelectItems.add(new SelectItem(Parameter.DATE, "DATE"));
@@ -204,7 +265,7 @@ public class QueryEditorBean extends FacesBean implements Savable
   
   private List<SelectItem> getEnumTypeSelectItems(String enumTypeId)
   {
-    List<SelectItem> selectItems = new ArrayList<SelectItem>(); 
+    List<SelectItem> selectItems = new ArrayList(); 
     TypeCache typeCache = TypeCache.getInstance();
     EnumTypeItemFilter filter = new EnumTypeItemFilter();
     filter.setEnumTypeId(enumTypeId);
@@ -218,6 +279,23 @@ public class QueryEditorBean extends FacesBean implements Savable
       selectItems.add(selectItem);
     }
     return selectItems;
+  }
+  
+  private boolean isRenderMoveElementUpButton(List elementList, Object element)
+  {
+    return (element != null && elementList.indexOf(element) > 0);
+  }
+
+  private boolean isRenderMoveElementDownButton(List elementList, 
+    Object element)
+  {
+    return (element != null && 
+      (elementList.indexOf(element) < elementList.size() - 1));
+  }
+
+  private boolean isRenderRemoveElementButton(Object element)
+  {
+    return (element != null);
   }
   
   public String copyQuery()

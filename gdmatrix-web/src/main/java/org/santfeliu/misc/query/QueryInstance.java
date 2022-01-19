@@ -46,15 +46,17 @@ import org.santfeliu.util.template.WebTemplate;
  */
 public class QueryInstance implements Serializable
 {
+  public static final Integer DEFAULT_MAX_RESULTS = 1000;
+  
   private final Query query;
   private String name;
   private String description;
   private final Operator rootExpression = new Operator(Operator.ROOT);
-  private final List<Output> outputs = new ArrayList<Output>();
-  private final HashMap<String, String> globalParameterValuesMap =
-    new HashMap<String, String>();
-  private final Map<String, Expression> expressions =
-    new HashMap<String, Expression>();
+  private final List<Output> outputs = new ArrayList();
+  private final HashMap<String, String> globalParameterValuesMap = 
+    new HashMap();
+  private final Map<String, Expression> expressions = new HashMap();
+  private Integer maxResults;
   
   public QueryInstance(Query query)
   {
@@ -107,12 +109,27 @@ public class QueryInstance implements Serializable
     this.description = description;
   }
 
+  public Integer getMaxResults() 
+  {
+    return maxResults;
+  }
+
+  public void setMaxResults(Integer maxResults) 
+  {
+    this.maxResults = maxResults;
+  }
+
   public Output addOutput(String name)
+  {
+    return addOutput(name, outputs.size());
+  }
+  
+  public Output addOutput(String name, int position)
   {
     Query.Output output = query.getOutput(name);
     if (output == null) return null;
     Output outputInstance = new Output(output);
-    outputs.add(outputInstance);
+    outputs.add(position, outputInstance);
     return outputInstance;
   }
 
@@ -163,7 +180,7 @@ public class QueryInstance implements Serializable
     public static final String NOR = "NOR";
 
     private String type;
-    final List<Expression> arguments = new ArrayList<Expression>();
+    final List<Expression> arguments = new ArrayList();
 
     Operator(String type)
     {
@@ -228,8 +245,7 @@ public class QueryInstance implements Serializable
   public class Predicate extends Expression
   {
     private final Query.Predicate predicate;
-    final HashMap<String, String> parameterValuesMap =
-      new HashMap<String, String>();
+    final HashMap<String, String> parameterValuesMap = new HashMap();
 
     Predicate(Query.Predicate predicate)
     {
@@ -289,7 +305,7 @@ public class QueryInstance implements Serializable
     StringBuilder outputNamesBuffer = new StringBuilder();
     StringBuilder outputLabelsBuffer = new StringBuilder();
 
-    HashMap<String, String> variables = new HashMap<String, String>();
+    HashMap<String, String> variables = new HashMap();
     variables.putAll(globalParameterValuesMap);
     
     if (outputs.isEmpty())
@@ -380,7 +396,7 @@ public class QueryInstance implements Serializable
       if (predicate.getName() != null)
       {
         String sql = getQuery().getPredicate(predicate.getName()).getSql();
-        HashMap<String, String> variables = new HashMap<String, String>();
+        HashMap<String, String> variables = new HashMap();
         variables.putAll(globalParameterValuesMap);
         variables.putAll(predicate.getParameterValuesMap());
         return Template.create(sql).merge(variables);

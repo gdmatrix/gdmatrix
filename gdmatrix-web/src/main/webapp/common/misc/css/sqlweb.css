@@ -1,5 +1,17 @@
 /* sqlweb */
 
+td.cpcol2
+{
+  position: relative; 
+}
+
+td.cpcol2 .contentPanel
+{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
 #sqlweb_header
 {
   margin: 2px;
@@ -11,6 +23,57 @@
   width:100%;
   padding: 2px;
   box-sizing:border-box;
+}
+
+#sqlweb_editor .CodeMirror
+{
+  height: auto;
+}
+
+div.sqlweb_body
+{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+div#sqlweb_header
+{
+  flex-grow: 0;
+}
+
+div#sqlweb_editor
+{
+  flex-grow: 0;
+}
+
+div#result_panel
+{
+  flex-grow: 1;
+}
+
+div#result_panel .result_container
+{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+div#result_panel .result_container .scroll
+{
+  flex-grow: 1;
+  position: relative;  
+}
+
+div#result_panel .result_container .scroll table
+{  
+  position: absolute;  
+}
+
+div#result_panel .result_container #table_bottom
+{
+  flex-grow: 0;
 }
 
 #driver,
@@ -136,7 +199,7 @@ input[type='checkbox']
 
 div.scroll
 {
-  height: 280px; 
+  height: auto; 
   overflow: auto;
 }
 

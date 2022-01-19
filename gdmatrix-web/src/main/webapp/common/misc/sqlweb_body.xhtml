@@ -3,248 +3,204 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:pe="http://primefaces.org/ui/extensions">
 
   <ui:composition>
 
-    <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
-                  var="objectBundle" />
+    <t:div class="sqlweb_body">
+    
+      <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                    var="objectBundle" />
 
-    <f:loadBundle basename="org.santfeliu.misc.sqlweb.web.resources.SqlWebBundle" 
-                  var="sqlWebBundle" />
+      <f:loadBundle basename="org.santfeliu.misc.sqlweb.web.resources.SqlWebBundle" 
+                    var="sqlWebBundle" />
 
-    <t:stylesheet path="/plugins/codemirror/codemirror.css" />
+      <t:stylesheet path="/plugins/codemirror/codemirror.css" />
 
-    <t:div id="sqlweb_header" forceId="true">
-      <h:outputText value="#{sqlWebBean.title == null ? userSessionBean.menuModel.selectedMenuItem.label : sqlWebBean.title}" />
-      <h:outputLink value="javascript:showHideEditor()" styleClass="show_hide_button" 
-                    rendered="#{sqlWebBean.editMode}" 
-                    title="#{sqlWebBundle.change_view}" />
-    </t:div>
-
-    <t:div id="sqlweb_editor" forceId="true">
-      <h:panelGroup rendered="#{sqlWebBean.editMode}">
-        <t:div>
-          <t:outputLabel value="#{sqlWebBundle.driver}:" for="driver" styleClass="output_label" />
-          <t:inputText id="driver" value="#{sqlWebBean.driver}" forceId="true" styleClass="input_text" />    
-        </t:div>
-        <t:div>
-          <t:outputLabel value="#{sqlWebBundle.url}:" for="url" styleClass="output_label" />
-          <t:inputText id="url" value="#{sqlWebBean.url}" forceId="true" styleClass="input_text" />    
-        </t:div>
-        <t:div style="display:inline-block; margin-right:4px">
-          <t:outputLabel value="#{sqlWebBundle.username}:" for="username" styleClass="output_label" />
-          <t:inputText id="username" value="#{sqlWebBean.username}" styleClass="input_text" forceId="true" />
-        </t:div>
-        <t:div style="display:inline-block">
-          <t:outputLabel value="#{sqlWebBundle.password}:" for="password" styleClass="output_label" />
-          <t:inputSecret id="password" value="#{sqlWebBean.password}" redisplay="true" styleClass="input_text" forceId="true" />    
-        </t:div>
-        <t:div>
-          <t:outputLabel value="#{sqlWebBundle.sql_statement}:" for="sql_stmt" />
-        </t:div>
-
-        <t:inputTextarea id="sql_stmt" forceId="true" value="#{sqlWebBean.sql}" />
-      </h:panelGroup>
-
-      <t:div styleClass="result_info">
-        <t:outputLabel value="#{sqlWebBundle.max_rows}:" for="max_rows" />
-        <t:inputText id="max_rows" value="#{sqlWebBean.maxRows}" forceId="true" 
-                     styleClass="input_text" style="margin-right:4px"/>
-        <t:outputLabel value="#{sqlWebBundle.show_row_numbers}:" for="row_numbers" />
-        <t:selectBooleanCheckbox id="row_numbers" value="#{sqlWebBean.showRowNumbers}" />
+      <t:div id="sqlweb_header" forceId="true">
+        <h:outputText value="#{sqlWebBean.title == null ? userSessionBean.menuModel.selectedMenuItem.label : sqlWebBean.title}" />
+        <h:outputLink value="javascript:showHideEditor()" styleClass="show_hide_button" 
+                      rendered="#{sqlWebBean.editMode}" 
+                      title="#{sqlWebBundle.change_view}" />
       </t:div>
 
-      <t:div styleClass="button_bar">
-        <p:commandButton value="#{sqlWebBundle.execute}"
-                         actionListener="#{sqlWebBean.execute}"
-                         update="result_container"
-                         onclick="queryStarted()"
-                         oncomplete="queryCompleted()"
-                         widgetVar="executeButton" 
-                         styleClass="button">
-          <p:ajax event="click"
-                  process="driver,url,username,password,max_rows,row_numbers,sql_stmt" />
-        </p:commandButton>
+      <t:div id="sqlweb_editor" forceId="true">
+        <h:panelGroup rendered="#{sqlWebBean.editMode}">
+          <t:div>
+            <t:outputLabel value="#{sqlWebBundle.driver}:" for="driver" styleClass="output_label" />
+            <t:inputText id="driver" value="#{sqlWebBean.driver}" forceId="true" styleClass="input_text" />    
+          </t:div>
+          <t:div>
+            <t:outputLabel value="#{sqlWebBundle.url}:" for="url" styleClass="output_label" />
+            <t:inputText id="url" value="#{sqlWebBean.url}" forceId="true" styleClass="input_text" />    
+          </t:div>
+          <t:div style="display:inline-block; margin-right:4px">
+            <t:outputLabel value="#{sqlWebBundle.username}:" for="username" styleClass="output_label" />
+            <t:inputText id="username" value="#{sqlWebBean.username}" styleClass="input_text" forceId="true" />
+          </t:div>
+          <t:div style="display:inline-block">
+            <t:outputLabel value="#{sqlWebBundle.password}:" for="password" styleClass="output_label" />
+            <t:inputSecret id="password" value="#{sqlWebBean.password}" redisplay="true" styleClass="input_text" forceId="true" />    
+          </t:div>
+          <t:div>
+            <t:outputLabel value="#{sqlWebBundle.sql_statement}:" for="sql_stmt" />
+          </t:div>
+          <pe:codeMirror mode="text/x-sql" 
+                         theme="default"
+                         value="#{sqlWebBean.sql}"
+                         lineNumbers="false"
+                         matchBrackets="true" />         
+
+        </h:panelGroup>
+
+        <t:div styleClass="result_info">
+          <t:outputLabel value="#{sqlWebBundle.max_rows}:" for="max_rows" />
+          <t:inputText id="max_rows" value="#{sqlWebBean.maxRows}" forceId="true" 
+                       styleClass="input_text" style="margin-right:4px"/>
+          <t:outputLabel value="#{sqlWebBundle.show_row_numbers}:" for="row_numbers" />
+          <t:selectBooleanCheckbox id="row_numbers" value="#{sqlWebBean.showRowNumbers}" />
+        </t:div>
+
+        <t:div styleClass="button_bar">
+          <p:commandButton value="#{sqlWebBundle.execute}"
+                           actionListener="#{sqlWebBean.execute}"
+                           update="result_container"
+                           onclick="queryStarted()"
+                           oncomplete="queryCompleted()"
+                           widgetVar="executeButton" 
+                           styleClass="button">
+            <p:ajax event="click"
+                    process="driver,url,username,password,max_rows,row_numbers" />
+          </p:commandButton>
+        </t:div>
       </t:div>
-    </t:div>
 
-    <div id="progress_panel" style="display:none">
-      <div class="line"></div>
-      <div class="subline inc"></div>
-      <div class="subline dec"></div>
-    </div>
+      <div id="progress_panel" style="display:none">
+        <div class="line"></div>
+        <div class="subline inc"></div>
+        <div class="subline dec"></div>
+      </div>
 
-    <div id="result_panel" style="display:none">
-      <h:panelGroup id="result_container">
-        <t:div styleClass="scroll" rendered="#{sqlWebBean.exception == null}">
-          <t:dataTable id="result_table" forceId="true"
-                       value="#{sqlWebBean.rows}" var="row" rowIndexVar="rowIndex"
-                       styleClass="table" rowStyleClass="#{rowIndex % 2 == 0 ? 'even' : 'odd'}" 
-                       columnClasses="#{sqlWebBean.showRowNumbers ? 'index,' : ''}#{sqlWebBean.columnClasses}">
-            <t:column rendered="#{sqlWebBean.showRowNumbers}">
-              <f:facet name="header">
-                <t:outputText value="#" />
-              </f:facet>
-              <t:outputText value="#{rowIndex + 1}" />
-            </t:column>
-            <t:columns value="#{sqlWebBean.columns}" var="column">
-              <f:facet name="header">
-                <t:outputText value="#{column.name}"
-                              title="#{sqlWebBean.columnType}" />
-              </f:facet>
-              <h:outputLink value="#{sqlWebBean.columnValue}" 
-                            rendered="#{sqlWebBean.columnLinkRendered}" target="_blank">
-                <h:outputText value="#{sqlWebBean.columnValue}" />
+      <div id="result_panel" style="display:none">
+        <t:div id="result_container" class="result_container">
+          <t:div styleClass="scroll" rendered="#{sqlWebBean.exception == null}">
+            <t:dataTable id="result_table" forceId="true"
+                         value="#{sqlWebBean.rows}" var="row" rowIndexVar="rowIndex"
+                         styleClass="table" rowStyleClass="#{rowIndex % 2 == 0 ? 'even' : 'odd'}" 
+                         columnClasses="index,#{sqlWebBean.columnClasses}">
+              <t:column rendered="#{sqlWebBean.showRowNumbers}">
+                <f:facet name="header">
+                  <t:outputText value="#" />
+                </f:facet>
+                <t:outputText value="#{rowIndex + 1}" />
+              </t:column>
+              <t:columns value="#{sqlWebBean.columns}" var="column">
+                <f:facet name="header">
+                  <t:outputText value="#{column.name}"
+                                title="#{column.description != null ? column.description : sqlWebBean.columnType}" />
+                </f:facet>
+                <h:outputLink value="#{sqlWebBean.columnValue}" 
+                              rendered="#{sqlWebBean.columnLinkRendered}" target="_blank">
+                  <h:outputText value="#{sqlWebBean.columnValue}" />
+                </h:outputLink>
+                <h:outputText value="#{sqlWebBean.columnValue}" 
+                              rendered="#{not sqlWebBean.columnLinkRendered}" />
+              </t:columns>
+            </t:dataTable>
+          </t:div>
+
+          <t:div id="table_bottom" forceId="true" rendered="#{sqlWebBean.exception == null}">
+            <t:outputText value="#{sqlWebBundle.rows_updated}: #{sqlWebBean.updateCount}." 
+              rendered="#{sqlWebBean.updateCount != -1}" styleClass="message updateCount block" />
+            <t:outputText value="#{sqlWebBundle.rows_selected}: #{sqlWebBean.rowCount}." 
+              rendered="#{sqlWebBean.rows != null}" 
+              styleClass="message row_count"/>
+            <t:outputText value="#{sqlWebBundle.ellapsed_time}: #{sqlWebBean.duration} ms." 
+              rendered="#{sqlWebBean.duration gt 0}" styleClass="message ellapsed"/>
+            <div>
+              <h:outputLink value="#" onclick="exportTable2CSV('result_table'); return false;" styleClass="button"
+                rendered="#{sqlWebBean.rows != null}">
+                <h:outputText value="#{sqlWebBundle.export_csv}" />
               </h:outputLink>
-              <h:outputText value="#{sqlWebBean.columnValue}" 
-                            rendered="#{not sqlWebBean.columnLinkRendered}" />
-            </t:columns>
-          </t:dataTable>
+              <h:outputLink value="#" onclick="exportTable2Pdf('result_table'); return false;" styleClass="button"
+                rendered="#{sqlWebBean.rows != null}">
+                <h:outputText value="#{sqlWebBundle.export_pdf} (#{sqlWebBundle.table})" />
+              </h:outputLink>
+              <h:outputLink value="#" onclick="exportLabels2Pdf('result_table'); return false;" styleClass="button"
+                rendered="#{sqlWebBean.rows != null}">
+                <h:outputText value="#{sqlWebBundle.export_pdf} (#{sqlWebBundle.labels})" />
+              </h:outputLink>
+            </div>
+          </t:div>        
+
+          <h:outputText value="#{sqlWebBean.exception}" styleClass="message error"
+                        rendered="#{sqlWebBean.exception != null}" />
         </t:div>
-        
-        <t:div id="table_bottom" forceId="true" rendered="#{sqlWebBean.exception == null}">
-          <t:outputText value="#{sqlWebBundle.rows_updated}: #{sqlWebBean.updateCount}." 
-            rendered="#{sqlWebBean.updateCount != -1}" styleClass="message updateCount block" />
-          <t:outputText value="#{sqlWebBundle.rows_selected}: #{sqlWebBean.rowCount}." 
-            rendered="#{sqlWebBean.rows != null}" 
-            styleClass="message row_count"/>
-          <t:outputText value="#{sqlWebBundle.ellapsed_time}: #{sqlWebBean.duration} ms." 
-            rendered="#{sqlWebBean.duration gt 0}" styleClass="message ellapsed"/>
-          <div>
-            <h:outputLink value="#" onclick="exportTable2CSV('result_table'); return false;" styleClass="button"
-              rendered="#{sqlWebBean.rows != null}">
-              <h:outputText value="#{sqlWebBundle.export_csv}" />
-            </h:outputLink>
-            <h:outputLink value="#" onclick="exportTable2Pdf('result_table'); return false;" styleClass="button"
-              rendered="#{sqlWebBean.rows != null}">
-              <h:outputText value="#{sqlWebBundle.export_pdf} (#{sqlWebBundle.table})" />
-            </h:outputLink>
-            <h:outputLink value="#" onclick="exportLabels2Pdf('result_table'); return false;" styleClass="button"
-              rendered="#{sqlWebBean.rows != null}">
-              <h:outputText value="#{sqlWebBundle.export_pdf} (#{sqlWebBundle.labels})" />
-            </h:outputLink>
-          </div>
-        </t:div>        
-        
-        <h:outputText value="#{sqlWebBean.exception}" styleClass="message error"
-                      rendered="#{sqlWebBean.exception != null}" />
-      </h:panelGroup>
-    </div>
+      </div>
 
-    <h:outputText value="#{sqlWebBean.autoExecuteCode}" escape="false" />
+      <h:outputText value="#{sqlWebBean.autoExecuteCode}" escape="false" />
 
-    <f:verbatim>
-      <script type="text/javascript" src="/plugins/jquery/jquery-last.min.js">
-        0;
-      </script>
-      <script type="text/javascript" src="/plugins/codemirror/codemirror.js">
-        0;
-      </script>
-      <script type="text/javascript" src="/plugins/codemirror/sql.js">
-        0;
-      </script>
-      <script type="text/javascript" src="/plugins/codemirror/runmode.js">
-        0;
-      </script>
-      <script type="text/javascript" src="/plugins/codemirror/matchbrackets.js">
-        0;
-      </script>
-      <script type="text/javascript" src="/plugins/table2csv/table2csv.js">
-        0;
-      </script>
-      <script type="text/javascript" src="/plugins/pdfmake/pdfmake.min.js">
-        0;
-      </script>
-      <script type="text/javascript" src="/plugins/pdfmake/vfs_fonts.js">
-        0;
-      </script>
-      <script type="text/javascript" src="/plugins/pdfmake/table2pdf.js">
-        0;
-      </script>        
-      <script type="text/javascript">
-        var editor = document.getElementById("sql_stmt");
-        if (editor)
-        {
-          myCodeMirror = CodeMirror.fromTextArea(editor,
-             {mode: 'text/x-sql', lineNumbers: false,
-              matchBrackets: true, lineWrapping: true});
-
-          myCodeMirror.on("change", function (cm, change)
+      <f:verbatim>
+        <script type="text/javascript" src="/plugins/jquery/jquery-last.min.js">
+          0;
+        </script>
+        <script type="text/javascript" src="/plugins/table2csv/table2csv.js">
+          0;
+        </script>
+        <script type="text/javascript" src="/plugins/pdfmake/pdfmake.min.js">
+          0;
+        </script>
+        <script type="text/javascript" src="/plugins/pdfmake/vfs_fonts.js">
+          0;
+        </script>
+        <script type="text/javascript" src="/plugins/pdfmake/table2pdf.js">
+          0;
+        </script>        
+        <script type="text/javascript">
+          function showHideEditor()
           {
-            setTimeout(function () {
-              updateScrollHeight();
-            }, 0);
-          });
-        }
-        
-        function updateScrollHeight()
-        {
-          if (!$(".scroll"))
-            return;
-
-          var editorVisible = $("#sqlweb_editor").is(":visible");
-
-          var pageHeight = editorVisible ?
-            $("#sqlweb_editor").offset().top + $("#sqlweb_editor").height() +
-            $("#table_bottom").height() :
-            $("#sqlweb_header").offset().top + $("#sqlweb_header").height() +
-            $("#table_bottom").height();
-
-          var scrollHeight = $(window).height() - pageHeight - 30;
-          if (scrollHeight &lt; 0) scrollHeight = 0;
-          $(".scroll").height(scrollHeight);
-        }
-
-        function showHideEditor()
-        {
-          var editorVisible = $("#sqlweb_editor").is(":visible");
-          if (editorVisible)
-          {
-            $("#sqlweb_editor").hide();
-          } else
-          {
-            $("#sqlweb_editor").show();
+            var editorVisible = $("#sqlweb_editor").is(":visible");
+            if (editorVisible)
+            {
+              $("#sqlweb_editor").hide();
+            } else
+            {
+              $("#sqlweb_editor").show();
+            }
           }
-          updateScrollHeight();
-        }
 
-        function queryStarted()
-        {
-          if (editor) editor.innerHTML = myCodeMirror.getValue();             
-          PF('executeButton').disable();
-          $("#progress_panel").show();
-          $("#result_panel").hide();
-        }
-
-        function queryCompleted()
-        {
-          $("#progress_panel").hide();
-          $("#result_panel").show();
-          PF('executeButton').enable();
-          updateScrollHeight();
-        }
-
-        function executeStatement()
-        {
-          if (autoExecute)
-          {
-            $(PF('executeButton').jqId).click()            
+          function queryStarted()
+          {          
+            PF('executeButton').disable();
+            $("#progress_panel").show();
+            $("#result_panel").hide();
           }
-        }
 
-        $(document).ready(function()
-        {
-          updateScrollHeight();
-          $(window).resize(function()
+          function queryCompleted()
           {
-            updateScrollHeight();
-          });
-          setTimeout(executeStatement, 0);
-        });
+            $("#progress_panel").hide();
+            $("#result_panel").show();
+            PF('executeButton').enable();          
+          }
 
-      </script>
-    </f:verbatim>
+          function executeStatement()
+          {
+            if (autoExecute)
+            {
+              $(PF('executeButton').jqId).click()            
+            }
+          }
+
+          $(document).ready(function()
+          {   
+            setTimeout(executeStatement, 0);
+          });
+
+        </script>
+      </f:verbatim>
       
+    </t:div>  
+    
   </ui:composition>
 </html>

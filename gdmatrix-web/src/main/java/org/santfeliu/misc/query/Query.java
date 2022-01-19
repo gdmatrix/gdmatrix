@@ -60,10 +60,10 @@ public class Query implements Serializable
   private String label;
   private String sql;
   private final Connection connection = new Connection();
-  private final List<Parameter> parameters = new ArrayList<Parameter>();
-  private final List<Predicate> predicates = new ArrayList<Predicate>();
-  private final List<Output> outputs = new ArrayList<Output>();
-  private final List<QueryInstance> instances = new ArrayList<QueryInstance>();
+  private final List<Parameter> parameters = new ArrayList();
+  private final List<Predicate> predicates = new ArrayList();
+  private final List<Output> outputs = new ArrayList();
+  private final List<QueryInstance> instances = new ArrayList();
 
   public String getName()
   {
@@ -147,7 +147,7 @@ public class Query implements Serializable
 
   public List<Parameter> getGlobalParameters()
   {
-    List<Parameter> globalParameters = new ArrayList<Parameter>();
+    List<Parameter> globalParameters = new ArrayList();
     List variables = new ArrayList();
     Template.create(label).loadReferencedVariables(variables);
     for (Object v : variables)
@@ -200,6 +200,19 @@ public class Query implements Serializable
     return parameter;
   }
 
+  public void moveParameter(Parameter parameter, int offset)
+  {
+    int index = parameters.indexOf(parameter);
+    if (index != -1)
+    {
+      parameters.remove(index);
+      index += offset;
+      if (index < 0) index = 0;
+      else if (index > parameters.size()) index = parameters.size();
+      parameters.add(index, parameter);
+    }
+  }
+  
   public void removeParameter(Parameter parameter)
   {
     parameters.remove(parameter);
@@ -207,13 +220,28 @@ public class Query implements Serializable
   
   public void sortParameters()
   {
+    sortParameters(null);
+  }
+  
+  public void sortParameters(String criteria)
+  {
     Collections.sort(parameters, new Comparator()
     {
+      @Override
       public int compare(Object o1, Object o2)
       {
         Query.Parameter param1 = (Query.Parameter)o1;
         Query.Parameter param2 = (Query.Parameter)o2;
-        return param1.getName().compareTo(param2.getName());
+        if (criteria != null)
+        {
+          String criteriaAux = "," + criteria + ",";          
+          return criteriaAux.indexOf("," + param1.getName() + ",") - 
+            criteriaAux.indexOf("," + param2.getName() + ",");          
+        }
+        else
+        {
+          return param1.getName().compareTo(param2.getName());
+        }
       }
     });
   }
@@ -274,17 +302,32 @@ public class Query implements Serializable
 
   public void sortPredicates()
   {
+    sortPredicates(null);
+  }
+    
+  public void sortPredicates(String criteria)
+  {
     Collections.sort(predicates, new Comparator()
     {
+      @Override
       public int compare(Object o1, Object o2)
       {
         Query.Predicate predicate1 = (Query.Predicate)o1;
         Query.Predicate predicate2 = (Query.Predicate)o2;
-        return predicate1.getName().compareTo(predicate2.getName());
+        if (criteria != null)
+        {
+          String criteriaAux = "," + criteria + ",";          
+          return criteriaAux.indexOf("," + predicate1.getName() + ",") - 
+            criteriaAux.indexOf("," + predicate2.getName() + ",");          
+        }
+        else
+        {        
+          return predicate1.getName().compareTo(predicate2.getName());
+        }
       }
     });
   }
-
+  
   public Output addOutput()
   {
     Output output = new Output();
@@ -331,13 +374,28 @@ public class Query implements Serializable
 
   public void sortOutputs()
   {
+    sortOutputs(null);
+  }
+  
+  public void sortOutputs(String criteria)
+  {
     Collections.sort(outputs, new Comparator()
     {
+      @Override
       public int compare(Object o1, Object o2)
       {
         Query.Output output1 = (Query.Output)o1;
         Query.Output output2 = (Query.Output)o2;
-        return output1.getName().compareTo(output2.getName());
+        if (criteria != null)
+        {
+          String criteriaAux = "," + criteria + ",";
+          return criteriaAux.indexOf("," + output1.getName() + ",") - 
+            criteriaAux.indexOf("," + output2.getName() + ",");          
+        }
+        else
+        {        
+          return output1.getName().compareTo(output2.getName());
+        }
       }
     });
   }
@@ -468,6 +526,7 @@ public class Query implements Serializable
     private int size = 10;
     private String defaultValue;
     private String sql;
+    private boolean inherited = false;
 
     public String getName()
     {
@@ -529,6 +588,16 @@ public class Query implements Serializable
       this.defaultValue = defaultValue;
     }
 
+    public boolean isInherited() 
+    {
+      return inherited;
+    }
+
+    public void setInherited(boolean inherited) 
+    {
+      this.inherited = inherited;
+    }
+
     @Override
     public String toString()
     {
@@ -542,6 +611,7 @@ public class Query implements Serializable
     String name;
     String label;
     String sql;
+    boolean inherited = false;
 
     public String getName()
     {
@@ -572,6 +642,16 @@ public class Query implements Serializable
     {
       this.sql = sql;
     }
+
+    public boolean isInherited() 
+    {
+      return inherited;
+    }
+
+    public void setInherited(boolean inherited) 
+    {
+      this.inherited = inherited;
+    }
   }
 
   /*** class Query.Predicate ***/
@@ -579,7 +659,7 @@ public class Query implements Serializable
   {
     public List<Parameter> getParameters()
     {
-      List<Parameter> parameters = new ArrayList<Parameter>();
+      List<Parameter> parameters = new ArrayList();
       List variables = new ArrayList();
       Template.create(label).loadReferencedVariables(variables);
       for (Object v : variables)
@@ -596,7 +676,7 @@ public class Query implements Serializable
       }
       return parameters;
     }
-
+    
     @Override
     public String toString()
     {
@@ -607,6 +687,18 @@ public class Query implements Serializable
   /*** class Query.Output ***/
   public class Output extends Fragment
   {
+    private String description;
+
+    public String getDescription() 
+    {
+      return description;
+    }
+
+    public void setDescription(String description) 
+    {
+      this.description = description;
+    }
+
     @Override
     public String toString()
     {

@@ -136,6 +136,7 @@ public class QueryWriter
       }
       endTag("connection", true);
 
+      StringBuilder sbParametersOrder = new StringBuilder();            
       for (Query.Parameter parameter : query.getParameters())
       {
         Query.Parameter baseParameter = baseQuery == null ? null :
@@ -155,8 +156,12 @@ public class QueryWriter
           writeTagValue("sql", parameter.getSql(), true);
           endTag("parameter", true);
         }
+        sbParametersOrder.append(sbParametersOrder.length() == 0 ? "" : ",").
+          append(parameter.getName());
       }
-
+      writeTagValue("parametersOrder", sbParametersOrder.toString());      
+      
+      StringBuilder sbPredicatesOrder = new StringBuilder();      
       for (Query.Predicate predicate : query.getPredicates())
       {
         Query.Predicate basePredicate = baseQuery == null ? null :
@@ -171,28 +176,47 @@ public class QueryWriter
           writeTagValue("sql", predicate.getSql(), true);
           endTag("predicate", true);
         }
+        sbPredicatesOrder.append(sbPredicatesOrder.length() == 0 ? "" : ",").
+          append(predicate.getName());
       }
+      writeTagValue("predicatesOrder", sbPredicatesOrder.toString());
 
+      StringBuilder sbOutputsOrder = new StringBuilder();      
       for (Query.Output output : query.getOutputs())
-      {
+      {        
         Query.Output baseOutput = baseQuery == null ? null :
           baseQuery.getOutput(output.getName());
 
         if (baseOutput == null ||
-          !StringUtils.equals(output.getLabel(), baseOutput.getLabel()) ||
+          !StringUtils.equals(output.getLabel(), baseOutput.getLabel()) ||          
+          !StringUtils.defaultString(output.getDescription()).equals(
+            StringUtils.defaultString(baseOutput.getDescription())) ||
           !StringUtils.equals(output.getSql(), baseOutput.getSql()))
         {
           startTag("output", output.getName(), true);
           writeTagValue("label", output.getLabel());
+          writeTagValue("description", output.getDescription());
           writeTagValue("sql", output.getSql(), true);
           endTag("output", true);
-        }
+        }        
+        sbOutputsOrder.append(sbOutputsOrder.length() == 0 ? "" : ",").
+          append(output.getName());
       }
+      writeTagValue("outputsOrder", sbOutputsOrder.toString());
 
       for (QueryInstance instance : query.getInstances())
       {
         startTag("instance", instance.getName(), true);
         writeTagValue("description", instance.getDescription());
+        if (instance.getMaxResults() != null)
+        {
+          writeTagValue("maxResults", String.valueOf(instance.getMaxResults()));
+        }
+        else
+        {
+          writeTagValue("maxResults", String.valueOf(
+            QueryInstance.DEFAULT_MAX_RESULTS));
+        }
         Set<Map.Entry<String, String>> entrySet =
           instance.getGlobalParameterValuesMap().entrySet();
         for (Map.Entry<String, String> entry : entrySet)

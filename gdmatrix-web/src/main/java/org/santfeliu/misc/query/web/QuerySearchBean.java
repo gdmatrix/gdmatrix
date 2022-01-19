@@ -236,6 +236,7 @@ public class QuerySearchBean extends FacesBean implements Savable
     {
       String queryName = getQueryName();
       QueryBean queryBean = (QueryBean)getBean("queryBean");
+      queryBean.setCreateNewVersion(true);
       queryBean.loadQuery(queryName);
     }
     catch (Exception ex)

@@ -57,7 +57,7 @@ public class QueryReader
   private HashSet<String> queryNames;
   
   public QueryReader()
-  {    
+  {
   }
 
   public QueryFinder getQueryFinder()
@@ -100,7 +100,7 @@ public class QueryReader
     String queryName = queryElement.getAttribute("name");
     query.setName(queryName);
 
-    if (queryNames == null) queryNames = new HashSet<String>();
+    if (queryNames == null) queryNames = new HashSet();
     else if (queryNames.contains(queryName))
       throw new Exception("CYCLIC_QUERY_DEFINTION");
     queryNames.add(queryName);
@@ -199,6 +199,7 @@ public class QueryReader
           parameter.setSize(baseParameter.getSize());
           parameter.setSql(baseParameter.getSql());
           parameter.setDefaultValue(baseParameter.getDefaultValue());
+          parameter.setInherited(true);
         }
       }
       
@@ -210,6 +211,7 @@ public class QueryReader
           predicate.setLabel(basePredicate.getLabel());
           predicate.setName(basePredicate.getName());
           predicate.setSql(basePredicate.getSql());
+          predicate.setInherited(true);
         }
       }
       
@@ -220,8 +222,40 @@ public class QueryReader
           Query.Output output = query.addOutput();
           output.setLabel(baseOutput.getLabel());
           output.setName(baseOutput.getName());
+          output.setDescription(baseOutput.getDescription());
           output.setSql(baseOutput.getSql());
+          output.setInherited(true);
         }
+      }
+    }
+    
+    element = getChild(queryElement, "parametersOrder");
+    if (element != null) 
+    {
+      String parametersOrder = element.getTextContent();
+      if (parametersOrder != null)
+      {
+        query.sortParameters(parametersOrder);
+      }      
+    }
+
+    element = getChild(queryElement, "predicatesOrder");
+    if (element != null) 
+    {
+      String predicatesOrder = element.getTextContent();    
+      if (predicatesOrder != null)
+      {
+        query.sortPredicates(predicatesOrder);     
+      }
+    }
+     
+    element = getChild(queryElement, "outputsOrder");
+    if (element != null) 
+    {
+      String outputsOrder = element.getTextContent();        
+      if (outputsOrder != null)
+      {
+        query.sortOutputs(outputsOrder);     
       }
     }
     
@@ -299,6 +333,9 @@ public class QueryReader
     element = getChild(outputElement, "label");
     if (element != null) output.setLabel(element.getTextContent());
 
+    element = getChild(outputElement, "description");
+    if (element != null) output.setDescription(element.getTextContent());    
+    
     element = getChild(outputElement, "sql");
     if (element != null) output.setSql(element.getTextContent());
   }
@@ -312,6 +349,23 @@ public class QueryReader
     element = getChild(instanceElement, "description");
     if (element != null) queryInstance.setDescription(element.getTextContent());
 
+    element = getChild(instanceElement, "maxResults");
+    if (element != null)
+    {
+      try
+      {
+        queryInstance.setMaxResults(Integer.parseInt(element.getTextContent()));
+      }
+      catch (NumberFormatException ex)
+      {
+        queryInstance.setMaxResults(QueryInstance.DEFAULT_MAX_RESULTS);
+      }
+    }
+    else
+    {
+      queryInstance.setMaxResults(QueryInstance.DEFAULT_MAX_RESULTS);
+    }
+    
     element = getChild(instanceElement, "expression");
     if (element != null)
       readExpression(queryInstance.getRootExpression(), element);
@@ -423,7 +477,7 @@ public class QueryReader
 
   private List<Element> getChildren(Element element, String name)
   {
-    List<Element> childElements = new ArrayList<Element>();
+    List<Element> childElements = new ArrayList();
     Node childNode = element.getFirstChild();
     while (childNode != null)
     {

@@ -1,10 +1,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-
+  
   <ui:composition template="/topframe/topframe.xhtml">
     <ui:param name="css" value="/common/misc/css/sqlweb.css" />
     <ui:define name="page">
       <ui:include src="/common/misc/sqlweb_body.xhtml" />
+      <link rel="stylesheet" type="text/css" 
+            href="${pageContext.request.contextPath}/common/misc/css/sqlweb_fs.css?v=${applicationBean.resourcesVersion}" />      
     </ui:define>
   </ui:composition>
 </html>

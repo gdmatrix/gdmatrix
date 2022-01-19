@@ -85,12 +85,13 @@ public class QueryBean extends FacesBean implements Savable, QueryFinder
 
   private Query query = new Query();
   private boolean persistent = false;
-  private final Set<String> readRoles = new HashSet<String>();
-  private final Set<String> writeRoles = new HashSet<String>();
+  private final Set<String> readRoles = new HashSet();
+  private final Set<String> writeRoles = new HashSet();
   private String queryScope;
   private String queryObject;
   private String queryType;
   private String queryCode;
+  private boolean createNewVersion = true;
 
   public QueryBean()
   {
@@ -150,6 +151,16 @@ public class QueryBean extends FacesBean implements Savable, QueryFinder
   public void setQueryCode(String queryCode)
   {
     this.queryCode = queryCode;
+  }
+
+  public boolean isCreateNewVersion() 
+  {
+    return createNewVersion;
+  }
+
+  public void setCreateNewVersion(boolean createNewVersion) 
+  {
+    this.createNewVersion = createNewVersion;
   }
   
   public String getReadRolesString()
@@ -247,9 +258,9 @@ public class QueryBean extends FacesBean implements Savable, QueryFinder
     query.setName(queryName);
     loadRoles(document);
     loadClassification(document);
-    persistent = true;
+    persistent = true;    
     clearBean("queryInstanceBean");
-    clearBean("queryEditorBean");
+    clearBean("queryEditorBean");    
   }
 
   public void saveQuery() throws Exception
@@ -319,6 +330,10 @@ public class QueryBean extends FacesBean implements Savable, QueryFinder
     document.setContent(content);
     document.setIncremental(true);
     putRoles(document);
+    if (createNewVersion)
+    {
+      document.setVersion(DocumentConstants.NEW_VERSION);
+    }
     document = getDocumentManagerClient().storeDocument(document);
     loadRoles(document);
     persistent = true;
