@@ -248,7 +248,8 @@ public class SignatureFormBean extends FormBean
       {
         DocumentToSign docToSign = new DocumentToSign();
         docToSign.setName(dataHash.getName());
-        docToSign.setHash(Base64.getEncoder().encodeToString(dataHash.getHash()));
+        docToSign.setHash(Base64.getMimeEncoder().
+          encodeToString(dataHash.getHash()));
         docToSign.setAlgorithm(dataHash.getAlgorithm());
         docsToSign.add(docToSign);
       }
@@ -264,7 +265,7 @@ public class SignatureFormBean extends FormBean
         throw new Exception((String)signResult.get("error"));
 
       String evidenceBase64 = (String)signResult.get("evidence");
-      byte[] bytes = Base64.getDecoder().decode(evidenceBase64);
+      byte[] bytes = Base64.getMimeDecoder().decode(evidenceBase64);
       port.addExternalSignature(sigId, bytes);
 
       result = "OK";
@@ -297,7 +298,8 @@ public class SignatureFormBean extends FormBean
       {
         DocumentToSign docToSign = new DocumentToSign();
         docToSign.setName(dataHash.getName());
-        docToSign.setHash(Base64.getEncoder().encodeToString(dataHash.getHash()));
+        docToSign.setHash(Base64.getMimeEncoder().
+          encodeToString(dataHash.getHash()));
         docToSign.setAlgorithm(dataHash.getAlgorithm());
         docsToSign.add(docToSign);
       }

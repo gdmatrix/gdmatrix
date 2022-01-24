@@ -148,8 +148,8 @@ public class P7MDocument
 
       signature.loadProperties();
 
-      signature.setSignature(
-        Base64.getEncoder().encodeToString(signer.getSignature()).toUpperCase());
+      signature.setSignature(Base64.getMimeEncoder().encodeToString(
+        signer.getSignature()).toUpperCase());
 
       // **** signed attributes ****
       AttributeTable table = signer.getSignedAttributes();

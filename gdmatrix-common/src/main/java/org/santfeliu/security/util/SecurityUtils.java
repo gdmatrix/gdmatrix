@@ -165,7 +165,7 @@ public class SecurityUtils
     {
       MessageDigest md5 = MessageDigest.getInstance("MD5");
       md5.update(text.getBytes());
-      return Base64.getEncoder().encodeToString(md5.digest());
+      return Base64.getMimeEncoder().encodeToString(md5.digest());
     }
     catch (Exception e)
     {

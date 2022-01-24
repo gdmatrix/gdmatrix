@@ -147,8 +147,8 @@ public class CMSData
       String signerName = certificate.getSubjectDN().getName();
       signature.loadProperties(signerName);
 
-      signature.setSignature(
-        Base64.getEncoder().encodeToString(signer.getSignature()).toUpperCase());
+      signature.setSignature(Base64.getMimeEncoder().
+        encodeToString(signer.getSignature()).toUpperCase());
 
       // **** signed attributes ****
       AttributeTable table = signer.getSignedAttributes();

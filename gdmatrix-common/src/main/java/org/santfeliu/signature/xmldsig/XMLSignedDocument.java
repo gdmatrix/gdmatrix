@@ -305,7 +305,8 @@ public class XMLSignedDocument implements SignedDocument
     {
       signatureValueElem.removeChild(signatureValueElem.getFirstChild());
     }
-    String base64codedValue = Base64.getEncoder().encodeToString(signatureData);
+    String base64codedValue = Base64.getMimeEncoder().
+      encodeToString(signatureData);
 
     if (base64codedValue.length() > 76)
     {
@@ -614,7 +615,7 @@ public class XMLSignedDocument implements SignedDocument
       doc.createElement(XMLDSIG_NS + ":" + Constants._TAG_DIGESTVALUE);
     certDigestElement.appendChild(digestValueElement);
     digestValueElement.appendChild(doc.createTextNode(
-      Base64.getEncoder().encodeToString(digest)));
+      Base64.getMimeEncoder().encodeToString(digest)));
 
     Element issuerSerialElement =
       doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_ISSUER_SERIAL);
@@ -703,7 +704,7 @@ public class XMLSignedDocument implements SignedDocument
       Element hashElement =
         doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_HASH);
       hashElement.setTextContent(
-        Base64.getEncoder().encodeToString(dataHash.getHash()));
+        Base64.getMimeEncoder().encodeToString(dataHash.getHash()));
       documentElement.appendChild(hashElement);
 
       Element algorithmElement =

@@ -172,7 +172,7 @@ public class ValidServlet extends HttpServlet
           }
           if (certBase64 != null)
           {
-            byte[] bytes = Base64.getDecoder().decode(certBase64);
+            byte[] bytes = Base64.getMimeDecoder().decode(certBase64);
 
             CertificateFactory cf = CertificateFactory.getInstance("X509");
             X509Certificate certificate = (X509Certificate)
@@ -215,7 +215,7 @@ public class ValidServlet extends HttpServlet
         else // ok
         {
           String evidenceBase64 = (String)signResult.get("evidence");
-          byte[] bytes = Base64.getDecoder().decode(evidenceBase64);
+          byte[] bytes = Base64.getMimeDecoder().decode(evidenceBase64);
 
           // complete signature
           String sigId =

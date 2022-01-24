@@ -235,7 +235,7 @@ public class FileTimeStampTask extends Task
         nr = is.read(buffer);
       }
       byte[] digest = md.digest();
-      return Base64.getEncoder().encodeToString(digest);
+      return Base64.getMimeEncoder().encodeToString(digest);
     }
   }
 

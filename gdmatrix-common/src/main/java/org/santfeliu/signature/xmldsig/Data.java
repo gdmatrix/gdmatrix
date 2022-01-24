@@ -227,7 +227,7 @@ public class Data // ElementProxy
     {
       contentElement.removeChild(contentElement.getFirstChild());
     }
-    String data64 = Base64.getEncoder().encodeToString(data);
+    String data64 = Base64.getMimeEncoder().encodeToString(data);
     contentElement.appendChild(doc.createTextNode(data64));
   }
 
@@ -235,7 +235,7 @@ public class Data // ElementProxy
   {
     Element contentElement = getContentElement();
     String data64 = contentElement.getFirstChild().getNodeValue();
-    return Base64.getDecoder().decode(data64);
+    return Base64.getMimeDecoder().decode(data64);
   }
 
   public byte[] digest(String hashAlgorithmURN) throws Exception

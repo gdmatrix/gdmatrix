@@ -85,7 +85,7 @@ public class ObjectSerializer
         os.writeObject(value);
       }
       byte[] data = bos.toByteArray();
-      str = JAVA_SER_B64 + Base64.getEncoder().encodeToString(data);
+      str = JAVA_SER_B64 + Base64.getMimeEncoder().encodeToString(data);
     }
     else
     {

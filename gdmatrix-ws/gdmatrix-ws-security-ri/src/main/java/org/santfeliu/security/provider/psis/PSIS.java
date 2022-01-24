@@ -254,7 +254,7 @@ public class PSIS implements SecurityProvider
         "org/santfeliu/security/provider/psis/XMLValidateCMS.xml");
 
       Map variables = new HashMap();
-      variables.put("SIGNATURE", Base64.getEncoder().encodeToString(cms));
+      variables.put("SIGNATURE", Base64.getMimeEncoder().encodeToString(cms));
       String message = Template.create(template).merge(variables);
 
       HttpClient client = new HttpClient();
@@ -501,7 +501,7 @@ public class PSIS implements SecurityProvider
         {
           String certBase64 = readFile(
             "org/santfeliu/security/provider/psis/tst.cer");
-          certEncoded = Base64.getDecoder().decode(certBase64);
+          certEncoded = Base64.getMimeDecoder().decode(certBase64);
         }
         catch (Exception ex)
         {
@@ -565,12 +565,14 @@ public class PSIS implements SecurityProvider
       {
         String certBase64 =
           readFile("org/santfeliu/security/provider/psis/tst.cer");
-        certEncoded = Base64.getDecoder().decode(certBase64);
+        certEncoded = Base64.getMimeDecoder().decode(certBase64);
       }
       Map variables = new HashMap();
       variables.put("DIGEST_METHOD", digestMethod);
-      variables.put("DIGEST_VALUE", Base64.getEncoder().encodeToString(digest));
-      variables.put("CERTIFICATE", Base64.getEncoder().encodeToString(certEncoded));
+      variables.put("DIGEST_VALUE", Base64.getMimeEncoder().
+        encodeToString(digest));
+      variables.put("CERTIFICATE", Base64.getMimeEncoder().
+        encodeToString(certEncoded));
       String message = Template.create(template).merge(variables);
 
       HttpClient client = new HttpClient();

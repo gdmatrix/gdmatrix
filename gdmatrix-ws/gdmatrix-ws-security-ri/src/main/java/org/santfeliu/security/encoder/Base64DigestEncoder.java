@@ -67,6 +67,6 @@ public class Base64DigestEncoder implements DigestEncoder
 
   private String encodeHash(byte[] message) throws Exception
   {
-    return Base64.getEncoder().encodeToString(message);
+    return Base64.getMimeEncoder().encodeToString(message);
   }
 }

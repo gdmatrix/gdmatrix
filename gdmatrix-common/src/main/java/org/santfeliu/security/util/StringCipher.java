@@ -61,7 +61,7 @@ public class StringCipher
     {
       byte[] utf8 = str.getBytes("UTF8");
       byte[] enc = ecipher.doFinal(utf8);
-      return Base64.getEncoder().encodeToString(enc);
+      return Base64.getMimeEncoder().encodeToString(enc);
     }
     catch (Exception e)
     {
@@ -73,7 +73,7 @@ public class StringCipher
   {
     try
     {
-      byte[] dec = Base64.getDecoder().decode(strBase64);
+      byte[] dec = Base64.getMimeDecoder().decode(strBase64);
       byte[] utf8 = dcipher.doFinal(dec);
       return new String(utf8, "UTF8");
     }

@@ -526,7 +526,8 @@ public class BiometricFormBean extends FormBean
       ByteArrayOutputStream output = new ByteArrayOutputStream();
       dh.writeTo(output);
       byte[] contentByteArray = output.toByteArray();
-      String base64Content = Base64.getEncoder().encodeToString(contentByteArray);
+      String base64Content = Base64.getMimeEncoder().
+        encodeToString(contentByteArray);
       String requestContent =
         "{" +
         "  \"DocContent\":\"" + base64Content + "\"," +
@@ -700,7 +701,7 @@ public class BiometricFormBean extends FormBean
         else
         {
           String docContentBase64 = extractDirectValueFromJson(jsonResponse, "DocContent");
-          byte[] docContent = Base64.getDecoder().decode(docContentBase64);
+          byte[] docContent = Base64.getMimeDecoder().decode(docContentBase64);
           return docContent;
         }
       }
@@ -791,7 +792,7 @@ public class BiometricFormBean extends FormBean
   private String getAuthString()
   {
     String userPass = apiUsername + ":" + apiPassword;
-    String encodedUserPass = Base64.getEncoder().
+    String encodedUserPass = Base64.getMimeEncoder().
       encodeToString(userPass.getBytes(StandardCharsets.UTF_8));
     String authValue = String.format("Basic " + encodedUserPass);
     return authValue;

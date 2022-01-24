@@ -47,7 +47,7 @@ public class BasicAuthorization
     if (autho != null && autho.startsWith("Basic "))
     {
       String basic = autho.substring(6);
-      String userPassString = new String(Base64.getDecoder().decode(basic));
+      String userPassString = new String(Base64.getMimeDecoder().decode(basic));
       String[] userPass = userPassString.split(":");
       this.userId = userPass[0].trim();
       if (userPass.length > 1)
@@ -63,7 +63,7 @@ public class BasicAuthorization
     String pass = (password == null) ? "" : password;
     String userPassString = userId + ":" + pass;
     String autho = "Basic " +
-      Base64.getEncoder().encodeToString(userPassString.getBytes());
+      Base64.getMimeEncoder().encodeToString(userPassString.getBytes());
 
     return autho;
   }

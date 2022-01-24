@@ -72,7 +72,8 @@ public class JRExtendedHtmlExporter extends JRHtmlExporter
           byte[] source = image.getRenderable().getImageData();
           if (source != null && source.length > 0)
           {
-            String encodedSource = Base64.getEncoder().encodeToString(source);
+            String encodedSource = Base64.getMimeEncoder().
+              encodeToString(source);
             imageSrc = "data:image/png;base64," + encodedSource;
           }
         }

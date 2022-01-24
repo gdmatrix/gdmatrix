@@ -88,7 +88,7 @@ public class HttpUtils
       String cert64 = request.getHeader(X_FORWARDED_CERTIFICATE_HEADER);
       if (cert64 != null)
       {
-        cert = Base64.getDecoder().decode(cert64);
+        cert = Base64.getMimeDecoder().decode(cert64);
       }
       else throw new Exception("INVALID_CERTIFICATE");     
     }

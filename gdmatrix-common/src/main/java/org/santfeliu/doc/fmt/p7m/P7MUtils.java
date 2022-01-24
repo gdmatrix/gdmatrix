@@ -246,7 +246,7 @@ public class P7MUtils
   {
     ContentInfo ts = createTimeStamp(serviceURI, message);
     byte[] tsBytes = ts.getEncoded();
-    return Base64.getEncoder().encodeToString(tsBytes);
+    return Base64.getMimeEncoder().encodeToString(tsBytes);
   }
 
   public static ContentInfo createTimeStamp(String serviceURI, byte[] message)

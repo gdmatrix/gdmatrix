@@ -100,7 +100,7 @@ public class ObjectDeserializer
     else if (str.startsWith(ObjectSerializer.JAVA_SER_B64))
     {
       str = str.substring(ObjectSerializer.JAVA_SER_B64.length());
-      byte[] data = Base64.getDecoder().decode(str);
+      byte[] data = Base64.getMimeDecoder().decode(str);
 
       ByteArrayInputStream bis = new ByteArrayInputStream(data);
       try (ObjectInputStream is = new ObjectInputStream(bis))

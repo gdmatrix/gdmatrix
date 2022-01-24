@@ -229,7 +229,7 @@ public class FileGrp
     }
     else if (data != null)
     {
-      is = new ByteArrayInputStream(Base64.getDecoder().decode(data));
+      is = new ByteArrayInputStream(Base64.getMimeDecoder().decode(data));
     }
     return is;
   }
