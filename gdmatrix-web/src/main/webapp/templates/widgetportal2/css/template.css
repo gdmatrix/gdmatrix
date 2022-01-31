@@ -938,9 +938,11 @@ label.element-invisible
 .footerBar .snMenu ul li
 {
   list-style-type: none;
-  float: left;
-  width: 16%;
-  text-align: center;    
+  display: inline-block;
+  *display: inline; /* IE7 Hack */
+  *zoom: 1; /* IE7 Hack */  
+  margin-left: 2px;
+  text-align: center;
 }
 
 .footerBar .snMenu ul li a
@@ -1977,8 +1979,8 @@ label.element-invisible
   list-style: none;
   display: inline-block;
   *display: inline; /* IE7 Hack */
-  *zoom: 1; /* IE7 Hack */
-  margin-left: 0px;
+  *zoom: 1; /* IE7 Hack */  
+  margin-left: 1px;
   height: 100%;  
 }
 
