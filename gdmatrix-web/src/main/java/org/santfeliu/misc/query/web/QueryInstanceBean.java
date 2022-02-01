@@ -479,8 +479,10 @@ public class QueryInstanceBean extends FacesBean implements Savable
     }
     else
     {
-      Query.Predicate predicate = getQuery().getPredicate(expressionName);
-      return predicate.getLabel();
+      Query.Predicate predicate = getQuery().getPredicate(expressionName);      
+      return (StringUtils.defaultString(predicate.getShortLabel()).isEmpty() ? 
+        predicate.getLabel() : 
+        predicate.getShortLabel());
     }
   }
 

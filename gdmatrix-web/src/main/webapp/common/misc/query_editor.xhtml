@@ -152,7 +152,7 @@
         </t:panelTab>
 
         <t:panelTab label="#{queryBundle.parameters}" onclick="refreshEditor(parameterEditor);">
-          <t:div styleClass="edit_panel">
+          <t:div styleClass="edit_panel parameters">
             <t:div styleClass="left">
               <t:dataList value="#{queryBean.query.parameters}" var="parameter">
                   <t:commandLink value="#{parameter.name} (#{parameter.description})" 
@@ -208,7 +208,7 @@
         </t:panelTab>
 
         <t:panelTab label="#{queryBundle.predicates}" onclick="refreshEditor(predicateEditor);">
-          <t:div styleClass="edit_panel">
+          <t:div styleClass="edit_panel predicates">
             <t:div styleClass="left">
               <t:dataList
                 value="#{queryBean.query.predicates}" var="predicate">
@@ -222,6 +222,11 @@
                 <t:inputText id="predicate_name" value="#{queryEditorBean.editingPredicate.name}" 
                   styleClass="input_text" readonly="#{queryEditorBean.editingPredicate == null}" forceId="true" />
               </t:div>
+              <t:div>
+                <t:outputLabel value="#{queryBundle.shortLabel}:" styleClass="output_label" for="predicate_short_label" />
+              </t:div>
+              <t:inputTextarea id="predicate_short_label" value="#{queryEditorBean.editingPredicate.shortLabel}" 
+                styleClass="input_text" readonly="#{queryEditorBean.editingPredicate == null}" forceId="true" />              
               <t:div>
                 <t:outputLabel value="#{queryBundle.label}:" styleClass="output_label" for="predicate_label" />
               </t:div>
@@ -334,17 +339,17 @@
           elem = document.getElementById("parameter_sql");
           var parameterEditor = CodeMirror.fromTextArea(elem, 
             {mode: 'text/x-sql', lineNumbers: false, matchBrackets: true, lineWrapping: true});
-          parameterEditor.setSize(null, 78);
+          parameterEditor.setSize(null, 200);
 
           elem = document.getElementById("predicate_sql");
           var predicateEditor = CodeMirror.fromTextArea(elem, 
             {mode: 'text/x-sql', lineNumbers: false, matchBrackets: true, lineWrapping: true});    
-          predicateEditor.setSize(null, 90);
+          predicateEditor.setSize(null, 200);
 
           elem = document.getElementById("output_sql");
           var outputEditor = CodeMirror.fromTextArea(elem, 
             {mode: 'text/x-sql', lineNumbers: false, matchBrackets: true, lineWrapping: true});
-          outputEditor.setSize(null, 90);
+          outputEditor.setSize(null, 200);
 
           var elems = document.getElementsByClassName("selected");
           for (var i = 0; i &lt; elems.length; i++)

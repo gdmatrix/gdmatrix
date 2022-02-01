@@ -282,7 +282,7 @@ select.input_value
 {
   display: inline-block;
   width: 100%;
-  height: 100px;
+  height: 300px;
   position:relative;
   overflow: hidden;
 }
@@ -525,13 +525,25 @@ input.instance_description
 }
 
 #predicate_label,
+#predicate_short_label,
 #output_label,
 #output_description
 {
   width:100%;
   box-sizing: border-box;
-  height: 50px;
   font-family: Arial;
+}
+
+#predicate_label,
+#output_label,
+#output_description
+{
+  height: 50px;
+}
+
+#predicate_short_label
+{
+  height: 32px;    
 }
 
 .tabbed_panel
@@ -579,9 +591,19 @@ input.instance_description
   height:200px;
 }
 
+.edit_panel.parameters
+{
+  height: 318px;
+}
+
+.edit_panel.predicates
+{
+  height: 368px;
+}
+
 .edit_panel.outputs
 {
-  height: 276px;
+  height: 386px;
 }
 
 .edit_panel .left

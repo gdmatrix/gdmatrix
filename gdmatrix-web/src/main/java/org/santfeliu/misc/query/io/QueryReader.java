@@ -209,6 +209,7 @@ public class QueryReader
         {
           Query.Predicate predicate = query.addPredicate();
           predicate.setLabel(basePredicate.getLabel());
+          predicate.setShortLabel(basePredicate.getShortLabel());
           predicate.setName(basePredicate.getName());
           predicate.setSql(basePredicate.getSql());
           predicate.setInherited(true);
@@ -320,6 +321,10 @@ public class QueryReader
     element = getChild(predicateElement, "label");
     if (element != null) predicate.setLabel(cleanText(element.getTextContent()));
 
+    element = getChild(predicateElement, "shortLabel");
+    if (element != null) 
+      predicate.setShortLabel(cleanText(element.getTextContent()));
+    
     element = getChild(predicateElement, "sql");
     if (element != null) predicate.setSql(element.getTextContent());    
   }

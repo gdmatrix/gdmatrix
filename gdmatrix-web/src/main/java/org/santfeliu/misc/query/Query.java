@@ -657,6 +657,18 @@ public class Query implements Serializable
   /*** class Query.Predicate ***/
   public class Predicate extends Fragment
   {
+    private String shortLabel;
+
+    public String getShortLabel() 
+    {
+      return shortLabel;
+    }
+
+    public void setShortLabel(String shortLabel) 
+    {
+      this.shortLabel = shortLabel;
+    }        
+    
     public List<Parameter> getParameters()
     {
       List<Parameter> parameters = new ArrayList();

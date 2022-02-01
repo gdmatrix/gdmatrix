@@ -267,6 +267,11 @@ public class QueryInstance implements Serializable
       return predicate.getLabel();
     }
 
+    public String getShortLabel()
+    {
+      return predicate.getShortLabel();
+    }
+
     public List<Query.Parameter> getParameters()
     {
       return predicate.getParameters();

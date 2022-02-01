@@ -169,10 +169,13 @@ public class QueryWriter
 
         if (basePredicate == null ||
           !StringUtils.equals(predicate.getLabel(), basePredicate.getLabel()) ||
+          !StringUtils.defaultString(predicate.getShortLabel()).equals(
+            StringUtils.defaultString(basePredicate.getShortLabel())) ||          
           !StringUtils.equals(predicate.getSql(), basePredicate.getSql()))
         {
           startTag("predicate", predicate.getName(), true);
           writeTagValue("label", predicate.getLabel());
+          writeTagValue("shortLabel", predicate.getShortLabel());
           writeTagValue("sql", predicate.getSql(), true);
           endTag("predicate", true);
         }
