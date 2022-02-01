@@ -153,8 +153,10 @@ public class IOUtils
 
   public static void writeToFile(InputStream is, File file) throws IOException
   {
-    OutputStream os = new FileOutputStream(file);
-    writeToStream(is, os);
+    try (OutputStream os = new FileOutputStream(file))
+    {
+      writeToStream(is, os);
+    }
   }
   
   public static File writeToFile(InputStream is) throws IOException

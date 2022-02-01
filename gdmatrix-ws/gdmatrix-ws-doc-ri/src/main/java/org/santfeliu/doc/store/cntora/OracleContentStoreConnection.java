@@ -98,9 +98,11 @@ public class OracleContentStoreConnection implements ContentStoreConnection
     boolean internal = (file != null);
     if (internal)
     {
-      InputStream is = new FileInputStream(file);
-      insertContentMetaData(conn, content);
-      insertInternalContent(conn, content, is);
+      try (InputStream is = new FileInputStream(file))
+      {
+        insertContentMetaData(conn, content);
+        insertInternalContent(conn, content, is);
+      }
     }
     else // external
     {

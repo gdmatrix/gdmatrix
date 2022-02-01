@@ -31,6 +31,7 @@
 package org.santfeliu.doc.client;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.developer.StreamingDataHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -390,14 +391,14 @@ public class DocumentManagerClient implements DocumentManagerPort
     if (data != null)
     {
       File tempFile = File.createTempFile(contentId, ".data");
-      FileOutputStream os = new FileOutputStream(tempFile);
-      try
+      if (data instanceof StreamingDataHandler)
+        ((StreamingDataHandler) data).moveTo(tempFile);      
+      else
       {
-        data.writeTo(os);
-      }
-      finally
-      {
-        os.close();
+        try (FileOutputStream os = new FileOutputStream(tempFile))
+        {
+          data.writeTo(os);
+        }
       }
       // rename file to actual filename
       File contentFile = getContentFile(content);

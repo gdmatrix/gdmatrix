@@ -31,7 +31,10 @@
 package org.santfeliu.doc.service;
 
 
+import com.sun.xml.ws.developer.StreamingDataHandler;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import java.text.SimpleDateFormat;
 
@@ -1638,7 +1641,7 @@ public class DocumentManager implements DocumentManagerPort
   private File getDataFile(Content content) throws Exception
   {
     File dataFile = null;
-    DataHandler dh = content.getData();
+    DataHandler dh = content.getData();   
     if (dh != null) // internal
     {
       DataSource ds = dh.getDataSource();
@@ -1646,23 +1649,44 @@ public class DocumentManager implements DocumentManagerPort
       {
         dataFile = ((javax.activation.FileDataSource)ds).getFile();
       }
+      else if (dh instanceof StreamingDataHandler)
+      {
+        StreamingDataHandler sdh = (StreamingDataHandler) dh;
+        
+        String contentType = content.getContentType() != null ? 
+          content.getContentType() : sdh.getContentType(); 
+        dataFile = createTempFile(contentType); 
+        
+        sdh.moveTo(dataFile);
+      }
       else if (ds != null)
       {
-        if (content.getContentType() != null)
+        String contentType = content.getContentType();  
+        dataFile = createTempFile(contentType);         
+        try (InputStream dis = ds.getInputStream())
         {
-          MimeTypeMap mimeTypeMap = DroidMimeTypeMap.getMimeTypeMap(droid);
-          String ext = 
-            mimeTypeMap.getExtension(content.getContentType());
-          dataFile = File.createTempFile("stream", "." + ext);
-          dataFile.deleteOnExit();
-          IOUtils.writeToFile(ds.getInputStream(), dataFile);
+          IOUtils.writeToFile(dis, dataFile);
         }
-        else
-          dataFile = IOUtils.writeToFile(ds.getInputStream());
       }
     }
 
     return dataFile;
+  }
+  
+  private File createTempFile(String contentType) throws IOException
+  {
+    String ext = "tmp";
+    
+    if (contentType != null)
+    {
+      MimeTypeMap mimeTypeMap = DroidMimeTypeMap.getMimeTypeMap(droid);
+      ext = mimeTypeMap.getExtension(contentType);
+    }
+    
+    File dataFile = File.createTempFile("stream", "." + ext);
+    dataFile.deleteOnExit();
+    
+    return dataFile;    
   }
 
   private void logOperation(String operation, String messageType, 
