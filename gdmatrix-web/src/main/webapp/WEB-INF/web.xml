@@ -72,7 +72,8 @@
       /WEB-INF/edu-config.xml,
       /WEB-INF/test-config.xml,
       /WEB-INF/mobile-config.xml,
-      /WEB-INF/feed-config.xml
+      /WEB-INF/feed-config.xml,
+      /WEB-INF/pf-config.xml   
     </param-value>
   </context-param>
   <context-param>

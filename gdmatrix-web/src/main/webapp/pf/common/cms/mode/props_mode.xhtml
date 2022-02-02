@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:sf="http://faces.santfeliu.org">
+
+
+        <h:panelGroup styleClass="nodeProperties" rendered="#{userSessionBean.editViewSelected}">
+
+          <h:panelGroup styleClass="subtoolbar">
+            <h:commandLink action="#{nodeEditBean.addProperty}" styleClass="imageButton"
+                           rendered="#{nodeEditBean.addPropertyEnabled}">
+              <t:graphicImage alt="#{cmsBundle.addProperty}" url="/common/cms/images/add.png" title="#{cmsBundle.addProperty}" />
+            </h:commandLink>
+            <h:commandLink action="#{nodeEditBean.saveProperties}" styleClass="imageButton"
+                           rendered="#{nodeEditBean.savePropertiesEnabled}">
+              <t:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
+            </h:commandLink>
+            <h:commandLink action="#{nodeEditBean.revertProperties}" styleClass="imageButton"
+                           rendered="#{nodeEditBean.addPropertyEnabled}">
+              <t:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
+            </h:commandLink>
+            <h:commandLink action="#{nodeEditBean.completeProperties}" styleClass="imageButton"
+                           rendered="#{nodeEditBean.completePropertiesEnabled}">
+              <t:graphicImage alt="#{cmsBundle.completeProperties}" url="/common/cms/images/complete.png" title="#{cmsBundle.completeProperties}" />
+            </h:commandLink>
+            <t:popup closePopupOnExitingElement="true"
+                     closePopupOnExitingPopup="true"
+                     displayAtDistanceX="-480"
+                     displayAtDistanceY="-60"
+                     styleClass="popup">
+              <h:commandLink action="#{nodeEditBean.switchPropertyHelp}"
+                             styleClass="#{nodeEditBean.helpButtonStyleClass}"
+                             rendered="#{nodeEditBean.completePropertiesEnabled}">
+                <t:graphicImage alt="Help" url="/common/cms/images/help.png"/>
+              </h:commandLink>
+              <f:facet name="popup">
+                <h:panelGrid columns="1" styleClass="helpCaptionTable">
+                  <h:outputText styleClass="inheritedAnnotatedPropertyName"
+                                value="#{cmsBundle.inheritedAnnotatedProperties} " />
+                  <h:outputText styleClass="directAnnotatedPropertyName"
+                                value="#{cmsBundle.ownAnnotatedProperties} " />
+                  <h:outputText styleClass="propertyName"
+                                value="#{cmsBundle.additionalProperties}" />
+                </h:panelGrid>
+              </f:facet>
+            </t:popup>
+            <h:panelGroup styleClass="nodeName">
+              <h:outputLabel value="#{cmsBundle.name}:" styleClass="nodeNameLabel" />
+              <h:inputText value="#{nodeEditBean.nodeName}" styleClass="nodeNameValue" />
+            </h:panelGroup>
+
+          </h:panelGroup>
+
+          <div id="propertiesLayer" style="overflow:auto;width:100%;">
+
+            <div styleClass="nodeActionTitleLayer">
+                <h:outputText value="#{cmsBundle.nodeActionUpper}" />
+            </div>
+
+            <div>
+
+                <h:panelGrid columns="2">
+                  <h:outputText value="beanName" styleClass="propertyName" />
+                  <sf:commandMenu action="#{nodeEditBean.changeBeanName}"
+                                      value="#{nodeEditBean.beanNameProperty.value[0]}"
+                                      style="margin-left:2px;">
+                    <f:selectItems value="#{nodeEditBean.beanNames}" />
+                  </sf:commandMenu>
+                  <h:outputText rendered="#{nodeEditBean.beanActionsRender}" value="beanAction" styleClass="propertyName" />
+                  <t:selectOneListbox rendered="#{nodeEditBean.beanActionsRender}" value="#{nodeEditBean.beanActionProperty.value[0]}"
+                                  style="margin-left:2px;">
+                    <f:selectItems value="#{nodeEditBean.beanActions}" />
+                  </t:selectOneListbox>
+                </h:panelGrid>
+
+            </div>
+
+            <div styleClass="userPropertiesTitleLayer">
+              <h:outputText styleClass="userPropertiesTitle"
+                value="#{cmsBundle.userPropertiesUpper}" />
+            </div>
+
+            <div>
+              <h:dataTable styleClass="propertyTable"
+                           columnClasses="col1,col2,col3,col4"
+                           value="#{nodeEditBean.userPropertyList}"
+                           var="property"
+                           rendered="#{!nodeEditBean.userPropertyListEmpty}">
+                <h:column>
+                  <h:inputText value="#{property.name}" styleClass="#{nodeEditBean.propertyNameStyleClass}" />
+                </h:column>
+                <h:column>
+                  <t:dataList value="#{nodeEditBean.propertyValues}" var="propertyValue">
+                    <t:inputText value="#{propertyValue.value}" styleClass="#{nodeEditBean.propertyValueStyleClass}" />
+                  </t:dataList>
+                  <h:outputText rendered="#{nodeEditBean.showPropertyHelp and nodeEditBean.propertyTipRender}"
+                                value="#{nodeEditBean.propertyTip}"
+                                styleClass="propertyTip"/>
+                </h:column>
+                <h:column>
+                  <h:commandLink action="#{nodeEditBean.addPropertyValue}" styleClass="imageButton"
+                                 rendered="#{nodeEditBean.addPropertyValueEnabled}">
+                    <t:graphicImage alt="" url="/common/cms/images/add_mini.png" title="#{cmsBundle.addPropertyValue}" />
+                  </h:commandLink>
+                </h:column>
+                <h:column>
+                  <h:commandLink action="#{nodeEditBean.removeProperty}" styleClass="imageButton"
+                                 rendered="#{nodeEditBean.removePropertyEnabled}">
+                    <t:graphicImage alt="" url="/common/cms/images/close_mini.png" title="#{cmsBundle.removeProperty}" />
+                  </h:commandLink>
+                </h:column>
+              </h:dataTable>
+
+              <h:outputLabel styleClass="noPropertiesLabel"
+                           rendered="#{nodeEditBean.userPropertyListEmpty}"
+                           value="#{cmsBundle.noProperties}" />
+            </div>
+
+          </div>
+
+        </h:panelGroup>
+
+  </ui:composition>
+

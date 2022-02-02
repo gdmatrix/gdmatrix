@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+  
+  <managed-bean>
+    <managed-bean-name>controllerBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.web.ControllerBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean> 
+  
+  <managed-bean>
+    <managed-bean-name>templateBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.web.TemplateBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>templateBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.web.TemplateBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>    
+    
+  <managed-bean>
+    <managed-bean-name>personBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+  
+  <managed-bean>
+    <managed-bean-name>personSearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonSearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+    
+  <managed-bean>
+    <managed-bean-name>personMainBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonMainBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>    
+  
+  <managed-bean>
+    <managed-bean-name>caseBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+  
+  <managed-bean>
+    <managed-bean-name>caseSearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseSearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+    
+  <managed-bean>
+    <managed-bean-name>caseMainBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseMainBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>          
+  
+  <managed-bean>
+    <managed-bean-name>casePersonsBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CasePersonsBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  
+  <converter>
+    <converter-id>selectItemConverter</converter-id>
+    <converter-class>org.matrix.pf.web.SelectItemConverter</converter-class>
+  </converter>   
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    
+    <!-- Kernel -->       
+    <navigation-case>
+      <from-outcome>pf_person_search</from-outcome>
+      <to-view-id>/pf/common/kernel/person_search.xhtml</to-view-id>
+    </navigation-case>   
+    
+    <navigation-case>
+      <from-outcome>pf_person_main</from-outcome>
+      <to-view-id>/pf/common/kernel/person_main.xhtml</to-view-id>
+    </navigation-case>         
+    
+    <navigation-case>
+      <from-outcome>pf_person_contacts</from-outcome>
+      <to-view-id>/pf/common/kernel/person_contacts.xhtml</to-view-id>
+    </navigation-case>    
+    
+    <navigation-case>
+      <from-outcome>pf_person_addresses</from-outcome>
+      <to-view-id>/pf/common/kernel/person_addresses.xhtml</to-view-id>
+    </navigation-case>     
+    
+    <!-- Cases -->
+    <navigation-case>
+      <from-outcome>pf_case_search</from-outcome>
+      <to-view-id>/pf/common/cases/case_search.xhtml</to-view-id>
+    </navigation-case> 
+    
+    <navigation-case>
+      <from-outcome>pf_case_main</from-outcome>
+      <to-view-id>/pf/common/cases/case_main.xhtml</to-view-id>
+    </navigation-case>    
+    
+    <navigation-case>
+      <from-outcome>pf_case_persons</from-outcome>
+      <to-view-id>/pf/common/cases/case_persons.xhtml</to-view-id>
+    </navigation-case>                            
+       
+    <!-- CMS -->    
+    <navigation-case>
+      <from-outcome>pf_node_edit</from-outcome>
+      <to-view-id>/pf/common/cms/node_edit.xhtml</to-view-id>
+    </navigation-case> 
+                        
+  </navigation-rule>
+
+</faces-config>
