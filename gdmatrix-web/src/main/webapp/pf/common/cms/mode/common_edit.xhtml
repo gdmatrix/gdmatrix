@@ -1,0 +1,90 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+  <div>Propietats comuns</div>
+  
+  <h:panelGrid columns="2">
+        <h:outputText value="Contingut:" styleClass="propertyName" />
+        <p:selectOneMenu id="beanNameSelect" 
+                         value="#{nodeEditBacking.objectClass}"
+                         style="margin-left:2px;"
+                         converter="classConverter">
+          <f:selectItem itemLabel=" " itemValue="" />                
+          <f:selectItems value="#{nodeEditBacking.objectClasses}" />
+          <p:ajax listener="#{nodeEditBacking.onObjectChange}" 
+                  update="beanActionSelect derivedTypeSelect formTabs" />                
+        </p:selectOneMenu>
+        
+        <h:outputText value="Tipus: " styleClass="propertyName" />
+        <p:selectOneMenu id="derivedTypeSelect" 
+                         value="#{nodeEditBacking.beanTypeId}"
+                         style="margin-left:2px;">
+          <f:selectItems value="#{nodeEditBacking.derivedTypes}" />
+        </p:selectOneMenu>        
+
+        <h:outputText value="AcciÃÂ³: " styleClass="propertyName" />
+        <p:selectOneMenu id="beanActionSelect"
+                         value="#{nodeEditBacking.beanAction}"
+                         style="margin-left:2px;">
+          <f:selectItems value="#{nodeEditBacking.beanActions}" />
+        </p:selectOneMenu>
+        
+    <h:outputText value="Etiqueta:" styleClass="propertyName" />
+    <h:inputText id="nodeLabelInpus"
+      value="#{nodeEditBacking.beanAction}"
+      style="margin-left:2px;">
+    </h:inputText>    
+    
+    <h:outputText value="Plantilla:" styleClass="propertyName" />
+    <p:selectOneMenu value="#{nodeEditBacking.selectedTemplate}"
+                     style="margin-left:2px;">
+      <f:selectItem itemLabel="Ajuntament" itemValue="Ajuntament" />
+      <f:selectItem itemLabel="Default" itemValue="Default" />
+      <f:selectItem itemLabel="Generic1" itemValue="Generic1" />
+      <f:selectItem itemLabel="Generic2" itemValue="Generic2" />
+      <f:selectItem itemLabel="Generic9" itemValue="Generic9" />
+      <f:selectItem itemLabel="Minimal" itemValue="Minimal" />      
+      <f:selectItem itemLabel="PrimeFaces" itemValue="PrimeFaces" />
+      <f:selectItem itemLabel="Widgetportal2" itemValue="Widgetportal2" />  
+      <p:ajax listener="#{nodeEditBacking.onObjectChange}" 
+              update="beanActionSelect derivedTypeSelect formTabs" />          
+    </p:selectOneMenu>  
+
+    <h:outputText value="Tema:" styleClass="propertyName" />
+    <p:selectOneMenu value="#{nodeEditBacking.beanAction}"
+                     style="margin-left:2px;">
+      <f:selectItem itemLabel="Default" itemValue="default" />
+      <f:selectItem itemLabel="Luna" itemValue="luna" />
+      <f:selectItem itemLabel="Modena" itemValue="modena" />
+      <f:selectItem itemLabel="PF" itemValue="pf" />
+      <f:selectItem itemLabel="Windows" itemValue="windows" />    
+    </p:selectOneMenu>    
+
+    <h:outputText value="Rol d'accÃÂ©s:" styleClass="propertyName" />
+    <h:inputText 
+      value="#{nodeEditBacking.beanAction}"
+      style="margin-left:2px;">
+    </h:inputText>    
+
+    <h:outputText value="Rol d'escriptura:" styleClass="propertyName" />
+    <h:inputText 
+      value="#{nodeEditBacking.beanAction}"
+      style="margin-left:2px;">
+    </h:inputText>    
+
+    <h:outputText value="Rol de modificaciÃÂ³:" styleClass="propertyName" />
+    <h:inputText 
+      value="#{nodeEditBacking.beanAction}"
+      style="margin-left:2px;">
+    </h:inputText>    
+
+    <h:outputText value="Node habilitat?" styleClass="propertyName" />
+    <p:selectBooleanCheckbox value="#{nodeEditBacking.beanAction}" 
+      itemLabel=""/>           
+  </h:panelGrid>  
+
+  </ui:composition>
+

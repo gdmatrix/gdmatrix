@@ -21,22 +21,12 @@
         <meta name="viewport" content="width=device-width" />
       </c:if>
       <title>
-        <c:choose>
-          <c:when test="${userSessionBean.editViewSelected}">
-            <sf:outputText value="#{webBundle.cmsEditor}" />
-          </c:when>
-          <c:when test="${userSessionBean.redirViewSelected}">
-            <sf:outputText value="#{webBundle.redirEditor}" />
-          </c:when>
-          <c:otherwise>
-            <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.pageTitlePrefix} 
-                #{userSessionBean.selectedMenuItem.properties.pageTitle == null ? 
-                userSessionBean.selectedMenuItem.properties.label : 
-                userSessionBean.selectedMenuItem.properties.pageTitle}"
-              translator="#{userSessionBean.translator}"
-              translationGroup="#{userSessionBean.translationGroup}" />            
-          </c:otherwise>
-        </c:choose>
+        <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.pageTitlePrefix} 
+        #{userSessionBean.selectedMenuItem.properties.pageTitle == null ? 
+        userSessionBean.selectedMenuItem.properties.label : 
+        userSessionBean.selectedMenuItem.properties.pageTitle}"
+          translator="#{userSessionBean.translator}"
+          translationGroup="#{userSessionBean.translationGroup}" />
       </title>
       <link rel="stylesheet" type="text/css"
         href="${pageContext.request.contextPath}/topframe/css/topframe.css?v=${applicationBean.resourcesVersion}" />
@@ -66,10 +56,12 @@
       <script type="text/javascript" src="${pageContext.request.contextPath}/topframe/js/common_script.js?v=${applicationBean.resourcesVersion}">
         /* general script */
       </script>
+      <link rel="stylesheet" href="https://unpkg.com/primeflex@3.0.1/primeflex.css" />      
     </h:head>
+    
     <h:body>
       <h:form id="mainform" enctype="multipart/form-data" onsubmit="return onSubmit();"
-        styleClass="#{userSessionBean.administrator ? 'adminview' : null}">
+              styleClass="#{userSessionBean.administrator ? 'adminview' : null}" >
         <header id="topframe_header" aria-label="#{webBundle.pageTitle}">
           <sf:heading level="1" styleClass="element-invisible">
             <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.pageTitle == null ?
@@ -78,22 +70,24 @@
               translator="#{userSessionBean.translator}"
               translationGroup="#{userSessionBean.translationGroup}" />
           </sf:heading>
-          <t:div style="display:none">
+          <div style="display:none">
             <t:inputHidden id="hiddenjumpcommand" value="#{userSessionBean.jumpCommand}" forceId="true" />
             <t:commandLink id="jumptoobjectaction" action="#{userSessionBean.jumpToObject}" value="Link to Object" forceId="true" />
             <t:inputHidden id="hiddenaction" value="#{userSessionBean.actionToExecute}" forceId="true" />
             <t:commandLink id="doactionexecution" action="#{userSessionBean.executeAction}" value="Execute action" forceId="true" />
-          </t:div> 
+          </div> 
         </header>
+        
+
         <ui:include src="/topframe/toolbar.xhtml" />
 
-        <t:div styleClass="bannerWrapper warnmsg" rendered="#{userSessionBean.selectedMenuItem.properties['webWarning.message'] != null}">
-          <t:div styleClass="webWarningMessage#{userSessionBean.selectedMenuItem.properties['webWarning.fixed'] == 'false' ? '' : ' bannerFixed'}">
+        <div styleClass="bannerWrapper warnmsg" rendered="#{userSessionBean.selectedMenuItem.properties['webWarning.message'] != null}">
+          <div styleClass="webWarningMessage#{userSessionBean.selectedMenuItem.properties['webWarning.fixed'] == 'false' ? '' : ' bannerFixed'}">
             <sf:outputText escape="false" value="#{userSessionBean.selectedMenuItem.properties['webWarning.message']}"
               translator="#{userSessionBean.translator}"
               translationGroup="#{userSessionBean.translationGroup}" />          
-          </t:div>          
-        </t:div>
+          </div>          
+        </div>
 
         <script>
           checkFixedBanners();        
@@ -105,12 +99,7 @@
         <div id="page" class="page">            
           <ui:insert name="page"></ui:insert>
         </div>
-
-        <t:div id="testFontSizeDiv" forceId="true" 
-               style="visibility: hidden; position: absolute">
-          <h:outputText value="A B C" />
-        </t:div>
-
+        
         <input type="hidden" name="_userid_" value="${userSessionBean.userId}" />
 
       </h:form>    

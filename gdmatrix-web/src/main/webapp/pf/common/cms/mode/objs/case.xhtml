@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+  <h:outputText value="Propietats del Cercador" styleClass="userPropertiesTitleLayer"/>
+  
+  <h:panelGrid columns="2">
+
+    <h:outputText value="TÃÂ­tol:" styleClass="propertyName" />
+    <h:inputText 
+      value="Cercador d'expedients"
+      style="margin-left:2px;">
+    </h:inputText> 
+    
+    <h:outputText value="Mostra filtre de persones?" styleClass="propertyName" />
+    <p:selectBooleanCheckbox value="#{nodeEditBacking.beanAction}" 
+      itemLabel=""/>   
+    
+    <h:outputText value="Mostra filtre de propietats dinÃÂ miques?" styleClass="propertyName" />
+    <p:selectBooleanCheckbox value="#{nodeEditBacking.beanAction}" 
+      itemLabel=""/>       
+
+  </h:panelGrid>  
+
+</ui:composition>
+

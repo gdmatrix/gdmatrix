@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="/templates/#{userSessionBean.template}/template.xhtml">
+  
+   <ui:define name="left_panel">
+    <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                  var="objectBundle" />  
+
+    <div class="search_panel_layout">
+      
+      <div class="search_filter_layout">
+        <p:accordionPanel id="search_panel" widgetVar="basic">
+          <p:tab title="Cerca ràpida">
+            <ui:insert name="smart_filter"></ui:insert>  
+          </p:tab>      
+          <p:tab title="Cerca avançada">
+            <ui:insert name="advanced_filter"></ui:insert>
+          </p:tab>   
+        </p:accordionPanel>
+      </div>
+      
+      <div class="basic_results_layout mt-2">
+        <ui:insert name="basic_results"></ui:insert>
+      </div>    
+    </div>
+  </ui:define>  
+  
+  <ui:define name="right_panel">
+    <p:panel header="Favorits">
+      <p:dataTable id="favorites_table" value="#{templateBacking.favorites}"
+                   var="fav" size="small" styleClass="favorites_table">
+        <p:column>
+          <p:commandLink action="#{controllerBacking.show(fav.getValue())}" ajax="false">
+            <h:outputText value="#{templateBacking.getDescription(fav)}" />
+          </p:commandLink>
+        </p:column>
+      </p:dataTable>
+    </p:panel> 
+    
+    <div class="mt-2">
+      <p:panel header="Recents">
+<!--        
+        <p:dataTable value="#{templateBacking.recentHistory}" 
+          var="rec" size="small" styleClass="recents_table">
+          <p:column>
+            <p:outputPanel>
+              <h:graphicImage rendered="#{rec.renderObjectTypeIcon}" alt=""
+                value="#{rec.objectTypeIconPath}" style="border:none;" />
+              <p:commandLink action="#{controllerBacking.show(rec.typeId, rec.objectId)}" ajax="false">
+                <sf:outputText value="#{rec.typeId} #{rec.objectId}"
+                  translator="#{userSessionBean.translator}"
+                  translationGroup="#{userSessionBean.translationGroup}" />
+                <h:outputText value="#{rec.description} :: #{templateBacking.getDescription(rec.typeId, rec.objectId)}" />
+              </p:commandLink>
+            </p:outputPanel>
+          </p:column>
+        </p:dataTable> 
+-->        
+
+
+        <p:tree value="#{templateBacking.recentHistoryTree}" var="node" styleClass="recents_tree" >
+          <p:treeNode type="group" >
+            <h:outputText value="#{node.typeId}" />
+          </p:treeNode>
+          <p:treeNode>
+            <p:outputPanel>
+              <p:commandLink action="#{controllerBacking.show(node.typeId, node.objectId)}" ajax="false">
+                <h:outputText value="#{templateBacking.getDescription(node.typeId, node.objectId)}" />
+              </p:commandLink>
+            </p:outputPanel>
+          </p:treeNode>
+        </p:tree> 
+
+      </p:panel>
+    </div>
+    
+  </ui:define>
+</ui:composition>
+

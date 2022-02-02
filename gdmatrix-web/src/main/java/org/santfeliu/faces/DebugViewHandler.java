@@ -59,6 +59,7 @@ public class DebugViewHandler extends ViewHandler
     _viewHandler = viewHandler;
   }
   
+  @Override
   public UIViewRoot createView(FacesContext context, String viewId)
   {    
     Map sessionMap = context.getExternalContext().getSessionMap();
@@ -73,6 +74,7 @@ public class DebugViewHandler extends ViewHandler
     return uiRoot;
   }
 
+  @Override
   public UIViewRoot restoreView(FacesContext context, String viewId)
   {
     Map sessionMap = context.getExternalContext().getSessionMap();
@@ -84,6 +86,7 @@ public class DebugViewHandler extends ViewHandler
     return uiRoot;
   }
   
+  @Override
   public void renderView(FacesContext context, UIViewRoot uiRoot)
     throws IOException
   {
@@ -97,26 +100,31 @@ public class DebugViewHandler extends ViewHandler
     if (debug) renderTree(uiRoot, "");
   }
 
+  @Override
   public Locale calculateLocale(FacesContext context)
   {
     return _viewHandler.calculateLocale(context);
   }
 
+  @Override
   public String calculateRenderKitId(FacesContext context)
   {
     return _viewHandler.calculateRenderKitId(context);
   }
 
+  @Override
   public String getActionURL(FacesContext context, String viewId)
   {
     return _viewHandler.getActionURL(context, viewId);
   }
 
+  @Override
   public String getResourceURL(FacesContext context, String viewId)
   {
     return _viewHandler.getResourceURL(context, viewId);
   }
 
+  @Override
   public void writeState(FacesContext context) throws IOException
   {
     _viewHandler.writeState(context);
@@ -144,5 +152,11 @@ public class DebugViewHandler extends ViewHandler
         renderTree(facet, indent + " ");
       }
     }
+  }
+
+  @Override
+  public String getWebsocketURL(FacesContext fc, String string)
+  {
+    return _viewHandler.getWebsocketURL(fc, string);
   }
 }
