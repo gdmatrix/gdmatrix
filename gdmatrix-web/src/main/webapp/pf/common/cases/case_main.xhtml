@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                template="case_template.xhtml">
+
+  <ui:param name="object_template" value="object.xhtml" />
+  <ui:param name="updateOnSearch" value="" />       
+  <ui:param name="ajax" value="false" />
+
+  <ui:define name="object_header">
+    <i class="pi pi-id-folder text-5xl mx-4 my-2"/>
+  </ui:define>  
+
+  <ui:define name="content">
+    <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                  var="caseBundle" />
+
+    <h:panelGroup>
+
+      <div class="formgrid grid pl-2">      
+        <div class="field col-12 md:col-4 lg:col-2">
+          <p:outputLabel for="id" value="Id." />
+          <p:inputText id="id" value="#{caseMainBacking.case.caseId}" 
+                       styleClass="inputfield w-full" readonly="true"/>
+        </div>
+
+        <div class="field col-12 md:col-4">
+          <p:outputLabel for="caseTypeId" value="#{caseBundle.case_type}" />    
+          <p:selectOneMenu id="caseTypeId" value="#{caseMainBacking.case.caseTypeId}"  
+                           styleClass="inputfield w-full" filter="true" var="t">
+            <f:selectItems value="#{caseMainBacking.typedHelper.allTypes}" 
+                           var="type" itemLabel="#{type.description}" 
+                           itemValue="#{type.typeId}" />
+            <p:column>
+              <h:outputText value="#{t}" />
+            </p:column>
+            <p:column>
+              <h:outputText value="#{typeBean.getDescription(t)}" />
+            </p:column>            
+          </p:selectOneMenu>
+        </div>        
+      </div>
+
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="title" value="#{caseBundle.case_title}" />
+        <p:inputText id="title" value="#{caseMainBacking.case.title}" 
+                     class="inputfield w-full"/>
+      </div>
+
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="description" value="#{caseBundle.case_description}" />        
+        <p:inputTextarea id="description" value="#{caseMainBacking.case.description}" 
+                         class="inputfield w-full" />
+      </div> 
+
+    </h:panelGroup>
+
+    <div class="tab_footer text-right">
+      <p:commandButton action="#{caseMainBacking.store}" ajax="true" update="form_panel growl "
+                       value="#{objectBundle.store}" 
+                       styleClass="ui-button-raised m-1" />
+      <p:commandButton action="#{caseMainBacking.remove}" ajax="true" update="form_panel growl " 
+                       value="#{objectBundle.delete}" immediate="true"
+                       onclick="return confirm('#{objectBundle.confirm_full_remove}');"
+                       styleClass="ui-button-raised m-1" />
+      <p:commandButton value="#{objectBundle.cancel}" styleClass="ui-button-raised m-1">
+        <p:ajax update="form_panel growl" resetValues="true"/>
+      </p:commandButton>      
+    </div> 
+  </ui:define>
+
+
+</ui:composition>

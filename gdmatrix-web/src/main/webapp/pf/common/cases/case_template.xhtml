@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/pf/common/obj/#{object_template}">
+  
+  <ui:define name="smart_filter">    
+    <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle" 
+                  var="caseBundle" />  
+    
+    <div class="field">
+      <p:outputLabel for="smart_value" value="Cerca expedient" />        
+      <p:inputText id="smart_value" value="#{caseSearchBacking.smartValue}" 
+                   class="inputfield w-full" />
+    </div>    
+
+    <div class="buttons text-right">
+      <p:commandButton value="#{objectBundle.clear}"
+                       ajax="#{ajax}"
+                       action="#{caseSearchBacking.clear}"
+                       styleClass="ui-button-raised m-1"
+                       update="search_panel"/>      
+      <p:commandButton id="default_button" value="#{objectBundle.search}"
+                       action="#{caseSearchBacking.smartSearch}"
+                       ajax="#{ajax}" process="mainform" update="#{updateOnSearch}"
+                       styleClass="ui-button-raised m-1" />
+    </div>        
+  </ui:define> 
+
+  <ui:define name="advanced_filter">  
+    <div class="field">
+      <p:outputLabel for="caseId" value="#{caseBundle.case_caseId}" />
+      <p:inputText id="caseId" value="#{caseSearchBacking.caseIdFilter}" 
+                   class="inputfield w-full"/>
+    </div>
+
+    <div class="field">
+      <p:outputLabel for="title" value="#{caseBundle.case_title}" />        
+      <p:inputText id="title" value="#{caseSearchBacking.filter.title}" 
+                   class="inputfield w-full" />
+    </div>      
+
+    <div class="field">
+      <p:outputLabel for="typeId" value="#{caseBundle.case_type}" />        
+      <p:inputText id="typeId" value="#{caseSearchBacking.filter.caseTypeId}" 
+                   class="inputfield w-full" />
+    </div>
+
+    <div class="buttons text-right">
+      <p:commandButton value="#{objectBundle.clear}"
+                       ajax="#{ajax}"
+                       action="#{caseSearchBacking.clear}"
+                       styleClass="ui-button-raised m-1"
+                       update="search_panel"/>      
+      <p:commandButton value="#{objectBundle.search}"
+                       action="#{caseSearchBacking.search}"
+                       ajax="#{ajax}" process="mainform" update="#{updateOnSearch}"
+                       styleClass="ui-button-raised m-1" />
+    </div>              
+  </ui:define>          
+
+
+</ui:composition>

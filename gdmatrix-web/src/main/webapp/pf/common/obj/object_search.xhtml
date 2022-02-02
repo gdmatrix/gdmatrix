@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="object_template.xhtml">
+
+
+  <ui:define name="central_panel"> 
+    <p:panel header="#{userSessionBean.selectedMenuItem.getProperty('label')}">   
+      <f:facet name="header">
+        <div class="flex align-items-center">
+          <div>
+            <p:outputPanel id="object_header" styleClass="flex align-items-center">
+              <div>
+                <p:outputLabel 
+                  value="#{userSessionBean.selectedMenuItem.getProperty('label')}" 
+                  styleClass="block text-2xl"/>
+              </div>
+            </p:outputPanel>                
+          </div>
+          <div class="flex flex-row-reverse w-3">                     
+          </div>
+        </div>
+      </f:facet> 
+      <p:outputPanel id="body_content" style="height: 75vh">
+        <ui:insert name="content" />
+      </p:outputPanel>
+    </p:panel>
+  </ui:define>
+</ui:composition>
+

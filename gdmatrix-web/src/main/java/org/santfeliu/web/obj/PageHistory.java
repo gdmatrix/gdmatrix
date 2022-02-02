@@ -42,8 +42,8 @@ import org.santfeliu.web.UserSessionBean;
  */
 public class PageHistory extends ArrayList implements Serializable
 {
-  private String currentMid;
-  private String currentObjectId;
+  protected String currentMid;
+  protected String currentObjectId;
 
   public void visit(String mid, String objectId)
   {
@@ -124,7 +124,7 @@ public class PageHistory extends ArrayList implements Serializable
     }
   }
 
-  private void removePage(MenuItemCursor cursor, String objectId)
+  protected void removePage(MenuItemCursor cursor, String objectId)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     int i = 0;
@@ -149,7 +149,7 @@ public class PageHistory extends ArrayList implements Serializable
     if (found) remove(i);
   }
 
-  private boolean isSamePage(MenuItemCursor cursor1, MenuItemCursor cursor2)
+  protected boolean isSamePage(MenuItemCursor cursor1, MenuItemCursor cursor2)
   {
     if (cursor1.equals(cursor2)) return true;
     
@@ -168,7 +168,7 @@ public class PageHistory extends ArrayList implements Serializable
     return false;
   }
 
-  private boolean isSameObject(String objectId1, String objectId2)
+  protected boolean isSameObject(String objectId1, String objectId2)
   {
     if (objectId1 == null) return objectId2 == null;
     return objectId1.equals(objectId2);
@@ -177,9 +177,9 @@ public class PageHistory extends ArrayList implements Serializable
   /* Inner class Entry */
   public class Entry implements Serializable
   {
-    private String mid;
-    private String objectId;
-    private String typeId;
+    protected String mid;
+    protected String objectId;
+    protected String typeId;
 
     public Entry(String mid, String objectId, String typeId)
     {

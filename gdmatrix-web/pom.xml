@@ -79,15 +79,30 @@
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>javax.faces-api</artifactId>
-      <version>2.2</version>
+      <version>2.3</version>
       <scope>provided</scope>
     </dependency>
-
+    
+    <!-- CDI Mandatory with javax.faces 2.3.x -->
+    <!--
+    <dependency>
+        <groupId>javax.enterprise</groupId>
+        <artifactId>cdi-api</artifactId>
+        <version>1.2</version>
+    </dependency>
+    -->
+    <!-- CDI Reference Implementation -->    
+    <dependency>
+        <groupId>org.jboss.weld.servlet</groupId>
+        <artifactId>weld-servlet-shaded</artifactId>
+        <version>3.1.6.Final</version>
+    </dependency>        
+    
     <!-- Faces implementation and related libraries -->
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.faces</artifactId>
-      <version>2.2.20</version>
+      <version>2.3.9</version>
     </dependency>
     <dependency>
       <groupId>org.primefaces</groupId>

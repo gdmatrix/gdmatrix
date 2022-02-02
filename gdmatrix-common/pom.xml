@@ -78,8 +78,8 @@
           <artifactId>stax-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>   
-    
+    </dependency> 
+
     <dependency>
       <groupId>javax.xml.ws</groupId>
       <artifactId>jaxws-api</artifactId>
