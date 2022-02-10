@@ -98,6 +98,7 @@
     <enumeration name="LogType">
       <value name="MULTIPLE"></value>
       <value name="CONTINUOUS"></value>
+      <value name="LAST"></value>      
     </enumeration>      
            
   </types>

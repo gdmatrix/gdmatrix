@@ -38,7 +38,11 @@ import org.matrix.job.ResponseType;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.job.service.JobFiring;
 
-import static org.santfeliu.job.store.cases.CasesJobStore.SUCCESS_INTERVENTION_TYPE;
+import static org.santfeliu.job.store.cases.CasesJobStore
+  .ERROR_INTERVENTION_TYPE;
+import static org.santfeliu.job.store.cases.CasesJobStore
+  .SUCCESS_INTERVENTION_TYPE;
+import org.santfeliu.util.TextUtils;
 
 /**
  *
@@ -105,4 +109,48 @@ public class JobFiringConverter
     
     return jobFiring;
   }  
+  
+  public static Intervention jobFiringToInt(JobFiring jobFiring)
+  {
+    Intervention intervention = null;
+    if (jobFiring != null)
+    {
+      intervention = new Intervention();
+      
+      if (jobFiring.getMessage() != null)
+        intervention.setComments(jobFiring.getMessage());
+      
+      ResponseType type = jobFiring.getResponseType();
+      if (type == ResponseType.ERROR)
+        intervention.setIntTypeId(ERROR_INTERVENTION_TYPE);
+      else
+        intervention.setIntTypeId(SUCCESS_INTERVENTION_TYPE);
+      
+      intervention.setCaseId(jobFiring.getJobId());
+      String startDateTime = jobFiring.getStartDateTime();
+      intervention.setStartDate(
+        TextUtils.formatInternalDate(startDateTime, "yyyyMMdd"));
+      intervention.setStartTime(
+        TextUtils.formatInternalDate(startDateTime, "HHmmss"));
+      String endDateTime = jobFiring.getEndDateTime();
+      intervention.setEndDate(
+        TextUtils.formatInternalDate(endDateTime, "yyyyMMdd"));
+      intervention.setEndTime(
+        TextUtils.formatInternalDate(endDateTime, "HHmmss"));     
+  
+      if (jobFiring.getLogId() != null)
+      {
+        DictionaryUtils.setProperty(intervention, "logDocId", 
+          jobFiring.getLogId());  
+      }
+      
+      if (jobFiring.getLogTitle() != null)
+      {
+        DictionaryUtils.setProperty(intervention, "logTitle", 
+          jobFiring.getLogTitle());
+      }
+    }
+    
+    return intervention;
+  }
 }

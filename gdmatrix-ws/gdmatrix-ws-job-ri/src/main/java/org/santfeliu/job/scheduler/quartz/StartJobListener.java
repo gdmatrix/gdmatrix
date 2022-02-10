@@ -127,7 +127,7 @@ public class StartJobListener implements TriggerListener
     LogType logType = (LogType) params.get("logType");
     String logFormat = (String) params.get("logFormat");
     File logFile = null;
-    if (LogType.CONTINUOUS.equals(logType))
+    if (LogType.CONTINUOUS.equals(logType) || LogType.LAST.equals(logType))
     {
       JobFiring jobFiring = jobStore.getLastJobFiring(jobId);
       if (jobFiring != null)
