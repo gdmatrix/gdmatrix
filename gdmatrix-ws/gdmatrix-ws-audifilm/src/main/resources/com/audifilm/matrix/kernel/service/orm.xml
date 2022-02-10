@@ -278,6 +278,8 @@
         DBPerson p, DBPersonDocument pd
       WHERE
         trim(p.personId) = trim(LEADING '0' FROM pd.personId)
+        AND trim(pd.docorigen) = 'PERSCODP'
+        AND trim(pd.aplcod) = 'NCL'
         AND NOT (pd.docId is NULL)
         AND (:personId is NULL OR p.personId = :personId)
         AND (:docId is NULL OR pd.docId = :docId)
