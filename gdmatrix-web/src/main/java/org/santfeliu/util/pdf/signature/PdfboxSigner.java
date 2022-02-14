@@ -222,13 +222,31 @@ public class PdfboxSigner extends PDFSigner
     CreateSignedTimeStamp creator = new CreateSignedTimeStamp(tsaUrl);
     try (PDDocument doc = PDDocument.load(is))
     {
-      creator.signDetached(doc, os);
       if (ltvEnabled)
-        addValidationInformation(doc, os);
+      {
+        //Write to file to avoid closing stream by creator
+        File f = File.createTempFile("tstamp", ".tmp");
+        try (FileOutputStream fos = new FileOutputStream(f))
+        {
+          creator.signDetached(doc, fos);
+          try (FileInputStream fis = new FileInputStream(f);
+            PDDocument auxDoc = PDDocument.load(fis))
+          {
+            addValidationInformation(auxDoc, os);
+          }          
+        }
+        finally
+        {
+          f.delete();
+        }
+      }
       else
+      {
+        creator.signDetached(doc, os);
         doc.saveIncremental(os);
-    }    
-  }  
+      }        
+    }
+  } 
   
   @Override
   protected void doPreserve(InputStream is, OutputStream os) 
