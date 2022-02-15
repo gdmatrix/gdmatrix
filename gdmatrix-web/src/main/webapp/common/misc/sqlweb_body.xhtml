@@ -157,7 +157,23 @@
         <script type="text/javascript" src="/plugins/pdfmake/table2pdf.js">
           0;
         </script>        
-        <script type="text/javascript">
+        <script type="text/javascript">          
+          function updateBodyHeight()
+          {
+            if ($(".sqlweb_fs").length > 0) return;
+
+            var windowHeight = $(window).height();
+            var webtoolHeight = $("div.webtool").length > 0 ? 
+              $("div.webtool").first().height() : 0;  
+            var headerPanelHeight = $("div.headerPanel").length > 0 ? 
+              $("div.headerPanel").first().height() : 0;
+  
+            var sqlwebBodyHeight = windowHeight - webtoolHeight - 
+              headerPanelHeight;    
+            if (sqlwebBodyHeight &lt; 0) sqlwebBodyHeight = 0;
+            $(".sqlweb_body").height(sqlwebBodyHeight);
+          }
+          
           function showHideEditor()
           {
             var editorVisible = $("#sqlweb_editor").is(":visible");
@@ -181,7 +197,8 @@
           {
             $("#progress_panel").hide();
             $("#result_panel").show();
-            PF('executeButton').enable();          
+            PF('executeButton').enable(); 
+            updateBodyHeight();
           }
 
           function executeStatement()
@@ -196,6 +213,8 @@
           {   
             setTimeout(executeStatement, 0);
           });
+          
+          $(window).resize(updateBodyHeight);
 
         </script>
       </f:verbatim>
