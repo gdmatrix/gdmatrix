@@ -328,6 +328,12 @@ public class DocumentPolicySearchBean extends BasicSearchBean
     return getControllerBean().showObject("Policy",
       (String)getValue("#{row.policy.policyId}"));
   }
+  
+  public String searchPolicy()
+  {
+    return getControllerBean().searchObject("Policy",
+      "#{documentPolicySearchBean.filter.policyId}");
+  }  
 
   public String changeState() throws Exception
   {

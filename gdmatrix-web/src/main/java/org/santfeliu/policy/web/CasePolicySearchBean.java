@@ -240,6 +240,12 @@ public class CasePolicySearchBean extends BasicSearchBean
     return getControllerBean().showObject(DictionaryConstants.POLICY_TYPE,
       (String)getValue("#{row.policy.policyId}"));
   }
+  
+  public String searchPolicy()
+  {
+    return getControllerBean().searchObject("Policy",
+      "#{casePolicySearchBean.filter.policyId}");
+  }    
 
   public String changeState() throws Exception
   {
