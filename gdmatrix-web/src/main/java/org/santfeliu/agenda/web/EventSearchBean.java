@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -416,8 +417,7 @@ public class EventSearchBean extends PageBean
     {
       if (roomSelectItems == null)
       {
-//        roomSelectItems = createRoomSelectItems(eventFilter.getRoomId());
-          roomSelectItems = createRoomSelectItems(roomId);
+        roomSelectItems = createRoomSelectItems(roomId);
       }
     }
     catch (Exception ex)
@@ -965,14 +965,6 @@ public class EventSearchBean extends PageBean
   {
     return showDetail((String)getValue("#{row.eventId}"));
   }
-
-//  @Override
-//  public String showDetail(String eventId)
-//  {
-//    EventDetailBean eventDetailBean = new EventDetailBean();
-//    setBean("eventDetailBean", eventDetailBean);
-//    return eventDetailBean.show(eventId);
-//  }
 
   public String selectEvent()
   {
@@ -1616,10 +1608,11 @@ public class EventSearchBean extends PageBean
     {
       for (SelectItem item : result)
       {
-        if (item.getLabel().equals(item.getValue())) 
+        String id = (String)item.getValue();
+        String label = (String)item.getLabel();
+        if (label.equals(id)) 
         { 
           //is not a room, is probably an address
-          String id = (String)item.getValue();
           if (!StringUtils.isBlank(id))
           {
             String description = id;
@@ -1637,12 +1630,17 @@ public class EventSearchBean extends PageBean
 
             if (description != null)
             {
+              if (description.equals("NOT_FOUND"))
+              {
+                ResourceBundle bundle = ResourceBundle.getBundle(
+                  "org.santfeliu.web.resources.MessageBundle", getLocale());
+                description = bundle.getString(description) + " (" + id + ")";
+              }
               item.setLabel(description);
               item.setDescription(description);
             }
           }
         }
-        item.setLabel(item.getLabel().replaceAll("\\((\\d)+;(\\d)+\\)", ""));
       }
     }
 
@@ -1714,7 +1712,8 @@ public class EventSearchBean extends PageBean
   private void setOrderBy(EventFilter filter)
   {
     filter.getOrderBy().clear();
-    List<String> orderby = getSelectedMenuItem().getMultiValuedProperty(ORDERBY);
+    List<String> orderby = 
+      getSelectedMenuItem().getMultiValuedProperty(ORDERBY);
     Iterator it = orderby.iterator();
     while (it.hasNext())
     {
@@ -1836,6 +1835,4 @@ public class EventSearchBean extends PageBean
     return eventFilter.getRoomId();
   }
 
-
-  
 }

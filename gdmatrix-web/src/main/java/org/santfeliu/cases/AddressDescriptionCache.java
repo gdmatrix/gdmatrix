@@ -99,7 +99,8 @@ public class AddressDescriptionCache
         {
           CaseAddressFilter filter = new CaseAddressFilter();
           filter.setAddressId(addressId);
-          List<CaseAddressView> views = getCasePort().findCaseAddressViews(filter);
+          List<CaseAddressView> views = 
+            getCasePort().findCaseAddressViews(filter);
           for (CaseAddressView view : views)
           {
             Case cas = view.getCaseObject();
@@ -115,6 +116,7 @@ public class AddressDescriptionCache
               }
             }
           }
+          
           if (description == null)
           {
             AddressFilter addressFilter = new AddressFilter();
@@ -125,8 +127,11 @@ public class AddressDescriptionCache
             if (addressViews != null && !addressViews.isEmpty())
               description = addressViews.get(0).getDescription();
           }
-          else
-            return addressId;
+          
+          if (StringUtils.isBlank(description))
+            description = "NOT_FOUND";
+
+          descriptions.put(addressId, description);
         }
         return description;
       }
