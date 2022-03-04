@@ -178,6 +178,26 @@
           AND EXISTS
             (SELECT ep2 FROM DBEventPlace ep2 WHERE ep2.eventId = :eventId
               AND ep2.domcod = ep.domcod AND ep2.salacod = ep.salacod)
+          AND NOT
+          (
+            EXISTS 
+            (
+              SELECT 1 
+              FROM DBEventProperty epr
+              WHERE epr.eventId = :eventId
+                AND epr.name = 'allowRoomOverlap'
+                AND epr.value = 'true'
+            )
+            AND
+            EXISTS 
+            (
+              SELECT 1 
+              FROM DBEventProperty epr
+              WHERE epr.eventId = e.eventId
+                AND epr.name = 'allowRoomOverlap'
+                AND epr.value = 'true'            
+            )          
+          )    
       </query>
     </named-query>
 
@@ -190,6 +210,26 @@
           AND ep2.domcod = :domcod AND ep2.salacod = :salacod
           AND CONCAT(e.datainici, e.horainici) &lt; CONCAT(e2.datafinal, e2.horafinal)
           AND CONCAT(e.datafinal, e.horafinal) &gt; CONCAT(e2.datainici, e2.horainici)
+          AND NOT
+          (
+            EXISTS 
+            (
+              SELECT 1 
+              FROM DBEventProperty epr
+              WHERE epr.eventId = e.eventId
+                AND epr.name = 'allowRoomOverlap'
+                AND epr.value = 'true'
+            )
+            AND
+            EXISTS 
+            (
+              SELECT 1 
+              FROM DBEventProperty epr
+              WHERE epr.eventId = e2.eventId
+                AND epr.name = 'allowRoomOverlap'
+                AND epr.value = 'true'
+            )
+          )
       </query>
     </named-query>
     
