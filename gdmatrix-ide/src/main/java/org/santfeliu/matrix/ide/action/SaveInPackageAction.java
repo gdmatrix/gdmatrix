@@ -33,21 +33,25 @@ package org.santfeliu.matrix.ide.action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.List;
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import org.santfeliu.matrix.ide.DocumentPanel;
+import org.santfeliu.matrix.ide.MainPanel;
 import org.santfeliu.matrix.ide.MatrixIDE;
+import org.santfeliu.matrix.ide.PackagePanel;
 
 
 /**
  *
  * @author realor
  */
-public class SaveAction extends BaseAction
+public class SaveInPackageAction extends BaseAction
 {
-  public SaveAction()
+  public SaveInPackageAction()
   {
     this.putValue(Action.SMALL_ICON,
-      loadIcon("/org/santfeliu/matrix/ide/resources/images/save.gif"));
+      loadIcon("/org/santfeliu/matrix/ide/resources/images/saveinpkg.gif"));
   }
 
   @Override
@@ -56,12 +60,37 @@ public class SaveAction extends BaseAction
     try
     {
       DocumentPanel panel = getIDE().getMainPanel().getActivePanel();
-      String name = panel.getDisplayName();
-      File dir = panel.getDirectory();
-      if (name != null && dir != null)
+
+      List<DocumentPanel> panels = getPackagePanels();
+
+      PackagePanel pkgPanel = (PackagePanel)panels.get(0);
+
+      File dir = pkgPanel.getUnpackDir();
+
+      JFileChooser chooser = new JFileChooser();
+      chooser.setDialogTitle("Save in package " + pkgPanel.getDisplayName());
+      chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+      chooser.setCurrentDirectory(dir);
+
+      int result = chooser.showSaveDialog(ide);
+      if (result == JFileChooser.APPROVE_OPTION)
       {
+        File file = chooser.getSelectedFile();
+
+        String filename = file.getName();
+        String name;
         String extension = panel.getDocumentType().getExtension();
-        File file = new File(dir, name + "." + extension);
+        int index = filename.indexOf(".");
+        if (index == -1) // no extension especified
+        {
+          name = filename;
+        }
+        else // extension especified, ignore it
+        {
+          name = filename.substring(0, index);
+        }
+        file = new File(file.getParentFile(), name + "." + extension);
+
         try (FileOutputStream fos = new FileOutputStream(file))
         {
           panel.setDisplayName(name);
@@ -71,6 +100,7 @@ public class SaveAction extends BaseAction
           panel.setModified(false);
           getIDE().getMainPanel().updateActions();
         }
+        pkgPanel.updateTable();
       }
     }
     catch (Exception ex)
@@ -83,7 +113,14 @@ public class SaveAction extends BaseAction
   public void updateEnabled()
   {
     DocumentPanel panel = getIDE().getMainPanel().getActivePanel();
-    setEnabled(panel != null && panel.getDisplayName() != null &&
-      panel.getDirectory() != null && panel.isModified());
+    setEnabled(panel != null && !(panel instanceof PackagePanel)
+      && !getPackagePanels().isEmpty());
+  }
+
+  public List<DocumentPanel> getPackagePanels()
+  {
+    MainPanel mainPanel = getIDE().getMainPanel();
+
+    return mainPanel.getPanels(panel -> panel instanceof PackagePanel);
   }
 }

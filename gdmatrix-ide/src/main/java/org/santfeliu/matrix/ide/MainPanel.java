@@ -85,6 +85,9 @@ import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel;
 import java.awt.Dimension;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.function.Predicate;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
@@ -557,6 +560,64 @@ public class MainPanel extends JPanel
     DocumentPanel documentPanel =
       (DocumentPanel)tabbedPane.getSelectedComponent();
     closePanel(documentPanel);
+  }
+
+  public List<DocumentPanel> getPanels()
+  {
+    return getPanels(panel -> true);
+  }
+
+  public List<DocumentPanel> getPanels(Predicate<DocumentPanel> predicate)
+  {
+    List<DocumentPanel> panels = new ArrayList<>();
+    int count = tabbedPane.getComponentCount();
+    for (int i = 0; i < count; i++)
+    {
+      Component component = tabbedPane.getComponent(i);
+      if (component instanceof DocumentPanel)
+      {
+        DocumentPanel panel = (DocumentPanel)component;
+        if (predicate.test(panel))
+        {
+          panels.add(panel);
+        }
+      }
+    }
+    return panels;
+  }
+
+  public void openDocument(File file) throws Exception
+  {
+    String filename = file.getName();
+    int index = filename.lastIndexOf(".");
+    if (index != -1)
+    {
+      String name = filename.substring(0, index);
+      String extension = filename.substring(index + 1);
+      DocumentType documentType =
+        ide.getMainPanel().getDocumentType(extension);
+      if (documentType != null)
+      {
+        DocumentPanel panel =
+          ide.getMainPanel().createPanel(documentType);
+        FileInputStream is = new FileInputStream(file);
+        try
+        {
+          panel.setDisplayName(name);
+          panel.setDirectory(file.getParentFile());
+          panel.open(is); // read from file
+          panel.setConnectionUrl(null);
+          ide.getMainPanel().addPanel(panel); // add panel to framework
+          panel.setModified(false);
+        }
+        finally
+        {
+          is.close();
+        }
+      }
+      else throw new Exception("Unsupported file type");
+    }
+    else throw new Exception("Unknow file type");
   }
 
   public void openDocumentFromDM(DocumentType documentType,

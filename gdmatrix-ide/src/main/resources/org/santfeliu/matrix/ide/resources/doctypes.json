@@ -3,7 +3,7 @@
     "displayName" : "Workflow",
     "extension" : "xml",
     "className" : "org.santfeliu.matrix.ide.WorkflowPanel",
-    "propertyName" : "workflow.xml", 
+    "propertyName" : "workflow.xml",
     "mimeType" : "text/xml",
     "icon" : "workflow.gif",
     "docTypeId" : "WORKFLOW"
@@ -12,7 +12,7 @@
     "displayName" : "HTML visual form",
     "extension" : "form",
     "className" : "org.santfeliu.matrix.ide.FormPanel",
-    "propertyName" : "workflow.form", 
+    "propertyName" : "workflow.form",
     "mimeType" : "text/html",
     "icon" : "form.gif",
     "docTypeId" : "FORM"
@@ -80,5 +80,14 @@
     "mimeType" : "text/plain",
     "icon" : "uploader.gif",
     "docTypeId" : "UploaderSetup"
+  },
+  {
+    "displayName" : "Package",
+    "extension" : "pkg",
+    "className" : "org.santfeliu.matrix.ide.PackagePanel",
+    "propertyName" : "package",
+    "mimeType" : "text/plain",
+    "icon" : "package.gif",
+    "docTypeId" : "Package"
   }
 ]

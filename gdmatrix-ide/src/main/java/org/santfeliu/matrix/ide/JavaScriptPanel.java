@@ -35,11 +35,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -49,18 +44,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.text.EditorKit;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.Undefined;
 import org.santfeliu.swing.FlatSplitPane;
 import org.santfeliu.swing.layout.WrapLayout;
 import org.santfeliu.swing.text.JavaScriptEditorKit;
 import org.santfeliu.swing.text.SymbolHighlighter;
-import org.santfeliu.util.script.ScriptableBase;
 
 /**
  *
@@ -76,7 +65,7 @@ public class JavaScriptPanel extends TextPanel
   private final JScrollPane scrollPane = new JScrollPane();
   private final JTextArea outputTextArea = new JTextArea();
   private final JSplitPane splitPane = new FlatSplitPane();
-  private Runner runner;
+  private JavaScriptRunner runner;
 
   public JavaScriptPanel()
   {
@@ -162,26 +151,18 @@ public class JavaScriptPanel extends TextPanel
     stopButton.setEnabled(false);
 
     outputButton.setText("Show output");
-    outputButton.addActionListener(new ActionListener()
+    outputButton.addActionListener((ActionEvent e) ->
     {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        outputButton_actionPerformed(e);
-      }
+      outputButton_actionPerformed(e);
     });
     toolBar.add(outputButton, null);
 
     clearButton.setText("Clear");
     clearButton.setIcon(new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/clear.gif")));
-    clearButton.addActionListener(new ActionListener()
+    clearButton.addActionListener((ActionEvent e) ->
     {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        clearButton_actionPerformed(e);
-      }
+      clearButton_actionPerformed(e);
     });
     toolBar.add(clearButton, null);
     clearButton.setEnabled(false);
@@ -215,7 +196,13 @@ public class JavaScriptPanel extends TextPanel
       {
         code = textPane.getText();
       }
-      runner = new Runner(code);
+      runner = new JavaScriptRunner(code, outputTextArea);
+      runner.setResultConsumer(result ->
+      {
+        runner = null;
+        runButton.setEnabled(true);
+        stopButton.setEnabled(false);
+      });
       runner.start();
     }
   }
@@ -264,121 +251,5 @@ public class JavaScriptPanel extends TextPanel
     clearButton.setEnabled(false);
     invalidate();
     revalidate();
-  }
-
-  public class Runner extends Thread
-  {
-    private final String code;
-    private Object result;
-    private long startMillis;
-    private long executionTime;
-
-    public Runner(String code)
-    {
-      this.code = code;
-    }
-
-    @Override
-    public void run()
-    {
-      Context cx = ContextFactory.getGlobal().enterContext();
-      try
-      {
-        HashMap variables = new HashMap();
-        variables.put("output",
-          new PrintWriter(new OutputWriter(outputTextArea)));
-        startMillis = System.currentTimeMillis();
-        Scriptable scope = new ScriptableBase(cx, variables);
-        result = cx.evaluateString(scope, code, "", 1, null);
-      }
-      catch (Exception ex)
-      {
-        result = ex.toString();
-      }
-      catch (ThreadDeath d)
-      {
-        result = "Execution interrupted.";
-      }
-      finally
-      {
-        executionTime = System.currentTimeMillis() - startMillis;
-
-        Context.exit();
-        runner = null;
-        SwingUtilities.invokeLater(new Runnable()
-        {
-          @Override
-          public void run()
-          {
-            if (!(result instanceof Undefined))
-            {
-              outputTextArea.append("\n" + result);
-            }
-            outputTextArea.append("\nExecution time: " + 
-              executionTime + " ms.");
-            runButton.setEnabled(true);
-            stopButton.setEnabled(false);
-          }
-        });
-      }
-    }
-
-    public void end()
-    {
-      try
-      {
-        Method method = this.getClass().getMethod("stop", new Class[0]);
-        if (method != null)
-        {
-          method.invoke(this, new Object[0]);
-        }
-      }
-      catch (Exception ex)
-      {
-        // ignore
-      }
-    }
-  }
-
-  class OutputWriter extends Writer
-  {
-    private JTextArea textArea;
-
-    OutputWriter(JTextArea textArea)
-    {
-      this.textArea = textArea;
-    }
-
-    @Override
-    public void write(char[] cbuf, int off, int len) throws IOException
-    {
-      final String text = new String(cbuf, off, len);
-      SwingUtilities.invokeLater(new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          textArea.append(text);
-        }
-      });
-      try
-      {
-        Thread.sleep(1);
-      }
-      catch (InterruptedException ex)
-      {
-        //ignore;
-      }
-    }
-
-    @Override
-    public void flush() throws IOException
-    {
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-    }
   }
 }

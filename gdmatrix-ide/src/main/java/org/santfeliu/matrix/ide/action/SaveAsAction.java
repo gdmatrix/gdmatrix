@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
 import org.santfeliu.matrix.ide.DocumentPanel;
+import org.santfeliu.matrix.ide.MatrixIDE;
 import org.santfeliu.matrix.ide.Options;
 
 /**
@@ -75,20 +76,20 @@ public class SaveAsAction extends BaseAction
           Options.setLastDirectory(dir);
 
           String filename = file.getName();
-          String name = null;
+          String name;
           String extension = panel.getDocumentType().getExtension();
           int index = filename.indexOf(".");
-          if (index == -1) // extension especified
+          if (index == -1) // no extension especified
           {
-            file = new File(dir, filename + "." + extension);
             name = filename;
           }
-          else // extension especified
+          else // extension especified, ignore it
           {
             name = filename.substring(0, index);
           }
-          FileOutputStream fos = new FileOutputStream(file);
-          try
+          file = new File(file.getParentFile(), name + "." + extension);
+
+          try (FileOutputStream fos = new FileOutputStream(file))
           {
             panel.setDisplayName(name);
             panel.save(fos);
@@ -97,16 +98,12 @@ public class SaveAsAction extends BaseAction
             panel.setModified(false);
             getIDE().getMainPanel().updateActions();
           }
-          finally
-          {
-            fos.close();
-          }
         }
       }
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      MatrixIDE.log(ex);
     }
   }
 
