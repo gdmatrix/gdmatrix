@@ -8,6 +8,12 @@
   </parent> 
   <artifactId>gdmatrix-ws-report-ri</artifactId>
   <packaging>jar</packaging>
+  <repositories>
+    <repository>
+      <id>jasperreport-artifactory</id>
+      <url>https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts</url>
+    </repository>
+  </repositories>  
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
