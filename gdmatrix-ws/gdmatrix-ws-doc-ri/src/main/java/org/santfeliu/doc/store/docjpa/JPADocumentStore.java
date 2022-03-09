@@ -31,6 +31,7 @@
 package org.santfeliu.doc.store.docjpa;
 
 import java.util.Properties;
+import javax.persistence.EntityManager;
 
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.doc.store.DocumentStore;
@@ -48,7 +49,8 @@ public class JPADocumentStore implements DocumentStore
   public void init(Properties properties)
   {
     //Triggers table autocreation.
-    JPAUtils.createEntityManager("doc_ri", "default");    
+    EntityManager em = JPAUtils.createEntityManager("doc_ri", "default");    
+    JPAUtils.enableDDLGeneration(em);  
   }
 
   @Override
