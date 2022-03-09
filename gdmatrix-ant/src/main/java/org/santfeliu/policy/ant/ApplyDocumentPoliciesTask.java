@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.policy.ant;
@@ -45,6 +45,11 @@ import org.matrix.policy.DocumentPolicyView;
 import org.matrix.policy.Policy;
 import org.matrix.policy.PolicyManagerPort;
 import org.matrix.policy.PolicyState;
+import static org.matrix.policy.PolicyState.APPROVED;
+import static org.matrix.policy.PolicyState.EXECUTED;
+import static org.matrix.policy.PolicyState.EXECUTING;
+import static org.matrix.policy.PolicyState.FAILED;
+import static org.matrix.policy.PolicyState.PENDENT;
 
 /**
  *
@@ -61,7 +66,7 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
   private String docPol2Var;
   private String keepDocPolVar;
 
-  private ArrayList<Task> tasks = new ArrayList();
+  private final ArrayList<Task> tasks = new ArrayList();
 
   public String getDocVar()
   {
@@ -135,7 +140,14 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
 
       log("analize current DocumentPolicies...", Project.MSG_INFO);
       // analize current documentPolcies
-      analizeCurrentDocumentPolicies(port, document, _case, toKeep, toRemove);
+
+      DocumentPolicyFilter filter = new DocumentPolicyFilter();
+      filter.setDocId(document.getDocId());
+      List<DocumentPolicyView> docPolicyViews =
+        port.findDocumentPolicyViews(filter);
+
+      analizeCurrentDocumentPolicies(docPolicyViews, document, _case,
+        toKeep, toRemove);
 
       // analize new documentPolicies
       log("analize new DocumentPolicies...", Project.MSG_INFO);
@@ -143,7 +155,7 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
         findPoliciesForClassIds(classIds);
       for (WeightedPolicy policy : policies.values())
       {
-        addNewDocumentPolicy(document, _case, policy, toKeep);
+        addNewDocumentPolicy(document, _case, policy, toKeep, docPolicyViews);
       }
       // cartesian product
       for (int i = 0; i < toKeep.size(); i++)
@@ -162,7 +174,7 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
               {
                 WeightedPolicy p1 = policies.get(docPol1.getPolicyId());
                 if (p1 == null) p1 = getPolicy(docPol1.getPolicyId());
-                                
+
                 setVariable(pol1Var, p1);
 
               }
@@ -177,13 +189,13 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
               {
                 WeightedPolicy p2 = policies.get(docPol2.getPolicyId());
                 if (p2 == null) p2 = getPolicy(docPol2.getPolicyId());
-                
+
                 setVariable(pol2Var, p2);
 
               }
             }
-            
-            for (Task task : tasks) task.perform();  
+
+            for (Task task : tasks) task.perform();
 
           }
         }
@@ -194,65 +206,73 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
 
       // remove docPolicies
       removeDocumentPolicies(port, toRemove);
-      
+
       setVariable(keepDocPolVar, toKeep);
     }
   }
 
+  @Override
   public void addTask(Task task)
   {
     tasks.add(task);
   }
 
-  private void analizeCurrentDocumentPolicies(PolicyManagerPort port,
+  private void analizeCurrentDocumentPolicies(
+    List<DocumentPolicyView> docDocumentViews,
     Document document, Case _case, List<DocumentPolicy> toKeep,
     List<DocumentPolicy> toRemove)
   {
-    DocumentPolicyFilter filter = new DocumentPolicyFilter();
-    filter.setDocId(document.getDocId());
-    List<DocumentPolicyView> views = port.findDocumentPolicyViews(filter);
-    for (DocumentPolicyView view : views)
+    for (DocumentPolicyView view : docDocumentViews)
     {
       DocumentPolicy docPolicy = view.getDocPolicy();
       Policy policy = view.getPolicy();
-      if (evalActivationCondition(_case, document, policy))
+      PolicyState state = docPolicy.getState();
+      if (state.equals(EXECUTED) ||
+          state.equals(EXECUTING) ||
+          state.equals(FAILED))
       {
-        if (docPolicy.getState().equals(PolicyState.EXECUTED))
+        toKeep.add(docPolicy);
+      }
+      else
+      {
+        // must evaluate again
+        if (evalActivationCondition(_case, document, policy, docDocumentViews))
         {
-          toKeep.add(docPolicy);
-        }
-        else
-        {
-          String activationDate = evalActivationDate(_case, document, policy);
+          String activationDate = evalActivationDate(_case, document,
+            policy, docDocumentViews);
           if (activationDate == null)
           {
             toRemove.add(docPolicy);
           }
           else
           {
-            docPolicy.setActivationDate(activationDate);
-            if (docPolicy.getState().equals(PolicyState.PENDENT) && 
-                policy.isAutomaticExecution())
-            {
-              docPolicy.setState(PolicyState.APPROVED);
-            }
             toKeep.add(docPolicy);
+
+            docPolicy.setActivationDate(activationDate);
+            if (state.equals(PENDENT) && policy.isAutomaticExecution())
+            {
+              docPolicy.setState(APPROVED);
+            }
           }
         }
-      }
-      else
-      {
-        toRemove.add(docPolicy);
+        else
+        {
+          toRemove.add(docPolicy);
+        }
       }
     }
   }
 
   private void addNewDocumentPolicy(Document document, Case _case,
-    Policy policy, List<DocumentPolicy> toKeep)
+    Policy policy, List<DocumentPolicy> toKeep,
+    List<DocumentPolicyView> docPolicyViews)
   {
-    if (evalActivationCondition(null, document, policy))
+    log("Trying to apply policy " + policy.getPolicyId(), Project.MSG_INFO);
+
+    if (evalActivationCondition(null, document, policy, docPolicyViews))
     {
-      String activationDate = evalActivationDate(_case, document, policy);
+      String activationDate = evalActivationDate(_case, document,
+        policy, docPolicyViews);
       if (activationDate != null)
       {
         if (!existsDocumentPolicy(toKeep, policy.getPolicyId(), activationDate))
@@ -263,11 +283,11 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
           docPolicy.setPolicyId(policy.getPolicyId());
           if (policy.isAutomaticExecution())
           {
-            docPolicy.setState(PolicyState.APPROVED);
+            docPolicy.setState(APPROVED);
           }
           else
           {
-            docPolicy.setState(PolicyState.PENDENT);
+            docPolicy.setState(PENDENT);
           }
           toKeep.add(docPolicy);
         }
@@ -289,9 +309,9 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
     return found;
   }
 
-  private void storeDocumentPolicies(PolicyManagerPort port, 
+  private void storeDocumentPolicies(PolicyManagerPort port,
     ArrayList<DocumentPolicy> toStore)
-  {    
+  {
     log("toStore:", Project.MSG_INFO);
     for (DocumentPolicy dp : toStore)
     {
@@ -300,7 +320,7 @@ public class ApplyDocumentPoliciesTask extends ApplyPoliciesTask
     }
   }
 
-  private void removeDocumentPolicies(PolicyManagerPort port, 
+  private void removeDocumentPolicies(PolicyManagerPort port,
     ArrayList<DocumentPolicy> toRemove)
   {
     log("toRemove:", Project.MSG_INFO);

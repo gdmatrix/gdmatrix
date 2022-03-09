@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.policy.ant;
@@ -44,6 +44,11 @@ import org.matrix.policy.CasePolicyView;
 import org.matrix.policy.Policy;
 import org.matrix.policy.PolicyManagerPort;
 import org.matrix.policy.PolicyState;
+import static org.matrix.policy.PolicyState.APPROVED;
+import static org.matrix.policy.PolicyState.EXECUTED;
+import static org.matrix.policy.PolicyState.EXECUTING;
+import static org.matrix.policy.PolicyState.FAILED;
+import static org.matrix.policy.PolicyState.PENDENT;
 
 /**
  *
@@ -58,7 +63,7 @@ public class ApplyCasePoliciesTask extends ApplyPoliciesTask
   private String casePol1Var;
   private String casePol2Var;
 
-  private ArrayList<Task> tasks = new ArrayList();
+  private final ArrayList<Task> tasks = new ArrayList();
 
   public String getCaseVar()
   {
@@ -109,7 +114,12 @@ public class ApplyCasePoliciesTask extends ApplyPoliciesTask
 
       log("analize current CasePolicies...", Project.MSG_INFO);
       // analize current documentPolcies
-      analizeCurrentCasePolicies(port, _case, toKeep, toRemove);
+
+      CasePolicyFilter filter = new CasePolicyFilter();
+      filter.setCaseId(_case.getCaseId());
+      List<CasePolicyView> casePolicyViews = port.findCasePolicyViews(filter);
+
+      analizeCurrentCasePolicies(casePolicyViews, _case, toKeep, toRemove);
 
       // analize new documentPolicies
       log("analize new CasePolicies...", Project.MSG_INFO);
@@ -117,7 +127,7 @@ public class ApplyCasePoliciesTask extends ApplyPoliciesTask
         findPoliciesForClassIds(classIds);
       for (WeightedPolicy policy : policies.values())
       {
-        addNewCasePolicy(_case, policy, toKeep);
+        addNewCasePolicy(_case, policy, toKeep, casePolicyViews);
       }
       // cartesian product
       for (int i = 0; i < toKeep.size(); i++)
@@ -129,14 +139,14 @@ public class ApplyCasePoliciesTask extends ApplyPoliciesTask
             if (casePol1Var != null)
             {
               CasePolicy casePol1 = toKeep.get(i);
-              
+
               setVariable(casePol1Var, casePol1);
 
               if (pol1Var != null)
               {
                 WeightedPolicy p1 = policies.get(casePol1.getPolicyId());
                 if (p1 == null) p1 = getPolicy(casePol1.getPolicyId());
-                
+
                 setVariable(pol1Var, p1);
 
               }
@@ -155,9 +165,9 @@ public class ApplyCasePoliciesTask extends ApplyPoliciesTask
                 setVariable(pol2Var, p2);
               }
             }
-            
+
             for (Task task : tasks) task.perform();
-            
+
           }
         }
       }
@@ -170,59 +180,67 @@ public class ApplyCasePoliciesTask extends ApplyPoliciesTask
     }
   }
 
+  @Override
   public void addTask(Task task)
   {
     tasks.add(task);
   }
 
-  private void analizeCurrentCasePolicies(PolicyManagerPort port,
+  private void analizeCurrentCasePolicies(List<CasePolicyView> casePolicyViews,
     Case _case, List<CasePolicy> toKeep, List<CasePolicy> toRemove)
   {
-    CasePolicyFilter filter = new CasePolicyFilter();
-    filter.setCaseId(_case.getCaseId());
-    List<CasePolicyView> views = port.findCasePolicyViews(filter);
-    for (CasePolicyView view : views)
+    for (CasePolicyView view : casePolicyViews)
     {
       CasePolicy casePolicy = view.getCasePolicy();
       Policy policy = view.getPolicy();
-      if (evalActivationCondition(_case, null, policy))
+
+      PolicyState state = casePolicy.getState();
+      if (state.equals(EXECUTED) ||
+          state.equals(EXECUTING) ||
+          state.equals(FAILED))
       {
-        if (casePolicy.getState().equals(PolicyState.EXECUTED))
+        toKeep.add(casePolicy);
+      }
+      else
+      {
+        // must evaluate again
+        if (evalActivationCondition(_case, null, policy, casePolicyViews))
         {
-          toKeep.add(casePolicy);
-        }
-        else
-        {
-          String activationDate = evalActivationDate(_case, null, policy);
+          String activationDate = evalActivationDate(_case, null,
+            policy, casePolicyViews);
           if (activationDate == null)
           {
             toRemove.add(casePolicy);
           }
           else
           {
+            toKeep.add(casePolicy);
+
             casePolicy.setActivationDate(activationDate);
-            if (casePolicy.getState().equals(PolicyState.PENDENT) &&
+            if (casePolicy.getState().equals(PENDENT) &&
                 policy.isAutomaticExecution())
             {
-              casePolicy.setState(PolicyState.APPROVED);
+              casePolicy.setState(APPROVED);
             }
-            toKeep.add(casePolicy);
           }
         }
-      }
-      else
-      {
-        toRemove.add(casePolicy);
+        else
+        {
+          toRemove.add(casePolicy);
+        }
       }
     }
   }
 
   private void addNewCasePolicy(Case _case, Policy policy,
-    List<CasePolicy> toKeep)
+    List<CasePolicy> toKeep, List<CasePolicyView> casePolicyViews)
   {
-    if (evalActivationCondition(_case, null, policy))
+    log("Trying to apply policy " + policy.getPolicyId(), Project.MSG_INFO);
+
+    if (evalActivationCondition(_case, null, policy, casePolicyViews))
     {
-      String activationDate = evalActivationDate(_case, null, policy);
+      String activationDate = evalActivationDate(_case, null,
+        policy, casePolicyViews);
       if (activationDate != null)
       {
         if (!existsCasePolicy(toKeep, policy.getPolicyId(), activationDate))
@@ -233,11 +251,11 @@ public class ApplyCasePoliciesTask extends ApplyPoliciesTask
           casePolicy.setPolicyId(policy.getPolicyId());
           if (policy.isAutomaticExecution())
           {
-            casePolicy.setState(PolicyState.APPROVED);
+            casePolicy.setState(APPROVED);
           }
           else
           {
-            casePolicy.setState(PolicyState.PENDENT);
+            casePolicy.setState(PENDENT);
           }
           toKeep.add(casePolicy);
         }
