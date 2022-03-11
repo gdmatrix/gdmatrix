@@ -79,7 +79,7 @@ function registerClientId()
     window.localStorage.setItem("clientId", clientId);
     status = "OK!";
     document.getElementById("status").style = "color:green;font-weight:bold"; 
-    document.getElementById("message").innerHTML = "Aquesta configuraci� �s nom�s v�lida per <b>aquest navegador</b>, per configurar el client en un altre diferent fes servir la seg�ent URL al navegador que desitgis:";
+    document.getElementById("message").innerHTML = "Aquesta configuració és només vàlida per <b>aquest navegador</b>, per configurar el client en un altre diferent fes servir la següent URL al navegador que desitgis:";
   }
   else
   {
@@ -88,7 +88,7 @@ function registerClientId()
     document.getElementById("status").style = "color:red";    
     
     if (clientId != null)
-      document.getElementById("message").innerHTML = "Aquest navegador no est� suportat i no s'ha pogut configurar el client. Fes servir la URL seg�ent per configurar-lo en un altre navegador:";    
+      document.getElementById("message").innerHTML = "Aquest navegador no està suportat i no s'ha pogut configurar el client. Fes servir la URL següent per configurar-lo en un altre navegador:";    
     else
       document.getElementById("message").innerHTML = "Identificador de client no definit";          
   }

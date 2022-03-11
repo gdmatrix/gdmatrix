@@ -44,7 +44,7 @@
           <h:selectBooleanCheckbox value="#{addressFormBean.bis}" />
         <h:outputText value="Bis" />
         <h:selectBooleanCheckbox value="#{addressFormBean.noNumber}" />
-        <h:outputText value="Sense n�mero" />
+        <h:outputText value="Sense número" />
         <h:message for="number"
           warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
       </t:div>
@@ -80,7 +80,7 @@
       <t:div>
         <h:outputText value="Escala:" style="display:inline-block;width:20%" />
         <h:inputText  id="stair" value="#{addressFormBean.stair}" maxlength="4" style="width:6%" />
-        <h:outputText value="Omplir nom�s si correspon"
+        <h:outputText value="Omplir només si correspon"
           style="font-style:italic;margin-left:4px;color:gray" />
         <h:message for="stair"
           warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
@@ -89,7 +89,7 @@
       <t:div>
         <h:outputText value="Pis:" style="display:inline-block;width:20%" />
         <h:inputText id="floor" value="#{addressFormBean.floor}" maxlength="4" style="width:6%" />
-        <h:outputText value="Omplir nom�s si correspon"
+        <h:outputText value="Omplir només si correspon"
           style="font-style:italic;margin-left:4px;color:gray" />
         <h:message for="floor"
           warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
@@ -98,7 +98,7 @@
       <t:div>
         <h:outputText value="Porta:" style="display:inline-block;width:20%" />
         <h:inputText id="door" value="#{addressFormBean.door}" maxlength="4" style="width:6%" />
-        <h:outputText value="Omplir nom�s si correspon"
+        <h:outputText value="Omplir només si correspon"
           style="font-style:italic;margin-left:4px;color:gray" />
         <h:message for="door"
           warnClass="warnMessage" errorClass="errorMessage" fatalClass="fatalMessage" />
@@ -123,12 +123,12 @@
 
       <t:div>
         <t:div rendered="#{addressFormBean.forcedCity == null}">
-          <h:outputText value="Poblaci�*:" style="display:inline-block;width:20%"/>
+          <h:outputText value="Població*:" style="display:inline-block;width:20%"/>
           <h:inputText id="city" value="#{addressFormBean.city}" required="true"
             style="display:inline-block;width:30%;text-transform:uppercase"/>
         </t:div>
         <t:div  rendered="#{addressFormBean.forcedCity != null}">
-          <h:outputText value="Poblaci�:" style="display:inline-block;width:20%"/>
+          <h:outputText value="Població:" style="display:inline-block;width:20%"/>
           <h:outputText value="#{addressFormBean.forcedCity}"
             style="display:inline-block;width:30%;text-transform:uppercase"/>
         </t:div>

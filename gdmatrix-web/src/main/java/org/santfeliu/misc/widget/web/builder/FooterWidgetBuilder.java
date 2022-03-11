@@ -47,7 +47,7 @@ import org.santfeliu.faces.component.HtmlOutputText;
 public class FooterWidgetBuilder extends WidgetBuilder
 {
   private static final String FOOTER_MORE_INFO_ARIA_LABEL = 
-    "Ampliaci� d'informaci� del widget";
+    "Ampliació d'informació del widget";
   private static final String FOOTER_RSS_ARIA_LABEL = 
     "Accedir al canal RSS del widget";
   
