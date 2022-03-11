@@ -85,7 +85,7 @@
     "displayName" : "Package",
     "extension" : "pkg",
     "className" : "org.santfeliu.matrix.ide.PackagePanel",
-    "propertyName" : "package",
+    "propertyName" : "pkg",
     "mimeType" : "text/plain",
     "icon" : "package.gif",
     "docTypeId" : "PACKAGE"
