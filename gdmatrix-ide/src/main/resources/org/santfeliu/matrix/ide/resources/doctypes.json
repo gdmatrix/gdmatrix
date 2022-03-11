@@ -88,6 +88,6 @@
     "propertyName" : "package",
     "mimeType" : "text/plain",
     "icon" : "package.gif",
-    "docTypeId" : "Package"
+    "docTypeId" : "PACKAGE"
   }
 ]
