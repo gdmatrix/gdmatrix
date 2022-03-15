@@ -32,14 +32,11 @@ package org.santfeliu.job.scheduler.quartz;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.logging.Level;
-import org.apache.tools.ant.Project;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.santfeliu.ant.AntLauncher;
-import org.santfeliu.ant.Message;
 import org.santfeliu.util.MatrixConfig;
 
 /**
@@ -62,14 +59,7 @@ public class AntJob extends AbstractJob
       String[] filenames = filename.split(",");
       
       if (wsURL == null)
-      {
         wsURL = MatrixConfig.getProperty("wsdirectory.url");
-        if (wsURL == null)
-        {
-          String contextPath = MatrixConfig.getProperty("contextPath");
-          wsURL = "http://localhost" + contextPath + "/wsdirectory";
-        }
-      }  
       
       URL wsDirectory = new URL(wsURL);
       File antDir = null;

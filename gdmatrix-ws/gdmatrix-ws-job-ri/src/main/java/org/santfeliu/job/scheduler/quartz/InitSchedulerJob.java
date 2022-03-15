@@ -78,9 +78,8 @@ public class InitSchedulerJob implements org.quartz.Job
   {
     try
     {
-      String contextPath = MatrixConfig.getProperty("contextPath");
       URL wsDirectoryURL = 
-        new URL("http://localhost" + contextPath + "/wsdirectory");      
+        new URL(MatrixConfig.getProperty("wsdirectory.url"));      
       WSDirectory wsDirectory = WSDirectory.getInstance(wsDirectoryURL);
       WSEndpoint endpoint =
         wsDirectory.getEndpoint(JobManagerService.class);

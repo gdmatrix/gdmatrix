@@ -444,10 +444,7 @@ public class CasesJobStore implements JobStore
       MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
 
     if (wsDirectoryURL == null)
-    {
-      String contextPath = MatrixConfig.getProperty("contextPath");
-      wsDirectoryURL = "http://localhost" + contextPath + "/wsdirectory";
-    }    
+      wsDirectoryURL = MatrixConfig.getProperty("wsdirectory.url");   
 
     client = new DocumentManagerClient(new URL(wsDirectoryURL), 
       MatrixConfig.getProperty("adminCredentials.userId"), 
@@ -456,30 +453,24 @@ public class CasesJobStore implements JobStore
     return client;    
   }
   
-  private DictionaryManagerPort getDicManagerPort()
+  private DictionaryManagerPort getDicManagerPort() 
+    throws MalformedURLException
   {
     DictionaryManagerPort port = null;    
-    try
-    {
-      String wsDirectoryURL =
-        MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
-      
-      if (wsDirectoryURL == null)
-      {
-        String contextPath = MatrixConfig.getProperty("contextPath");
-        wsDirectoryURL = "http://localhost" + contextPath + "/wsdirectory";
-      }
-      
-      WSDirectory wsDirectory =
-        WSDirectory.getInstance(new URL(wsDirectoryURL));
-      WSEndpoint endpoint = wsDirectory.getEndpoint(DictionaryManagerService.class);
-      port = endpoint.getPort(DictionaryManagerPort.class,
-        MatrixConfig.getProperty("adminCredentials.userId"),
-        MatrixConfig.getProperty("adminCredentials.password"));
-    }
-    catch (MalformedURLException ex)
-    {
-    }
+
+    String wsDirectoryURL =
+      MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
+
+    if (wsDirectoryURL == null)
+      wsDirectoryURL = MatrixConfig.getProperty("wsdirectory.url");
+
+    WSDirectory wsDirectory =
+      WSDirectory.getInstance(new URL(wsDirectoryURL));
+    WSEndpoint endpoint = 
+      wsDirectory.getEndpoint(DictionaryManagerService.class);
+    port = endpoint.getPort(DictionaryManagerPort.class,
+      MatrixConfig.getProperty("adminCredentials.userId"),
+      MatrixConfig.getProperty("adminCredentials.password"));
     
     return port;
   }  
@@ -492,10 +483,7 @@ public class CasesJobStore implements JobStore
       MatrixConfig.getClassProperty(getClass(), "wsDirectoryURL");
 
     if (wsDirectoryURL == null)
-    {
-      String contextPath = MatrixConfig.getProperty("contextPath");
-      wsDirectoryURL = "http://localhost" + contextPath + "/wsdirectory";
-    }
+      wsDirectoryURL = MatrixConfig.getProperty("wsdirectory.url");
 
     WSDirectory wsDirectory = 
       WSDirectory.getInstance(new URL(wsDirectoryURL));      
@@ -508,15 +496,15 @@ public class CasesJobStore implements JobStore
   }
 
   private void createType(String typeId, String superTypeId, String description)
-  {    
-    DictionaryManagerPort port = getDicManagerPort();
-    TypeFilter filter = new TypeFilter();
-    filter.setTypeId(typeId);
-    filter.setSuperTypeId(superTypeId);
-    int counter = port.countTypes(filter);
-    if (counter == 0)
+  { 
+    try
     {
-      try 
+      DictionaryManagerPort port = getDicManagerPort();
+      TypeFilter filter = new TypeFilter();
+      filter.setTypeId(typeId);
+      filter.setSuperTypeId(superTypeId);
+      int counter = port.countTypes(filter);
+      if (counter == 0)
       {
         org.matrix.dic.Type t = new org.matrix.dic.Type();
         t.setSuperTypeId(superTypeId);
@@ -524,10 +512,11 @@ public class CasesJobStore implements JobStore
         t.setDescription(description);
         t.setInstantiable(true);
         port.storeType(t);
-      }
-      catch (Exception ex) 
-      {
-      }
-    }    
+      }    
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
   }
 }
