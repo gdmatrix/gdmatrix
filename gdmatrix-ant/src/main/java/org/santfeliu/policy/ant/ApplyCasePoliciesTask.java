@@ -45,6 +45,7 @@ import org.matrix.policy.Policy;
 import org.matrix.policy.PolicyManagerPort;
 import org.matrix.policy.PolicyState;
 import static org.matrix.policy.PolicyState.APPROVED;
+import static org.matrix.policy.PolicyState.CANCELLED;
 import static org.matrix.policy.PolicyState.EXECUTED;
 import static org.matrix.policy.PolicyState.EXECUTING;
 import static org.matrix.policy.PolicyState.FAILED;
@@ -197,7 +198,8 @@ public class ApplyCasePoliciesTask extends ApplyPoliciesTask
       PolicyState state = casePolicy.getState();
       if (state.equals(EXECUTED) ||
           state.equals(EXECUTING) ||
-          state.equals(FAILED))
+          state.equals(FAILED) ||
+          state.equals(CANCELLED))
       {
         toKeep.add(casePolicy);
       }
