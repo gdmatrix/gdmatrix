@@ -88,6 +88,7 @@ public abstract class ApplyPoliciesTask extends WSTask
     List<String> classIds)
   {
     HashMap<String, WeightedPolicy> policies = new HashMap<>();
+    int validClassCount = 0;
     if (classIds.size() > 0)
     {
       for (int i = classIds.size() - 1; i >= 0; i--)
@@ -96,6 +97,7 @@ public abstract class ApplyPoliciesTask extends WSTask
         try
         {
           List<String> classPath = getClassPath(classId);
+          validClassCount++;
           for (int j = 0; j < classPath.size(); j++)
           {
             int weight = j + 1000 / (i + 1);
@@ -108,7 +110,8 @@ public abstract class ApplyPoliciesTask extends WSTask
         }
       }
     }
-    else
+
+    if (validClassCount == 0)
     {
       findPoliciesForClassId("0000", policies, 0);
     }
