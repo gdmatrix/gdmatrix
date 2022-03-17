@@ -14,10 +14,10 @@
     <client_inaction_timeout>500</client_inaction_timeout>
 
     <warp_packer_version>v0.3.0</warp_packer_version>
-    <jre_download_url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download</jre_download_url>
-    <jre_name>OpenJDK8U</jre_name>
-    <jre_version>jdk8u242-b08</jre_version>
-    <jre_file>8u242b08</jre_file>
+    <jre_download_url>https://github.com/adoptium/temurin11-binaries/releases/download</jre_download_url>
+    <jre_version>jdk-11.0.14.1+1</jre_version>
+    <jre_name>OpenJDK11U</jre_name>
+    <jre_file>11.0.14.1_1</jre_file>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf</artifactId>
-      <version>0.35</version>
+      <version>2.0.2</version>
     </dependency>
   </dependencies>
 
@@ -157,8 +157,8 @@
 
                     <echo>Packaging GDMatrixClient for Windows...</echo>
                     <get src="${jre_download_url}/${jre_version}/${jre_name}-jre_x64_windows_hotspot_${jre_file}.zip"
-                         dest="${user.home}/gdmatrix_build/windows-jre.zip" skipexisting="true" />
-                    <unzip src="${user.home}/gdmatrix_build/windows-jre.zip"
+                         dest="${user.home}/gdmatrix_build/windows-${jre_name}.zip" skipexisting="true" />
+                    <unzip src="${user.home}/gdmatrix_build/windows-${jre_name}.zip"
                            dest="${basedir}/target/windows-jre" />
                     <move file="${basedir}/target/windows-jre/${jre_version}-jre"
                           tofile="${basedir}/target/windows-jre/jre" />
@@ -196,8 +196,8 @@
 
                     <echo>Packaging GDMatrixClient for MacOS-64...</echo>
                     <get src="${jre_download_url}/${jre_version}/${jre_name}-jre_x64_mac_hotspot_${jre_file}.tar.gz"
-                         dest="${user.home}/gdmatrix_build/macos-jre.tar.gz" skipexisting="true" />
-                    <untar src="${user.home}/gdmatrix_build/macos-jre.tar.gz" compression="gzip"
+                         dest="${user.home}/gdmatrix_build/macos-${jre_name}.tar.gz" skipexisting="true" />
+                    <untar src="${user.home}/gdmatrix_build/macos-${jre_name}.tar.gz" compression="gzip"
                            dest="${basedir}/target/gdmatrix-client-mac/gdmatrix-client" />
                     <move file="${basedir}/target/gdmatrix-client-mac/gdmatrix-client/${jre_version}-jre"
                           tofile="${basedir}/target/gdmatrix-client-mac/gdmatrix-client/Contents/PlugIns/JRE" />
