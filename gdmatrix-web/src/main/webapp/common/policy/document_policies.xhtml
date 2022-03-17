@@ -83,7 +83,9 @@
                            image="#{userSessionBean.icons.detail}"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            />
-          <h:commandButton value="#{objectBundle.delete}"           image="#{userSessionBean.icons.delete}"           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+          <h:commandButton value="#{objectBundle.delete}"           
+                           image="#{userSessionBean.icons.delete}"           
+                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            action="#{documentPoliciesBean.removeDocumentPolicy}"
                            rendered="#{row.docPolicy != null}"
                            disabled="#{documentPoliciesBean.editingDocumentPolicy != null or
@@ -159,7 +161,14 @@
     <h:commandButton value="#{policyBundle.analyze}"
                      action="#{documentPoliciesBean.analyzeDocument}"
                      rendered="#{row.docPolicy == null}"
-                     styleClass="addButton"
+                     styleClass="button"
+                     onclick="showOverlay()"
+                     disabled="#{!document2Bean.editable}"/>
+    <h:commandButton value="#{policyBundle.reload}"
+                     action="#{documentPoliciesBean.reloadPolicies}"
+                     rendered="#{row.docPolicy == null}"
+                     styleClass="button"
+                     onclick="showOverlay()"
                      disabled="#{!document2Bean.editable}"/>
   </t:div>
 

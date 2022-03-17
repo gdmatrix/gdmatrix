@@ -157,7 +157,14 @@
                          action="#{casePoliciesBean.analyzeCase}"
                          rendered="#{row.casePolicy == null}"
                          disabled="#{!caseBean.editable}"
-                         styleClass="addButton"  />
+                         onclick="showOverlay()"
+                         styleClass="button"  />
+        <h:commandButton value="#{policyBundle.reload}"
+                         action="#{casePoliciesBean.reloadPolicies}"
+                         rendered="#{row.casePolicy == null}"
+                         disabled="#{!caseBean.editable}"
+                         onclick="showOverlay()"
+                         styleClass="button"  />
       </t:div>
 
       <t:div rendered="#{casePoliciesBean.editingCasePolicy != null}"

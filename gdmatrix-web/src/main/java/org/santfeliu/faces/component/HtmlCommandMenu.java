@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.component;
@@ -54,7 +54,7 @@ import org.santfeliu.faces.FacesUtils;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @FacesComponent(value = "HtmlCommandMenu")
 public class HtmlCommandMenu extends UICommand
@@ -145,7 +145,7 @@ public class HtmlCommandMenu extends UICommand
     ValueExpression ve = getValueExpression("title");
     return ve != null ? (String)ve.getValue(getFacesContext().getELContext()) : null;
   }
-  
+
   public Object getSubmittedValue()
   {
     return _submittedValue;
@@ -155,13 +155,13 @@ public class HtmlCommandMenu extends UICommand
   {
     this._submittedValue = value;
   }
-  
+
   @Override
   public void decode(FacesContext context)
   {
     if (!isRendered()) return;
     if (isDisabled()) return;
-    
+
     boolean activated = false;
     String clientId = getClientId(context);
     Map parameterMap = context.getExternalContext().getRequestParameterMap();
@@ -229,7 +229,7 @@ public class HtmlCommandMenu extends UICommand
       writer.writeText("function fireCommandMenu(formId,clientId){" +
         "showOverlay(); document.forms[formId][clientId + ':act'].value='y';" +
         "document.forms[formId].submit(); return false;}" , null);
-      writer.endElement("script");      
+      writer.endElement("script");
       requestMap.put(COMMAND_MENU_RENDERED, Boolean.TRUE);
     }
 
@@ -266,7 +266,7 @@ public class HtmlCommandMenu extends UICommand
       writer.writeAttribute("title", title, null);
     }
   }
-  
+
   @Override
   public void encodeChildren(FacesContext context)
     throws IOException
@@ -319,9 +319,9 @@ public class HtmlCommandMenu extends UICommand
     _style = (String)values[2];
     _styleClass = (String)values[3];
     _disabled = (Boolean)values[4];
-    _title = (String)values[5];    
+    _title = (String)values[5];
   }
-  
+
   private void encodeSelectItem(SelectItem selectItem, ResponseWriter writer)
     throws IOException
   {
@@ -334,13 +334,13 @@ public class HtmlCommandMenu extends UICommand
     }
     if (selectItem.isDisabled())
       writer.writeAttribute("disabled", "true", null);
-    
+
     if (StringUtils.isBlank(selectItem.getLabel()))
       writer.writeAttribute("label", " ", null);
     writer.writeText(selectItem.getLabel(), null);
     writer.endElement("option");
   }
-  
+
   private List<SelectItem> getSelectItems()
   {
     List<SelectItem> selectItems = new ArrayList();
@@ -355,7 +355,7 @@ public class HtmlCommandMenu extends UICommand
         if (selectItem == null)
         {
           selectItem = new SelectItem(
-            uiSelectItem.getItemValue(), 
+            uiSelectItem.getItemValue(),
             uiSelectItem.getItemLabel());
         }
         selectItems.add(selectItem);

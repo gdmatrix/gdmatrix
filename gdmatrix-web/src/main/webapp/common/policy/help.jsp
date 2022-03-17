@@ -43,9 +43,11 @@
 <BODY class="text">
 <H3 class="text">Variables predefinides</H3>
 <UL>
-  <LI><SPAN class="code">d</SPAN>: document (Document)</LI>
-  <LI><SPAN class="code">c</SPAN>: expedient (Case)</LI>
+  <LI><SPAN class="code">d</SPAN>: document (<SPAN class="code">Document</SPAN>)</LI>
+  <LI><SPAN class="code">c</SPAN>: expedient (<SPAN class="code">Case</SPAN>)</LI>
   <LI><SPAN class="code">o</SPAN>: document o expedient si no hi ha document</LI>
+  <LI><SPAN class="code">currentPolicies</SPAN>: polítiques aplicades 
+    (<SPAN class="code">List&lt;DocumentPolicyView&gt;</SPAN> o <SPAN class="code">List&lt;CasePolicyView&gt;</SPAN>)</LI>
 </UL>
 
 <H3 class="text">Funcions</H3>

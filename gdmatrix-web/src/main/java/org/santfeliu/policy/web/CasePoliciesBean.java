@@ -332,6 +332,11 @@ public class CasePoliciesBean extends PageBean
     }
   }
 
+  public void reloadPolicies()
+  {
+    load();
+  }
+
   public int getMaxVerbosityLevel()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();

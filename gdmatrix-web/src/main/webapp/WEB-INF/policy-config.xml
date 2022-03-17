@@ -24,6 +24,12 @@
   </managed-bean>
 
   <managed-bean>
+    <managed-bean-name>policyClassesBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.policy.web.PolicyClassesBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
     <managed-bean-name>policySearchBean</managed-bean-name>
     <managed-bean-class>org.santfeliu.policy.web.PolicySearchBean</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
@@ -83,6 +89,11 @@
     <navigation-case>
       <from-outcome>policy_main</from-outcome>
       <to-view-id>/common/policy/policy_main.xhtml</to-view-id>
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>policy_classes</from-outcome>
+      <to-view-id>/common/policy/policy_classes.xhtml</to-view-id>
     </navigation-case>
 
     <navigation-case>
