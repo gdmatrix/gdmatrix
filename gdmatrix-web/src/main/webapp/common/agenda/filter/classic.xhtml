@@ -3,23 +3,25 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:sf="http://faces.santfeliu.org"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:p="http://primefaces.org/ui">
 
+  <script type="text/javascript" src="/plugins/datepicker/datepicker_locales.js">
+  </script>
+  
   <t:div styleClass="filterPanel" style="display: inline-block">
     <t:div style="width:100%;display:inline-block">
       <!-- Calendar -->
       <t:div styleClass="calendarColumn"
              rendered="#{eventSearchBean.renderCalendarPanel}">
-        <t:inputCalendar
-          value="#{eventSearchBean.selectedDate}"
-          valueChangeListener="#{eventSearchBean.searchSelectedDay}"
-          styleClass="calendarBox"
-          currentDayCellClass="calendarCurrentDay"
-          weekRowClass="weekRow"
-          dayCellClass="calendarDayCell"
-          monthYearRowClass="monthYearRow"
-          style="width:100px"/>
-
+        
+        <p:datePicker id="inline" 
+                      value="#{eventSearchBean.selectedDate}"
+                      locale="#{userSessionBean.viewLanguage}"
+                      inline="true"
+                      style="width:100px;height:200px"
+                      valueChangeListener="#{eventSearchBean.searchSelectedDay}" />
+        
         <t:div style="width:100%;font-size:9px;margin:2px;"
                rendered="#{eventSearchBean.viewName != 'schedule'}">
           <t:fieldset legend="#{agendaBundle.eventSearch_showEvents}">

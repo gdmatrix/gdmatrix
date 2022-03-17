@@ -3,8 +3,12 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:sf="http://faces.santfeliu.org"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:p="http://primefaces.org/ui">
 
+    <script type="text/javascript" src="/plugins/datepicker/datepicker_locales.js">
+    </script>
+  
     <h:panelGrid styleClass="filterPanel" columns="1"
                  columnClasses="calendarColumn,propsColumn"
                  headerClass="header"
@@ -18,14 +22,13 @@
     <!-- Calendar -->
     <t:div styleClass="calendarColumn" style="width:100%"
            rendered="#{eventSearchBean.renderCalendarPanel}">
-      <t:inputCalendar 
-        value="#{eventSearchBean.selectedDate}"
-        valueChangeListener="#{eventSearchBean.searchSelectedDay}"
-        styleClass="calendarBox"
-        currentDayCellClass="calendarCurrentDay"
-        weekRowClass="weekRow"
-        dayCellClass="calendarDayCell" 
-        monthYearRowClass="monthYearRow"  />
+  
+      <p:datePicker id="inline" 
+                    value="#{eventSearchBean.selectedDate}"
+                    locale="#{userSessionBean.viewLanguage}"
+                    inline="true"
+                    style="width:100px;height:200px"
+                    valueChangeListener="#{eventSearchBean.searchSelectedDay}" />
 
       <t:div style="width:100%;font-size:9px;margin:2px;"
              rendered="#{eventSearchBean.viewName != 'schedule'}">
