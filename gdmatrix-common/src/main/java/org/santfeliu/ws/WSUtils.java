@@ -89,10 +89,7 @@ public class WSUtils
   public static ServletAdapter getServletAdapter(
     WebServiceContext wsContext)
   {
-    MessageContext messageContext = wsContext.getMessageContext();
-    System.out.println(messageContext);
-
-    String pathInfo =
+    String requestUrl =
       (String)wsContext.getMessageContext().get(HTTP_REQUEST_URL);
 
     ServletAdapter servletAdapter = null;
@@ -102,7 +99,7 @@ public class WSUtils
     while (iter.hasNext() && servletAdapter == null)
     {
       ServletAdapter sa = iter.next();
-      if (pathInfo.endsWith(sa.getValidPath()))
+      if (requestUrl.endsWith(sa.getValidPath()))
       {
         servletAdapter = sa;
       }

@@ -1,35 +1,36 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces;
 
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import java.lang.reflect.Method;
 
 import java.text.MessageFormat;
@@ -56,6 +57,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.soap.SOAPFault;
 import org.matrix.util.MessageBuilder;
 import org.santfeliu.util.TextUtils;
 
@@ -104,10 +106,22 @@ public class FacesUtils
     }
     return new FacesMessage(severity, summary, detail);
   }
-  
+
   public static FacesMessage getFacesMessage(Exception ex)
   {
-    String messageId = ex.getMessage();
+    String messageId;
+
+    if (ex instanceof ServerSOAPFaultException)
+    {
+      ServerSOAPFaultException soapEx = (ServerSOAPFaultException)ex;
+      SOAPFault fault = soapEx.getFault();
+      messageId = fault.getFaultString();
+    }
+    else
+    {
+      messageId = ex.getMessage();
+    }
+
     if (messageId == null) messageId = ex.toString();
     return getFacesMessage(messageId, null, FacesMessage.SEVERITY_ERROR);
   }
@@ -167,17 +181,17 @@ public class FacesUtils
     return facesMessage;
   }
 
-  public static void addMessage(String summary, String detail, Object[] params, 
+  public static void addMessage(String summary, String detail, Object[] params,
     FacesMessage.Severity severity)
   {
     FacesContext context = FacesContext.getCurrentInstance();
     Locale locale = context.getViewRoot().getLocale();
-    
-    FacesMessage message = 
+
+    FacesMessage message =
       FacesUtils.createFacesMessage(summary, detail, locale, params, severity);
-    context.addMessage(null, message);    
+    context.addMessage(null, message);
   }
-  
+
   public static void addMessage(String messageId,
     Object params[], FacesMessage.Severity severity)
   {
