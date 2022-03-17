@@ -93,14 +93,14 @@
       <h:outputText value="#{row.title}"
         styleClass="#{row.policyId == policyBean.objectId ? 'selected' : ''}"/>
     </t:column>
-    <t:column style="width:24%">
+    <t:column style="width:32%">
       <f:facet name="header">
         <h:outputText value="#{policyBundle.policySearch_type}" />
       </f:facet>
         <h:outputText value="#{policySearchBean.typeDescription}"
           styleClass="#{row.policyId == caseBean.objectId ? 'selected' : ''}" />
     </t:column>
-    <t:column style="width:20%" styleClass="actionsColumn">
+    <t:column style="width:12%" styleClass="actionsColumn">
       <h:panelGroup>
       <h:commandButton value="#{objectBundle.select}"
         image="#{userSessionBean.icons.back}"

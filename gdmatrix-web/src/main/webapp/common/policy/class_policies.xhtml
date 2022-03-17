@@ -105,12 +105,12 @@
       rowStyleClass="#{classPoliciesBean.editingClassPolicy != null
         and row.classPolicy.classPolicyId == classPoliciesBean.editingClassPolicy.classPolicyId
                         ? 'selectedRow' :
-                        classPoliciesBean.rowEndDate != null ? 'disabledRow' : null}"
+                        not policyClassesBean.isClassPolicyActive(row) ? 'disabledRow' : null}"
       bodyStyle="#{empty classPoliciesBean.rows ? 'display:none' : ''}"
       styleClass="resultList" style="width:100%"
       rows="#{classPoliciesBean.pageSize}">
 
-      <t:column style="width:5%">
+      <t:column style="width:6%">
         <f:facet name="header">
           <h:outputText value="#{policyBundle.classPolicies_classPolicyId}:" />
         </f:facet>
@@ -118,7 +118,7 @@
                       rendered="#{row != null and row.policy != null}"/>
       </t:column>
 
-      <t:column style="width:40%">
+      <t:column style="width:44%">
         <f:facet name="header">
           <h:outputText value="#{policyBundle.classPolicies_policy}:" />
         </f:facet>
@@ -126,27 +126,31 @@
                       rendered="#{row != null and row.policy != null }"/>
       </t:column>
 
-      <t:column style="width:15%;text-align:center">
+      <t:column style="width:16%;text-align:center">
         <f:facet name="header">
           <h:outputText value="#{policyBundle.classPolicies_startDate}:" />
         </f:facet>
-        <h:outputText value="#{classPoliciesBean.rowStartDate}"
+        <h:outputText value="#{row.classPolicy.startDate}"
                       rendered="#{row != null and row.classPolicy != null}">
-          <f:convertDateTime pattern="dd/MM/yyyy" />
+          <f:converter converterId="DateTimeConverter" />
+          <f:attribute name="internalFormat" value="yyyyMMdd" />
+          <f:attribute name="userFormat" value="dd/MM/yyyy" />
         </h:outputText>
       </t:column>
 
-      <t:column style="width:15%;text-align:center">
+      <t:column style="width:16%;text-align:center">
         <f:facet name="header">
           <h:outputText value="#{policyBundle.classPolicies_endDate}:" />
         </f:facet>
-        <h:outputText value="#{classPoliciesBean.rowEndDate}"
+        <h:outputText value="#{row.classPolicy.endDate}"
                       rendered="#{row != null and row.classPolicy != null}">
-          <f:convertDateTime pattern="dd/MM/yyyy" />
+          <f:converter converterId="DateTimeConverter" />
+          <f:attribute name="internalFormat" value="yyyyMMdd" />
+          <f:attribute name="userFormat" value="dd/MM/yyyy" />
         </h:outputText>
       </t:column>
 
-      <t:column style="width:25%" styleClass="actionsColumn">
+      <t:column style="width:18%" styleClass="actionsColumn">
         <h:panelGroup>
           <h:commandButton action="#{classPoliciesBean.showPolicy}"
                            rendered="#{row.classPolicy != null}"
@@ -230,6 +234,7 @@
           <f:selectItems value="#{classPoliciesBean.policySelectItems}" />
         </t:selectOneMenu>
         <h:commandButton action="#{classPoliciesBean.searchPolicy}"
+                         image="#{userSessionBean.icons.search}"
                          styleClass="searchButton" value="#{objectBundle.search}" />
       </h:panelGroup>
     </t:div>

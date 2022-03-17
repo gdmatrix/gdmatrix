@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.policy.service;
@@ -46,6 +46,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.matrix.cases.CaseManagerPort;
@@ -93,21 +94,21 @@ import org.santfeliu.ws.annotations.MultiInstance;
 public class PolicyManager implements PolicyManagerPort
 {
   private static final Logger LOGGER = Logger.getLogger("Policy");
-  
+
   @Resource
   WebServiceContext wsContext;
 
   @PersistenceContext(unitName="policy_ri")
   EntityManager entityManager;
-  
+
   private WSEndpoint endpoint;
 
   @Initializer
   public void initialize(String endpointName)
   {
     // create emf
-  }  
-  
+  }
+
   // Policy
   @Override
   public Policy loadPolicy(String policyId)
@@ -288,7 +289,7 @@ public class PolicyManager implements PolicyManagerPort
   @Override
   public ClassPolicy storeClassPolicy(ClassPolicy classPolicy)
   {
-    LOGGER.log(Level.INFO, "storeClassPolicy {0}", 
+    LOGGER.log(Level.INFO, "storeClassPolicy {0}",
       classPolicy.getClassPolicyId());
     validateClassPolicy(classPolicy);
 
@@ -363,12 +364,25 @@ public class PolicyManager implements PolicyManagerPort
     for (Object[] row : rows)
     {
       ClassPolicyView view = new ClassPolicyView();
+
       ClassPolicy classPolicy = new ClassPolicy();
-      Policy policy = new Policy();
-      view.setClassPolicy(classPolicy);
-      view.setPolicy(policy);
       ((DBClassPolicy)row[0]).copyTo(classPolicy);
-      ((DBPolicy)row[1]).copyTo(policy);
+      view.setClassPolicy(classPolicy);
+
+      if (StringUtils.isBlank(filter.getPolicyId()))
+      {
+        Policy policy = new Policy();
+        ((DBPolicy)row[1]).copyTo(policy);
+        view.setPolicy(policy);
+      }
+
+      if (StringUtils.isBlank(filter.getClassId()))
+      {
+        org.matrix.classif.Class cls = new org.matrix.classif.Class();
+        cls.setClassId(classPolicy.getClassId());
+        view.setClazz(cls);
+      }
+
       results.add(view);
     }
     return results;
@@ -1020,7 +1034,7 @@ public class PolicyManager implements PolicyManagerPort
     String policyTypeId = policy.getPolicyTypeId();
     if (policyTypeId == null)
       throw new WebServiceException("policy:POLICY_TYPE_UNDEFINED");
-    policyTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class, 
+    policyTypeId = getWSEndpoint().toGlobalId(org.matrix.dic.Type.class,
       policyTypeId);
 
     org.santfeliu.dic.Type type = TypeCache.getInstance().getType(policyTypeId);
