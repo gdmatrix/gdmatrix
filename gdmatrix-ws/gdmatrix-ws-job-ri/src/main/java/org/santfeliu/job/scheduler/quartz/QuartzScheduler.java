@@ -56,7 +56,6 @@ import org.santfeliu.job.scheduler.Scheduler;
 import org.santfeliu.job.service.JobException;
 
 import org.santfeliu.job.store.JobStore;
-import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
 
 /**
@@ -68,8 +67,6 @@ public class QuartzScheduler implements Scheduler
   public static final String SIMPLE_TRIGGER = "Simple";
   public static final String CALENDAR_TRIGGER = "Calendar";
   public static final String CRON_TRIGGER = "Cron";
-  
-  public static final String LOCK_ENABLED = "lockEnabled";
   
   private static final String TRIGGER_NAME_SUFFIX = "_trigger";
   private static final String DEFAULT_GROUP = "default";
@@ -162,18 +159,13 @@ public class QuartzScheduler implements Scheduler
       scheduler.getListenerManager().addJobListener(jobListener,
         EverythingMatcher.allJobs());
       
-      String lockEnabledProp = 
-        MatrixConfig.getClassProperty(QuartzScheduler.class, LOCK_ENABLED);      
-      if (lockEnabledProp != null && lockEnabledProp.equalsIgnoreCase("true"))
-      {
-        TriggerListener startJobListener = new StartJobListener(jobStore);
-        scheduler.getListenerManager().addTriggerListener(startJobListener,
-          EverythingMatcher.allTriggers());
-        
-        JobListener endJobListener = new EndJobListener(jobStore);
-        scheduler.getListenerManager().addJobListener(endJobListener,
-          EverythingMatcher.allJobs());        
-      }
+      TriggerListener startJobListener = new StartJobListener(jobStore);
+      scheduler.getListenerManager().addTriggerListener(startJobListener,
+        EverythingMatcher.allTriggers());
+
+      JobListener endJobListener = new EndJobListener(jobStore);
+      scheduler.getListenerManager().addJobListener(endJobListener,
+        EverythingMatcher.allJobs());        
       
       //Schedule initializer job
       scheduleJob(createInitJob());
