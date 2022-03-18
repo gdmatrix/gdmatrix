@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import org.santfeliu.util.MatrixConfig;
 
 /**
  *
@@ -98,7 +99,13 @@ public class WSDirectory
   {
     try
     {
-      if (url == null) url = new URL("http://localhost/wsdirectory");
+      if (url == null) 
+      {
+        String wsDirectoryURL = MatrixConfig.getProperty("wsdirectory.url");
+        if (wsDirectoryURL == null)
+          wsDirectoryURL = "http://localhost/wsdirectory";
+        url = new URL(wsDirectoryURL);
+      }
       WSDirectory directory = new WSDirectory();
       directory.url = url;
       InputStream is = url.openStream();
