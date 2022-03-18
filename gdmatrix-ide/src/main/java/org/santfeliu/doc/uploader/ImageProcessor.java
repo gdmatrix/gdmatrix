@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.uploader;
@@ -34,12 +34,11 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
  *
- * @author real
+ * @author realor
  */
 public class ImageProcessor extends Thread
 {
@@ -71,10 +70,10 @@ public class ImageProcessor extends Thread
   {
     this.overlappedText = overlappedText;
   }
-  
-  public BufferedImage processImage() throws IOException
+
+  public BufferedImage processImage() throws Exception
   {
-    BufferedImage sourceImage = ImageIO.read(file);    
+    BufferedImage sourceImage = ImageIO.read(file);
     BufferedImage image = sourceImage;
     if (maxSize > 0)
     {
@@ -86,19 +85,19 @@ public class ImageProcessor extends Thread
         width = maxSize;
       }
       else if (height > maxSize && height >= width)
-      {        
+      {
         width = (maxSize * width) / height;
         height = maxSize;
       }
-      Image scaledImage = sourceImage.getScaledInstance(width, height, 
+      Image scaledImage = sourceImage.getScaledInstance(width, height,
         Image.SCALE_SMOOTH);
       if (scaledImage instanceof BufferedImage)
-      {        
+      {
         image = (BufferedImage)scaledImage;
       }
       else
       {
-        BufferedImage scaledBufferedImage = 
+        BufferedImage scaledBufferedImage =
           new BufferedImage(width, height, sourceImage.getType());
         Graphics g = scaledBufferedImage.getGraphics();
         g.drawImage(scaledImage, 0, 0, null);
@@ -108,8 +107,8 @@ public class ImageProcessor extends Thread
     }
     return image;
   }
-  
-  public File processImageAndSave() throws IOException
+
+  public File processImageAndSave() throws Exception
   {
     if (maxSize == 0) return file;
     else

@@ -90,7 +90,7 @@ public class DocumentUploaderPanel extends DocumentPanel
   private Unloader unloader;
   private DefaultTableModel documentsTableModel;
   private DefaultTableModel propertiesTableModel;
-  private List<DocumentInfo> documents = new ArrayList<DocumentInfo>();
+  private List<DocumentInfo> documents = new ArrayList<>();
 
   /**
    * Creates new form JDocumentUploaderPanel
@@ -141,14 +141,7 @@ public class DocumentUploaderPanel extends DocumentPanel
         try
         {
           Thread.sleep(millis);
-          SwingUtilities.invokeLater(new Runnable()
-          {
-            @Override
-            public void run()
-            {
-              showStatusPanel();
-            }
-          });
+          SwingUtilities.invokeLater(() -> showStatusPanel());
         }
         catch (InterruptedException ex)
         {
@@ -193,8 +186,9 @@ public class DocumentUploaderPanel extends DocumentPanel
       int value = Integer.parseInt(svalue);
       maxImageSizeSpinner.setValue(value);
     }
-    catch (Exception ex)
+    catch (NumberFormatException ex)
     {
+      MatrixIDE.log(ex);
     }
     // connection
     wsDirectoryTextField.setText(properties.getProperty("wsdir"));
@@ -1007,7 +1001,7 @@ public class DocumentUploaderPanel extends DocumentPanel
   {//GEN-HEADEREND:event_documentsTablemouseClickedOnTable
     if (evt.getClickCount() > 1)
     {
-      if (evt.isAltDown())
+      if (evt.isShiftDown())
       {
         // show uploadinfo
         showUploadInfo();
@@ -1150,12 +1144,17 @@ public class DocumentUploaderPanel extends DocumentPanel
           Date date = new Date(uploadInfo.getLastModified());
           builder.append("lastModified: ").append(date).append("\n");
         }
+        if (uploadInfo.getCaseId() != null)
+        {
+          builder.append("caseId: ").append(uploadInfo.getCaseId()).append("\n");
+        }
       }
       else builder.append("Not uploaded yet.\n");
-      if (uploadInfo.getError() != null)
+
+      String error = uploadInfo.getError();
+      if (error != null)
       {
-        Throwable error = uploadInfo.getError();
-        builder.append("Error: ").append(error.toString()).append("\n");
+        builder.append("Error: ").append(error).append("\n");
       }
       JOptionPane.showMessageDialog(this, builder.toString());
     }

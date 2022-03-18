@@ -14,6 +14,7 @@
     <table border="1" width="540">
       <tr><td><font color="green">file.state == 'NEW'</font></td><td>Nom&eacute;s els fitxers que s&oacute;n nous (que encara no existeixen al gestor).</td></tr>
       <tr><td><font color="green">file.state == 'NEW' || file.state == 'MODIFIED'</font></td><td>Nom&eacute;s els fitxers nous o modificats.</td></tr>
+      <tr><td><font color="green">file.state != 'SYNCED'</font></td><td>Nom&eacute;s els fitxers no sincronitzats.</td></tr>
       <tr><td><font color="green">file.length &lt; 20000</font></td><td>Nom&eacute;s els fitxers que tenen una mida inferior a 20Kb.</td></tr>
       <tr><td><font color="green">file.image</font></td><td>Nom&eacute;s els fitxers que siguin imatges.</td></tr>
       <tr><td><font color="green">file.position == 0</font></td><td>Nom&eacute;s si &eacute;s el primer fitxer del directori.</td></tr>
@@ -23,6 +24,8 @@
     <table border="1" width="540">
       <tr><td><font color="green">document.metadata.put("title", "Foto de prova " + file.simpleName);</font></td><td>Estableix el t&iacute;tol a partir del nom del fitxer.</td></tr>
       <tr><td><font color="green">document.metadata.put("docTypeId", "sf:IMAGE");</font></td><td>Estableix la tipologia del document.</td></tr>
+      <tr><td><font color="green">document.metadata.put("caseId", "sf:556252");</font></td><td>Estableix el codi de l'expedient al que pertany el document.</td></tr>
+      <tr><td><font color="green">document.metadata.put("caseDocTypeId", "sf:CaseDocument");</font></td><td>Estableix la tipologia del CaseDocument.</td></tr>
       <tr><td><font color="green">document.metadata.put("gpsLat", file.metadata.get("GPS Latitude"));</font></td><td>Estableix la latitud GPS a partir de les metadades del fitxer.</td></tr>
       <tr><td><font color="green">document.metadata.put("gpsLon", file.metadata.get("GPS Longitude"));</font></td><td>Estableix la longitud GPS a partir de les metadades del fitxer.</td></tr>
       <tr><td><font color="green">document.metadata.putAll(file.metadata);</font></td><td>Copia totes les metadades del fitxer en el document.</td></tr>

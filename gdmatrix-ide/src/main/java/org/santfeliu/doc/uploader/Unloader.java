@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.uploader;
@@ -45,7 +45,7 @@ import org.matrix.cases.CaseManagerPort;
 import org.santfeliu.doc.client.DocumentManagerClient;
 
 public class Unloader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
-{    
+{
   DocumentUploaderPanel uploader;
   int docCount;
   int successCount;
@@ -61,7 +61,7 @@ public class Unloader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
     this.docClient = docClient;
     this.casePort = casesPort;
   }
-  
+
   @Override
   protected List<DocumentInfo> doInBackground() throws Exception
   {
@@ -72,13 +72,16 @@ public class Unloader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
       DocumentInfo docInfo = documents.get(docCount);
       try
       {
-        unloadDocument(docInfo);        
+        unloadDocument(docInfo);
+        successCount++;
       }
       catch (Exception ex)
       {
-        docInfo.getFile().getUploadInfo().setError(ex);
-        errorCount = 0;
-      }      
+        UploadInfo uploadInfo = docInfo.getFile().getUploadInfo();
+        uploadInfo.setError(ex.toString());
+        uploadInfo.write();
+        errorCount++;
+      }
       publish(docInfo);
       docCount++;
     }
@@ -107,21 +110,21 @@ public class Unloader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
   }
 
   @Override
-  public void done()            
+  public void done()
   {
     String message;
     if (isCancelled())
-    {       
+    {
       message = "Cancelled.";
     }
     else
     {
       message = "Done.";
     }
-    uploader.setStatus(message + " " + successCount + " files unloaded. " + 
+    uploader.setStatus(message + " " + successCount + " files unloaded. " +
        errorCount + " errors.");
     uploader.setButtonsEnabled(true);
-    
+
     // deferred repaint
     uploader.showStatusPanel(200);
   }
@@ -145,7 +148,7 @@ public class Unloader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
         casePort.removeCaseDocument(caseDocs.get(0).getCaseDocId());
       }
     }
-    
+
     if (docId != null)
     {
       docClient.removeDocument(docId, 0);

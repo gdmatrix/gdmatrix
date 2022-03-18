@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.uploader;
@@ -54,7 +54,7 @@ import org.santfeliu.util.FileDataSource;
  * @author real
  */
 public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
-{    
+{
   DocumentUploaderPanel uploader;
   int docCount;
   int successCount;
@@ -92,7 +92,7 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
   {
     this.maxImageSize = maxImageSize;
   }
-  
+
   @Override
   protected List<DocumentInfo> doInBackground() throws Exception
   {
@@ -109,7 +109,7 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
       catch (Exception ex)
       {
         UploadInfo uploadInfo = docInfo.getFile().getUploadInfo();
-        uploadInfo.setError(ex);
+        uploadInfo.setError(ex.toString());
         uploadInfo.write();
         errorCount++;
       }
@@ -125,17 +125,19 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
     DefaultTableModel documentsTableModel = uploader.getDocumentsTableModel();
     for (int i = 0; i < chunks.size(); i++)
     {
-      String state = "";
+      String state;
       FileInfo fileInfo = chunks.get(i).getFile();
+      UploadInfo uploadInfo = fileInfo.getUploadInfo();
+
       if (removeFiles)
       {
-        state = fileInfo.getUploadInfo().getError() == null ?
+        state = uploadInfo.getError() == null ?
           "UPLOADED" : "ERROR";
       }
       else
       {
         state = fileInfo.getState();
-        if (fileInfo.getUploadInfo().getError() != null)
+        if (uploadInfo.getError() != null)
         {
           state = "! " + state;
         }
@@ -150,21 +152,21 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
   }
 
   @Override
-  public void done()            
+  public void done()
   {
     String message;
     if (isCancelled())
-    {       
+    {
       message = "Cancelled.";
     }
     else
     {
       message = "Done.";
     }
-    uploader.setStatus(message + " " + successCount + " files uploaded. " + 
+    uploader.setStatus(message + " " + successCount + " files uploaded. " +
       errorCount + " errors.");
     uploader.setButtonsEnabled(true);
-    
+
     // deferred repaint
     uploader.showStatusPanel(200);
   }
@@ -173,7 +175,8 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
   {
     FileInfo fileInfo = docInfo.getFile();
     UploadInfo uploadInfo = fileInfo.getUploadInfo();
-    
+    uploadInfo.setError(null);
+
     // upload
     File fileToUpload = fileInfo.getFile();
     if (fileInfo.isImage() && maxImageSize > 0)
@@ -199,8 +202,9 @@ public class Uploader extends SwingWorker<List<DocumentInfo>, DocumentInfo>
     content.setData(new DataHandler(new FileDataSource(fileToUpload)));
     document.setContent(content);
     document = docClient.storeDocument(document);
+    docId = document.getDocId();
 
-    uploadInfo.setDocId(document.getDocId());
+    uploadInfo.setDocId(docId);
     uploadInfo.setLastModified(fileInfo.getLastModified());
 
     String caseId = (String)metadata.get("caseId");

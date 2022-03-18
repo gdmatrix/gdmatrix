@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.doc.uploader;
@@ -50,7 +50,7 @@ import org.santfeliu.util.script.DefaultScriptable;
 
 /**
  *
- * @author real
+ * @author realor
  */
 public class Scanner extends SwingWorker<List<DocumentInfo>, DocumentInfo>
 {
@@ -59,10 +59,10 @@ public class Scanner extends SwingWorker<List<DocumentInfo>, DocumentInfo>
   FileFilter fileFilter;
   String filter;
   String properties;
-  LinkedList<File> directories = new LinkedList<File>();
+  LinkedList<File> directories = new LinkedList<>();
   int dirCount;
 
-  public Scanner(DocumentUploaderPanel uploader, File dir, String pattern, 
+  public Scanner(DocumentUploaderPanel uploader, File dir, String pattern,
     String filter, String properties)
   {
     this.uploader = uploader;
@@ -94,22 +94,22 @@ public class Scanner extends SwingWorker<List<DocumentInfo>, DocumentInfo>
   }
 
   @Override
-  public void process(List<DocumentInfo> docInfos)    
+  public void process(List<DocumentInfo> docInfos)
   {
     for (DocumentInfo docInfo : docInfos)
     {
       FileInfo fileInfo = docInfo.getFile();
       String basePath = dir.getAbsolutePath();
       String path = fileInfo.getPath().substring(basePath.length());
-      
-      uploader.getDocumentsTableModel().addRow(new Object[]{ 
+
+      uploader.getDocumentsTableModel().addRow(new Object[]{
         fileInfo.getState(), fileInfo.getPosition(),
         path, fileInfo.getLength()});
     }
   }
 
   @Override
-  public void done()            
+  public void done()
   {
     int docCount = uploader.getDocuments().size();
 
@@ -174,7 +174,7 @@ public class Scanner extends SwingWorker<List<DocumentInfo>, DocumentInfo>
     try
     {
       Scriptable scope = new DefaultScriptable(ctx);
-      scope.put("file", scope, 
+      scope.put("file", scope,
         new NativeJavaObject(scope, fileInfo, FileInfo.class));
       Object result = ctx.evaluateString(scope, filter, "<filter>", 1, null);
       return Context.toBoolean(result);
@@ -196,11 +196,11 @@ public class Scanner extends SwingWorker<List<DocumentInfo>, DocumentInfo>
     {
       FileInfo fileInfo = docInfo.getFile();
       Scriptable scope = new DefaultScriptable(ctx);
-      scope.put("document", scope, 
+      scope.put("document", scope,
         new NativeJavaObject(scope, docInfo, DocumentInfo.class));
-      scope.put("file", scope, 
+      scope.put("file", scope,
         new NativeJavaObject(scope, fileInfo, FileInfo.class));
-      ctx.evaluateString(scope, properties, "<properties>", 1, null);        
+      ctx.evaluateString(scope, properties, "<properties>", 1, null);
     }
     catch (Exception ex)
     {
@@ -214,21 +214,18 @@ public class Scanner extends SwingWorker<List<DocumentInfo>, DocumentInfo>
   private void updateProgress()
   {
     final int total = dirCount + directories.size();
-    final int percentCompleted = 
-      (int)(100.0 * ((double)dirCount / (double)total));    
-    SwingUtilities.invokeLater(new Runnable()
+    final int percentCompleted =
+      (int)(100.0 * ((double)dirCount / (double)total));
+    SwingUtilities.invokeLater(() ->
     {
-      public void run()
+      JProgressBar progressBar = uploader.getProgressBar();
+      progressBar.setMinimum(0);
+      progressBar.setMaximum(100);
+      int currentPercent = progressBar.getValue();
+      if (percentCompleted > currentPercent)
       {
-        JProgressBar progressBar = uploader.getProgressBar();
-        progressBar.setMinimum(0);
-        progressBar.setMaximum(100);
-        int currentPercent = progressBar.getValue();
-        if (percentCompleted > currentPercent)
-        {
-          progressBar.setValue(percentCompleted);
-          progressBar.setString("Scanning..." + percentCompleted + "%");
-        }
+        progressBar.setValue(percentCompleted);
+        progressBar.setString("Scanning..." + percentCompleted + "%");
       }
     });
   }
