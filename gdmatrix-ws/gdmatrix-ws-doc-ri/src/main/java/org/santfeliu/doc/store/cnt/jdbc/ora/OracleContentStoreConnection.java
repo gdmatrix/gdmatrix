@@ -74,12 +74,10 @@ public class OracleContentStoreConnection extends JdbcContentStoreConnection
     String fileType = null;
     String mimeType = null;
     String sqlContent = config.getProperty("selectContentTypeSQL");
-    PreparedStatement stmtContent = conn.prepareStatement(sqlContent);
-    try
+    try (PreparedStatement stmtContent = conn.prepareStatement(sqlContent)) 
     {
       stmtContent.setString(1, contentId);
-      ResultSet rs = stmtContent.executeQuery();
-      try
+      try (ResultSet rs = stmtContent.executeQuery()) 
       {
         if (rs.next())
         {
@@ -88,42 +86,35 @@ public class OracleContentStoreConnection extends JdbcContentStoreConnection
         }
         else throw new Exception("doc:INVALID_CONTENTID");
       }
-      finally
-      {
-        rs.close();
-      }
-    }
-    finally
-    {
-      stmtContent.close();
     }
     file = File.createTempFile("mkp", ".tmp");
-    FileOutputStream out = new FileOutputStream(file);
-    // call markup
-    if (mimeType != null && mimeType.startsWith("text/") &&
-      !"text/html".equals(mimeType))
+    try (FileOutputStream out = new FileOutputStream(file))
     {
-      // markup for non html text files
-      ByteArrayOutputStream bout = new ByteArrayOutputStream();
-      oracleMarkupContent(contentId, searchExpression, fileType,
-        "{{{",
-        "}}}",
-        " ",
-        " ", bout);
-      // Oracle don't transform text files to html
-      // this transformation must be performed here for non html text files
-      createHTMLFile(bout.toByteArray(), out);
+      // call markup
+      if (mimeType != null && mimeType.startsWith("text/") &&
+        !"text/html".equals(mimeType))
+      {
+        // markup for non html text files
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        oracleMarkupContent(contentId, searchExpression, fileType,
+          "{{{",
+          "}}}",
+          " ",
+          " ", bout);
+        // Oracle don't transform text files to html
+        // this transformation must be performed here for non html text files
+        createHTMLFile(bout.toByteArray(), out);
+      }
+      else
+      {
+        // markup for binary or html files
+        oracleMarkupContent(contentId, searchExpression, fileType,
+          "<a name=\"ctx%CURNUM\" style=\"color:red\"><b>",
+          "</b></a>",
+          "<a href=\"#ctx%PREVNUM\">&lt;&lt;&nbsp;</a>",
+          "<a href=\"#ctx%NEXTNUM\">&nbsp;&gt;&gt;</a>", out);
+      }
     }
-    else
-    {
-      // markup for binary or html files
-      oracleMarkupContent(contentId, searchExpression, fileType,
-        "<a name=\"ctx%CURNUM\" style=\"color:red\"><b>",
-        "</b></a>",
-        "<a href=\"#ctx%PREVNUM\">&lt;&lt;&nbsp;</a>",
-        "<a href=\"#ctx%NEXTNUM\">&nbsp;&gt;&gt;</a>", out);
-    }
-    out.close();
     return file;
   }
 
@@ -160,12 +151,10 @@ public class OracleContentStoreConnection extends JdbcContentStoreConnection
     String sqlRowid = EXTERNAL.equals(fileType) ?
       config.getProperty("selectExternalRowidSQL") :
       config.getProperty("selectInternalRowidSQL");
-    PreparedStatement stmtRowid = conn.prepareStatement(sqlRowid);
-    try
+    try (PreparedStatement stmtRowid = conn.prepareStatement(sqlRowid)) 
     {
       stmtRowid.setString(1, contentId);
-      ResultSet rs = stmtRowid.executeQuery();
-      try
+      try (ResultSet rs = stmtRowid.executeQuery()) 
       {
         if (rs.next())
         {
@@ -173,22 +162,13 @@ public class OracleContentStoreConnection extends JdbcContentStoreConnection
         }
         else throw new Exception("doc:INVALID_CONTENTID");
       }
-      finally
-      {
-        rs.close();
-      }
-    }
-    finally
-    {
-      stmtRowid.close();
     }
 
     // ******** execute ctx_doc.markup procedure
     String sqlCall = EXTERNAL.equals(fileType) ?
       config.getProperty("markupExternalCall") :
       config.getProperty("markupInternalCall");
-    PreparedStatement stmtCall = conn.prepareCall(sqlCall);
-    try
+    try (PreparedStatement stmtCall = conn.prepareCall(sqlCall)) 
     {
       stmtCall.setString(1, rowid);
       stmtCall.setString(2, searchExpression);
@@ -199,10 +179,6 @@ public class OracleContentStoreConnection extends JdbcContentStoreConnection
       stmtCall.setString(7, nextTag);
       stmtCall.executeUpdate();
     }
-    finally
-    {
-      stmtCall.close();
-    }
 
     // ******** read markup
     String sqlSelect = config.getProperty("selectMarkupSQL");
@@ -210,8 +186,7 @@ public class OracleContentStoreConnection extends JdbcContentStoreConnection
     try
     {
       stmtSel.setInt(1, query_id);
-      ResultSet rs = stmtSel.executeQuery();
-      try
+      try (ResultSet rs = stmtSel.executeQuery()) 
       {
         if (rs.next())
         {
@@ -219,10 +194,6 @@ public class OracleContentStoreConnection extends JdbcContentStoreConnection
           InputStream in = clob.getAsciiStream();
           IOUtils.writeToStream(in, out);
         }
-      }
-      finally
-      {
-        rs.close();
       }
     }
     finally

@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.sql.Connection;
 
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -50,6 +52,10 @@ import org.santfeliu.util.MatrixConfig;
  */
 public class JdbcContentStore implements ContentStore
 {
+  private static final Logger LOGGER = 
+    Logger.getLogger(JdbcContentStore.class.getName());  
+  private static final String JDBC_FILENAME = "jdbc.properties";
+  
   private final Properties config = new Properties();
   
   public JdbcContentStore()
@@ -63,31 +69,12 @@ public class JdbcContentStore implements ContentStore
   {
     try
     {
-      Class cls = getClass();
-      String className = cls.getName();
-      int index = className.lastIndexOf(".");
-      String path = "/" + className.substring(0, index).replace('.', '/');
-      System.out.println(path);
-      InputStream is = cls.getResourceAsStream(path + "/jdbc.properties");
-      config.load(is);
-      //Try auto tables creation
-      JdbcContentStoreConnection conn = getConnection();
-      try
-      {
-        conn.createTables();
-        conn.commit();
-      }
-      catch(Exception cex)
-      {
-        conn.rollback();
-      }
-      finally
-      {
-        conn.close();
-      }
+      loadConfiguration(JDBC_FILENAME);
+      createTables();
     }
     catch(Exception ex)
     {
+      LOGGER.log(Level.SEVERE, "Error initializing", ex);      
       throw new RuntimeException(ex);
     }
   }
@@ -119,7 +106,7 @@ public class JdbcContentStore implements ContentStore
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      LOGGER.log(Level.SEVERE, "Error getting connection", ex);
       throw new Exception(ex);
     }
   }
@@ -129,4 +116,65 @@ public class JdbcContentStore implements ContentStore
   {
     return new JdbcContentStoreConnection(conn, config);     
   }
+  
+  private String getConfigurationPath(Class cls)
+  {
+    String className = cls.getName();
+    int index = className.lastIndexOf(".");
+    return "/" + className.substring(0, index).replace('.', '/');    
+  }
+  
+  private void loadProperties(String path, String filename) throws Exception
+  {
+    String name = path + "/" + filename;
+    try (InputStream is = getClass().getResourceAsStream(name))
+    {
+      LOGGER.log(Level.INFO, "Loading {0}", name);
+      config.load(is);
+    }    
+  }  
+  
+  protected void loadConfiguration(String filename) 
+  {
+    try
+    {
+      String path = getConfigurationPath(getClass());
+      try
+      {
+        loadProperties(path, filename);
+      }
+      catch (Exception ex)
+      {
+        LOGGER.log(Level.WARNING, "Can not load config file: {0}/{1}: {2}", 
+          new String[]{path, filename, ex.getMessage()});
+        loadProperties(getConfigurationPath(JdbcContentStore.class), filename);
+      }
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "Can not load ContentStore configuration", ex);
+    }
+  }
+  
+  protected void createTables() throws Exception
+  {
+    JdbcContentStoreConnection conn = getConnection();
+    try 
+    {
+      conn.createTables();
+      conn.commit();
+    }
+    catch(Exception ex)
+    {
+      LOGGER.log(Level.WARNING, "Tables creation not succeded: {0}", 
+        ex.getMessage());
+      conn.rollback();
+    }
+    finally
+    {
+      conn.close();
+    }    
+  }
+  
+
 }

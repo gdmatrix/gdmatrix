@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
@@ -61,7 +63,9 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
   public static final String FMT_TEXT = "TEXT";
   public static final String FMT_BINARY = "BINARY";
   public static final String FMT_IGNORE = "IGNORE";
-
+  
+  private static final Logger LOGGER = 
+    Logger.getLogger(JdbcContentStoreConnection.class.getName()); 
   protected Connection conn;
   protected Properties config;
 
@@ -126,12 +130,11 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
   {
     Content content = null;
     String sql = config.getProperty("selectContentSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.setString(1, contentId);
-      ResultSet rs = prepStmt.executeQuery();
-      try
+      try (ResultSet rs = prepStmt.executeQuery()) 
       {
         if (rs.next())
         {
@@ -145,7 +148,7 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
             content.setLanguage(rs.getString(5));
             content.setCaptureUserId(rs.getString(6));
             content.setCaptureDateTime(rs.getString(7));
-            content.setSize(new Long(rs.getLong(8)));
+            content.setSize(rs.getLong(8));
             if (INTERNAL.equals(fileType))
             {
               if (ContentInfo.ALL.equals(contentInfo))
@@ -164,14 +167,6 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
           }
         }
       }
-      finally
-      {
-        rs.close();
-      }
-    }
-    finally
-    {
-      prepStmt.close();
     }
     return content;
   }
@@ -194,7 +189,7 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
     if (contentsSize > 0)
     {
       String sql = config.getProperty("findContentsSQL");
-
+     
       int count = 1;
       while (count < contentsSize)
       {
@@ -202,8 +197,8 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
         count++;
       }
 
-      PreparedStatement prepStmt = conn.prepareStatement(sql);
-      try
+      LOGGER.log(Level.INFO, "SQL: {0}", sql);
+      try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
       {
         count = 1;
         for (String contentId : contentIds)
@@ -212,11 +207,9 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
           count++;
         }
 
-        System.out.println(sql);
-        System.out.println(contentIds);
+        LOGGER.log(Level.INFO, contentIds.toString());
 
-        ResultSet rs = prepStmt.executeQuery();
-        try
+        try (ResultSet rs = prepStmt.executeQuery()) 
         {
           while (rs.next())
           {
@@ -227,18 +220,10 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
             content.setLanguage(rs.getString(4));
             content.setCaptureUserId(rs.getString(5));
             content.setCaptureDateTime(rs.getString(6));
-            content.setSize(new Long(rs.getLong(7)));
+            content.setSize(rs.getLong(7));
             contents.add(content);
           }
         }
-        finally
-        {
-          rs.close();
-        }
-      }
-      finally
-      {
-        prepStmt.close();
       }
     }
     return contents;
@@ -276,23 +261,19 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
   protected void createTable(String queryName) throws Exception
   {
     String sql = config.getProperty(queryName);
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.executeUpdate();
-    }
-    finally
-    {
-      prepStmt.close();
     }    
   }
     
-  private void insertContentMetaData(Connection conn, Content content)
+  protected void insertContentMetaData(Connection conn, Content content)
     throws Exception
   {
     String sql = config.getProperty("insertContentMetaDataSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       String fileType = content.getData() == null ? EXTERNAL : INTERNAL;
       prepStmt.setString(1, content.getContentId());
@@ -306,62 +287,44 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
       prepStmt.setString(9, content.getCreationDate());
       prepStmt.executeUpdate();
     }
-    finally
-    {
-      prepStmt.close();
-    }
   }
 
-  private void insertInternalContent(Connection conn, Content content,
+  protected void insertInternalContent(Connection conn, Content content,
     InputStream is) throws Exception
   {
     String sql = config.getProperty("insertInternalContentSQL");
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
-      PreparedStatement prepStmt = conn.prepareStatement(sql);
-      try
-      {
-        prepStmt.setString(1, content.getContentId());
-        prepStmt.setString(2, getFormat(content.getContentType()));
-        prepStmt.setBinaryStream(3, is, content.getSize().intValue());
-        prepStmt.executeUpdate();
-      }
-      finally
-      {
-        prepStmt.close();
-      }
-    }
-    finally
-    {
-      is.close();
+      prepStmt.setString(1, content.getContentId());
+      prepStmt.setString(2, getFormat(content.getContentType()));
+      prepStmt.setBinaryStream(3, is, content.getSize().intValue());
+      prepStmt.executeUpdate();
     }
   }
 
-  private void insertExternalContent(Connection conn, Content content)
+  protected void insertExternalContent(Connection conn, Content content)
     throws Exception
   {
     String sql = config.getProperty("insertExternalContentSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.setString(1, content.getContentId());
       prepStmt.setString(2, getFormat(content.getContentType()));
       prepStmt.setString(3, content.getUrl());
       prepStmt.executeUpdate();
     }
-    finally
-    {
-      prepStmt.close();
-    }
   }
 
-  private void copyContentMetaData(Connection conn, Content content,
+  protected void copyContentMetaData(Connection conn, Content content,
     String contentId)
     throws Exception
   {
     String sql = config.getProperty("copyContentMetaDataSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.setString(1, content.getContentId());
       prepStmt.setString(2, content.getLanguage());
@@ -370,95 +333,71 @@ public class JdbcContentStoreConnection implements ContentStoreConnection
       prepStmt.setString(5, contentId);
       prepStmt.executeUpdate();
     }
-    finally
-    {
-      prepStmt.close();
-    }
   }
 
-  private void copyInternalContent(Connection conn, Content content,
+  protected void copyInternalContent(Connection conn, Content content,
     String contentId) throws Exception
   {
     String sql = config.getProperty("copyInternalContentSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.setString(1, content.getContentId());
       prepStmt.setString(2, contentId);
       prepStmt.executeUpdate();
     }
-    finally
-    {
-      prepStmt.close();
-    }
   }
 
-  private void copyExternalContent(Connection conn, Content content,
+  protected void copyExternalContent(Connection conn, Content content,
     String contentId) throws Exception
   {
     String sql = config.getProperty("copyExternalContentSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.setString(1, content.getContentId());
       prepStmt.setString(2, contentId);
       prepStmt.executeUpdate();
     }
-    finally
-    {
-      prepStmt.close();
-    }
   }
 
-  private int deleteContentMetaData(Connection conn, String contentId)
+  protected int deleteContentMetaData(Connection conn, String contentId)
     throws Exception
   {
     String sql = config.getProperty("deleteContentMetaDataSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.setString(1, contentId);
       return prepStmt.executeUpdate();
     }
-    finally
-    {
-      prepStmt.close();
-    }
   }
 
-  private int deleteInternalContent(Connection conn, String contentId)
+  protected int deleteInternalContent(Connection conn, String contentId)
     throws Exception
   {
     String sql = config.getProperty("deleteInternalContentSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.setString(1, contentId);
       return prepStmt.executeUpdate();
     }
-    finally
-    {
-      prepStmt.close();
-    }
   }
 
-  private int deleteExternalContent(Connection conn, String contentId)
+  protected int deleteExternalContent(Connection conn, String contentId)
     throws Exception
   {
     String sql = config.getProperty("deleteExternalContentSQL");
-    PreparedStatement prepStmt = conn.prepareStatement(sql);
-    try
+    LOGGER.log(Level.INFO, "SQL: {0}", sql);
+    try (PreparedStatement prepStmt = conn.prepareStatement(sql)) 
     {
       prepStmt.setString(1, contentId);
-     return prepStmt.executeUpdate();
-    }
-    finally
-    {
-      prepStmt.close();
+      return prepStmt.executeUpdate();
     }
   }
 
-  private String getFormat(String mimeType)
+  protected String getFormat(String mimeType)
   {
     String format;
     if (mimeType.startsWith("text/"))

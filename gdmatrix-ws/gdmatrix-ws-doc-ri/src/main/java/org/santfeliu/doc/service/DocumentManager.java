@@ -180,6 +180,7 @@ public class DocumentManager implements DocumentManagerPort
     }
     catch (Exception ex)
     {
+      LOGGER.log(Level.SEVERE, "initializer failed", ex);
       throw new RuntimeException(ex);
     }    
   }
@@ -967,7 +968,7 @@ public class DocumentManager implements DocumentManagerPort
   //DocumentStore initilization
   private void initDocumentStore() throws Exception
   {
-    System.out.println("Initializing DocumentStore");
+    LOGGER.log(Level.INFO, "Initializing DocumentStore");
     String documentStoreClassName = 
       MatrixConfig.getClassProperty(DocumentManager.class, DOCUMENT_STORE);
 
@@ -980,12 +981,12 @@ public class DocumentManager implements DocumentManagerPort
     documentStore = (DocumentStore)documentStoreClass.newInstance();
 
     documentStore.init(MatrixConfig.getClassProperties(documentStoreClass));
-    System.out.println(documentStore.getClass() + " initialized");      
+    LOGGER.log(Level.INFO, "{0} initialized", documentStore.getClass());      
   }
 
   private void initContentStore() throws Exception
   {
-    System.out.println("Initializing ContentStore");  
+    LOGGER.log(Level.INFO, "Initializing ContentStore");  
     String contentStoreClassName = 
       MatrixConfig.getClassProperty(DocumentManager.class, CONTENT_STORE);
     if (contentStoreClassName != null)
@@ -1004,7 +1005,7 @@ public class DocumentManager implements DocumentManagerPort
       contentStore = new OracleContentStore();
     }
     contentStore.init();
-    System.out.println(contentStore.getClass() + " initialized");          
+    LOGGER.log(Level.INFO, "{0} initialized", contentStore.getClass());          
   }
 
   private void initDroid() throws Exception
@@ -1274,8 +1275,8 @@ public class DocumentManager implements DocumentManagerPort
       }
       catch(Exception e)
       {
-        LOGGER.log(Level.WARNING, "Introspection of content " + 
-          Level.INFO, content.getContentId() + " failed: " + e.getMessage());
+        LOGGER.log(Level.WARNING, "Introspection of content {0} failed: {1}", 
+          new Object[]{content.getContentId(), e.getMessage()});
       }
     }
     else // for external contents
