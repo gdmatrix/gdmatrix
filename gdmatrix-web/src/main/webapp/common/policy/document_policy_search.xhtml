@@ -90,7 +90,8 @@
     
     <f:facet name="footer">
       <h:commandButton id="default_button" value="#{objectBundle.search}"
-        action="#{documentPolicySearchBean.search}" styleClass="searchButton" />
+        action="#{documentPolicySearchBean.search}" styleClass="searchButton" 
+        onclick="showOverlay()" />
     </f:facet>
   </h:panelGrid>
 
