@@ -41,16 +41,27 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -63,10 +74,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 
 /**
  *
@@ -85,6 +97,7 @@ public class PackagePanel extends DocumentPanel
   private BorderLayout layout = new BorderLayout();
 
   private Path unpackDir;
+  private ChangeMonitor changeMonitor;
 
   public PackagePanel()
   {
@@ -107,6 +120,24 @@ public class PackagePanel extends DocumentPanel
   public void create() throws Exception
   {
     unpackDir = Files.createTempDirectory("unpack-");
+
+    try (InputStream is = getClass().getResourceAsStream(
+      "/org/santfeliu/matrix/ide/resources/install.js"))
+    {
+      Files.copy(is, Paths.get(unpackDir.toString(), "install.js"));
+    }
+    catch (Exception ex)
+    {
+      MatrixIDE.log(ex);
+    }
+    updateTable();
+    startMonitor();
+  }
+
+  @Override
+  public void close()
+  {
+    stopMonitor();
   }
 
   @Override
@@ -142,6 +173,8 @@ public class PackagePanel extends DocumentPanel
     }
 
     updateTable();
+
+    startMonitor();
   }
 
   @Override
@@ -173,6 +206,7 @@ public class PackagePanel extends DocumentPanel
 
   public void updateTable()
   {
+    int selectedRow = table.getSelectedRow();
     try
     {
       String unpackDirName = unpackDir.toString();
@@ -222,6 +256,10 @@ public class PackagePanel extends DocumentPanel
       });
 
       table.setModel(tableModel);
+      if (selectedRow >= 0 && selectedRow < tableModel.getRowCount())
+      {
+        table.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+      }
 
       TableColumn column = table.getColumnModel().getColumn(0);
       column.setPreferredWidth(1000);
@@ -293,7 +331,6 @@ public class PackagePanel extends DocumentPanel
     try
     {
       getMainPanel().openDocument(getSelectedDocument());
-      setModified(true);
     }
     catch (Exception ex)
     {
@@ -326,8 +363,6 @@ public class PackagePanel extends DocumentPanel
           Path path = Paths.get(unpackDir.toString(), file.getName());
           Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
         }
-        setModified(true);
-        updateTable();
       }
     }
     catch (Exception ex)
@@ -344,11 +379,7 @@ public class PackagePanel extends DocumentPanel
     try
     {
       File file = getSelectedDocument();
-      if (file.delete())
-      {
-        setModified(true);
-        updateTable();
-      }
+      file.delete();
     }
     catch (Exception ex)
     {
@@ -389,6 +420,46 @@ public class PackagePanel extends DocumentPanel
     catch (IOException ex)
     {
       MatrixIDE.log(ex);
+    }
+  }
+
+  protected void startMonitor()
+  {
+    if (changeMonitor == null)
+    {
+      changeMonitor = new ChangeMonitor(unpackDir);
+      changeMonitor.start();
+    }
+  }
+
+  protected void stopMonitor()
+  {
+    if (changeMonitor != null)
+    {
+      changeMonitor.interrupt();
+      changeMonitor = null;
+    }
+  }
+
+  public class DateCellRenderer extends DefaultTableCellRenderer
+  {
+    private final SimpleDateFormat dateFormat =
+      new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+      boolean isSelected, boolean hasFocus, int row, int column)
+    {
+      super.getTableCellRendererComponent(table, value,
+        isSelected, hasFocus, row, column);
+
+      if (value instanceof Date)
+      {
+        setText(dateFormat.format((Date)value));
+      }
+      else setText("");
+
+      return this;
     }
   }
 
@@ -493,6 +564,7 @@ public class PackagePanel extends DocumentPanel
     table.setSelectionMode(SINGLE_SELECTION);
 
     table.setDefaultRenderer(Path.class, new PathCellRenderer());
+    table.setDefaultRenderer(Date.class, new DateCellRenderer());
 
     KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
     table.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(enter, "open");
@@ -504,5 +576,64 @@ public class PackagePanel extends DocumentPanel
         openDocument();
       }
     });
+  }
+
+  class ChangeMonitor extends Thread
+  {
+    final Path dir;
+
+    ChangeMonitor(Path dir)
+    {
+      this.dir = dir;
+    }
+
+    @Override
+    public void run()
+    {
+      try
+      {
+        MatrixIDE.log(Level.INFO, "Start change monitor for " + dir);
+
+        WatchService watcher = FileSystems.getDefault().newWatchService();
+
+        Files.walkFileTree(dir, new SimpleFileVisitor<Path>()
+        {
+          @Override
+          public FileVisitResult preVisitDirectory(
+            Path subDir, BasicFileAttributes attrs) throws IOException
+          {
+            subDir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            return FileVisitResult.CONTINUE;
+          }
+        });
+
+        while (!Thread.currentThread().isInterrupted())
+        {
+          WatchKey key = watcher.take();
+          key.pollEvents();
+
+          SwingUtilities.invokeLater(() -> updateTable());
+          setModified(true);
+
+          boolean valid = key.reset();
+          if (!valid)
+          {
+            break;
+          }
+        }
+      }
+      catch (InterruptedException ex)
+      {
+        // ignore
+      }
+      catch (Exception ex)
+      {
+        MatrixIDE.log(ex);
+      }
+      finally
+      {
+        MatrixIDE.log(Level.INFO, "End change monitor for " + dir);
+      }
+    }
   }
 }

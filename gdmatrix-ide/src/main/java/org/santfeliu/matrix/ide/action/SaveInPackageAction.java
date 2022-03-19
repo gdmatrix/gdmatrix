@@ -71,6 +71,11 @@ public class SaveInPackageAction extends BaseAction
       chooser.setDialogTitle("Save in package " + pkgPanel.getDisplayName());
       chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       chooser.setCurrentDirectory(dir);
+      String displayName = panel.getDisplayName();
+      if (!"new".equals(displayName))
+      {
+        chooser.setSelectedFile(new File(dir, displayName));
+      }
 
       int result = chooser.showSaveDialog(ide);
       if (result == JFileChooser.APPROVE_OPTION)
@@ -100,7 +105,6 @@ public class SaveInPackageAction extends BaseAction
           panel.setModified(false);
           getIDE().getMainPanel().updateActions();
         }
-        pkgPanel.updateTable();
       }
     }
     catch (Exception ex)

@@ -275,10 +275,14 @@ public class MatrixIDE extends JFrame
   {
     MatrixIDE.loadOptions();
 
+    System.setProperty("flatlaf.useWindowDecorations", "false");
+    System.setProperty("flatlaf.menuBarEmbedded", "false");
+
     // setup LookAndFeel
     try
     {
-      UIManager.put("Popup.dropShadowPainted", false);
+      UIManager.put("Popup.dropShadowPainted", true);
+      UIManager.put("Popup.forceHeavyWeight", true);
       UIManager.installLookAndFeel(
         "FlatLaf light", "com.formdev.flatlaf.FlatLightLaf");
       UIManager.installLookAndFeel(

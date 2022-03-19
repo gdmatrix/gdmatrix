@@ -84,6 +84,7 @@ import org.santfeliu.swing.layout.WrapLayout;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
@@ -541,11 +542,13 @@ public class MainPanel extends JPanel
         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
       if (option == JOptionPane.YES_OPTION)
       {
+        documentPanel.close();
         tabbedPane.remove(documentPanel);
       }
     }
     else
     {
+      documentPanel.close();
       tabbedPane.remove(documentPanel);
     }
     if (tabbedPane.getTabCount() == 0) // no tabs
@@ -600,8 +603,7 @@ public class MainPanel extends JPanel
       {
         DocumentPanel panel =
           ide.getMainPanel().createPanel(documentType);
-        FileInputStream is = new FileInputStream(file);
-        try
+        try (FileInputStream is = new FileInputStream(file))
         {
           panel.setDisplayName(name);
           panel.setDirectory(file.getParentFile());
@@ -610,12 +612,15 @@ public class MainPanel extends JPanel
           ide.getMainPanel().addPanel(panel); // add panel to framework
           panel.setModified(false);
         }
-        finally
-        {
-          is.close();
-        }
       }
-      else throw new Exception("Unsupported file type");
+      else if (Desktop.isDesktopSupported())
+      {
+        Desktop.getDesktop().open(file);
+      }
+      else
+      {
+        throw new Exception("Unsupported file type");
+      }
     }
     else throw new Exception("Unknow file type");
   }
