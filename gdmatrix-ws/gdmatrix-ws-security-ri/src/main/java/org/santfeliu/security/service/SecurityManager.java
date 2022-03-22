@@ -484,7 +484,7 @@ public class SecurityManager implements SecurityManagerPort
               loadIdentificationInfo(user, userId);
             }
           }
-          else throw new Exception("security:INVALID_PASSWORD");
+          else throw new Exception("security:INVALID_IDENTIFICATION");
         }
         else if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
         {
@@ -497,9 +497,9 @@ public class SecurityManager implements SecurityManagerPort
             user.setPassword(password);
             loadIdentificationInfo(user, userId);
           }
-          else throw new Exception("security:INVALID_PASSWORD");
+          else throw new Exception("security:INVALID_IDENTIFICATION");
         }
-        else throw new Exception("security:INVALID_USERNAME");
+        else throw new Exception("security:INVALID_IDENTIFICATION");
       }
     }
     catch (Exception ex)
@@ -648,9 +648,9 @@ public class SecurityManager implements SecurityManagerPort
 
           result = "ok";
         }
-        else throw new Exception("security:INVALID_PASSWORD");
+        else throw new Exception("security:INVALID_IDENTIFICATION");
       }
-      else throw new Exception("security:INVALID_USERNAME");
+      else throw new Exception("security:INVALID_IDENTIFICATION");
     }
     catch (Exception ex)
     {

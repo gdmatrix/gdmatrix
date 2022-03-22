@@ -565,6 +565,11 @@ public class AgendaServlet extends HttpServlet
       response.sendError(HttpServletResponse.SC_FORBIDDEN,
         ex.toString());
     }
+    else if (message.indexOf("INVALID_IDENTIFICATION") != -1)
+    {
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+        ex.toString());
+    }
     else if (message.indexOf("INVALID_USERNAME") != -1)
     {
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
