@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.web.servlet;
@@ -58,8 +58,8 @@ import org.matrix.doc.Document;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.util.IOUtils;
-import org.santfeliu.util.MatrixConfig; 
-import org.santfeliu.util.Utilities; 
+import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.Utilities;
 
 /**
  *
@@ -69,7 +69,7 @@ public class ImageScaleServlet extends HttpServlet
 {
   private static final String DEFAULT_HOSTNAME = "localhost";
   private static final String SERVLET_PATH = "/documents/";
-  private static final String IMAGE_MAX_SIZE = "maxSize"; 
+  private static final String IMAGE_MAX_SIZE = "maxSize";
   private static final double MAX_DIFFERENCE_RATIO = 0.05;
 
   static long size = 0;
@@ -81,7 +81,7 @@ public class ImageScaleServlet extends HttpServlet
   {
     return "ImageScale Servlet 1.0";
   }
-  
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws IOException
@@ -90,7 +90,7 @@ public class ImageScaleServlet extends HttpServlet
     {
       long millis = System.currentTimeMillis();
       RequestedImage reqImage = parseRequest(request);
-      
+
       //Browser cache
       if (reqImage == null)
         writeServletInfo(response);
@@ -101,7 +101,7 @@ public class ImageScaleServlet extends HttpServlet
           response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
           return;
         }
-        
+
         //If has no contentId get it from document manager.
         if (!reqImage.hasContentId())
           loadContentId(reqImage);
@@ -109,8 +109,8 @@ public class ImageScaleServlet extends HttpServlet
         if (!readFromCache(response, reqImage))
           transformImage(response, reqImage);
         else
-          log.log(Level.INFO, "ImageCache hit! {0} ((Memory usage: {1})", 
-            new Object[]{reqImage.getIdentifier(), getMemoryUsage()});          
+          log.log(Level.INFO, "ImageCache hit! {0} ((Memory usage: {1})",
+            new Object[]{reqImage.getIdentifier(), getMemoryUsage()});
       }
       log.log(Level.INFO, "Image {0} processed in {1} ms (Memory usage: {2})",
         new Object[]{reqImage.getIdentifier(), (System.currentTimeMillis() - millis), getMemoryUsage()});
@@ -120,7 +120,7 @@ public class ImageScaleServlet extends HttpServlet
       String message = ex.getMessage();
       if (message == null)
         message = ex.getClass().toString();
-        
+
       log.log(Level.INFO, "Image not properly processed: {0} (Memory usage: {1})",
         new Object[]{message, getMemoryUsage()});
       if (response != null && !response.isCommitted())
@@ -141,14 +141,20 @@ public class ImageScaleServlet extends HttpServlet
     String width = getParameter(request, "width");
     if (width != null)
       reqImage.setWidth(width, maxSize);
-          
+
     String height = getParameter(request, "height");
     if (height != null)
       reqImage.setHeight(height, maxSize);
 
     String crop = getParameter(request, "crop", "middle_center");
     if (crop != null)
+    {
+      if (!"auto".equals(crop) && !"middle_center".equals(crop))
+      {
+        crop = "middle_center";
+      }
       reqImage.setCropMode(crop);
+    }
 
     String contextPath = request.getContextPath();
     String servletPath = request.getServletPath();
@@ -168,18 +174,18 @@ public class ImageScaleServlet extends HttpServlet
 
       reqImage.setIdentifier(identifier);
     }
-    
+
     //ETag
     reqImage.setModifiedSince(request.getDateHeader("If-Modified-Since"));
     reqImage.setEtag(request.getHeader("If-None-Match"));
 
     return reqImage;
   }
-  
+
   private void loadContentId(RequestedImage reqImage)
   {
     DocumentManagerClient client = new DocumentManagerClient();
-    Document doc = 
+    Document doc =
             client.loadDocument(reqImage.getIdentifier(), 0, ContentInfo.ID);
     if (doc != null)
     {
@@ -194,7 +200,7 @@ public class ImageScaleServlet extends HttpServlet
   {
     if (reqImage.isHeightPercent() || reqImage.isWidthPercent())
       return false;
-    
+
     String identifier = reqImage.getIdentifier();
     if (identifier == null) return false;
 
@@ -206,11 +212,11 @@ public class ImageScaleServlet extends HttpServlet
       File imageFile = restoreImageFile(reqImage, width, height);
       if (imageFile != null)
       {
-        response.setHeader("ETag", imageFile.getName()); 
+        response.setHeader("ETag", imageFile.getName());
         response.setDateHeader("Last-Modified", imageFile.lastModified());
         IOUtils.writeToStream(new FileInputStream(imageFile),
           response.getOutputStream());
-        written = true;    
+        written = true;
       }
     }
     return written;
@@ -230,25 +236,25 @@ public class ImageScaleServlet extends HttpServlet
       httpUrlConnection.getHeaderFieldDate("Last-Modified", 0);
     response.setDateHeader("Last-Modified", lastModified);
     InputStream is = httpUrlConnection.getInputStream();
-    String formatName = getFormatName(httpUrlConnection);    
+    String formatName = getFormatName(httpUrlConnection);
     BufferedImage srcImage = null;
     BufferedImage dstImage = null;
     try
     {
       //Read source image
       srcImage = ImageIO.read(is);
-      incSize(srcImage);              
-      log.log(Level.INFO, "Image {0} loaded (Memory usage: {1})", 
-        new Object[]{reqImage.getIdentifier(), getMemoryUsage()});         
+      incSize(srcImage);
+      log.log(Level.INFO, "Image {0} loaded (Memory usage: {1})",
+        new Object[]{reqImage.getIdentifier(), getMemoryUsage()});
 
-      if (reqImage.isHeightPercent() || reqImage.isWidthPercent() || 
+      if (reqImage.isHeightPercent() || reqImage.isWidthPercent() ||
         needsTransformation(srcImage.getHeight(), srcImage.getWidth(),
           reqImage.getHeight(), reqImage.getWidth()))
       {
         //Image transformation
-        int dstWidth = reqImage.isWidthPercent() ? 
+        int dstWidth = reqImage.isWidthPercent() ?
           (srcImage.getWidth() * reqImage.getWidth() / 100) : reqImage.getWidth();
-        int dstHeight = reqImage.isHeightPercent() ? 
+        int dstHeight = reqImage.isHeightPercent() ?
           (srcImage.getHeight() * reqImage.getHeight() / 100) : reqImage.getHeight();
 
         String crop = reqImage.getCropMode();
@@ -265,9 +271,9 @@ public class ImageScaleServlet extends HttpServlet
           dstImage = getScaledInstance(dstImage, dstWidth, dstHeight);
         }
 
-        incSize(dstImage);                
-        log.log(Level.INFO, "Image {0} scaled (Memory usage: {1})", new Object[]{reqImage.getIdentifier(), getMemoryUsage()});              
-        decSize(srcImage);                                        
+        incSize(dstImage);
+        log.log(Level.INFO, "Image {0} scaled (Memory usage: {1})", new Object[]{reqImage.getIdentifier(), getMemoryUsage()});
+        decSize(srcImage);
         srcImage.flush();
         srcImage = null;
 
@@ -302,22 +308,22 @@ public class ImageScaleServlet extends HttpServlet
         saveImage(is, reqImage);
         //Write to response from cache
         readFromCache(response, reqImage);
-        
-        log.log(Level.INFO, "Image {0} does not need transformation. Not scaled (Memory usage:{1})", 
-                new Object[]{reqImage.getIdentifier(), getMemoryUsage()});          
+
+        log.log(Level.INFO, "Image {0} does not need transformation. Not scaled (Memory usage:{1})",
+                new Object[]{reqImage.getIdentifier(), getMemoryUsage()});
       }
     }
     finally
     {
-      if (srcImage != null) 
+      if (srcImage != null)
       {
-        decSize(srcImage);                                
+        decSize(srcImage);
         srcImage.flush();
       }
       srcImage = null;
-      if (dstImage != null) 
+      if (dstImage != null)
       {
-        decSize(dstImage);                                
+        decSize(dstImage);
         dstImage.flush();
       }
       dstImage = null;
@@ -353,7 +359,7 @@ public class ImageScaleServlet extends HttpServlet
 
     return scaledImage;
   }
-  
+
   private BufferedImage getSubimage(BufferedImage srcImage, int dstWidth,
     int dstHeight, String cropMode)
   {
@@ -373,7 +379,7 @@ public class ImageScaleServlet extends HttpServlet
     BufferedImage bufferedImage =
       new BufferedImage(dstWidth, dstHeight, srcImage.getType());
     bufferedImage.getGraphics().drawImage(img, 0, 0, dstWidth, dstHeight, null);
-    
+
     return bufferedImage;
   }
 
@@ -420,9 +426,9 @@ public class ImageScaleServlet extends HttpServlet
     return result;
   }
 
-  private String getParameter(HttpServletRequest request, String param, String def) 
+  private String getParameter(HttpServletRequest request, String param, String def)
   {
-    String parameter = null;  
+    String parameter = null;
     String queryString = request.getQueryString();
     if (queryString == null)
       return def;
@@ -433,7 +439,7 @@ public class ImageScaleServlet extends HttpServlet
       if (parameter == null || "".equals(parameter))
       {
        return def;
-      }      
+      }
     }
     catch (IllegalArgumentException ex)
     {
@@ -452,7 +458,7 @@ public class ImageScaleServlet extends HttpServlet
               parameter = def;
           }
         }
-      }        
+      }
     }
     catch (UnsupportedEncodingException ex)
     {
@@ -460,7 +466,7 @@ public class ImageScaleServlet extends HttpServlet
       if (parameter == null || "".equals(parameter))
       {
        return def;
-      }         
+      }
     }
 
     return parameter;
@@ -478,24 +484,24 @@ public class ImageScaleServlet extends HttpServlet
     writer.print(getServletInfo());
     writer.print("</p></body></html>");
   }
-  
-  private String getFormatName(HttpURLConnection httpUrlConnection) 
+
+  private String getFormatName(HttpURLConnection httpUrlConnection)
   {
     String contentType = httpUrlConnection.getContentType();
     String formatName = "gif"; //default
     if (contentType != null && contentType.contains("image/"))
       formatName = contentType.substring("image/".length());
     return formatName;
-  }    
+  }
 
   //Cache Methods
   private void saveImage(BufferedImage image, RequestedImage reqImage, String formatName)
     throws IOException
   {
-    String contentId = getCachedFilename(reqImage.getIdentifier(), 
-      reqImage.getWidth(), reqImage.getHeight(), reqImage.isWidthPercent(), 
+    String contentId = getCachedFilename(reqImage.getIdentifier(),
+      reqImage.getWidth(), reqImage.getHeight(), reqImage.isWidthPercent(),
       reqImage.isHeightPercent(), reqImage.getCropMode());
-    
+
     if (contentId != null)
     {
       try
@@ -521,7 +527,7 @@ public class ImageScaleServlet extends HttpServlet
           }
           finally
           {
-            if (lock != null && lock.isValid()) 
+            if (lock != null && lock.isValid())
               lock.release();
           }
         }
@@ -536,13 +542,13 @@ public class ImageScaleServlet extends HttpServlet
       }
     }
   }
-  
+
   private void saveImage(InputStream is, RequestedImage reqImage) throws IOException
   {
-    String contentId = getCachedFilename(reqImage.getIdentifier(), 
-      reqImage.getWidth(), reqImage.getHeight(), reqImage.isWidthPercent(), 
+    String contentId = getCachedFilename(reqImage.getIdentifier(),
+      reqImage.getWidth(), reqImage.getHeight(), reqImage.isWidthPercent(),
       reqImage.isHeightPercent(), reqImage.getCropMode());
-    
+
     if (contentId != null)
     {
       try
@@ -555,11 +561,11 @@ public class ImageScaleServlet extends HttpServlet
           FileLock lock = os.getChannel().lock();
           try
           {
-            IOUtils.writeToStream(is, os);        
+            IOUtils.writeToStream(is, os);
           }
           finally
           {
-            if (lock != null && lock.isValid()) 
+            if (lock != null && lock.isValid())
               lock.release();
           }
         }
@@ -573,8 +579,8 @@ public class ImageScaleServlet extends HttpServlet
         log.log(Level.SEVERE, ex.getMessage());
       }
     }
-  }  
-  
+  }
+
   private boolean needsTransformation(int srcHeight, int srcWidth,
     int dstHeight, int dstWidth)
   {
@@ -589,7 +595,7 @@ public class ImageScaleServlet extends HttpServlet
 
   private File restoreImageFile(RequestedImage reqImage, int width, int height)
   {
-    String filename = getCachedFilename(reqImage.getIdentifier(), 
+    String filename = getCachedFilename(reqImage.getIdentifier(),
       width, height, reqImage.isWidthPercent(), reqImage.isHeightPercent(), reqImage.getCropMode());
     File dir = getImageCacheDir();
     File imageFile = new File(dir, filename);
@@ -598,14 +604,14 @@ public class ImageScaleServlet extends HttpServlet
 
     return null;
   }
-  
+
   static String getCachedFilename(String identifier, int width, int height,
-    boolean isWidthPercent, boolean isHeightPercent, String cropMode)  
+    boolean isWidthPercent, boolean isHeightPercent, String cropMode)
   {
     String w = width + (isWidthPercent ? "pc" : "px");
     String h = height + (isHeightPercent? "pc" : "px");
     String crop = cropMode != null ? "_" + cropMode : "";
-    return identifier + "_" + w + "_" + h + crop;    
+    return identifier + "_" + w + "_" + h + crop;
   }
 
   private File getImageCacheDir()
@@ -692,7 +698,7 @@ public class ImageScaleServlet extends HttpServlet
     {
       this.width = width;
     }
-    
+
     public void setWidth(String value, int maxSize)
     {
       if (value != null)
@@ -706,7 +712,7 @@ public class ImageScaleServlet extends HttpServlet
         {
           value = value.substring(0, value.length() - 2);
         }
-        
+
         try
         {
           int w = Integer.parseInt(value);
@@ -721,7 +727,7 @@ public class ImageScaleServlet extends HttpServlet
         }
       }
     }
-    
+
     public void setHeight(String value, int maxSize)
     {
       if (value != null)
@@ -735,7 +741,7 @@ public class ImageScaleServlet extends HttpServlet
         {
           value = value.substring(0, value.length() - 2);
         }
-        
+
         try
         {
           int w = Integer.parseInt(value);
@@ -749,8 +755,8 @@ public class ImageScaleServlet extends HttpServlet
           log.log(Level.INFO, "Invalid height format: {0}", ex.getMessage());
         }
       }
-    }    
-    
+    }
+
     public boolean isWidthPercent()
     {
       return widthPercent;
@@ -780,7 +786,7 @@ public class ImageScaleServlet extends HttpServlet
     {
       this.etag = etag;
     }
-    
+
 
     public URL getUrl() throws MalformedURLException
     {
@@ -794,20 +800,20 @@ public class ImageScaleServlet extends HttpServlet
     {
       return identifier != null && Utilities.isUUID(identifier);
     }
-    
-    public String getCachedFilename()  
+
+    public String getCachedFilename()
     {
       String w = width + (isWidthPercent() ? "pc" : "px");
       String h = height + (isHeightPercent()? "pc" : "px");
       String crop = cropMode != null ? "_" + cropMode : "";
-      return identifier + "_" + w + "_" + h + crop;    
-    }   
-    
+      return identifier + "_" + w + "_" + h + crop;
+    }
+
     public boolean isValidEtag()
     {
       return etag != null && etag.equals(getCachedFilename());
     }
-    
+
     public boolean isNotModified()
     {
       return getModifiedSince() >= 0;
@@ -822,7 +828,7 @@ public class ImageScaleServlet extends HttpServlet
     {
       return modifiedSince;
     }
-    
+
   }
 
   //Memory size methods
@@ -831,7 +837,7 @@ public class ImageScaleServlet extends HttpServlet
     if (image != null)
       size = size + (image.getHeight() * image.getWidth() * 4);
   }
-    
+
   private synchronized void decSize(BufferedImage image)
   {
     if (image != null)
@@ -840,7 +846,7 @@ public class ImageScaleServlet extends HttpServlet
       if (size < 0) size = 0;
     }
   }
-  
+
   private String getMemoryUsage()
   {
     return DocumentUtils.getSizeString(size);

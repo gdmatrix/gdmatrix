@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.web.servlet;
@@ -99,11 +99,11 @@ public class ProxyServlet extends HttpServlet
       String cacheRefresh = req.getParameter(CACHE_REFRESH_PARAM);
       String cacheFormat = req.getParameter(CACHE_FORMAT_PARAM);
       Enumeration names = req.getParameterNames();
-      ArrayList<String> parameterList = new ArrayList<String>();
+      ArrayList<String> parameterList = new ArrayList<>();
       while (names.hasMoreElements())
       {
         String name = (String)names.nextElement();
-        if (!name.equals(URL_PARAM) && 
+        if (!name.equals(URL_PARAM) &&
             !name.equals(CACHE_GROUP_PARAM) &&
             !name.equals(CACHE_REFRESH_PARAM) &&
             !name.equals(CACHE_FORMAT_PARAM) &&
@@ -142,7 +142,7 @@ public class ProxyServlet extends HttpServlet
         String refreshValue = req.getParameter(cacheRefresh);
         String refreshParam = refreshValue == null ?
           null : "&" + cacheRefresh + "=" + refreshValue;
-        sendResponseFromCache(surl, 
+        sendResponseFromCache(surl,
           cacheFormat, cacheGroup, refreshParam, req, resp);
       }
     }
@@ -176,27 +176,15 @@ public class ProxyServlet extends HttpServlet
       }
       // write request message
       byte[] buffer = new byte[BUFFER_SIZE];
-      InputStream ris = req.getInputStream();
-      try
+      try (InputStream ris = req.getInputStream();
+           OutputStream cos = conn.getOutputStream())
       {
-        OutputStream cos = conn.getOutputStream();
-        try
+        int nr = ris.read(buffer);
+        while (nr > 0)
         {
-          int nr = ris.read(buffer);
-          while (nr > 0)
-          {
-            cos.write(buffer, 0, nr);
-            nr = ris.read(buffer);
-          }
+          cos.write(buffer, 0, nr);
+          nr = ris.read(buffer);
         }
-        finally
-        {
-          cos.close();
-        }
-      }
-      finally
-      {
-        ris.close();
       }
       if (!connect(conn, resp)) return;
 
@@ -212,27 +200,15 @@ public class ProxyServlet extends HttpServlet
         resp.setHeader("Content-Encoding", contentEncoding);
       }
 
-      InputStream cis = conn.getInputStream();
-      try
+      try (InputStream cis = conn.getInputStream();
+           OutputStream ros = resp.getOutputStream())
       {
-        OutputStream ros = resp.getOutputStream();
-        try
+        int nr = cis.read(buffer);
+        while (nr > 0)
         {
-          int nr = cis.read(buffer);
-          while (nr > 0)
-          {
-            ros.write(buffer, 0, nr);
-            nr = cis.read(buffer);
-          }
+          ros.write(buffer, 0, nr);
+          nr = cis.read(buffer);
         }
-        finally
-        {
-          ros.close();
-        }
-      }
-      finally
-      {
-        cis.close();
       }
     }
     else
@@ -241,7 +217,7 @@ public class ProxyServlet extends HttpServlet
     }
   }
 
-  private void sendResponse(String surl, 
+  private void sendResponse(String surl,
     HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException
   {
@@ -264,7 +240,7 @@ public class ProxyServlet extends HttpServlet
   }
 
   private void sendResponseFromCache(String surl, String cacheFormat,
-    String cacheGroup, String refreshParam, 
+    String cacheGroup, String refreshParam,
     HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException
   {
@@ -274,7 +250,7 @@ public class ProxyServlet extends HttpServlet
     cacheRequestCount++;
 
     long lastModified = 0;
-    
+
     InputStream dataStream;
     File cacheGroupDir = getCacheGroupDir(cacheGroup);
     File mimeFile = new File(cacheGroupDir, hashValue + MIME_SUFFIX);
@@ -285,13 +261,14 @@ public class ProxyServlet extends HttpServlet
       long since = req.getDateHeader("If-Modified-Since");
       if (dataFile.lastModified() / 1000 <= since / 1000)
       {
-        // client has a valid version      
+        // client has a valid version
         resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
         return;
       }
-      // get dataStream from cache
-      BufferedReader reader = new BufferedReader(new FileReader(mimeFile));
-      try { contentType = reader.readLine();} finally { reader.close(); }
+      try (BufferedReader reader = new BufferedReader(new FileReader(mimeFile)))
+      {
+        contentType = reader.readLine();
+      }
       contentLength = (int)dataFile.length();
       dataStream = new FileInputStream(dataFile);
       lastModified = dataFile.lastModified();
@@ -316,8 +293,10 @@ public class ProxyServlet extends HttpServlet
 
         // write mime file
         File tempMimeFile = File.createTempFile("temp", MIME_SUFFIX);
-        FileWriter writer = new FileWriter(tempMimeFile);
-        try { writer.write(contentType); } finally { writer.close(); }
+        try (FileWriter writer = new FileWriter(tempMimeFile))
+        {
+          writer.write(contentType);
+        }
         if (mimeFile.exists()) mimeFile.delete();
         tempMimeFile.renameTo(mimeFile);
 
@@ -342,15 +321,14 @@ public class ProxyServlet extends HttpServlet
   private void printInfo(HttpServletResponse resp) throws IOException
   {
     resp.setContentType("text/html");
-    PrintWriter writer = resp.getWriter();
-    try
+    try (PrintWriter writer = resp.getWriter())
     {
       writer.println("<?xml version='1.0' encoding='UTF-8'?>");
       writer.println("<html><head><title>ProxyServlet</title>");
       writer.println("<style>body {font-family:Arial; font-size:14px;}</style>");
       writer.println("</head><body>");
       writer.println("<h1>ProxyServlet</h1>");
-      writer.println("<p>Config file: " + 
+      writer.println("<p>Config file: " +
         proxyConfig.getProxyFile().getAbsolutePath() + "</p>");
       writer.println("<p>Cache groups:</p>");
       writer.println("<ul>");
@@ -385,10 +363,6 @@ public class ProxyServlet extends HttpServlet
       writer.println("</ul>");
       writer.println("</body>");
       writer.println("</html>");
-    }
-    finally
-    {
-      writer.close();
     }
   }
 
@@ -452,7 +426,7 @@ public class ProxyServlet extends HttpServlet
     return cacheFormat == null || contentType.startsWith(cacheFormat);
   }
 
-  private void prepareConnection(HttpURLConnection conn, 
+  private void prepareConnection(HttpURLConnection conn,
     HttpServletRequest req) throws IOException
   {
     URL url = conn.getURL();
@@ -482,6 +456,7 @@ public class ProxyServlet extends HttpServlet
         }
       }
     }
+    else throw new IOException("Invalid host: " + host);
   }
 
   private boolean connect(HttpURLConnection conn, HttpServletResponse resp)

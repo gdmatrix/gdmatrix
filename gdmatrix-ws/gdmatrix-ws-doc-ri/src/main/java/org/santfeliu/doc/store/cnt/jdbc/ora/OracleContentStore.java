@@ -46,8 +46,8 @@ import org.santfeliu.doc.store.cnt.jdbc.JdbcContentStoreConnection;
 public class OracleContentStore extends JdbcContentStore
 {
   @Override
-  protected JdbcContentStoreConnection getContentStoreConnection(Connection conn, 
-    Properties config)
+  protected JdbcContentStoreConnection getContentStoreConnection(
+    Connection conn, Properties config)
   {
     return new OracleContentStoreConnection(conn, config);
   }
