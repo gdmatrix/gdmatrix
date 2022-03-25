@@ -299,16 +299,16 @@ public class CasesJobStore implements JobStore
       }
       
       if (intervention == null)
-      {
         intervention = JobFiringConverter.jobFiringToInt(jobFiring);
-        if (document != null)
-        {
-          DictionaryUtils.setProperty(intervention, "logDocId", 
-            document.getDocId());
-          DictionaryUtils.setProperty(intervention, "logTitle",
-            document.getTitle());
-        }        
-      }
+      
+      if (document != null)
+      {
+        DictionaryUtils.setProperty(intervention, "logDocId", 
+          document.getDocId());
+        DictionaryUtils.setProperty(intervention, "logTitle",
+          document.getTitle());
+      }        
+
       
       port.storeIntervention(intervention);      
     }
