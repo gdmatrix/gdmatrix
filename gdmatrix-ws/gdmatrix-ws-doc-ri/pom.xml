@@ -25,7 +25,12 @@
       <groupId>uk.gov.nationalarchives</groupId>
       <artifactId>droid-container</artifactId>
       <version>6.5.2</version>              
-    </dependency>      
+    </dependency>   
+	<dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.1.55</version>
+	</dependency>       
   </dependencies>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
