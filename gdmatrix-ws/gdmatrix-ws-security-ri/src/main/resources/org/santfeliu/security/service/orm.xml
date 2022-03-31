@@ -353,7 +353,7 @@
         <column name="USRPASS" length="8" />
       </basic>
       <basic name="displayName">
-        <column name="USRDESC" length="20" />
+        <column name="USRDESC" length="60" />
       </basic>
       <basic name="personId">
         <column name="PERSCOD" length="20" />

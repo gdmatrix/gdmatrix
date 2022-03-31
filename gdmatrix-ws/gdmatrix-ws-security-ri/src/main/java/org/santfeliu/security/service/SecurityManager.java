@@ -104,7 +104,7 @@ public class SecurityManager implements SecurityManagerPort
   public static final int ROLE_DESCRIPTION_MAX_SIZE = 400;
   public static final int ROLE_ID_MAX_SIZE = 20;
   public static final int ROLE_NAME_MAX_SIZE = 100;
-  public static final int USER_DISPLAY_NAME_MAX_SIZE = 20;
+  public static final int USER_DISPLAY_NAME_MAX_SIZE = 60;
   public static final int USER_ID_MAX_SIZE = 20;
 
   // MatrixConfig properties
