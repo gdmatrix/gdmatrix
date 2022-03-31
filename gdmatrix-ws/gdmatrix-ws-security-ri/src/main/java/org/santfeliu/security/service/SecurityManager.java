@@ -79,6 +79,7 @@ import org.matrix.doc.DocumentConstants;
 import org.matrix.forum.ForumConstants;
 import org.matrix.job.JobConstants;
 import org.matrix.kernel.KernelConstants;
+import org.matrix.policy.PolicyConstants;
 import org.matrix.presence.PresenceConstants;
 import org.matrix.sql.SQLConstants;
 import org.matrix.workflow.WorkflowConstants;
@@ -225,6 +226,8 @@ public class SecurityManager implements SecurityManagerPort
       "Presence administrator");
     createUserInRole(adminId, CMSConstants.CMS_ADMIN_ROLE,
       "CMS administrator");
+    createUserInRole(adminId, PolicyConstants.POLICY_ADMIN_ROLE,
+      "Policy administrator");
   }
 
   private void createUser(String userId)
