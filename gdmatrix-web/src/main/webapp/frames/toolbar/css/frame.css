@@ -38,9 +38,53 @@ BODY
 ul > .errorMessage,
 ul > .warnMessage,
 ul > .infoMessage,
-ul > .fatalMessage
+ul > .fatalMessage,
+ul > .errorMessage_line,
+ul > .warnMessage_line,
+ul > .infoMessage_line,
+ul > .fatalMessage_line
 {
   margin-left: -40px;
+}
+
+.infoMessage_line
+{
+  color: green;
+  display: block;
+  border: 1px green solid;
+  background-color: #F7FFF7;
+  padding: 5px;
+  margin-bottom: 1px;
+}
+
+.warnMessage_line
+{
+  color: gray;
+  display: block;
+  border: 1px orange solid;
+  background-color: #FFFF80;
+  padding: 5px;
+  margin-bottom: 1px;  
+}
+
+.errorMessage_line
+{
+  color: #A80000;
+  display: block;
+  border: 1px #A80000 solid;
+  background-color: #FFEEEE;
+  padding: 5px;
+  margin-bottom: 1px;  
+}
+
+.fatalMessage_line
+{
+  color: yellow;
+  display: block;
+  border: 1px red solid;
+  background-color: red;
+  padding: 5px;
+  margin-bottom: 1px;    
 }
 
 A.bottomLink
