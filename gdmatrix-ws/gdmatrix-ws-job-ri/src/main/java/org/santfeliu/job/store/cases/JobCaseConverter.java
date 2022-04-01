@@ -57,8 +57,11 @@ public class JobCaseConverter
       cas.setTitle(job.getName());
       cas.setDescription(job.getDescription());
       String startDateTime = job.getStartDateTime();
-      cas.setStartDate(startDateTime.substring(0, 8));
-      cas.setStartTime(startDateTime.substring(8));
+      if (startDateTime != null)
+      {  
+        cas.setStartDate(startDateTime.substring(0, 8));
+        cas.setStartTime(startDateTime.substring(8));
+      }
       String endDateTime = job.getEndDateTime();
       if (endDateTime != null)
       {

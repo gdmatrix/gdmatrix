@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -73,11 +74,12 @@ import org.matrix.policy.Policy;
 import org.matrix.policy.PolicyFilter;
 import org.matrix.policy.PolicyState;
 import org.matrix.dic.Property;
-import org.matrix.security.User;
+import org.matrix.policy.PolicyConstants;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.WSTypeValidator;
+import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.ws.WSUtils;
@@ -145,7 +147,12 @@ public class PolicyManager implements PolicyManagerPort
   public Policy storePolicy(Policy policy)
   {
     LOGGER.log(Level.INFO, "storePolicy {0}", policy.getPolicyId());
+
     User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     policy = getWSEndpoint().toLocal(Policy.class, policy);
 
     validatePolicy(policy);
@@ -218,6 +225,12 @@ public class PolicyManager implements PolicyManagerPort
   public boolean removePolicy(String policyId)
   {
     LOGGER.log(Level.INFO, "removePolicy {0}", policyId);
+
+    User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     boolean removed;
     try
     {
@@ -291,9 +304,14 @@ public class PolicyManager implements PolicyManagerPort
   {
     LOGGER.log(Level.INFO, "storeClassPolicy {0}",
       classPolicy.getClassPolicyId());
-    validateClassPolicy(classPolicy);
 
     User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
+    validateClassPolicy(classPolicy);
+
     String classPolicyId = classPolicy.getClassPolicyId();
     if (classPolicyId == null) // new
     {
@@ -319,6 +337,12 @@ public class PolicyManager implements PolicyManagerPort
   public boolean removeClassPolicy(String classPolicyId)
   {
     LOGGER.log(Level.INFO, "removeClassPolicy {0}", classPolicyId);
+
+    User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     boolean removed;
     try
     {
@@ -407,9 +431,14 @@ public class PolicyManager implements PolicyManagerPort
   public CasePolicy storeCasePolicy(CasePolicy casePolicy)
   {
     LOGGER.log(Level.INFO, "storeCasePolicy {0}", casePolicy.getCasePolicyId());
-    validateCasePolicy(casePolicy);
 
     User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
+    validateCasePolicy(casePolicy);
+
     String casePolicyId = casePolicy.getCasePolicyId();
     if (casePolicyId == null) // new
     {
@@ -435,6 +464,12 @@ public class PolicyManager implements PolicyManagerPort
   public boolean removeCasePolicy(String casePolicyId)
   {
     LOGGER.log(Level.INFO, "removeCasePolicy {0}", casePolicyId);
+
+    User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     boolean removed;
     try
     {
@@ -530,9 +565,14 @@ public class PolicyManager implements PolicyManagerPort
   public DocumentPolicy storeDocumentPolicy(DocumentPolicy docPolicy)
   {
     LOGGER.log(Level.INFO, "storeDocumentPolicy {0}", docPolicy.getPolicyId());
-    validateDocumentPolicy(docPolicy);
 
     User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
+    validateDocumentPolicy(docPolicy);
+
     String docPolicyId = docPolicy.getDocPolicyId();
 
     if (docPolicyId == null) // new
@@ -559,6 +599,12 @@ public class PolicyManager implements PolicyManagerPort
   public boolean removeDocumentPolicy(String docPolicyId)
   {
     LOGGER.log(Level.INFO, "removeDocumentPolicy {0}", docPolicyId);
+
+    User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     boolean removed;
     try
     {
@@ -659,7 +705,12 @@ public class PolicyManager implements PolicyManagerPort
   public DisposalHold storeDisposalHold(DisposalHold dispHold)
   {
     LOGGER.log(Level.INFO, "storeDisposalHold {0}", dispHold.getDispHoldId());
+
     User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     String dispHoldId = dispHold.getDispHoldId();
     if (dispHoldId == null) // new
     {
@@ -685,6 +736,12 @@ public class PolicyManager implements PolicyManagerPort
   public boolean removeDisposalHold(String dispHoldId)
   {
     LOGGER.log(Level.INFO, "removeDisposalHold {0}", dispHoldId);
+
+    User user = UserCache.getUser(wsContext);
+
+    if (!isUserAdmin(user))
+      throw new WebServiceException("ACTION_DENIED");
+
     boolean removed;
     try
     {
@@ -1068,5 +1125,11 @@ public class PolicyManager implements PolicyManagerPort
 
     WSTypeValidator validator = new WSTypeValidator(type);
     validator.validate(classPolicy, "classPolicyId");
+  }
+
+  private boolean isUserAdmin(User user)
+  {
+    Set<String> userRoles = user.getRoles();
+    return userRoles.contains(PolicyConstants.POLICY_ADMIN_ROLE);
   }
 }

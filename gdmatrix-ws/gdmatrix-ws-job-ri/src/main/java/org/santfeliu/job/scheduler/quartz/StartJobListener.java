@@ -94,12 +94,12 @@ public class StartJobListener implements TriggerListener
           LogUtils.log(jobId, "Job was already locked", Level.INFO);            
         }
         else //set lock
-        {     
-          job.setLocked(true);
-          jobStore.storeJob(job);
+        {
           Boolean audit = map.getBoolean("audit");
           if (audit)
-            setLogger(map);              
+            setLogger(map);           
+          job.setLocked(true);
+          jobStore.storeJob(job);
         }  
       }
     }
