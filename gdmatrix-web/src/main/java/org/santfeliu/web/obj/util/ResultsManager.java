@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.faces.convert.Converter;
@@ -70,14 +72,15 @@ public class ResultsManager extends WebBean implements Serializable
   public static final String COLUMN_RENDERERS_PROPERTY = "columnRenderer";
   public static final String COLUMN_VALUE_PREFIX_PROPERTY = "columnValuePrefix";
   public static final String COLUMN_VALUE_SUFFIX_PROPERTY = "columnValueSuffix";
-  public static final String COLUMN_VALUE_TEMPLATE_PROPERTY = "columnValueTemplate";
+  public static final String COLUMN_VALUE_TEMPLATE_PROPERTY = 
+    "columnValueTemplate";
   public static final String ROW_STYLECLASS_PROPERTY = "rowStyleClass";
 
   private static final String STYLECLASS_SUFFIX = "Column";
 
   private List<String> defaultColumnNames;
-  private String bundleClassName;
-  private String bundlePrefix;
+  private final String bundleClassName;
+  private final String bundlePrefix;
 
   private HashMap<String, ColumnDefinition> columns;
   private List<String> columnNames;
@@ -85,6 +88,9 @@ public class ResultsManager extends WebBean implements Serializable
   private boolean ascending = false;
   private String typeIdPropName;
   private RowStyleClassGenerator rowStyleClassGenerator;
+  
+  private static Logger LOGGER = 
+    Logger.getLogger(ResultsManager.class.getName());
 
   public ResultsManager(String bundleClassName, String bundlePrefix)
   {
@@ -257,10 +263,12 @@ public class ResultsManager extends WebBean implements Serializable
       result = colDef.getValue(row, true);
 
       //complete URL values
-      if (colDef != null && (colDef.isImageType() || colDef.isLinkType())
-        && result != null && !result.toString().toLowerCase().startsWith("http://"))
+      if ((colDef.isImageType() || colDef.isLinkType())
+        && result != null 
+        && !result.toString().toLowerCase().startsWith("http://"))
       {
-        result = result.toString().toLowerCase().replaceAll("[^\\w&&[^\\.\\/\\:]]", "_");
+        String regex = "[\\W&&[^\\.\\/\\:]]";
+        result = result.toString().toLowerCase().replaceAll(regex, "_");
       }
     }
 
@@ -352,7 +360,8 @@ public class ResultsManager extends WebBean implements Serializable
             {
               if (!column.equals((String)variable))
               {
-                Object value = getColumnValue(getValue("#{row}"), (String)variable);
+                Object value = 
+                  getColumnValue(getValue("#{row}"), (String)variable);
                 properties.put(variable, value);
               }
             }
@@ -434,6 +443,7 @@ public class ResultsManager extends WebBean implements Serializable
           }
           catch (Exception ex)
           {
+            warn(ROW_STYLECLASS_PROPERTY, attribute, tokens, ex);
           }
         }
       }
@@ -462,66 +472,85 @@ public class ResultsManager extends WebBean implements Serializable
             colDef.setResultsManager(this);
             this.columns.put(attName, colDef);
           }
-          if (propertyName.equals(COLUMN_NAMES_PROPERTY))
+          switch (propertyName)
           {
-            this.columnNames.add(attName);
-            if (attValue != null)
-              colDef.setAlias(attValue);
-            if (tokens.size() >= 3)
-              colDef.setDescription(tokens.get(2));
-          }
-          else if (propertyName.equals(COLUMN_SOURCES_PROPERTY))
-            colDef.setSource(attValue);
-          else if (propertyName.equals(COLUMN_STYLES_PROPERTY))
-            colDef.setStyle(attValue);
-          else if (propertyName.equals(COLUMN_STYLECLASSES_PROPERTY))
-            colDef.setStyleClass(attValue);
-          else if (propertyName.equals(COLUMN_TYPES_PROPERTY))
-            colDef.setType(attValue);
-          else if (propertyName.equals(COLUMN_VALUE_PREFIX_PROPERTY))
-            colDef.setValuePrefix(attValue);
-          else if (propertyName.equals(COLUMN_VALUE_SUFFIX_PROPERTY))
-            colDef.setValueSuffix(attValue);
-          else if (propertyName.equals(COLUMN_VALUE_TEMPLATE_PROPERTY))
-            colDef.setValueTemplate(attValue);     
-          else if (propertyName.equals(COLUMN_CONVERTERS_PROPERTY))
-          {
-            try
-            {
-              Converter converter = (Converter)newInstance(tokens, attValue, 2);
-              colDef.setConverter(converter);
-            }
-            catch (Exception ex)
-            {
-            }
-          }
-          else if (propertyName.equals(COLUMN_COMPARATORS_PROPERTY))
-          {
-            try
-            {
-              ColumnComparator comparator =
-                (ColumnComparator)newInstance(tokens, attValue, 2);
-              colDef.setComparator(comparator);
-            }
-            catch (Exception ex)
-            {
-            }
-          }
-          else if (propertyName.equals(COLUMN_RENDERERS_PROPERTY))
-          {
-            try
-            {
-              ColumnRenderer renderer =
-                (ColumnRenderer)newInstance(tokens, attValue, 2);
-              colDef.setRenderer(renderer);
-            }
-            catch (Exception ex)
-            {
-            }
+            case COLUMN_NAMES_PROPERTY:
+              this.columnNames.add(attName);
+              if (attValue != null)
+                colDef.setAlias(attValue);
+              if (tokens.size() >= 3)
+                colDef.setDescription(tokens.get(2));
+              break;
+            case COLUMN_SOURCES_PROPERTY:
+              colDef.setSource(attValue);
+              break;
+            case COLUMN_STYLES_PROPERTY:
+              colDef.setStyle(attValue);
+              break;
+            case COLUMN_STYLECLASSES_PROPERTY:
+              colDef.setStyleClass(attValue);
+              break;
+            case COLUMN_TYPES_PROPERTY:
+              colDef.setType(attValue);
+              break;
+            case COLUMN_VALUE_PREFIX_PROPERTY:
+              colDef.setValuePrefix(attValue);
+              break;
+            case COLUMN_VALUE_SUFFIX_PROPERTY:
+              colDef.setValueSuffix(attValue);
+              break;
+            case COLUMN_VALUE_TEMPLATE_PROPERTY:
+              colDef.setValueTemplate(attValue);
+              break;
+            case COLUMN_CONVERTERS_PROPERTY:
+              try
+              {
+                Converter converter = 
+                  (Converter)newInstance(tokens, attValue, 2);
+                colDef.setConverter(converter);
+              }
+              catch (Exception ex)
+              {
+                warn(COLUMN_CONVERTERS_PROPERTY, attValue, tokens, ex);
+              } 
+              break;
+            case COLUMN_COMPARATORS_PROPERTY:
+              try
+              {
+                ColumnComparator comparator =
+                  (ColumnComparator)newInstance(tokens, attValue, 2);
+                colDef.setComparator(comparator);
+              }
+              catch (Exception ex)
+              {
+                warn(COLUMN_COMPARATORS_PROPERTY, attValue, tokens, ex);
+              } 
+              break;
+            case COLUMN_RENDERERS_PROPERTY:
+              try
+              {
+                ColumnRenderer renderer =
+                  (ColumnRenderer)newInstance(tokens, attValue, 2);
+                colDef.setRenderer(renderer);
+              }
+              catch (Exception ex)
+              {
+                warn(COLUMN_RENDERERS_PROPERTY, attValue, tokens, ex);
+              } 
+              break;
+            default:
+              break;
           }
         }
       }
     }
+  }
+  
+  private void warn(String attName, String attValue, List<String> tokens,
+    Exception ex)
+  {
+    Object[] params = new Object[]{attName, attValue, tokens, ex.getMessage()};
+    LOGGER.log(Level.WARNING, "Invalid config. {0}::{1}::{2}::{3}", params);    
   }
 
   private List<String> parseAttribute(String attribute)
@@ -549,8 +578,8 @@ public class ResultsManager extends WebBean implements Serializable
     return matchList;
   }
 
-  private Object newInstance(List<String> tokens, String className, int minTokenSize)
-    throws Exception
+  private Object newInstance(List<String> tokens, String className, 
+    int minTokenSize) throws Exception
   {
     Class instanceClass = Class.forName(className);
     Object instance = null;
@@ -561,7 +590,8 @@ public class ResultsManager extends WebBean implements Serializable
     else if (tokens.size() > minTokenSize)
     {
       Constructor[] constructors = instanceClass.getConstructors();
-      Object[] parameters = Arrays.copyOfRange(tokens.toArray(), minTokenSize, tokens.size());
+      Object[] parameters = 
+        Arrays.copyOfRange(tokens.toArray(), minTokenSize, tokens.size());
       instance = newInstance(constructors, parameters);
     }
     return instance;
@@ -597,7 +627,7 @@ public class ResultsManager extends WebBean implements Serializable
 
   public class ColumnComparator implements Comparator, Serializable
   {
-    private List<String> columnNames;
+    private final List<String> columnNames;
     private boolean ascending;
 
     public ColumnComparator(List<String> columnNames, boolean ascending)
@@ -606,6 +636,7 @@ public class ResultsManager extends WebBean implements Serializable
       this.ascending = ascending;
     }
 
+    @Override
     public int compare(Object o1, Object o2)
     {
       int result = 0;
@@ -617,27 +648,26 @@ public class ResultsManager extends WebBean implements Serializable
           ascending = false;
 
         ColumnDefinition colDef = columns.get(columnName);
-        Object column1 = colDef.getValue(o1, false);
-        Object column2 = colDef.getValue(o2, false);
-
-        if (column1 == null && column2 != null)
-            return getResult(-1);
-        else if (column1 == null && column2 == null)
-            return getResult(0);
-        else if (column1 != null && column2 == null)
-            return getResult(1);
-        else
+        if (colDef != null)
         {
-          if (colDef != null)
+          Object column1 = colDef.getValue(o1, false);
+          Object column2 = colDef.getValue(o2, false);
+
+          if (column1 == null && column2 != null)
+              return getResult(-1);
+          else if (column1 == null && column2 == null)
+              return getResult(0);
+          else if (column1 != null && column2 == null)
+              return getResult(1);
+          else
           {
             Comparator c = colDef.getComparator();
             if (c != null)
               result = c.compare(column1, column2);
-            else
+            else if (column1 != null)
               result = ((Comparable)column1).compareTo(column2);
           }
-          else
-            result = ((Comparable)column1).compareTo(column2);
+
           if (result != 0)
             return getResult(result);
         }

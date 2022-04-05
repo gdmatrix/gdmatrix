@@ -50,7 +50,8 @@ import org.santfeliu.util.TextUtils;
 public class KeywordsManager implements Serializable
 {
   public static final String KEYWORDS_PROPERTY = "keywords";
-  public static final String KEYWORDS_PROPERTIES_PROPERTY = "_keywordsProperties";
+  public static final String KEYWORDS_PROPERTIES_PROPERTY = 
+    "_keywordsProperties";
 
   private List<String> keywords;
   private HashSet<String> dummyWords = new HashSet();
@@ -124,15 +125,18 @@ public class KeywordsManager implements Serializable
     if (isKeywordsDefined(type))
     {
       String keywords = null;
-      if (!DictionaryUtils.containsProperty(object, KeywordsManager.KEYWORDS_PROPERTY))
+      if (!DictionaryUtils.containsProperty(object, KEYWORDS_PROPERTY))
       {
         //Main property
         Property p = DictionaryUtils.getProperty(object, defaultMainProperty);
         if (p != null)
-          keywords = KeywordsManager.toKeywordsText(keywords, p.getValue().get(0));
-
-        PropertyDefinition propDef =
-          type.getPropertyDefinition(KeywordsManager.KEYWORDS_PROPERTIES_PROPERTY);
+        {
+          String text = p.getValue().get(0);
+          keywords = KeywordsManager.toKeywordsText(keywords, text);
+        }
+        
+        PropertyDefinition propDef = 
+          type.getPropertyDefinition(KEYWORDS_PROPERTIES_PROPERTY);
         if (propDef != null)
         {
           String properties = propDef.getValue().get(0);
@@ -140,16 +144,20 @@ public class KeywordsManager implements Serializable
           {
             p = DictionaryUtils.getProperty(object, prop.trim());
             if (p != null)
-              keywords = KeywordsManager.toKeywordsText(keywords, p.getValue().get(0));
+            {
+              String text = p.getValue().get(0);
+              keywords = 
+                KeywordsManager.toKeywordsText(keywords, text);
+            }
           }
         }
       }
       else
       {
-        Property p = DictionaryUtils.getProperty(object, KeywordsManager.KEYWORDS_PROPERTY);
+        Property p = DictionaryUtils.getProperty(object, KEYWORDS_PROPERTY);
         keywords = KeywordsManager.toKeywordsText(p.getValue().get(0));
       }
-      DictionaryUtils.setProperty(object, KeywordsManager.KEYWORDS_PROPERTY, keywords);
+      DictionaryUtils.setProperty(object, KEYWORDS_PROPERTY, keywords);
     }
   }
 
@@ -166,7 +174,7 @@ public class KeywordsManager implements Serializable
         {
           String word = parts[i].toLowerCase();
           word = TextUtils.unAccent(word);
-          word = word.replaceAll("[^\\w]", "");
+          word = word.replaceAll("[\\W]", "");
           if (word.length() > 2)
             searchWords.add(word);
         }
@@ -190,7 +198,7 @@ public class KeywordsManager implements Serializable
       {
         String word = parts[i].toLowerCase();
         word = TextUtils.unAccent(word);
-        word = word.replaceAll("[^\\w]", "");
+        word = word.replaceAll("[\\W]", "");
         if (word.length() > 2 && !sb.toString().contains(word + " "))
         {
           sb.append(word).append(" ");
@@ -209,7 +217,7 @@ public class KeywordsManager implements Serializable
   private static boolean isKeywordsDefined(Type type)
   {
     if (type != null)
-      return type.getPropertyDefinition(KeywordsManager.KEYWORDS_PROPERTY) != null;
+      return type.getPropertyDefinition(KEYWORDS_PROPERTY) != null;
     else
       return false;
   }
@@ -237,14 +245,15 @@ public class KeywordsManager implements Serializable
     {
     }
     
+    @Override
     public int compare(Object o1, Object o2)
     {
       if (o1 != null && o2 != null)
       {
         Property p1 =
-          DictionaryUtils.getProperty(o1, KeywordsManager.KEYWORDS_PROPERTY);
+          DictionaryUtils.getProperty(o1, KEYWORDS_PROPERTY);
         Property p2 =
-          DictionaryUtils.getProperty(o2, KeywordsManager.KEYWORDS_PROPERTY);
+          DictionaryUtils.getProperty(o2, KEYWORDS_PROPERTY);
         if (p1 != null && p2 != null)
         {
           String k1 = p1.getValue().get(0);
@@ -255,10 +264,12 @@ public class KeywordsManager implements Serializable
           double score2 = 0;
           for (String word : keywords)
           {
-            score1 = score1 + (keywords1.indexOf(word) >= 0 ?
-              (double)((double)keywords1.indexOf(word) / (double)keywords1.size()) : 2.0);
-            score2 = score2 + (keywords2.indexOf(word) >= 0 ?
-              (double)((double)keywords2.indexOf(word) / (double)keywords2.size()) : 2.0);
+            int k1Pos = keywords1.indexOf(word);
+            int k2Pos = keywords2.indexOf(word);
+            score1 = score1 + (k1Pos >= 0 ? (double)((double)k1Pos / 
+              (double)keywords1.size()) : 2.0);
+            score2 = score2 + (k2Pos >= 0 ? (double)((double)k2Pos / 
+              (double)keywords2.size()) : 2.0);
           }
           return (score1 <= score2 ? -1 : 1);
         }

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.matrix.dic.Property;
 import org.santfeliu.dic.util.DictionaryUtils;
+import static org.santfeliu.util.keywords.KeywordsManager.KEYWORDS_PROPERTY;
 
 
 /**
@@ -114,9 +115,10 @@ public class SetObjectManager extends ParametersManager
           DictionaryUtils.setProperty(object, name, value);
 
           if (DictionaryUtils.containsProperty(object, name) ||
-            KeywordsManager.KEYWORDS_PROPERTY.equals(name))
-            DictionaryUtils.addProperty(processedParameters, name, String.valueOf(value));
-          
+            KEYWORDS_PROPERTY.equals(name))
+          {
+            DictionaryUtils.addProperty(processedParameters, name, value);
+          }
           objectModified = true;
         }
       }
