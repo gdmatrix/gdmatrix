@@ -94,6 +94,11 @@ public class SQLManager implements SQLManagerPort
       Class connStoreClass = Class.forName(connectionStoreClassName);
       connStore = (ConnectionStore)connStoreClass.newInstance();
       Properties properties = MatrixConfig.getClassProperties(connStoreClass);
+      
+      String ddlGeneration = MatrixConfig.getProperty("enableDDLGeneration");
+      if (ddlGeneration != null)
+        properties.setProperty("enableDDLGeneration", ddlGeneration);
+      
       connStore.init(properties);
       
       repository = new DBRepository();
