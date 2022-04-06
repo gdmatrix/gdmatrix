@@ -78,7 +78,10 @@ public class DBDataStore implements DataStore
         username = properties.getProperty(PKG + "username");
         password = properties.getProperty(PKG + "password");
       }
-      createTables();
+      String enableDDLGeneration = 
+        properties.getProperty("enableDDLGeneration");
+      if ("true".equalsIgnoreCase(enableDDLGeneration))
+        createTables();
     }
     catch (Exception ex)
     {

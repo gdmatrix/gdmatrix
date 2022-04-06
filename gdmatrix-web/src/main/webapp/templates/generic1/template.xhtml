@@ -61,27 +61,34 @@
                                    styleClass="loginCommand" immediate="true">
                       <h:outputText value="[#{webBundle.buttonSignout}]" />
                     </h:commandLink>
+                    
+                    <h:panelGroup rendered="#{not userSessionBean.selectedMenuItem.properties.hideCertificateAuthentication}">
+                      <sf:secureCommandLink
+                        styleClass="loginCommand" immediate="true"
+                        rendered="#{not userSessionBean.certificateUser}"
+                        action="#{loginBean.loginCertificate}" scheme="https"
+                        port="#{applicationBean.clientSecurePort}">
+                        <h:outputText value="[#{webBundle.certificateAuthentication}]" />
+                      </sf:secureCommandLink>
+                    </h:panelGroup>
+                    
+                    <h:panelGroup rendered="#{not userSessionBean.selectedMenuItem.properties.hideCreateAccounts}">
+                      <h:commandLink action="register" styleClass="loginCommand"
+                                     rendered="#{userSessionBean.anonymousUser}"
+                                     immediate="true">
+                        <h:outputText value="[#{webBundle.outputCreateAccount}]" />
+                      </h:commandLink>
+                    </h:panelGroup>
 
-                    <sf:secureCommandLink
-                      styleClass="loginCommand" immediate="true"
-                      rendered="#{not userSessionBean.certificateUser}"
-                      action="#{loginBean.loginCertificate}" scheme="https"
-                      port="#{applicationBean.clientSecurePort}">
-                      <h:outputText value="[#{webBundle.certificateAuthentication}]" />
-                    </sf:secureCommandLink>
+                    <h:panelGroup rendered="#{not userSessionBean.selectedMenuItem.properties.hideChangePassword}">
+                      <h:commandLink action="password" styleClass="loginCommand"
+                                     rendered="#{not userSessionBean.anonymousUser and 
+                                                 not userSessionBean.certificateUser}"
+                                     immediate="true">
+                        <h:outputText value="[#{webBundle.outputChangePassword}]" />
+                      </h:commandLink>
+                    </h:panelGroup>
 
-                    <h:commandLink action="register" styleClass="loginCommand"
-                                   rendered="#{userSessionBean.anonymousUser}"
-                                   immediate="true">
-                      <h:outputText value="[#{webBundle.outputCreateAccount}]" />
-                    </h:commandLink>
-
-                    <h:commandLink action="password" styleClass="loginCommand"
-                                   rendered="#{not userSessionBean.anonymousUser and 
-                                               not userSessionBean.certificateUser}"
-                                   immediate="true">
-                      <h:outputText value="[#{webBundle.outputChangePassword}]" />
-                    </h:commandLink>
                   </t:div>                
                   <t:div styleClass="fcol2"></t:div>
                 </t:div>

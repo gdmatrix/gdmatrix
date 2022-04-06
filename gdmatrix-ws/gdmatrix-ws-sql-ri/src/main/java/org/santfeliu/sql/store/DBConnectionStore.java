@@ -63,7 +63,9 @@ public class DBConnectionStore implements ConnectionStore
   {
     dataSourceName = (String)properties.get(PKG + DATA_SOURCE);
 
-    createTables();
+    String enableDDLGeneration = (String) properties.get("enableDDLGeneration");
+    if ("true".equalsIgnoreCase(enableDDLGeneration))
+      createTables();
   }
 
   @Override

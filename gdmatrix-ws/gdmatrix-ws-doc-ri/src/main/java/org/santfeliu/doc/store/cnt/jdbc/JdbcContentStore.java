@@ -70,7 +70,10 @@ public class JdbcContentStore implements ContentStore
     try
     {
       loadConfiguration(JDBC_FILENAME);
-      createTables();
+      String enableDDLGeneration =
+        MatrixConfig.getProperty("enableDDLGeneration");   
+      if ("true".equalsIgnoreCase(enableDDLGeneration))
+        createTables();
     }
     catch(Exception ex)
     {
@@ -116,7 +119,7 @@ public class JdbcContentStore implements ContentStore
   {
     return new JdbcContentStoreConnection(conn, config);     
   }
-  
+   
   private String getConfigurationPath(Class cls)
   {
     String className = cls.getName();
