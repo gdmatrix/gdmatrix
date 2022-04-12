@@ -350,7 +350,7 @@
         <column name="USRCOD" length="20" />
       </id>
       <basic name="password">
-        <column name="USRPASS" length="8" />
+        <column name="USRPASS" length="64" />
       </basic>
       <basic name="displayName">
         <column name="USRDESC" length="60" />
