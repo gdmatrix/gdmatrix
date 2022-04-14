@@ -35,8 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.santfeliu.faces.matrixclient.model.ScanMatrixClientModel;
 import org.santfeliu.security.util.Credentials;
@@ -51,12 +49,12 @@ import org.santfeliu.workflow.form.Form;
 
 /**
  *
- * @author unknown
+ * @author blanquepa
  */
 public class ScanDocumentFormBean extends FormBean
 {
   public static final String ERROR_PREFIX = "ERROR: ";
-
+  private static final String BEAN_NAME = "instanceBean";
 
   private String message;
   private String result;
@@ -100,11 +98,12 @@ public class ScanDocumentFormBean extends FormBean
     this.resultVar = resultVar;
   }
 
+  @Override
   public String show(Form form)
   {
     Properties parameters = form.getParameters();
 
-    InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
+    InstanceBean instanceBean = (InstanceBean)getBean(BEAN_NAME);
     instanceBean.setForwardEnabled(false);
     instanceBean.setBackwardEnabled(false);
 
@@ -129,9 +128,10 @@ public class ScanDocumentFormBean extends FormBean
     return "scan_form";
   }
 
+  @Override
   public Map submit()
   {
-    HashMap variables = new HashMap();
+    HashMap<String, String> variables = new HashMap<>();
     variables.put(resultVar, result);
     variables.put("token", token);
     return variables;
@@ -155,30 +155,14 @@ public class ScanDocumentFormBean extends FormBean
       result = (String)model.parseResult();
       if (result != null)
       {
-        InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
+        InstanceBean instanceBean = (InstanceBean)getBean(BEAN_NAME);
         return instanceBean.forward();         
       }
     }
     catch (Exception ex)
     {
-      String message = ex.getMessage();
-      if (message != null && message.startsWith("<html>"))
-      {
-        final Pattern pattern = Pattern.compile("<h1>(.+?)</h1>");
-        final Matcher matcher = pattern.matcher(message);        
-        matcher.find();
-        error(matcher.group(1));
-      }
-      else if (message != null && message.equals("INVALID_SCAN"))
-      {
-        ResourceBundle bundle = ResourceBundle.getBundle(
-          "org.santfeliu.workflow.web.resources.WorkflowBundle", getLocale());
-        error(bundle.getString(message));
-      }
-      else
-        error(message);
-      
-      InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
+      renderErrorMessage(ex.getMessage());
+      InstanceBean instanceBean = (InstanceBean)getBean(BEAN_NAME);
       instanceBean.updateForm();
     }
     return null;
@@ -192,18 +176,37 @@ public class ScanDocumentFormBean extends FormBean
     
     //Credentials
     String secret = 
-      MatrixConfig.getProperty("org.santfeliu.security.urlCredentialsCipher.secret");    
+      MatrixConfig.getProperty(ScannerServlet.CIPHER_SECRET_PROPERTY);    
     StringCipher strCipher = new StringCipher(secret);
     
-    Credentials credentials = UserSessionBean.getCurrentInstance().getCredentials();
+    Credentials credentials = 
+      UserSessionBean.getCurrentInstance().getCredentials();
     URLCredentialsCipher urlCipher = new URLCredentialsCipher(secret);
-    String ciphCredentials = strCipher.encrypt(urlCipher.putCredentials(model.getServletUrl(), credentials));
+    String urlCipherString = 
+      urlCipher.putCredentials(model.getServletUrl(), credentials);
+    String ciphCredentials = strCipher.encrypt(urlCipherString);
 
-    return strCipher.encrypt(ScannerServlet.formatToken(ScannerServlet.TOKEN_PREFIX, dt, ciphCredentials));
+    return strCipher.encrypt(ScannerServlet.formatToken(
+      ScannerServlet.TOKEN_PREFIX, dt, ciphCredentials));
   }
 
   private void addDocumentParameter(String name, Object value)
   {
     model.putParameter(ScannerServlet.HEADERS_PREFIX + name, value);
+  }
+  
+  private void renderErrorMessage(String message)
+  {
+    try
+    {
+      ResourceBundle bundle = ResourceBundle.getBundle(
+        "org.santfeliu.workflow.web.resources.WorkflowBundle", getLocale());
+      String localizedMessage = bundle.getString(message);
+      error(localizedMessage);
+    }
+    catch (Exception ex)
+    {
+      error(message);
+    }
   }
 }

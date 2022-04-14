@@ -37,7 +37,6 @@ import java.io.OutputStream;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +48,6 @@ import org.santfeliu.doc.client.CachedDocumentManagerClient;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +58,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.FileDataSource;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -91,7 +91,7 @@ public class ScannerServlet extends HttpServlet
   private static final String DEFAULT_TITLE = "Scanned document";
   private static final String DEFAULT_DOCTYPE = "Document";
 
-  public static String HEADERS_PREFIX = "scan_";
+  public static final String HEADERS_PREFIX = "scan_";
   public static final String TOKEN_PREFIX = "SCAN";
   public static final String TOKEN_HEADER = "_token";
   public static final String LOCATION_HEADER = "_signatureLocation";
@@ -111,106 +111,130 @@ public class ScannerServlet extends HttpServlet
   private static final String MEMORY_THRESHOLD = "memoryThreshold";  
   private static final String MAX_FILE_SIZE = "maxFileSize"; 
   private static final String MAX_REQUEST_SIZE = "maxReqyestSize"; 
-
-  String keyStorePath = MatrixConfig.getPathProperty(
-    "org.santfeliu.signature.certificate.tramitacio." + KEY_STORE_PATH);
-  String keyStoreType = MatrixConfig.getProperty(
-    "org.santfeliu.signature.certificate.tramitacio." + KEY_STORE_TYPE);
-  String keyStorePassword = MatrixConfig.getProperty(
-    "org.santfeliu.signature.certificate.tramitacio." + KEY_STORE_PASSWORD);
-  String tsaUrl = MatrixConfig.getProperty("org.santfeliu.security.tspURL");
+  
+  private static final String SIGN_PACKAGE = 
+    "org.santfeliu.signature.certificate.tramitacio"; 
+  
+  final String keyStorePath = 
+    MatrixConfig.getPathProperty(SIGN_PACKAGE + "." + KEY_STORE_PATH);
+  final String keyStoreType = 
+    MatrixConfig.getProperty(SIGN_PACKAGE + "." + KEY_STORE_TYPE);
+  final String keyStorePassword = 
+    MatrixConfig.getProperty(SIGN_PACKAGE + "." + KEY_STORE_PASSWORD);
+  final String tsaUrl = 
+    MatrixConfig.getProperty("org.santfeliu.security.tspURL");
+  
+  public static final String CIPHER_SECRET_PROPERTY = 
+    "org.santfeliu.security.urlCredentialsCipher.secret";  
 
   //Multipart form-data constants
   public static final int DEFAULT_MEMORY_THRESHOLD = 1024 * 1024 * 3;  // 3MB
   public static final int DEFAULT_MAX_FILE_SIZE = 1024 * 1024 * 40; // 40MB
   public static final int DEFAULT_MAX_REQUEST_SIZE = 1024 * 1024 * 50; // 50MB
 
-  private ScannedSource scannedSource;
-
-  @Override
-  public void init(ServletConfig config) throws ServletException
-  {
-    super.init(config);
-  }
-
+  private static final Logger LOGGER = 
+    Logger.getLogger(ScannerServlet.class.getName());    
+  
   @Override
   protected void doGet(HttpServletRequest request, 
-    HttpServletResponse response) throws ServletException, java.io.IOException
+    HttpServletResponse response) 
   {
-    processRequest(request, response);
+    try
+    {
+      processRequest(request, response);
+    }
+    catch (Exception ex)
+    {
+      sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex);
+    }
   }
 
   @Override
   protected void doPost(HttpServletRequest request, 
-    HttpServletResponse response) throws ServletException, java.io.IOException
-  {
-    processRequest(request, response);
-  }
-
-  public void processRequest(HttpServletRequest request,
-    HttpServletResponse response) throws IOException
+    HttpServletResponse response) 
   {
     try
     {
-      scannedSource = new ScannedSource(getServletConfig(), request);      
-      if (!scannedSource.existsToken())
-        throw new Exception(TOKEN_NOT_FOUND);
-
-      Token token = decryptToken(scannedSource.getToken());
-      if (token.getPrefix() == null || !token.getPrefix().equals(TOKEN_PREFIX))
-        throw new Exception(INVALID_TOKEN);
-
-      if (isValidScan(token.getDateTime()))
-      {
-        InputStream is = scannedSource.getInputStream();
-        File signedFile = null;
-        try
-        {
-          //Sign document
-          signedFile = File.createTempFile("sign", ".pdf");
-          signDocument(is, signedFile, keyStorePath, 
-            keyStorePassword.toCharArray(), scannedSource);
-
-          //Upload to document manager
-          Document document = uploadDocument(signedFile, 
-            scannedSource.getDocProperties(), token.getCredentials());
-          if (document != null)
-          {
-            System.out.println("Scanned in " + (System.currentTimeMillis() - 
-              getScanTime(token.getDateTime())) + " milliseconds");
-            response.addHeader("docId", document.getDocId());
-          }
-          else
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
-              "DOCUMENT_NOT_CREATED");
-        }
-        catch (Throwable ex)
-        {
-          ex.printStackTrace();
-        }
-        finally
-        {
-          is.close();
-          if (signedFile != null)
-          {
-            signedFile.delete();
-          }
-        }
-      }
+      processRequest(request, response);
     }
     catch (Exception ex)
     {
-      String message = ex.getMessage();
-      if (message == null)
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
-      else
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, message);
-
-      ex.printStackTrace();
-    }
+      sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex);
+    }      
   }
 
-  public static String formatToken(String prefix, String dateTime, String credentials)
+  protected void processRequest(HttpServletRequest request,
+    HttpServletResponse response) throws Exception
+  {
+    ScannedSource scannedSource = 
+      new ScannedSource(getServletConfig(), request);      
+    if (!scannedSource.existsToken())
+      throw new ScannerServletException(TOKEN_NOT_FOUND);
+
+    Token token = decryptToken(scannedSource.getToken());   
+    if (token == null || token.getPrefix() == null || 
+      !token.getPrefix().equals(TOKEN_PREFIX))
+      throw new ScannerServletException(INVALID_TOKEN);
+
+    if (!isValidScan(token.getDateTime()))
+      throw new ScannerServletException(INVALID_SCAN);
+
+    InputStream is = scannedSource.getInputStream();
+    File signedFile = null;
+    try
+    {
+      //Sign document
+      signedFile = File.createTempFile("sign", ".pdf");
+      signDocument(is, signedFile, keyStorePath, 
+        keyStorePassword.toCharArray(), scannedSource);
+
+      //Upload to document manager
+      Document document = uploadDocument(signedFile, 
+        scannedSource.getDocProperties(), token.getCredentials());
+
+      if (document == null)
+        throw new ScannerServletException("DOCUMENT_NOT_CREATED");
+
+      long ms = (System.currentTimeMillis() - getScanTime(token.getDateTime()));
+      LOGGER.log(Level.INFO, "Scanned in {0} milliseconds", new Object[]{ms});
+      response.addHeader("docId", document.getDocId());
+    }
+    finally
+    {
+      is.close();
+      if (signedFile != null)
+      {
+        boolean deleted = signedFile.delete();
+        if (!deleted)
+          LOGGER.log(Level.WARNING, "{0} can not be deleted", 
+            new Object[]{signedFile.getAbsolutePath()});
+      }
+    }
+  }
+  
+  private void sendError(HttpServletResponse response, int status, Exception ex) 
+  {
+    String msg = ex.getMessage();
+    response.setContentType("text/plain");
+    response.setCharacterEncoding("UTF-8");
+    response.setStatus(status);
+    if (msg != null)
+    {
+      try 
+      {
+        response.getWriter().print(msg);
+      }
+      catch (IOException ex1) 
+      {
+        LOGGER.log(Level.SEVERE, "Can not send error message to client", ex1);
+      }
+    }
+    
+    LOGGER.log(Level.SEVERE, msg, ex);
+  }
+
+  public static String formatToken(String prefix, String dateTime, 
+    String credentials)
   {
     return prefix + ":" + dateTime + ":" + credentials;
   }
@@ -224,25 +248,29 @@ public class ScannerServlet extends HttpServlet
 
   private Token decryptToken(String token)
   {
-    String secret = MatrixConfig.getProperty(
-      "org.santfeliu.security.urlCredentialsCipher.secret");
+    String secret = MatrixConfig.getProperty(CIPHER_SECRET_PROPERTY);
     StringCipher cipher = new StringCipher(secret);
     return parseToken(cipher.decrypt(token));
   }
 
-  private boolean isValidScan(String tokenValue) throws Exception
+  private boolean isValidScan(String tokenValue) 
   {
-    long scanTime = getScanTime(tokenValue);
-    long gap = DEFAULT_TIMEOUT_IN_SECONDS;
-    String configGap = getServletConfig().getInitParameter(SCAN_TIME_GAP);
-    if (configGap != null)
-      gap = Long.parseLong(configGap);
+    long scanTime;
+    try
+    {
+      scanTime = getScanTime(tokenValue);
+      long gap = DEFAULT_TIMEOUT_IN_SECONDS;
+      String configGap = getServletConfig().getInitParameter(SCAN_TIME_GAP);
+      if (configGap != null)
+        gap = Long.parseLong(configGap);
 
-    long now = System.currentTimeMillis();
-    if (scanTime + (gap * 1000) < now) 
-      throw new Exception(INVALID_SCAN);
-    else
-      return true;
+      long now = System.currentTimeMillis();
+      return (scanTime + (gap * 1000) >= now);      
+    }
+    catch (ParseException ex)
+    {
+      return false;
+    }
   }
 
   private long getScanTime(String dt) throws ParseException
@@ -253,17 +281,12 @@ public class ScannerServlet extends HttpServlet
   }
   
   private void signDocument(InputStream src, File file, String ksPath,
-    char[] ksPassword, ScannedSource source)
-    throws Exception
+    char[] ksPassword, ScannedSource source) throws Exception 
   {
     //Get request headers
     String location = source.getParameter(LOCATION_HEADER);
     String reason = source.getParameter(REASON_HEADER);
-    
-    String visible = source.getParameter(VISIBLE_SIGNATURE_HEADER);  
-    boolean visibleSignature
-            = (visible != null && !visible.equalsIgnoreCase("false"));
-    
+        
     String pdfTitle = source.getParameter(PDF_TITLE);
     String pdfSubject = source.getParameter(PDF_SUBJECT);
     String pdfAuthor = source.getParameter(PDF_AUTHOR);
@@ -288,7 +311,7 @@ public class ScannerServlet extends HttpServlet
   }
  
   private Document uploadDocument(File file, List<Property> properties, 
-    Credentials credentials) throws FileNotFoundException, IOException
+    Credentials credentials) 
   {
     String userId = credentials != null ? credentials.getUserId() : 
       MatrixConfig.getProperty("adminCredentials.userId");
@@ -319,70 +342,46 @@ public class ScannerServlet extends HttpServlet
     private Map<String,String> parameters;
     private String token;
 
-    public ScannedSource(ServletConfig config, HttpServletRequest request) throws FileUploadException
+    public ScannedSource(ServletConfig config, HttpServletRequest request) 
+      throws FileUploadException
     {
       this.request = request;      
       if (parameters == null)
-        parameters = new HashMap();
+        parameters = new HashMap<>();
       
       if (ServletFileUpload.isMultipartContent(request))      
       {
         // configures upload settings
-        DiskFileItemFactory factory = new DiskFileItemFactory();
         String mem = config.getInitParameter(MEMORY_THRESHOLD);
         String maxFile = config.getInitParameter(MAX_FILE_SIZE);
         String maxRequest = config.getInitParameter(MAX_REQUEST_SIZE);
-        // sets memory threshold - beyond which files are stored in disk
-        factory.setSizeThreshold(mem != null ? Integer.valueOf(mem) : DEFAULT_MEMORY_THRESHOLD);
+        int sizeThreshold = 
+          mem != null ? Integer.valueOf(mem) : DEFAULT_MEMORY_THRESHOLD;
+
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        factory.setSizeThreshold(sizeThreshold);
         // sets temporary location to store files
         factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
 
         ServletFileUpload upload = new ServletFileUpload(factory);
         // sets maximum size of upload file
-        upload.setFileSizeMax(maxFile != null ? Integer.valueOf(maxFile) : DEFAULT_MAX_FILE_SIZE);
+        int maxFileSize = 
+          maxFile != null ? Integer.valueOf(maxFile) : DEFAULT_MAX_FILE_SIZE;
+        upload.setFileSizeMax(maxFileSize);
         // sets maximum size of request (include file + form data)
-        upload.setSizeMax(maxRequest != null ? Integer.valueOf(maxRequest) : DEFAULT_MAX_REQUEST_SIZE);
+        int reqMaxSize = 
+          maxRequest != null ? Integer.valueOf(maxRequest) : 
+            DEFAULT_MAX_REQUEST_SIZE;
+        upload.setSizeMax(reqMaxSize);
 
         // parses the request's content to extract file data
-        List<FileItem> formItems = upload.parseRequest(request);
-        if (formItems != null && formItems.size() > 0)
-        {
-          // iterates over form's fields
-          for (FileItem item : formItems)
-          {
-            if (!item.isFormField())
-              this.fileItem = item;
-            else
-            {
-              String name = item.getFieldName();
-              name = name.substring(HEADERS_PREFIX.length());
-              String value = item.getString();
-              parameters.put(name, value);
-              if (name.equals(TOKEN_HEADER))
-                token = value;
-            }
-          }
-        }
+        parseRequestData(upload, request);
       }
       else
-      {
-        Enumeration headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements())
-        {
-          String headerName = (String) headerNames.nextElement();
-          if (headerName.startsWith(HEADERS_PREFIX))
-          {
-            String header = request.getHeader(headerName);
-            headerName = headerName.substring(HEADERS_PREFIX.length());
-            parameters.put(headerName, header);
-            if (headerName.equals(TOKEN_HEADER))
-              token = header;            
-          }
-        }        
-      }
+        parseHeadersData(request);       
     }
-
-    public Map getParameters()
+    
+    public Map<String, String> getParameters()
     {
       return parameters;
     }
@@ -390,7 +389,9 @@ public class ScannerServlet extends HttpServlet
     public String getParameter(String name)
     {
       String parameter = parameters.get(name);
-      if (parameter == null && name.startsWith("_")) //if looking for a system property tries if it comes from request header (case insensitive)
+      //if looking for a system property tries if it comes from request header 
+      //(case insensitive)
+      if (parameter == null && name.startsWith("_")) 
         parameter = parameters.get(name.toLowerCase());
       return parameter;
     }
@@ -417,14 +418,15 @@ public class ScannerServlet extends HttpServlet
     
     public List<Property> getDocProperties()
     {
-      List<Property> result = new ArrayList();
+      List<Property> result = new ArrayList<>();
       Iterator<String> it = parameters.keySet().iterator();
       while(it.hasNext())
       {
-        String headerName = (String)it.next();
+        String headerName = it.next();
         if (!headerName.startsWith("_"))
         {
-          DictionaryUtils.addProperty(result, headerName, parameters.get(headerName));
+          String value = parameters.get(headerName);
+          DictionaryUtils.addProperty(result, headerName, value);
         }
       }
 
@@ -435,6 +437,49 @@ public class ScannerServlet extends HttpServlet
       }      
       return result;
     }
+    
+    private void parseHeadersData(HttpServletRequest request)
+    {
+      Enumeration<String> headerNames = request.getHeaderNames();
+      while (headerNames.hasMoreElements())
+      {
+        String headerName = headerNames.nextElement();
+        if (headerName.startsWith(HEADERS_PREFIX))
+        {
+          String headerValue = request.getHeader(headerName);
+          setTokenAndParameters(headerName, headerValue);          
+        }
+      }       
+    }
+    
+    private void parseRequestData(ServletFileUpload upload, 
+      HttpServletRequest request) throws FileUploadException
+    {
+      List<FileItem> formItems = upload.parseRequest(request);
+      if (formItems != null && !formItems.isEmpty())
+      {
+        // iterates over form's fields
+        for (FileItem item : formItems)
+        {
+          if (!item.isFormField())
+            this.fileItem = item;
+          else
+          {
+            String name = item.getFieldName();
+            String value = item.getString();    
+            setTokenAndParameters(name, value);
+          }
+        }
+      }      
+    }
+    
+    private void setTokenAndParameters(String name, String value)
+    {
+      name = name.substring(HEADERS_PREFIX.length());
+      parameters.put(name, value);
+      if (name.equals(TOKEN_HEADER))
+        token = value;         
+    }    
   }
 
   class InputStreamDataSource implements DataSource
@@ -471,6 +516,14 @@ public class ScannerServlet extends HttpServlet
       return "InputStreamDataSource";
     }
   }
+  
+  class ScannerServletException extends Exception 
+  {
+    public ScannerServletException(String message)
+    {
+      super(message);
+    }
+  }
 
   private class Token
   {
@@ -489,8 +542,7 @@ public class ScannerServlet extends HttpServlet
       if (parts.length == 3)
       {
         String encCredentials = parts[2];
-        String secret
-                = MatrixConfig.getProperty("org.santfeliu.security.urlCredentialsCipher.secret");
+        String secret = MatrixConfig.getProperty(CIPHER_SECRET_PROPERTY);
         StringCipher cipher = new StringCipher(secret);
         strCredentials = cipher.decrypt(encCredentials);
       }
@@ -522,7 +574,5 @@ public class ScannerServlet extends HttpServlet
               .getCredentials(this.strCredentials);
     }
   } 
-  
-  
-
+    
 }
