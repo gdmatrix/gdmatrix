@@ -32,9 +32,13 @@ package org.santfeliu.web.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -75,7 +79,21 @@ public class FormServlet extends HttpServlet
       if (selector != null)
       {
         FormFactory instance = FormFactory.getInstance();
-        form = instance.getForm(selector, data);
+        String nocache = (String) data.get("nocache");
+        if (nocache != null && !nocache.equalsIgnoreCase("false"))
+        {
+          form = instance.getForm(selector, data, true);
+          if (form != null)
+          {
+            SimpleDateFormat df = 
+              new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("GMT"));
+            String lastModified = df.format(new Date());      
+            resp.setHeader("last-modified", lastModified);
+          }
+        }
+        else
+          form = instance.getForm(selector, data);
       }
       
       // get FormRenderer

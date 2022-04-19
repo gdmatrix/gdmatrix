@@ -6,36 +6,18 @@
                 xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="object_template.xhtml">
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="object_common.xhtml">
   
-  <ui:define name="basic_results">
 
-    <p:panel styleClass="" header="" rendered="#{templateBacking.searchBacking.resultListHelper.rowCount > 0}">
-        <p:dataTable id="basic_results_table" value="#{templateBacking.searchBacking.resultListHelper.rows}" var="row"
-                     paginator="true" size="small" paginatorPosition="bottom" 
-                     first="#{templateBacking.searchBacking.resultListHelper.firstRowIndex}"
-                     rows="#{templateBacking.searchBacking.resultListHelper.pageSize}"
-                     pageLinks="3"
-                     rendered="#{templateBacking.searchBacking.renderBasicResults}"
-                     styleClass="basic_results_table">
-          <p:column>
-            <p:commandLink action="#{templateBacking.show(row)}"
-                           ajax="false" update="mainform:central_panel">
-              <h:outputText value="#{templateBacking.getDescription(row)}" />
-            </p:commandLink>          
-          </p:column>   
-        </p:dataTable>  
-      </p:panel>      
-
-  </ui:define>
-
-  <ui:define name="central_panel">  
+  
+  <ui:define name="main">  
     <p:panel>    
       <f:facet name="header">
         <div class="flex align-items-center">
           <div class="w-9">            
-            <p:outputPanel id="object_header" styleClass="flex align-items-center">                
-              <ui:insert name="object_header"> </ui:insert>                  
+            <p:outputPanel id="object_header" styleClass="flex align-items-center"> 
+              <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-7xl mx-2 my-1"/>                
               <div class="mr-3">
                 <p:commandButton  
                   icon="text-2xl ui-icon pi pi-star" 
@@ -51,16 +33,49 @@
                   process="@this" update="object_header favorites_table"/> 
               </div>                  
               <div>
+                <p:outputLabel value="#{templateBacking.getTypeDescription()}" 
+                               styleClass="block"
+                               rendered="#{templateBacking.getTypeDescription() != null}"/>                
                 <p:outputLabel value="#{templateBacking.getDescription()}" 
                                styleClass="block text-2xl"/>
-                <p:outputLabel value="ID: #{templateBacking.getObjectId()}"
-                               styleClass=""/>
+                <div>
+                  <p:outputLabel id="objectId" value="#{templateBacking.getObjectId()}"
+                                 styleClass=""/>
+                  <p:commandButton id="btnCopy" icon="pi pi-copy" styleClass="text-xs ui-button-flat" global="false"
+                                   rendered="#{not templateBacking.objectBacking.new}" />
+                  <pe:clipboard id="clipCopy" trigger="btnCopy" action="copy" target="objectId">
+                  </pe:clipboard> 
+                </div>
               </div>
             </p:outputPanel>                
           </div>
           <div class="flex flex-row-reverse w-3">
-            <div class="m-1"><p:commandButton type="button" icon="text-lg ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"/></div>
-            <div class="m-1"><p:commandButton type="button"  icon="text-lg ui-icon pi pi-plus-circle"  styleClass="rounded-button ui-button-flat"/></div>                                 
+            <div class="m-1">
+              <p:commandButton icon="text-lg ui-icon pi pi-cog" styleClass="rounded-button ui-button-flat"
+                               title="#{objectBundle.create}" alt="#{objectBundle.create}"/>
+            </div>
+            <div class="m-1">
+              <p:commandButton  icon="text-lg ui-icon pi pi-trash" styleClass="rounded-button ui-button-flat" 
+                                action="#{templateBacking.remove}" ajax="false" update="form_panel growl" 
+                                title="#{objectBundle.delete}" alt="#{objectBundle.delete}" immediate="true"
+                                onclick="return confirm('#{objectBundle.confirm_full_remove}');"/>
+            </div>             
+            <div class="m-1">
+              <p:commandButton  icon="text-lg pi pi-undo" styleClass="rounded-button ui-button-flat"
+                                title="#{objectBundle.cancel}" alt="#{objectBundle.cancel}">
+                <p:ajax update="form_panel growl" resetValues="true" />
+              </p:commandButton>  
+            </div>        
+            <div class="m-1">
+              <p:commandButton icon="text-lg ui-icon pi pi-save" styleClass="rounded-button ui-button-flat" 
+                               action="#{templateBacking.store}" ajax="true" update="form_panel object_header growl"
+                               title="#{objectBundle.store}" alt="#{objectBundle.store}"/>
+            </div>             
+            <div class="m-1">
+              <p:commandButton icon="text-lg ui-icon pi pi-plus-circle"  styleClass="rounded-button ui-button-flat"
+                               action="#{templateBacking.create}" ajax="false" update="form_panel growl"
+                               title="#{objectBundle.create}" alt="#{objectBundle.create}"/>
+            </div>                                 
           </div>
         </div>
       </f:facet> 
@@ -74,15 +89,24 @@
           </p:menuitem>
         </c:forEach>
       </p:tabMenu>
+      
+      <div class="flex-grow-1 overflow-auto" style="height:60vh"> <!-- TODO adjust to any screen size -->
+        <div class="tab p-3">
+          <h:panelGroup id="form_panel">
+            <ui:insert name="content"></ui:insert>  
+          </h:panelGroup>          
+        </div>
 
-      <div class="tab p-3">
-        <h:panelGroup id="form_panel">
-          <ui:insert name="content"></ui:insert>  
-        </h:panelGroup>          
+        <div class="tab_footer text-right">
+          <p:commandButton action="#{templateBacking.store}" ajax="true" update="form_panel object_header growl"
+                           value="#{objectBundle.store}" icon="pi pi-save"
+                           styleClass="ui-button-raised m-1" />
+          <p:commandButton value="#{objectBundle.cancel}" icon="pi pi-undo" styleClass="ui-button-raised m-1">
+            <p:ajax update="form_panel growl" resetValues="true" />
+          </p:commandButton>      
+        </div>       
       </div>
-
     </p:panel>
-
 
   </ui:define>
 </ui:composition>

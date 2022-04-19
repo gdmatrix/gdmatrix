@@ -6,14 +6,13 @@
                 xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="object_template.xhtml">
-
-
-  <ui:define name="central_panel"> 
+                template="object_common.xhtml">
+  
+  <ui:define name="main"> 
     <p:panel header="#{userSessionBean.selectedMenuItem.getProperty('label')}">   
       <f:facet name="header">
         <div class="flex align-items-center">
-          <div>
+          <div class="w-9">
             <p:outputPanel id="object_header" styleClass="flex align-items-center">
               <div>
                 <p:outputLabel 
@@ -22,12 +21,50 @@
               </div>
             </p:outputPanel>                
           </div>
-          <div class="flex flex-row-reverse w-3">                     
+          <div class="flex flex-row-reverse w-3">    
+            <div class="m-1">
+              <p:commandButton icon="text-lg ui-icon pi pi-plus-circle"  styleClass="rounded-button ui-button-flat"
+                               action="#{templateBacking.create}" ajax="false" update="form_panel growl"
+                               title="#{objectBundle.create}" alt="#{objectBundle.create}"/>
+            </div>              
           </div>
         </div>
       </f:facet> 
-      <p:outputPanel id="body_content" style="height: 75vh">
+      <p:outputPanel id="body_content" style="height: 68vh">
         <ui:insert name="content" />
+                  
+        <p:dataTable id="full_results_table" value="#{templateBacking.searchBacking.resultListHelper.rows}" var="row"
+                     stripedRows="true" paginator="true" pageLinks="5" resizableColumns="false" showGridlines="true" 
+                     paginatorPosition="bottom" size="small" widgetVar="searchResultsTable"
+                     first="#{templateBacking.searchBacking.resultListHelper.firstRowIndex}"
+                     rows="#{templateBacking.searchBacking.resultListHelper.pageSize}"
+                     rendered="#{!userSessionBean.menuModel.selectedMenuItem.properties.renderCustomResults}">           
+
+            <p:columns value="#{templateBacking.searchBacking.resultListHelper.columns}" var="column" 
+                       headerText="#{column.label}" field="#{column.property}" style="#{column.style}"
+                       filterable="false" sortable="false" resizable="true">
+<!--              
+                <f:facet name="filter">
+                    <p:datePicker selectionMode="range" onchange="PF('searchResultsTable').filter()" rendered="#{column.type eq 'date'}"/>
+                    <p:selectOneMenu onchange="PF('searchResultsTable').filter()" rendered="#{column.type eq 'enum'}">
+                        <f:selectItem itemValue="#{null}" itemLabel=""/>
+                        <f:selectItems value="#{column.klazz.enumConstants}" />
+                    </p:selectOneMenu>
+                </f:facet>
+
+-->
+            </p:columns>
+                    
+
+            <p:column styleClass="w-1">
+              <p:commandButton icon="pi pi-pencil" styleClass="ui-button-raised" 
+                action="#{templateBacking.searchBacking.show(row)}" immediate="true" ajax="false" />     
+              <p:commandButton icon="pi pi-replay" styleClass="ui-button-raised m-1"
+                action="#{templateBacking.searchBacking.select(row)}" immediate="true" ajax="false" />                  
+            </p:column>
+       
+        </p:dataTable>  
+      
       </p:outputPanel>
     </p:panel>
   </ui:define>

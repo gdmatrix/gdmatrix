@@ -41,6 +41,7 @@ import org.matrix.doc.OrderByProperty;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.form.Form;
 import org.santfeliu.form.FormDescriptor;
+import org.santfeliu.form.type.faces.XhtmlForm;
 import org.santfeliu.form.type.html.HtmlForm;
 
 /**
@@ -52,9 +53,11 @@ public class ReferenceFormBuilder extends MatrixFormBuilder
   private static final Entry[] REFERENCE_TABLE = new Entry[]
   {
     new Entry("html", "workflow.html", FORM_TYPEID, HtmlForm.class),
-    new Entry("form", "workflow.form", FORM_TYPEID, HtmlForm.class)
+    new Entry("form", "workflow.form", FORM_TYPEID, HtmlForm.class),
+    new Entry("xhtml", "xhtml", FORM_TYPEID, XhtmlForm.class)
   };
 
+  @Override
   public List<FormDescriptor> findForms(String selectorBase)
   {
     try
@@ -89,6 +92,7 @@ public class ReferenceFormBuilder extends MatrixFormBuilder
     return Collections.EMPTY_LIST;
   }
 
+  @Override
   public Form getForm(String selector)
   {
     try

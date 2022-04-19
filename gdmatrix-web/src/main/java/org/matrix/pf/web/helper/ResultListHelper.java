@@ -31,44 +31,58 @@
 package org.matrix.pf.web.helper;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.santfeliu.web.UserSessionBean;
 
 /**
  *
  * @author blanquepa
- * @param <T> 
  */
-public class ResultListHelper<T> implements Serializable
+public class ResultListHelper<T extends Serializable> implements Serializable
 {
   public static final int PAGE_SIZE = 10;
-  public static final String PAGE_SIZE_PROPERTY = "pageSize";   
+  public static final String PAGE_SIZE_PROPERTY = "pageSize";
+  public static final String COLUMNS_TEMPLATE = "columnsTemplate";
   
   protected ResultListPage pageBacking;
-  private List<T> rows;
+  
+  //Rows
+  protected List<T> rows;
   protected int firstRowIndex;
+  
+  //Columns
+  protected List<ColumnModel> columns;
 
   public ResultListHelper(ResultListPage pageBacking)
   {
     this.pageBacking = pageBacking;
   }
-
+  
   public List<T> getRows()
   {
     return rows;
-  }
-  
+  }  
+    
   public void search()
   {
     firstRowIndex = 0; // reset index
-    initRows(); // force rows population 
+    createDynamicColumns();     
+    populate(); // force rows population 
   }    
   
   public void reset()
   {
     rows = null;
     firstRowIndex = 0;
+    columns = null;
   }  
+  
+  protected void populate()
+  {
+    rows = pageBacking.getResults(firstRowIndex, getPageSize());
+  }   
   
   public int getFirstRowIndex()
   {
@@ -105,8 +119,91 @@ public class ResultListHelper<T> implements Serializable
       return PAGE_SIZE;
   }   
   
-  protected void initRows()
+  public List<ColumnModel> getColumns() 
   {
-    rows = pageBacking.getResults(firstRowIndex, getPageSize());
-  }  
+    return columns;
+  } 
+  
+  protected void createDynamicColumns()
+  {
+    List<String> columnsTemplate = 
+      UserSessionBean.getCurrentInstance().getMenuModel()
+      .getSelectedMenuItem().getMultiValuedProperty(COLUMNS_TEMPLATE);    
+    if (!columnsTemplate.isEmpty())
+    {      
+      columns = new ArrayList<>();
+      for (String columnKey : columnsTemplate)
+      {
+        String[] parts = columnKey.split("::");
+        String property = parts[0];
+        String label = parts.length > 1 ? parts[1] : columnKey.toUpperCase();
+        String style = parts.length > 2 ? parts[2] : "";  
+        ColumnModel columnModel = new ColumnModel(property, label, style);
+        columns.add(columnModel);
+      }
+    }
+  }
+  
+  //TODO: styles, renderers, converters...JSON???
+  public static class ColumnModel implements Serializable, 
+    Comparable<ColumnModel> 
+  {
+    private String label;
+    private final String property;
+    private String style;
+    
+    public ColumnModel(String property)
+    {
+      this.property = property;
+    }
+
+    public ColumnModel(String property, String label, String style)
+    {
+      this.label = label;
+      this.property = property;
+      this.style = style;
+    }
+
+    public String getLabel()
+    {
+      return label;
+    }
+
+    public String getProperty()
+    {
+      return property;
+    }
+
+    public String getStyle()
+    {
+      return style;
+    }
+
+    @Override
+    public int compareTo(ColumnModel o)
+    {
+      return property.compareTo(o.getProperty()); 
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+      if (o == null)
+        return false;
+      
+      if (this.getClass() != o.getClass())
+        return false;
+      
+      return property.equals(((ColumnModel)o).getProperty());
+    }
+
+    @Override
+    public int hashCode()
+    {
+      int hash = 3;
+      hash = 97 * hash + Objects.hashCode(this.property);
+      return hash;
+    }
+  }
+ 
 }

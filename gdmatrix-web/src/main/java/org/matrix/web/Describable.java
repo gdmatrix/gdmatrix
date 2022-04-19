@@ -39,7 +39,7 @@ package org.matrix.web;
 public interface Describable
 {
   public String getObjectTypeId();
-  
+    
   public String getObjectId();
   
   public String getDescription();

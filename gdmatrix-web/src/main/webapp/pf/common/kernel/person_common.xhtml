@@ -3,33 +3,12 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="/pf/common/obj/#{object_template}">
+                template="/pf/common/obj/#{objectPage}.xhtml">
 
-  <ui:define name="smart_filter">
-
-    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
-                  var="kernelBundle" />  
-
-    <div class="field">
-      <p:outputLabel for="smart_value" value="Cerca persona" />        
-      <p:inputText id="smart_value" value="#{personSearchBacking.smartValue}" 
-                   class="inputfield w-full" />
-    </div>    
-
-    <div class="buttons text-right">
-      <p:commandButton value="#{objectBundle.clear}"
-                       ajax="#{ajax}"
-                       action="#{personSearchBacking.clear}"
-                       styleClass="ui-button-raised m-1"
-                       update="search_panel"/>      
-      <p:commandButton id="default_button" value="#{objectBundle.search}"
-                       action="#{personSearchBacking.smartSearch}"
-                       ajax="#{ajax}" process="mainform" update="#{updateOnSearch}"
-                       styleClass="ui-button-raised m-1" />
-    </div>        
-  </ui:define>
 
   <ui:define name="advanced_filter">
+    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
+                  var="kernelBundle" />      
     <div class="field">
       <p:outputLabel for="nif" value="#{kernelBundle.person_nif}" />
       <p:inputText id="nif" value="#{personSearchBacking.filter.nif}" 
@@ -65,7 +44,7 @@
                        ajax="#{ajax}"
                        action="#{personSearchBacking.clear}"
                        styleClass="ui-button-raised m-1"
-                       update="search_panel"/>      
+                       update="search_accordion"/>      
       <p:commandButton value="#{objectBundle.search}"
                        action="#{personSearchBacking.search}"
                        ajax="#{ajax}" process="mainform" update="#{updateOnSearch}"

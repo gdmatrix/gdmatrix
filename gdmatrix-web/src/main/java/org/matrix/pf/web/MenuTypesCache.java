@@ -99,11 +99,16 @@ public class MenuTypesCache
 
   private boolean matchTypeId(MenuItemCursor mic, String typeId)
   {
+    boolean match = false;
+    
     String nodeTypeId = 
       mic.getProperty(WebUtils.OBJECT_TYPEID_PROPERTY);
     Type type = TypeCache.getInstance().getType(typeId);
     if (type != null)
-      return type.isDerivedFrom(nodeTypeId);
-    return false;
+      match = type.isDerivedFrom(nodeTypeId);
+    else if (typeId != null)
+      match = typeId.equals(nodeTypeId); //Allow types out from dictionary
+    
+    return match;
   }   
 }

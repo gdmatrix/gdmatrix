@@ -43,9 +43,10 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.MenuElement;
 import org.primefaces.model.menu.MenuItem;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.web.obj.PageHistory;
 
 /**
  *
@@ -58,6 +59,7 @@ public class TemplateBacking extends WebBacking
   
   public TemplateBacking()
   {
+    //Let to super class constructor.   
   }
   
   public SearchBacking getSearchBacking()
@@ -88,7 +90,7 @@ public class TemplateBacking extends WebBacking
   
   public List<MenuItem> getLeftMenuItems()
   {
-    List<MenuItem> results = new ArrayList();
+    List<MenuItem> results = new ArrayList<>();
     MatrixMenuModel mMenuModel = getPFMenuModel();
     List<MenuElement> elements = mMenuModel.getElements();
     for (MenuElement element : elements)
@@ -110,9 +112,8 @@ public class TemplateBacking extends WebBacking
   public String executeItemAction(String action)
   {
     FacesContext facesContext = FacesContext.getCurrentInstance();
-    String value = facesContext.getApplication().evaluateExpressionGet(
+    return facesContext.getApplication().evaluateExpressionGet(
       facesContext, action, String.class);   
-    return value;
   }
   
   public List<SelectItem> getFavorites()
@@ -154,38 +155,15 @@ public class TemplateBacking extends WebBacking
     TreeNode root = new DefaultTreeNode("", null);
     
     PageHistory pageHistory = getRecentHistory();
-    Collections.sort(pageHistory, new Comparator<PageHistory.Entry>()
-    {
-      @Override
-      public int compare(PageHistory.Entry o1, PageHistory.Entry o2)
-      { 
-        if (o1 == null || o1.getTypeId() == null)
-          return -1;
-        else if (o2 == null || o2.getTypeId() == null)
-          return 1;
-        
-        int result = o1.getTypeId().compareTo(o2.getTypeId());
-        if (result == 0)
-        {
-          String description1 = o1.getDescription();
-          String description2 = o2.getDescription();
-          if (description1 != null && description2 != null)
-            return o1.getDescription().compareTo(o2.getDescription());
-          else if (description1 == null)
-            return -1;
-          else if (description2 == null)
-            return 1;
-        }
-        return result;
-      }
-    });
+    Collections.sort(pageHistory, new PageHistoryComparator());
     
     String prevTypeId = null;
     TreeNode group = null;
     for (Object item : pageHistory)
     {
       PageHistory.Entry entry = (PageHistory.Entry) item;
-      if (group == null || !entry.getTypeId().equals(prevTypeId))
+      String entryTypeId = entry.getTypeId();
+      if (group == null || (entryTypeId != null && !entryTypeId.equals(prevTypeId)))
       {
         group = new DefaultTreeNode("group", entry, root);
         group.setExpanded(true);
@@ -196,6 +174,8 @@ public class TemplateBacking extends WebBacking
     
     return root;
   }
+  
+
   
   public String getDescription(String typeId, String objectId)
   {
@@ -226,21 +206,69 @@ public class TemplateBacking extends WebBacking
     String objectId = getSearchBacking().getObjectId(row);
     return encodeDescription(label, objectId);
   }  
-  
+    
   public String getDescription()
   {
     return getObjectBacking().getDescription();
   }
   
+  public String getPageHistoryDescription(PageHistory.Entry entry)
+  {
+    String label = null;
+    String objectId = entry.getObjectId();
+    if (StringUtils.isBlank(objectId))
+      label = entry.getTitle();
+    else
+      label = entry.getDescription();
+    
+    if (StringUtils.isBlank(label))
+      label = getDescription(entry.getTypeId(), objectId);
+    
+    return label;
+  }    
+  
   public String getObjectId()
   {
     return getObjectBacking().getObjectId();
+  }
+  
+  public String getTypeDescription()
+  {
+    String typeId = getObjectBacking().getObjectTypeId();
+    return getTypeDescription(typeId);
+  }
+  
+  public String getTypeDescription(String typeId)
+  {
+    String description = typeId;
+    if (typeId != null)
+    {
+      Type type = TypeCache.getInstance().getType(typeId);      
+      if (type != null)
+        description = type.getDescription();
+    }
+    return description;    
   }
     
   public String show(Object row)
   {
     String objectId = getObjectBacking().getObjectId(row);
     return ControllerBacking.getCurrentInstance().show(objectId);
+  }
+  
+  public String create()
+  {
+    return getObjectBacking().create();
+  }
+  
+  public String store()
+  {
+    return getObjectBacking().store();
+  }
+  
+  public String remove()
+  { 
+    return getObjectBacking().remove();
   }
        
   //Private methods
@@ -270,9 +298,35 @@ public class TemplateBacking extends WebBacking
       existsPreference(objectTypeId, objectId);
   }  
   
-  private ObjectBacking getObjectBacking()
+  public ObjectBacking getObjectBacking()
   {
     return ControllerBacking.getCurrentInstance().getObjectBacking();
+  }
+  
+  private class PageHistoryComparator implements Comparator<PageHistory.Entry>
+  {
+    @Override
+    public int compare(PageHistory.Entry o1, PageHistory.Entry o2)
+    { 
+      if (o1 == null || o1.getTypeId() == null)
+        return -1;
+      else if (o2 == null || o2.getTypeId() == null)
+        return 1;
+
+      int result = o1.getTypeId().compareTo(o2.getTypeId());
+      if (result == 0)
+      {
+        String description1 = o1.getDescription();
+        String description2 = o2.getDescription();
+        if (description1 != null && description2 != null)
+          return o1.getDescription().compareTo(o2.getDescription());
+        else if (description1 == null)
+          return -1;
+        else
+          return 1;
+      }
+      return result;
+    } 
   }
  
 }

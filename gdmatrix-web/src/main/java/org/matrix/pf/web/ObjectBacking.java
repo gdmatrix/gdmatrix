@@ -39,45 +39,67 @@ import javax.annotation.PostConstruct;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import org.matrix.pf.cms.CMSContent;
+import org.matrix.pf.web.helper.TabPage;
+import org.matrix.pf.web.helper.Typed;
+import org.matrix.pf.web.helper.TypedHelper;
+import org.matrix.web.Describable;
+import org.matrix.web.WebUtils;
 import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.ObjectDescriptionCache;
-import org.matrix.web.Describable;
 
 /**
  *
  * @author blanquepa
  */
 public abstract class ObjectBacking extends WebBacking
-  implements Savable, Describable
+  implements Savable, Describable, Typed
 { 
   public static final String NEW_OBJECT_ID = "";
   public static final String RENDER_OBJECT_TYPE_ICON_PROPERTY =
     "renderObjectTypeIcon";
+  public static final String TABS_PROPERTY = "tabs";
   
-  private String objectId;
-  private List<Tab> tabs;  
-  private Integer tabIndex;  
+  protected String objectId;
+  protected List<Tab> tabs;  
+  protected Integer tabIndex;  
+  
+  protected TypedHelper typedHelper;
 
-  public ObjectBacking()
+  protected ObjectBacking()
   {
-    tabs = new ArrayList();    
+    tabs = new ArrayList<>();    
     tabIndex = 0; 
   }
   
   @PostConstruct
   public void init()
   {
+    typedHelper = new TypedHelper(this); 
+    
     loadTabs();
   }
-  
+
+  @Override
+  public TypedHelper getTypedHelper()
+  {
+    return typedHelper;
+  }
+
+  @Override
+  public String getTypeId()
+  {
+    return getMenuItemTypeId();
+  }
+      
   @Override
   public String getObjectTypeId()
   {
-    return super.getObjectTypeId();
+    return getTypeId();
   }
   
+  @Override
   public String getRootTypeId()
   {
     CMSContent annotation = getClass().getAnnotation(CMSContent.class);
@@ -150,8 +172,25 @@ public abstract class ObjectBacking extends WebBacking
     tabs.add(tab);
   }  
   
-  /* TODO: not abstract, load from dictionary */
-  public abstract void loadTabs();  
+  public void loadTabs()
+  {
+    clearTabs();
+    List<String> tabsDef = typedHelper.getMultivaluedProperty(TABS_PROPERTY);
+    if (tabsDef != null)
+    {    
+      for (int i = 0; i < tabsDef.size(); i++)
+      {
+        String tabDef = tabsDef.get(i);
+        String[] parts = tabDef.split("::");
+        String label = parts[0];
+        String typeId = parts[1];
+        String action = parts[2];
+        Tab tab = new Tab(i, label, typeId, action);  
+        tabs.add(tab);
+      }
+    }
+  }
+  
   
   public String getPageTypeId()
   {
@@ -188,11 +227,23 @@ public abstract class ObjectBacking extends WebBacking
     return getDescription(getObjectId());
   }
   
+  public abstract String getAdminRole();
+  
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(getObjectId());
+  }  
+  
   public String show()
   {
-//    BackingNamesCache.getInstance().put(getObjectTypeId(), getBackingName());
+    loadTabs();
     return getSearchBacking().show();
   }
+  
+  public boolean isEditable()
+  {
+    return true;
+  }  
   
   public boolean hasCustomHeader()
   {
@@ -278,5 +329,91 @@ public abstract class ObjectBacking extends WebBacking
   }  
     
   public abstract SearchBacking getSearchBacking();
+  
+  public String create()
+  {
+    setObjectId(NEW_OBJECT_ID);
+    for (Tab tab :  getTabs())
+    {
+      PageBacking pageBacking = 
+        WebUtils.getBackingFromAction(tab.getAction());
+      if (pageBacking instanceof TabPage)
+        ((TabPage)pageBacking).reset();
+    }    
+    return getSearchBacking().show(NEW_OBJECT_ID);    
+  }
+  
+  public void preRemove()
+  {
+    //TODO executeTypeAction
+  }
+  
+  public void postRemove()
+  {
+    //TODO executeTypeAction    
+  }
+  
+  public abstract boolean remove(String objectId);
+  
+  public String remove()
+  {
+    String result = null;
+    try
+    {
+      if (!isNew())
+      {
+        preRemove();
+        if (remove(getObjectId()))
+          result = getSearchBacking().show();
+        postRemove();
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
+    return result;
+  }  
+  
+  public void preStore()
+  {
+    //TODO executeTypeAction
+  }
+  
+  public void postStore()
+  {
+    //TODO executeTypeAction    
+  }  
+  
+  public String store() 
+  {
+    try
+    {
+      preStore(); //TODO: Perhaps detect if other tabs has benn modified
+      
+//      for (Tab tab : getTabs())
+//      {
+//        PageBacking pageBacking = 
+//          WebUtils.getBackingFromAction(tab.getAction());
+//        if (pageBacking instanceof TabPage)
+//          ((TabPage)pageBacking).store();
+//      }
+
+      Tab tab = getCurrentTab();
+      PageBacking pageBacking = 
+        WebUtils.getBackingFromAction(tab.getAction());
+      if (pageBacking instanceof TabPage)
+        ((TabPage)pageBacking).store();
+
+      postStore();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
+    return null;
+  }    
     
 }

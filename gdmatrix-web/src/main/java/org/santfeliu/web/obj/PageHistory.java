@@ -70,12 +70,17 @@ public class PageHistory extends ArrayList implements Serializable
         if (!ControllerBean.NEW_OBJECT_ID.equals(currentObjectId))
         {
           // do not add to list new objects
-          add(new Entry(currentMid, currentObjectId, currentTypeId));
+          addEntry(currentMid, currentObjectId, currentTypeId);
         }
       }
     }
     currentMid = mid;
     currentObjectId = objectId;
+  }
+  
+  protected void addEntry(String mid, String objectId, String typeId)
+  {
+    add(new Entry(mid, objectId, typeId));
   }
 
   public void reset()

@@ -28,19 +28,39 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.web.helper;
+package org.matrix.pf.web;
+
+import javax.inject.Named;
+import org.matrix.pf.web.helper.DynamicFormPage;
+import org.matrix.pf.web.helper.FormHelper;
+import org.matrix.web.WebUtils;
 
 /**
  *
  * @author blanquepa
  */
-public interface TypedPage
+@Named("formBacking")
+public class FormBacking extends WebBacking
 {
-  public String getRootTypeId();
+  public ObjectBacking getObjectBacking()
+  {
+    return ControllerBacking.getCurrentInstance().getObjectBacking();
+  }
   
-  public String getTypeId();
+  public FormHelper getFormHelper()
+  {
+    ObjectBacking objectBacking = getObjectBacking();
+    PageBacking pageBacking = 
+      WebUtils.getBackingFromAction(objectBacking.getCurrentTab().getAction());
+    if (pageBacking instanceof DynamicFormPage)
+    {
+      return ((DynamicFormPage)pageBacking).getFormHelper();
+    }
+    return null;
+  }
   
-  public String getAdminRole();
-  
-  public TypedHelper getTypedHelper();
+  public boolean isRenderForm()
+  {
+    return getFormHelper() != null;
+  }
 }

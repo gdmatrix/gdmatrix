@@ -49,7 +49,9 @@ import org.santfeliu.web.bean.CMSProperty;
 public class GroupableHelper
 {
   public static final String ALL_ROWS_NAME = "ALL_ROWS";
-  public static final String NULL_GROUP_NAME = ";"; 
+  public static final String NULL_GROUP_NAME = ";";
+  
+  private static final String GROUP_EL_EXPRESSION = "#{group}";
   
   protected Group NULL_GROUP = new Group(NULL_GROUP_NAME, "");
   protected Group ALL_ROWS_GROUP = new Group(ALL_ROWS_NAME, "Mostrar tot");  
@@ -63,13 +65,13 @@ public class GroupableHelper
   public static final String BAR_SELECTION_MODE = "bar";
 
   protected String groupBy;
-  protected TreeMap<Group, List> groupedRows; //Contains all groups
-  protected List<Group> renderGroups = new ArrayList(); //Contains the groups to be rendered
+  protected TreeMap<Group, List<Object>> groupedRows; //Contains all groups
+  protected List<Group> renderGroups = new ArrayList<>(); //Contains the groups to be rendered
   protected String groupSelectionMode = NONE_SELECTION_MODE;  
 
   protected List<String> orderBy;  
   
-  private GroupablePage pageBacking;
+  private final GroupablePage pageBacking;
   
   public GroupableHelper(GroupablePage pageBacking)
   {
@@ -86,31 +88,27 @@ public class GroupableHelper
       return null;
   }
 
-  public List getRows()
+  public List<Object> getRows()
   {
-    Group group = WebUtils.evaluateExpression("#{group}");
+    Group group = WebUtils.evaluateExpression(GROUP_EL_EXPRESSION);
     if (groupedRows != null)
     {
-      List rows = groupedRows.get(group != null ? group : new Group(NULL_GROUP_NAME, ""));
+      List<Object> rows = 
+        groupedRows.get(group != null ? group : new Group(NULL_GROUP_NAME, ""));
       if (orderBy != null && !orderBy.isEmpty())
-        Collections.sort(rows, getPropertyComparator());
+        Collections.sort(rows, new PropertyComparator());
       return rows;
     }
     else
       return null;
   }
-  
-  public Comparator getPropertyComparator()
-  {
-    return new PropertyComparator();
-  }
-  
+    
   public boolean isRowsEmpty()
   {
-    Group group = WebUtils.evaluateExpression("#{group}");
+    Group group = WebUtils.evaluateExpression(GROUP_EL_EXPRESSION);
     if (groupedRows != null)
     {
-      List rows = groupedRows.get(group);
+      List<Object> rows = groupedRows.get(group);
       return rows == null || rows.isEmpty();
     }
     return true;
@@ -118,7 +116,7 @@ public class GroupableHelper
 
   public int getFirstRowIndex()
   {
-    Group group = WebUtils.evaluateExpression("#{group}");
+    Group group = WebUtils.evaluateExpression(GROUP_EL_EXPRESSION);
     if (group != null)
       return group.getFirst();
     else
@@ -127,7 +125,7 @@ public class GroupableHelper
 
   public void setFirstRowIndex(int index)
   {
-    Group group = WebUtils.evaluateExpression("#{group}");
+    Group group = WebUtils.evaluateExpression(GROUP_EL_EXPRESSION);
     if (group != null)
       group.setFirst(index);
   }
@@ -141,9 +139,9 @@ public class GroupableHelper
     }
   }
   
-  protected void setGroups(List rows, GroupExtractor extractor)
+  protected void setGroups(List<Object> rows, GroupExtractor extractor)
   {
-    groupedRows = new TreeMap<Group, List>();
+    groupedRows = new TreeMap<>();
     if (!rows.isEmpty()) //there are some rows to group
     {
       if (extractor != null)
@@ -153,9 +151,9 @@ public class GroupableHelper
           Group key = extractor.getGroup(row);
           if (key == null) key = NULL_GROUP;
 
-          List list = groupedRows.get(key);
+          List<Object> list = groupedRows.get(key);
           if (list == null)
-            list = new ArrayList();
+            list = new ArrayList<>();
           list.add(row);
           groupedRows.put(key, list);
         }
@@ -163,7 +161,7 @@ public class GroupableHelper
         {
           if (groupedRows.size() > 1) //There is more than one group
           {
-            groupedRows.put(ALL_ROWS_GROUP, new ArrayList());
+            groupedRows.put(ALL_ROWS_GROUP, new ArrayList<>());
             groupedRows.get(ALL_ROWS_GROUP).addAll(rows);
           }
           if (renderGroups.isEmpty() || groupedRows.get(renderGroups.get(0)) == null)
@@ -206,7 +204,7 @@ public class GroupableHelper
 
   public String showGroup()
   {
-    Group group = WebUtils.evaluateExpression("#{group}");
+    Group group = WebUtils.evaluateExpression(GROUP_EL_EXPRESSION);
 
     if (isRenderGroupBarMode())
     {
@@ -226,7 +224,7 @@ public class GroupableHelper
 
   public boolean isRenderGroup()
   {
-    Group group = WebUtils.evaluateExpression("#{group}");
+    Group group = WebUtils.evaluateExpression(GROUP_EL_EXPRESSION);
     return
       groupBy == null || (renderGroups != null && renderGroups.contains(group));
   }
@@ -258,7 +256,8 @@ public class GroupableHelper
 
   public boolean isRenderGroupSelection()
   {
-    return (groupSelectionMode != null && !NONE_SELECTION_MODE.equals(groupSelectionMode));
+    return (groupSelectionMode != null && 
+      !NONE_SELECTION_MODE.equals(groupSelectionMode));
   }  
 
   public String expandAllGroups()
@@ -279,7 +278,7 @@ public class GroupableHelper
     return null;
   }
   
-  public class Group implements Comparable, Serializable
+  public static class Group implements Comparable<Object>, Serializable
   {
     private String name;
     private String description;
@@ -369,12 +368,12 @@ public class GroupableHelper
     
   }  
   
-  public abstract class GroupExtractor
+  public interface GroupExtractor
   {
     public abstract Group getGroup(Object view);    
   }
 
-  public class DefaultGroupExtractor extends GroupExtractor
+  public class DefaultGroupExtractor implements GroupExtractor
   {
     protected String propertyName;
 
@@ -427,7 +426,7 @@ public class GroupableHelper
       String name = propName.substring(0, propName.indexOf("["));
       String index = propName.substring(propName.indexOf("[") + 1, propName.indexOf("]"));
       obj = PojoUtils.getStaticProperty(obj, name);
-      if (obj != null && obj instanceof List)
+      if (obj instanceof List)
       {
         try
         {
@@ -451,7 +450,7 @@ public class GroupableHelper
     }
   }   
   
-  public class PropertyComparator implements Comparator
+  public class PropertyComparator implements Comparator<Object>
   {
     public int compare(Object o1, Object o2)
     {
@@ -461,28 +460,28 @@ public class GroupableHelper
       {
         boolean allDescendent = false;
         boolean nullDescendent = false;      
-        if (ob.indexOf(":desc") > 0)
+        if (ob.contains(":desc"))
         {
           allDescendent = true;
-          ob = ob.replaceAll(":desc", "");
+          ob = ob.replace(":desc", "");
         }
-        if (ob.indexOf(":nulldesc") > 0)
+        if (ob.contains(":nulldesc"))
         {
           nullDescendent = true;
-          ob = ob.replaceAll(":nulldesc", "");
+          ob = ob.replace(":nulldesc", "");
         }
         
         Object p1 = getPropertyValue(o1, ob);
         Object p2 = getPropertyValue(o2, ob);
 
-        if (p1 != null && p1 instanceof List)
+        if (p1 instanceof List)
         {
-          List lp1 = (List)p1;
+          List<Object> lp1 = (List)p1;
           p1 = (lp1.isEmpty() ? null: lp1.get(0));
         }
-        if (p2 != null && p2 instanceof List)
+        if (p2 instanceof List)
         {
-          List lp2 = (List)p2;
+          List<Object> lp2 = (List)p2;
           p2 = (lp2.isEmpty() ? null : lp2.get(0));
         }
         

@@ -30,6 +30,7 @@
  */
 package org.matrix.pf.web;
 
+import javax.annotation.PostConstruct;
 import org.santfeliu.faces.beansaver.Savable;
 
 /**
@@ -40,9 +41,14 @@ public abstract class PageBacking extends WebBacking implements Savable
 {   
   protected ObjectBacking objectBacking;
   
-  public PageBacking()
+  protected PageBacking()
   {
-    objectBacking = ControllerBacking.getCurrentInstance().getObjectBacking();
+  }
+  
+  @PostConstruct
+  public void init()
+  {
+    objectBacking = ControllerBacking.getCurrentInstance().getObjectBacking();    
   }
     
   public ObjectBacking getObjectBacking()
@@ -50,17 +56,27 @@ public abstract class PageBacking extends WebBacking implements Savable
     return objectBacking;
   }
   
-  public abstract String getPageId();
+  /** Get identifier of the main object managed by the page. Tipically:
+   * objectId for main pages.
+   * related object id for object relation pages.
+   * null for search pages.
+   * @return identifier
+   */
+  public abstract String getPageObjectId();
   
   public abstract String show();  
   
   public abstract String show(String objectId);
-      
-  //TODO: typeId as parameter
-  public String search(String targetBackingName, String valueBinding)
+
+  public String search(String targetObjectTypeId, String valueBinding)
   {
     return ControllerBacking.getCurrentInstance()
-      .search(targetBackingName, valueBinding);
+      .search(targetObjectTypeId, valueBinding);
+  }
+  
+  public String getLanguage()
+  {
+    return getLocale().getLanguage();
   }
                
 }

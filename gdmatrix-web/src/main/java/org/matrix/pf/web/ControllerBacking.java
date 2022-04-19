@@ -32,10 +32,9 @@ package org.matrix.pf.web;
 
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
-import org.matrix.web.WebUtils;
-import org.matrix.web.ReturnStack;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
+import org.matrix.web.ReturnStack;
+import org.matrix.web.WebUtils;
 import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
@@ -82,14 +81,43 @@ public class ControllerBacking extends WebBacking implements Savable
     this.pageHistory = pageHistory;
   }
     
-  //Controller commands  
+  //Controller commands 
+  public String show(String objectId)
+  {    
+    String objectTypeId = getMenuItemTypeId();
+    return show(objectTypeId, objectId, 0, null);    
+  }  
+  
+  public String show(String objectTypeId, String objectId)
+  {
+    return show(objectTypeId, objectId, 0, null);
+  }    
+  
+  public String show(String objectTypeId, String objectId, String tabTypeId, 
+    String pageObjectId)
+  { 
+    ObjectBacking targetObjectBacking = getObjectBacking(objectTypeId);
+    Tab tab = targetObjectBacking.getTab(tabTypeId);
+     
+    return show(objectTypeId, objectId, tab.getIndex(), pageObjectId);   
+  }
+  
+  public String show(String objectTypeId, String objectId, String pageObjectId)
+  {
+    return show(objectTypeId, objectId, 0, pageObjectId);
+  }
+  
   public String show(String objectTypeId, String objectId, Integer tabIndex, 
-    String pageId)
+    String pageObjectId)
   {
     String outcome;
      
     ObjectBacking targetObjectBacking = getObjectBacking(objectTypeId);
-    targetObjectBacking.setObjectId(objectId); 
+    if (targetObjectBacking != null)
+    {
+      targetObjectBacking.setObjectId(objectId); 
+      targetObjectBacking.setTabIndex(tabIndex);         
+    }
          
     //PageHistory
     MenuItemCursor currentMenuItem = UserSessionBean.getCurrentInstance()
@@ -97,19 +125,18 @@ public class ControllerBacking extends WebBacking implements Savable
     MenuItemCursor targetMenuItem =
       MenuTypesCache.getInstance().get(currentMenuItem, objectTypeId);
     String targetMid = targetMenuItem.getMid();
-    String oldTypeId = getObjectTypeId(currentMenuItem);   
+    
+    String oldTypeId = getMenuItemTypeId(currentMenuItem);   
     pageHistory.visit(targetMid, objectId, oldTypeId);  
     
-    targetObjectBacking.setTabIndex(tabIndex);           
-    
     PageBacking targetPageBacking;
-    if (!StringUtils.isBlank(objectId))
+    if (objectId != null) //Allows ObjectBacking.NEW_OBJECT_ID value
     {
       Tab tab = targetObjectBacking.getCurrentTab();      
-      if (pageId != null)
+      if (pageObjectId != null)
       {
         targetPageBacking = WebUtils.getBackingFromAction(tab.getAction());
-        outcome = targetPageBacking.show(pageId);
+        outcome = targetPageBacking.show(pageObjectId);
       }
       else
         outcome = tab.executeAction();     
@@ -117,46 +144,21 @@ public class ControllerBacking extends WebBacking implements Savable
     else //SearchBacking
     {
       targetPageBacking = targetObjectBacking.getSearchBacking();
-      outcome = targetPageBacking.show();
+      outcome = ((SearchBacking)targetPageBacking).getOutcome();
     }
     
     targetMenuItem.select();
     
     return outcome;      
   }
-  
-  public String show(String objectTypeId, String objectId)
-  {
-    return show(objectTypeId, objectId, 0, null);
-  }  
-  
-  public String show(String objectId)
-  {    
-    String objectTypeId = getObjectTypeId();
-    return show(objectTypeId, objectId);    
-  }  
-  
-  public String show(String objectTypeId, String objectId, String tabTypeId, 
-    String pageId)
-  { 
-    ObjectBacking targetObjectBacking = getObjectBacking(objectTypeId);
-    Tab tab = targetObjectBacking.getTab(tabTypeId);
-     
-    return show(objectTypeId, objectId, tab.getIndex(), pageId);   
-  }
-  
-  public String show(String objectTypeId, String objectId, String pageId)
-  {
-    return show(objectTypeId, objectId, 0, pageId);
-  }
-     
+    
   public String search(String targetObjectTypeId, String valueBinding)
   { 
     MenuItemCursor currentMenuItem = getSelectedMenuItem();    
 
     //Push entry to ReturnStack
     ObjectBacking objectBacking = getObjectBacking(currentMenuItem);
-    String returnTypeId = getObjectTypeId();    
+    String returnTypeId = getMenuItemTypeId();    
     String returnObjectId = objectBacking.getObjectId();
     Tab currentTab = objectBacking.getCurrentTab();
     Integer returnTabIndex = currentTab.getIndex();

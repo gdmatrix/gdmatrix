@@ -6,9 +6,14 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="/frames/#{userSessionBean.frame}/frame.xhtml">
 
-
   <ui:define name="template">
-    <p:growl id="growl" />     
+
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>    
+
+    <p:growl id="growl"  />     
+
+    <p:messages closable="true"/>
 
     <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>
 
@@ -20,101 +25,75 @@
       </div>
     </p:dialog>
 
-    <div class="flex justify-content-end align-items-center">
-      <sf:languageSelector locales="#{userSessionBean.supportedLocales}"
-                           styleClass="m-2"/>
-
-      <h:outputText value="#{userSessionBean.displayName}"
-                    styleClass="profile-name m-2"/>
-
-      <p:commandButton action="#{loginBean.logout}" value="#{webBundle.buttonSignout}"
-                       styleClass="ui-button-raised m-2" immediate="true">
-      </p:commandButton>
-    </div>
-
   </ui:define>
 
   <ui:define name="page">
-    <div class="flex flex-column mx-2" style="height: 8vh">
-      <!-- Horizontal menu -->
-      <div id="horizontal_menu" class="flex-grow-0">       
-        <ui:insert name="horizontal_menu">
-          <p:menubar model="#{templateBacking.PFMenuModel}" class="menubar" />
-        </ui:insert>
-      </div>
 
-      <div class="flex-grow-1">
-        <div class="flex flex-row flex-wrap">
+    <!-- Horizontal menu -->
+    <p:outputPanel id="horizontal_menu">       
+      <p:menubar id="horizontal_menubar" model="#{templateBacking.PFMenuModel}" class="menubar">            
+        <f:facet name="options">
+          <div class="flex justify-content-end align-items-center">
+            <sf:languageSelector locales="#{userSessionBean.supportedLocales}"
+                                 styleClass="m-2"/>                
+            <p:outputLabel id="username_label" value="#{userSessionBean.displayName}" class="ml-4 mr-2"/>
+            <p:tooltip for="username_label">
+              <p:outputPanel rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
+                                         userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}"
+                             styleClass="justify-content-center">
+                <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
+                               translator="#{userSessionBean.translator}" 
+                               translationGroup="login" />
+                <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}" style="margin-left: 2px;">
+                  <f:converter converterId="DateTimeConverter" />
+                  <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                </h:outputText>
+              </p:outputPanel> 
+            </p:tooltip>                
+            <p:commandButton action="#{loginBean.logout}" icon="pi pi-fw pi-sign-out" 
+                             title="#{webBundle.buttonSignout}" alt="#{webBundle.buttonSignout}"
+                             styleClass="mx-2" immediate="true">
+            </p:commandButton>                                    
+          </div>                     
+        </f:facet>
+      </p:menubar>
+    </p:outputPanel>
 
-          <!-- Vertical menu -->
-          <p:outputPanel id="vertical_menu" styleClass="flex-grow-0">
-            <ui:insert name="vertical_menu">
-              <div id="left_button_bar" class="flex flex-row md:flex-column align-items-center w-12 md:w-4rem mt-3"  > 
-                <p:repeat value="#{templateBacking.leftMenuItems}" var="leftMenuItem">
-                  <p:linkButton href="#{leftMenuItem.getUrl()}" onclick="#{leftMenuItem.getOnclick()}" 
-                                icon="#{leftMenuItem.getIcon()} mi-invert-color" value="#{leftMenuItem.getTitle()}" 
-                                styleClass="ui-button-raised m-2" />
-                </p:repeat>
-              </div> 
-            </ui:insert>
-          </p:outputPanel>
+    <div class="flex">
 
-          <!-- Left panel -->
-          <p:outputPanel id="left_panel" class="flex-grow-0 w-12 md:w-3 lg:w-2 my-2 pb-2">           
-            <ui:insert name="left_panel"></ui:insert>
-          </p:outputPanel>
-
-          <!-- Central panel -->
-          <p:outputPanel id="central_panel" styleClass="flex flex-grow-1 w-12 md:w-5 lg:w-7 py-2">
-            <p:outputPanel class="flex align-items-center">
-              <p:commandButton id="left_blind_button" type="button" 
-                               icon="pi pi-chevron-left" styleClass="ui-button-flat w-1rem mt-2 shadow-1"
-                               onclick="$('#mainform\\:left_blind_button').hide();$('#mainform\\:left_slide_button').show();">  
-                <p:effect type="blind" event="click" for="left_panel" >
-                  <f:param name="direction" value="'left'"/>
-                </p:effect>                   
-              </p:commandButton>
-              <p:commandButton id="left_slide_button" type="button" 
-                               icon="pi pi-chevron-right" styleClass="ui-button-flat w-1rem mt-2 shadow-1"
-                               style="display: none"
-                               onclick="$('#mainform\\:left_blind_button').show();$('#mainform\\:left_slide_button').hide();">  
-                <p:effect type="slide" event="click" for="left_panel" >
-                  <f:param name="direction" value="'left'"/>
-                </p:effect>  
-              </p:commandButton>              
-            </p:outputPanel> 
-
-            <div class="flex-grow-1 overflow-auto" style="height:85vh">
-              <ui:insert name="central_panel"></ui:insert>
-            </div>
-
-            <p:outputPanel class="flex align-items-center">
-              <p:commandButton id="right_blind_button" type="button" 
-                               icon="pi pi-chevron-right" styleClass="ui-button-flat w-1rem mt-2 shadow-1"
-                               onclick="$('#mainform\\:right_blind_button').hide();$('#mainform\\:right_slide_button').show();">  
-                <p:effect type="blind" event="click" for="right_panel" >
-                  <f:param name="direction" value="'right'"/>
-                </p:effect>                   
-              </p:commandButton>
-              <p:commandButton id="right_slide_button" type="button" 
-                               icon="pi pi-chevron-left" styleClass="ui-button-flat w-1rem mt-2 shadow-1"
-                               style="display: none"
-                               onclick="$('#mainform\\:right_blind_button').show();$('#mainform\\:right_slide_button').hide();">  
-                <p:effect type="slide" event="click" for="right_panel" >
-                  <f:param name="direction" value="'right'"/>
-                </p:effect>  
-              </p:commandButton>              
-            </p:outputPanel>                
-          </p:outputPanel>
-
-          <!-- Right panel -->
-          <p:outputPanel id="right_panel" class="flex-grow-1 w-12 md:w-3 lg:w-2 my-2 pb-2">
-            <ui:insert name="right_panel"></ui:insert>             
-          </p:outputPanel>
-
+      <!-- Vertical menu -->
+      <p:outputPanel id="vertical_menu" class="lg:flex hidden">
+        <div id="left_button_bar" class="flex flex-row lg:flex-column align-items-center w-12  mt-3"  > 
+          <p:repeat value="#{templateBacking.leftMenuItems}" var="leftMenuItem">
+            <p:linkButton href="#{leftMenuItem.getUrl()}" onclick="#{leftMenuItem.getOnclick()}" 
+                          icon="#{leftMenuItem.getIcon()} mi-invert-color" value="#{leftMenuItem.getTitle()}" 
+                          styleClass="ui-button-raised m-2" />
+          </p:repeat>
         </div>  
+      </p:outputPanel>
+
+      <!-- 3 columns -->
+      <div class="col flex slick-columns" style="width: 97vw" >
+        <!-- Left column -->
+        <p:outputPanel id="left_column" style="width:15vw" class="m-2 pb-2">           
+          <ui:insert name="left_column"></ui:insert>
+        </p:outputPanel>
+
+        <!-- Central column -->
+        <p:outputPanel id="central_column"  style="width:65vw" class="flex-grow-1 overflow-auto m-2">
+          <ui:insert name="central_column"></ui:insert>
+        </p:outputPanel>
+
+        <!-- Right column -->
+        <p:outputPanel id="right_column" style="width: 15vw" class="m-2 pb-2">
+          <ui:insert name="right_column"></ui:insert>             
+        </p:outputPanel>
       </div>
+
     </div>
+
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="/templates/pf/template.js"></script>
 
   </ui:define>
 

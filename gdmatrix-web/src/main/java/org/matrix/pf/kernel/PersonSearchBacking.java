@@ -46,6 +46,8 @@ import org.santfeliu.kernel.web.KernelConfigBean;
 @Named("personSearchBacking")
 public class PersonSearchBacking extends SearchBacking
 {
+  public static final String OUTCOME = "pf_person_search";  
+  
   private PersonFilter filter;
   
   public PersonSearchBacking()
@@ -76,16 +78,18 @@ public class PersonSearchBacking extends SearchBacking
   {
     smartValue = convert(filter);
     super.search();
-    return "pf_person_search";
+    return OUTCOME;
   }
   
+  @Override
   public String smartSearch()
   {
     filter = convert(smartValue);  
     super.search();
-    return "pf_person_search";
+    return OUTCOME;
   }
 
+  @Override
   public String clear()
   {
     filter = new PersonFilter();
@@ -168,9 +172,21 @@ public class PersonSearchBacking extends SearchBacking
   }
 
   @Override
-  public String show()
+  public String getFilterTypeId()
   {
-    return "pf_person_search";
+    return getObjectBacking().getRootTypeId();
   }
-  
+
+  @Override
+  public void refresh()
+  {
+    init();
+  }
+
+  @Override
+  public String getOutcome()
+  {
+    return OUTCOME;
+  }
+    
 }

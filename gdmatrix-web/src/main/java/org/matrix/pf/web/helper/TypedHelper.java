@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.faces.model.SelectItem;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.PropertyDefinition;
 import org.matrix.pf.web.WebBacking;
 import org.matrix.web.WebUtils;
 import org.santfeliu.dic.Type;
@@ -46,53 +47,158 @@ import org.santfeliu.dic.web.TypeBean;
  *
  * @author blanquepa
  */
-  public class TypedHelper extends WebBacking 
-    implements Serializable
+public class TypedHelper extends WebBacking
+  implements Serializable
+{
+  private static final String TYPE_BEAN = "typeBean";
+  
+  protected final Typed backing;
+
+  public TypedHelper(Typed backing)
   {
-    private final TypedPage backing;
-
-    public TypedHelper(TypedPage backing)
-    {
-      this.backing = backing;
-    }
-
-    public String getObjectTypeId()
-    {
-      String objectTypeId = backing.getTypeId();
-      return objectTypeId != null ? objectTypeId : backing.getRootTypeId();
-    }  
-
-    public List<Type> getAllTypes()
-    {
-      TypeCache tc = TypeCache.getInstance();
-      List<Type> types = new ArrayList();
-      List<SelectItem> items = getAllTypeItems();
-      for (SelectItem i : items)
-      {
-        types.add(tc.getType(String.valueOf(i.getValue())));
-      }
-      return types;
-    }
-
-    public List<SelectItem> getAllTypeItems()
-    {
-      return getAllTypeItems(DictionaryConstants.READ_ACTION,
-        DictionaryConstants.CREATE_ACTION, DictionaryConstants.WRITE_ACTION);
-    }
-
-    private List<SelectItem> getAllTypeItems(String ... actions)
-    {
-      try
-      {
-        TypeBean typeBean = WebUtils.getBacking("typeBean");
-        return typeBean.getAllSelectItems(getObjectTypeId(), 
-          backing.getAdminRole(), actions, true);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }   
-      return Collections.EMPTY_LIST;
-    }  
-
+    this.backing = backing;
   }
+
+  public String getTypeId()
+  {
+    String objectTypeId = backing.getTypeId();
+    return objectTypeId != null ? objectTypeId : backing.getRootTypeId();
+  }
+
+  public List<Type> getAllTypes()
+  {
+    TypeCache tc = TypeCache.getInstance();
+    List<Type> types = new ArrayList<>();
+    List<SelectItem> items = getAllTypeItems();
+    for (SelectItem i : items)
+    {
+      types.add(tc.getType(String.valueOf(i.getValue())));
+    }
+    return types;
+  }
+
+  public List<SelectItem> getAllTypeItems()
+  {
+    return getAllTypeItems(DictionaryConstants.READ_ACTION,
+      DictionaryConstants.CREATE_ACTION, DictionaryConstants.WRITE_ACTION);
+  }
+
+  public boolean isPropertyHidden(String propName)
+  {
+
+    return isPropertyHidden(getTypeId(), propName);
+  }
+
+  public String getPropertyLabel(String propName, String altName)
+  {
+    PropertyDefinition pd
+      = getPropertyDefinition(getTypeId(), propName);
+
+    return pd != null ? pd.getDescription() : altName;
+  }
+
+  /**
+   * Get property from current node or dictionary definition.
+   * @param name
+   * @return Property value.
+   */
+  @Override
+  public String getProperty(String name)
+  {
+    String value = super.getProperty(name);
+    if (value == null)
+    {
+      value = getFirstPropertyValue(name);
+    }
+    return value;
+  }
+  
+  /**
+   * Get property from current node or dictionary definition.
+   * @param name
+   * @return List of values.
+   */
+  @Override
+  public List<String> getMultivaluedProperty(String name)
+  {
+    List<String> values = super.getMultivaluedProperty(name);
+    if (values == null || values.isEmpty())
+    {
+      values = getPropertyValue(name);
+    }
+    return values;
+  }  
+
+  private String getFirstPropertyValue(String propName)
+  {
+    List<String> values = getPropertyValue(propName);
+    return !values.isEmpty() ? values.get(0) : null;
+  }  
+  
+  private List<String> getPropertyValue(String propName)
+  {
+    PropertyDefinition pd
+      = getPropertyDefinition(getTypeId(), propName);
+    if (pd != null)
+    {
+      return pd.getValue();
+    }
+    else
+    {
+      return Collections.emptyList();
+    }
+  }
+
+  private PropertyDefinition getPropertyDefinition(String typeId,
+    String propName)
+  {
+    Type type = TypeCache.getInstance().getType(typeId);
+    if (type != null)
+    {
+      List<PropertyDefinition> pds = type.getPropertyDefinition();
+      for (PropertyDefinition pd : pds)
+      {
+        if (pd.getName().equals(propName))
+        {
+          return pd;
+        }
+      }
+      String superTypeId = type.getSuperTypeId();
+      if (superTypeId != null)
+      {
+        return getPropertyDefinition(superTypeId, propName);
+      }
+    }
+    return null;
+  }
+
+  // Private methods
+  private boolean isPropertyHidden(String typeId, String propName)
+  {
+    PropertyDefinition pd = getPropertyDefinition(typeId, propName);
+    if (pd != null)
+    {
+      return pd.isHidden();
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  private List<SelectItem> getAllTypeItems(String... actions)
+  {
+    try
+    {
+      TypeBean typeBean = WebUtils.getBacking(TYPE_BEAN);
+      return typeBean.getAllSelectItems(getTypeId(),
+        backing.getAdminRole(), actions, true);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return Collections.emptyList();
+  }
+
+}

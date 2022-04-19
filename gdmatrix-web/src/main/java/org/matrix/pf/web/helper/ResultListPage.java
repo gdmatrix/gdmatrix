@@ -30,15 +30,16 @@
  */
 package org.matrix.pf.web.helper;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author blanquepa
  */
-public interface ResultListPage
+public interface ResultListPage<T extends Serializable>
 {  
-  public List getResults(int firstResult, int maxResults);
+  public List<T> getResults(int firstResult, int maxResults);
 
   public ResultListHelper getResultListHelper();
 }

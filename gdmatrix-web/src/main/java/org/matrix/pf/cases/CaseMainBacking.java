@@ -30,15 +30,23 @@
  */
 package org.matrix.pf.cases;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseConstants;
+import org.matrix.dic.Property;
 import org.matrix.pf.web.PageBacking;
+import org.matrix.pf.web.helper.DynamicFormPage;
+import org.matrix.pf.web.helper.FormHelper;
 import org.matrix.pf.web.helper.TypedHelper;
-import org.santfeliu.cases.web.CaseConfigBean;
-import org.matrix.pf.web.helper.TypedPage;
 import org.matrix.web.WebUtils;
+import org.santfeliu.cases.web.CaseConfigBean;
+import org.santfeliu.dic.TypeCache;
+import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.UserSessionBean;
 
 /**
  *
@@ -46,21 +54,27 @@ import org.matrix.web.WebUtils;
  */
 @Named("caseMainBacking")
 public class CaseMainBacking extends PageBacking
-  implements TypedPage
+  implements DynamicFormPage
 {
+  public static final String SHOW_AUDIT_PROPERTIES = "_showAuditProperties";
+  public static final String OUTCOME = "pf_case_main";  
+  
   private Case cas;
   private TypedHelper typedHelper;
-  
+  private FormHelper formHelper;
+
   public CaseMainBacking()
   {
+    //Let to super class constructor.  
   }
   
   @PostConstruct
   public void init()
   {
-    objectBacking = WebUtils.getInstance(CaseBacking.class);    
-    typedHelper = new TypedHelper(this);
-    load();
+    objectBacking = WebUtils.getInstance(CaseBacking.class); 
+    
+    typedHelper = new TypedHelper(this);  
+    formHelper = new FormHelper(this);
   }
 
   @Override
@@ -72,19 +86,28 @@ public class CaseMainBacking extends PageBacking
   @Override
   public String getTypeId()
   {
-    return getObjectTypeId();
-  }
-
-  @Override
-  public String getAdminRole()
-  {
-    return CaseConstants.CASE_ADMIN_ROLE;
+    if (cas != null) 
+      return cas.getCaseTypeId();
+    else
+      return getMenuItemTypeId();
   }
 
   @Override
   public TypedHelper getTypedHelper()
   {
     return typedHelper;
+  } 
+
+  @Override
+  public void setTypeId(String typeId)
+  {
+    this.cas.setCaseTypeId(typeId);
+  }
+
+  @Override
+  public FormHelper getFormHelper()
+  {
+    return formHelper;
   }
 
   public Case getCase()
@@ -98,10 +121,44 @@ public class CaseMainBacking extends PageBacking
   }
 
   @Override
-  public String getPageId()
+  public String getPageObjectId()
   {
     return objectBacking.getObjectId();
   }
+
+  public Date getStartDateTime()
+  {
+    if (cas != null && cas.getStartDate() != null)
+      return getDate(cas.getStartDate(), cas.getStartTime());
+    else
+      return null;
+  }
+  
+  public Date getEndDateTime()
+  {
+    if (cas != null && cas.getEndDate() != null)
+      return getDate(cas.getEndDate(), cas.getEndTime());
+    else
+      return null;
+  }  
+    
+  public void setStartDateTime(Date date)
+  {
+    if (date != null && cas != null)
+    {
+      cas.setStartDate(TextUtils.formatDate(date, "yyyyMMdd"));
+      cas.setStartTime(TextUtils.formatDate(date, "HHmmss"));
+    }
+  }
+  
+  public void setEndDateTime(Date date)
+  {
+    if (date != null && cas != null)
+    {
+      cas.setEndDate(TextUtils.formatDate(date, "yyyyMMdd"));
+      cas.setEndTime(TextUtils.formatDate(date, "HHmmss"));
+    }
+  }  
   
   @Override
   public String show(String pageId)
@@ -113,38 +170,36 @@ public class CaseMainBacking extends PageBacking
   @Override
   public String show()
   {
-    load(); 
-    return "pf_case_main";
-  }
- 
-  public String store()
-  {
-    try
-    {
-      CaseConfigBean.getPort().storeCase(cas);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return null;    
+    populate(); 
+    return OUTCOME;
   }
   
-  public String remove()
+  @Override
+  public void reset()
   {
-    error("Not implemented yet");
-    return null;
+    create();
+  }
+
+  @Override
+  public List<Property> getProperties()
+  {
+    if (cas != null)
+      return cas.getProperty();
+    else
+      return Collections.emptyList();
   }
   
-  public String cancel()
+  @Override
+  public void create()
   {
-    load();
-    return null;
+    cas = new Case();   
+    cas.setCaseTypeId(getMenuItemTypeId());
   }
-    
-  private void load()
+  
+  @Override
+  public void load()
   {
-    String caseId = getPageId();
+    String caseId = getPageObjectId();
     if (caseId != null)
     {
       try
@@ -156,5 +211,62 @@ public class CaseMainBacking extends PageBacking
         error(ex);
       }
     }
+  }  
+  
+  @Override
+  public String doStore()
+  {
+    try
+    {
+      CaseConfigBean.getPort().storeCase(cas);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;    
   }
+    
+  public String cancel()
+  {
+    populate();
+    return null;
+  }
+  
+  //TODO: AuditHelper?
+  public boolean isShowAuditProperties()
+  {
+    try
+    {
+      if (UserSessionBean.getCurrentInstance().isUserInRole(
+        CaseConstants.CASE_ADMIN_ROLE))
+        return true;
+      
+      if (cas == null)
+        return false;
+
+      org.santfeliu.dic.Type type =
+        TypeCache.getInstance().getType(cas.getCaseTypeId());
+      if (type != null)
+      {
+        String showAuditProperty = 
+          typedHelper.getProperty(SHOW_AUDIT_PROPERTIES);
+        return showAuditProperty == null || 
+          !"false".equalsIgnoreCase(showAuditProperty);
+      }
+      else 
+        return true;
+    }
+    catch (Exception ex)
+    {
+      return true;
+    }
+  }  
+      
+  private Date getDate(String date, String time)
+  {
+    String dateTime = 
+      TextUtils.concatDateAndTime(date, time);
+    return TextUtils.parseInternalDate(dateTime);    
+  }  
 }

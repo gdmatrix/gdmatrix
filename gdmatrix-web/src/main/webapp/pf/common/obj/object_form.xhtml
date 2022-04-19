@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <p:outputPanel styleClass="formgrid grid pl-2" rendered="#{formBacking.renderForm}">         
+
+    <p:outputPanel styleClass="field col col-12 md:col-6">  
+      <p:outputLabel  value="#{objectBundle.form}" />
+
+      <div class="inputfield w-full align-items-center">
+        <p:selectOneMenu id="forms" value="#{formBacking.formHelper.selector}"
+                         styleClass="align-items-center" label="#{objectBundle.update}"
+                         title="#{objectBundle.update}"
+                         rendered="#{not formBacking.formHelper.renderPropertyEditor}">
+          <p:ajax event="change" update="dynamic_form_panel" listener="#{formBacking.formHelper.onFormChange}"/>
+          <f:selectItems value="#{formBacking.formHelper.formSelectItems}" />
+        </p:selectOneMenu>
+        <p:commandButton value="#{objectBundle.update}" style="top: -9px"
+                         styleClass="inputfield ml-2 align-items-center ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only"
+                         icon="pi pi-refresh" immediate="true"
+                         alt="#{objectBundle.update}" title="#{objectBundle.update}"
+                         rendered="#{not formBacking.formHelper.renderPropertyEditor}"
+                         action="#{formBacking.formHelper.clearForm}" update="dynamic_form_panel"/>   
+      </div>
+
+    </p:outputPanel>
+
+    <p:outputPanel id="dynamic_form_panel" styleClass="field col col-12 md:col-12" 
+                   rendered="#{formBacking.formHelper.renderForm}">
+      <sf:dynamicForm
+        form="#{formBacking.formHelper.form}"
+        rendererTypes="#{formBacking.objectBacking.editable ? 'HtmlFormRenderer,GenericFormRenderer' : 'DisabledHtmlFormRenderer'}"
+        value="#{formBacking.formHelper.data}" 
+        rendered="#{not formBacking.formHelper.renderPropertyEditor}"
+        translator="#{userSessionBean.translator}"
+        translationGroup="#{userSessionBean.translationGroup}_#{formBacking.objectBacking.objectId}" />
+      <p:inputTextarea value="#{formBacking.formHelper.propertyEditorString}"
+                       rendered="#{formBacking.formHelper.renderPropertyEditor}"
+                       validator="#{formBacking.formHelper.validatePropertyEditorString}"
+                       style="font-family:Courier New"
+                       styleClass="inputfield w-full" 
+                       readonly="#{not formBacking.objectBacking.editable}"/>
+    </p:outputPanel>  
+  </p:outputPanel>  
+</ui:composition>
+

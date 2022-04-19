@@ -36,7 +36,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
-import org.matrix.cases.CaseConstants;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CasePerson;
 import org.matrix.cases.CasePersonFilter;
@@ -47,12 +46,12 @@ import org.matrix.pf.kernel.PersonBacking;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.ResultListHelper;
 import org.matrix.pf.web.helper.ResultListPage;
+import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.pf.web.helper.TypedHelper;
+import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.util.TextUtils;
-import org.matrix.pf.web.helper.TypedPage;
-import org.matrix.web.WebUtils;
 
 /**
  *
@@ -60,7 +59,7 @@ import org.matrix.web.WebUtils;
  */
 @Named("casePersonsBacking")
 public class CasePersonsBacking extends PageBacking 
-  implements TypedPage, ResultListPage
+  implements TypedTabPage, ResultListPage
 {  
   private TypedHelper typedHelper;
   private ResultListHelper<CasePersonView> resultListHelper;
@@ -68,6 +67,7 @@ public class CasePersonsBacking extends PageBacking
   
   public CasePersonsBacking()
   {
+    //Let to super class constructor.   
   }
   
   @PostConstruct
@@ -76,7 +76,7 @@ public class CasePersonsBacking extends PageBacking
     objectBacking = WebUtils.getInstance(CaseBacking.class);   
     typedHelper = new TypedHelper(this);
     resultListHelper = new ResultListHelper(this);
-    load();
+    populate();
   }
   
   public CasePerson getEditing()
@@ -90,18 +90,12 @@ public class CasePersonsBacking extends PageBacking
   }    
 
   @Override
-  public String getPageId()
+  public String getPageObjectId()
   {
     if (editing != null)
       return editing.getCasePersonId();
     else
       return null;
-  }
-
-  @Override
-  public String getAdminRole()
-  {
-    return CaseConstants.CASE_ADMIN_ROLE;
   }
 
   @Override
@@ -239,7 +233,7 @@ public class CasePersonsBacking extends PageBacking
   @Override
   public String show()
   {    
-    load();
+    populate();
     return "pf_case_persons";
   }
   
@@ -271,6 +265,9 @@ public class CasePersonsBacking extends PageBacking
   {
     try
     {
+      if (editing == null)
+        return null;
+      
       if (editing.getPersonId() == null || 
         editing.getPersonId().isEmpty())
       {
@@ -282,7 +279,7 @@ public class CasePersonsBacking extends PageBacking
       
       if (editing.getCasePersonTypeId() == null)
       {
-        editing.setCasePersonTypeId(typedHelper.getObjectTypeId());
+        editing.setCasePersonTypeId(typedHelper.getTypeId());
       }
       
       CaseManagerPort port = CaseConfigBean.getPort();
@@ -343,9 +340,29 @@ public class CasePersonsBacking extends PageBacking
     return null;
   }
 
-  private void load()
+  @Override
+  public String store()
+  {
+    return storePerson();
+  }
+  
+  @Override
+  public void load()
   {
     resultListHelper.search();
+  }
+
+  @Override
+  public void create()
+  {
+    editing = new CasePerson();
+  }
+
+  @Override
+  public void reset()
+  {
+    editing = null;
+    resultListHelper.reset();
   }
 
 
