@@ -31,11 +31,11 @@
 package org.matrix.pf.kernel;
 
 import javax.inject.Named;
+import org.matrix.kernel.KernelConstants;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.PersonView;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
-import org.matrix.pf.web.Tab;
 import org.matrix.web.WebUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
 
@@ -51,16 +51,7 @@ public class PersonBacking extends ObjectBacking
   {
     super();  
   }
-  
-  @Override
-  public void loadTabs()
-  {
-    clearTabs();
-    addTab(new Tab("Principal", 0, "#{personMainBacking.show()}", "Person"));
-    addTab(new Tab("Domicilis", 1, "#{personAddressessBacking.show()}", "PersonAddress"));
-    addTab(new Tab("Contactes", 2, "#{personContactsBacking.show()}", "PersonContact"));
-  }
-
+ 
   @Override
   public PersonSearchBacking getSearchBacking()
   {
@@ -141,8 +132,19 @@ public class PersonBacking extends ObjectBacking
   @Override
   public String show()
   {
-//    loadTabs();
     return super.show();
   }
-   
+
+  @Override
+  public String getAdminRole()
+  {
+    return KernelConstants.KERNEL_ADMIN_ROLE;
+  }
+  
+  @Override
+  public boolean remove(String objectId)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+     
 }

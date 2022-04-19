@@ -37,7 +37,8 @@ import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
-import org.matrix.kernel.KernelConstants;
+import org.matrix.kernel.City;
+import org.matrix.kernel.CityFilter;
 import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
@@ -45,10 +46,12 @@ import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
-import org.matrix.pf.web.helper.TypedPage;
 import org.matrix.web.WebUtils;
+import org.santfeliu.kernel.web.CityBean;
 import org.santfeliu.kernel.web.CountryBean;
+import org.santfeliu.kernel.web.CountryToStreetBean;
 import org.santfeliu.util.TextUtils;
+import org.matrix.pf.web.helper.TypedTabPage;
 
 /**
  *
@@ -56,8 +59,10 @@ import org.santfeliu.util.TextUtils;
  */
 @Named("personMainBacking")
 public class PersonMainBacking extends PageBacking 
-  implements TypedPage
+  implements TypedTabPage
 {
+  public static final String OUTCOME = "pf_person_main";
+  
   private Person person;
   private TypedHelper typedHelper;
   private List<SelectItem> personParticleSelectItems;
@@ -65,14 +70,16 @@ public class PersonMainBacking extends PageBacking
   
   public PersonMainBacking()
   {
+    //Let to super class constructor.    
   }
   
   @PostConstruct
   public void init()
   {
     objectBacking = WebUtils.getInstance(PersonBacking.class);
-    typedHelper = new TypedHelper(this);      
-    load();
+    typedHelper = new TypedHelper(this);   
+
+    populate();
   }
 
   @Override
@@ -84,13 +91,7 @@ public class PersonMainBacking extends PageBacking
   @Override
   public String getTypeId()
   {
-    return getObjectTypeId();
-  }
-  
-  @Override
-  public String getAdminRole()
-  {
-    return KernelConstants.KERNEL_ADMIN_ROLE;
+    return getMenuItemTypeId();
   }
 
   @Override
@@ -98,7 +99,7 @@ public class PersonMainBacking extends PageBacking
   {
     return typedHelper;
   }
-
+  
   public Person getPerson()
   {
     return person;
@@ -123,35 +124,97 @@ public class PersonMainBacking extends PageBacking
       person.setBirthDate(TextUtils.formatDate(date, "yyyyMMdd"));
   }
   
-  public List<SelectItem> getNationalitySelectItems()
+  public List<SelectItem> getCountrySelectItems()
   {
     if (countrySelectItems == null)
     {
-      CountryBean countryBean = (CountryBean)getBean("countryBean");
-      countrySelectItems = countryBean.getSelectItems(person.getNationalityId());
+      CountryToStreetBean countryToStreetBean = getCountryToStreetBean();
+      countrySelectItems = countryToStreetBean.getCountrySelectItems();
     }
     return countrySelectItems;
+  }
+  
+  public String getCountryLabel(String value)
+  {
+    List<SelectItem> items = getCountrySelectItems();
+    if (items != null)
+    {
+      for (SelectItem item : items)
+      {
+        if (value.equals(item.getValue()))
+          return item.getLabel();
+      }
+    }
+    return "";
+  }
+  
+  public SelectItem getCountrySelectItem()
+  {
+    CountryBean countryBean = (CountryBean)getBean("countryBean");
+    String id = person.getNationalityId();
+    String description = countryBean.getDescription(id);
+    return new SelectItem(id, description);
+  }
+  
+  public void setCountrySelectItem(SelectItem selectItem)
+  {
+    person.setNationalityId((String) selectItem.getValue());
+  }
+  
+  public SelectItem getCitySelectItem()
+  {
+    CityBean cityBean = (CityBean)getBean("cityBean");
+    String id = person.getBirthCityId();
+    String description = cityBean.getDescription(id);
+    return new SelectItem(id, description);
+  }
+  
+  public void setCitySelectItem(SelectItem selectItem)
+  {
+    person.setBirthCityId((String) selectItem.getValue());
   }  
   
-  public List<SelectItem> completeNationality(String query)
+  public List<SelectItem> completeCountry(String query)
   {
-    List<SelectItem> items = new ArrayList();
+    List<SelectItem> results = new ArrayList<>();
     
     //Query search
-    if (query != null && query.length() >= 3)
+    List<SelectItem> countries = getCountrySelectItems();
+    if (countries != null && !countries.isEmpty())
     {
-      items = getNationalitySelectItems();
-      if (items != null && !items.isEmpty())
+      for (SelectItem item : countries)
       {
-        for (SelectItem item : items)
+        String country = item.getLabel().toUpperCase();
+        if (country.contains(query.toUpperCase()))
+          results.add(item);
+      }
+    }
+
+    return results;
+  }   
+  
+  public List<SelectItem> completeCity(String query)
+  {
+    List<SelectItem> results = new ArrayList<>();
+    
+    CityFilter filter = new CityFilter();
+    if (query != null && query.length() > 1)
+    {
+      filter.setCityName("%" + query.toUpperCase() + "%");
+      List<City> cities = 
+        KernelConfigBean.getPort().findCities(filter);
+
+      if (cities != null && !cities.isEmpty())
+      {
+        for (City city : cities)
         {
-          if (!item.getLabel().startsWith(query))
-            items.remove(item);
+          results.add(new SelectItem(city.getCityId(), city.getName()));
         }
       }
     }
-    return items;
-  }   
+
+    return results;
+  }     
   
   @Override
   public String show(String pageId)
@@ -163,10 +226,11 @@ public class PersonMainBacking extends PageBacking
   @Override
   public String show()
   {
-    load();
-    return "pf_person_main";
+    populate();
+    return OUTCOME;
   }
   
+  @Override
   public String store()
   {
     try
@@ -213,18 +277,36 @@ public class PersonMainBacking extends PageBacking
   }
 
   @Override
-  public String getPageId()
+  public String getPageObjectId()
   {
     return objectBacking.getObjectId();
   }
-      
-  private void load()
+
+  @Override
+  public void create()
   {
-    String personId = getPageId();
+    person = new Person();
+  }
+          
+  @Override
+  public void load()
+  {
+    String personId = getPageObjectId();
     if (personId != null)
     {
       person = KernelConfigBean.getPort().loadPerson(personId);
     }
+  }
+
+  @Override
+  public void reset()
+  {
+    person = null;
+  }
+  
+  private CountryToStreetBean getCountryToStreetBean()
+  {
+    return (CountryToStreetBean) getBean("countryToStreetBean");    
   }
 
 

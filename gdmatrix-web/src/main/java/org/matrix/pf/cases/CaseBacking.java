@@ -32,6 +32,7 @@ package org.matrix.pf.cases;
 
 import javax.inject.Named;
 import org.matrix.cases.Case;
+import org.matrix.cases.CaseConstants;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.SearchBacking;
@@ -46,20 +47,22 @@ import org.santfeliu.cases.web.CaseConfigBean;
 @CMSContent(typeId = "Case")
 @Named("caseBacking")
 public class CaseBacking extends ObjectBacking
-{   
+{
   public CaseBacking()
   {
     super();
   }
-    
+  
   @Override
   public void loadTabs()
   {
-    clearTabs();
-    addTab(new Tab("Principal", 0, "#{caseMainBacking.show()}", "Case"));
-    addTab(new Tab("Professionals", 1, "#{casePersonsBacking.show()}", "sf:ProfessionalSSCasePerson"));
-    addTab(new Tab("Membres", 2, "#{casePersonsBacking.show()}", "sf:MembreSSCasePerson"));    
-    addTab(new Tab("Domicilis", 3, "#{caseAddressessBacking.show()}", "CaseAddress"));    
+    super.loadTabs();
+    if (tabs.isEmpty())
+    {
+      addTab(new Tab(0, "Principal", "Case", "#{caseMainBacking.show()}"));
+      addTab(new Tab(1, "Persones", "CasePerson", "#{casePersonsBacking.show()}")); 
+      addTab(new Tab(2, "Domicilis", "CaseAddress", "#{caseAddressessBacking.show()}"));  
+    }
   }
   
   @Override
@@ -114,10 +117,34 @@ public class CaseBacking extends ObjectBacking
   @Override
   public String show()
   {
-//    loadTabs(); //TODO: Move to ObjectBacking, get tabs from dictionary
     return super.show(); 
   }
+
+  @Override
+  public boolean remove(String objectId)
+  {
+    try
+    {
+      return CaseConfigBean.getPort().removeCase(objectId);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return false;
+  }
+
+  @Override
+  public String getAdminRole()
+  {
+    return CaseConstants.CASE_ADMIN_ROLE;
+  }
   
-  
+  @Override
+  public boolean isEditable()
+  {
+    //TODO:
+    return true;
+  }  
        
 }

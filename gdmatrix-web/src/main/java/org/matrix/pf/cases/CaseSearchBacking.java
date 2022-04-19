@@ -36,11 +36,10 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
-import org.matrix.cases.CasePersonView;
 import org.matrix.pf.web.SearchBacking;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
-import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.bean.CMSProperty;
 /**
  *
  * @author blanquepa
@@ -48,11 +47,17 @@ import org.santfeliu.util.TextUtils;
 @Named("caseSearchBacking")
 public class CaseSearchBacking extends SearchBacking
 {
+  @CMSProperty
+  public static final String LOAD_METADATA_PROPERTY = "loadMetadata";
+  
+  public static final String OUTCOME = "pf_case_search";
+  
   private CaseFilter filter;
   private String caseIdFilter;
   
   public CaseSearchBacking()
   {
+    //Let to super class constructor.    
   }
   
   @PostConstruct
@@ -60,7 +65,7 @@ public class CaseSearchBacking extends SearchBacking
   {
     objectBacking = WebUtils.getInstance(CaseBacking.class);
     filter = new CaseFilter();
-    String typeId = getObjectTypeId();
+    String typeId = getMenuItemTypeId();
     if (typeId != null)
       filter.setCaseTypeId(typeId);    
     smartValue = null;
@@ -90,23 +95,25 @@ public class CaseSearchBacking extends SearchBacking
   public String search()
   {
     smartValue = filterToSmartValue();
-    String typeId = getObjectTypeId();
+    String typeId = getMenuItemTypeId();
     if (typeId != null)
       filter.setCaseTypeId(typeId);
     super.search();
-    return "pf_case_search";
+    return OUTCOME;
   }
   
+  @Override
   public String smartSearch()
   {
     filter = smartValueToFilter(); 
-    String typeId = getObjectTypeId();
+    String typeId = getMenuItemTypeId();
     if (typeId != null)
       filter.setCaseTypeId(typeId);    
     super.search();
-    return "pf_case_search";
+    return OUTCOME;
   }
 
+  @Override
   public String clear()
   {
     filter = new CaseFilter();
@@ -132,22 +139,24 @@ public class CaseSearchBacking extends SearchBacking
   @Override
   public List<Case> getResults(int firstResult, int maxResults)
   {
+    List<Case> results = null;
     try
     {
       filter.setFirstResult(firstResult);
       filter.setMaxResults(maxResults);
-      return CaseConfigBean.getPort().findCases(filter);
+      results = CaseConfigBean.getPort().findCases(filter);
+      loadMetadata(results);
     }
     catch (Exception ex)
     {
       error(ex);
     }
-    return null;
+    return results;
   }  
   
   private CaseFilter smartValueToFilter()
   {
-    CaseFilter filter = new CaseFilter();
+    CaseFilter result = new CaseFilter();
     if (smartValue != null)
     {
       try
@@ -158,56 +167,84 @@ public class CaseSearchBacking extends SearchBacking
       catch (NumberFormatException ex)
       {
         if (!StringUtils.isBlank(smartValue))
-          filter.setTitle("%" + smartValue + "%");
+          result.setTitle("%" + smartValue + "%");
       }
     }  
-    return filter;
+    return result;
   }
     
   private String filterToSmartValue()
   {
-    String smartValue = null;
+    String result = null;
     if (!StringUtils.isBlank(caseIdFilter))
-      smartValue = caseIdFilter;
+      result = caseIdFilter;
     else if (!StringUtils.isBlank(filter.getTitle()))
     {
-      smartValue = filter.getTitle();
+      result = filter.getTitle();
       filter.setTitle("%" + filter.getTitle() + "%");
     }
 
-    return smartValue;
-  }
-  
-  @Override
-  public String show()
-  {
-    return "pf_case_search";
-  }
-  
-  public String getViewStartDate()
-  {
-    String date = "";
-    CasePersonView row = (CasePersonView)getValue("#{row}");
-    if (row != null)
-    {
-      date = row.getStartDate();
-      date = TextUtils.formatDate(
-        TextUtils.parseInternalDate(date), "dd/MM/yyyy");
-    }
-    return date;
+    return result;
   }
 
-  public String getViewEndDate()
+  @Override
+  public String getFilterTypeId()
   {
-    String date = "";
-    CasePersonView row = (CasePersonView)getValue("#{row}");
-    if (row != null)
+    return filter != null ? filter.getCaseTypeId() : null;
+  }
+
+  @Override
+  public void refresh()
+  {
+    init();
+  }
+
+  @Override
+  public String getOutcome()
+  {
+    return OUTCOME;
+  }
+  
+  //TODO: Move to SearchBean
+  private void loadMetadata(List<Case> results) throws Exception
+  {
+    boolean loadMetadata = false;
+    loadMetadata = (getProperty(LOAD_METADATA_PROPERTY) != null
+      && getProperty(LOAD_METADATA_PROPERTY).equalsIgnoreCase("true"));
+    if (loadMetadata)
     {
-      date = row.getEndDate();
-      date = TextUtils.formatDate(
-        TextUtils.parseInternalDate(date), "dd/MM/yyyy");
+      for (int i = 0; i < results.size(); i++)
+      {
+        Case cas = CaseConfigBean.getPort().loadCase(results.get(i).getCaseId());
+        results.set(i, cas);
+      }
     }
-    return date;
-  }   
+  }
+  
+//  public String getViewStartDate()
+//  {
+//    String date = "";
+//    CasePersonView row = (CasePersonView)getValue("#{row}");
+//    if (row != null)
+//    {
+//      date = row.getStartDate();
+//      date = TextUtils.formatDate(
+//        TextUtils.parseInternalDate(date), "dd/MM/yyyy");
+//    }
+//    return date;
+//  }
+//
+//  public String getViewEndDate()
+//  {
+//    String date = "";
+//    CasePersonView row = (CasePersonView)getValue("#{row}");
+//    if (row != null)
+//    {
+//      date = row.getEndDate();
+//      date = TextUtils.formatDate(
+//        TextUtils.parseInternalDate(date), "dd/MM/yyyy");
+//    }
+//    return date;
+//  }   
   
 }

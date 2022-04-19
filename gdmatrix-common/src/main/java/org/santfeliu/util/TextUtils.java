@@ -446,6 +446,18 @@ public class TextUtils
       + ":" + result.substring(result.length()-2);
     return result;
   }
+  
+  public static String concatDateAndTime(String date, String time)
+  {
+    String dateTime = null;
+    
+    if (date != null && time != null)
+      dateTime = date + time;
+    else if (date != null && time == null)
+      dateTime = date + "000000";
+
+    return dateTime;
+  }  
 
   private static final char[] kDigits = { '0', '1', '2', '3', '4', '5', '6',
     '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };

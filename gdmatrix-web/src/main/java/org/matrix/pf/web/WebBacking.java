@@ -30,6 +30,7 @@
  */
 package org.matrix.pf.web;
 
+import java.util.List;
 import javax.inject.Named;
 import static org.matrix.web.WebUtils.OBJECT_TYPEID_PROPERTY;
 import org.santfeliu.faces.FacesBean;
@@ -42,25 +43,41 @@ import org.santfeliu.web.UserSessionBean;
  */
 @Named("webBacking")
 public class WebBacking extends FacesBean
-{ 
+{   
+  
   protected MenuItemCursor getSelectedMenuItem()
   {
-    return UserSessionBean.getCurrentInstance().getSelectedMenuItem();
+    return UserSessionBean.getCurrentInstance().getMenuModel()
+      .getSelectedMenuItem();
   }
   
-  protected String getObjectTypeId(MenuItemCursor mic)
+  protected String getMenuItemTypeId(MenuItemCursor mic)
   {
     return mic.getProperty(OBJECT_TYPEID_PROPERTY);
   }  
   
-  protected String getObjectTypeId()
+  protected String getMenuItemTypeId()
   {
-    return getObjectTypeId(getSelectedMenuItem());
+    return getMenuItemTypeId(getSelectedMenuItem());
   } 
     
   protected String getBackingName()
   {
     return getClass().getAnnotation(Named.class).value();  
   }
-       
+  
+  protected String getProperty(String name)
+  {
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    return menuItem.getProperty(name);
+  }  
+  
+  protected List<String> getMultivaluedProperty(String name)
+  {
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    return menuItem.getMultiValuedProperty(name);    
+  }
+     
 }

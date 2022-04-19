@@ -73,9 +73,12 @@ public class ControllerProxy
 
       if (objectBacking != null)
       {
-        String currentTypeId = objectBacking.getObjectTypeId();      
-        controllerBacking.getPageHistory()
-          .visit(menuItem.getMid(), null, currentTypeId);
+        String currentTypeId = objectBacking.getObjectTypeId();     
+        if (currentTypeId != null)
+        {
+          controllerBacking.getPageHistory()
+            .visit(menuItem.getMid(), null, currentTypeId);
+        }
       }
     }
   }

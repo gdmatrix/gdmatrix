@@ -30,8 +30,9 @@
  */
 package org.matrix.pf.web;
 
-import org.matrix.web.WebUtils;
 import java.io.Serializable;
+import org.matrix.web.Describable;
+import org.matrix.web.WebUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.ObjectDescriptionCache;
@@ -42,7 +43,14 @@ import org.santfeliu.web.obj.ObjectDescriptionCache;
  */
 public class PageHistory extends org.santfeliu.web.obj.PageHistory 
   implements Serializable
-{   
+{
+  
+  @Override
+  protected void addEntry(String mid, String objectId, String typeId)
+  {
+    add(new Entry(mid, objectId, typeId));
+  }
+
   @Override
   protected boolean isSamePage(MenuItemCursor cursor1, MenuItemCursor cursor2)
   {
@@ -72,23 +80,30 @@ public class PageHistory extends org.santfeliu.web.obj.PageHistory
       String title = null;
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
       MenuItemCursor cursor = userSessionBean.getMenuModel().getMenuItem(mid);
-      ObjectBacking objectBacking = WebUtils.getBacking(cursor);      
+//      WebBacking webBacking = WebUtils.getBacking(cursor); 
       if (objectId == null) // search
       {        
-        SearchBacking searchBacking = objectBacking.getSearchBacking();
-        if (searchBacking != null)
-        {
-          title = cursor.getProperty("title"); //TODO
-        }
+        title = cursor.getProperty("title");
+        if (title == null)
+          title = cursor.getLabel();
+//        if (webBacking instanceof ObjectBacking)
+//        {
+//          SearchBacking searchBacking = 
+//            ((ObjectBacking)webBacking).getSearchBacking();
+//          if (searchBacking != null)
+//          {
+//            title = cursor.getProperty("title"); //TODO
+//          }
+//        }
       }
 
-      if (title == null)
-      {
-        if (objectBacking != null)
-        {
-          title = objectBacking.getDescription(objectId);
-        }
-      }
+//      if (title == null)
+//      {
+//        if (webBacking != null && webBacking instanceof Describable)
+//        {
+//          title = ((Describable)webBacking).getDescription(objectId);
+//        }
+//      }
       return title;
     }
     
@@ -99,12 +114,13 @@ public class PageHistory extends org.santfeliu.web.obj.PageHistory
 
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();      
       MenuItemCursor cursor = userSessionBean.getMenuModel().getMenuItem(mid);      
-      ObjectBacking objectBacking = WebUtils.getBacking(cursor);  
+      WebBacking webBacking = WebUtils.getBacking(cursor);  
       
-      if (objectBacking != null && objectId != null)
+      if (webBacking != null && webBacking instanceof Describable 
+        && objectId != null)
       {
         ObjectDescriptionCache cache = ObjectDescriptionCache.getInstance();
-        description = cache.getDescription(objectBacking, objectId);
+        description = cache.getDescription((Describable) webBacking, objectId);
       }
       return description;
     }

@@ -4,46 +4,23 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                template="person_template.xhtml">
+                template="person_common.xhtml">
 
-  <ui:param name="object_template" value="object.xhtml" />
-  <ui:param name="updateOnSearch" value="" />       
-  <ui:param name="ajax" value="false" />
-
-  <ui:define name="object_header">
-    <i class="pi pi-id-card text-5xl mx-4 my-2"/>
-  </ui:define>
-
+  <ui:param name="objectPage" value="object" />
+  
   <ui:define name="content">
     <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
                   var="kernelBundle" />
 
     <h:panelGroup>
 
-      <div class="formgrid grid pl-2">   
-
+      <div class="formgrid grid pl-2">  
+                
         <div class="field col-12 md:col-4 lg:col-2">
           <p:outputLabel for="id" value="Id. de persona" />
           <p:inputText id="id" value="#{personMainBacking.person.personId}" 
                        styleClass="inputfield w-full" readonly="true" />
         </div>
-
-        <div class="field col-12 md:col-4">
-          <p:outputLabel for="personTypeId" value="#{kernelBundle.person_type}" />
-
-          <p:selectOneMenu id="personTypeId" value="#{personMainBacking.person.personTypeId}"  
-                           styleClass="inputfield w-full"
-                           filter="true" var="t">
-            <f:selectItems value="#{personMainBacking.typedHelper.allTypes}" var="type" 
-              itemLabel="#{type.description}" itemValue="#{type.typeId}" />
-            <p:column>
-              <h:outputText value="#{t}" />
-            </p:column>
-            <p:column>
-              <h:outputText value="#{typeBean.getDescription(t)}" />
-            </p:column>            
-          </p:selectOneMenu>
-        </div>   
         
         <div class="field col-12 md:col-4 lg:col-2">
           <p:outputLabel for="nif" value="#{kernelBundle.person_nif}" />
@@ -56,16 +33,36 @@
           <p:inputText id="passport" value="#{personMainBacking.person.passport}" 
                        styleClass="inputfield w-full"/>
         </div>           
-      </div>
 
-      <div class="field col-12 md:col-4 ">
+      </div>
+      
+      <div class="field col-12 md:col-4">
+        <p:outputLabel for="personTypeId" value="#{kernelBundle.person_type}" />
+
+        <p:selectOneMenu id="personTypeId" value="#{personMainBacking.person.personTypeId}"  
+                         styleClass="inputfield w-full"
+                         filter="true" var="t">
+          <f:selectItems value="#{personMainBacking.typedHelper.allTypes}" var="type" 
+            itemLabel="#{type.description}" itemValue="#{type.typeId}" />
+          <!--
+          <p:column>
+            <h:outputText value="#{t}" />
+          </p:column>
+          -->
+          <p:column>
+            <h:outputText value="#{typeBean.getDescription(t)}" />
+          </p:column>            
+        </p:selectOneMenu>
+      </div>  
+      
+      <div class="field lg:col-4 md:col-12">
         <p:outputLabel for="name" value="#{kernelBundle.person_name}" />        
         <p:inputText id="name" value="#{personMainBacking.person.name}" 
                      styleClass="inputfield w-full" />
-      </div>      
-
+      </div>   
+  
       <div class="formgrid grid pl-2"> 
-        <div class="field sm:col-4 lg:col-2">
+        <div class="field md:col-4 lg:col-2">
           <p:outputLabel for="first_particle" value="#{kernelBundle.person_particle}" />
           <p:selectOneMenu id="first_particle" value="#{personMainBacking.person.firstParticle}"
                            styleClass="inputfield w-full">
@@ -73,13 +70,13 @@
           </p:selectOneMenu>
         </div>  
 
-        <div class="field sm:col-8 lg:col-4">
+        <div class="field md:col-8 lg:col-4">
           <p:outputLabel for="surname1" value="#{kernelBundle.person_surname1}" />        
           <p:inputText id="surname1" value="#{personMainBacking.person.firstSurname}" 
                        styleClass="inputfield w-full" />
         </div>
 
-        <div class="field sm:col-4 lg:col-2">
+        <div class="field md:col-4 lg:col-2">
           <p:outputLabel for="second_particle" value="#{kernelBundle.person_particle}" />
           <p:selectOneMenu id="second_particle" value="#{personMainBacking.person.secondParticle}"
                            styleClass="inputfield w-full">
@@ -87,7 +84,7 @@
           </p:selectOneMenu>
         </div>         
 
-        <div class="field sm:col-8 lg:col-4">
+        <div class="field md:col-8 lg:col-4">
           <p:outputLabel for="surname2" value="#{kernelBundle.person_surname2}" />
           <p:inputText id="surname2" value="#{personMainBacking.person.secondSurname}" 
                        styleClass="inputfield w-full"/>
@@ -105,6 +102,7 @@
           </p:selectOneMenu>
         </div> 
         
+        <!--TODO: Locale -->
         <div class="field col-12 md:col-4 lg:col-3">
           <p:outputLabel for="birth_date" value="#{kernelBundle.person_birthDate}" />
           <p:datePicker id="birth_date" value="#{personMainBacking.birthDate}" locale="ca"
@@ -116,33 +114,71 @@
       </div>
 
       <div class="formgrid grid pl-2">       
-       <div class="field col-12 md:col-6 lg:col-4">
+       <div class="field col-12 md:col-9 lg:col-6">
           <h:outputLabel for="person_birthCity" value="#{kernelBundle.person_birthCity}:" />
-          <!--<p:cascadeSelect ... -->
-          <p:inputText id="person_birthCity" value="#{personMainBacking.person.birthCityId}" 
-                       styleClass="inputfield w-full" />
+          <!--
+          <p:cascadeSelect value="#{personMainBacking.person.birthCityId}" >
+            <f:selectItems value="#{personMainBacking.citySelectItems}"/>
+          </p:cascadeSelect> 
+          -->
+          <!--
+          <p:selectOneMenu id="person_birthCity" value="#{personMainBacking.person.birthCityId}"  
+                           styleClass="inputfield w-full"
+                           filter="true" var="t" dynamic="true">
+            <f:selectItems value="#{personMainBacking.citySelectItems}" var="city" 
+              itemLabel="#{city.label}" itemValue="#{city.value}" />
+            <p:column>
+              <h:outputText value="#{cityBean.getDescription(t)}" />
+            </p:column>            
+          </p:selectOneMenu> 
+          -->
+ 
+          <p:autoComplete id="person_birthCity" styleClass="w-full" inputStyleClass="w-full"
+              value="#{personMainBacking.citySelectItem}" 
+              maxResults="10" dropdown="false" dropdownMode="blank" cache="true"
+              completeMethod="#{personMainBacking.completeCity}"
+              converter="selectItemConverter"
+              var="item" itemValue="#{item}" itemLabel="#{item.label}"
+              minQueryLength="2" queryDelay="1000"
+              onclick="this.setSelectionRange(0, this.value.length)">
+            <p:column>
+              <h:outputText value="#{cityBean.getDescription(item.value)}" />
+            </p:column>        
+          </p:autoComplete>     
+     
         </div>
-        
+   
         <div class="field col-12 md:col-6 lg:col-4">
           <h:outputLabel for="person_nationality" value="#{kernelBundle.person_nationality}:" />
-          <p:inputText id="person_nationality" value="#{personMainBacking.person.nationalityId}" styleClass="inputfield w-full" />
+          <!--
+          <p:autoComplete id="person_nacionality" styleClass="w-full"
+              value="#{personMainBacking.countrySelectItem}" 
+              maxResults="10" dropdown="true" dropdownMode="blank"
+              completeMethod="#{personMainBacking.completeCountry}"
+              converter="selectItemConverter"
+              var="item" itemValue="#{item}" itemLabel="#{item.label}"
+              minQueryLength="3" queryDelay="1000"
+              onclick="this.setSelectionRange(0, this.value.length)">
+            <p:column>
+              <h:outputText value="#{item.label}" />
+            </p:column>        
+          </p:autoComplete>  
+          -->
 
-              <p:autoComplete id="person_nacionality" styleClass="w-full" inputStyleClass="w-full"
-                              value="#{personMainBacking.nationalitySelectItems}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank"
-                              completeMethod="#{personMainBacking.completeNationality}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label} (#{item.value})"
-                              minQueryLength="3" queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:column>
-                  <h:outputText value="#{item.label} (#{item.value})" />
-                </p:column>        
-              </p:autoComplete>   
-
+          <p:selectOneMenu id="person_nationality" value="#{personMainBacking.person.nationalityId}"  
+                           styleClass="inputfield w-full"
+                           filter="true" var="ct">
+            <f:selectItems value="#{personMainBacking.countrySelectItems}" var="country" 
+              itemLabel="#{country.label}" itemValue="#{country.value}" />
+            <p:column>
+              <h:outputText value="#{personMainBacking.getCountryLabel(ct)}" />
+            </p:column>            
+          </p:selectOneMenu>   
+         
         </div> 
+  
       </div>   
-   
+
       <div class="formgrid grid pl-2">         
        
       </div>
@@ -160,19 +196,6 @@
       </div>      
 
     </h:panelGroup>
-
-    <div class="tab_footer text-right">
-      <p:commandButton action="#{personMainBacking.store}" ajax="true" update="form_panel growl "
-                       value="#{objectBundle.store}" 
-                       styleClass="ui-button-raised m-1" />
-      <p:commandButton action="#{personMainBacking.remove}" ajax="true" update="form_panel growl " 
-                       value="#{objectBundle.delete}" immediate="true"
-                       onclick="return confirm('#{objectBundle.confirm_full_remove}');"
-                       styleClass="ui-button-raised m-1" />
-      <p:commandButton value="#{objectBundle.cancel}" styleClass="ui-button-raised m-1">
-        <p:ajax update="form_panel growl" resetValues="true"/>
-      </p:commandButton>        
-    </div> 
 
 
   </ui:define>

@@ -4,15 +4,9 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                template="case_template.xhtml">
+                template="case_common.xhtml">
 
-  <ui:param name="object_template" value="object.xhtml" />
-  <ui:param name="updateOnSearch" value="" />       
-  <ui:param name="ajax" value="false" />
-
-  <ui:define name="object_header">
-    <i class="pi pi-id-folder text-5xl mx-4 my-2"/>
-  </ui:define>  
+  <ui:param name="objectPage" value="object" />
 
   <ui:define name="content">
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
@@ -20,56 +14,95 @@
 
     <h:panelGroup>
 
-      <div class="formgrid grid pl-2">      
-        <div class="field col-12 md:col-4 lg:col-2">
+      <div class="formgrid grid pl-2">   
+<!--        
+        <p:outputPanel styleClass="field col-12 md:col-4 lg:col-2"
+                       rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('caseId')}">
           <p:outputLabel for="id" value="Id." />
           <p:inputText id="id" value="#{caseMainBacking.case.caseId}" 
                        styleClass="inputfield w-full" readonly="true"/>
-        </div>
+        </p:outputPanel>    
+-->
+        <p:outputPanel styleClass="field col-12 md:col-8" 
+                       rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('title')}">
+          <p:outputLabel for="title" value="#{caseMainBacking.typedHelper.getPropertyLabel('title', caseBundle.case_title)}" />
+          <p:inputText id="title" value="#{caseMainBacking.case.title}" 
+                       class="inputfield w-full"/>
+        </p:outputPanel>     
 
-        <div class="field col-12 md:col-4">
-          <p:outputLabel for="caseTypeId" value="#{caseBundle.case_type}" />    
-          <p:selectOneMenu id="caseTypeId" value="#{caseMainBacking.case.caseTypeId}"  
-                           styleClass="inputfield w-full" filter="true" var="t">
+      </div>
+
+      <!--TODO: isRenderType -->
+
+      
+      <div class="formgrid grid pl-2">  
+        <p:outputPanel styleClass="field col col-12 md:col-4"
+                       rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('caseTypeId') and caseMainBacking.typedHelper.allTypes.size() > 1}">
+          <p:outputLabel for="case_type_id" value="#{caseMainBacking.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />    
+          <p:selectOneMenu id="case_type_id" value="#{caseMainBacking.case.caseTypeId}"  
+                           styleClass="inputfield w-full" filter="true" var="t"
+                           valueChangeListener="#{caseMainBacking.formHelper.onTypeIdChange}" >
             <f:selectItems value="#{caseMainBacking.typedHelper.allTypes}" 
                            var="type" itemLabel="#{type.description}" 
                            itemValue="#{type.typeId}" />
-            <p:column>
+            <p:column style="width:30%">
               <h:outputText value="#{t}" />
             </p:column>
-            <p:column>
+            <p:column style="width:70%">
               <h:outputText value="#{typeBean.getDescription(t)}" />
             </p:column>            
           </p:selectOneMenu>
-        </div>        
-      </div>
+        </p:outputPanel>  
+        
+        <p:outputPanel styleClass="field col col-12 md:col-12 lg:col-3">
+          <p:outputLabel for="start_date" value="#{caseMainBacking.typedHelper.getPropertyLabel('startDate', caseBundle.case_startDate)}" />
+          <!-- TODO: disable if not editable -->
+          <p:datePicker id="start_date" value="#{caseMainBacking.startDateTime}" 
+                        locale="#{caseMainBacking.language}" inputStyleClass="w-10"
+                        styleClass="inputfield w-full" showIcon="true" showTime="#{!caseMainBacking.typedHelper.isPropertyHidden('startTime')}"
+                        monthNavigator="true" yearNavigator="true" />
+        </p:outputPanel>     
 
-      <div class="field col-12 md:col-12">
-        <p:outputLabel for="title" value="#{caseBundle.case_title}" />
-        <p:inputText id="title" value="#{caseMainBacking.case.title}" 
-                     class="inputfield w-full"/>
-      </div>
-
-      <div class="field col-12 md:col-12">
-        <p:outputLabel for="description" value="#{caseBundle.case_description}" />        
+        <p:outputPanel styleClass="field col col-12 md:col-12 lg:col-3"
+                       rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('endDate')}">
+          <p:outputLabel for="end_date" value="#{caseMainBacking.typedHelper.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
+          <!-- TODO: disable if not editable -->
+          <p:datePicker id="end_date" value="#{caseMainBacking.endDateTime}" 
+                        locale="#{caseMainBacking.language}" inputStyleClass="w-10"
+                        styleClass="inputfield w-full" showIcon="true" showTime="#{!caseMainBacking.typedHelper.isPropertyHidden('endTime')}"
+                        monthNavigator="true" yearNavigator="true" />
+        </p:outputPanel> 
+      </div>  
+      
+      <p:outputPanel rendered="#{caseMainBacking.showAuditProperties and caseMainBean.creationDateTime != null}">
+        <p:outputLabel for="creation_date_time" value="#{caseMainBacking.typedHelper.getPropertyLabel('creationDateTime', caseBundle.case_creationDateTime)}"/>
+        <h:outputText value="#{caseMainBacking.case.creationDateTime}" />
+        
+        <h:outputText value="#{caseBundle.case_createdBy}:"
+          styleClass="textBox" style="width:5%"
+          rendered="#{caseMainBacking.case.creationUserId != null}"/>
+        <h:outputText value="#{caseMainBacking.case.creationUserId}"/>
+      </p:outputPanel>
+   
+     
+      <p:outputPanel styleClass="field col-12 md:col-12"
+                     rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('description')}">
+        <p:outputLabel for="description" value="#{caseMainBacking.typedHelper.getPropertyLabel('description', caseBundle.case_description)}"  />        
         <p:inputTextarea id="description" value="#{caseMainBacking.case.description}" 
-                         class="inputfield w-full" />
-      </div> 
+                         styleClass="inputfield w-full" />
+      </p:outputPanel> 
 
+      <p:outputPanel styleClass="field col-12 md:col-12" 
+                     rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('comments')}">
+        <p:outputLabel for="comments" value="#{caseMainBacking.typedHelper.getPropertyLabel('comments', caseBundle.case_comments)}" />
+        <p:inputTextarea id="comments" value="#{caseMainBacking.case.comments}" 
+          styleClass="inputfield w-full" />
+      </p:outputPanel> 
+<!--      
+      <ui:include src="/pf/common/obj/object_form.xhtml" />
+-->
     </h:panelGroup>
 
-    <div class="tab_footer text-right">
-      <p:commandButton action="#{caseMainBacking.store}" ajax="true" update="form_panel growl "
-                       value="#{objectBundle.store}" 
-                       styleClass="ui-button-raised m-1" />
-      <p:commandButton action="#{caseMainBacking.remove}" ajax="true" update="form_panel growl " 
-                       value="#{objectBundle.delete}" immediate="true"
-                       onclick="return confirm('#{objectBundle.confirm_full_remove}');"
-                       styleClass="ui-button-raised m-1" />
-      <p:commandButton value="#{objectBundle.cancel}" styleClass="ui-button-raised m-1">
-        <p:ajax update="form_panel growl" resetValues="true"/>
-      </p:commandButton>      
-    </div> 
   </ui:define>
 
 

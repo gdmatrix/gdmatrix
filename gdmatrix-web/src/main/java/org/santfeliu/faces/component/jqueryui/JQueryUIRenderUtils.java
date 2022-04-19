@@ -82,6 +82,7 @@ public class JQueryUIRenderUtils
       writer.writeAttribute("rel", "stylesheet", null);
       writer.writeAttribute("href", contextPath + "/plugins/jquery/ui/" 
         + JQUERY_UI_VERSION + "/themes/" + getTheme() + "/jquery-ui.css", null);
+      writer.endElement("link");
 
       JQueryRenderUtils.encodeLibraries(context, writer, component);
 
@@ -122,7 +123,8 @@ public class JQueryUIRenderUtils
       writer.startElement("link", component);
       writer.writeAttribute("rel", "stylesheet", null);
       writer.writeAttribute("href", contextPath +  
-        "/plugins/jquery/datepicker/datepicker.css", null);    
+        "/plugins/jquery/datepicker/datepicker.css", null); 
+      writer.endElement("link");      
 
       //Add timepicker extension to datepicker
       writer.startElement("script", component);
@@ -149,6 +151,7 @@ public class JQueryUIRenderUtils
       writer.writeAttribute("rel", "stylesheet", null);
       writer.writeAttribute("href", contextPath +  
         "/plugins/jquery/timepicker/jquery-ui-timepicker-addon.css", null); 
+      writer.endElement("link");
     }
   } 
   

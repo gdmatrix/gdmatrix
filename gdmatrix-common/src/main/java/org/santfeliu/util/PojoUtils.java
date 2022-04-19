@@ -243,6 +243,24 @@ public class PojoUtils
     return setDynamicProperty(properties, propertyName, value, propertyClass, 
       "name", "value");
   }
+  
+  public static <U,V extends Object> boolean setDynamicProperty(
+    String propertyFieldName, String propertyName, V pojo, 
+    Class<U> propertyClass, String namePropertyName, String valuePropertyName) 
+    throws Exception
+  {
+    Class<V> valueClass = (Class<V>) pojo.getClass();
+    Method propertyMethod = 
+      valueClass.getMethod(getMethodName("get", propertyFieldName));
+    if (propertyMethod != null)
+    {
+      List<U> properties = (List<U>) propertyMethod.invoke(pojo);
+      return setDynamicProperty(properties, propertyName, pojo, propertyClass,
+        namePropertyName, valuePropertyName);
+    }
+    else
+      return false;
+  }
 
   public static boolean setDynamicProperty(List properties,
     String propertyName, Object value, Class propertyClass,
@@ -257,7 +275,7 @@ public class PojoUtils
       {
         Method nameGetter =
           propertyClass.getMethod(getMethodName("get", namePropertyName));
-        String propName = (String)nameGetter.invoke(property, new Object[0]);
+        String propName = (String)nameGetter.invoke(property);
         if (propertyName.equals(propName))
         {
           propertyFound = true;
@@ -265,7 +283,7 @@ public class PojoUtils
             propertyClass.getMethod(getMethodName("get", valuePropertyName));
           if (List.class.isAssignableFrom(valueGetter.getReturnType()))
           {
-            List propValue = (List)valueGetter.invoke(property, new Object[0]);
+            List propValue = (List)valueGetter.invoke(property);
             List result = new ArrayList();
             if (List.class.isAssignableFrom(value.getClass()))
               result.addAll((List)value);
@@ -314,6 +332,21 @@ public class PojoUtils
     }
 
     return propertyFound;
+  }
+  
+  public static <U,V extends Object> Object getDynamicProperty(V pojo, String name, String namePropertyName)
+    throws Exception
+  {
+    Object result = null;
+    Class<V> valueClass = (Class<V>) pojo.getClass();
+    Method propertyMethod = 
+      valueClass.getMethod(getMethodName("get", namePropertyName));
+    if (propertyMethod != null)
+    { 
+      List<U> properties = (List<U>) propertyMethod.invoke(pojo);
+      result = getDynamicProperty(properties, name);
+    } 
+    return result;
   }
 
   public static Object getDynamicProperty(List properties, String name)

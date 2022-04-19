@@ -41,37 +41,18 @@ import org.santfeliu.util.BigList;
 public class BigListHelper extends ResultListHelper implements Serializable
 {
   public static final int CACHE_SIZE = 15;  
-
-  private BigList rows;
   
   public BigListHelper(BigListPage searchPage)
   {
     super(searchPage);
   }
-  
-  @Override
-  public BigList getRows()
-  {
-    return rows;
-  }
-  
+    
   public void refresh()
   {
-    initRows(); 
+    createDynamicColumns();     
+    populate(); 
   }  
-  
-  @Override
-  public void search()
-  {
-    super.search();
-  }  
-  
-//  public void reset()
-//  {
-//    rows = null;
-//    firstRowIndex = 0;
-//  }
-  
+    
   public int getCacheSize()
   {
     if (getPageSize() != PAGE_SIZE)
@@ -79,27 +60,6 @@ public class BigListHelper extends ResultListHelper implements Serializable
     else
       return CACHE_SIZE;
   } 
-  
-//  @Override
-//  public int getFirstRowIndex()
-//  {
-//    int size = getRowCount();
-//    if (size == 0)
-//    {
-//      firstRowIndex = 0;
-//    }
-//    else if (firstRowIndex >= size)
-//    {
-//      int pageSize = getPageSize();
-//      firstRowIndex = pageSize * ((size - 1) / pageSize);
-//    }
-//    return firstRowIndex;
-//  }
-
-//  public void setFirstRowIndex(int firstRowIndex)
-//  {
-//    this.firstRowIndex = firstRowIndex;
-//  }
 
   @Override
   public int getRowCount()
@@ -108,12 +68,12 @@ public class BigListHelper extends ResultListHelper implements Serializable
   }  
 
   @Override
-  protected void initRows()
+  protected void populate()
   {
-    if (rows != null && (getPageSize() == rows.getBlockSize()))
+    if (rows != null && (getPageSize() == ((BigList)rows).getBlockSize()))
     {
       // clear rows cache, reuse rows
-      rows.clearCache();
+      ((BigList)rows).clearCache();
     }
     else
     {

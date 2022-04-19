@@ -95,6 +95,17 @@ public class ScriptClient
   {
     context = ContextFactory.getGlobal().enterContext();  
   }
+  
+  public ScriptClient(Context context)
+  {
+    this.context = context;
+  }
+  
+  public ScriptClient(Context context, Scriptable scope)
+  {
+    this.context = context;
+    this.scope = scope;
+  }
 
   protected Context getContext()
   {
@@ -118,6 +129,11 @@ public class ScriptClient
       return null;
   }
   
+  public Object execute(Scriptable scope, String method)
+  {
+    return context.evaluateString(scope, method, "", 1, null);  
+  }
+
   public Object executeScript(String scriptName) throws Exception
   {   
     if (scope == null)
@@ -131,25 +147,36 @@ public class ScriptClient
   {
     LOGGER.log(Level.INFO, "Executing {0} script.", new Object[]{scriptName});
     
-    Script script;
+    return executeScript(scriptName, null, scope);
+  } 
+  
+  public Object executeScript(String scriptName, String methodExpr)
+    throws Exception
+  {
+    if (scope == null)
+      scope = new ScriptableBase(context);
     
-    long now = System.currentTimeMillis();
-    if (lastCacheRefresh + REFRESH_TIME < now)
-      clearCache(now);
+    return executeScript(scriptName, methodExpr, scope);
+  }
+  
+  public Object executeScript(String scriptName, String methodExpr, 
+    Scriptable scope) throws Exception
+  {
+    if (methodExpr != null)
+    {
+      LOGGER.log(Level.INFO, "Executing {0}.{1} script.", 
+        new Object[]{scriptName, methodExpr});   
+    }
+    
+    Script script = getScript(scriptName, context);
 
-    script = getScript(scriptName);
-    
-    Object result = null;    
+    Object result;
     try
     {
       result = script.exec(context, scope);
-      if (result instanceof NativeJavaObject)
-      {
-        NativeJavaObject nat = (NativeJavaObject)result;
-        result = nat.unwrap();
-      }
-      if (result instanceof Undefined)
-        result = null;
+      if (methodExpr != null)
+        result = context.evaluateString(scope, methodExpr, scriptName, 1, null);
+      result = unwrap(result);
     }
     catch (JavaScriptException ex)
     {
@@ -159,12 +186,28 @@ public class ScriptClient
     {
       Context.exit();
     }
+    return result;
+  }
+  
+  public static Object unwrap(Object result)
+  {
+    if (result instanceof NativeJavaObject)
+    {
+      NativeJavaObject nat = (NativeJavaObject)result;
+      result = nat.unwrap();
+    }
+    if (result instanceof Undefined)
+      result = null;
 
     return result;
-  }  
+  }
   
-  private Script getScript(String scriptName) throws Exception
+  private Script getScript(String scriptName, Context context) throws Exception
   {
+    long now = System.currentTimeMillis();
+    if (lastCacheRefresh + REFRESH_TIME < now)
+      clearCache(now);
+    
     Script script = (Script) cache.get(scriptName);
     if (script == null)
     {

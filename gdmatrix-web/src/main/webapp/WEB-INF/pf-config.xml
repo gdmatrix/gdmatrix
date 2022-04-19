@@ -18,8 +18,8 @@
   </managed-bean>   
   
   <managed-bean>
-    <managed-bean-name>templateBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.web.TemplateBacking</managed-bean-class>
+    <managed-bean-name>formBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.web.FormBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>    
     
@@ -64,6 +64,24 @@
     <managed-bean-class>org.matrix.pf.cases.CasePersonsBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>
+   
+  <managed-bean>
+    <managed-bean-name>scriptBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.misc.ScriptBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>scriptPageBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.misc.ScriptPageBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>organigramView</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.misc.OrganigramView</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>    
   
   <converter>
     <converter-id>selectItemConverter</converter-id>
@@ -115,6 +133,22 @@
       <from-outcome>pf_node_edit</from-outcome>
       <to-view-id>/pf/common/cms/node_edit.xhtml</to-view-id>
     </navigation-case> 
+    
+    <!-- Misc -->
+    <navigation-case>
+      <from-outcome>pf_script</from-outcome>
+      <to-view-id>/pf/common/misc/script.xhtml</to-view-id>
+    </navigation-case>     
+        
+    <navigation-case>
+      <from-outcome>pf_script_page</from-outcome>
+      <to-view-id>/pf/common/misc/script_page.xhtml</to-view-id>
+    </navigation-case> 
+    
+    <navigation-case>
+      <from-outcome>pf_organigram</from-outcome>
+      <to-view-id>/pf/common/misc/organigram.xhtml</to-view-id>
+    </navigation-case>             
                         
   </navigation-rule>
 

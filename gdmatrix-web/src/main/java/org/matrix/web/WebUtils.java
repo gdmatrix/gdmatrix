@@ -75,7 +75,7 @@ public class WebUtils
   {
     if (action != null)
     {
-      Pattern pattern = Pattern.compile("#\\{(.*)\\..*\\}");
+      Pattern pattern = Pattern.compile("#\\{(\\w*)\\..*\\}");
       Matcher matcher = pattern.matcher(action);
       if (matcher.find())
       {

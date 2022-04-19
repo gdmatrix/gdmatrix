@@ -44,7 +44,7 @@ public abstract class SearchBacking extends PageBacking
   protected final BigListHelper bigListHelper;
   protected String smartValue;
   
-  public SearchBacking()
+  protected SearchBacking()
   {
     bigListHelper = new BigListHelper(this);   
   }
@@ -58,6 +58,10 @@ public abstract class SearchBacking extends PageBacking
   {
     this.smartValue = smartValue;
   }  
+  
+  public abstract String smartSearch();
+
+  public abstract String clear();
 
   @Override
   public BigListHelper getResultListHelper()
@@ -65,14 +69,35 @@ public abstract class SearchBacking extends PageBacking
     return bigListHelper;
   }
   
+  public abstract String getFilterTypeId();
+  
+  public abstract void refresh();
+  
+  public abstract String getOutcome();
+  
+  @Override
+  public String show()
+  {
+    String currentTypeId = getFilterTypeId();
+    String menuItemTypeId = getMenuItemTypeId();    
+    if (currentTypeId != null && !currentTypeId.equals(menuItemTypeId))
+    {
+      refresh();
+      bigListHelper.reset();
+      bigListHelper.refresh();
+    }
+
+    return getOutcome();
+  }  
+  
   public String search()
   {
-    bigListHelper.search();
+    populate();
     return null;
   }  
 
   @Override
-  public String getPageId()
+  public String getPageObjectId()
   {
     return null;
   }
@@ -81,7 +106,7 @@ public abstract class SearchBacking extends PageBacking
   public abstract int countResults();
 
   @Override
-  public abstract List getResults(int firstResult, int maxResults);  
+  public abstract List<?> getResults(int firstResult, int maxResults);  
   
   public boolean isRenderBasicResults()
   {
@@ -97,7 +122,7 @@ public abstract class SearchBacking extends PageBacking
   {
     return objectBacking.getDescription(row);
   }
-  
+    
   public String show(Object row)
   {
     return show(getObjectId(row));
@@ -109,9 +134,19 @@ public abstract class SearchBacking extends PageBacking
     return ControllerBacking.getCurrentInstance().show(objectId);
   }
   
+  public String select(Object row)
+  {
+    return select(getObjectId(row));
+  }  
+  
   public String select(String selectedObjectId)
   {
     return ControllerBacking.getCurrentInstance().select(selectedObjectId);
   }
- 
+
+  protected void populate()
+  {
+    bigListHelper.search();    
+  }
+   
 }

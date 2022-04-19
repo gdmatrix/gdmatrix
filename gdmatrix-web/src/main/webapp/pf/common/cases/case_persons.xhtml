@@ -4,15 +4,9 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                template="case_template.xhtml">
+                template="case_common.xhtml">
 
-  <ui:param name="object_template" value="object.xhtml" />
-  <ui:param name="updateOnSearch" value="" />       
-  <ui:param name="ajax" value="false" />
-
-  <ui:define name="object_header">
-    <i class="pi pi-id-folder text-5xl mx-4 my-2"/>
-  </ui:define>  
+  <ui:param name="objectPage" value="object" />
 
   <ui:define name="content">
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"

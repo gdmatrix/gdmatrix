@@ -3,10 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:t="http://myfaces.apache.org/tomahawk"
-                template="person_template.xhtml">
-  <ui:param name="object_template" value="object.xhtml" />
-  <ui:param name="updateOnSearch" value="" />       
-  <ui:param name="ajax" value="false" />
+                template="person_common.xhtml">
+  <ui:param name="objectPage" value="object" />
   
   <ui:define name="content">
       <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 

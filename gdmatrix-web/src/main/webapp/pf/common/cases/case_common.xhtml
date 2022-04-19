@@ -3,32 +3,11 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="/pf/common/obj/#{object_template}">
+                template="/pf/common/obj/#{objectPage}.xhtml">
   
-  <ui:define name="smart_filter">    
+  <ui:define name="advanced_filter">
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle" 
-                  var="caseBundle" />  
-    
-    <div class="field">
-      <p:outputLabel for="smart_value" value="Cerca expedient" />        
-      <p:inputText id="smart_value" value="#{caseSearchBacking.smartValue}" 
-                   class="inputfield w-full" />
-    </div>    
-
-    <div class="buttons text-right">
-      <p:commandButton value="#{objectBundle.clear}"
-                       ajax="#{ajax}"
-                       action="#{caseSearchBacking.clear}"
-                       styleClass="ui-button-raised m-1"
-                       update="search_panel"/>      
-      <p:commandButton id="default_button" value="#{objectBundle.search}"
-                       action="#{caseSearchBacking.smartSearch}"
-                       ajax="#{ajax}" process="mainform" update="#{updateOnSearch}"
-                       styleClass="ui-button-raised m-1" />
-    </div>        
-  </ui:define> 
-
-  <ui:define name="advanced_filter">  
+                  var="caseBundle" />     
     <div class="field">
       <p:outputLabel for="caseId" value="#{caseBundle.case_caseId}" />
       <p:inputText id="caseId" value="#{caseSearchBacking.caseIdFilter}" 
@@ -52,11 +31,12 @@
                        ajax="#{ajax}"
                        action="#{caseSearchBacking.clear}"
                        styleClass="ui-button-raised m-1"
-                       update="search_panel"/>      
+                       update="search_accordion"/>      
       <p:commandButton value="#{objectBundle.search}"
                        action="#{caseSearchBacking.search}"
                        ajax="#{ajax}" process="mainform" update="#{updateOnSearch}"
-                       styleClass="ui-button-raised m-1" />
+                       styleClass="ui-button-raised m-1" 
+                       oncomplete="clickSlickDot(2)"/>
     </div>              
   </ui:define>          
 

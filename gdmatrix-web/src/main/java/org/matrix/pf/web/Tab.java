@@ -44,7 +44,7 @@ public class Tab implements Serializable
   private String action;
   private String typeId;
   
-  public Tab(String label, Integer index, String action, String typeId)
+  public Tab(Integer index, String label, String typeId, String action)
   {
     this.label = label;
     this.index = index;

@@ -58,7 +58,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.matrix.cms.CMSConstants;
 import org.matrix.doc.DocumentConstants;
+import org.matrix.pf.misc.ScriptBean;
 import org.matrix.security.SecurityConstants;
+import org.matrix.web.ControllerProxy;
 import org.santfeliu.agenda.client.AgendaManagerClient;
 import org.santfeliu.cms.CMSCache;
 import org.santfeliu.cms.CMSListener;
@@ -153,6 +155,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   private transient String selectedMid;
   private transient MenuModel menuModel;
+  
+  private final Map<String, ScriptBean> scriptBeans = new HashMap<>();  
 
   public UserSessionBean()
   {
@@ -649,8 +653,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
         ApplicationBean.getCurrentInstance().getResourcesVersion());
     }
     return result;
-  }  
-  
+  }
+
   public boolean isNodeWithAction()
   {
     MenuItemCursor cursor = getMenuModel().getSelectedMenuItem();
@@ -1113,14 +1117,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
       menuItem = getExecutableMenuItem(rootMenuItem);
     }
 
-    // TODO: reference to ControllerBean!!
-    ControllerBean controllerBean = ControllerBean.getCurrentInstance();
-    if (controllerBean.getSearchBean(menuItem) != null)
-    {
-      MenuItemCursor selectedMenuItem = getSelectedMenuItem();
-      String oldTypeId = controllerBean.getActualTypeId(selectedMenuItem);
-      controllerBean.getPageHistory().visit(menuItem.getMid(), null, oldTypeId);
-    }
+    ControllerProxy controller = new ControllerProxy(menuItem);
+    controller.visit();
 
     String action = menuItem.getAction();
 
@@ -1183,7 +1181,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
     ExternalContext externalContext =
       FacesContext.getCurrentInstance().getExternalContext();
 
-    HttpServletRequest request = (HttpServletRequest)externalContext.getRequest();
+    HttpServletRequest request = 
+      (HttpServletRequest)externalContext.getRequest();
 
     byte[] cert = HttpUtils.getUserCertificate(request);
 
@@ -1364,7 +1363,97 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
     
     return DEFAULT_PRIMEFACES_THEME;
-  }    
+  }  
+    
+  //ScriptBeans
+  public Map getSb()
+  {
+    return new Map()
+    {
+      @Override
+      public Object get(Object key)
+      {
+        String beanName = (String) key;
+        ScriptBean bean;
+        if (scriptBeans.containsKey(beanName))
+        {
+          bean = scriptBeans.get(beanName);
+        }
+        else
+        {
+          bean = new ScriptBean(beanName);
+          scriptBeans.put(beanName, bean);
+        }
+        return bean;      
+      }
+
+      @Override
+      public Object put(Object key, Object value)
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }      
+      @Override
+      public int size()
+      {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public boolean isEmpty()
+      {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public boolean containsKey(Object key)
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }
+
+      @Override
+      public boolean containsValue(Object value)
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }
+
+      @Override
+      public ScriptBean remove(Object key)
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }
+
+      @Override
+      public void putAll(Map m)
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }
+
+      @Override
+      public void clear()
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }
+
+      @Override
+      public Set keySet()
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }
+
+      @Override
+      public Collection values()
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }
+
+      @Override
+      public Set entrySet()
+      {
+        throw new UnsupportedOperationException("Not supported yet."); 
+      }
+    };
+  }
+  
   
   //Action executed from showObject command in common_script.js
   public String jumpToObject()
@@ -1468,8 +1557,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
       }
     }
     return preStr + auxId + postStr;
-  }
-
+  }  
+  
   /**** private methods ****/
 
   private void changeBrowserTypeTo(String browserType)

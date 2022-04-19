@@ -27,6 +27,15 @@
     "docTypeId" : "FORM"
   },
   {
+    "displayName" : "XHTML document",
+    "extension" : "xhtml",
+    "className" : "org.santfeliu.matrix.ide.XhtmlPanel",
+    "propertyName" : "xhtml",
+    "mimeType" : "text/html",
+    "icon" : "xhtml.png",
+    "docTypeId" : "FORM"
+  },
+  {
     "displayName" : "XSL template",
     "extension" : "xsl",
     "className" : "org.santfeliu.matrix.ide.XslPanel",

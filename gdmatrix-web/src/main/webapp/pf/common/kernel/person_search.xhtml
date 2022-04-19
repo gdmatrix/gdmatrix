@@ -3,13 +3,12 @@
   xmlns:h="http://java.sun.com/jsf/html"  
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui"
-  template="person_template.xhtml">
+  template="person_common.xhtml">
     
-  <ui:param name="object_template" value="object_search.xhtml" />
-  <ui:param name="updateOnSearch" value="mainform:full_results_table" />
-  <ui:param name="ajax" value="true" /> 
+  <ui:param name="objectPage" value="object_search" />
 
   <ui:define name="content"> 
+    <!--
     <p:dataTable id="full_results_table" value="#{personSearchBacking.resultListHelper.rows}" var="row"
                  stripedRows="true" paginator="true" pageLinks="5"
                  paginatorPosition="bottom" size="small"
@@ -30,7 +29,8 @@
         <p:commandButton icon="pi pi-replay" styleClass="ui-button-raised m-1"
           action="#{personSearchBacking.select(row.getPersonId())}" immediate="true" ajax="false" />         
       </p:column>
-    </p:dataTable>  
+    </p:dataTable> 
+    -->
   </ui:define>
 
 </ui:composition> 
