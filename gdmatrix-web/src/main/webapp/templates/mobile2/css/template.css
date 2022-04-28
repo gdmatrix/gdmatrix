@@ -265,6 +265,22 @@
   text-align: center;
 }
 
+.mobile .profileDiv .lastSuccessLoginDateTime
+{
+  margin-left: 2.5%;
+  font-size: 12px;
+}
+
+.mobile .profileDiv .lastSuccessLoginDateTime div
+{
+  display: inline-block;
+}
+
+.mobile .profileDiv .lastSuccessLoginDateTime div + div
+{
+  margin-left: 4px;
+}
+
 .mobile .searchDiv
 {
   width:100%;

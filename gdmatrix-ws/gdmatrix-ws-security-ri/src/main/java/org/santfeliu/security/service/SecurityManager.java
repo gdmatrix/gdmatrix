@@ -1939,7 +1939,6 @@ public class SecurityManager implements SecurityManagerPort
     String nowDateTime = TextUtils.formatDate(now, "yyyyMMddHHmmss");
     storeDateTimeInProperty(user.getUserId(), nowDateTime, 
       "lastSuccessLoginDateTime");    
-    user.setLastSuccessLoginDateTime(nowDateTime);
   }
 
   private void updateLastFailedLoginDateTime(User user, Date now)

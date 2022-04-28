@@ -245,6 +245,20 @@
                   </t:div>
                 </t:div>
                 <t:div rendered="#{not userSessionBean.anonymousUser}">
+                  <t:div rendered="#{userSessionBean.selectedMenuItem.properties.last_success_login_dt != null}"
+                         styleClass="lastSuccessLoginDateTime">
+                    <t:div>
+                      <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.last_success_login_dt}" 
+                                     translator="#{userSessionBean.translator}" 
+                                     translationGroup="login" />
+                    </t:div>
+                    <t:div>
+                      <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}">
+                        <f:converter converterId="DateTimeConverter" />
+                        <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                      </h:outputText>
+                    </t:div>
+                  </t:div>                                    
                   <t:div rendered="#{userSessionBean.selectedMenuItem.properties.login_password_change_url != null}">
                     <h:outputLink value="#{userSessionBean.selectedMenuItem.properties.login_password_change_url}" 
                                   styleClass="loginButton">

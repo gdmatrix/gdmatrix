@@ -319,6 +319,13 @@ main#sf_main_content
   margin-top:8px;
 }
 
+.topBar #loginPanel .lastSuccessLoginDateTime
+{
+}
+
+.topBar #loginPanel .lastSuccessLoginDateTime div
+{
+}
 
 /* HEADER BAR */
 
