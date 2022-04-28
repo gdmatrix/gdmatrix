@@ -30,6 +30,8 @@
  */
 package org.santfeliu.security.web;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.faces.model.SelectItem;
@@ -37,7 +39,9 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.security.SecurityManagerPort;
 import org.matrix.security.User;
 import org.matrix.security.UserFilter;
+import org.matrix.security.SecurityMetaData;
 import org.santfeliu.kernel.web.PersonBean;
+import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.obj.PageBean;
 
 /**
@@ -48,6 +52,8 @@ public class UserMainBean extends PageBean
 {
   private User user;
   private String passwordInput;
+  
+  private SecurityMetaData securityMetaData;
 
   public UserMainBean()
   {
@@ -74,7 +80,16 @@ public class UserMainBean extends PageBean
   {
     this.passwordInput = passwordInput;
   }
-  
+
+  public SecurityMetaData getSecurityMetaData() throws Exception 
+  {
+    if (securityMetaData == null)
+    {
+      securityMetaData = SecurityConfigBean.getPort().getSecurityMetaData();      
+    }
+    return securityMetaData;
+  }
+
   public boolean isLocked()
   {
     return user.isLocked() != null && user.isLocked();
@@ -154,6 +169,61 @@ public class UserMainBean extends PageBean
     PersonBean personBean = (PersonBean)getBean("personBean");
     return personBean.getSelectItems(user.getPersonId());
   }
+  
+  public boolean isUserLocked()
+  {
+    return "locked".equals(getUserState());
+  }
+  
+  public boolean isUserUnlocked()
+  {
+    return "unlocked".equals(getUserState());
+  }
+  
+  public boolean isUserUnlockedAuto()
+  {
+    return "unlocked_auto".equals(getUserState());
+  }
+  
+  public Integer getAttemptsToLock()
+  {
+    try
+    {
+      int maxFailedLoginAttempts = 
+        getSecurityMetaData().getMaxFailedLoginAttempts();
+      return (maxFailedLoginAttempts - user.getFailedLoginAttempts());
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+
+  public String getAutoUnlockDateTime()
+  {
+    try
+    {
+      return TextUtils.formatDate(getAutoUnlockDate(), "dd/MM/yyyy HH:mm:ss");
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }    
+  }
+
+  public Integer getAttemptsToIntrusion()
+  {
+    try
+    {
+      int minIntrusionAttempts = 
+        getSecurityMetaData().getMinIntrusionAttempts();
+      return (minIntrusionAttempts - user.getFailedLoginAttempts());
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
 
   private void load()
   {
@@ -174,6 +244,61 @@ public class UserMainBean extends PageBean
         user = new User();
       }
       passwordInput = "";
+    }
+  }
+  
+  private String getUserState()
+  {
+    try
+    {
+      int maxFailedLoginAttempts = 
+        getSecurityMetaData().getMaxFailedLoginAttempts();
+      if (user.getFailedLoginAttempts() < maxFailedLoginAttempts)
+      {
+        return "unlocked";
+      }
+      else
+      {
+        Date autoUnlockDate = getAutoUnlockDate();
+        if (autoUnlockDate != null)
+        {
+          Date now = new java.util.Date();
+          if (now.after(autoUnlockDate))          
+          {
+            return "unlocked_auto";
+          }
+          else
+          {
+            return "locked";
+          }
+        }
+        else
+        {
+          return null;
+        }
+      }        
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }    
+  }  
+  
+  private Date getAutoUnlockDate()
+  {
+    try
+    {
+      int autoUnlockMarginTime = 
+        getSecurityMetaData().getAutoUnlockMarginTime();    
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(TextUtils.parseInternalDate(
+        user.getLastFailedLoginDateTime()));
+      calendar.add(Calendar.SECOND, autoUnlockMarginTime);
+      return calendar.getTime();
+    }
+    catch (Exception ex)
+    {
+      return null;
     }
   }
 }

@@ -143,6 +143,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private Locale viewLocale;
 
   private UserPreferences userPreferences;
+  private Boolean lockControlEnabled;
+  private Integer failedLoginAttempts;
+  private String lastSuccessLoginDateTime;
+  private String lastFailedLoginDateTime;
+  private String lastIntrusionDateTime;  
 
   private transient String selectedMid;
   private transient MenuModel menuModel;
@@ -296,6 +301,56 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public void setEmail(String email)
   {
     this.email = email;
+  }
+
+  public Boolean getLockControlEnabled() 
+  {
+    return lockControlEnabled;
+  }
+
+  public void setLockControlEnabled(Boolean lockControlEnabled) 
+  {
+    this.lockControlEnabled = lockControlEnabled;
+  }
+
+  public Integer getFailedLoginAttempts() 
+  {
+    return failedLoginAttempts;
+  }
+
+  public void setFailedLoginAttempts(Integer failedLoginAttempts) 
+  {
+    this.failedLoginAttempts = failedLoginAttempts;
+  }
+
+  public String getLastSuccessLoginDateTime() 
+  {
+    return lastSuccessLoginDateTime;
+  }
+
+  public void setLastSuccessLoginDateTime(String lastSuccessLoginDateTime) 
+  {
+    this.lastSuccessLoginDateTime = lastSuccessLoginDateTime;
+  }
+
+  public String getLastFailedLoginDateTime() 
+  {
+    return lastFailedLoginDateTime;
+  }
+
+  public void setLastFailedLoginDateTime(String lastFailedLoginDateTime) 
+  {
+    this.lastFailedLoginDateTime = lastFailedLoginDateTime;
+  }
+
+  public String getLastIntrusionDateTime() 
+  {
+    return lastIntrusionDateTime;
+  }
+
+  public void setLastIntrusionDateTime(String lastIntrusionDateTime) 
+  {
+    this.lastIntrusionDateTime = lastIntrusionDateTime;
   }
 
   public Set getRoles()
@@ -1545,6 +1600,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
     organizationName = user.getOrganizationName();
     email = user.getEmail();
     roles = user.getRoles();
+    lockControlEnabled = user.isLockControlEnabled();
+    failedLoginAttempts = user.getFailedLoginAttempts();
+    lastSuccessLoginDateTime = user.getLastSuccessLoginDateTime();
+    lastFailedLoginDateTime = user.getLastFailedLoginDateTime();
+    lastIntrusionDateTime = user.getLastIntrusionDateTime();
     userPreferences = null;
 
     try

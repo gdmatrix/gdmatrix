@@ -332,12 +332,25 @@
     </query>
   </named-query>
 
+  <named-query name="findUserLockProperties">
+    <query>
+      SELECT p
+      FROM UserProperty p
+      WHERE (locate(concat(',', concat(upper(trim(p.userId)), ',')), :userId) > 0)
+        AND (p.name = 'failedLoginAttempts' 
+          OR p.name = 'lastSuccessLoginDateTime' 
+          OR p.name = 'lastFailedLoginDateTime' 
+          OR p.name = 'lastIntrusionDateTime')
+      ORDER BY p.userId, p.name, p.index
+    </query>
+  </named-query>
+
   <named-query name="removeUserProperty">
     <query>
        DELETE FROM UserProperty p
        WHERE trim(p.userId) = :userId
-         AND p.name = :name
-         AND p.index = :index
+         AND (:name is null OR p.name = :name)
+         AND (:index is null OR p.index = :index)
     </query>
   </named-query>
 
@@ -379,6 +392,11 @@
       <basic name="stdhmod">
         <column name="STDHMOD" length="6" />
       </basic>
+      <transient name="lockControlEnabled" />
+      <transient name="failedLoginAttempts" />
+      <transient name="lastSuccessLoginDateTime" />
+      <transient name="lastFailedLoginDateTime" />
+      <transient name="lastIntrusionDateTime" />      
     </attributes>
   </entity>
 

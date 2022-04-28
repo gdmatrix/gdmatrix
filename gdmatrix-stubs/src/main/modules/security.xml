@@ -51,7 +51,17 @@
       <property name="changeDateTime" type="mx:dateTime" minOccurs="0">
       </property>
       <property name="representant" type="xs:boolean" minOccurs="0">
-      </property>      
+      </property>
+      <property name="lockControlEnabled" type="xs:boolean" minOccurs="0">
+      </property>
+      <property name="failedLoginAttempts" type="xs:int">
+      </property>
+      <property name="lastSuccessLoginDateTime" type="mx:dateTime" minOccurs="0">        
+      </property>
+      <property name="lastFailedLoginDateTime" type="mx:dateTime" minOccurs="0">        
+      </property>
+      <property name="lastIntrusionDateTime" type="mx:dateTime" minOccurs="0">        
+      </property>
     </entity>
 
     <entity name="Role">
@@ -108,6 +118,14 @@
       <property name="roleNameMaxSize" type="xs:int">
       </property>
       <property name="roleDescriptionMaxSize" type="xs:int">
+      </property>
+      <property name="userLockControlMode" type="xs:string" minOccurs="0">
+      </property>
+      <property name="maxFailedLoginAttempts" type="xs:int">
+      </property>
+      <property name="autoUnlockMarginTime" type="xs:int">
+      </property>
+      <property name="minIntrusionAttempts" type="xs:int">
       </property>
     </struct>
 

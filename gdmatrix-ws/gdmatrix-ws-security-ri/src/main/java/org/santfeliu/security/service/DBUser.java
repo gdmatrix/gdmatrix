@@ -53,7 +53,8 @@ public class DBUser extends User
   public DBUser(User user)
   {
     this.userId = user.getUserId();
-    this.displayName = user.getDisplayName();    
+    this.displayName = user.getDisplayName();
+    this.failedLoginAttempts = user.getFailedLoginAttempts();
     if (user.isLocked() != null && user.isLocked())
     {
       lockedValue = 1;
@@ -71,6 +72,7 @@ public class DBUser extends User
     user.setUserId(userId.trim());
     user.setPassword(null);
     user.setLocked(lockedValue == 1);
+    user.setLockControlEnabled(lockControlEnabled);
     
     if (stddgr != null && stdhgr != null)
     {
@@ -88,6 +90,7 @@ public class DBUser extends User
     // only used to update display & locked fields
     this.displayName = user.getDisplayName();
     this.locked = user.isLocked();
+    this.failedLoginAttempts = user.getFailedLoginAttempts();
     if (user.isLocked() != null && user.isLocked())
     {
       this.lockedValue = 1;
