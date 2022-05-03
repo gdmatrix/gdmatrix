@@ -101,6 +101,11 @@ main#sf_main_content
   padding: 3px;
 }
 
+.main .loginContainer .lastSuccessLoginDateTime
+{
+  color: black;
+}
+
 .main .contCol /*Contingut*/
 {
   width:630px;

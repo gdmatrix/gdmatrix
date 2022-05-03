@@ -96,14 +96,14 @@
 
 .main .header .footer .fcol1
 {
-  width:85%;
+  width:65%;
   text-align:left;
   height:40px;
 }
 
 .main .header .footer .fcol2
 {
-  width:15%;
+  width:35%;
   text-align:right;
   height:40px;
 }
@@ -608,7 +608,7 @@ textarea
 }
 
 
-/* News - Pàgina noticia ampliada */
+/* News - Pï¿½gina noticia ampliada */
 .newsSelectPage
 {
   border-width: 1px;

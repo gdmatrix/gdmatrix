@@ -245,10 +245,11 @@
                   </t:div>
                 </t:div>
                 <t:div rendered="#{not userSessionBean.anonymousUser}">
-                  <t:div rendered="#{userSessionBean.selectedMenuItem.properties.last_success_login_dt != null}"
+                  <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
+                                     userSessionBean.lastSuccessLoginDateTime != null}"
                          styleClass="lastSuccessLoginDateTime">
                     <t:div>
-                      <sf:outputText value="#{userSessionBean.selectedMenuItem.properties.last_success_login_dt}" 
+                      <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
                                      translator="#{userSessionBean.translator}" 
                                      translationGroup="login" />
                     </t:div>

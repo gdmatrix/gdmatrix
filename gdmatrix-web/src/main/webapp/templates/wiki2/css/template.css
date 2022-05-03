@@ -775,3 +775,8 @@ input.toggler
   vertical-align:middle;
   border:0;
 }
+
+.lastSuccessLoginDateTime
+{
+  float: right;
+}

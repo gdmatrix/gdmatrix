@@ -100,3 +100,9 @@ div.footerPanel
   margin-right:4px;
 }
 
+.lastSuccessLoginDateTime
+{
+  margin-left: 2px;
+  margin-right: 4px;
+  vertical-align: middle;
+}

@@ -157,16 +157,22 @@ main#sf_main_content
 
 .main .header .footer .fcol1
 {
-  width:85%;
+  width:65%;
   text-align:left;
   height:40px;
 }
 
 .main .header .footer .fcol2
 {
-  width:15%;
+  width:35%;
   text-align:right;
   height:40px;
+  margin-right: 2px;
+}
+
+.main .header .footer .fcol2 .lastSuccessLoginDateTime
+{
+  line-height: 40px;
 }
 
 .navPath

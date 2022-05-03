@@ -112,6 +112,22 @@
               <h:outputText value="#{userSessionBean.displayName}"
                             style="text-align: right; font-weight: bold; color: red"/>
 
+              <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
+                                 userSessionBean.lastSuccessLoginDateTime != null}"
+                     styleClass="lastSuccessLoginDateTime">
+                <t:div>
+                  <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
+                                 translator="#{userSessionBean.translator}" 
+                                 translationGroup="login" />
+                </t:div>
+                <t:div>
+                  <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}">
+                    <f:converter converterId="DateTimeConverter" />
+                    <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                  </h:outputText>
+                </t:div>
+              </t:div>                                    
+
               <h:commandLink action="#{loginBean.logout}" 
                 styleClass="loginButton" immediate="true">
                 <h:outputText value="#{webBundle.buttonSignout}" />

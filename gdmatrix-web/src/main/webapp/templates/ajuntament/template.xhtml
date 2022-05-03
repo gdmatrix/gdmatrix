@@ -95,10 +95,23 @@
                                              not userSessionBean.certificateUser}"
                                  immediate="true">
                     <h:outputText value="[#{webBundle.outputChangePassword}]" />
-                  </h:commandLink>
+                  </h:commandLink>                                    
                 </h:panelGroup>
 
-                <h:panelGroup/>
+                <h:panelGroup>
+                  <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
+                                     userSessionBean.lastSuccessLoginDateTime != null}"
+                         styleClass="lastSuccessLoginDateTime">
+                    <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
+                                   translator="#{userSessionBean.translator}" 
+                                   translationGroup="login" />
+                    <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}" 
+                                  style="margin-left: 2px;">
+                      <f:converter converterId="DateTimeConverter" />
+                      <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                    </h:outputText>
+                  </t:div>                  
+                </h:panelGroup>
 
               </h:panelGrid>
             </f:facet>
