@@ -373,6 +373,7 @@ public class DocumentContentBean extends PageBean
       HttpServletRequest request = (HttpServletRequest)getExternalContext().getRequest();
       String contextPath = request.getContextPath();
       String serverName = HttpUtils.getServerName(request);
+      String protocol = HttpUtils.getScheme(request);
       String port = MatrixConfig.getProperty("org.santfeliu.web.defaultPort");
       port = !"80".equals(port) ? ":" + port : "";
 
@@ -388,7 +389,7 @@ public class DocumentContentBean extends PageBean
 
       String url = contextPath + DOC_SERVLET_URL + content.getContentId() + "/" + filename;
       if (fullUrl)
-        url = "http://" + serverName + port + url;
+        url = protocol + "://" + serverName + port + url;
       if (downloadable)
         url = url + "?saveas=" + filename;
 

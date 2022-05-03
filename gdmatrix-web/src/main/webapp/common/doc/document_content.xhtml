@@ -103,9 +103,12 @@
           <t:div styleClass="row">
             <h:outputText value="#{documentBundle.documentContent_downloadUrl}:"
                         styleClass="textBox" style="width:25%" />
-            <h:outputText value="#{documentContentBean.fullURL}"
-                        styleClass="outputBox"
-                        style="font-family:courier new;width:62%;height:auto" />
+            <h:outputLink value="#{documentContentBean.fullURL}" target="_blank"
+                          styleClass="documentLink">
+              <h:outputText value="#{documentContentBean.fullURL}" 
+                          styleClass="outputBox"
+                          style="font-family:courier new;width:62%;height:auto;color:inherit" />
+            </h:outputLink>
           </t:div>
         </t:div>
 
