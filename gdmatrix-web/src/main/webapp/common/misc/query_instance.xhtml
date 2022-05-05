@@ -32,6 +32,12 @@
         <h:commandButton value="#{queryBundle.reload}" action="#{queryInstanceBean.reloadQuery}" styleClass="big_button" 
                          rendered="#{queryBean.persistent}" immediate="true" />
         <h:commandButton value="#{objectBundle.store}" action="#{queryInstanceBean.saveQuery}" styleClass="big_button" rendered="#{queryBean.saveEnabled}" />
+        <t:div rendered="#{queryBean.saveEnabled}" styleClass="createNewVersionDiv">
+          <h:selectBooleanCheckbox id="createNewVersionCB" 
+                                   value="#{queryBean.createNewVersion}" />
+          <h:outputLabel for="createNewVersionCB"  
+                         value="#{queryBundle.create_new_version}" />
+        </t:div>
       </t:div>
 
       <t:div styleClass="query_header">
@@ -87,13 +93,6 @@
                        value="#{queryBundle.max_results}:" forceId="true" />
         <t:inputText id="max_results" forceId="true" 
                      value="#{queryInstanceBean.selectedInstance.maxResults}" />
-      </t:div>
-      
-      <t:div rendered="#{queryBean.saveEnabled}" styleClass="createNewVersionDiv">
-        <h:selectBooleanCheckbox id="createNewVersionCB" 
-                                 value="#{queryBean.createNewVersion}" />
-        <h:outputLabel for="createNewVersionCB"  
-                       value="#{queryBundle.create_new_version}" />
       </t:div>
       
       <t:commandButton value="#{queryBundle.execute_query}" action="#{queryInstanceBean.execute}" 

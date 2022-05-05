@@ -23,35 +23,43 @@
                   errorClass="errorMessage"
                   fatalClass="fatalMessage" />
 
-      <t:div>
-        <t:outputLabel value="#{queryBundle.query_scope}:" for="filter_scope" />
-        <t:selectOneMenu value="#{querySearchBean.filterByScope}" styleClass="input_text">
-          <f:selectItem itemLabel=" " itemValue="" />
-          <f:selectItems value="#{querySearchBean.queryScopeSelectItems}" />                     
-        </t:selectOneMenu>
-      </t:div>  
-      <t:div>
-        <t:outputLabel value="#{queryBundle.query_object}:" for="filter_object" />
-        <t:selectOneMenu value="#{querySearchBean.filterByObject}" styleClass="input_text">
-          <f:selectItem itemLabel=" " itemValue="" />      
-          <f:selectItems value="#{querySearchBean.queryObjectSelectItems}" />                     
-        </t:selectOneMenu>
-      </t:div>  
-      <t:div>
-        <t:outputLabel value="#{queryBundle.query_type}:" for="filter_type" />
-        <t:selectOneMenu value="#{querySearchBean.filterByType}" styleClass="input_text">
-          <f:selectItem itemLabel=" " itemValue="" />      
-          <f:selectItems value="#{querySearchBean.queryTypeSelectItems}" />                     
-        </t:selectOneMenu>
-      </t:div>  
-      <t:div>
-        <t:outputLabel value="#{queryBundle.name}:" for="filter_name" />  
-        <t:inputText id="filter_name" value="#{querySearchBean.filterByName}" styleClass="input_text" />
-
-        <t:outputLabel value="#{queryBundle.title}:" for="filter_title" />  
-        <t:inputText id="filter_title" value="#{querySearchBean.filterByTitle}" styleClass="input_text" />      
-
-        <t:commandButton action="#{querySearchBean.search}" value="#{objectBundle.search}" styleClass="big_button" />                
+      <t:div styleClass="querySearchPanel">
+        <t:div>
+          <t:outputLabel value="#{queryBundle.query_scope}:" for="filter_scope" />
+          <t:selectOneMenu value="#{querySearchBean.filterByScope}" styleClass="input_text">
+            <f:selectItem itemLabel=" " itemValue="" />
+            <f:selectItems value="#{querySearchBean.queryScopeSelectItems}" />                     
+          </t:selectOneMenu>
+        </t:div>  
+        <t:div>
+          <t:outputLabel value="#{queryBundle.query_object}:" for="filter_object" />
+          <t:selectOneMenu value="#{querySearchBean.filterByObject}" styleClass="input_text">
+            <f:selectItem itemLabel=" " itemValue="" />      
+            <f:selectItems value="#{querySearchBean.queryObjectSelectItems}" />                     
+          </t:selectOneMenu>
+        </t:div>  
+        <t:div>
+          <t:outputLabel value="#{queryBundle.query_type}:" for="filter_type" />
+          <t:selectOneMenu value="#{querySearchBean.filterByType}" styleClass="input_text">
+            <f:selectItem itemLabel=" " itemValue="" />      
+            <f:selectItems value="#{querySearchBean.queryTypeSelectItems}" />                     
+          </t:selectOneMenu>
+        </t:div>  
+        <t:div>
+          <t:outputLabel value="#{queryBundle.name}:" for="filter_name" />  
+          <t:inputText id="filter_name" value="#{querySearchBean.filterByName}" styleClass="input_text" />
+        </t:div>
+        <t:div>
+          <t:outputLabel value="#{queryBundle.title}:" for="filter_title" />  
+          <t:inputText id="filter_title" value="#{querySearchBean.filterByTitle}" styleClass="input_text" />      
+        </t:div>
+        <t:div>
+          <t:outputLabel value="#{queryBundle.base}:" for="filter_base" />  
+          <t:inputText id="filter_base" value="#{querySearchBean.filterByBase}" styleClass="input_text" />
+        </t:div>
+        <t:div>
+          <t:commandButton action="#{querySearchBean.search}" value="#{objectBundle.search}" styleClass="big_button" />                
+        </t:div>
       </t:div>
 
       <t:div>

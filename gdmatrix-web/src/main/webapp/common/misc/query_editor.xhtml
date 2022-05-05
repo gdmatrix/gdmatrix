@@ -52,6 +52,12 @@
             </t:div>
           </f:facet>
         </t:popup>
+        <t:div rendered="#{queryBean.saveEnabled}" styleClass="createNewVersionDiv">
+          <h:selectBooleanCheckbox id="createNewVersionCB" 
+                                   value="#{queryBean.createNewVersion}" />
+          <h:outputLabel for="createNewVersionCB" 
+                         value="#{queryBundle.create_new_version}" />
+        </t:div>
       </t:div>
 
       <t:div>
@@ -310,13 +316,6 @@
         </t:panelTab>
 
       </t:panelTabbedPane>
-
-      <t:div rendered="#{queryBean.saveEnabled}" styleClass="createNewVersionDiv">
-        <h:selectBooleanCheckbox id="createNewVersionCB" 
-                                 value="#{queryBean.createNewVersion}" />
-        <h:outputLabel for="createNewVersionCB" 
-                       value="#{queryBundle.create_new_version}" />
-      </t:div>  
 
       <f:verbatim>
         <script type="text/javascript" src="/plugins/codemirror/codemirror.js">

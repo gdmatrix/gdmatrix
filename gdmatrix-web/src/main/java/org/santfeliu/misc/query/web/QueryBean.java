@@ -80,6 +80,7 @@ public class QueryBean extends FacesBean implements Savable, QueryFinder
   public static final String QUERY_UPDATE_PROPERTY = "update_sql";
   public static final String QUERY_SCOPE_PROPERTY = "query_scope";
   public static final String QUERY_TYPE_PROPERTY = "query_type";
+  public static final String QUERY_BASE_PROPERTY = "query_base";
   public static final String QUERY_OBJECT_PROPERTY = "query_object";
   public static final String QUERY_CODE_PROPERTY = "query_code";
 
@@ -320,6 +321,10 @@ public class QueryBean extends FacesBean implements Savable, QueryFinder
     property = new Property();
     property.setName(QUERY_CODE_PROPERTY);
     property.getValue().add(String.valueOf(queryCode));
+    document.getProperty().add(property);
+    property = new Property();
+    property.setName(QUERY_BASE_PROPERTY);
+    property.getValue().add(String.valueOf(query.getBase()));
     document.getProperty().add(property);
 
     DataSource dataSource =

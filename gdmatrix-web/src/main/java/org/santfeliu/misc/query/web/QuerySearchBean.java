@@ -50,6 +50,7 @@ public class QuerySearchBean extends FacesBean implements Savable
 {
   private String filterByName;
   private String filterByTitle;  
+  private String filterByBase;  
   private String filterByScope;
   private String filterByType;
   private String filterByObject;
@@ -76,6 +77,16 @@ public class QuerySearchBean extends FacesBean implements Savable
   public void setFilterByTitle(String filterByTitle)
   {
     this.filterByTitle = filterByTitle;
+  }
+
+  public String getFilterByBase() 
+  {
+    return filterByBase;
+  }
+
+  public void setFilterByBase(String filterByBase) 
+  {
+    this.filterByBase = filterByBase;
   }
 
   public String getFilterByScope() 
@@ -184,6 +195,15 @@ public class QuerySearchBean extends FacesBean implements Savable
       property.getValue().add(filterByType);
       filter.getProperty().add(property);
     }
+
+    if (!StringUtils.isBlank(filterByBase))
+    {
+      Property property = new Property();
+      property.setName(QueryBean.QUERY_BASE_PROPERTY);
+      property.getValue().add(filterByBase);
+      filter.getProperty().add(property);
+    }
+
     documents = QueryBean.getDocumentManagerClient().findDocuments(filter);
   }
   

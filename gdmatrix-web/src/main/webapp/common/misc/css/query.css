@@ -44,6 +44,16 @@ textarea
 
 /* query_search */
 
+.querySearchPanel
+{  
+}
+
+.querySearchPanel label
+{  
+  width: 60px;
+  display: inline-block;
+}
+
 .query_list
 {
   width:100%;
@@ -702,6 +712,8 @@ input.instance_description
 div.createNewVersionDiv
 {
   height: 30px;
+  display: inline-block;
+  margin-left: 4px;  
 }
 
 div.createNewVersionDiv input[type=checkbox]
