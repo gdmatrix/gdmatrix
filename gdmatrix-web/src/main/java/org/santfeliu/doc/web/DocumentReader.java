@@ -60,6 +60,7 @@ import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.util.Utilities;
+import org.santfeliu.web.HttpUtils;
 import org.santfeliu.web.UserSessionBean;
 
 
@@ -76,6 +77,14 @@ public class DocumentReader
   public static final String CACHE_PARAM = "cache";
   public static final String TRANSFORM_TO_PARAM = "transform-to";
   public static final String TRANSFORM_WITH_PARAM = "transform-with";
+  public static final String AUTHENTICATE = "authenticate";
+  
+  private static final String DOCX_MIMETYPE = 
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  private static final String TCQ_MIMETYPE = 
+    "application/tcq";
+    
+  
 
   private long defaultCacheTime = 10000; // 10 seconds
 
@@ -116,12 +125,17 @@ public class DocumentReader
         {
           String msg = ex.getMessage();
           if (msg != null && (msg.contains("FILE_NOT_FOUND") ||
-                              msg.contains("DOCUMENT_NOT_FOUND")))
+            msg.contains("DOCUMENT_NOT_FOUND")))
           {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
           }
-          else if (msg != null && msg.contains("ACTION_DENIED"))
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+          else if (msg != null && (msg.contains("ACTION_DENIED") || 
+            msg.contains("INVALID_IDENTIFICATION")))
+          {
+            if (HttpUtils.isSecure(request) && docReq.authenticate)
+              response.addHeader("WWW-Authenticate", "Basic");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+          }
           else
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -235,6 +249,10 @@ public class DocumentReader
       }
       docReq.username = credentials.getUserId();
       docReq.password = credentials.getPassword();
+      String authParam = request.getParameter(AUTHENTICATE);
+      docReq.authenticate = 
+        authParam != null && !authParam.equalsIgnoreCase("false");
+
     }
     return docReq;
   }
@@ -364,12 +382,13 @@ public class DocumentReader
     }
   }
 
-  private void setContentDispositionHeader(DocumentRequest docReq, HttpServletResponse response)
+  private void setContentDispositionHeader(DocumentRequest docReq, 
+    HttpServletResponse response)
   {
     String contentType = response.getContentType();
     if (docReq.saveAs == null && contentType != null &&
-        (contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ||
-         contentType.equals("application/tcq")))
+      (contentType.equals(DOCX_MIMETYPE) ||
+       contentType.equals(TCQ_MIMETYPE)))
     {
       String filename =
         docReq.filename != null ? docReq.filename : docReq.contentId + "." +
@@ -377,17 +396,17 @@ public class DocumentReader
       docReq.saveAs = filename;
     }
 
-    if (docReq.saveAs != null) response.addHeader("Content-Disposition",
-        "attachment; filename=" + docReq.saveAs);
+    if (docReq.saveAs != null) 
+    {
+      String headerValue = "attachment; filename=" + docReq.saveAs;
+      response.addHeader("Content-Disposition", headerValue);
+    }
   }
 
   private CachedDocumentManagerClient getDocumentManagerClient(String username,
     String password) throws Exception
   {
-    CachedDocumentManagerClient client =
-      new CachedDocumentManagerClient(username, password);
-
-    return client;
+    return new CachedDocumentManagerClient(username, password);
   }
 
   private void writeServletInfo(HttpServletResponse response,
@@ -399,10 +418,10 @@ public class DocumentReader
     writer.print("</p></body></html>");
   }
 
-  private Map getOptions(HttpServletRequest request)
+  private Map<String,String> getOptions(HttpServletRequest request)
   {
-    HashMap options = new HashMap();
-    Enumeration enu = request.getParameterNames();
+    HashMap<String,String> options = new HashMap<>();
+    Enumeration<String> enu = request.getParameterNames();
     while (enu.hasMoreElements())
     {
       String paramName = (String)enu.nextElement();
@@ -435,6 +454,7 @@ public class DocumentReader
     String etag;
     String saveAs;
     String filename;
+    boolean authenticate;
     TransformationRequest transform;
 
     public String getCacheKey()
