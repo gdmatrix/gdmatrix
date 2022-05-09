@@ -85,6 +85,7 @@ import org.matrix.policy.PolicyConstants;
 import org.matrix.presence.PresenceConstants;
 import org.matrix.sql.SQLConstants;
 import org.matrix.workflow.WorkflowConstants;
+import org.santfeliu.security.util.Credentials;
 
 
 /**
@@ -297,72 +298,118 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public SecurityMetaData getSecurityMetaData()
   {
-    SecurityMetaData metaData = new SecurityMetaData();
-    metaData.setRoleDescriptionMaxSize(ROLE_DESCRIPTION_MAX_SIZE);
-    metaData.setRoleIdMaxSize(ROLE_ID_MAX_SIZE);
-    metaData.setRoleNameMaxSize(ROLE_NAME_MAX_SIZE);
-    metaData.setUserDisplayNameMaxSize(USER_DISPLAY_NAME_MAX_SIZE);
-    metaData.setUserIdMaxSize(USER_ID_MAX_SIZE);
-    metaData.setUserLockControlMode(config.userLockControlMode);
-    metaData.setMaxFailedLoginAttempts(config.maxFailedLoginAttempts);
-    metaData.setAutoUnlockMarginTime(config.autoUnlockMarginTime);
-    metaData.setMinIntrusionAttempts(config.minIntrusionAttempts);
-    return metaData;
+    try
+    {
+      LOGGER.log(Level.INFO, "getSecurityMetaData");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
+
+      SecurityMetaData metaData = new SecurityMetaData();
+      metaData.setRoleDescriptionMaxSize(ROLE_DESCRIPTION_MAX_SIZE);
+      metaData.setRoleIdMaxSize(ROLE_ID_MAX_SIZE);
+      metaData.setRoleNameMaxSize(ROLE_NAME_MAX_SIZE);
+      metaData.setUserDisplayNameMaxSize(USER_DISPLAY_NAME_MAX_SIZE);
+      metaData.setUserIdMaxSize(USER_ID_MAX_SIZE);
+      metaData.setUserLockControlMode(config.userLockControlMode);
+      metaData.setMaxFailedLoginAttempts(config.maxFailedLoginAttempts);
+      metaData.setAutoUnlockMarginTime(config.autoUnlockMarginTime);
+      metaData.setMinIntrusionAttempts(config.minIntrusionAttempts);
+      return metaData;
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "getSecurityMetaData failed");
+      throw WSExceptionFactory.create(ex);
+    }
   }
 
   @Override
   public List<User> findUsers(UserFilter filter)
   {
-    int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
-    Query query;
-    if (userCount > 1)
-      query = entityManager.createNamedQuery("findUsersMultipleId");
-    else
-      query = entityManager.createNamedQuery("findUsersSingleId");
-    setUserFilterParameters(query, filter, userCount);
-    List<DBUser> dbUsers = query.getResultList();
-    
-    loadLockUserProperties(dbUsers);
-    
-    List<User> users = new ArrayList<>();
-    for (DBUser dbUser : dbUsers)
+    try
     {
-      User user = new User();
-      dbUser.copyTo(user);
-      users.add(user);
+      LOGGER.log(Level.INFO, "findUsers");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
+
+      int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
+      Query query;
+      if (userCount > 1)
+        query = entityManager.createNamedQuery("findUsersMultipleId");
+      else
+        query = entityManager.createNamedQuery("findUsersSingleId");
+      setUserFilterParameters(query, filter, userCount);
+      List<DBUser> dbUsers = query.getResultList();
+
+      loadLockUserProperties(dbUsers);
+
+      List<User> users = new ArrayList<>();
+      for (DBUser dbUser : dbUsers)
+      {
+        User user = new User();
+        dbUser.copyTo(user);
+        users.add(user);
+      }
+      return users;
     }
-    return users;
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "findUsers failed");
+      throw WSExceptionFactory.create(ex);
+    }
   }
 
   @Override
   public int countUsers(UserFilter filter)
   {
-    int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
-    Query query;
-    if (userCount > 1)
-      query = entityManager.createNamedQuery("countUsersMultipleId");
-    else
-      query = entityManager.createNamedQuery("countUsersSingleId");
-    setUserFilterParameters(query, filter, userCount);
-    query.setFirstResult(0);
-    query.setMaxResults(1);
-    Number count = (Number)query.getSingleResult();
-    return count.intValue();
+    try
+    {
+      LOGGER.log(Level.INFO, "countUsers");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
+
+      int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
+      Query query;
+      if (userCount > 1)
+        query = entityManager.createNamedQuery("countUsersMultipleId");
+      else
+        query = entityManager.createNamedQuery("countUsersSingleId");
+      setUserFilterParameters(query, filter, userCount);
+      query.setFirstResult(0);
+      query.setMaxResults(1);
+      Number count = (Number)query.getSingleResult();
+      return count.intValue();
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "countUsers failed");
+      throw WSExceptionFactory.create(ex);
+    }
   }
 
   @Override
   public User loadUser(String userId)
   {
-    LOGGER.log(Level.INFO, "loadUser userId:{0}", userId);
+    try
+    {
+      LOGGER.log(Level.INFO, "loadUser userId:{0}", userId);
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
 
-    // checkRoles
-    DBUser dbUser = selectUser(userId);
-    if (dbUser == null)
-      throw new WebServiceException("security:USER_NOT_FOUND");
+      // checkRoles
+      DBUser dbUser = selectUser(userId);
+      if (dbUser == null)
+        throw new WebServiceException("security:USER_NOT_FOUND");
 
-    User user = new User();
-    dbUser.copyTo(user);
-    return user;
+      User user = new User();
+      dbUser.copyTo(user);
+      return user;
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "loadUser failed");
+      throw WSExceptionFactory.create(ex);
+    }
   }
 
   @Override
@@ -757,53 +804,87 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<Role> findRoles(RoleFilter filter)
   {
-    int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
-    Query query;
-    if (roleCount > 1)
-      query = entityManager.createNamedQuery("findRolesMultipleId");
-    else
-      query = entityManager.createNamedQuery("findRolesSingleId");
-    setRoleFilterParameters(query, filter, roleCount);
-    List<DBRole> dbRoles = query.getResultList();
-    List<Role> roles = new ArrayList<>();
-    for (DBRole dbRole : dbRoles)
+    try
     {
-      Role role = new Role();
-      dbRole.copyTo(role);
-      roles.add(role);
+      LOGGER.log(Level.INFO, "findRoles");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
+    
+      int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
+      Query query;
+      if (roleCount > 1)
+        query = entityManager.createNamedQuery("findRolesMultipleId");
+      else
+        query = entityManager.createNamedQuery("findRolesSingleId");
+      setRoleFilterParameters(query, filter, roleCount);
+      List<DBRole> dbRoles = query.getResultList();
+      List<Role> roles = new ArrayList<>();
+      for (DBRole dbRole : dbRoles)
+      {
+        Role role = new Role();
+        dbRole.copyTo(role);
+        roles.add(role);
+      }
+      return roles;
     }
-    return roles;
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "findRoles failed");
+      throw WSExceptionFactory.create(ex);
+    }
   }
 
   @Override
   public int countRoles(RoleFilter filter)
   {
-    int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
-    Query query;
-    if (roleCount > 1)
-      query = entityManager.createNamedQuery("countRolesMultipleId");
-    else
-      query = entityManager.createNamedQuery("countRolesSingleId");
-    setRoleFilterParameters(query, filter, roleCount);
-    query.setFirstResult(0);
-    query.setMaxResults(1);
-    Number count = (Number)query.getSingleResult();
-    return count.intValue();
+    try
+    {
+      LOGGER.log(Level.INFO, "countRoles");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
+      
+      int roleCount = filter.getRoleId() != null ? filter.getRoleId().size() : 0;
+      Query query;
+      if (roleCount > 1)
+        query = entityManager.createNamedQuery("countRolesMultipleId");
+      else
+        query = entityManager.createNamedQuery("countRolesSingleId");
+      setRoleFilterParameters(query, filter, roleCount);
+      query.setFirstResult(0);
+      query.setMaxResults(1);
+      Number count = (Number)query.getSingleResult();
+      return count.intValue();
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "countRoles failed");
+      throw WSExceptionFactory.create(ex);
+    }
   }
 
   @Override
   public Role loadRole(String roleId)
   {
-    Role role;
-    LOGGER.log(Level.INFO, "loadRole roleId:{0}", roleId);
+    try
+    {
+      Role role;
+      LOGGER.log(Level.INFO, "loadRole roleId:{0}", roleId);
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");        
 
-    DBRole dbRole = entityManager.find(DBRole.class, roleId);
-    if (dbRole == null)
-      throw new WebServiceException("security:ROLE_NOT_FOUND");
+      DBRole dbRole = entityManager.find(DBRole.class, roleId);
+      if (dbRole == null)
+        throw new WebServiceException("security:ROLE_NOT_FOUND");
 
-    role = new Role();
-    dbRole.copyTo(role);
-    return role;
+      role = new Role();
+      dbRole.copyTo(role);
+      return role;
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "loadRole failed");
+      throw WSExceptionFactory.create(ex);
+    }    
   }
 
   @Override
@@ -871,112 +952,136 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<UserInRole> findUserInRoles(UserInRoleFilter filter)
   {
-    List<UserInRole> userInRoles = new ArrayList<>();
-
-    String userId = filter.getUserId();
-    String roleId = filter.getRoleId();
-    if (userId == null ||
-      !userId.startsWith(SecurityConstants.TEMP_USER_PREFIX))
+    try
     {
-      // search in database
-      Query query = entityManager.createNamedQuery("findUserInRoles");
-      query.setParameter("userId", userId);
-      query.setParameter("roleId", roleId);
-      query.setParameter("comments", addWildCards(filter.getComments()));
-      query.setParameter("minDate", filter.getMinDate());
-      query.setParameter("maxDate", filter.getMaxDate());
-      List<DBUserInRole> dbUserInRoles = query.getResultList();
-      for (DBUserInRole dbUserInRole : dbUserInRoles)
-      {
-        UserInRole userInRole = new UserInRole();
-        dbUserInRole.copyTo(userInRole);
-        userInRoles.add(userInRole);
-      }
-    }
-    // add fixed roles
-    if (userId != null && roleId == null)
-    {
-      // add nominal role
-      UserInRole userInRole;
-      userInRole = new UserInRole();
-      userInRole.setUserId(userId);
-      userInRole.setRoleId(getNominalRole(filter.getUserId()));
-      userInRoles.add(userInRole);
+      LOGGER.log(Level.INFO, "findUserInRoles");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
 
-      // add everyone role
-      userInRole = new UserInRole();
-      userInRole.setUserId(userId);
-      userInRole.setRoleId(SecurityConstants.EVERYONE_ROLE);
-      userInRoles.add(userInRole);
+      List<UserInRole> userInRoles = new ArrayList<>();
 
-      if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
+      String userId = filter.getUserId();
+      String roleId = filter.getRoleId();
+      if (userId == null ||
+        !userId.startsWith(SecurityConstants.TEMP_USER_PREFIX))
       {
-        // add certificate roles
-        for (String certUserRoleId : config.certUserRoles)
+        // search in database
+        Query query = entityManager.createNamedQuery("findUserInRoles");
+        query.setParameter("userId", userId);
+        query.setParameter("roleId", roleId);
+        query.setParameter("comments", addWildCards(filter.getComments()));
+        query.setParameter("minDate", filter.getMinDate());
+        query.setParameter("maxDate", filter.getMaxDate());
+        List<DBUserInRole> dbUserInRoles = query.getResultList();
+        for (DBUserInRole dbUserInRole : dbUserInRoles)
         {
-          userInRole = new UserInRole();
-          userInRole.setUserId(userId);
-          userInRole.setRoleId(certUserRoleId);
+          UserInRole userInRole = new UserInRole();
+          dbUserInRole.copyTo(userInRole);
           userInRoles.add(userInRole);
         }
       }
+      // add fixed roles
+      if (userId != null && roleId == null)
+      {
+        // add nominal role
+        UserInRole userInRole;
+        userInRole = new UserInRole();
+        userInRole.setUserId(userId);
+        userInRole.setRoleId(getNominalRole(filter.getUserId()));
+        userInRoles.add(userInRole);
+
+        // add everyone role
+        userInRole = new UserInRole();
+        userInRole.setUserId(userId);
+        userInRole.setRoleId(SecurityConstants.EVERYONE_ROLE);
+        userInRoles.add(userInRole);
+
+        if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
+        {
+          // add certificate roles
+          for (String certUserRoleId : config.certUserRoles)
+          {
+            userInRole = new UserInRole();
+            userInRole.setUserId(userId);
+            userInRole.setRoleId(certUserRoleId);
+            userInRoles.add(userInRole);
+          }
+        }
+      }
+      return userInRoles;
     }
-    return userInRoles;
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "findUserInRoles failed");
+      throw WSExceptionFactory.create(ex);
+    }
   }
 
   @Override
   public List<UserInRoleView> findUserInRoleViews(UserInRoleFilter filter)
   {
-    List<UserInRoleView> userInRoleViews = new ArrayList<>();
-    if (filter.getUserId() == null)
+    try
     {
-      Query query = entityManager.createNamedQuery("findUserInRoleViews");
-      query.setParameter("roleId", filter.getRoleId());
-      query.setParameter("comments", addWildCards(filter.getComments()));
-      query.setParameter("minDate", filter.getMinDate());
-      query.setParameter("maxDate", filter.getMaxDate());
-      List<Object[]> rowList = query.getResultList();
-      for (Object[] row : rowList)
+      LOGGER.log(Level.INFO, "findUserInRoleViews");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
+    
+      List<UserInRoleView> userInRoleViews = new ArrayList<>();
+      if (filter.getUserId() == null)
       {
-        DBUser dbUser = (DBUser)row[0];
-        String startDate = (String)row[1];
-        String endDate = (String)row[2];
-        User user = new User();
-        dbUser.copyTo(user);
-        UserInRoleView userInRoleView = new UserInRoleView();
-        userInRoleView.setUserInRoleId(user.getUserId() + PK_SEPARATOR +
-          filter.getRoleId());
-        userInRoleView.setUser(user);
-        userInRoleView.setStartDate(startDate);
-        userInRoleView.setEndDate(endDate);
-        userInRoleViews.add(userInRoleView);
+        Query query = entityManager.createNamedQuery("findUserInRoleViews");
+        query.setParameter("roleId", filter.getRoleId());
+        query.setParameter("comments", addWildCards(filter.getComments()));
+        query.setParameter("minDate", filter.getMinDate());
+        query.setParameter("maxDate", filter.getMaxDate());
+        List<Object[]> rowList = query.getResultList();
+        for (Object[] row : rowList)
+        {
+          DBUser dbUser = (DBUser)row[0];
+          String startDate = (String)row[1];
+          String endDate = (String)row[2];
+          User user = new User();
+          dbUser.copyTo(user);
+          UserInRoleView userInRoleView = new UserInRoleView();
+          userInRoleView.setUserInRoleId(user.getUserId() + PK_SEPARATOR +
+            filter.getRoleId());
+          userInRoleView.setUser(user);
+          userInRoleView.setStartDate(startDate);
+          userInRoleView.setEndDate(endDate);
+          userInRoleViews.add(userInRoleView);
+        }
       }
+      else
+      {
+        Query query = entityManager.createNamedQuery("findRoleInUserViews");
+        query.setParameter("userId", filter.getUserId());
+        query.setParameter("comments", addWildCards(filter.getComments()));
+        query.setParameter("minDate", filter.getMinDate());
+        query.setParameter("maxDate", filter.getMaxDate());
+        List<Object[]> rowList = query.getResultList();
+        for (Object[] row : rowList)
+        {
+          DBRole dbRole = (DBRole)row[0];
+          String startDate = (String)row[1];
+          String endDate = (String)row[2];
+          Role role = new Role();
+          dbRole.copyTo(role);
+          UserInRoleView userInRoleView = new UserInRoleView();
+          userInRoleView.setUserInRoleId(filter.getUserId() + PK_SEPARATOR +
+            role.getRoleId());
+          userInRoleView.setRole(role);
+          userInRoleView.setStartDate(startDate);
+          userInRoleView.setEndDate(endDate);
+          userInRoleViews.add(userInRoleView);
+        }
+      }
+      return userInRoleViews;
     }
-    else
+    catch (Exception ex)
     {
-      Query query = entityManager.createNamedQuery("findRoleInUserViews");
-      query.setParameter("userId", filter.getUserId());
-      query.setParameter("comments", addWildCards(filter.getComments()));
-      query.setParameter("minDate", filter.getMinDate());
-      query.setParameter("maxDate", filter.getMaxDate());
-      List<Object[]> rowList = query.getResultList();
-      for (Object[] row : rowList)
-      {
-        DBRole dbRole = (DBRole)row[0];
-        String startDate = (String)row[1];
-        String endDate = (String)row[2];
-        Role role = new Role();
-        dbRole.copyTo(role);
-        UserInRoleView userInRoleView = new UserInRoleView();
-        userInRoleView.setUserInRoleId(filter.getUserId() + PK_SEPARATOR +
-          role.getRoleId());
-        userInRoleView.setRole(role);
-        userInRoleView.setStartDate(startDate);
-        userInRoleView.setEndDate(endDate);
-        userInRoleViews.add(userInRoleView);
-      }
+      LOGGER.log(Level.SEVERE, "findUserInRoleViews failed");
+      throw WSExceptionFactory.create(ex);
     }
-    return userInRoleViews;
   }
 
   @Override
@@ -986,6 +1091,8 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "loadUserInRole userInRoleId:{0}", userInRoleId);
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");      
       DBUserInRole dbUserInRole = selectUserInRole(userInRoleId);
       if (dbUserInRole == null) return null;
       userInRole = new UserInRole();
@@ -1094,59 +1201,83 @@ public class SecurityManager implements SecurityManagerPort
   @Override
   public List<RoleInRole> findRoleInRoles(RoleInRoleFilter filter)
   {
-    Query query = entityManager.createNamedQuery("findRoleInRoles");
-    query.setParameter("containerRoleId", filter.getContainerRoleId());
-    query.setParameter("includedRoleId", filter.getIncludedRoleId());
-    List<DBRoleInRole> dbRoleInRoles = query.getResultList();
-    List<RoleInRole> roleInRoles = new ArrayList<>();
-    for (DBRoleInRole dbRoleInRole : dbRoleInRoles)
+    try
     {
-      RoleInRole roleInRole = new RoleInRole();
-      dbRoleInRole.copyTo(roleInRole);
-      roleInRole.setRoleInRoleId(roleInRole.getContainerRoleId() +
-        PK_SEPARATOR + roleInRole.getIncludedRoleId());
-      roleInRoles.add(roleInRole);
+      LOGGER.log(Level.INFO, "findRoleInRoles");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
+
+      Query query = entityManager.createNamedQuery("findRoleInRoles");
+      query.setParameter("containerRoleId", filter.getContainerRoleId());
+      query.setParameter("includedRoleId", filter.getIncludedRoleId());
+      List<DBRoleInRole> dbRoleInRoles = query.getResultList();
+      List<RoleInRole> roleInRoles = new ArrayList<>();
+      for (DBRoleInRole dbRoleInRole : dbRoleInRoles)
+      {
+        RoleInRole roleInRole = new RoleInRole();
+        dbRoleInRole.copyTo(roleInRole);
+        roleInRole.setRoleInRoleId(roleInRole.getContainerRoleId() +
+          PK_SEPARATOR + roleInRole.getIncludedRoleId());
+        roleInRoles.add(roleInRole);
+      }
+      return roleInRoles;
     }
-    return roleInRoles;
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "findRoleInRoles failed");
+      throw WSExceptionFactory.create(ex);
+    }
   }
 
   @Override
   public List<RoleInRoleView> findRoleInRoleViews(RoleInRoleFilter filter)
   {
-    List<RoleInRoleView> roleInRoleViews = new ArrayList<>();
-    if (filter.getContainerRoleId() == null)
+    try
     {
-      Query query = entityManager.createNamedQuery("findContainerRoleViews");
-      query.setParameter("includedRoleId", filter.getIncludedRoleId());
-      List<DBRole> dbRoles = query.getResultList();
-      for (DBRole dbRole : dbRoles)
+      LOGGER.log(Level.INFO, "findRoleInRoleViews");
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
+    
+      List<RoleInRoleView> roleInRoleViews = new ArrayList<>();
+      if (filter.getContainerRoleId() == null)
       {
-        Role role = new Role();
-        dbRole.copyTo(role);
-        RoleInRoleView roleInRoleView = new RoleInRoleView();
-        roleInRoleView.setRoleInRoleId(role.getRoleId() + PK_SEPARATOR +
-          filter.getIncludedRoleId());
-        roleInRoleView.setContainerRole(role);
-        roleInRoleViews.add(roleInRoleView);
+        Query query = entityManager.createNamedQuery("findContainerRoleViews");
+        query.setParameter("includedRoleId", filter.getIncludedRoleId());
+        List<DBRole> dbRoles = query.getResultList();
+        for (DBRole dbRole : dbRoles)
+        {
+          Role role = new Role();
+          dbRole.copyTo(role);
+          RoleInRoleView roleInRoleView = new RoleInRoleView();
+          roleInRoleView.setRoleInRoleId(role.getRoleId() + PK_SEPARATOR +
+            filter.getIncludedRoleId());
+          roleInRoleView.setContainerRole(role);
+          roleInRoleViews.add(roleInRoleView);
+        }
       }
+      else
+      {
+        Query query = entityManager.createNamedQuery("findIncludedRoleViews");
+        query.setParameter("containerRoleId", filter.getContainerRoleId());
+        List<DBRole> dbRoles = query.getResultList();
+        for (DBRole dbRole : dbRoles)
+        {
+          Role role = new Role();
+          dbRole.copyTo(role);
+          RoleInRoleView roleInRoleView = new RoleInRoleView();
+          roleInRoleView.setRoleInRoleId(filter.getContainerRoleId() +
+            PK_SEPARATOR + role.getRoleId());
+          roleInRoleView.setIncludedRole(role);
+          roleInRoleViews.add(roleInRoleView);
+        }
+      }
+      return roleInRoleViews;
     }
-    else
+    catch (Exception ex)
     {
-      Query query = entityManager.createNamedQuery("findIncludedRoleViews");
-      query.setParameter("containerRoleId", filter.getContainerRoleId());
-      List<DBRole> dbRoles = query.getResultList();
-      for (DBRole dbRole : dbRoles)
-      {
-        Role role = new Role();
-        dbRole.copyTo(role);
-        RoleInRoleView roleInRoleView = new RoleInRoleView();
-        roleInRoleView.setRoleInRoleId(filter.getContainerRoleId() +
-          PK_SEPARATOR + role.getRoleId());
-        roleInRoleView.setIncludedRole(role);
-        roleInRoleViews.add(roleInRoleView);
-      }
+      LOGGER.log(Level.SEVERE, "findRoleInRoleViews failed");
+      throw WSExceptionFactory.create(ex);
     }
-    return roleInRoleViews;
   }
 
   @Override
@@ -1156,6 +1287,8 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "loadRoleInRole:{0}", roleInRoleId);
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");      
       DBRoleInRole dbRoleInRole =
         entityManager.find(DBRoleInRole.class, new DBRoleInRolePK(roleInRoleId));
       if (dbRoleInRole == null) return null;
@@ -1252,6 +1385,8 @@ public class SecurityManager implements SecurityManagerPort
     {
       LOGGER.log(Level.INFO, "findUserProperties userId:{0} " +
         "name:{1} value:{2}", new Object[]{userId, name, value});
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");
 
       if (userId == null || userId.trim().isEmpty())
         throw new WebServiceException("security:USERID_IS_MANDATORY");
@@ -1641,6 +1776,20 @@ public class SecurityManager implements SecurityManagerPort
   {
     Set<String> userRoles = UserCache.getUser(wsContext).getRoles();
     return userRoles.contains(SecurityConstants.SECURITY_ADMIN_ROLE);
+  }
+  
+  private boolean isMatrixAdmin()
+  {
+    Credentials credentials = SecurityUtils.getCredentials(wsContext);    
+    String userId = credentials.getUserId();
+    String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
+    if (userId.equals(adminUserId))
+    {
+      String password = credentials.getPassword();
+      String adminPassword = MatrixConfig.getProperty(ADMIN_PASSWORD);
+      return adminPassword.equals(password);
+    }
+    return false;
   }
 
   private void validateUser(User user) throws Exception
