@@ -143,7 +143,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private Locale viewLocale;
 
   private UserPreferences userPreferences;
-  private Boolean lockControlEnabled;
   private Integer failedLoginAttempts;
   private String lastSuccessLoginDateTime;
   private String lastFailedLoginDateTime;
@@ -301,16 +300,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public void setEmail(String email)
   {
     this.email = email;
-  }
-
-  public Boolean getLockControlEnabled() 
-  {
-    return lockControlEnabled;
-  }
-
-  public void setLockControlEnabled(Boolean lockControlEnabled) 
-  {
-    this.lockControlEnabled = lockControlEnabled;
   }
 
   public Integer getFailedLoginAttempts() 
@@ -1600,7 +1589,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
     organizationName = user.getOrganizationName();
     email = user.getEmail();
     roles = user.getRoles();
-    lockControlEnabled = user.isLockControlEnabled();
     failedLoginAttempts = user.getFailedLoginAttempts();
     lastSuccessLoginDateTime = user.getLastSuccessLoginDateTime();
     lastFailedLoginDateTime = user.getLastFailedLoginDateTime();

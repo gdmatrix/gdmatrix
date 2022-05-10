@@ -38,20 +38,28 @@
 
   <named-query name="findUsersMultipleId">
     <query>
-      SELECT u
+      SELECT u, up1.value, up2.value, up3.value, up4.value
       FROM User u
+        LEFT JOIN UserProperty up1 ON (up1.userId = trim(u.userId) AND up1.name = 'failedLoginAttempts' and up1.index = 1)
+        LEFT JOIN UserProperty up2 ON (up2.userId = trim(u.userId) AND up2.name = 'lastSuccessLoginDateTime' and up2.index = 1)
+        LEFT JOIN UserProperty up3 ON (up3.userId = trim(u.userId) AND up3.name = 'lastFailedLoginDateTime' and up3.index = 1)
+        LEFT JOIN UserProperty up4 ON (up4.userId = trim(u.userId) AND up4.name = 'lastIntrusionDateTime' and up4.index = 1)
       WHERE (locate(concat(',', concat(upper(trim(u.userId)), ',')), :userId) > 0 or :userId is null)
       and (upper(u.displayName) like :displayName or :displayName is null)
       and (concat(u.stddmod, u.stdhmod) &lt;= :endDateTime or :endDateTime is null)
-      and (concat(u.stddmod, u.stdhmod) &gt;= :startDateTime or :startDateTime is null)
+      and (concat(u.stddmod, u.stdhmod) &gt;= :startDateTime or :startDateTime is null)      
       ORDER BY u.userId
     </query>
   </named-query>
 
   <named-query name="findUsersSingleId">
     <query>
-      SELECT u
+      SELECT u, up1.value, up2.value, up3.value, up4.value
       FROM User u
+        LEFT JOIN UserProperty up1 ON (up1.userId = trim(u.userId) AND up1.name = 'failedLoginAttempts' and up1.index = 1)
+        LEFT JOIN UserProperty up2 ON (up2.userId = trim(u.userId) AND up2.name = 'lastSuccessLoginDateTime' and up2.index = 1)
+        LEFT JOIN UserProperty up3 ON (up3.userId = trim(u.userId) AND up3.name = 'lastFailedLoginDateTime' and up3.index = 1)
+        LEFT JOIN UserProperty up4 ON (up4.userId = trim(u.userId) AND up4.name = 'lastIntrusionDateTime' and up4.index = 1)
       WHERE (upper(trim(u.userId)) like :userId or :userId is null)
       and (upper(u.displayName) like :displayName or :displayName is null)
       and (concat(u.stddmod, u.stdhmod) &lt;= :endDateTime or :endDateTime is null)
@@ -336,12 +344,11 @@
     <query>
       SELECT p
       FROM UserProperty p
-      WHERE (locate(concat(',', concat(upper(trim(p.userId)), ',')), :userId) > 0)
+      WHERE (trim(p.userId) = :userId)
         AND (p.name = 'failedLoginAttempts' 
           OR p.name = 'lastSuccessLoginDateTime' 
           OR p.name = 'lastFailedLoginDateTime' 
           OR p.name = 'lastIntrusionDateTime')
-      ORDER BY p.userId, p.name, p.index
     </query>
   </named-query>
 
@@ -392,7 +399,6 @@
       <basic name="stdhmod">
         <column name="STDHMOD" length="6" />
       </basic>
-      <transient name="lockControlEnabled" />
       <transient name="failedLoginAttempts" />
       <transient name="lastSuccessLoginDateTime" />
       <transient name="lastFailedLoginDateTime" />

@@ -72,7 +72,6 @@ public class DBUser extends User
     user.setUserId(userId.trim());
     user.setPassword(null);
     user.setLocked(lockedValue == 1);
-    user.setLockControlEnabled(lockControlEnabled);
     
     if (stddgr != null && stdhgr != null)
     {

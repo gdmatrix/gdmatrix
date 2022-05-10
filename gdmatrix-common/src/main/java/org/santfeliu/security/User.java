@@ -64,7 +64,6 @@ public class User extends org.matrix.security.User implements Serializable
     organizationName = user.getOrganizationName();
     email = user.getEmail();
     changeDateTime = user.getChangeDateTime();
-    lockControlEnabled = user.isLockControlEnabled();
     failedLoginAttempts = user.getFailedLoginAttempts();
     lastSuccessLoginDateTime = user.getLastSuccessLoginDateTime();
     lastFailedLoginDateTime = user.getLastFailedLoginDateTime();

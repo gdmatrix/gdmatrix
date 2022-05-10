@@ -35,7 +35,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -332,6 +331,7 @@ public class SecurityManager implements SecurityManagerPort
       if (!isMatrixAdmin() && !isUserAdmin()) 
         throw new Exception("ACTION_DENIED");
 
+      List<DBUser> dbUsers = new ArrayList();
       int userCount = filter.getUserId() != null ? filter.getUserId().size() : 0;
       Query query;
       if (userCount > 1)
@@ -339,9 +339,35 @@ public class SecurityManager implements SecurityManagerPort
       else
         query = entityManager.createNamedQuery("findUsersSingleId");
       setUserFilterParameters(query, filter, userCount);
-      List<DBUser> dbUsers = query.getResultList();
-
-      loadLockUserProperties(dbUsers);
+      List<Object[]> dbList = query.getResultList();
+      for (Object[] row : dbList)
+      {
+        DBUser dbUser = (DBUser)row[0];
+        if (row[1] != null)
+        {
+          try
+          {
+            dbUser.setFailedLoginAttempts(Integer.valueOf((String)row[1]));
+          }
+          catch (NumberFormatException ex)
+          {
+            dbUser.setFailedLoginAttempts(0);
+          }                    
+        }
+        if (row[2] != null)
+        {          
+          dbUser.setLastSuccessLoginDateTime((String)row[2]);
+        }
+        if (row[3] != null)
+        {
+          dbUser.setLastFailedLoginDateTime((String)row[3]);
+        }
+        if (row[4] != null)
+        {
+          dbUser.setLastIntrusionDateTime((String)row[4]);
+        }
+        dbUsers.add(dbUser);        
+      }
 
       List<User> users = new ArrayList<>();
       for (DBUser dbUser : dbUsers)
@@ -466,7 +492,6 @@ public class SecurityManager implements SecurityManagerPort
         dbUser.setStddmod(changeDate);
         dbUser.setStdhmod(changeTime);
         entityManager.persist(dbUser);
-        dbUser.setLockControlEnabled(isUserLockControlEnabled(userId));
       }
       else // change user
       {
@@ -483,8 +508,10 @@ public class SecurityManager implements SecurityManagerPort
       }
       if (isUserLockControlEnabled(userId))
       {
-        storeFailedLoginAttempts(dbUser.getUserId(), 
+        int failedLoginAttempts = (dbUser.getFailedLoginAttempts() == null ? 0 :
           dbUser.getFailedLoginAttempts());
+        storeFailedLoginAttempts(dbUser.getUserId(), failedLoginAttempts);
+        dbUser.setFailedLoginAttempts(failedLoginAttempts);
       }
       dbUser.copyTo(user);
     }
@@ -569,7 +596,7 @@ public class SecurityManager implements SecurityManagerPort
           try
           {
             Date now = new java.util.Date();
-            boolean userLockControlEnabled = dbUser.isLockControlEnabled();
+            boolean userLockControlEnabled = isUserLockControlEnabled(userId);
             boolean userLocked = false;
             
             if (userLockControlEnabled)
@@ -1594,7 +1621,7 @@ public class SecurityManager implements SecurityManagerPort
       Query query = entityManager.createNamedQuery("selectUser");
       query.setParameter("userId", userId);
       DBUser dbUser = (DBUser)query.getSingleResult();
-      loadLockUserProperties(Arrays.asList(dbUser));
+      loadLockUserProperties(dbUser);
       return dbUser;
     }
     catch (NoResultException e)
@@ -1982,58 +2009,49 @@ public class SecurityManager implements SecurityManagerPort
     return connector;
   }
 
-  private void loadLockUserProperties(List<DBUser> dbUsers)
+  private void loadLockUserProperties(DBUser dbUser)
   {
-    if (dbUsers == null || dbUsers.isEmpty()) return;
+    if (dbUser == null) return;
     
-    Map<String, DBUser> dbUserMap = new HashMap();
-    for (DBUser dbUser : dbUsers)      
-    {
-      String userId = dbUser.getUserId().trim();
-      dbUser.setLockControlEnabled(isUserLockControlEnabled(userId));
-      dbUserMap.put(userId, dbUser);
-    }
+    String userId = dbUser.getUserId().trim();    
     Query query = entityManager.createNamedQuery("findUserLockProperties");
-    query.setParameter("userId", 
-      getStringFromList(new ArrayList(dbUserMap.keySet())));
+    query.setParameter("userId", userId);
     List<DBUserProperty> dbUserProperties = query.getResultList();
     for (DBUserProperty dbUserProperty : dbUserProperties)
     {
-      DBUser dbUser = dbUserMap.get(dbUserProperty.getUserId().trim());
-      if (dbUser != null)
+      if ("failedLoginAttempts".equals(dbUserProperty.getName()))
       {
-        if ("failedLoginAttempts".equals(dbUserProperty.getName()))
+        try
         {
-          try
-          {
-            int failedLoginAttempts = 
-              Integer.valueOf(dbUserProperty.getValue());
-            dbUser.setFailedLoginAttempts(failedLoginAttempts);
-          }
-          catch (NumberFormatException ex)
-          {
-            dbUser.setFailedLoginAttempts(0);
-          }
+          int failedLoginAttempts = 
+            Integer.valueOf(dbUserProperty.getValue());
+          dbUser.setFailedLoginAttempts(failedLoginAttempts);
         }
-        else if ("lastSuccessLoginDateTime".equals(dbUserProperty.getName()))
+        catch (NumberFormatException ex)
         {
-          dbUser.setLastSuccessLoginDateTime(dbUserProperty.getValue());
-        }
-        else if ("lastFailedLoginDateTime".equals(dbUserProperty.getName()))
-        {
-          dbUser.setLastFailedLoginDateTime(dbUserProperty.getValue());
-        }
-        else if ("lastIntrusionDateTime".equals(dbUserProperty.getName()))
-        {
-          dbUser.setLastIntrusionDateTime(dbUserProperty.getValue());
+          dbUser.setFailedLoginAttempts(0);
         }
       }
+      else if ("lastSuccessLoginDateTime".equals(dbUserProperty.getName()))
+      {
+        dbUser.setLastSuccessLoginDateTime(dbUserProperty.getValue());
+      }
+      else if ("lastFailedLoginDateTime".equals(dbUserProperty.getName()))
+      {
+        dbUser.setLastFailedLoginDateTime(dbUserProperty.getValue());
+      }
+      else if ("lastIntrusionDateTime".equals(dbUserProperty.getName()))
+      {
+        dbUser.setLastIntrusionDateTime(dbUserProperty.getValue());
+      }      
     }    
-  }  
+  }
   
   private boolean isUserLocked(User user)
   {
-    return (user.getFailedLoginAttempts() >= config.maxFailedLoginAttempts);
+    int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
+      user.getFailedLoginAttempts());            
+    return (failedLoginAttempts >= config.maxFailedLoginAttempts);
   }
   
   private void unlockUserIfNeeded(User user, Date now) throws Exception
@@ -2062,7 +2080,8 @@ public class SecurityManager implements SecurityManagerPort
   
   private void resetUserLock(User user)
   {
-    if (user.getFailedLoginAttempts() > 0)
+    if (user.getFailedLoginAttempts() == null || 
+      user.getFailedLoginAttempts() > 0)
     {
       storeFailedLoginAttempts(user.getUserId(), 0);
       user.setFailedLoginAttempts(0);
@@ -2071,7 +2090,9 @@ public class SecurityManager implements SecurityManagerPort
   
   private void incrementFailedLoginAttempts(User user, Date now)
   {
-    int newFailedLoginAttempts = user.getFailedLoginAttempts() + 1;
+    int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
+      user.getFailedLoginAttempts());    
+    int newFailedLoginAttempts = failedLoginAttempts + 1;
     storeFailedLoginAttempts(user.getUserId(), newFailedLoginAttempts);
     user.setFailedLoginAttempts(newFailedLoginAttempts);
     if (newFailedLoginAttempts == config.minIntrusionAttempts)

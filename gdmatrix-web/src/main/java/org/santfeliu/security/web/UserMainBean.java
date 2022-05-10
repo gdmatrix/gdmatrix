@@ -191,7 +191,9 @@ public class UserMainBean extends PageBean
     {
       int maxFailedLoginAttempts = 
         getSecurityMetaData().getMaxFailedLoginAttempts();
-      return (maxFailedLoginAttempts - user.getFailedLoginAttempts());
+      int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
+        user.getFailedLoginAttempts());
+      return (maxFailedLoginAttempts - failedLoginAttempts);
     }
     catch (Exception ex)
     {
@@ -217,7 +219,9 @@ public class UserMainBean extends PageBean
     {
       int minIntrusionAttempts = 
         getSecurityMetaData().getMinIntrusionAttempts();
-      return (minIntrusionAttempts - user.getFailedLoginAttempts());
+      int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
+        user.getFailedLoginAttempts());      
+      return (minIntrusionAttempts - failedLoginAttempts);
     }
     catch (Exception ex)
     {
@@ -251,9 +255,11 @@ public class UserMainBean extends PageBean
   {
     try
     {
+      int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
+        user.getFailedLoginAttempts());      
       int maxFailedLoginAttempts = 
         getSecurityMetaData().getMaxFailedLoginAttempts();
-      if (user.getFailedLoginAttempts() < maxFailedLoginAttempts)
+      if (failedLoginAttempts < maxFailedLoginAttempts)
       {
         return "unlocked";
       }
