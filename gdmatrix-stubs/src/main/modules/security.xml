@@ -440,6 +440,13 @@
       <response name="removed" type="xs:boolean">        
       </response>
     </operation>
+    
+    <operation name="isUserLockControlEnabled">
+      <parameter name="userId" type="xs:string">
+      </parameter>
+      <response name="enabled" type="xs:boolean">
+      </response>
+    </operation>
 
   </operations>
 </module>

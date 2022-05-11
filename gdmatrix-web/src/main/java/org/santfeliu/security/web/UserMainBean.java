@@ -52,6 +52,7 @@ public class UserMainBean extends PageBean
 {
   private User user;
   private String passwordInput;
+  private Boolean renderUserLockPanel;
   
   private SecurityMetaData securityMetaData;
 
@@ -81,6 +82,31 @@ public class UserMainBean extends PageBean
     this.passwordInput = passwordInput;
   }
 
+  public Boolean getRenderUserLockPanel() 
+  {
+    if (renderUserLockPanel == null)
+    {
+      renderUserLockPanel = false;      
+      if (!isNew())
+      {
+        try
+        {
+          renderUserLockPanel = SecurityConfigBean.getPort().
+            isUserLockControlEnabled(getObjectId());
+        }
+        catch (Exception ex)
+        {
+        }      
+      }      
+    }
+    return renderUserLockPanel;
+  }
+
+  public void setRenderUserLockPanel(Boolean renderUserLockPanel)
+  {
+    this.renderUserLockPanel = renderUserLockPanel;
+  }  
+  
   public SecurityMetaData getSecurityMetaData() throws Exception 
   {
     if (securityMetaData == null)
@@ -139,6 +165,7 @@ public class UserMainBean extends PageBean
       user.setPassword(passwordInput.length() > 0 ? passwordInput : null);
       user = port.storeUser(user);
       setObjectId(user.getUserId());
+      renderUserLockPanel = null;      
     }
     catch (Exception ex)
     {
@@ -234,6 +261,7 @@ public class UserMainBean extends PageBean
     if (isNew())
     {
       user = new User();
+      renderUserLockPanel = false;
     }
     else
     {
@@ -248,6 +276,7 @@ public class UserMainBean extends PageBean
         user = new User();
       }
       passwordInput = "";
+      renderUserLockPanel = null;
     }
   }
   

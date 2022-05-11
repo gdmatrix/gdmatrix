@@ -506,7 +506,7 @@ public class SecurityManager implements SecurityManagerPort
         dbUser.setStdhmod(changeTime);
         updateUser(dbUser);
       }
-      if (isUserLockControlEnabled(userId))
+      if (checkUserLockControlEnabled(userId))
       {
         int failedLoginAttempts = (dbUser.getFailedLoginAttempts() == null ? 0 :
           dbUser.getFailedLoginAttempts());
@@ -596,7 +596,8 @@ public class SecurityManager implements SecurityManagerPort
           try
           {
             Date now = new java.util.Date();
-            boolean userLockControlEnabled = isUserLockControlEnabled(userId);
+            boolean userLockControlEnabled = 
+              checkUserLockControlEnabled(userId);
             boolean userLocked = false;
             
             if (userLockControlEnabled)
@@ -1480,6 +1481,37 @@ public class SecurityManager implements SecurityManagerPort
     }
   }
 
+  @Override
+  public boolean isUserLockControlEnabled(String userId) 
+  {
+    try
+    {
+      LOGGER.log(Level.INFO, "isUserLockControlEnabled userId:{0}", userId);
+      if (!isMatrixAdmin() && !isUserAdmin()) 
+        throw new Exception("ACTION_DENIED");           
+      
+      if (userId == null || userId.trim().isEmpty())
+        throw new WebServiceException("security:USERID_IS_MANDATORY");
+      
+      try
+      {
+        Query query = entityManager.createNamedQuery("selectUser");
+        query.setParameter("userId", userId);
+        query.getSingleResult();
+      }
+      catch (NoResultException ex)
+      {
+        throw new WebServiceException("security:USER_NOT_FOUND");
+      }       
+      return checkUserLockControlEnabled(userId);
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.SEVERE, "isUserLockControlEnabled failed");
+      throw WSExceptionFactory.create(ex);
+    }
+  }
+  
   /**** private methods ****/
 
   private int persistProperty(String userId, Property property,
@@ -2119,12 +2151,13 @@ public class SecurityManager implements SecurityManagerPort
     user.setLastFailedLoginDateTime(nowDateTime);
   }
   
-  private boolean isUserLockControlEnabled(String userId)
+  private boolean checkUserLockControlEnabled(String userId)
   {
     String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
     String autoLoginUserId = MatrixConfig.getProperty(
       "org.santfeliu.web.autoLogin.userId");      
-    if (userId.equals(adminUserId) || userId.equals(autoLoginUserId))
+    if (userId.equals(adminUserId) || userId.equals(autoLoginUserId) || 
+      userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
     {
       return false;
     }

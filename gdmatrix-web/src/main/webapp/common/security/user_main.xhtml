@@ -120,7 +120,7 @@
         </h:outputText>
       </t:div>      
       
-      <t:div rendered="#{userMainBean.user.failedLoginAttempts != null}">
+      <t:div rendered="#{userMainBean.renderUserLockPanel}">
         <t:div style="margin-top: 4px">
           <h:outputText value="#{securityBundle.user_state}:"
                         styleClass="textBox" style="width:30%" />
