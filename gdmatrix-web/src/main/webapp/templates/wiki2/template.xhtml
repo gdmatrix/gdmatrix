@@ -56,7 +56,8 @@
         <h:outputText value="[#{webBundle.buttonSignout}]" />
       </h:commandLink>
       <h:panelGroup rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
-                                userSessionBean.lastSuccessLoginDateTime != null}"
+                                userSessionBean.lastSuccessLoginDateTime != null and 
+                                userSessionBean.loginMethod == 'PASSWORD'}"
                     styleClass="lastSuccessLoginDateTime">
         <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
                        translator="#{userSessionBean.translator}" 

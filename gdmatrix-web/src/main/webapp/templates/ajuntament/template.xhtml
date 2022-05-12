@@ -100,7 +100,9 @@
 
                 <h:panelGroup>
                   <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
-                                     userSessionBean.lastSuccessLoginDateTime != null}"
+                                     userSessionBean.lastSuccessLoginDateTime != null and 
+                                     not userSessionBean.anonymousUser and 
+                                     userSessionBean.loginMethod == 'PASSWORD'}"
                          styleClass="lastSuccessLoginDateTime">
                     <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
                                    translator="#{userSessionBean.translator}" 
