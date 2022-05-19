@@ -49,7 +49,7 @@
         <h:outputText value="#{userSessionBean.displayName}"
                       styleClass="displayName"/>
         <h:panelGroup rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
-                                  userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}"
+                                  userSessionBean.lastSuccessLoginDateTime != null}"
                       styleClass="lastSuccessLoginDateTime">
           <h:outputText value="(" />
           <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 

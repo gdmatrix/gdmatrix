@@ -584,6 +584,7 @@ public class SecurityManager implements SecurityManagerPort
       }
       else
       {
+        Date now = new java.util.Date();        
         DBUser dbUser = selectUser(userId);
         if (dbUser != null)
         {
@@ -595,7 +596,6 @@ public class SecurityManager implements SecurityManagerPort
 
           try
           {
-            Date now = new java.util.Date();
             boolean userLockControlEnabled = 
               checkUserLockControlEnabled(userId);
             boolean userLocked = false;
@@ -645,25 +645,30 @@ public class SecurityManager implements SecurityManagerPort
           catch (Exception ex)
           {
             //commit before exception
-            if (entityManager.getTransaction().isActive())
-            {
-              entityManager.getTransaction().commit();
-            }
+            txCommit();
             throw ex;
           }
         }
         else if (userId.startsWith(SecurityConstants.AUTH_USER_PREFIX))
-        {
+        {          
           // unregistered certificate user: #NUMBER
+          user = new User();
+          user.setUserId(userId.trim());          
           if (isMasterPassword(userId, password) ||
               getAuthUserPassword(userId).equals(password))
           {
-            user = new User();
-            user.setUserId(userId.trim());
             user.setPassword(password);
             loadIdentificationInfo(user, userId);
+            loadLockUserProperties(user);
+            updateLastSuccessLoginDateTime(user, now);
           }
-          else throw new Exception("security:INVALID_IDENTIFICATION");
+          else 
+          {
+            updateLastFailedLoginDateTime(user, now);
+            //commit before exception
+            txCommit();
+            throw new Exception("security:INVALID_IDENTIFICATION");
+          }
         }
         else throw new Exception("security:INVALID_IDENTIFICATION");
       }
@@ -683,6 +688,8 @@ public class SecurityManager implements SecurityManagerPort
     try
     {
       LOGGER.log(Level.INFO, "loginCertificate");
+      
+      Date now = new java.util.Date();      
       String userId = null;
       String displayName = null;
       String givenName = null;
@@ -767,6 +774,8 @@ public class SecurityManager implements SecurityManagerPort
       user.setRepresentant(representant);
       user.setOrganizationName(organizationName);
       user.setEmail(email);
+      loadLockUserProperties(user);
+      updateLastSuccessLoginDateTime(user, now);
     }
     catch (Exception ex)
     {
@@ -2041,11 +2050,11 @@ public class SecurityManager implements SecurityManagerPort
     return connector;
   }
 
-  private void loadLockUserProperties(DBUser dbUser)
+  private void loadLockUserProperties(User user)
   {
-    if (dbUser == null) return;
+    if (user == null) return;
     
-    String userId = dbUser.getUserId().trim();    
+    String userId = user.getUserId().trim();
     Query query = entityManager.createNamedQuery("findUserLockProperties");
     query.setParameter("userId", userId);
     List<DBUserProperty> dbUserProperties = query.getResultList();
@@ -2057,28 +2066,28 @@ public class SecurityManager implements SecurityManagerPort
         {
           int failedLoginAttempts = 
             Integer.valueOf(dbUserProperty.getValue());
-          dbUser.setFailedLoginAttempts(failedLoginAttempts);
+          user.setFailedLoginAttempts(failedLoginAttempts);
         }
         catch (NumberFormatException ex)
         {
-          dbUser.setFailedLoginAttempts(0);
+          user.setFailedLoginAttempts(0);
         }
       }
       else if ("lastSuccessLoginDateTime".equals(dbUserProperty.getName()))
       {
-        dbUser.setLastSuccessLoginDateTime(dbUserProperty.getValue());
+        user.setLastSuccessLoginDateTime(dbUserProperty.getValue());
       }
       else if ("lastFailedLoginDateTime".equals(dbUserProperty.getName()))
       {
-        dbUser.setLastFailedLoginDateTime(dbUserProperty.getValue());
+        user.setLastFailedLoginDateTime(dbUserProperty.getValue());
       }
       else if ("lastIntrusionDateTime".equals(dbUserProperty.getName()))
       {
-        dbUser.setLastIntrusionDateTime(dbUserProperty.getValue());
+        user.setLastIntrusionDateTime(dbUserProperty.getValue());
       }      
     }    
   }
-  
+
   private boolean isUserLocked(User user)
   {
     int failedLoginAttempts = (user.getFailedLoginAttempts() == null ? 0 :
@@ -2135,7 +2144,7 @@ public class SecurityManager implements SecurityManagerPort
       user.setLastIntrusionDateTime(nowDateTime);
     }
   }
-  
+
   private void updateLastSuccessLoginDateTime(User user, Date now)
   {
     String nowDateTime = TextUtils.formatDate(now, "yyyyMMddHHmmss");
@@ -2150,7 +2159,7 @@ public class SecurityManager implements SecurityManagerPort
       "lastFailedLoginDateTime");    
     user.setLastFailedLoginDateTime(nowDateTime);
   }
-  
+
   private boolean checkUserLockControlEnabled(String userId)
   {
     String adminUserId = MatrixConfig.getProperty(ADMIN_USERID);
@@ -2229,6 +2238,14 @@ public class SecurityManager implements SecurityManagerPort
     {
       return null;
     }    
+  }
+  
+  private void txCommit()
+  {
+    if (entityManager.getTransaction().isActive())
+    {
+      entityManager.getTransaction().commit();
+    }
   }
 
 }

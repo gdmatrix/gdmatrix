@@ -324,7 +324,7 @@
               <h:outputText value="#{webBundle.welcome}, #{userSessionBean.displayName}" />
             </t:div>
             <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
-                               userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}"
+                               userSessionBean.lastSuccessLoginDateTime != null}"
                    styleClass="lastSuccessLoginDateTime">
               <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
                              translator="#{userSessionBean.translator}" 

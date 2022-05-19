@@ -137,6 +137,23 @@
                     </sf:outputLink>
                   </t:div>
                 </t:div>
+                <t:div rendered="#{not userSessionBean.anonymousUser}">
+                  <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
+                                     userSessionBean.lastSuccessLoginDateTime != null}"
+                         styleClass="lastSuccessLoginDateTime">
+                    <t:div>
+                      <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
+                                     translator="#{userSessionBean.translator}" 
+                                     translationGroup="login" />
+                    </t:div>
+                    <t:div>
+                      <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}">
+                        <f:converter converterId="DateTimeConverter" />
+                        <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                      </h:outputText>
+                    </t:div>
+                  </t:div>                                    
+                </t:div>                
               </t:div>
 
               <t:div styleClass="loginBox certificate" 
@@ -179,6 +196,23 @@
                     </sf:outputLink>
                   </t:div>
                 </t:div>
+                <t:div rendered="#{not userSessionBean.anonymousUser}">
+                  <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
+                                     userSessionBean.lastSuccessLoginDateTime != null}"
+                         styleClass="lastSuccessLoginDateTime">
+                    <t:div>
+                      <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 
+                                     translator="#{userSessionBean.translator}" 
+                                     translationGroup="login" />
+                    </t:div>
+                    <t:div>
+                      <h:outputText value="#{userSessionBean.lastSuccessLoginDateTime}">
+                        <f:converter converterId="DateTimeConverter" />
+                        <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                      </h:outputText>
+                    </t:div>
+                  </t:div>                                    
+                </t:div>                
               </t:div>
               
               <t:div styleClass="loginBox password" 

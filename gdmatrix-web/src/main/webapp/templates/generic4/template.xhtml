@@ -113,7 +113,7 @@
                             style="text-align: right; font-weight: bold; color: red"/>
 
               <t:div rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
-                                 userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}"
+                                 userSessionBean.lastSuccessLoginDateTime != null}"
                      styleClass="lastSuccessLoginDateTime">
                 <t:div>
                   <sf:outputText value="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt')}" 

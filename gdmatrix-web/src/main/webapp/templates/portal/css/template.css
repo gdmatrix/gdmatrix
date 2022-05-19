@@ -304,6 +304,14 @@
   vertical-align:middle;
 }
 
+.loginContainer
+{
+}
+
+.loginContainer .lastSuccessLoginDateTime
+{
+}
+
 .main .content .ccol1
 {
   vertical-align:top;  
