@@ -145,7 +145,8 @@ public class QueryWriter
         if (baseParameter == null ||
           !StringUtils.equals(parameter.getDescription(), baseParameter.getDescription()) ||
           !StringUtils.equals(parameter.getFormat(), baseParameter.getFormat()) ||
-          !StringUtils.equals(parameter.getSql(), baseParameter.getSql()) ||
+          !StringUtils.equals(removeCR(parameter.getSql()), 
+            removeCR(baseParameter.getSql())) ||
           !StringUtils.equals(parameter.getDefaultValue(), baseParameter.getDefaultValue()))
         {
           startTag("parameter", parameter.getName(), true);
@@ -171,7 +172,8 @@ public class QueryWriter
           !StringUtils.equals(predicate.getLabel(), basePredicate.getLabel()) ||
           !StringUtils.defaultString(predicate.getShortLabel()).equals(
             StringUtils.defaultString(basePredicate.getShortLabel())) ||          
-          !StringUtils.equals(predicate.getSql(), basePredicate.getSql()))
+          !StringUtils.equals(removeCR(predicate.getSql()), 
+            removeCR(basePredicate.getSql())))
         {
           startTag("predicate", predicate.getName(), true);
           writeTagValue("label", predicate.getLabel());
@@ -194,14 +196,15 @@ public class QueryWriter
           !StringUtils.equals(output.getLabel(), baseOutput.getLabel()) ||          
           !StringUtils.defaultString(output.getDescription()).equals(
             StringUtils.defaultString(baseOutput.getDescription())) ||
-          !StringUtils.equals(output.getSql(), baseOutput.getSql()))
+          !StringUtils.equals(removeCR(output.getSql()), 
+            removeCR(baseOutput.getSql())))
         {
           startTag("output", output.getName(), true);
           writeTagValue("label", output.getLabel());
           writeTagValue("description", output.getDescription());
           writeTagValue("sql", output.getSql(), true);
           endTag("output", true);
-        }        
+        }
         sbOutputsOrder.append(sbOutputsOrder.length() == 0 ? "" : ",").
           append(output.getName());
       }
@@ -352,6 +355,11 @@ public class QueryWriter
     {
       writer.write('\t');
     }
+  }
+  
+  private String removeCR(String text)
+  {
+    return (text == null ? null : text.replace("\r", ""));
   }
 
   public static void main(String[] args)
