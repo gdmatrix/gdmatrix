@@ -556,7 +556,7 @@ public class InstanceBean extends FacesBean implements Serializable
     }
     catch (Exception ex)
     {
-      if (ex.getMessage().startsWith("Can't set variable"))
+      if (ex.getMessage().contains("Can't set variable"))
       {
         error("SET_VARIABLES_FAILED", new Object[]{ex.toString()});
         return "error_detected";
