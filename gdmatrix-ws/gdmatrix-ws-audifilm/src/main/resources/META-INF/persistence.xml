@@ -8,7 +8,7 @@
     <mapping-file>com/audifilm/matrix/kernel/service/orm-ext.xml</mapping-file>
     <properties>
       <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
-      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.level" value="CONFIG"/>
       <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>
@@ -19,7 +19,7 @@
     <mapping-file>com/audifilm/matrix/cases/bpm/service/orm.xml</mapping-file>
     <properties>
       <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
-      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.level" value="CONFIG"/>
       <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>
@@ -30,7 +30,7 @@
     <mapping-file>com/audifilm/matrix/security/service/orm.xml</mapping-file>
     <properties>
       <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
-      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.level" value="CONFIG"/>
       <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>
@@ -41,7 +41,7 @@
     <mapping-file>com/audifilm/matrix/dic/service/orm.xml</mapping-file>
     <properties>
       <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
-      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.level" value="CONFIG"/>
       <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>

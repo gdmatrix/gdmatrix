@@ -9,7 +9,7 @@
     <properties>
       <property name="eclipselink.ddl-generation" value="none"/>
       <property name="eclipselink.session.customizer" value="org.santfeliu.jpa.EclipseLinkSessionCustomizer"/>
-      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.level" value="CONFIG"/>
       <property name="eclipselink.cache.shared.default" value="false"/>
     </properties>
   </persistence-unit>
