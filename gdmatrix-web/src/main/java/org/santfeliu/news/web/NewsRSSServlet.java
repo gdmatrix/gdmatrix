@@ -50,6 +50,7 @@ import org.matrix.cms.CMSManagerService;
 import org.matrix.cms.Node;
 import org.matrix.cms.NodeFilter;
 import org.matrix.cms.Property;
+import org.matrix.news.New;
 import org.matrix.news.NewView;
 import org.matrix.news.SectionFilter;
 import org.matrix.news.SectionView;
@@ -99,6 +100,7 @@ public class NewsRSSServlet extends HttpServlet
 
   private static final String LANGUAGE_PARAM = "language";
   private static final String IMG_PARAM = "img";
+  private static final String TEXT_PARAM = "text";
   
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -114,7 +116,8 @@ public class NewsRSSServlet extends HttpServlet
       if (inheritedProperties.getEnabled())
       {
         NewsManagerClient newsClient = getNewsManagerClient(request);
-        writeRSS(request, response, node, inheritedProperties, newsClient, cmsPort);
+        writeRSS(request, response, node, inheritedProperties, newsClient, 
+          cmsPort);
       }
       else
       {
@@ -141,20 +144,21 @@ public class NewsRSSServlet extends HttpServlet
     doGet(request, response);
   }
 
-  private void writeRSS(HttpServletRequest request,
-    HttpServletResponse response, Node node, InheritedProperties inheritedProperties, 
-    NewsManagerClient newsClient, CMSManagerPort cmsPort) throws IOException
+  private void writeRSS(HttpServletRequest request, 
+    HttpServletResponse response, Node node, 
+    InheritedProperties inheritedProperties, NewsManagerClient newsClient, 
+    CMSManagerPort cmsPort) throws IOException
   {    
     String serverURL = getServerURL(request);
     String dateTime = getDateTime();
     String language = getLanguage(request);
     String imagePriority = getImagePriority(request);
+    String textFilter = getTextFilter(request);
     response.setContentType("text/xml");
     response.setCharacterEncoding("UTF-8");
     PrintWriter writer = response.getWriter();
     writer.println("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
-    writer.println("<rss version=\"2.0\">");
-    List<SectionView> sectionViewList = new ArrayList<SectionView>();
+    writer.println("<rss version=\"2.0\">");    
     try
     {
       SectionFilter filter = new SectionFilter();
@@ -171,19 +175,23 @@ public class NewsRSSServlet extends HttpServlet
       filter.getExcludeDrafts().add(true);
       filter.setStartDateTime(dateTime);
       filter.setEndDateTime(dateTime);      
-      sectionViewList = newsClient.findNewsBySectionFromCache(filter);
+      List<SectionView> sectionViewList = 
+        newsClient.findNewsBySectionFromCache(filter);
       writer.println("<channel>");
-      writeChannelDescriptionRSS(writer, language, serverURL, node, inheritedProperties);
-      writeChannelImageRSS(writer, serverURL, inheritedProperties.getIconDocId());
+      writeChannelDescriptionRSS(writer, language, serverURL, node, 
+        inheritedProperties);
+      writeChannelImageRSS(writer, serverURL, 
+        inheritedProperties.getIconDocId());
       List<NewView> newViewList;
       if (inheritedProperties.getDeep())
       {
-        newViewList = new ArrayList<NewView>();
+        newViewList = new ArrayList();
         for (SectionView sectionView : sectionViewList)
         {
           newViewList.addAll(sectionView.getNewView());
         }
         Collections.sort(newViewList, new Comparator() {
+          @Override
           public int compare(Object o1, Object o2)
           {
             NewView nv1 = (NewView)o1;
@@ -202,8 +210,9 @@ public class NewsRSSServlet extends HttpServlet
       }
       for (NewView newView : newViewList)
       {
-        writeItemRSS(writer, newView, serverURL, language, node.getNodeId(), 
-          inheritedProperties.getIncludeImages(), imagePriority);
+        writeItemRSS(writer, newsClient, newView, serverURL, language, 
+          node.getNodeId(), inheritedProperties.getIncludeImages(), 
+          imagePriority, textFilter);
       }
       writer.print("</channel>");
       writer.print("</rss>");
@@ -259,9 +268,9 @@ public class NewsRSSServlet extends HttpServlet
     }
   }
 
-  private void writeItemRSS(PrintWriter writer, NewView newView,
-    String serverURL, String language, String newsNodeId, boolean includeImages, 
-    String imagePriority)
+  private void writeItemRSS(PrintWriter writer, NewsManagerClient newsClient, 
+    NewView newView, String serverURL, String language, String newsNodeId, 
+    boolean includeImages, String imagePriority, String textFilter)
   {
     writer.println("<item>");
     writer.println("<title>" +
@@ -281,17 +290,52 @@ public class NewsRSSServlet extends HttpServlet
     String imageTag = "";
     if (includeImages)
     {
-      String docId = getNewImageDocId(newView, imagePriority);
-      if (docId != null && !docId.isEmpty())
-      {            
-        String imageURL = serverURL + "/documents/" + docId;
-        imageTag = "<img alt=\"\" src=\"" + imageURL + "\" />";
-      }    
+      if ("all".equals(imagePriority))
+      {
+        List<String> docIdList = NewsConfigBean.getAllImagesDocId(newView);
+        for (String docId : docIdList)
+        {
+          if (docId != null && !docId.isEmpty())
+          {
+            String imageURL = serverURL + "/documents/" + docId;
+            imageTag += "<img alt=\"\" src=\"" + imageURL + "\" />";
+          }
+        }
+      }
+      else
+      {
+        String docId = getNewImageDocId(newView, imagePriority);
+        if (docId != null && !docId.isEmpty())
+        {            
+          String imageURL = serverURL + "/documents/" + docId;
+          imageTag = "<img alt=\"\" src=\"" + imageURL + "\" />";
+        }
+      }
+    }
+    String newSummary = null;
+    String newText = null;
+    if (textFilter.contains("s"))
+    {
+      newSummary = newView.getSummary();
+    }
+    if (textFilter.contains("t"))
+    {
+      try
+      {
+        New newObj = newsClient.loadNewFromCache(newView.getNewId());
+        newText = newObj.getText();
+      }
+      catch (Exception ex)
+      {
+      }      
     }
     writer.println("<description>" +
       getNonParsedText
       (
-        imageTag + translate(newView.getSummary(), newView.getNewId(), language)
+        imageTag + 
+          translate(newSummary, newView.getNewId(), language) + 
+          (newSummary != null && newText != null ? "<br><br>" : "") +
+          translate(newText, newView.getNewId(), language)
       ) +
       "</description>");
     writer.println("<pubDate>" +
@@ -350,7 +394,8 @@ public class NewsRSSServlet extends HttpServlet
         tokenProperty.setName(PARAM_RSS_TOKEN_CODE);
         tokenProperty.getValue().add(auxNodeId);
         nodeFilter.getProperty().add(tokenProperty);
-        List<Node> newsNodeList = getCMSManagerPort(request).findNodes(nodeFilter);
+        List<Node> newsNodeList = 
+          getCMSManagerPort(request).findNodes(nodeFilter);
         if (newsNodeList.size() > 0) 
         {
           return newsNodeList.get(0).getNodeId();
@@ -428,14 +473,39 @@ public class NewsRSSServlet extends HttpServlet
     return imagePriority;
   }
 
+  private String getTextFilter(HttpServletRequest request)
+  {
+    String textFilter = request.getParameter(TEXT_PARAM);
+    if (!validateTextFilter(textFilter))
+    {
+      textFilter = "s"; //only show summary
+    }
+    return textFilter;
+  }
+  
   private boolean validateImagePriority(String imagePriority)
   {
     if (imagePriority == null || imagePriority.isEmpty()) return false;
     if (imagePriority.length() > 3) return false;
+    if ("all".equals(imagePriority)) return true;
+    
     char[] arrImagePriority = imagePriority.toCharArray();
     for (char c : arrImagePriority)
     {
       if (c != 'c' && c != 'd' && c != 'l') return false; 
+    }
+    return true;
+  }
+
+  private boolean validateTextFilter(String textFilter)
+  {
+    if (textFilter == null || textFilter.isEmpty()) return false;
+    if (textFilter.length() > 2) return false;
+    
+    char[] arrTextFilter = textFilter.toCharArray();
+    for (char c : arrTextFilter)
+    {
+      if (c != 's' && c != 't') return false; 
     }
     return true;
   }
@@ -605,56 +675,68 @@ public class NewsRSSServlet extends HttpServlet
     if (inheritedProperties.getEnabled() == null)
     {
       String enabledValue = getPropertyValue(node, PARAM_RSS_ENABLED);
-      if (enabledValue != null) inheritedProperties.setEnabled(Boolean.valueOf(enabledValue));      
+      if (enabledValue != null) 
+        inheritedProperties.setEnabled(Boolean.valueOf(enabledValue));      
     }
     
     if (inheritedProperties.getDeep() == null)
     {  
       String deepValue = getPropertyValue(node, PARAM_RSS_DEEP);
-      if (deepValue != null) inheritedProperties.setDeep(Boolean.valueOf(deepValue));
+      if (deepValue != null) 
+        inheritedProperties.setDeep(Boolean.valueOf(deepValue));
     }
 
     if (inheritedProperties.getMaxResults() == null)
     {
       String maxResultsValue = getPropertyValue(node, PARAM_RSS_MAX_RESULTS);
-      if (maxResultsValue != null) inheritedProperties.setMaxResults(Integer.valueOf(maxResultsValue));
+      if (maxResultsValue != null) 
+        inheritedProperties.setMaxResults(Integer.valueOf(maxResultsValue));
     }
 
     if (inheritedProperties.getIncludeImages() == null)
     {
-      String includeImagesValue = getPropertyValue(node, PARAM_RSS_INCLUDE_IMAGES);
-      if (includeImagesValue != null) inheritedProperties.setIncludeImages(Boolean.valueOf(includeImagesValue));
+      String includeImagesValue = getPropertyValue(node, 
+        PARAM_RSS_INCLUDE_IMAGES);
+      if (includeImagesValue != null) inheritedProperties.setIncludeImages(
+        Boolean.valueOf(includeImagesValue));
     }    
 
     if (inheritedProperties.getDefaultTitlePrefix() == null)
     {
-      String defaultTitlePrefix = getPropertyValue(node, PARAM_RSS_DEFAULT_TITLE_PREFIX);
+      String defaultTitlePrefix = getPropertyValue(node, 
+        PARAM_RSS_DEFAULT_TITLE_PREFIX);
       inheritedProperties.setDefaultTitlePrefix(defaultTitlePrefix);
     }
 
     if (inheritedProperties.getDefaultTitleSuffix() == null)
     {
-      String defaultTitleSuffix = getPropertyValue(node, PARAM_RSS_DEFAULT_TITLE_SUFFIX);
+      String defaultTitleSuffix = getPropertyValue(node, 
+        PARAM_RSS_DEFAULT_TITLE_SUFFIX);
       inheritedProperties.setDefaultTitleSuffix(defaultTitleSuffix);
     }
 
     if (!inheritedProperties.isDone() && node.getParentNodeId() != null)
     {
-      Node parentNode = port.loadNode(node.getWorkspaceId(), node.getParentNodeId());
+      Node parentNode = port.loadNode(node.getWorkspaceId(), 
+        node.getParentNodeId());
       collectInheritedProperties(parentNode, port, inheritedProperties);
     }
     else
     {
-      if (inheritedProperties.getEnabled() == null) inheritedProperties.setEnabled(false);
-      if (inheritedProperties.getDeep() == null) inheritedProperties.setDeep(false);      
-      if (inheritedProperties.getMaxResults() == null) inheritedProperties.setMaxResults(Integer.MAX_VALUE); 
-      if (inheritedProperties.getIncludeImages() == null) inheritedProperties.setIncludeImages(true);       
+      if (inheritedProperties.getEnabled() == null) 
+        inheritedProperties.setEnabled(false);
+      if (inheritedProperties.getDeep() == null) 
+        inheritedProperties.setDeep(false);      
+      if (inheritedProperties.getMaxResults() == null) 
+        inheritedProperties.setMaxResults(Integer.MAX_VALUE); 
+      if (inheritedProperties.getIncludeImages() == null) 
+        inheritedProperties.setIncludeImages(true);       
     }
   }
 
   private List<String> getAllNodeIdList(Node node, CMSManagerPort port)
   {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList();
     result.add(getTargetNodeId(node));
     
     NodeFilter filter = new NodeFilter();

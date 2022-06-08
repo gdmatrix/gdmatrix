@@ -103,6 +103,11 @@ public class NewsConfigBean implements Serializable
     return putWildCards(text);
   }
 
+  public static List<String> getAllImagesDocId(NewView newRow)
+  {
+    return getAllImagesId(newRow, false);
+  }
+  
   public static String getListImageDocId(NewView newRow)
   {
     return getListImageId(newRow, false);
@@ -117,6 +122,11 @@ public class NewsConfigBean implements Serializable
   {
     return getCarouselImageId(newRow, false);
   }
+  
+  public static List<String> getAllImagesContentId(NewView newRow)
+  {
+    return getAllImagesId(newRow, true);
+  }  
   
   public static String getListImageContentId(NewView newRow)
   {
@@ -145,6 +155,23 @@ public class NewsConfigBean implements Serializable
     }
     return result;
   }  
+  
+  private static List<String> getAllImagesId(NewView newRow, boolean contentId)
+  {
+    List<String> result = new ArrayList();
+    for (NewDocument nd : newRow.getNewDocument())
+    {
+      if (nd.getNewDocTypeId().endsWith(LIST_IMAGE_TYPE) || 
+        nd.getNewDocTypeId().endsWith(LIST_AND_DETAILS_IMAGE_TYPE) || 
+        nd.getNewDocTypeId().endsWith(DETAILS_IMAGE_TYPE) || 
+        nd.getNewDocTypeId().endsWith(CAROUSEL_AND_DETAILS_IMAGE_TYPE) ||
+        nd.getNewDocTypeId().endsWith(CAROUSEL_IMAGE_TYPE))
+      {
+        result.add(contentId ? nd.getContentId() : nd.getDocumentId());
+      }
+    }
+    return result;
+  }
   
   private static String getListImageId(NewView newRow, boolean contentId)
   {
