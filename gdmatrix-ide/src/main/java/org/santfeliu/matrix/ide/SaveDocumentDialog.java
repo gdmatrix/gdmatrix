@@ -87,6 +87,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
 
   public void showForm()
   {
+    boolean urlChange = false;
     DocumentPanel panel = mainPanel.getActivePanel();
     String panelUrl = panel.getConnectionUrl();
     String activeUrl =
@@ -94,6 +95,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     String url = activeUrl;
     if (panelUrl != null && !panelUrl.equals(activeUrl))
     {
+      urlChange = true;
       url = panelUrl + " -> " + activeUrl;
       urlValueLabel.setBackground(Color.YELLOW);
       urlValueLabel.setOpaque(true);
@@ -117,15 +119,30 @@ public class SaveDocumentDialog extends javax.swing.JDialog
 
       docIdLabel.setVisible(true);
       docIdValueLabel.setVisible(true);
-      docIdValueLabel.setText(panel.getDocId() + " / " + panel.getVersion());
       newVersionCheckBox.setVisible(true);
 
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       try
       {
+        Document document;
         DocumentManagerClient client = mainPanel.getDocumentManagerClient();
-        Document document =
-          client.loadDocument(panel.getDocId(), panel.getVersion());
+        if (urlChange)
+        {
+          //Load source document
+          ConnectionParameters fromConnParams = 
+            mainPanel.getConnectionPanel().getConnectionByUrl(panelUrl);
+          DocumentManagerClient fromClient = 
+            mainPanel.getDocumentManagerClient(fromConnParams);
+          document = fromClient.loadDocument(panel.getDocId(), 
+            panel.getVersion());                    
+          docIdValueLabel.setText(getTargetDocIdValueLabel(panel, client));
+        }
+        else
+        {
+          document = client.loadDocument(panel.getDocId(), panel.getVersion());
+          docIdValueLabel.setText(panel.getDocId() + " / " + 
+            panel.getVersion());          
+        }
         for (org.matrix.dic.Property property : document.getProperty())
         {
           String propertyName = property.getName();
@@ -191,6 +208,42 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     metadataTextArea.setText(mapEditor.format());
     pack();
     setVisible(true);
+  }
+  
+  private String getTargetDocIdValueLabel(DocumentPanel panel, 
+    DocumentManagerClient targetClient)
+  {
+    DocumentType documentType = panel.getDocumentType();
+    String propName = documentType.getPropertyName();
+    String docTypeId = documentType.getDocTypeId();
+    DocumentFilter filter = new DocumentFilter();
+    filter.setDocTypeId(docTypeId);          
+    filter.setVersion(0); // last version
+    filter.setRolesDisabled(true); // disable role check
+    Property prop = new Property();
+    prop.setName(propName);
+    if (panel.getDisplayName() != null && 
+      panel.getDisplayName().trim().length() > 0)
+    {
+      prop.getValue().add(panel.getDisplayName());
+    }
+    filter.getProperty().add(prop);
+    List<Document> docList = targetClient.findDocuments(filter);
+    int count = docList.size();
+    if (count == 1) // document already exists with that name
+    {
+      return docList.get(0).getDocId() + " / " + 
+        docList.get(0).getVersion();
+    }
+    else if (count > 1)
+    {
+      saveButton.setEnabled(false);
+      return "MULTIPLE DOCUMENTS";
+    }
+    else
+    {  
+      return "NEW DOCUMENT";
+    }    
   }
 
   @SuppressWarnings("unchecked")

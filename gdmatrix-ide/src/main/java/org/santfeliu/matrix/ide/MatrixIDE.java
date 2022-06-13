@@ -149,7 +149,7 @@ public class MatrixIDE extends JFrame
 
   private void initComponents() throws Exception
   {
-    setTitle("Matrix IDE");
+    setTitle("GDMatrix IDE");
 
     setIconImages(loadIcons(
       "icon_blue_16.png", "icon_blue_32.png", "icon_blue_64.png",

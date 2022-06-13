@@ -678,7 +678,12 @@ public class MainPanel extends JPanel
   {
     ConnectionParameters connectionParameters =
       connPanel.getSelectedConnection();
+    return getDocumentManagerClient(connectionParameters);
+  }
 
+  public DocumentManagerClient getDocumentManagerClient(
+    ConnectionParameters connectionParameters) throws Exception
+  {
     if (connectionParameters == null) return null;
 
     URL wsDirectoryURL = new URL(connectionParameters.getURL());

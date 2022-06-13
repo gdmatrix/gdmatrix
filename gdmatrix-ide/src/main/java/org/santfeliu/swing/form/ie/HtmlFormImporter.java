@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.swing.form.ComponentView;
 import org.santfeliu.swing.form.FormDesigner;
@@ -79,6 +80,10 @@ public class HtmlFormImporter
     Tidy tidy = new Tidy();
     tidy.setOnlyErrors(true);
     tidy.setInputEncoding(HtmlFormExporter.CHARSET);
+    String newAllowedTags = "style";
+    Properties props = new Properties();
+    props.put("new-blocklevel-tags", newAllowedTags);
+    tidy.setConfigurationFromProps(props);
 
     Document document = tidy.parseDOM(is, null);
     Node node = document.getFirstChild();
@@ -444,12 +449,12 @@ public class HtmlFormImporter
         else
         {
           buffer.append(">");
-          if (tag.equalsIgnoreCase("script"))
+          if (tag.equalsIgnoreCase("script") || tag.equalsIgnoreCase("style"))
           {
             buffer.append("\n");
           }
           String nodeContent = getNodeContent(child, indent + 2);
-          if (tag.equalsIgnoreCase("script"))
+          if (tag.equalsIgnoreCase("script") || tag.equalsIgnoreCase("style"))
           {
             buffer.append(nodeContent.trim());
             buffer.append("\n");

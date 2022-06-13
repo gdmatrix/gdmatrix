@@ -139,6 +139,16 @@ public class ConnectionPanel extends JPanel
   {
     return (ConnectionParameters)model.getSelectedItem();
   }
+  
+  public ConnectionParameters getConnectionByUrl(String url)
+  {
+    for (Object connection : connections)
+    {
+      ConnectionParameters connParams = (ConnectionParameters)connection;
+      if (connParams.getURL().equals(url)) return connParams;
+    }
+    return null;
+  }
 
   private void updateComboBox()
   {

@@ -33,12 +33,14 @@ package org.santfeliu.matrix.ide;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
@@ -47,6 +49,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.undo.UndoManager;
 import org.santfeliu.swing.FlatSplitPane;
@@ -69,6 +72,9 @@ public class HtmlPanel extends DocumentPanel
   private UndoHandler undoHandler = new UndoHandler();
   private Thread updateViewThread = null;
 
+  protected int findIndexStart = 0;
+  protected int findIndexEnd = 0;  
+  
   public HtmlPanel()
   {
     try
@@ -134,6 +140,93 @@ public class HtmlPanel extends DocumentPanel
     return undoManager;
   }
 
+  @Override
+  public boolean isFindEnabled()
+  {
+    return true;
+  } 
+  
+  @Override
+  public void find()
+  {
+    findIndexStart = 0;
+    findIndexEnd = 0;
+    JEditorPane textPane = textEditor.getTextPane();
+    textPane.requestFocus();
+
+    FindDialog dialog = new FindDialog(getMainPanel().getIDE())
+    {
+      @Override
+      protected boolean next(String text)
+      {
+        boolean found = false;
+        JEditorPane textPane = textEditor.getTextPane();
+        String xmlText = textPane.getText();
+        if (findIndexEnd >= xmlText.length()) return false;
+
+        int index = xmlText.indexOf(text, findIndexEnd);
+        if (index != -1)
+        {
+          findIndexStart = index;
+          findIndexEnd = index + text.length();
+          textPane.select(findIndexStart, findIndexEnd);
+          scrollToSelection();
+          textPane.repaint();
+          found = true;
+        }
+        return found;
+      }
+
+      @Override
+      protected boolean previous(String text)
+      {
+        boolean found = false;
+        JEditorPane textPane = textEditor.getTextPane();
+        String xmlText = textPane.getText();
+        if (findIndexStart >= xmlText.length())
+        {
+          findIndexStart = xmlText.length() - 1;
+          findIndexEnd = xmlText.length() - 1;
+        }
+        else
+        {
+          xmlText = xmlText.substring(0, findIndexStart);
+        }
+
+        int index = xmlText.lastIndexOf(text);
+        if (index != -1)
+        {
+          findIndexStart = index;
+          findIndexEnd = index + text.length();
+          textPane.select(findIndexStart, findIndexEnd);
+          scrollToSelection();
+          textPane.repaint();
+          found = true;
+        }
+        return found;
+      }
+
+      protected void scrollToSelection()
+      {
+        try
+        {
+          JEditorPane textPane = textEditor.getTextPane();
+          Rectangle rect = textPane.modelToView(findIndexStart);
+          rect.union(textPane.modelToView(findIndexEnd));
+          rect.grow(100, 100);
+          textPane.scrollRectToVisible(rect);
+        }
+        catch (BadLocationException ex)
+        {
+        }
+      }
+    };
+
+    dialog.setTitle("Find text");
+    dialog.setLabelText("Enter text to find:");
+    dialog.showDialog();
+  }  
+  
   @Override
   public void create()
   {
