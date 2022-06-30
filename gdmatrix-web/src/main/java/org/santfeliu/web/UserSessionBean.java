@@ -57,10 +57,12 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.matrix.cms.CMSConstants;
+import org.matrix.doc.DocumentConstants;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.agenda.client.AgendaManagerClient;
 import org.santfeliu.cms.CMSCache;
 import org.santfeliu.cms.CMSListener;
+import org.santfeliu.doc.DocumentCache;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
@@ -75,6 +77,7 @@ import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.StringCipher;
 import org.santfeliu.security.web.LoginBean;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.Utilities;
 import org.santfeliu.util.script.ActionsScriptClient;
 import org.santfeliu.web.obj.ControllerBean;
 import org.santfeliu.web.obj.PageBean;
@@ -646,8 +649,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
         ApplicationBean.getCurrentInstance().getResourcesVersion());
     }
     return result;
-  }
-
+  }  
+  
   public boolean isNodeWithAction()
   {
     MenuItemCursor cursor = getMenuModel().getSelectedMenuItem();
@@ -1419,6 +1422,52 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
 
     return result;
+  }
+  
+  public static String toUuid(String id)
+  {
+    String preStr = "";
+    String postStr = "";
+    String auxId = id;    
+    if (auxId.startsWith("/documents/")) //document servlet
+    {
+      preStr = "/documents/";
+      auxId = auxId.substring("/documents/".length());
+    }
+    if (auxId.contains("?")) //parameters
+    {
+      postStr = auxId.substring(auxId.indexOf("?"));
+      auxId = auxId.substring(0, auxId.indexOf("?"));
+    }
+    if (auxId.contains("/")) //file name
+    {
+      postStr = auxId.substring(auxId.indexOf("/")) + postStr;
+      auxId = auxId.substring(0, auxId.indexOf("/"));
+    }
+    try
+    {
+      Integer.parseInt(auxId); //check if Integer (docId)
+      try
+      {
+        auxId = DocumentCache.getDocument(auxId, 
+          DocumentConstants.UNIVERSAL_LANGUAGE, 
+          getCurrentInstance().getCredentials().getUserId(), 
+          getCurrentInstance().getCredentials().getPassword(),  
+          60 * 60 * 1000);        
+      }
+      catch (Exception ex)
+      {
+        return id;
+      }
+    }
+    catch (NumberFormatException ex) //contentId?
+    {
+      if (!Utilities.isUUID(auxId))
+      {
+        return id;
+      }
+    }
+    return preStr + auxId + postStr;
   }
 
   /**** private methods ****/

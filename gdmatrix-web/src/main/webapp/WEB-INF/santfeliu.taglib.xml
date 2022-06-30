@@ -2351,5 +2351,11 @@
     <function-class>org.apache.commons.lang.StringEscapeUtils</function-class>
     <function-signature>java.lang.String escapeJavaScript(java.lang.String)</function-signature>
   </function>  
-  
+
+  <function>
+    <function-name>toUuid</function-name>
+    <function-class>org.santfeliu.web.UserSessionBean</function-class>
+    <function-signature>java.lang.String toUuid(java.lang.String)</function-signature>
+  </function>  
+      
 </facelet-taglib>
