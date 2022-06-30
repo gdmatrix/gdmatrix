@@ -1655,10 +1655,11 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     try
     {
-      Integer cssCount = saveCSS(currentWorkspaceId, getSelectedNodeId());
-      String message = cssCount + 
-        (cssCount == 1 ? " node actualitzat" : " nodes actualitzats");
-      message = UserSessionBean.getCurrentInstance().translate(message, "cms");      
+      Document cssDoc = saveCSS(currentWorkspaceId, getSelectedNodeId());
+      String message = "Document " + 
+        (cssDoc.getVersion() == 1 ? "creat" : "actualitzat");
+      message = UserSessionBean.getCurrentInstance().translate(message, "cms") + 
+        ": " + cssDoc.getDocId();     
       info("CSS_SAVED", new Object[]{message});
     }
     catch (Exception ex)
@@ -1680,11 +1681,11 @@ public class NodeEditBean extends FacesBean implements Serializable
       String refWorkspaceId = getRefWorkspaceId();
       if (refWorkspaceId != null)
       {
-        Integer cssCount = saveCSS(refWorkspaceId, getSelectedNodeId());
-        String message = cssCount + 
-          (cssCount == 1 ? " node actualitzat" : " nodes actualitzats"); 
+        Document cssDoc = saveCSS(refWorkspaceId, getSelectedNodeId());
+        String message = "Document " + 
+          (cssDoc.getVersion() == 1 ? "creat" : "actualitzat");
         message = UserSessionBean.getCurrentInstance().translate(message, 
-          "cms");
+          "cms") + ": " + cssDoc.getDocId();
         info("CSS_SYNCHRONIZED", new Object[]{message});      
       }
     }
@@ -2083,19 +2084,18 @@ public class NodeEditBean extends FacesBean implements Serializable
     return getTreeRoot().getChildren().get(0);
   }  
   
-  private int saveCSS(String workspaceId, String nodeId) throws Exception
+  private Document saveCSS(String workspaceId, String nodeId) throws Exception
   {
-    int cssCount = 0;
+    Document document = null;
     if (cssText != null)
     {
-      List<Node> nodeList = new ArrayList();
       CNode cNode = ApplicationBean.getCurrentInstance().
         getCmsCache().getWorkspace(workspaceId).getNode(nodeId);
-      Document document;
       CachedDocumentManagerClient docClient = DocumentConfigBean.getClient();
       String docId = cNode.getSinglePropertyValue(UserSessionBean.NODE_CSS);
       if (docId != null) // existing CSS
       {
+        //Update document
         if (docId.contains("?"))
         {
           docId = docId.substring(0, docId.indexOf("?"));
@@ -2106,28 +2106,12 @@ public class NodeEditBean extends FacesBean implements Serializable
         document.setIncremental(true);
         document.setVersion(DocumentConstants.NEW_VERSION);
         document = docClient.storeDocument(document);
-        NodeFilter filter = new NodeFilter();
-        Property property = new Property();
-        property.setName(UserSessionBean.NODE_CSS);
-        property.getValue().add(docId + "%");
-        filter.getProperty().add(property);
-        List<Node> auxNodeList = getCMSManagerPort().findNodes(filter);
-        for (Node auxNode : auxNodeList)
-        {
-          Property p = getNodeCSSProperty(auxNode);
-          String nodeCSSValue = p.getValue().get(0);
-          if (nodeCSSValue.equals(docId) || 
-            nodeCSSValue.startsWith(docId + "?"))
-          {
-            removeNodeCSSProperty(auxNode);
-            nodeList.add(auxNode);
-          }
-        }
       }
       else // new CSS
       {
+        //Store new document
         document = prepareCSSDocument();        
-        document.setDocTypeId("Document");
+        document.setDocTypeId("Web");
         document.setTitle("CSS node " + nodeId);
         document.setIncremental(false);
         AccessControl accessControl;
@@ -2139,66 +2123,23 @@ public class NodeEditBean extends FacesBean implements Serializable
         accessControl.setAction(DictionaryConstants.WRITE_ACTION);
         accessControl.setRoleId(CMSConstants.MENU_ADMIN_ROLE);
         document.getAccessControl().add(accessControl);
-        document = docClient.storeDocument(document);
+        document = docClient.storeDocument(document);        
         docId = document.getDocId();
+        //Add nodeCSS property
         Node auxNode = cNode.getNode();
-        nodeList.add(auxNode);
-        resetTree();        
-        resetSyncPanel();
-      }
-      Set<String> modifiedWorkspaceIdSet = new HashSet();
-      // update nodeCSS property
-      for (Node node : nodeList)
-      {
         Property nodeCssProperty = new Property();
         nodeCssProperty.setName(UserSessionBean.NODE_CSS);
-        nodeCssProperty.getValue().add(docId + "?v=" + document.getVersion());
-        node.getProperty().add(nodeCssProperty);
-        getCMSManagerPort().storeNode(node);
-        cssCount++;
-        modifiedWorkspaceIdSet.add(node.getWorkspaceId());
-      }
-      resetPropertiesPanel();
-      for (String modifiedWorkspaceId : modifiedWorkspaceIdSet)
-      {
-        updateCache(modifiedWorkspaceId);
-      }      
-    }
-    return cssCount;
-  }
-  
-  private Property getNodeCSSProperty(Node node)
-  {
-    Integer idx = getNodeCSSPropertyIndex(node);
-    if (idx != null)
-    {
-      return node.getProperty().get(idx);
-    }
-    return null;
-  }
-
-  private boolean removeNodeCSSProperty(Node node)
-  {
-    Integer idx = getNodeCSSPropertyIndex(node);
-    if (idx != null)
-    {
-      node.getProperty().remove(idx.intValue());
-      return true;
-    }
-    return false;
-  }
-
-  private Integer getNodeCSSPropertyIndex(Node node)
-  {
-    for (int i = 0; i < node.getProperty().size(); i++)
-    {
-      Property p = node.getProperty().get(i);
-      if (UserSessionBean.NODE_CSS.equals(p.getName()))
-      {
-        return i;        
+        nodeCssProperty.getValue().add(docId);
+        auxNode.getProperty().add(nodeCssProperty);
+        getCMSManagerPort().storeNode(auxNode);
+        //Update panels and workspace
+        resetTree();
+        resetSyncPanel();
+        resetPropertiesPanel();
+        updateCache(workspaceId);        
       }
     }
-    return null;
+    return document;
   }
   
   private Document prepareCSSDocument()

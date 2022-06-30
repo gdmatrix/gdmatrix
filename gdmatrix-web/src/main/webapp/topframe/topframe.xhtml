@@ -53,8 +53,8 @@
         <link rel="stylesheet" type="text/css"
               href="${pageContext.request.contextPath}/themes/${userSessionBean.theme}/theme.css?v=${applicationBean.resourcesVersion}" />
         <c:forEach var="nodeCSS" items="${userSessionBean.nodeCSS}">
-          <link rel="stylesheet" type="text/css"
-                href="${pageContext.request.contextPath}${nodeCSS}" />
+          <link rel="stylesheet" type="text/css" 
+                href="${pageContext.request.contextPath}${sf:toUuid(nodeCSS)}" />
         </c:forEach>
       </c:if>
       <c:if test="${userSessionBean.selectedMenuItem.properties.faviconURL != null}">
