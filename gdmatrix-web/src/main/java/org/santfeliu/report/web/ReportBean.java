@@ -182,7 +182,7 @@ public class ReportBean extends ObjectBean implements Serializable
     MenuItemCursor cursor = 
       userSessionBean.getMenuModel().getSelectedMenuItem();
     String docId = cursor.getProperty(HEADER_DOCID_PROPERTY);
-    if (docId != null)
+    if (docId != null && !"none".equals(docId))
     {
       url = getConnectionBase() + "/documents/" + docId;
     }
@@ -196,7 +196,7 @@ public class ReportBean extends ObjectBean implements Serializable
     MenuItemCursor cursor = 
       userSessionBean.getMenuModel().getSelectedMenuItem();
     String docId = cursor.getProperty(FOOTER_DOCID_PROPERTY);
-    if (docId != null)
+    if (docId != null && !"none".equals(docId))
     {
       url = getConnectionBase() + "/documents/" + docId;
     }

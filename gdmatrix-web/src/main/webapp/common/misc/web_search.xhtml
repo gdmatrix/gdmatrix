@@ -26,7 +26,8 @@
   <t:div styleClass="webSearch">
 
     <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties['header.docId']}"
-       rendered="#{userSessionBean.selectedMenuItem.properties['header.docId'] != null}"
+       rendered="#{userSessionBean.selectedMenuItem.properties['header.docId'] != null and 
+                   userSessionBean.selectedMenuItem.properties['header.docId'] != 'none'}"
        translator="#{userSessionBean.translator}"
        translationGroup="webSearch" />
 
@@ -120,8 +121,8 @@
     </t:dataList>
 
     <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties['footer.docId']}"
-       rendered="#{userSessionBean.selectedMenuItem.properties['footer.docId'] != null}" />
-
+       rendered="#{userSessionBean.selectedMenuItem.properties['footer.docId'] != null and 
+                   userSessionBean.selectedMenuItem.properties['footer.docId'] != 'none'}" />
   </t:div>
 
     </ui:define>

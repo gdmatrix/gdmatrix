@@ -163,6 +163,20 @@ public class InterventionSearchBean extends DynamicTypifiedSearchBean
     this.headerBrowserUrl = headerBrowserUrl;
   }
 
+  public boolean isHeaderRender()
+  {
+    String value = getProperty(HEADER_RENDER_PROPERTY);
+    if (value == null) return false;
+    else return "true".equalsIgnoreCase(value);
+  }  
+  
+  public boolean isFooterRender()
+  {
+    String value = getProperty(FOOTER_RENDER_PROPERTY);
+    if (value == null) return false;
+    else return "true".equalsIgnoreCase(value);
+  }  
+  
   public InterventionFormFilter getFilter()
   {
     return filter;
