@@ -34,8 +34,8 @@ package org.santfeliu.util.script.function;
 import java.util.HashMap;
 import java.util.Map;
 import org.mozilla.javascript.BaseFunction;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.component.jquery.JQueryRenderUtils;
 
@@ -103,7 +103,7 @@ public class HtmlEditorFunction extends BaseFunction
       configMap.put("language",  FacesUtils.getViewLanguage());
       configMap.put("height", height);
       configMap.put("width", width);
-      configMap.put("removeButtons", "Scayt,About,A11ychecker,Find,Replace,Anchor,Superscript,Subscript,RemoveFormat,Outdent,Indent,Blockquote,Styles,Format,SpecialChar,HorizontalRule");
+      configMap.put("removeButtons", "Scayt,About,A11ychecker,Find,Replace,Anchor,Superscript,Subscript,Outdent,Indent,Blockquote,Styles,Format,SpecialChar,HorizontalRule,PasteFromWord");
       configMap.put("removePlugins", "scayt,elementspath,resize");
       configMap.put("toolbarGroups", "[" +
         "{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] }," +

@@ -903,7 +903,7 @@ public class HtmlFormRenderer extends FormRenderer
     }
 
     configMap.put("width", "100%");
-    configMap.put("removeButtons", "Scayt,About,A11ychecker,Find,Replace,Anchor,Superscript,Subscript,RemoveFormat,Outdent,Indent,Blockquote,Styles,Format,SpecialChar,HorizontalRule");
+    configMap.put("removeButtons", "Scayt,About,A11ychecker,Find,Replace,Anchor,Superscript,Subscript,Outdent,Indent,Blockquote,Styles,Format,SpecialChar,HorizontalRule,PasteFromWord");
     configMap.put("removePlugins", "scayt,elementspath,resize");
     configMap.put("toolbarGroups", "[" +
       "{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] }," +
