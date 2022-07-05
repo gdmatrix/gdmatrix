@@ -380,7 +380,8 @@ public class HtmlBrowser extends UIComponentBase
 
         String encoderClassName = getContentEncoder(mimeType);
         Class encoderClass = Class.forName(encoderClassName);
-        ContentEncoder encoder = (ContentEncoder)encoderClass.newInstance();
+        ContentEncoder encoder = (ContentEncoder)encoderClass
+          .getDeclaredConstructor().newInstance();
 
         String contentLanguage = httpClient.getContentLanguage();
         Translator translator = null;

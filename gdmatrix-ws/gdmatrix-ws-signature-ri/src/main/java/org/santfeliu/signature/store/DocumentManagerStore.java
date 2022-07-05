@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.signature.store;
@@ -44,6 +44,7 @@ import org.matrix.doc.DocumentConstants;
 import org.matrix.doc.Document;
 import org.matrix.doc.State;
 import org.matrix.translation.TranslationConstants;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.signature.SignedDocument;
@@ -83,7 +84,7 @@ public class DocumentManagerStore implements SignedDocumentStore
 
     DataSource dataSource = new MemoryDataSource(
       bos.toByteArray(), "document", signedDocument.getMimeType());
-    
+
     Document newDocument = new Document();
     newDocument.setDocTypeId(DEFAULT_DOCTYPEID);
     newDocument.setState(State.DRAFT);
@@ -93,16 +94,16 @@ public class DocumentManagerStore implements SignedDocumentStore
     }
     DataHandler dh = new DataHandler(dataSource);
     DocumentUtils.setContentData(newDocument, dh);
-    DocumentUtils.setProperty(newDocument, "SignedDocumentClass", 
+    DictionaryUtils.setProperty(newDocument, "SignedDocumentClass",
       signedDocument.getClass().getName());
     DocumentUtils.setProperties(newDocument, signedDocument.getProperties());
 
-    String signatureLanguage = 
+    String signatureLanguage =
       (String)signedDocument.getProperties().get(DocumentConstants.LANGUAGE);
-    if (signatureLanguage == null) signatureLanguage = 
+    if (signatureLanguage == null) signatureLanguage =
       TranslationConstants.UNIVERSAL_LANGUAGE;
-    newDocument.setLanguage(signatureLanguage);    
-    
+    newDocument.setLanguage(signatureLanguage);
+
     // service call
     newDocument = client.storeDocument(newDocument);
 
@@ -117,7 +118,7 @@ public class DocumentManagerStore implements SignedDocumentStore
     throws Exception
   {
     signedDocument.setId(sigId);
-    
+
     String docId = sigIdToDocId(sigId);
 
     DocumentManagerClient client = getDocumentManagerClient();
@@ -139,18 +140,18 @@ public class DocumentManagerStore implements SignedDocumentStore
     }
     DataHandler dh = new DataHandler(dataSource);
     DocumentUtils.setContentData(newDocument, dh);
-    DocumentUtils.setProperty(newDocument, "SignedDocumentClass", 
+    DictionaryUtils.setProperty(newDocument, "SignedDocumentClass",
       signedDocument.getClass().getName());
-    DocumentUtils.setProperty(newDocument, "sigId", sigId);
+    DictionaryUtils.setProperty(newDocument, "sigId", sigId);
 
-    String signatureLanguage = 
+    String signatureLanguage =
       (String)signedDocument.getProperties().get(DocumentConstants.LANGUAGE);
-    if (signatureLanguage == null) signatureLanguage = 
+    if (signatureLanguage == null) signatureLanguage =
       TranslationConstants.UNIVERSAL_LANGUAGE;
     newDocument.setLanguage(signatureLanguage);
     newDocument.setIncremental(false);
 
-    client.storeDocument(newDocument);  
+    client.storeDocument(newDocument);
   }
 
   @Override
@@ -161,11 +162,12 @@ public class DocumentManagerStore implements SignedDocumentStore
 
     DocumentManagerClient client = getDocumentManagerClient();
     Document document = client.loadDocument(docId, 0);
-    
-    String docClassName = 
+
+    String docClassName =
       DocumentUtils.getPropertyValue(document, "SignedDocumentClass");
     Class docClass = Class.forName(docClassName);
-    SignedDocument signedDocument = (SignedDocument)docClass.newInstance();
+    SignedDocument signedDocument =
+      (SignedDocument)docClass.getDeclaredConstructor().newInstance();
 
     DataHandler dataHandler = document.getContent().getData();
     signedDocument.parseDocument(dataHandler.getInputStream());
@@ -191,12 +193,14 @@ public class DocumentManagerStore implements SignedDocumentStore
       document.getDocTypeId());
     signedDocument.getProperties().put(DocumentConstants.CREATION_DATE,
       document.getCreationDate());
+    signedDocument.getProperties().put(DocumentConstants.LANGUAGE,
+      document.getLanguage());
     if (document.getClassId().size() > 0)
     {
       signedDocument.getProperties().put(DocumentConstants.CLASSID,
         document.getClassId().get(0));
     }
-    
+
     //load signedDocument roles as properties
     for (AccessControl ac : document.getAccessControl())
     {
@@ -207,7 +211,7 @@ public class DocumentManagerStore implements SignedDocumentStore
         && signedDocument.getProperties().get(DocumentConstants.WRITE_ROLE) == null)
         signedDocument.getProperties().put(DocumentConstants.WRITE_ROLE, ac.getRoleId());
     }
-    
+
     checkSigId(sigId, signedDocument);
 
     return signedDocument;
@@ -257,7 +261,7 @@ public class DocumentManagerStore implements SignedDocumentStore
     String docId = sigId.substring(0, index);
     return docId;
   }
-  
+
   private void checkSigId(String sigId, SignedDocument signedDocument)
     throws Exception
   {

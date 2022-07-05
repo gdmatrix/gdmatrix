@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.signature.web;
@@ -78,7 +78,7 @@ public class SignatureServlet extends HttpServlet
   public SignatureServlet()
   {
   }
-  
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws IOException
@@ -86,7 +86,7 @@ public class SignatureServlet extends HttpServlet
     try
     {
       String requestLanguage = request.getLocale().getLanguage();
-      String responseLanguage = TranslationConstants.UNIVERSAL_LANGUAGE;
+      String responseLanguage;
       String uri = request.getRequestURI();
       int semicolon = uri.indexOf(";");
       if (semicolon > 0)
@@ -109,7 +109,7 @@ public class SignatureServlet extends HttpServlet
           documentProperties =
             PropertyListConverter.toMap(document.getProperties());
           // set responseLanguage from document language
-          responseLanguage = 
+          responseLanguage =
             (String)documentProperties.get(DocumentConstants.LANGUAGE);
         }
         catch (Exception ex)
@@ -189,11 +189,11 @@ public class SignatureServlet extends HttpServlet
   public void doPost(HttpServletRequest request, HttpServletResponse response)
     throws IOException
   {
-    ObjectInputStream in = 
+    ObjectInputStream in =
       new ObjectInputStream(request.getInputStream());
     try
     {
-      ObjectOutputStream out = 
+      ObjectOutputStream out =
         new ObjectOutputStream(response.getOutputStream());
       try
       {
@@ -222,7 +222,6 @@ public class SignatureServlet extends HttpServlet
       }
       catch (Exception e)
       {
-        e.printStackTrace();
         out.writeObject(new Exception(e.getMessage()));
       }
       finally
@@ -241,11 +240,11 @@ public class SignatureServlet extends HttpServlet
   {
     Document xslDocument = null;
     int dotIndex = xslName.lastIndexOf(".");
-    xslName = (dotIndex == -1) ? 
+    xslName = (dotIndex == -1) ?
       xslName : xslName.substring(0, dotIndex);
     DocumentManagerClient client = getDocumentManagerClient();
 
-    xslDocument =  client.loadDocumentByName(TEMPLATE_DOCTYPEID, 
+    xslDocument =  client.loadDocumentByName(TEMPLATE_DOCTYPEID,
       PROPERTY_NAME, xslName, requestLanguage, 0);
 
     return xslDocument;
@@ -256,7 +255,7 @@ public class SignatureServlet extends HttpServlet
     Map map = PropertyListConverter.toMap(document.getProperties());
     return (String)map.get(DocumentConstants.LANGUAGE);
   }
-  
+
   private SignatureManagerPort getSignatureManagerPort()
     throws Exception
   {
