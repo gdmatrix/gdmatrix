@@ -36,6 +36,7 @@ import java.util.List;
 /**
  *
  * @author blanquepa
+ * @param <T>
  */
 public interface ResultListPage<T extends Serializable>
 {  

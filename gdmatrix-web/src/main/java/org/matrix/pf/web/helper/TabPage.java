@@ -47,7 +47,8 @@ public interface TabPage
    */
   public default void populate()
   {
-    if (!getObjectBacking().isNew())
+    ObjectBacking objectBacking = getObjectBacking();
+    if (objectBacking != null && !objectBacking.isNew())
       load();
   }
   

@@ -67,22 +67,10 @@
    
   <managed-bean>
     <managed-bean-name>scriptBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.misc.ScriptBacking</managed-bean-class>
+    <managed-bean-class>org.matrix.pf.script.ScriptBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>   
-  
-  <managed-bean>
-    <managed-bean-name>scriptPageBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.misc.ScriptPageBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>   
-  
-  <managed-bean>
-    <managed-bean-name>organigramView</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.misc.OrganigramView</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>    
-  
+  </managed-bean>     
+    
   <converter>
     <converter-id>selectItemConverter</converter-id>
     <converter-class>org.matrix.pf.web.SelectItemConverter</converter-class>
@@ -137,19 +125,9 @@
     <!-- Misc -->
     <navigation-case>
       <from-outcome>pf_script</from-outcome>
-      <to-view-id>/pf/common/misc/script.xhtml</to-view-id>
+      <to-view-id>/pf/common/script/script.xhtml</to-view-id>
     </navigation-case>     
-        
-    <navigation-case>
-      <from-outcome>pf_script_page</from-outcome>
-      <to-view-id>/pf/common/misc/script_page.xhtml</to-view-id>
-    </navigation-case> 
-    
-    <navigation-case>
-      <from-outcome>pf_organigram</from-outcome>
-      <to-view-id>/pf/common/misc/organigram.xhtml</to-view-id>
-    </navigation-case>             
-                        
+                                   
   </navigation-rule>
 
 </faces-config>
