@@ -28,7 +28,7 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.misc;
+package org.matrix.pf.script;
 
 import java.util.ArrayList;
 import java.util.Collection;

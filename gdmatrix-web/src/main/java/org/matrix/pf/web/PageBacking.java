@@ -56,7 +56,7 @@ public abstract class PageBacking extends WebBacking implements Savable
     return objectBacking;
   }
   
-  /** Get identifier of the main object managed by the page. Tipically:
+  /** Get identifier of the main object managed by the page. Usually:
    * objectId for main pages.
    * related object id for object relation pages.
    * null for search pages.

@@ -56,6 +56,7 @@ public class PersonSearchBacking extends SearchBacking
   }
   
   @PostConstruct
+  @Override
   public void init()
   {
     objectBacking = WebUtils.getInstance(PersonBacking.class);

@@ -58,7 +58,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.matrix.cms.CMSConstants;
 import org.matrix.doc.DocumentConstants;
-import org.matrix.pf.misc.ScriptBean;
+import org.matrix.pf.script.ScriptBean;
 import org.matrix.security.SecurityConstants;
 import org.matrix.web.ControllerProxy;
 import org.santfeliu.agenda.client.AgendaManagerClient;

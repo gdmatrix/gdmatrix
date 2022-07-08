@@ -44,14 +44,14 @@ import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.TypedHelper;
-import org.santfeliu.faces.FacesUtils;
-import org.santfeliu.kernel.web.KernelConfigBean;
+import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.web.WebUtils;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.kernel.web.CityBean;
 import org.santfeliu.kernel.web.CountryBean;
 import org.santfeliu.kernel.web.CountryToStreetBean;
+import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.util.TextUtils;
-import org.matrix.pf.web.helper.TypedTabPage;
 
 /**
  *
@@ -74,6 +74,7 @@ public class PersonMainBacking extends PageBacking
   }
   
   @PostConstruct
+  @Override
   public void init()
   {
     objectBacking = WebUtils.getInstance(PersonBacking.class);

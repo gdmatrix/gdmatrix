@@ -55,8 +55,8 @@
     <div class="flex">
 
       <!-- Vertical menu -->
-      <p:outputPanel id="vertical_menu" class="">
-        <div id="left_button_bar" class="flex flex-column align-items-center w-12  mt-3"  > 
+      <p:outputPanel id="vertical_menu" class="lg:flex hidden">
+        <div id="left_button_bar" class="flex flex-row lg:flex-column align-items-center w-12  mt-3"  > 
           <p:repeat value="#{templateBacking.leftMenuItems}" var="leftMenuItem">
             <p:linkButton href="#{leftMenuItem.getUrl()}" onclick="#{leftMenuItem.getOnclick()}" 
                           icon="#{leftMenuItem.getIcon()} mi-invert-color" value="#{leftMenuItem.getTitle()}" 
@@ -65,15 +65,35 @@
         </div>  
       </p:outputPanel>
 
-      <div class="w-12">
-        <ui:insert name="body"></ui:insert>  
-      </div>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>  
+    
+    <div class="col flex slick-columns" style="width: 97vw" >
+      <!-- Left column -->
+      <p:outputPanel id="left_column" style="width:15vw" class="m-2 pb-2">           
+        <ui:insert name="left_column"></ui:insert>
+      </p:outputPanel>
+
+      <!-- Central column -->
+      <p:outputPanel id="central_column"  style="width:65vw" class="flex-grow-1 overflow-auto m-2">
+        <ui:insert name="body"></ui:insert>
+      </p:outputPanel>
+
+      <!-- Right column -->
+      <p:outputPanel id="right_column" style="width: 15vw" class="m-2 pb-2">
+        <ui:insert name="right_column"></ui:insert>             
+      </p:outputPanel>
     </div>
     
-  
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="/templates/pf_3cols/template.js"></script>   
+
+    </div>
 
   </ui:define>
 
 
 </ui:composition>
+
+
 
