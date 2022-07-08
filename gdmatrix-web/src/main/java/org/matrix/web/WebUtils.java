@@ -43,6 +43,7 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
  */
 public class WebUtils
 { 
+  public static final String OBJECT_BACKING = "objectBacking";
   public static final String OBJECT_TYPEID_PROPERTY = "objectTypeId";  
   public static final String TOPWEB_PROPERTY = "topweb";
 
@@ -59,7 +60,11 @@ public class WebUtils
   
   public static <T> T getBacking(MenuItemCursor mic)
   {
-    return getBackingFromAction(mic.getAction());
+    String backingName = mic.getProperty(OBJECT_BACKING);
+    if (backingName != null)
+      return getBacking(backingName);
+    else
+      return getBackingFromAction(mic.getAction());
   }
   
   public static <T> T getBackingFromAction(String actionExpression)

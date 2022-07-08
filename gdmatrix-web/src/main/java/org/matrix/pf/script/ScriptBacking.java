@@ -34,10 +34,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.matrix.pf.web.ControllerBacking;
-import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.TabPage;
-import org.matrix.web.WebUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.HttpUtils;
 import org.santfeliu.web.UserSessionBean;
@@ -45,7 +43,7 @@ import org.santfeliu.web.UserSessionBean;
 /**
  * @author blanquepa
  */
-@Named("scriptTabBacking")
+@Named("scriptBacking")
 public class ScriptBacking extends PageBacking 
   implements TabPage
 {
@@ -53,7 +51,6 @@ public class ScriptBacking extends PageBacking
   private static final String FORM_SERVLET = "/form/";
   private static final String FORM_RENDERER_CLASS = 
     "org.santfeliu.web.servlet.form.EchoFormRenderer"; 
-  private static final String OBJECT_BACKING = "objectBacking";
   
   protected String pageName;
   protected String label;  
@@ -150,17 +147,7 @@ public class ScriptBacking extends PageBacking
   public String getPageObjectId()
   {
     return (String) call("getObjectId"); 
-  }
-  
-  @Override
-  public ObjectBacking getObjectBacking()
-  {
-    String backingName = getProperty(OBJECT_BACKING);
-    if (backingName != null)
-      return WebUtils.getBacking(backingName);
-    else
-      return null;
-  }  
+  } 
   
   protected Object call(String method, Object... args)
   {
