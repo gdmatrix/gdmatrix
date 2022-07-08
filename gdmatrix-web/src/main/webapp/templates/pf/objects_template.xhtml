@@ -1,0 +1,55 @@
+<!--
+  Defines the body region common to all templates. 
+  Inserts all regions needed by object management pages. 
+
+  Defines: 
+    - body
+  Inserts:
+    - smart_filter
+    - advanced_filter
+    - basic_results
+    - main
+    - favorites
+    - recents
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="template.xhtml">
+
+  <ui:define name="body">
+    
+    <div>
+      <p:outputPanel id="search_panel" class="search_panel_layout">
+        <p:accordionPanel id="search_accordion" widgetVar="basic">
+          <p:tab title="Cerca ràpida">
+            <ui:insert name="smart_filter"></ui:insert>  
+          </p:tab>      
+          <p:tab title="Cerca avançada"> 
+            <ui:insert name="advanced_filter"></ui:insert>
+          </p:tab>   
+        </p:accordionPanel>
+
+        <p:outputPanel id="basic_results_panel" class="basic_results_layout mt-2"
+                       rendered="#{objectPage == 'object'}">
+          <ui:insert name="basic_results"></ui:insert>
+        </p:outputPanel> 
+
+      </p:outputPanel>
+    </div>
+    
+    <div>
+      <ui:insert name="main"></ui:insert>      
+    </div>
+    
+    <p:outputPanel rendered="false">
+      <p:panel id="favorites_panel" header="Favorits">
+        <ui:insert name="favorites"></ui:insert>
+      </p:panel>
+      <p:panel id="recents_panel" header="Recents" styleClass="mt-2">
+        <ui:insert name="recents"></ui:insert>
+      </p:panel>
+    </p:outputPanel>
+  </ui:define>
+</ui:composition>
+
