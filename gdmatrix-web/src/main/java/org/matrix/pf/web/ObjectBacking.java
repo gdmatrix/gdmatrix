@@ -44,6 +44,8 @@ import org.matrix.pf.web.helper.Typed;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.web.Describable;
 import org.matrix.web.WebUtils;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
@@ -414,6 +416,17 @@ public abstract class ObjectBacking extends WebBacking
     }
     
     return null;
-  }    
+  }  
+
+  public List<String> getDerivedTypeIds()
+  {
+    Type type = getSelectedType();
+    return type.getDerivedTypeIds();
+  }
+  
+  public Type getSelectedType()
+  {
+    return TypeCache.getInstance().getType(getTypeId());
+  }  
     
 }
