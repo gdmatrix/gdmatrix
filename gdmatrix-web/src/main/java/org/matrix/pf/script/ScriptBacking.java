@@ -33,6 +33,7 @@ package org.matrix.pf.script;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ControllerBacking;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.TabPage;
@@ -43,6 +44,7 @@ import org.santfeliu.web.UserSessionBean;
 /**
  * @author blanquepa
  */
+@CMSContent(typeId = "Script")
 @Named("scriptBacking")
 public class ScriptBacking extends PageBacking 
   implements TabPage

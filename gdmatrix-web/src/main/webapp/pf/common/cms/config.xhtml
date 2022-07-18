@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:sf="http://faces.santfeliu.org">
+  
+    <div class="formgrid grid">
+      
+      <p:outputPanel styleClass="buttonsPanel">
+        <p:commandLink actionListener="#{systemConfigBacking.store()}" styleClass="imageButton"
+                       update="@this toolbarRenderingButtons topPanel mainform:tree rootSelectionPanel userPropertyListPanel messagesPanel" ajax="true">
+          <h:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
+        </p:commandLink>
+      </p:outputPanel>      
+      
+      <div class="field col-12">
+        <p:outputLabel for="@next" value="Etiqueta"/>
+        <p:inputText id="label" value="#{systemConfigBacking.label}" styleClass="p-2 w-full" />
+      </div>
+      
+      <div class="field col-12 md:col-6">
+        <p:outputLabel value="#{cmsBundle.beanName}" 
+                       for="@next" />
+        <p:selectOneMenu id="beanNameSelector"
+                         value="#{nodeEditBean.beanNameProperty.value[0]}"
+                         class="w-full p-2">
+          <p:ajax update="@this beanActionsSelector" listener="#{nodeEditBean.changeBeanName}" global="false" />
+          <f:selectItems value="#{nodeEditBean.beanNames}" />
+        </p:selectOneMenu>          
+      </div>
+      
+      <p:outputLabel styleClass="field col-12 md:col-6">
+        <p:outputLabel rendered="#{nodeEditBean.beanActionsRender}"
+                       for="@next"
+                       value="#{cmsBundle.beanAction}:"  />
+        <p:selectOneMenu id="beanActionsSelector"
+                         rendered="#{nodeEditBean.beanActionsRender}" 
+                         value="#{nodeEditBean.beanActionProperty.value[0]}"
+                         styleClass="w-full p-2">
+          <f:selectItems value="#{nodeEditBean.beanActions}" />
+        </p:selectOneMenu>          
+      </p:outputLabel>      
+<!--
+      <div class="field col-12 md:col-6">
+        <p:outputLabel for="@next" value="Acció" />
+        <p:inputText id="action" value="#{systemConfigBacking.action}" styleClass="p-2 w-full"/>
+      </div>      
+-->
+      <div class="field col-12 md:col-6">
+        <p:outputLabel for="@next" value="Frame" />
+        <p:selectOneMenu id="frame" value="#{systemConfigBacking.frame}" class="w-full p-2">
+          <f:selectItem itemLabel="" itemValue="" />
+          <f:selectItems value="#{systemConfigBacking.getFolders('/frames')}" var="folder"
+                         itemLabel="#{folder.fileName}" itemValue="#{folder.fileName}"/>
+        </p:selectOneMenu>
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <p:outputLabel for="@next" value="Plantilla" />
+        <p:selectOneMenu id="template" value="#{systemConfigBacking.template}" class="w-full p-2">
+          <f:selectItem itemLabel="" itemValue="" />
+          <f:selectItems value="#{systemConfigBacking.getFolders('/templates')}" var="folder"
+                         itemLabel="#{folder.fileName}" itemValue="#{folder.fileName}"/>      
+        </p:selectOneMenu>
+      </div> 
+      
+      <div class="field col-12">
+        <p:outputLabel for="@next" value="Rols de lectura (multi)" />
+        <p:chips value="#{systemConfigBacking.rolesSelect}" class="w-full"/>
+      </div>     
+      
+      <div class="field col-12">
+        <p:outputLabel for="@next" value="Rols d'escriptura (multi)" />
+        <p:chips value="#{systemConfigBacking.rolesUpdate}" class="w-full"/>
+      </div>       
+    
+      <div class="field-checkbox col-12">
+        <p:selectBooleanCheckbox id="topWeb" value="#{systemConfigBacking.topWeb}" />
+        <p:outputLabel for="topWeb" value="És node topWeb?" />
+      </div>        
+
+    </div> 
+  
+</ui:composition>

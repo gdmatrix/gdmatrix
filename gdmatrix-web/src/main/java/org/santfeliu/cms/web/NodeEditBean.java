@@ -46,7 +46,6 @@ import java.util.Set;
 import javax.activation.DataHandler;
 import javax.faces.model.SelectItem;
 import org.apache.commons.lang.StringUtils;
-import org.matrix.security.AccessControl;
 import org.matrix.cms.CMSConstants;
 import org.matrix.cms.CMSManagerPort;
 import org.matrix.cms.CMSManagerService;
@@ -61,6 +60,7 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
+import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
@@ -107,6 +107,7 @@ public class NodeEditBean extends FacesBean implements Serializable
   private static final Integer CSS_TAB_INDEX = 1;
   private static final Integer SYNC_TAB_INDEX = 2;
   private static final Integer SEARCH_TAB_INDEX = 3;  
+  private static final Integer FORMS_TAB_INDEX = 4;   
   
   //Tree edit & selection
   private String currentWorkspaceId;
@@ -1973,6 +1974,11 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     return SEARCH_TAB_INDEX.equals(getActiveTabIndex());
   }  
+  
+  public boolean isFormsTabSelected()
+  {
+    return FORMS_TAB_INDEX.equals(getActiveTabIndex());
+  }
   
   // ********* Private methods ********
 

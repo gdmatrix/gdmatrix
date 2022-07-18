@@ -70,7 +70,25 @@
     <managed-bean-class>org.matrix.pf.script.ScriptBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>     
-    
+  
+  <managed-bean>
+    <managed-bean-name>configFormsBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cms.ConfigFormsBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>systemConfigBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cms.SystemConfigBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean> 
+  
+  <managed-bean>
+    <managed-bean-name>pfTemplateConfigBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cms.PFTemplateConfigBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+        
   <converter>
     <converter-id>selectItemConverter</converter-id>
     <converter-class>org.matrix.pf.web.SelectItemConverter</converter-class>
@@ -117,11 +135,7 @@
     </navigation-case>                            
        
     <!-- CMS -->    
-    <navigation-case>
-      <from-outcome>pf_node_edit</from-outcome>
-      <to-view-id>/pf/common/cms/node_edit.xhtml</to-view-id>
-    </navigation-case> 
-    
+        
     <!-- Misc -->
     <navigation-case>
       <from-outcome>pf_script</from-outcome>

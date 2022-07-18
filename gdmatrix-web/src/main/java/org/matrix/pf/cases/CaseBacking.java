@@ -36,7 +36,6 @@ import org.matrix.cases.CaseConstants;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.SearchBacking;
-import org.matrix.pf.web.Tab;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
 
@@ -57,12 +56,6 @@ public class CaseBacking extends ObjectBacking
   public void loadTabs()
   {
     super.loadTabs();
-    if (tabs.isEmpty())
-    {
-      addTab(new Tab(0, "Principal", "Case", "#{caseMainBacking.show()}"));
-      addTab(new Tab(1, "Persones", "CasePerson", "#{casePersonsBacking.show()}")); 
-      addTab(new Tab(2, "Domicilis", "CaseAddress", "#{caseAddressessBacking.show()}"));  
-    }
   }
   
   @Override

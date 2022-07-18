@@ -71,7 +71,7 @@ public class WebBacking extends FacesBean
     MenuItemCursor menuItem =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     return menuItem.getProperty(name);
-  }  
+  }
   
   protected List<String> getMultivaluedProperty(String name)
   {
@@ -79,5 +79,19 @@ public class WebBacking extends FacesBean
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     return menuItem.getMultiValuedProperty(name);    
   }
+  
+  protected String getDirectProperty(String name)
+  {
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    return menuItem.getDirectProperty(name);
+  }  
+
+  protected List<String> getDirectMultivaluedProperty(String name)
+  {
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    return menuItem.getDirectMultiValuedProperty(name);
+  }    
      
 }

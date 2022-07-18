@@ -52,6 +52,11 @@ public class CMSManagedBeanIntrospector
     {
       beanClasses = ClassFinder.findClasses("org.santfeliu", ".*Bean",
         CMSManagedBean.class);
+      if (beanClasses != null)
+      {
+        beanClasses.addAll(ClassFinder.findClasses("org.matrix", ".*Backing",
+          CMSManagedBean.class));
+      }
     }
     return beanClasses;
   }
