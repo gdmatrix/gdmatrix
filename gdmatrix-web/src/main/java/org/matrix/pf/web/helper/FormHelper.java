@@ -55,6 +55,7 @@ import org.santfeliu.form.Form;
 import org.santfeliu.form.FormDescriptor;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
+import org.santfeliu.form.builder.TypeFormBuilder.FormMode;
 import org.santfeliu.util.MapEditor;
 import org.santfeliu.web.UserSessionBean;
 
@@ -73,10 +74,25 @@ public class FormHelper extends FacesBean implements Serializable
   private String selector;
   private final List<SelectItem> formSelectItems = new ArrayList<>();
   private Map<String, String> data = new HashMap<>();  
-
-  public FormHelper(DynamicFormPage backing)
+  
+  private final FormMode formMode;
+  private final String selectorPrefix;
+  
+  public FormHelper(DynamicFormPage backing, FormMode formMode)
   {
     this.backing = backing;
+    this.formMode = formMode;
+    switch (formMode)
+    {
+      case SEARCH:
+        this.selectorPrefix = TypeFormBuilder.SEARCH_PREFIX;
+        break;
+      case VIEW:
+        this.selectorPrefix = TypeFormBuilder.VIEW_PREFIX;
+        break;
+      default:
+        this.selectorPrefix = TypeFormBuilder.PREFIX;
+    }
   } 
   
   //getter and setters
@@ -104,7 +120,12 @@ public class FormHelper extends FacesBean implements Serializable
   {
     return formSelectItems;
   }  
-  
+
+  public FormMode getFormMode()
+  {
+    return formMode;
+  }
+    
   public Form getForm()
   {
     try
@@ -131,13 +152,13 @@ public class FormHelper extends FacesBean implements Serializable
     return null;
   }  
   
-  public void postLoad(List<Property> properties)
+  public void postSubmit(List<Property> properties)
   {
     refreshFormSelectors(backing.getTypeId());
     populateFormData(properties);
   }
   
-  public void preStore(List<Property> properties)
+  public void preSubmit(List<Property> properties)
   {
     properties.clear();
     properties.addAll(getDataAsProperties());
@@ -212,7 +233,8 @@ public class FormHelper extends FacesBean implements Serializable
   
   public boolean isRenderPropertyEditor()
   {
-    return selector == null || PROPERTY_EDITOR_SELECTOR.equals(selector);
+    return formMode.equals(FormMode.EDIT) && 
+      (selector == null || PROPERTY_EDITOR_SELECTOR.equals(selector));
   }  
   
   public boolean isRenderForm()
@@ -282,7 +304,7 @@ public class FormHelper extends FacesBean implements Serializable
         formSelectItems.clear();
         UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
         String selectorBase =
-          TypeFormBuilder.PREFIX + ":" + typeId +
+          selectorPrefix + ":" + typeId +
           TypeFormBuilder.USERID + userSessionBean.getUserId() +
           TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
         FormFactory formFactory = FormFactory.getInstance();

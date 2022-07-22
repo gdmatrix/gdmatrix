@@ -32,13 +32,21 @@ package org.matrix.pf.web.helper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.matrix.dic.Property;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.web.UserSessionBean;
 
 /**
  *
  * @author blanquepa
+ * @param <T>
  */
 public class ResultListHelper<T extends Serializable> implements Serializable
 {
@@ -60,11 +68,36 @@ public class ResultListHelper<T extends Serializable> implements Serializable
     this.pageBacking = pageBacking;
   }
   
+  /**
+   * @return List of POJO objects
+   */
   public List<T> getRows()
   {
     return rows;
+  } 
+  
+  /**
+   * 
+   * @return List of objects as Map of properties. 
+   */
+  public ResultList getResultList()
+  {
+    return new ResultList(rows);
+  }
+  
+  public Object getObject(Object row)
+  {
+    if (row instanceof HashMap)
+      return getRow((ResultList.Row) row);
+    else
+      return row;
   }  
-    
+  
+  private Object getRow(ResultList.Row resultListItem)
+  {
+    return resultListItem.getObject();
+  }
+     
   public void search()
   {
     firstRowIndex = 0; // reset index
@@ -205,5 +238,98 @@ public class ResultListHelper<T extends Serializable> implements Serializable
       return hash;
     }
   }
+  
+  /**
+   * This list allows to component <p:columns> to show metadata values of  
+   * lists of Property fields.
+   */
+  public class ResultList extends ArrayList
+  {
+    private List list = new ArrayList();
+    
+    public ResultList(List list)
+    {
+      super();
+      if (list != null)
+        this.list = list;
+    }
+
+    @Override
+    public Iterator iterator()
+    {
+      return list.iterator();
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+      return list.isEmpty();
+    }
+
+    @Override
+    public int size()
+    {
+      return list.size();
+    }
+    
+    @Override
+    public Row get(int index) 
+    {
+      if (list == null)
+        return null;
+      
+      Object listItem = list.get(index);
+      return new Row(listItem);
+    }
+    
+    public class Row extends HashMap<String, Object>
+    {
+      private static final String FIELD_NAME = "property";
+      private Object object;
+      
+      public Row(Object object)
+      {
+        super();
+        try
+        {
+          if (object != null)
+          {
+            this.object = object;
+            putAll(PropertyUtils.describe(object));
+          }
+        }
+        catch (Exception ex)
+        {
+          Logger.getLogger(ResultListHelper.class.getName()).
+            log(Level.SEVERE, null, ex);
+        }
+      }
+
+      @Override
+      public Object get(Object key)
+      {
+        Object obj = super.get(key);
+        if (obj == null)
+        {
+          Object properties = super.get(FIELD_NAME);
+          if (properties != null && properties instanceof List)
+          {
+            List<Property> propList = (List<Property>) properties;
+            obj = DictionaryUtils.getPropertyValue(propList, (String) key);
+          }
+        }
+
+        return obj;
+      }
+      
+      public Object getObject()
+      {
+        return this.object;
+      }
+         
+    }
+    
+  }
+  
  
 }

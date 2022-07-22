@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.faces.model.SelectItem;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.pf.web.WebBacking;
@@ -85,8 +86,22 @@ public class TypedHelper extends WebBacking
 
   public boolean isPropertyHidden(String propName)
   {
-
     return isPropertyHidden(getTypeId(), propName);
+  }
+  
+
+  /**
+   * @param propName: render property name.
+   * @return  true if property is defined in CMS node and hasn't 'false' value
+   * or if is defined in type as PropertyDefinitions with value not 'false'.
+   */
+  @Override
+  public boolean render(String propName)
+  {
+    propName = "render" + StringUtils.capitalize(propName);
+    String value = getFirstPropertyDefinitionValue(propName);
+    boolean defValue = (value == null || !value.equalsIgnoreCase("false"));
+    return super.render(propName, defValue);
   }
 
   public String getPropertyLabel(String propName, String altName)
@@ -108,7 +123,7 @@ public class TypedHelper extends WebBacking
     String value = super.getProperty(name);
     if (value == null)
     {
-      value = getFirstPropertyValue(name);
+      value = getFirstPropertyDefinitionValue(name);
     }
     return value;
   }
@@ -124,18 +139,19 @@ public class TypedHelper extends WebBacking
     List<String> values = super.getMultivaluedProperty(name);
     if (values == null || values.isEmpty())
     {
-      values = getPropertyValue(name);
+      values = getPropertyDefinitionValue(name);
     }
     return values;
   }  
 
-  private String getFirstPropertyValue(String propName)
+  // Private methods  
+  private String getFirstPropertyDefinitionValue(String propName)
   {
-    List<String> values = getPropertyValue(propName);
+    List<String> values = getPropertyDefinitionValue(propName);
     return !values.isEmpty() ? values.get(0) : null;
   }  
   
-  private List<String> getPropertyValue(String propName)
+  private List<String> getPropertyDefinitionValue(String propName)
   {
     PropertyDefinition pd
       = getPropertyDefinition(getTypeId(), propName);
@@ -172,7 +188,6 @@ public class TypedHelper extends WebBacking
     return null;
   }
 
-  // Private methods
   private boolean isPropertyHidden(String typeId, String propName)
   {
     PropertyDefinition pd = getPropertyDefinition(typeId, propName);

@@ -98,9 +98,11 @@
         <p:inputTextarea id="comments" value="#{caseMainBacking.case.comments}" 
           styleClass="inputfield w-full" />
       </p:outputPanel> 
-<!--      
-      <ui:include src="/pf/common/obj/object_form.xhtml" />
--->
+    
+      <ui:include src="/pf/common/obj/object_form.xhtml">
+        <ui:param name="backing" value="#{caseMainBacking}" />
+      </ui:include>
+
     </h:panelGroup>
 
   </ui:define>

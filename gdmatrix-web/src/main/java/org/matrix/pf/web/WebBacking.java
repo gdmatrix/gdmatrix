@@ -92,6 +92,20 @@ public class WebBacking extends FacesBean
     MenuItemCursor menuItem =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     return menuItem.getDirectMultiValuedProperty(name);
-  }    
+  }   
+  
+  protected boolean render(String property, boolean defaultValue)
+  {
+    String propValue = getProperty(property);
+    if (propValue != null)
+      return Boolean.valueOf(propValue);
+    else
+      return defaultValue;
+  }
+  
+  protected boolean render(String propertyName)
+  {
+    return render(propertyName, true);
+  }  
      
 }

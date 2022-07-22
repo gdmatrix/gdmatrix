@@ -38,20 +38,27 @@ import org.matrix.web.StackEntry;
  */
 public class ReturnStackEntry implements StackEntry
 {
+  private final String searchTypeId;
   private final String returnTypeId;
   private final String objectId;
   private final Integer tabIndex;
   private final String pageId;
   private final String valueBinding;
 
-  public ReturnStackEntry(String returnTypeId,String objectId, Integer tabIndex, 
+  public ReturnStackEntry(String searchTypeId, String returnTypeId,String objectId, Integer tabIndex, 
     String pageId, String valueBinding)
   {
+    this.searchTypeId = searchTypeId;
     this.returnTypeId = returnTypeId;
     this.objectId = objectId;
     this.valueBinding = valueBinding;
     this.tabIndex = tabIndex;
     this.pageId = pageId;
+  }
+
+  public String getSearchTypeId()
+  {
+    return searchTypeId;
   }
 
   public String getReturnTypeId()

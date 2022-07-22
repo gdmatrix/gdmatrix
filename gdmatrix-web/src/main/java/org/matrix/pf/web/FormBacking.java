@@ -30,6 +30,7 @@
  */
 package org.matrix.pf.web;
 
+import javax.faces.view.facelets.FaceletContext;
 import javax.inject.Named;
 import org.matrix.pf.web.helper.DynamicFormPage;
 import org.matrix.pf.web.helper.FormHelper;
@@ -42,6 +43,16 @@ import org.matrix.web.WebUtils;
 @Named("formBacking")
 public class FormBacking extends WebBacking
 {
+  private FormHelper formHelper;
+  
+  public FormBacking()
+  {
+    FaceletContext faceletContext = 
+      (FaceletContext) getFacesContext().getAttributes()
+        .get(FaceletContext.FACELET_CONTEXT_KEY);
+    formHelper = (FormHelper) faceletContext.getAttribute("formHelper");    
+  }
+  
   public ObjectBacking getObjectBacking()
   {
     return ControllerBacking.getCurrentInstance().getObjectBacking();
@@ -49,18 +60,29 @@ public class FormBacking extends WebBacking
   
   public FormHelper getFormHelper()
   {
-    ObjectBacking objectBacking = getObjectBacking();
-    PageBacking pageBacking = 
-      WebUtils.getBackingFromAction(objectBacking.getCurrentTab().getAction());
+    if (formHelper == null)
+      formHelper = getFormHelper(null);
+    return formHelper;
+  }
+  
+  public FormHelper getFormHelper(PageBacking pageBacking)
+  {
+    if (pageBacking == null)
+    {
+      ObjectBacking objectBacking = getObjectBacking();
+      pageBacking = 
+        WebUtils.getBackingFromAction(objectBacking.getCurrentTab().getAction());
+    }
+    
     if (pageBacking instanceof DynamicFormPage)
     {
-      return ((DynamicFormPage)pageBacking).getFormHelper();
+      formHelper = ((DynamicFormPage)pageBacking).getFormHelper();
     }
-    return null;
+    return formHelper;    
   }
   
   public boolean isRenderForm()
   {
     return getFormHelper() != null;
-  }
+  }  
 }

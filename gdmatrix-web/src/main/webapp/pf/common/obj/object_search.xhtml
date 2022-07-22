@@ -41,7 +41,7 @@
       <p:outputPanel id="body_content" style="height: 68vh">
         <ui:insert name="content" />
                  
-        <p:dataTable id="full_results_table" value="#{templateBacking.searchBacking.resultListHelper.rows}" var="row"
+        <p:dataTable id="full_results_table" value="#{templateBacking.searchBacking.resultListHelper.resultList}" var="row"
                      stripedRows="true" paginator="true" pageLinks="5" resizableColumns="false" showGridlines="true" 
                      paginatorPosition="bottom" size="small" widgetVar="searchResultsTable"
                      first="#{templateBacking.searchBacking.resultListHelper.firstRowIndex}"
@@ -50,7 +50,7 @@
 
             <p:columns value="#{templateBacking.searchBacking.resultListHelper.columns}" var="column" 
                        headerText="#{column.label}" field="#{column.property}" style="#{column.style}"
-                       filterable="false" sortable="false" resizable="true">
+                       filterable="false" sortable="false" resizable="true" >
 <!--              
                 <f:facet name="filter">
                     <p:datePicker selectionMode="range" onchange="PF('searchResultsTable').filter()" rendered="#{column.type eq 'date'}"/>
@@ -63,12 +63,12 @@
 -->
             </p:columns>
                     
-
-            <p:column styleClass="w-1">
+            <p:column styleClass="w-1 text-center">
               <p:commandButton icon="pi pi-pencil" styleClass="ui-button-raised" 
-                action="#{templateBacking.searchBacking.show(row)}" immediate="true" ajax="false" />     
+                               action="#{templateBacking.searchBacking.show(row)}" immediate="true" ajax="false" />     
               <p:commandButton icon="pi pi-replay" styleClass="ui-button-raised m-1"
-                action="#{templateBacking.searchBacking.select(row)}" immediate="true" ajax="false" />                  
+                action="#{templateBacking.searchBacking.select(row)}" immediate="true" ajax="false"
+                rendered="#{templateBacking.searchBacking.selectableObject}"/>                  
             </p:column>
        
         </p:dataTable>  

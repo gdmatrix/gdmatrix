@@ -28,23 +28,37 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.web.helper;
+package org.matrix.pf.web;
 
-import java.util.List;
-import org.matrix.dic.Property;
-import org.matrix.pf.web.ObjectBacking;
+import javax.inject.Named;
+import org.matrix.pf.web.helper.FormHelper;
+import org.matrix.pf.web.helper.DynamicFormTabPage;
 
 /**
  *
  * @author blanquepa
  */
-public interface DynamicFormPage extends Typed
-{  
-  public FormHelper getFormHelper();
+@Named("searchFormBacking")
+public class SearchFormBacking extends WebBacking
+{
+  public ObjectBacking getObjectBacking()
+  {
+    return ControllerBacking.getCurrentInstance().getObjectBacking();
+  }
   
-  public void setTypeId(String typeId);
+  public FormHelper getFormHelper()
+  {
+    ObjectBacking objectBacking = getObjectBacking();
+    SearchBacking searchBacking = objectBacking.getSearchBacking();
+    if (searchBacking instanceof DynamicFormTabPage)
+    {
+      return ((DynamicFormTabPage)searchBacking).getFormHelper();
+    }
+    return null;
+  }
   
-  public List<Property> getProperties();
-    
-  public ObjectBacking getObjectBacking();
+  public boolean isRenderForm()
+  {
+    return getFormHelper() != null;
+  }  
 }

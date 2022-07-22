@@ -39,12 +39,13 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseConstants;
 import org.matrix.dic.Property;
 import org.matrix.pf.web.PageBacking;
-import org.matrix.pf.web.helper.DynamicFormPage;
+import org.matrix.pf.web.helper.DynamicFormTabPage;
 import org.matrix.pf.web.helper.FormHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.form.builder.TypeFormBuilder.FormMode;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
 
@@ -54,7 +55,7 @@ import org.santfeliu.web.UserSessionBean;
  */
 @Named("caseMainBacking")
 public class CaseMainBacking extends PageBacking
-  implements DynamicFormPage
+  implements DynamicFormTabPage
 {
   public static final String SHOW_AUDIT_PROPERTIES = "_showAuditProperties";
   public static final String OUTCOME = "pf_case_main";  
@@ -74,7 +75,7 @@ public class CaseMainBacking extends PageBacking
     objectBacking = WebUtils.getInstance(CaseBacking.class); 
     
     typedHelper = new TypedHelper(this);  
-    formHelper = new FormHelper(this);
+    formHelper = new FormHelper(this, FormMode.EDIT);
   }
 
   @Override
@@ -249,8 +250,7 @@ public class CaseMainBacking extends PageBacking
         TypeCache.getInstance().getType(cas.getCaseTypeId());
       if (type != null)
       {
-        String showAuditProperty = 
-          typedHelper.getProperty(SHOW_AUDIT_PROPERTIES);
+        String showAuditProperty = getProperty(SHOW_AUDIT_PROPERTIES);
         return showAuditProperty == null || 
           !"false".equalsIgnoreCase(showAuditProperty);
       }

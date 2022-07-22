@@ -28,23 +28,50 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.web.helper;
+package org.matrix.pf.cases;
 
-import java.util.List;
-import org.matrix.dic.Property;
-import org.matrix.pf.web.ObjectBacking;
+import org.matrix.pf.cms.CMSConfigHelper;
+import org.matrix.pf.web.WebBacking;
+import org.santfeliu.web.bean.CMSProperty;
 
 /**
  *
  * @author blanquepa
  */
-public interface DynamicFormPage extends Typed
-{  
-  public FormHelper getFormHelper();
+public class CaseConfigBacking extends WebBacking
+{
+  @CMSProperty
+  public static final String LOAD_METADATA_PROPERTY = "loadMetadata";
+  @CMSProperty
+  public static final String RENDER_SEARCH_EXPRESSION_PROPERTY =
+    "renderSearchExpression";
   
-  public void setTypeId(String typeId);
+  private final CMSConfigHelper configHelper;
+
+  public CaseConfigBacking(CMSConfigHelper configHelper)
+  {
+    this.configHelper = configHelper;
+  }
   
-  public List<Property> getProperties();
-    
-  public ObjectBacking getObjectBacking();
+  public String getLoadMetadata()
+  {
+    return getProperty(LOAD_METADATA_PROPERTY);
+  }
+  
+  public void setLoadMetadata(String loadMetadata)
+  {
+    configHelper.setProperty(LOAD_METADATA_PROPERTY, loadMetadata);
+  }
+  
+  public String getRenderSearchExpression()
+  {
+    return getProperty(RENDER_SEARCH_EXPRESSION_PROPERTY);
+  }
+  
+  public void setRenderSearchExpression(String renderSearchExpression)
+  {
+    configHelper.setProperty(RENDER_SEARCH_EXPRESSION_PROPERTY, 
+      renderSearchExpression);
+  }  
+  
 }

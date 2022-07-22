@@ -9,34 +9,49 @@
     <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
                   var="kernelBundle" />      
     <div class="field">
-      <p:outputLabel for="nif" value="#{kernelBundle.person_nif}" />
-      <p:inputText id="nif" value="#{personSearchBacking.filter.nif}" 
-                   class="inputfield w-full"/>
+      <p:outputLabel for="@next" value="#{kernelBundle.person_id}" />
+      <p:chips id="personId" value="#{personSearchBacking.personId}"
+               addOnPaste="true" separator=","
+               class="inputfield w-full ui-fluid"/>
     </div>
+    
+    <div class="field">    
+      <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
+      <p:inputText id="nif" value="#{personSearchBacking.filter.nif}"
+        styleClass="inputfield w-full" /> 
+    </div>
+    
+    <div class="field">    
+      <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
+      <p:inputText id="passport" value="#{personSearchBacking.filter.passport}"
+        styleClass="inputfield w-full" /> 
+    </div>      
 
     <div class="field">
-      <p:outputLabel for="fullname" value="#{kernelBundle.person_full_name}" />        
+      <p:outputLabel for="@next" value="#{kernelBundle.person_full_name}" />        
       <p:inputText id="fullname" value="#{personSearchBacking.filter.fullName}" 
                    class="inputfield w-full" />
     </div>      
 
     <div class="field">
-      <p:outputLabel for="name" value="#{kernelBundle.person_name}" />        
+      <p:outputLabel for="@next" value="#{kernelBundle.person_name}" />        
       <p:inputText id="name" value="#{personSearchBacking.filter.name}" 
                    class="inputfield w-full" />
     </div>
 
     <div class="field">
-      <p:outputLabel for="surname1" value="#{kernelBundle.person_surname1}" />        
+      <p:outputLabel for="@next" value="#{kernelBundle.person_surname1}" />        
       <p:inputText id="surname1" value="#{personSearchBacking.filter.firstSurname}" 
                    class="inputfield w-full" />
     </div>
 
     <div class="field">
-      <p:outputLabel for="surname2" value="#{kernelBundle.person_surname2}" />
+      <p:outputLabel for="@next" value="#{kernelBundle.person_surname2}" />
       <p:inputText id="surname2" value="#{personSearchBacking.filter.secondSurname}" 
                    class="inputfield w-full"/>
-    </div>      
+    </div>    
+    
+  
 
     <div class="buttons text-right">
       <p:commandButton value="#{objectBundle.clear}"
@@ -45,8 +60,8 @@
                        styleClass="ui-button-raised m-1"
                        update="search_accordion"/>      
       <p:commandButton value="#{objectBundle.search}"
-                       action="#{personSearchBacking.search}"
-                       ajax="#{ajax}" process="mainform" update="#{updateOnSearch}"
+                       action="#{personSearchBacking.search}"                       
+                       ajax="true" process="@parent" update="#{objectPage == 'object_search' ? 'mainform:full_results_table' :''}"
                        styleClass="ui-button-raised m-1" />
     </div>              
   </ui:define>            
