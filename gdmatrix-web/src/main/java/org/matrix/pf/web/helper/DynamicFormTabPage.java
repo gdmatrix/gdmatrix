@@ -30,21 +30,28 @@
  */
 package org.matrix.pf.web.helper;
 
-import java.util.List;
-import org.matrix.dic.Property;
-import org.matrix.pf.web.ObjectBacking;
-
 /**
  *
  * @author blanquepa
  */
-public interface DynamicFormPage extends Typed
+public interface DynamicFormTabPage extends DynamicFormPage, TypedTabPage 
 {  
-  public FormHelper getFormHelper();
+  @Override
+  public default String store()
+  {
+    getFormHelper().preSubmit(getProperties()); 
+    return doStore();
+  }
   
-  public void setTypeId(String typeId);
+  public String doStore();  
   
-  public List<Property> getProperties();
-    
-  public ObjectBacking getObjectBacking();
+  @Override
+  public default void populate()
+  {
+    if (!getObjectBacking().isNew())
+    {
+      load();
+      getFormHelper().postSubmit(getProperties());
+    }
+  }
 }

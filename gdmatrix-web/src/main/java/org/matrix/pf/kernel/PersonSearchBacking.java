@@ -73,6 +73,18 @@ public class PersonSearchBacking extends SearchBacking
   {
     this.filter = filter;
   }
+  
+  public List<String> getPersonId()
+  {
+    return this.filter.getPersonId();
+  }
+  
+  public void setPersonId(List<String> personIds)
+  {
+    this.filter.getPersonId().clear();
+    if (personIds != null && !personIds.isEmpty())
+      this.filter.getPersonId().addAll(personIds);
+  }
      
   @Override
   public String search()
@@ -117,7 +129,6 @@ public class PersonSearchBacking extends SearchBacking
   {
     try
     {
-      filter.getPersonId().clear();
       filter.setFirstResult(firstResult);
       filter.setMaxResults(maxResults);
       return KernelConfigBean.getPort().findPersonViews(filter);
@@ -145,18 +156,15 @@ public class PersonSearchBacking extends SearchBacking
     
   private PersonFilter convert(String smartValue)
   {
-    PersonFilter filter = new PersonFilter();
+    filter = new PersonFilter();
     if (smartValue != null)
     {
-      try
-      {
-        Integer dni = Integer.valueOf(smartValue);
-        filter.setNif(String.valueOf(dni));
-      }
-      catch (NumberFormatException ex)
-      {
+      if (smartValue.matches("\\d+"))
+        filter.getPersonId().add(smartValue);
+      else if (smartValue.matches("(\\d+\\D+|\\D+\\d+)"))
+        filter.setNif(smartValue);
+      else
         filter.setFullName(smartValue);
-      }
     }  
     return filter;
   }
@@ -164,7 +172,9 @@ public class PersonSearchBacking extends SearchBacking
   private String convert(PersonFilter filter)
   {
     String value = null;
-    if (!StringUtils.isBlank(filter.getNif()))
+    if (!filter.getPersonId().isEmpty())
+      value = filter.getPersonId().get(0);
+    else if (!StringUtils.isBlank(filter.getNif()))
       value = filter.getNif();
     else if (!StringUtils.isBlank(filter.getFullName()))
       value = filter.getFullName();

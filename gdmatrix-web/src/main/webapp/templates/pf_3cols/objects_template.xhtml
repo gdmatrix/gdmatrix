@@ -22,7 +22,7 @@
 
   <ui:define name="left_column">
     <p:outputPanel id="search_panel" class="search_panel_layout">
-      <p:accordionPanel id="search_accordion" widgetVar="basic">
+      <p:accordionPanel id="search_accordion" widgetVar="basic" activeIndex="#{templateBacking.searchPanelIndex}">
         <p:tab title="Cerca ràpida">
           <ui:insert name="smart_filter"></ui:insert>  
         </p:tab>      

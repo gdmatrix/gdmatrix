@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
@@ -55,11 +56,26 @@ import org.santfeliu.web.UserSessionBean;
 @Named("templateBacking")
 public class TemplateBacking extends WebBacking
 {
-  private static final String SEARCH_PAGE_LABEL = "Cercador"; //TODO: translate
+  private static final String OBJECT_BUNDLE = 
+    "org.santfeliu.web.obj.resources.ObjectBundle";
+  private static final String SEARCH_PAGE_LABEL = "search";
+  
+  private Integer searchPanelIndex = 0;
   
   public TemplateBacking()
   {
-    //Let to super class constructor.   
+    //Let to super class constructor. 
+  }
+
+  //Search panels
+  public Integer getSearchPanelIndex()
+  {
+    return searchPanelIndex;
+  }
+
+  public void setSearchPanelIndex(Integer searchPanelIndex)
+  {
+    this.searchPanelIndex = searchPanelIndex;
   }
   
   public SearchBacking getSearchBacking()
@@ -67,6 +83,7 @@ public class TemplateBacking extends WebBacking
     return getObjectBacking().getSearchBacking();
   }  
   
+  //Object tabs
   public List getTabs()
   {
     return getObjectBacking().getTabs();
@@ -82,6 +99,7 @@ public class TemplateBacking extends WebBacking
     getObjectBacking().doTabAction(event);
   }
   
+  //Menús
   public MatrixMenuModel getPFMenuModel()
   {
     MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
@@ -116,6 +134,7 @@ public class TemplateBacking extends WebBacking
       facesContext, action, String.class);   
   }
   
+  //Favorites panel
   public List<SelectItem> getFavorites()
   {
     return getObjectBacking().getFavorites();
@@ -145,6 +164,7 @@ public class TemplateBacking extends WebBacking
     return unmarkObjectAsFavorite(objectTypeId, objectId);
   } 
   
+  //Recent history panel
   public PageHistory getRecentHistory()
   {
     return ControllerBacking.getCurrentInstance().getPageHistory();
@@ -175,13 +195,14 @@ public class TemplateBacking extends WebBacking
     return root;
   }
   
-
-  
+  //Object header
   public String getDescription(String typeId, String objectId)
   {
     String label = "";
+    ResourceBundle bundle = 
+      ResourceBundle.getBundle(OBJECT_BUNDLE, getLocale());     
     if (StringUtils.isBlank(objectId))
-      label = SEARCH_PAGE_LABEL;
+      label = bundle.getString(SEARCH_PAGE_LABEL);
     else
     {
       ObjectBacking targetBacking = 
@@ -250,6 +271,7 @@ public class TemplateBacking extends WebBacking
     return description;    
   }
     
+  //Operations
   public String show(Object row)
   {
     String objectId = getObjectBacking().getObjectId(row);
@@ -270,6 +292,11 @@ public class TemplateBacking extends WebBacking
   { 
     return getObjectBacking().remove();
   }
+  
+  public ObjectBacking getObjectBacking()
+  {
+    return ControllerBacking.getCurrentInstance().getObjectBacking();
+  }  
        
   //Private methods
   private String encodeDescription(String label, String objectId)
@@ -297,12 +324,7 @@ public class TemplateBacking extends WebBacking
     return UserSessionBean.getCurrentInstance().getUserPreferences().
       existsPreference(objectTypeId, objectId);
   }  
-  
-  public ObjectBacking getObjectBacking()
-  {
-    return ControllerBacking.getCurrentInstance().getObjectBacking();
-  }
-  
+    
   private class PageHistoryComparator implements Comparator<PageHistory.Entry>
   {
     @Override

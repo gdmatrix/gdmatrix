@@ -35,7 +35,7 @@
                          update="search_accordion"/>      
         <p:commandButton id="default_button" value="#{objectBundle.search}"
                          action="#{templateBacking.searchBacking.smartSearch}"
-                         process="mainform" 
+                         process="@parent" 
                          ajax="#{objectPage == 'object_search' ? true : false}" 
                          update="#{objectPage == 'object_search' ? 'mainform:full_results_table' : ''}"
                          styleClass="ui-button-raised m-1" />

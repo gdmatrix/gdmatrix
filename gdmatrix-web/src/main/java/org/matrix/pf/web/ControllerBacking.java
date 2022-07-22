@@ -163,8 +163,8 @@ public class ControllerBacking extends WebBacking implements Savable
     Tab currentTab = objectBacking.getCurrentTab();
     Integer returnTabIndex = currentTab.getIndex();
     String returnPageId = null; //TODO
-    ReturnStackEntry entry = new ReturnStackEntry(returnTypeId, 
-      returnObjectId, returnTabIndex, returnPageId, valueBinding);
+    ReturnStackEntry entry = new ReturnStackEntry(targetObjectTypeId, 
+      returnTypeId, returnObjectId, returnTabIndex, returnPageId, valueBinding);
     returnStack.push(entry);    
 
     //Manage page history
@@ -216,7 +216,24 @@ public class ControllerBacking extends WebBacking implements Savable
   public ObjectBacking getObjectBacking(MenuItemCursor mic)
   {
     return toObjectBacking(WebUtils.getBacking(mic));
-  }  
+  }
+
+  public boolean isSelectableNode()
+  {
+    String returnTypeId = getSearchTypeId();
+    if (returnTypeId == null)
+      return false;
+    else
+      return returnTypeId.equals(getObjectBacking().getTypeId());
+  }
+  
+  private String getSearchTypeId()
+  {
+    if (returnStack.isEmpty()) return null;
+    ReturnStackEntry entry = returnStack.peek();
+
+    return entry.getSearchTypeId();
+  }
   
   //Private methods  
   private WebBacking getCurrentBacking()

@@ -30,30 +30,40 @@
  */
 package org.matrix.pf.cases;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import org.matrix.dic.Property;
+import static org.matrix.pf.cases.CaseConfigBacking.LOAD_METADATA_PROPERTY;
 import org.matrix.pf.web.SearchBacking;
+import org.matrix.pf.web.helper.DynamicFormPage;
+import org.matrix.pf.web.helper.FormHelper;
+import org.matrix.pf.web.helper.Typed;
+import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
-import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.form.builder.TypeFormBuilder.FormMode;
+import org.santfeliu.util.TextUtils;
+
 /**
  *
  * @author blanquepa
  */
 @Named("caseSearchBacking")
-public class CaseSearchBacking extends SearchBacking
+public class CaseSearchBacking extends SearchBacking 
+  implements Typed, DynamicFormPage
 {
-  @CMSProperty
-  public static final String LOAD_METADATA_PROPERTY = "loadMetadata";
-  
+
   public static final String OUTCOME = "pf_case_search";
   
   private CaseFilter filter;
-  private String caseIdFilter;
+  private TypedHelper typedHelper;
+  private FormHelper formHelper;
   
   public CaseSearchBacking()
   {
@@ -61,6 +71,7 @@ public class CaseSearchBacking extends SearchBacking
   }
   
   @PostConstruct
+  @Override
   public void init()
   {
     objectBacking = WebUtils.getInstance(CaseBacking.class);
@@ -69,6 +80,8 @@ public class CaseSearchBacking extends SearchBacking
     if (typeId != null)
       filter.setCaseTypeId(typeId);    
     smartValue = null;
+    typedHelper = new TypedHelper(this); 
+    formHelper = new FormHelper(this, FormMode.SEARCH);    
   }
 
   public CaseFilter getFilter()
@@ -81,20 +94,59 @@ public class CaseSearchBacking extends SearchBacking
     this.filter = filter;
   }
 
-  public String getCaseIdFilter()
+  public List<String> getCaseId()
   {
-    return caseIdFilter;
+    return filter.getCaseId();
   }
 
-  public void setCaseIdFilter(String caseIdFilter)
+  public void setCaseId(List<String> caseIds)
   {
-    this.caseIdFilter = caseIdFilter;
+    filter.getCaseId().clear();
+    if (caseIds != null && !caseIds.isEmpty())
+      this.filter.getCaseId().addAll(caseIds);
+  }
+  
+  public Date getFromDate()
+  {
+    if (filter != null && filter.getFromDate() != null)
+      return TextUtils.parseInternalDate(filter.getFromDate());
+    else
+      return null;
+  }
+  
+  public void setFromDate(Date date)
+  {
+    if (date != null && filter != null)
+      filter.setFromDate(TextUtils.formatDate(date, "yyyyMMdd"));
+  }  
+  
+  public Date getToDate()
+  {
+    if (filter != null && filter.getToDate() != null)
+      return TextUtils.parseInternalDate(filter.getToDate());
+    else
+      return null;
   }   
-   
+  
+  public void setToDate(Date date)
+  {
+    if (date != null && filter != null)
+      filter.setToDate(TextUtils.formatDate(date, "yyyyMMdd"));
+  }   
+  
+  @Override
+  public String show()
+  {
+    String outcome = super.show();
+    formHelper.postSubmit(getProperties());
+    return outcome;
+  }
+     
   @Override
   public String search()
   {
-    smartValue = filterToSmartValue();
+    formHelper.preSubmit(getProperties());
+    smartValue = convert(filter);
     String typeId = getMenuItemTypeId();
     if (typeId != null)
       filter.setCaseTypeId(typeId);
@@ -105,7 +157,8 @@ public class CaseSearchBacking extends SearchBacking
   @Override
   public String smartSearch()
   {
-    filter = smartValueToFilter(); 
+    formHelper.preSubmit(getProperties());    
+    filter = convert(smartValue); 
     String typeId = getMenuItemTypeId();
     if (typeId != null)
       filter.setCaseTypeId(typeId);    
@@ -117,7 +170,9 @@ public class CaseSearchBacking extends SearchBacking
   public String clear()
   {
     filter = new CaseFilter();
-    caseIdFilter = null;
+    String typeId = getMenuItemTypeId();
+    if (typeId != null)
+      filter.setCaseTypeId(typeId);        
     smartValue = null;
     return null;
   }
@@ -154,43 +209,43 @@ public class CaseSearchBacking extends SearchBacking
     return results;
   }  
   
-  private CaseFilter smartValueToFilter()
+  private CaseFilter convert(String smartValue)
   {
-    CaseFilter result = new CaseFilter();
+    filter = new CaseFilter();
     if (smartValue != null)
     {
       try
       {
         Integer.valueOf(smartValue);
-        caseIdFilter = smartValue;
+        filter.getCaseId().add(smartValue);
       }
       catch (NumberFormatException ex)
       {
         if (!StringUtils.isBlank(smartValue))
-          result.setTitle("%" + smartValue + "%");
+          filter.setTitle("%" + smartValue + "%");
       }
     }  
-    return result;
+    return filter;
   }
     
-  private String filterToSmartValue()
+  private String convert(CaseFilter filter)
   {
-    String result = null;
-    if (!StringUtils.isBlank(caseIdFilter))
-      result = caseIdFilter;
+    String value = null;
+    if (!filter.getCaseId().isEmpty())
+      value = filter.getCaseId().get(0);
     else if (!StringUtils.isBlank(filter.getTitle()))
     {
-      result = filter.getTitle();
+      value = filter.getTitle();
       filter.setTitle("%" + filter.getTitle() + "%");
     }
 
-    return result;
+    return value;
   }
 
   @Override
   public String getFilterTypeId()
   {
-    return filter != null ? filter.getCaseTypeId() : null;
+    return filter != null ? filter.getCaseTypeId() : getMenuItemTypeId();
   }
 
   @Override
@@ -205,6 +260,53 @@ public class CaseSearchBacking extends SearchBacking
     return OUTCOME;
   }
   
+  @Override
+  public String getRootTypeId()
+  {
+    return getObjectBacking().getRootTypeId();
+  }
+
+  @Override
+  public String getTypeId()
+  {
+    return getFilterTypeId();
+  }
+
+  @Override
+  public String getAdminRole()
+  {
+    return getObjectBacking().getAdminRole();
+  }
+
+  @Override
+  public TypedHelper getTypedHelper()
+  {
+    return typedHelper;
+  }  
+  
+  //DynamicFormPage methods
+
+  @Override
+  public FormHelper getFormHelper()
+  {
+    return formHelper;
+  } 
+  
+  @Override
+  public void setTypeId(String typeId)
+  {
+    filter.setCaseTypeId(typeId);
+  }
+
+  @Override
+  public List<Property> getProperties()
+  {
+    if (filter != null)
+      return filter.getProperty();
+    else
+      return Collections.emptyList();
+  }
+ 
   //TODO: Move to SearchBean
   private void loadMetadata(List<Case> results) throws Exception
   {
@@ -246,5 +348,9 @@ public class CaseSearchBacking extends SearchBacking
 //    }
 //    return date;
 //  }   
+
+
+
+
   
 }

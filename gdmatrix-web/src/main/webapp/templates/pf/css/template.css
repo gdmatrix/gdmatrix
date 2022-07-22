@@ -67,6 +67,11 @@ body .loading-icon-container .ui-dialog-content
   border: 0;
 }
 
+.ui-chips-container
+{
+  width: 100% !important;
+}
+
 :root {
   --text-color:#495057;
   --text-color-secondary:#6c757d;

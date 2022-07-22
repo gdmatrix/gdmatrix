@@ -125,9 +125,10 @@ public abstract class SearchBacking extends PageBacking
     
   public String show(Object row)
   {
-    return show(getObjectId(row));
+    Object obj = bigListHelper.getObject(row);
+    return show(getObjectId(obj));
   }
-
+  
   @Override
   public String show(String objectId)
   {
@@ -136,12 +137,18 @@ public abstract class SearchBacking extends PageBacking
   
   public String select(Object row)
   {
-    return select(getObjectId(row));
+    Object obj = bigListHelper.getObject(row);    
+    return select(getObjectId(obj));
   }  
   
   public String select(String selectedObjectId)
   {
     return ControllerBacking.getCurrentInstance().select(selectedObjectId);
+  }
+  
+  public boolean isSelectableObject()
+  {
+    return ControllerBacking.getCurrentInstance().isSelectableNode();
   }
 
   protected void populate()
