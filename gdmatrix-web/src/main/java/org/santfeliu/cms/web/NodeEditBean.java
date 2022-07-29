@@ -60,6 +60,7 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
+import org.matrix.pf.cms.CMSConfigHelper;
 import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
 import org.matrix.util.WSDirectory;
@@ -159,9 +160,11 @@ public class NodeEditBean extends FacesBean implements Serializable
   //Misc
   private Integer activeTabIndex;
   private org.primefaces.model.menu.MenuModel nodePathModel;  
+  private final CMSConfigHelper configHelper;
   
   public NodeEditBean()
   {
+    configHelper = new CMSConfigHelper();
   }
 
   //********** setters/getters *********
@@ -1953,6 +1956,12 @@ public class NodeEditBean extends FacesBean implements Serializable
       }
     }
     return label;
+  }
+
+  public String getSelectedNodeLabel()
+  {
+    return configHelper.getNodeLabel(UserSessionBean.getCurrentInstance().
+      getSelectedMenuItem());
   }  
   
   public boolean isPropertiesTabSelected()
@@ -1979,6 +1988,52 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     return FORMS_TAB_INDEX.equals(getActiveTabIndex());
   }
+  
+  public void resetRootSelectionPanel()
+  {
+    resetRootSelectionPanel(null);
+  }
+
+  public void resetTree()
+  {
+    treeRoot = null;
+  }
+  
+  public void resetTopPanel()
+  {
+    nodePathModel = null;
+  }
+
+  public void resetCssPanel()
+  {
+    cssText = null;    
+  }
+  
+  public void resetSyncPanel()
+  {
+    resetSyncPanel(true);
+  }
+  
+  public void resetPropertiesPanel()
+  {
+    propertyList = null;
+    userPropertyList = null;
+    beanNameProperty = null;
+    beanActionProperty = null;
+    beanActions = null;
+    nodeTipsBundlePath = null;
+    annotatedPropertyNameSet = null;
+    nodeName = null;    
+  }  
+
+  public void goToNode(String nodeId)
+  {
+    UserSessionBean.getCurrentInstance().setSelectedMid(nodeId);
+    resetTopPanel();
+    resetPropertiesPanel();
+    resetCssPanel();
+    resetSyncPanel();
+  }  
   
   // ********* Private methods ********
 
@@ -2333,15 +2388,12 @@ public class NodeEditBean extends FacesBean implements Serializable
 
   private void updateCache()
   {
-    String workspaceId =
-      UserSessionBean.getCurrentInstance().getWorkspaceId();
-    updateCache(workspaceId);
+    configHelper.updateCache();
   }
   
   private void updateCache(String workspaceId)
   {
-    CMSCache cmsCache = ApplicationBean.getCurrentInstance().getCmsCache();
-    cmsCache.getWorkspace(workspaceId).purge();
+    configHelper.updateCache(workspaceId);
   }
 
   private List<Property> clean(List<Property> properties,
@@ -2394,13 +2446,7 @@ public class NodeEditBean extends FacesBean implements Serializable
 
   private CNode getSelectedCNode()
   {
-    CMSCache cmsCache = ApplicationBean.getCurrentInstance().getCmsCache();
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    String workspaceId = userSessionBean.getWorkspaceId();
-    String nodeId = userSessionBean.getSelectedMid();
-    CNode selectedCNode =
-      cmsCache.getWorkspace(workspaceId).getNode(nodeId);
-    return selectedCNode;
+    return configHelper.getSelectedCNode();
   }
 
   private String loadCssText()
@@ -2536,15 +2582,6 @@ public class NodeEditBean extends FacesBean implements Serializable
   {
     return (!UserSessionBean.getCurrentInstance().getWorkspaceId().
       equals(currentWorkspaceId));
-  }
-  
-  private void goToNode(String nodeId)
-  {
-    UserSessionBean.getCurrentInstance().setSelectedMid(nodeId);
-    resetTopPanel();
-    resetPropertiesPanel();
-    resetCssPanel();
-    resetSyncPanel();
   }
   
   private List<NodeChange> sortNodeChangeList(List<NodeChange> nodeChangeList)
@@ -2892,17 +2929,9 @@ public class NodeEditBean extends FacesBean implements Serializable
 
   private boolean nodeIsVisible(String nodeId)
   {
-    try
-    {
-      getMenuModel().getMenuItemByMid(nodeId);
-      return true;
-    }
-    catch (Exception ex)
-    {
-      return false;
-    }
+    return configHelper.nodeIsVisible(nodeId);
   }
-
+  
   private List<Node> filterVisibleNodes(List<Node> nodeList)
   {
     List<Node> result = new ArrayList();
@@ -2924,42 +2953,13 @@ public class NodeEditBean extends FacesBean implements Serializable
 
   private String getNewVisibleNodeId()
   {
-    MenuItemCursor newCursor = getCursor().getPrevious();
-    if (newCursor.getMid() == null) //no previous visible node
-    {
-      newCursor = getCursor().getNext();
-      if (newCursor.getMid() == null) //no next visible node -> go to parent
-      {
-        newCursor = getCursor().getParent();
-        if (newCursor.getMid() == null)
-        {
-          String mid = UserSessionBean.getCurrentInstance().getSelectedMid();          
-          return getRootNodeId(mid);          
-        }
-      }
-    }
-    return newCursor.getMid();
+    return configHelper.getNewVisibleNodeId();
   }
 
-  private void resetRootSelectionPanel()
-  {
-    resetRootSelectionPanel(null);
-  }
-    
   private void resetRootSelectionPanel(String newRootNodeId)
   {
     rootNodeList = null;
     if (newRootNodeId != null) rootNodeId = newRootNodeId;
-  }
-
-  private void resetTree()
-  {
-    treeRoot = null;
-  }
-  
-  private void resetTopPanel()
-  {
-    nodePathModel = null;
   }
   
   private void resetSearchPanel()
@@ -2976,16 +2976,6 @@ public class NodeEditBean extends FacesBean implements Serializable
     if (removeProperties) searchPropertyList = null;
   }
 
-  private void resetCssPanel()
-  {
-    cssText = null;    
-  }
-  
-  void resetSyncPanel()
-  {
-    resetSyncPanel(true);
-  }
-  
   private void resetSyncPanel(boolean updateSyncCache)
   {
     nodeChangeItemList = null;
@@ -2998,18 +2988,6 @@ public class NodeEditBean extends FacesBean implements Serializable
     }
   }   
   
-  private void resetPropertiesPanel()
-  {
-    propertyList = null;
-    userPropertyList = null;
-    beanNameProperty = null;
-    beanActionProperty = null;
-    beanActions = null;
-    nodeTipsBundlePath = null;
-    annotatedPropertyNameSet = null;
-    nodeName = null;    
-  }  
-
   private MenuModel getMenuModel()
   {
     return UserSessionBean.getCurrentInstance().getMenuModel();

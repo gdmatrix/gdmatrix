@@ -664,6 +664,58 @@ a.imageButton img:hover
   width: auto;
 }
 
+/* forms.xhtml styles */
+
+.nodeConfigPanel
+{
+  height:100%;
+  display:flex;
+  flex-direction:column
+}
+
+.nodeConfigPanel .editFormsPanel
+{
+  flex-grow:1;
+  display:flex;
+  flex-direction:column
+}
+
+.nodeConfigPanel .systemConfigPanel
+{
+  display:flex;
+  flex-direction:column;
+  height:100%
+}
+
+.nodeConfigPanel .systemConfigPanel .buttonsPanel
+{
+  flex-grow:0;
+}
+
+.nodeConfigPanel .systemConfigPanel .formgrid
+{
+  flex-grow:1;
+  position:relative;
+  overflow:auto
+}
+
+.nodeConfigPanel .formgrid .propertyList
+{
+  position:absolute;
+  width: 100%;
+}
+
+.nodeConfigPanel .inheritedProperty
+{
+  font-size: 10px;
+  color: grey;
+}
+
+.nodeConfigPanel .propertyDiv .ui-autocomplete-input-token
+{
+  width: 50px;
+}
+
 /* redir_edit.xhtml styles */
 
 .redirFilePanel
