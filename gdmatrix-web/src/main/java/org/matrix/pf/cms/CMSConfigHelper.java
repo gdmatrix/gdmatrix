@@ -30,6 +30,7 @@
  */
 package org.matrix.pf.cms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,8 @@ import org.matrix.cms.Property;
 import org.santfeliu.cms.CMSCache;
 import org.santfeliu.cms.CNode;
 import org.santfeliu.cms.web.CMSConfigBean;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.ApplicationBean;
 import org.santfeliu.web.UserSessionBean;
 
@@ -47,7 +50,7 @@ import org.santfeliu.web.UserSessionBean;
  *
  * @author blanquepa
  */
-public class CMSConfigHelper
+public class CMSConfigHelper implements Serializable
 {
   private final Map<String, Property> properties = new HashMap<>();
   
@@ -66,7 +69,7 @@ public class CMSConfigHelper
     Property prop = new Property();
     prop.setName(key);
     prop.getValue().clear();
-    if (value != null)
+    if (value != null && !value.trim().isEmpty())
       prop.getValue().add(value);
     properties.put(key, prop);
   }  
@@ -92,10 +95,12 @@ public class CMSConfigHelper
     selectedNode = mNode.mergeProperties(propertyList);
     selectedNode.setName(nodeName);      
     CMSConfigBean.getPort().storeNode(selectedNode);
-    updateCache();    
+    //updateCache();    
   }
   
-  private CNode getSelectedCNode()
+  //SHARED METHODS
+  
+  public CNode getSelectedCNode()
   {
     CMSCache cmsCache = ApplicationBean.getCurrentInstance().getCmsCache();
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -106,18 +111,77 @@ public class CMSConfigHelper
     return selectedCNode;
   }  
   
-  private void updateCache()
+  public void updateCache()
   {
     String workspaceId =
       UserSessionBean.getCurrentInstance().getWorkspaceId();
     updateCache(workspaceId);
   }
   
-  private void updateCache(String workspaceId)
+  public void updateCache(String workspaceId)
   {
     CMSCache cmsCache = ApplicationBean.getCurrentInstance().getCmsCache();
     cmsCache.getWorkspace(workspaceId).purge();
   }
+
+  public boolean nodeIsVisible(String nodeId)
+  {
+    try
+    {
+      getMenuModel().getMenuItemByMid(nodeId);
+      return true;
+    }
+    catch (Exception ex)
+    {
+      return false;
+    }
+  }
+
+  public String getNewVisibleNodeId()
+  {
+    MenuItemCursor newCursor = getCursor().getPrevious();
+    if (newCursor.getMid() == null) //no previous visible node
+    {
+      newCursor = getCursor().getNext();
+      if (newCursor.getMid() == null) //no next visible node -> go to parent
+      {
+        newCursor = getCursor().getParent();
+        if (newCursor.getMid() == null)
+        {
+          String mid = UserSessionBean.getCurrentInstance().getSelectedMid();          
+          return getRootNodeId(mid);          
+        }
+      }
+    }
+    return newCursor.getMid();
+  }
+  
+  public String getNodeLabel(MenuItemCursor mic)
+  {
+    String description = mic.getDirectProperty("description");
+    String label = mic.getDirectProperty("label");
+    return (description != null ? 
+      description : (label != null ? label : mic.getMid()));
+  }
+
+  private MenuItemCursor getCursor()
+  {
+    return UserSessionBean.getCurrentInstance().getMenuModel().
+      getSelectedMenuItem();
+  }
+
+  private MenuModel getMenuModel()
+  {
+    return UserSessionBean.getCurrentInstance().getMenuModel();
+  }
+
+  private String getRootNodeId(String mid)
+  {
+    CMSCache cmsCache = ApplicationBean.getCurrentInstance().getCmsCache();
+    String workspaceId = UserSessionBean.getCurrentInstance().getWorkspaceId();
+    CNode cNode = cmsCache.getWorkspace(workspaceId).getNode(mid);
+    return cNode.getRoot().getNodeId();
+  }  
   
   //TODO: Keep properties sorted as original node
   public class MergedNode
