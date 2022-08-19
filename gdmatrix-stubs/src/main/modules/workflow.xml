@@ -5,7 +5,7 @@
   wsdlLocation="../services/workflow?wsdl"
   service="WorkflowManagerService"
   port="WorkflowManagerPort"
-  version="2.0"
+  version="2.1"
   status="REVISION"
   authors="Ricard Real">
 
@@ -68,6 +68,31 @@
       <property name="destroyButtonEnabled" type="xs:boolean">
       </property>
     </struct>
+    
+    <struct name="InstanceEvent">
+      <property name="instanceId" type="xs:string">
+      </property>
+      <property name="eventNum" type="xs:int">
+      </property>
+      <property name="dateTime" type="mx:dateTime">
+      </property>
+      <property name="actorName" type="xs:string" minOccurs="0">
+      </property>
+      <property name="variableChange" type="workflow:VariableChange" 
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </property>
+    </struct>
+
+    <struct name="VariableChange">
+      <property name="name" type="xs:string">
+      </property>
+      <property name="type" type="xs:string">
+      </property>
+      <property name="oldValue" type="xs:string" minOccurs="0">
+      </property>
+      <property name="newValue" type="xs:string" minOccurs="0">
+      </property>
+    </struct>
   </types>
 
   <operations>
@@ -79,7 +104,24 @@
       </response>
     </operation>
 
+    <operation name="setVariables">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <parameter name="variable" type="workflow:Variable" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </parameter>
+      <response name="variableCount" type="xs:int">
+      </response>
+    </operation>
+
     <operation name="doStep">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <response name="step" type="xs:boolean">
+      </response>
+    </operation>
+
+    <operation name="undoStep">
       <parameter name="instanceId" type="xs:string">
       </parameter>
       <response name="step" type="xs:boolean">
@@ -115,23 +157,6 @@
       </response>
     </operation>
 
-    <operation name="undoStep">
-      <parameter name="instanceId" type="xs:string">
-      </parameter>
-      <response name="step" type="xs:boolean">
-      </response>
-    </operation>
-
-    <operation name="setVariables">
-      <parameter name="instanceId" type="xs:string">
-      </parameter>
-      <parameter name="variable" type="workflow:Variable" minOccurs="0"
-        maxOccurs="unbounded" nillable="true">
-      </parameter>
-      <response name="variableCount" type="xs:int">
-      </response>
-    </operation>
-
     <operation name="findInstances">
       <parameter name="filter" type="workflow:InstanceFilter">
       </parameter>
@@ -149,5 +174,14 @@
       <response name="instanceId" type="xs:string">
       </response>
     </operation>
+
+    <operation name="getInstanceEvents">
+      <parameter name="instanceId" type="xs:string">
+      </parameter>
+      <response name="instanceEvent" type="workflow:InstanceEvent" 
+        minOccurs="0" maxOccurs="unbounded" nillable="true">
+      </response>
+    </operation>
+
   </operations>
 </module>

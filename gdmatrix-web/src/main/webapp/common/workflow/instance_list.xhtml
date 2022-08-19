@@ -137,7 +137,8 @@
                 styleClass="workflowCommandLink"
                 action="#{instanceListBean.destroyInstance}" 
                 rendered="#{instanceListBean.workflowAdmin ||
-                            instance.destroyButtonEnabled}" />
+                            instance.destroyButtonEnabled}" 
+                onclick="return confirm('#{workflowBundle.confirm_workflow_destroy}');" />
             </h:panelGroup>
           </h:column>
 

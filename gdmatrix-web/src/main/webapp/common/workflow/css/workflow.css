@@ -431,6 +431,17 @@ A.docPrintButton:hover
   background:#F0F080;
 }
 
+.debugToolbar
+{
+  padding: 6px 2px 6px 2px
+}
+
+.debugTabs
+{
+  font-family: Arial;
+  font-size: 12px;
+}
+
 .varTable
 {
   width:100%;
@@ -438,6 +449,7 @@ A.docPrintButton:hover
   border-color:black;
   border:solid;
   border-width:2px;
+  word-break: break-all;
 }
 
 .varTable td
@@ -451,6 +463,8 @@ A.docPrintButton:hover
   border-color:black;
   border-width:1px 0px 0px 0px;
   width:40%;
+  font-family: monospace;
+  font-size: 12px;
 }
 
 .varTable .col2
@@ -459,6 +473,8 @@ A.docPrintButton:hover
   border-color:black;
   border-width:1px 0px 0px 1px;
   width:60%;
+  font-family: monospace;
+  font-size: 12px;
 }
 
 .varIcon
@@ -859,11 +875,6 @@ ul.messages li
   display: inline-block;
 }
 
-.workflowInstance .body table.assistant tr td
-{
-  
-}
-
 .workflowInstance .body table.assistant tr td a 
 {
   padding: 10px 14px;
@@ -920,4 +931,115 @@ ul.messages li
   width: 75%;
   box-sizing: border-box;
   display: inline-block;
+}
+
+.stackItems > div
+{
+  border: none;
+}
+
+.stackItems a
+{
+  text-decoration: underline;
+}
+
+.stackItems ul
+{
+  list-style-type: none;
+  padding-left: 0; 
+}
+
+.stackItems ul.stackItem
+{
+  border: 1px solid gray;
+  border-radius: 3px;
+  margin-bottom: 6px;
+  padding: 4px;
+}
+
+.stackItems ul.stackItem
+{
+  font-family: monospace;
+  font-size: 12px;
+  padding: 4px;   
+}
+
+.stackItems ul.stackItem li
+{
+  color: #404060;
+}
+
+.stackItems .instanceId
+{
+  font-weight: bold;
+}
+
+.instanceEvents > div
+{
+  border: none;
+  padding: 4px;
+}
+
+.instanceEvents ul
+{
+  list-style-type: none;
+  padding-left: 0; 
+}
+
+.instanceEvent
+{
+  border: 1px solid gray;
+  border-radius: 3px;
+  margin-bottom: 6px;
+  padding: 6px;
+}
+
+.instanceEvent > li
+{
+  font-family: monospace;
+  font-size:12px;
+  padding-left: 6px;
+  color: #404060;
+}
+
+.variableChanges > div
+{
+  border: none;
+  padding-left: 6px;
+}
+
+.variableChange
+{
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 3px;
+  margin-top: 6px;
+  padding: 6px;  
+}
+
+.variableChange > li
+{
+  padding-left: 6px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #404060;
+}
+
+.variableChange a
+{
+  text-decoration: underline;
+}
+
+span.value
+{
+  color: black;
+  word-break: break-all;
+}
+
+input.set_variables
+{
+  width:350px;
+  vertical-align:middle;
+  font-family: monospace;
+  font-size:12px;
 }

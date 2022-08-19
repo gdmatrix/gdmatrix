@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.service;
@@ -35,16 +35,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.WebServiceException;
+import org.matrix.workflow.InstanceEvent;
 import org.matrix.workflow.InstanceFilter;
 import org.matrix.workflow.InstanceView;
 import org.matrix.workflow.Variable;
 import org.matrix.workflow.WorkflowConstants;
+import static org.matrix.workflow.WorkflowConstants.WORKFLOW_ADMIN_ROLE;
 import org.matrix.workflow.WorkflowManagerPort;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
@@ -84,7 +88,7 @@ public class WorkflowManager implements WorkflowManagerPort
   public static final String WORKFLOW_STORE = "workflowStore";
   public static final String AGENTS = "agents";
   public static final String MAX_STEPS = "maxSteps";
-  
+
   @Initializer
   public void initialize(String endpoint)
   {
@@ -92,26 +96,26 @@ public class WorkflowManager implements WorkflowManagerPort
     try
     {
       Properties properties = MatrixConfig.getProperties();
-      
+
       // setup workflowStore
-      String workflowStoreClassName = 
+      String workflowStoreClassName =
         MatrixConfig.getClassProperty(WorkflowManager.class, WORKFLOW_STORE);
       WorkflowStore ws = (WorkflowStore)
-        Class.forName(workflowStoreClassName).newInstance();      
+        Class.forName(workflowStoreClassName).newInstance();
       ws.init(properties);
-      
+
       // setup dataStore
-      String dataStoreClassName = 
+      String dataStoreClassName =
         MatrixConfig.getClassProperty(WorkflowManager.class, DATA_STORE);
       DataStore ds = (DataStore)
-        Class.forName(dataStoreClassName).newInstance(); 
+        Class.forName(dataStoreClassName).newInstance();
       ds.init(properties);
 
       // create engine
       engine = new WorkflowEngine(ws, ds);
 
       // create agents
-      String agentNamesString = 
+      String agentNamesString =
         MatrixConfig.getClassProperty(WorkflowManager.class, AGENTS);
       if (agentNamesString != null)
       {
@@ -123,7 +127,7 @@ public class WorkflowManager implements WorkflowManagerPort
       }
 
       // set maxSteps
-      String sMaxSteps = 
+      String sMaxSteps =
         MatrixConfig.getClassProperty(WorkflowManager.class, MAX_STEPS);
       if (sMaxSteps != null)
       {
@@ -136,20 +140,20 @@ public class WorkflowManager implements WorkflowManagerPort
       throw new RuntimeException(ex);
     }
   }
-  
+
   @Disposer
   public void dispose(String endpoint)
   {
     LOGGER.log(Level.INFO, "Disposing WorkflowManager, killing agents...");
     engine.killAllAgents();
   }
-  
+
   @Override
   public String createInstance(String workflowName, List<Variable> variables)
   {
     try
     {
-      return String.valueOf(engine.createInstance(workflowName, 
+      return String.valueOf(engine.createInstance(workflowName,
         VariableListConverter.toMap(variables),
         getWorkflowUser()));
     }
@@ -191,7 +195,7 @@ public class WorkflowManager implements WorkflowManagerPort
   {
     try
     {
-      Map map = engine.processInstance(instanceId, 
+      Map map = engine.processInstance(instanceId,
         VariableListConverter.toMap(variables),
         returnVariables, getWorkflowUser(), maxSteps);
       return VariableListConverter.toList(map);
@@ -207,7 +211,7 @@ public class WorkflowManager implements WorkflowManagerPort
   {
     try
     {
-      WorkflowEvent event = engine.doStep(instanceId, 
+      WorkflowEvent event = engine.doStep(instanceId,
         getWorkflowUser(), false);
       return event != null;
     }
@@ -245,7 +249,7 @@ public class WorkflowManager implements WorkflowManagerPort
       throw WSExceptionFactory.create(ex);
     }
   }
-  
+
   @Override
   public List<Variable> getVariables(String instanceId)
   {
@@ -301,8 +305,25 @@ public class WorkflowManager implements WorkflowManagerPort
     {
       throw WSExceptionFactory.create(ex);
     }
-  }  
-  
+  }
+
+  @Override
+  public List<InstanceEvent> getInstanceEvents(String instanceId)
+  {
+    Set<String> roles = UserCache.getUser(wsContext).getRoles();
+    if (!roles.contains(WORKFLOW_ADMIN_ROLE))
+      throw new WebServiceException("NOT_AUTHORIZED");
+
+    try
+    {
+      return engine.getInstanceEvents(instanceId);
+    }
+    catch (Exception ex)
+    {
+      throw WSExceptionFactory.create(ex);
+    }
+  }
+
   /**** private methods ****/
 
   private WorkflowUser getWorkflowUser()

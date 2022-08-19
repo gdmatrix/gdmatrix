@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow;
@@ -36,9 +36,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import org.matrix.workflow.InstanceEvent;
 import org.matrix.workflow.InstanceFilter;
 import org.matrix.workflow.WorkflowConstants;
 import org.santfeliu.util.Table;
@@ -79,12 +81,12 @@ public class WorkflowEngine
     }
     return agent;
   }
-  
+
   public synchronized WorkflowAgent getAgent(String agentName)
   {
     return (WorkflowAgent)agents.get(agentName);
   }
-  
+
   public synchronized void killAllAgents()
   {
     Collection col = agents.values();
@@ -98,7 +100,7 @@ public class WorkflowEngine
       }
     }
   }
-  
+
   public synchronized void removeDeadAgents()
   {
     Collection col = agents.values();
@@ -112,13 +114,13 @@ public class WorkflowEngine
       }
     }
   }
-  
+
   public synchronized WorkflowAgent[] getAgents()
   {
     Collection col = agents.values();
     return (WorkflowAgent[])col.toArray(new WorkflowAgent[col.size()]);
   }
-  
+
   public synchronized String assignAgent(String instanceId, String agentName)
     throws WorkflowException
   {
@@ -133,7 +135,7 @@ public class WorkflowEngine
         Map variables = new HashMap();
         variables.put(WorkflowConstants.AGENT_NAME, agentName);
         conn.storeVariables(instanceId, variables);
-        
+
         if (agentName != null) wakeUpAgent(agentName);
       }
       catch (Exception e)
@@ -156,22 +158,22 @@ public class WorkflowEngine
   public Workflow getWorkflow(String workflowName, String version)
     throws WorkflowException
   {
-    return workflowStore.getWorkflow(workflowName, version);
+    return workflowStore.getWorkflow(workflowName, version, false);
   }
-  
-  public String createInstance(String workflowName, 
+
+  public String createInstance(String workflowName,
     Map variables, WorkflowActor actor) throws WorkflowException
   {
     String instanceId = null;
     try
     {
-      Workflow workflow = workflowStore.getWorkflow(workflowName, null);
+      Workflow workflow = workflowStore.getWorkflow(workflowName, null, true);
       String workflowVersion = workflow.getVersion();
       DataStoreConnection conn = dataStore.getConnection();
       try
       {
         instanceId = String.valueOf(conn.createInstance(workflowName));
-        WorkflowInstance instance = 
+        WorkflowInstance instance =
           new WorkflowInstance(workflowName, workflowVersion, instanceId);
 
         // set START_DATE_TIME variable
@@ -179,7 +181,7 @@ public class WorkflowEngine
           TextUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
 
         // set UPDATE_ONLY_FORM rule
-        variables.put(WorkflowConstants.UPDATE_ONLY_PREFIX + "FORM", 
+        variables.put(WorkflowConstants.UPDATE_ONLY_PREFIX + "FORM",
           WorkflowConstants.FORM_PREFIX + "%");
         instance.putAll(variables);
 
@@ -194,9 +196,9 @@ public class WorkflowEngine
           agentName = findAgent();
         }
         instance.setAgentName(agentName);
-        
+
         // set DESCRIPTION var
-        String description = 
+        String description =
           (String)instance.get(WorkflowConstants.DESCRIPTION);
         if (description == null)
         {
@@ -205,7 +207,7 @@ public class WorkflowEngine
         }
 
         conn.storeVariables(instanceId, instance);
-        WorkflowEvent event = new WorkflowEvent(instanceId, 
+        WorkflowEvent event = new WorkflowEvent(instanceId,
           new ValueChanges(instance), actor.getName());
         if (workflow.isUndoable())
         {
@@ -257,7 +259,7 @@ public class WorkflowEngine
     }
     catch (Exception ex)
     {
-      throw WorkflowException.createException(ex); 
+      throw WorkflowException.createException(ex);
     }
     return destroyed;
   }
@@ -284,8 +286,8 @@ public class WorkflowEngine
     }
     return instanceId;
   }
-  
-  public Map processInstance(String instanceId, Map variables, 
+
+  public Map processInstance(String instanceId, Map variables,
     boolean returnVariables, WorkflowActor actor, int maxSteps)
     throws WorkflowException
   {
@@ -320,7 +322,7 @@ public class WorkflowEngine
       variables.put(WorkflowConstants.ERRORS, " 0 ");
       setVariables(instanceId, variables, new WorkflowAdmin(), false);
     }
-    
+
     // phase 3: return variables
     if (returnVariables)
     {
@@ -329,7 +331,7 @@ public class WorkflowEngine
     return instance;
   }
 
-  public WorkflowEvent doStep(String instanceId, WorkflowActor actor, 
+  public WorkflowEvent doStep(String instanceId, WorkflowActor actor,
     boolean moreSteps) throws WorkflowException
   {
     WorkflowEvent event = null;
@@ -348,7 +350,7 @@ public class WorkflowEngine
 
         Workflow workflow = getWorkflow(instance);
 
-        boolean pendentNodes = 
+        boolean pendentNodes =
           processActiveNodes(workflow, instance, actor, valueChanges);
 
         event = storeChanges(workflow, instance, actor, valueChanges, conn);
@@ -413,7 +415,7 @@ public class WorkflowEngine
     return undone;
   }
 
-  public Map getVariables(String instanceId, Map variables, WorkflowActor actor) 
+  public Map getVariables(String instanceId, Map variables, WorkflowActor actor)
     throws WorkflowException
   {
     try
@@ -434,11 +436,11 @@ public class WorkflowEngine
     }
     catch (Exception ex)
     {
-      throw WorkflowException.createException(ex); 
+      throw WorkflowException.createException(ex);
     }
   }
 
-  public WorkflowEvent setVariables(String instanceId, 
+  public WorkflowEvent setVariables(String instanceId,
     Map variables, WorkflowActor actor, boolean moreSteps)
     throws WorkflowException
   {
@@ -455,7 +457,7 @@ public class WorkflowEngine
 
         // check access rules
         checkWriteAccess(instance, variables, actor.getRoles());
-        
+
         ValueChanges valueChanges = new ValueChanges();
         instance.setValueChanges(valueChanges);
         instance.setEngine(this);
@@ -478,7 +480,7 @@ public class WorkflowEngine
           wakeUpAgent(instance.getAgentName());
       }
       catch (Exception ex)
-      {        
+      {
         conn.rollback();
         throw ex;
       }
@@ -514,7 +516,28 @@ public class WorkflowEngine
       throw WorkflowException.createException(ex);
     }
   }
-  
+
+  public List<InstanceEvent> getInstanceEvents(String instanceId)
+    throws WorkflowException
+  {
+    try
+    {
+      DataStoreConnection conn = dataStore.getConnection();
+      try
+      {
+        return conn.getInstanceEvents(instanceId);
+      }
+      finally
+      {
+        conn.close();
+      }
+    }
+    catch (Exception ex)
+    {
+      throw WorkflowException.createException(ex);
+    }
+  }
+
   public void programTimer(String instanceId, String dateTime)
     throws WorkflowException
   {
@@ -535,9 +558,9 @@ public class WorkflowEngine
       throw WorkflowException.createException(ex);
     }
   }
-  
+
   public void removeTimer(String instanceId, String dateTime)
-    throws WorkflowException  
+    throws WorkflowException
   {
     try
     {
@@ -556,7 +579,7 @@ public class WorkflowEngine
       throw WorkflowException.createException(ex);
     }
   }
-  
+
   public Table getTimers(String dateTime)
     throws WorkflowException
   {
@@ -577,7 +600,7 @@ public class WorkflowEngine
       throw WorkflowException.createException(ex);
     }
   }
-  
+
   public Set parseElements(String values, WorkflowInstance instance)
   {
     HashSet set = new HashSet();
@@ -587,15 +610,15 @@ public class WorkflowEngine
       TextUtils.splitWords(mergedValues, set);
     }
     return set;
-  } 
-  
+  }
+
   public Set getRolesSet(String roles, WorkflowInstance instance)
   {
     return parseElements(roles, instance);
-  }    
-  
+  }
+
   /**
-   * 
+   *
    * @param instance
    * @return
    * @throws Exception
@@ -608,14 +631,19 @@ public class WorkflowEngine
     String workflowVersion = instance.getWorkflowVersion();
     try
     {
-      workflow = workflowStore.getWorkflow(workflowName, workflowVersion);
+      boolean forceWorkflowReload =
+        instance.containsKey(WorkflowConstants.ERRORS);
+
+      // if workflow has errors, reload last workflow version
+      workflow = workflowStore.getWorkflow(workflowName, workflowVersion,
+        forceWorkflowReload);
     }
     catch (WorkflowException ex)
     {
       // if that version does not exist, try loading last version.
       if (workflowVersion != null)
       {
-        workflow = workflowStore.getWorkflow(workflowName, null);
+        workflow = workflowStore.getWorkflow(workflowName, null, true);
       }
       else throw ex;
     }
@@ -629,7 +657,7 @@ public class WorkflowEngine
    * @return true if instance is still processable by another actor
    * @throws Exception
    */
-  private boolean processActiveNodes(Workflow workflow, 
+  private boolean processActiveNodes(Workflow workflow,
     WorkflowInstance instance, WorkflowActor actor, ValueChanges valueChanges)
     throws Exception
   {
@@ -646,7 +674,7 @@ public class WorkflowEngine
       Set activeNodeSet = parseActiveNodes(activeNodes);
       Set nextActiveNodeSet = new HashSet();
 
-      pendentNodes = recursiveProcessActiveNodes(workflow, instance, actor, 
+      pendentNodes = recursiveProcessActiveNodes(workflow, instance, actor,
         activeNodeSet, nextActiveNodeSet, true);
 
       // update ACTIVE_NODES variable, if not set manually
@@ -672,9 +700,9 @@ public class WorkflowEngine
     }
     return pendentNodes;
   }
-  
+
  /**
-  * 
+  *
   * @param workflow
   * @param instance
   * @param actor
@@ -683,7 +711,7 @@ public class WorkflowEngine
   * @return
   * @throws java.lang.Exception
   */
-  private WorkflowEvent storeChanges(Workflow workflow, 
+  private WorkflowEvent storeChanges(Workflow workflow,
     WorkflowInstance instance, WorkflowActor actor,
     ValueChanges valueChanges, DataStoreConnection conn)
     throws Exception
@@ -705,9 +733,9 @@ public class WorkflowEngine
     }
     return event;
   }
-  
+
   /**
-   * 
+   *
    * @param workflow
    * @param instance
    * @param actor
@@ -716,8 +744,8 @@ public class WorkflowEngine
    * @param firstStep
    * @return true if instance is still processable by another actor
    */
-  private boolean recursiveProcessActiveNodes(Workflow workflow, 
-    WorkflowInstance instance, WorkflowActor actor, 
+  private boolean recursiveProcessActiveNodes(Workflow workflow,
+    WorkflowInstance instance, WorkflowActor actor,
     Set nodeSet, Set nextNodeSet, boolean firstStep)
   {
     boolean pendentNodes = false;
@@ -744,7 +772,7 @@ public class WorkflowEngine
         }
         else // other outcomes
         {
-          pendentNodes = recursiveProcessActiveNodes(workflow, instance, actor, 
+          pendentNodes = recursiveProcessActiveNodes(workflow, instance, actor,
             newNodeSet, nextNodeSet, false) || pendentNodes;
         }
       }
@@ -758,21 +786,21 @@ public class WorkflowEngine
   }
 
   /**
-   * 
+   *
    * @param node
    * @param instance
    * @param actor
    * @param newNodeSet
    * @return true if node returns 'wait' outcome
    */
-  private boolean processActiveNode(WorkflowNode node, 
+  private boolean processActiveNode(WorkflowNode node,
     WorkflowInstance instance, WorkflowActor actor, Set newNodeSet)
   {
     boolean wait = false;
     try
     {
       // clear error
-      instance.put(WorkflowConstants.ERROR_PREFIX + node.getId(), null); 
+      instance.put(WorkflowConstants.ERROR_PREFIX + node.getId(), null);
       String outcome = ((NodeProcessor)node).process(instance, actor); // process node
       if (WorkflowNode.END_OUTCOME.equals(outcome))
       {
@@ -790,7 +818,7 @@ public class WorkflowEngine
     catch (Exception ex)
     {
       // set error
-      instance.put(WorkflowConstants.ERROR_PREFIX + node.getId(), ex.toString()); 
+      instance.put(WorkflowConstants.ERROR_PREFIX + node.getId(), ex.toString());
       addNextNodes(node, WorkflowNode.ERROR_OUTCOME, newNodeSet);
     }
     return wait;
@@ -829,7 +857,7 @@ public class WorkflowEngine
     WorkflowNode.Transition transitions[] = node.getTransitions();
     for (WorkflowNode.Transition transition : transitions)
     {
-      if (matchOutcome(outcome, transition.getOutcome()) || 
+      if (matchOutcome(outcome, transition.getOutcome()) ||
         (transition.isAnyOutcome() &&
         !WorkflowNode.ERROR_OUTCOME.equals(outcome)))
       {
@@ -851,12 +879,12 @@ public class WorkflowEngine
     }
     return match;
   }
-  
+
   private Set parseActiveNodes(String s)
   {
     HashSet set = new HashSet();
     if (s == null) return set;
-    
+
     StringTokenizer tokenizer = new StringTokenizer(s, " ", false);
     while (tokenizer.hasMoreTokens())
     {
@@ -904,7 +932,7 @@ public class WorkflowEngine
       agent.wakeUp();
     }
   }
-  
+
   private synchronized String findAgent()
   {
     WorkflowAgent bestAgent = null;
@@ -916,7 +944,7 @@ public class WorkflowEngine
       if (agent instanceof GenericAgent)
       {
         if (bestAgent == null) bestAgent = agent;
-        else if (bestAgent.getStatistics().getLastProcessTime() < 
+        else if (bestAgent.getStatistics().getLastProcessTime() <
           agent.getStatistics().getLastProcessTime())
         {
           bestAgent = agent;
@@ -925,8 +953,8 @@ public class WorkflowEngine
     }
     return bestAgent == null ? null : bestAgent.getName();
   }
-  
-  private void filterVariables(WorkflowInstance instance, 
+
+  private void filterVariables(WorkflowInstance instance,
     Map variables, Set roles)
   {
     Iterator iter = instance.entrySet().iterator();
@@ -942,7 +970,7 @@ public class WorkflowEngine
     }
   }
 
-  private void checkWriteAccess(WorkflowInstance instance, 
+  private void checkWriteAccess(WorkflowInstance instance,
     Map variables, Set roles) throws Exception
   {
     Iterator iter = variables.entrySet().iterator();
@@ -951,7 +979,7 @@ public class WorkflowEngine
       Map.Entry entry = (Map.Entry)iter.next();
       String variable = (String)entry.getKey();
 
-      if (!instance.containsKey(variable) && 
+      if (!instance.containsKey(variable) &&
           instance.isUpdateOnlyVariable(variable))
         throw new WorkflowException(
           "Can't set variable '" + variable + "': updatable only");
@@ -966,11 +994,11 @@ public class WorkflowEngine
     WorkflowNode node, WorkflowInstance instance)
   {
     Set nodeRoles = getRolesSet(node.getRoles(), instance);
-    
+
     boolean onlyAgents = (nodeRoles.size() == 1 &&
       nodeRoles.contains(WorkflowConstants.WORKFLOW_AGENT_ROLE));
 
-    return actor.hasAnyRole(nodeRoles) || 
+    return actor.hasAnyRole(nodeRoles) ||
       (actor.isWorkflowAdministrator() && !onlyAgents);
   }
 }

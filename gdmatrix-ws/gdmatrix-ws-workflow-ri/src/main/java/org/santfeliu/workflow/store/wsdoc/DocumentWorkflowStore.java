@@ -171,17 +171,12 @@ public class DocumentWorkflowStore extends BaseWorkflowStore
 
       DataHandler dh = document.getContent().getData();
       DataSource dataSource = dh.getDataSource();
-      InputStream stream = dataSource.getInputStream();
-      try
+      try (InputStream stream = dataSource.getInputStream())
       {
         WorkflowReader reader =
           new WorkflowReader("org.santfeliu.workflow.processor");
         workflow = reader.read(stream);
         workflow.setVersion(workflowVersion);
-      }
-      finally
-      {
-        stream.close();
       }
       // auto fix workflow
       String fixEnabled =

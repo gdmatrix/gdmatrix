@@ -31,14 +31,18 @@
 package org.santfeliu.workflow.store.dsdbf;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.matrix.workflow.InstanceEvent;
 import org.matrix.workflow.InstanceFilter;
+import org.matrix.workflow.VariableChange;
 import org.matrix.workflow.VariableFilter;
 import org.matrix.workflow.WorkflowConstants;
 import org.santfeliu.dbf.DBConnection;
@@ -502,6 +506,51 @@ public class DBDataStoreConnection implements DataStoreConnection
       row++;
     }
     return result;
+  }
+
+  @Override
+  public List<InstanceEvent> getInstanceEvents(String instanceId)
+    throws Exception
+  {
+    parameters.clear();
+    parameters.put("instanceId", instanceId);
+
+    String query = "select e.eventnum, eventdate, eventhour, e.actor, " +
+      "name, type, oldvalue, newvalue " +
+      "from wfw_event e, wfw_eventvar ev " +
+      "where e.instanceid = ev.instanceid and e.eventnum = ev.eventnum and " +
+      "e.instanceid = {instanceId} order by e.eventnum, name";
+
+    Table table = conn.executeQuery(query, parameters);
+    List<InstanceEvent> instanceEvents = new ArrayList<>();
+    InstanceEvent instanceEvent = null;
+    int eventNum = -1;
+
+    for (int i = 0; i < table.getRowCount(); i++)
+    {
+      int nextEventNum = ((Number)table.getElementAt(i, 0)).intValue();
+      if (nextEventNum != eventNum || instanceEvent == null)
+      {
+        eventNum = nextEventNum;
+        String date = (String)table.getElementAt(i, 1);
+        String time = (String)table.getElementAt(i, 2);
+        String actorName = (String)table.getElementAt(i, 3);
+        String dateTime = date + time;
+        instanceEvent = new InstanceEvent();
+        instanceEvent.setInstanceId(instanceId);
+        instanceEvent.setEventNum(eventNum);
+        instanceEvent.setDateTime(dateTime);
+        instanceEvent.setActorName(actorName);
+        instanceEvents.add(instanceEvent);
+      }
+      VariableChange variableChange = new VariableChange();
+      variableChange.setName((String)table.getElementAt(i, 4));
+      variableChange.setType((String)table.getElementAt(i, 5));
+      variableChange.setOldValue((String)table.getElementAt(i, 6));
+      variableChange.setNewValue((String)table.getElementAt(i, 7));
+      instanceEvent.getVariableChange().add(variableChange);
+    }
+    return instanceEvents;
   }
 
   @Override

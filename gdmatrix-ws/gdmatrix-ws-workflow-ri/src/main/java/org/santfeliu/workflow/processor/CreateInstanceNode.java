@@ -1,44 +1,47 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.processor;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.matrix.workflow.WorkflowConstants;
+import static org.matrix.workflow.WorkflowConstants.ACTIVE_NODES;
+import static org.matrix.workflow.WorkflowConstants.ERRORS;
+import static org.matrix.workflow.WorkflowConstants.INVOCATION_PREFIX;
+import static org.matrix.workflow.WorkflowConstants.INVOKER_INSTANCE_ID;
+import static org.matrix.workflow.WorkflowConstants.INVOKER_NODE_ID;
 import org.santfeliu.util.Properties;
 import org.santfeliu.util.template.Template;
 import org.santfeliu.workflow.WorkflowActor;
 import org.santfeliu.workflow.WorkflowAdmin;
 import org.santfeliu.workflow.WorkflowEngine;
-import org.santfeliu.workflow.WorkflowException;
 import org.santfeliu.workflow.WorkflowInstance;
 
 
@@ -46,8 +49,8 @@ import org.santfeliu.workflow.WorkflowInstance;
  *
  * @author realor
  */
-public class CreateInstanceNode 
-  extends org.santfeliu.workflow.node.CreateInstanceNode 
+public class CreateInstanceNode
+  extends org.santfeliu.workflow.node.CreateInstanceNode
   implements NodeProcessor
 {
   @Override
@@ -56,20 +59,20 @@ public class CreateInstanceNode
   {
     String outcome;
     String newInstanceId =
-      (String)instance.get(WorkflowConstants.INVOCATION_PREFIX + getId());
+      (String)instance.get(INVOCATION_PREFIX + getId());
     // first process
     if (newInstanceId == null)
     {
       String wn = Template.create(workflowName).merge(instance);
       Map map = getFinalParameters(instance);
-      map.put(WorkflowConstants.INVOKER_INSTANCE_ID, instance.getInstanceId());
-      map.put(WorkflowConstants.INVOKER_NODE_ID, getId());
-      
+      map.put(INVOKER_INSTANCE_ID, instance.getInstanceId());
+      map.put(INVOKER_NODE_ID, getId());
+
       WorkflowEngine engine = instance.getEngine();
       newInstanceId = engine.createInstance(wn, map, actor);
       if (waitResult)
       {
-        instance.put(WorkflowConstants.INVOCATION_PREFIX + getId(), 
+        instance.put(INVOCATION_PREFIX + getId(),
           newInstanceId);
         outcome = WAIT_OUTCOME;
       }
@@ -84,12 +87,11 @@ public class CreateInstanceNode
       HashMap variables = new HashMap();
       instance.getEngine().getVariables(newInstanceId, variables, admin);
       // newInstanceId terminated?
-      if (variables.get(WorkflowConstants.ACTIVE_NODES) == null)
+      if (variables.get(ACTIVE_NODES) == null &&
+          variables.get(ERRORS) == null)
       {
-        instance.put(WorkflowConstants.INVOCATION_PREFIX + getId(), null);
-        if (variables.get(WorkflowConstants.ERRORS) != null)
-          throw new WorkflowException(
-            "Child instance [" + newInstanceId + "] terminated with errors");
+        // continue execution only if child process finished without errors
+        instance.put(INVOCATION_PREFIX + getId(), null);
         outcome = CONTINUE_OUTCOME;
       }
       else
@@ -99,7 +101,7 @@ public class CreateInstanceNode
     }
     return outcome;
   }
-  
+
   private Map getFinalParameters(WorkflowInstance instance)
   {
     Properties finalParameters = new Properties();

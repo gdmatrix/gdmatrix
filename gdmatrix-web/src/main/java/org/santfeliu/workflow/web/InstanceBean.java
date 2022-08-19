@@ -36,21 +36,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
-
 import javax.faces.component.html.HtmlInputText;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
-
+import org.matrix.workflow.InstanceEvent;
 import org.matrix.workflow.WorkflowConstants;
 import org.matrix.workflow.WorkflowManagerPort;
 import org.matrix.workflow.WorkflowManagerService;
-
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
@@ -62,7 +61,7 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.workflow.VariableListConverter;
 import org.santfeliu.workflow.form.Form;
 import org.santfeliu.workflow.form.FormFactory;
-
+import static org.matrix.workflow.WorkflowConstants.*;
 
 /**
  *
@@ -92,7 +91,8 @@ public class InstanceBean extends FacesBean implements Serializable
   private boolean backwardEnabled;
 
   private Form selectedForm;
-  private List pendentForms = new ArrayList();
+  private List<Form> pendentForms = new ArrayList<>();
+  private int activeDebugTab = 0;
 
   private transient HtmlInputText inputText;
 
@@ -142,12 +142,12 @@ public class InstanceBean extends FacesBean implements Serializable
     return selectedForm.equals(form);
   }
 
-  public void setPendentForms(List pendentForms)
+  public void setPendentForms(List<Form> pendentForms)
   {
     this.pendentForms = pendentForms;
   }
 
-  public List getPendentForms()
+  public List<Form> getPendentForms()
   {
     return pendentForms;
   }
@@ -196,6 +196,16 @@ public class InstanceBean extends FacesBean implements Serializable
       }
     }
     return styleClass;
+  }
+
+  public int getActiveDebugTab()
+  {
+    return activeDebugTab;
+  }
+
+  public void setActiveDebugTab(int activeDebugTab)
+  {
+    this.activeDebugTab = activeDebugTab;
   }
 
   public String getWorkflowName()
@@ -280,6 +290,11 @@ public class InstanceBean extends FacesBean implements Serializable
     return destroyEnabled;
   }
 
+  public boolean isRecoverEnabled()
+  {
+    return this.isErrorDetected();
+  }
+
   public String getFormRenderers()
   {
     if (variables != null)
@@ -351,10 +366,10 @@ public class InstanceBean extends FacesBean implements Serializable
     boolean translationEnabled = false; // false by default
     if (variables != null)
     {
-      Object value = variables.get(WorkflowConstants.TRANSLATION_ENABLED);
+      Object value = variables.get(TRANSLATION_ENABLED);
       if (value instanceof Boolean)
       {
-        translationEnabled = ((Boolean)value).booleanValue();
+        translationEnabled = ((Boolean)value);
       }
     }
     return translationEnabled;
@@ -368,13 +383,13 @@ public class InstanceBean extends FacesBean implements Serializable
   public boolean isTerminated()
   {
     if (variables == null) return false;
-    return variables.get(WorkflowConstants.ACTIVE_NODES) == null;
+    return variables.get(ACTIVE_NODES) == null;
   }
 
   public boolean isErrorDetected()
   {
     if (variables == null) return false;
-    return variables.get(WorkflowConstants.ERRORS) != null;
+    return variables.get(ERRORS) != null;
   }
 
   public String getFinalMessage()
@@ -383,9 +398,9 @@ public class InstanceBean extends FacesBean implements Serializable
 
     if (variables != null)
     {
-      if (variables.get(WorkflowConstants.ERRORS) == null) // OK
+      if (variables.get(ERRORS) == null) // OK
       {
-        Object value = variables.get(WorkflowConstants.TERMINATION_MESSAGE);
+        Object value = variables.get(TERMINATION_MESSAGE);
         if (value instanceof String)
         {
           message = (String)value;
@@ -399,7 +414,7 @@ public class InstanceBean extends FacesBean implements Serializable
       }
       else // ERROR
       {
-        Object value = variables.get(WorkflowConstants.FAIL_MESSAGE);
+        Object value = variables.get(FAIL_MESSAGE);
         if (value instanceof String)
         {
           message = (String)value;
@@ -421,9 +436,9 @@ public class InstanceBean extends FacesBean implements Serializable
 
     if (variables != null)
     {
-      if (variables.get(WorkflowConstants.ERRORS) == null) // OK
+      if (variables.get(ERRORS) == null) // OK
       {
-        Object value = variables.get(WorkflowConstants.TERMINATION_ICON);
+        Object value = variables.get(TERMINATION_ICON);
         if (value instanceof String)
         {
           url = (String)value;
@@ -435,7 +450,7 @@ public class InstanceBean extends FacesBean implements Serializable
       }
       else // FAIL
       {
-        Object value = variables.get(WorkflowConstants.FAIL_ICON);
+        Object value = variables.get(FAIL_ICON);
         if (value instanceof String)
         {
           url = (String)value;
@@ -451,8 +466,8 @@ public class InstanceBean extends FacesBean implements Serializable
 
   public boolean isWorkflowAdmin()
   {
-    return UserSessionBean.getCurrentInstance().
-      isUserInRole(WorkflowConstants.WORKFLOW_ADMIN_ROLE);
+    return UserSessionBean.getCurrentInstance()
+      .isUserInRole(WORKFLOW_ADMIN_ROLE);
   }
 
   public void setInputText(HtmlInputText inputText)
@@ -525,7 +540,6 @@ public class InstanceBean extends FacesBean implements Serializable
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
       error(ex);
     }
     return null;
@@ -543,8 +557,7 @@ public class InstanceBean extends FacesBean implements Serializable
         formVariables = formBean.submit();
         if (formVariables != null)
         {
-          formVariables.put(selectedForm.getVariable(),
-            WorkflowConstants.FORWARD_STATE);
+          formVariables.put(selectedForm.getVariable(), FORWARD_STATE);
         }
       }
       WorkflowManagerPort port = getWorkflowManagerPort();
@@ -556,16 +569,7 @@ public class InstanceBean extends FacesBean implements Serializable
     }
     catch (Exception ex)
     {
-      if (ex.getMessage().contains("Can't set variable"))
-      {
-        error("SET_VARIABLES_FAILED", new Object[]{ex.toString()});
-        return "error_detected";
-      }
-      else
-      {
-        error(ex);
-        return null;
-      }
+      return processException(ex);
     }
   }
 
@@ -577,8 +581,7 @@ public class InstanceBean extends FacesBean implements Serializable
       if (selectedForm != null)
       {
         formVariables = new HashMap();
-        formVariables.put(selectedForm.getVariable(),
-          WorkflowConstants.BACKWARD_STATE);
+        formVariables.put(selectedForm.getVariable(), BACKWARD_STATE);
       }
       WorkflowManagerPort port = getWorkflowManagerPort();
       this.variables = VariableListConverter.toMap(
@@ -589,41 +592,7 @@ public class InstanceBean extends FacesBean implements Serializable
     }
     catch (Exception ex)
     {
-      if (ex.getMessage().startsWith("Can't set variable"))
-      {
-        error("SET_VARIABLES_FAILED", new Object[]{ex.toString()});
-        return "error_detected";
-      }
-      else
-      {
-        error(ex);
-        return null;
-      }
-    }
-  }
-
-  public String updateInstance()
-  {
-    try
-    {
-      WorkflowManagerPort port = getWorkflowManagerPort();
-      this.variables =
-        VariableListConverter.toMap(port.getVariables(instanceId));
-      loadPendentForms();
-      return updateForm();
-    }
-    catch (Exception ex)
-    {
-      if (ex.getMessage().startsWith("Can't set variable"))
-      {
-        error("SET_VARIABLES_FAILED", new Object[]{ex.toString()});
-        return "error_detected";
-      }
-      else
-      {
-        error(ex);
-        return null;
-      }
+      return processException(ex);
     }
   }
 
@@ -647,16 +616,23 @@ public class InstanceBean extends FacesBean implements Serializable
 
   public String updateForm()
   {
+    return updateForm(false);
+  }
+
+  public String updateForm(boolean stayInInstance)
+  {
     formEnabled = true;
-    if (variables.get(WorkflowConstants.ACTIVE_NODES) == null)
+    if (variables.get(ACTIVE_NODES) == null)
     {
       // look for return
-      String invokerInstanceId = (String)variables.get(
-        WorkflowConstants.INVOKER_INSTANCE_ID);
-      if (invokerInstanceId != null && !isErrorDetected())
+      if (!stayInInstance)
       {
-        setInstanceId(invokerInstanceId);
-        return forward();
+        String invokerInstanceId = (String)variables.get(INVOKER_INSTANCE_ID);
+        if (invokerInstanceId != null && !isErrorDetected())
+        {
+          setInstanceId(invokerInstanceId);
+          return forward();
+        }
       }
       // instance terminated
       forwardEnabled = false;
@@ -691,11 +667,14 @@ public class InstanceBean extends FacesBean implements Serializable
       }
       else // there is no Form, look for invocation
       {
-        String invokedInstanceId = findInvokedInstance();
-        if (invokedInstanceId != null)
+        if (!stayInInstance)
         {
-          setInstanceId(invokedInstanceId);
-          return forward();
+          String invokedInstanceId = findInvokedInstance();
+          if (invokedInstanceId != null)
+          {
+            setInstanceId(invokedInstanceId);
+            return forward();
+          }
         }
       }
     }
@@ -704,6 +683,55 @@ public class InstanceBean extends FacesBean implements Serializable
     backwardEnabled = false;
 
     return "nothing_to_do";
+  }
+
+  public String recover()
+  {
+    try
+    {
+      Object errorsValue = variables.get(ERRORS);
+      if (errorsValue instanceof String)
+      {
+        Map changes = new HashMap();
+
+        Set<String> activeNodesSet = new HashSet<>();
+
+        // load active nodes in a Set
+        Object activeNodesValue = variables.get(ACTIVE_NODES);
+        if (activeNodesValue != null)
+        {
+          String activeNodes = String.valueOf(activeNodesValue);
+          for (String activeNode : activeNodes.split(" "))
+          {
+            activeNodesSet.add(activeNode);
+          }
+        }
+
+        // add the error nodes to the Set
+        String errors = String.valueOf(errorsValue);
+        for (String errorNode : errors.split(" "))
+        {
+          changes.put(ERROR_PREFIX + errorNode, null);
+          activeNodesSet.add(errorNode);
+        }
+
+        String activeNodes = " " + String.join(" ", activeNodesSet) + " ";
+        changes.put(ACTIVE_NODES, activeNodes);
+        changes.put(ERRORS, null);
+
+        WorkflowManagerPort port = getWorkflowManagerPort();
+        this.variables = VariableListConverter.toMap(
+          port.processInstance(instanceId,
+          VariableListConverter.toList(changes), true));
+        loadPendentForms();
+        return updateForm();
+      }
+    }
+    catch (Exception ex)
+    {
+      return processException(ex);
+    }
+    return null;
   }
 
   public String doStep()
@@ -715,7 +743,7 @@ public class InstanceBean extends FacesBean implements Serializable
       this.variables =
         VariableListConverter.toMap(port.getVariables(instanceId));
       loadPendentForms();
-      return updateForm();
+      return updateForm(true);
     }
     catch (Exception ex)
     {
@@ -733,13 +761,29 @@ public class InstanceBean extends FacesBean implements Serializable
       this.variables =
         VariableListConverter.toMap(port.getVariables(instanceId));
       loadPendentForms();
-      return updateForm();
+      return updateForm(true);
     }
     catch (Exception ex)
     {
       error(ex);
     }
     return null;
+  }
+
+  public String updateInstance()
+  {
+    try
+    {
+      WorkflowManagerPort port = getWorkflowManagerPort();
+      this.variables =
+        VariableListConverter.toMap(port.getVariables(instanceId));
+      loadPendentForms();
+      return updateForm();
+    }
+    catch (Exception ex)
+    {
+      return processException(ex);
+    }
   }
 
   public String setVariables()
@@ -755,8 +799,89 @@ public class InstanceBean extends FacesBean implements Serializable
         VariableListConverter.toList(newVariables));
       this.variables =
         VariableListConverter.toMap(port.getVariables(instanceId));
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;
+  }
+
+  public String showInstance(String instanceId)
+  {
+    if (this.instanceId.equals(instanceId)) return null;
+
+    try
+    {
+      WorkflowManagerPort port = getWorkflowManagerPort();
+      this.variables =
+        VariableListConverter.toMap(port.getVariables(instanceId));
+      this.instanceId = instanceId;
+      activeDebugTab = 0;
       loadPendentForms();
-      return updateForm();
+      return updateForm(true);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;
+  }
+
+  public boolean isInstanceIdVariable(String name)
+  {
+    return name.equals(INSTANCE_ID)
+      || name.equals(INVOKER_INSTANCE_ID)
+      || name.startsWith(INVOCATION_PREFIX);
+  }
+
+  public List<StackItem> getStackItems()
+  {
+    List<StackItem> stackItems = new ArrayList<>();
+
+    try
+    {
+      Map currentVariables = this.variables;
+      WorkflowManagerPort port = getWorkflowManagerPort();
+
+      while (currentVariables != null)
+      {
+        StackItem stackItem = new StackItem();
+        stackItem.setWorkflowName((String)currentVariables.get(WORKFLOW_NAME));
+        stackItem.setInstanceId((String)currentVariables.get(INSTANCE_ID));
+        stackItem.setDescription((String)currentVariables.get(DESCRIPTION));
+        stackItem.setActiveNodes((String)currentVariables.get(ACTIVE_NODES));
+        stackItem.setInvokerNodeId((String)currentVariables.get(INVOKER_NODE_ID));
+        stackItem.setErrors((String)currentVariables.get(ERRORS));
+        stackItems.add(stackItem);
+
+        String invokerInstanceId = (String)currentVariables.get(INVOKER_INSTANCE_ID);
+        if (invokerInstanceId != null)
+        {
+          currentVariables =
+            VariableListConverter.toMap(port.getVariables(invokerInstanceId));
+        }
+        else
+        {
+          currentVariables = null;
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return stackItems;
+  }
+
+  public List<InstanceEvent> getInstanceEvents()
+  {
+    try
+    {
+      WorkflowManagerPort port = getWorkflowManagerPort();
+      List<InstanceEvent> instanceEvents = port.getInstanceEvents(instanceId);
+      Collections.reverse(instanceEvents);
+      return instanceEvents;
     }
     catch (Exception ex)
     {
@@ -793,13 +918,13 @@ public class InstanceBean extends FacesBean implements Serializable
 
     // set description
     if (description != null)
-      parameters.put(WorkflowConstants.DESCRIPTION, description);
+      parameters.put(DESCRIPTION, description);
 
     // set simulation variable
-    parameters.put(WorkflowConstants.SIMULATION, simulation);
+    parameters.put(SIMULATION, simulation);
 
     // assign any agent
-    parameters.put(WorkflowConstants.AGENT_NAME, WorkflowConstants.ANY_AGENT);
+    parameters.put(AGENT_NAME, ANY_AGENT);
 
     // create instance
     instanceId = port.createInstance(workflowName,
@@ -855,12 +980,26 @@ public class InstanceBean extends FacesBean implements Serializable
     HashMap newVariables = new HashMap();
     addCreatorVariables(newVariables);
 
-    newVariables.put(formName, WorkflowConstants.FORWARD_STATE);
+    newVariables.put(formName, FORWARD_STATE);
     port.setVariables(instanceId,
       VariableListConverter.toList(newVariables));
   }
 
   //********* private methods **********
+
+  private String processException(Exception ex)
+  {
+    if (ex.getMessage().contains("Can't set variable"))
+    {
+      error("SET_VARIABLES_FAILED", new Object[]{ex.toString()});
+      return "error_detected";
+    }
+    else
+    {
+      error(ex);
+    }
+    return null;
+  }
 
   private void loadPendentForms()
   {
@@ -878,7 +1017,7 @@ public class InstanceBean extends FacesBean implements Serializable
     {
       Map.Entry entry = (Map.Entry)iter.next();
       String variable = (String)entry.getKey();
-      if (variable.startsWith(WorkflowConstants.FORM_PREFIX))
+      if (variable.startsWith(FORM_PREFIX))
       {
         Object value = entry.getValue();
         if (value instanceof String)
@@ -887,7 +1026,7 @@ public class InstanceBean extends FacesBean implements Serializable
 
           Form form = FormFactory.parse(formValue);
           form.setVariable(variable);
-          if (WorkflowConstants.SHOW_STATE.equals(form.getState()))
+          if (SHOW_STATE.equals(form.getState()))
           {
             pendentForms.add(form);
             if (form.getGroup().equals(group))
@@ -901,14 +1040,14 @@ public class InstanceBean extends FacesBean implements Serializable
     Collections.sort(pendentForms, Form.getComparator());
     if (selectedForm == null && pendentForms.size() > 0)
     {
-      selectedForm = (Form)pendentForms.get(0);
+      selectedForm = pendentForms.get(0);
     }
   }
 
   private boolean isFormEnabled(Form selectedForm)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    if (userSessionBean.isUserInRole(WorkflowConstants.WORKFLOW_ADMIN_ROLE))
+    if (userSessionBean.isUserInRole(WORKFLOW_ADMIN_ROLE))
       return true;
 
     Set roles = userSessionBean.getRoles();
@@ -919,7 +1058,7 @@ public class InstanceBean extends FacesBean implements Serializable
     while (iter.hasNext() && !editable)
     {
       String variable = (String)iter.next();
-      if (variable.startsWith(WorkflowConstants.WRITE_ACCESS_PREFIX))
+      if (variable.startsWith(WRITE_ACCESS_PREFIX))
       {
         String value = (String)variables.get(variable);
         String formVariablePattern = value.substring(20).trim();
@@ -942,7 +1081,7 @@ public class InstanceBean extends FacesBean implements Serializable
     {
       Map.Entry entry = (Map.Entry)iter.next();
       String variable = (String)entry.getKey();
-      if (variable.startsWith(WorkflowConstants.INVOCATION_PREFIX))
+      if (variable.startsWith(INVOCATION_PREFIX))
       {
         Object value = entry.getValue();
         invokedInstanceId = value.toString();

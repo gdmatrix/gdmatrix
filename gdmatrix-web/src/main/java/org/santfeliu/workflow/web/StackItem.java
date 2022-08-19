@@ -28,30 +28,78 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.workflow.store;
-
-import java.util.Collection;
-import java.util.Properties;
-
-import org.santfeliu.workflow.Workflow;
-import org.santfeliu.workflow.WorkflowException;
+package org.santfeliu.workflow.web;
 
 /**
  *
  * @author realor
  */
-public interface WorkflowStore
+public class StackItem
 {
-  public void init(Properties properties)
-    throws WorkflowException;
+  private String workflowName;
+  private String instanceId;
+  private String description;
+  private String activeNodes;
+  private String invokerNodeId;
+  private String errors;
 
-  public String getCurrentWorkflowVersion(String workflowName)
-    throws WorkflowException;
+  public String getWorkflowName()
+  {
+    return workflowName;
+  }
 
-  /* if workflowVersion == null returns the last version */
-  public Workflow getWorkflow(String workflowName, String workflowVersion,
-    boolean forceWorkflowReload) throws WorkflowException;
+  public void setWorkflowName(String workflowName)
+  {
+    this.workflowName = workflowName;
+  }
 
-  public Collection getWorkflowNames()
-    throws WorkflowException;
+  public String getInstanceId()
+  {
+    return instanceId;
+  }
+
+  public void setInstanceId(String instanceId)
+  {
+    this.instanceId = instanceId;
+  }
+
+  public String getDescription()
+  {
+    return description;
+  }
+
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
+
+  public String getActiveNodes()
+  {
+    return activeNodes;
+  }
+
+  public void setActiveNodes(String activeNodes)
+  {
+    this.activeNodes = activeNodes;
+  }
+
+  public String getInvokerNodeId()
+  {
+    return invokerNodeId;
+  }
+
+  public void setInvokerNodeId(String invokerNodeId)
+  {
+    this.invokerNodeId = invokerNodeId;
+  }
+
+  public String getErrors()
+  {
+    return errors;
+  }
+
+  public void setErrors(String errors)
+  {
+    this.errors = errors;
+  }
 }
