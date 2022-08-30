@@ -16,7 +16,7 @@
 
       <h:panelGroup styleClass="block1">
         <h:graphicImage url="/images/gdmatrix/icon_text_white.svg" alt="gdmatrix" styleClass="gdmatrix_logo" />
-        <t:div forceId="true" id="toolbarRenderingButtons">
+        <t:div forceId="true" id="toolbarRenderingButtons" styleClass="toolbarRenderingButtons">
           <h:commandLink value="#{applicationBean.version}" 
                          disabled="#{userSessionBean.renderDisabled}"
                          styleClass="tb_button #{userSessionBean.matrixInfoViewSelected ? 'selected' : ''} info"

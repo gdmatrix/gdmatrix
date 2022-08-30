@@ -1,32 +1,28 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:p="http://primefaces.org/ui">
 
   <p:outputPanel styleClass="nodeConfigPanel" 
                  rendered="#{nodeEditBean.formsTabSelected}">
     
-    <p:outputPanel styleClass="flexRowPanel wide">
+    <div class="flexRowPanel wide">
 
-      <p:outputPanel styleClass="buttonsPanel">
+      <div class="buttonsPanel">
         <p:commandLink actionListener="#{configFormsBacking.storeForms}" styleClass="imageButton"
                        rendered="#{nodeEditBean.savePropertiesEnabled}" 
-                       update="@this toolbarRenderingButtons topPanel mainform:tree rootSelectionPanel userPropertyListPanel messagesPanel" ajax="true">
+                       update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel @(.userPropertyListPanel) :mainform:messagesPanel" ajax="true">
           <h:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
         </p:commandLink>
         <p:commandLink actionListener="#{nodeEditBean.revertProperties}" styleClass="imageButton"
                        rendered="#{nodeEditBean.addPropertyEnabled}"
-                       update="@this userPropertyListPanel messagesPanel" ajax="true" global="false">
+                       update="@this @(.userPropertyListPanel) :mainform:messagesPanel" ajax="true" global="false">
           <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
         </p:commandLink>
-      </p:outputPanel>
+      </div>
         
+    </div>
 
-    </p:outputPanel>
-    
- 
     <p:outputPanel id="editFormsPanel" styleClass="editFormsPanel expand">
       
       <p:tabView styleClass="w-12">

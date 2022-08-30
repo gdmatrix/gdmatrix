@@ -7,12 +7,12 @@
   
     <div class="formgrid grid">
       
-      <p:outputPanel styleClass="buttonsPanel">
+      <div class="buttonsPanel">
         <p:commandLink actionListener="#{pfTemplateConfigBacking.store()}" styleClass="imageButton"
-                       update="@this toolbarRenderingButtons topPanel mainform:tree rootSelectionPanel userPropertyListPanel messagesPanel" ajax="true">
+                       update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel @(.userPropertyListPanel) :mainform:messagesPanel" ajax="true">
           <h:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
         </p:commandLink>
-      </p:outputPanel>      
+      </div>      
       
       <div class="field col-12">
         <p:outputLabel for="@next" value="Icona"/>

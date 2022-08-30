@@ -318,24 +318,24 @@ public class SystemConfigBacking extends WebBacking
   
   public String getTopWeb()
   {
-    return getDirectProperty(TOPWEB);
+    return getBooleanProperty(TOPWEB, false);
   }
   
   public void setTopWeb(String topWeb)
   {
-    setBooleanProperty(TOPWEB, topWeb);
+    setBooleanProperty(TOPWEB, topWeb, false);
   }
 
   //RENDERED
   
   public String getRendered()
   {
-    return getDirectProperty(RENDERED);
+    return getBooleanProperty(RENDERED, true);
   }
   
   public void setRendered(String rendered)
   {
-    setBooleanProperty(RENDERED, rendered);
+    setBooleanProperty(RENDERED, rendered, true);
   }
   
   //TOPIC
@@ -544,10 +544,18 @@ public class SystemConfigBacking extends WebBacking
       return new ArrayList();      
     }
   }
-
-  private void setBooleanProperty(String name, String value)
-  {
-    configHelper.setProperty(name, ("true".equals(value) ? value : null));    
-  }  
   
+  private String getBooleanProperty(String name, boolean defaultValue)
+  {
+    String value = getDirectProperty(name);
+    return (value != null ? value : Boolean.toString(defaultValue));
+  }
+  
+  private void setBooleanProperty(String name, String value, 
+    boolean defaultValue)
+  {
+    configHelper.setProperty(name, 
+      (defaultValue != Boolean.parseBoolean(value) ? value : null));    
+  }
+
 }

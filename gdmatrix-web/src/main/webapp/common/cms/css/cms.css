@@ -359,6 +359,8 @@ a.imageButton img:hover
 .rightPanel .propertyTable TR.property TD
 {
   vertical-align:top;
+  border: 0;
+  padding-bottom: 4px;
 }
 
 .rightPanel .propertyTable TR.property TD.col1
@@ -374,11 +376,15 @@ a.imageButton img:hover
 .rightPanel .propertyTable TR.property TD.col3
 {
   width:25px;
+  padding-left:0;
+  padding-right:0;
 }
 
 .rightPanel .propertyTable TR.property TD.col4
 {
   width:25px;
+  padding-left:0;
+  padding-right:0;  
 }
 
 .rightPanel .propertyTable TR.property TD.col3 img,
@@ -451,6 +457,18 @@ a.imageButton img:hover
 .nodePropertiesPanel .userPropertyListPanel
 {
   overflow: auto;
+}
+
+.nodePropertiesPanel .userPropertyListPanel .ui-datalist-content
+{
+  padding: 0;
+  border: 0;
+}
+
+.nodePropertiesPanel .userPropertyListPanel .ui-datalist-data
+{
+  padding: 0;
+  margin: 0; 
 }
 
 .nodePropertiesPanel .noPropertiesLabel
@@ -618,6 +636,49 @@ a.imageButton img:hover
 .nodeSearchPanel
 {
   overflow: auto;
+}
+
+.nodeSearchPanel .searchPropertiesPanel .propertyTable
+{
+  table-layout: auto;
+}
+
+.nodeSearchPanel .searchPropertiesPanel .propertyTable th,
+.nodeSearchPanel .searchPropertiesPanel .propertyTable td
+{
+  padding: 0;
+}
+
+.nodeSearchPanel .searchPropertiesPanel .propertyTable th
+{
+  background-color: white;
+}
+
+.nodeSearchPanel .searchPropertiesPanel .ui-datalist-content
+{
+  padding: 0;
+  border: 0;
+}
+
+.nodeSearchPanel .searchPropertiesPanel .ui-datalist-data
+{
+  padding: 0;
+  margin: 0; 
+}
+
+.nodeSearchPanel .searchPropertiesPanel .ui-datatable-footer
+{
+  padding: 0;
+  margin-top: 5px;
+  background-color: white;
+  border: 0;  
+}
+
+.nodeSearchPanel .searchPropertiesPanel .searchModeSelect
+{
+  margin-top: 10px;
+  table-layout: auto;
+  width: auto;  
 }
 
 .nodeSearchPanel .nodeSearchTitlePanel

@@ -13,167 +13,167 @@
 
       <t:saveState value="#{nodeEditBean}" />
       <t:saveState value="#{cmsToolbarBean}" />
-      
-      <t:div forceId="true" id="messagesPanel" styleClass="messagesPanel">
-        <p:growl id="messages" showDetail="false" />
-      </t:div>        
 
-      <t:div forceId="true" id="topPanel" styleClass="topPanel">        
-        <t:div styleClass="cmsCurrentPathPanel">
+      <p:outputPanel id="messagesPanel" styleClass="messagesPanel">
+        <p:growl id="messages" showDetail="false" />
+      </p:outputPanel>
+
+      <p:outputPanel id="topPanel" styleClass="topPanel">        
+        <div class="cmsCurrentPathPanel">
           <p:breadCrumb model="#{nodeEditBean.nodePathModel}" homeDisplay="text">
           </p:breadCrumb>
-        </t:div>        
-      </t:div>      
+        </div>        
+      </p:outputPanel>      
 
       <p:splitter styleClass="cmsEditPanel">
         
         <p:splitterPanel size="25" styleClass="ui-widget ui-widget-content ui-corner-all">
           
-          <t:div forceId="true" id="leftPanel" styleClass="leftPanel">
+          <p:outputPanel id="leftPanel" styleClass="leftPanel">
           
-            <t:div forceId="true" id="rootSelectionPanel" styleClass="rootSelectionPanel">
+            <p:outputPanel id="rootSelectionPanel" styleClass="rootSelectionPanel">
               <p:outputLabel value="#{cmsBundle.changeRoot ? cmsBundle.changeRoot : 'Arrel'}:" 
                              for="rootNodeSelector" />
               <p:selectOneMenu id="rootNodeSelector" value="#{nodeEditBean.rootNodeId}">
-                <p:ajax update="@this toolbarRenderingButtons topPanel leftPanel rightPanel" 
+                <p:ajax update="@this @(.toolbarRenderingButtons) topPanel leftPanel :mainform:rightPanel" 
                         listener="#{nodeEditBean.changeRootNode}" />
                 <f:selectItems value="#{nodeEditBean.rootNodeList}" var="root" 
                                itemLabel="#{root.nodeId}: #{nodeEditBean.getNodeLabel(root)}" 
                                itemValue="#{root.nodeId}"/>
               </p:selectOneMenu>            
               <p:commandLink actionListener="#{nodeEditBean.createRootNode}" styleClass="imageButton"
-                             ajax="true" update="@this topPanel leftPanel rightPanel messagesPanel">
-                <t:graphicImage url="/common/cms/images/add.png" title="#{cmsBundle.createRoot}"
+                             ajax="true" update="@this topPanel leftPanel :mainform:rightPanel messagesPanel">
+                <h:graphicImage url="/common/cms/images/add.png" title="#{cmsBundle.createRoot}"
                                 alt="#{cmsBundle.createRoot}" />
               </p:commandLink>            
-            </t:div>
+            </p:outputPanel>
             
-            <t:div forceId="true" id="nodeToolsPanel" styleClass="buttonsPanel"> 
+            <p:outputPanel id="nodeToolsPanel" styleClass="buttonsPanel"> 
               <p:commandLink actionListener="#{nodeEditBean.appendNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.appendNodeEnabled}"
-                             update="@this topPanel mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
-                <t:graphicImage alt="#{cmsBundle.appendNode}" url="/common/cms/images/add.png" title="#{cmsBundle.appendNode}" />
+                             update="@this topPanel :mainform:tree nodeToolsPanel :mainform:rightPanel messagesPanel" ajax="true" global="false">
+                <h:graphicImage alt="#{cmsBundle.appendNode}" url="/common/cms/images/add.png" title="#{cmsBundle.appendNode}" />
               </p:commandLink>
               <p:commandLink actionListener="#{nodeEditBean.insertBeforeNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.insertBeforeNodeEnabled}"
-                             update="@this topPanel mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
-                <t:graphicImage alt="#{cmsBundle.insertBeforeNode}" url="/common/cms/images/insbefore.png" title="#{cmsBundle.insertBeforeNode}" />
+                             update="@this topPanel :mainform:tree nodeToolsPanel :mainform:rightPanel messagesPanel" ajax="true" global="false">
+                <h:graphicImage alt="#{cmsBundle.insertBeforeNode}" url="/common/cms/images/insbefore.png" title="#{cmsBundle.insertBeforeNode}" />
               </p:commandLink>
               <p:commandLink actionListener="#{nodeEditBean.insertAfterNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.insertAfterNodeEnabled}"
-                             update="@this topPanel mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
-                <t:graphicImage alt="#{cmsBundle.insertAfterNode}" url="/common/cms/images/insafter.png" title="#{cmsBundle.insertAfterNode}" />
+                             update="@this topPanel :mainform:tree nodeToolsPanel :mainform:rightPanel messagesPanel" ajax="true" global="false">
+                <h:graphicImage alt="#{cmsBundle.insertAfterNode}" url="/common/cms/images/insafter.png" title="#{cmsBundle.insertAfterNode}" />
               </p:commandLink>
               <p:commandLink actionListener="#{nodeEditBean.moveNodeUp}" styleClass="imageButton"
                              rendered="#{nodeEditBean.moveNodeUpEnabled}"
-                             update="@this mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
-                <t:graphicImage alt="#{cmsBundle.moveUp}" url="/common/cms/images/move_up.png" title="#{cmsBundle.moveUp}" />
+                             update="@this :mainform:tree nodeToolsPanel :mainform:rightPanel messagesPanel" ajax="true" global="false">
+                <h:graphicImage alt="#{cmsBundle.moveUp}" url="/common/cms/images/move_up.png" title="#{cmsBundle.moveUp}" />
               </p:commandLink>
               <p:commandLink actionListener="#{nodeEditBean.moveNodeDown}" styleClass="imageButton"
                              rendered="#{nodeEditBean.moveNodeDownEnabled}"
-                             update="@this mainform:tree nodeToolsPanel rightPanel messagesPanel" ajax="true" global="false">
-                <t:graphicImage alt="#{cmsBundle.moveDown}" url="/common/cms/images/move_down.png" title="#{cmsBundle.moveDown}" />
+                             update="@this :mainform:tree nodeToolsPanel :mainform:rightPanel messagesPanel" ajax="true" global="false">
+                <h:graphicImage alt="#{cmsBundle.moveDown}" url="/common/cms/images/move_down.png" title="#{cmsBundle.moveDown}" />
               </p:commandLink>
               <p:commandLink id="removeNodeButton"
                              actionListener="#{nodeEditBean.removeNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.removeNodeEnabled}" onclick="if(!confirm('#{cmsBundle.confirmRemove} #{nodeEditBean.selectedNodeId}?')) return false;"
-                             update="@this toolbarRenderingButtons topPanel mainform:tree rootSelectionPanel nodeToolsPanel rightPanel messagesPanel" ajax="true">
-                <t:graphicImage alt="#{cmsBundle.removeNode}" url="/common/cms/images/remove.png" title="#{cmsBundle.removeNode}" />
+                             update="@this @(.toolbarRenderingButtons) topPanel :mainform:tree rootSelectionPanel nodeToolsPanel :mainform:rightPanel messagesPanel" ajax="true">
+                <h:graphicImage alt="#{cmsBundle.removeNode}" url="/common/cms/images/remove.png" title="#{cmsBundle.removeNode}" />
               </p:commandLink>
               <p:commandLink actionListener="#{nodeEditBean.cutNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.cutNodeEnabled}"
-                             update="@this mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
-                <t:graphicImage alt="#{cmsBundle.cutNode}" url="/common/cms/images/cut.png" title="#{cmsBundle.cutNode}" />
+                             update="@this :mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
+                <h:graphicImage alt="#{cmsBundle.cutNode}" url="/common/cms/images/cut.png" title="#{cmsBundle.cutNode}" />
               </p:commandLink>
               <p:commandLink actionListener="#{nodeEditBean.copyNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.copyNodeEnabled}"
-                             update="@this mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
-                <t:graphicImage alt="#{cmsBundle.copyNode}" url="/common/cms/images/copy.png" title="#{cmsBundle.copyNode}" />
+                             update="@this :mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
+                <h:graphicImage alt="#{cmsBundle.copyNode}" url="/common/cms/images/copy.png" title="#{cmsBundle.copyNode}" />
               </p:commandLink>
               <p:commandLink actionListener="#{nodeEditBean.copySingleNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.copyNodeEnabled}"
-                             update="@this mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
-                <t:graphicImage alt="#{cmsBundle.copySingleNode}" url="/common/cms/images/copysingle.png" title="#{cmsBundle.copySingleNode}" />
+                             update="@this :mainform:tree nodeToolsPanel messagesPanel" ajax="true" global="false">
+                <h:graphicImage alt="#{cmsBundle.copySingleNode}" url="/common/cms/images/copysingle.png" title="#{cmsBundle.copySingleNode}" />
               </p:commandLink>
               <p:commandLink id="pasteAsRootNodeButton"
                              actionListener="#{nodeEditBean.pasteAsRootNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.pasteAsRootNodeEnabled}"
-                             update="@this topPanel leftPanel rightPanel messagesPanel" ajax="true">
-                <t:graphicImage alt="#{cmsBundle.pasteAsRootNode}" url="/common/cms/images/asroot.png" title="#{cmsBundle.pasteAsRootNode}" />
+                             update="@this topPanel leftPanel :mainform:rightPanel messagesPanel" ajax="true">
+                <h:graphicImage alt="#{cmsBundle.pasteAsRootNode}" url="/common/cms/images/asroot.png" title="#{cmsBundle.pasteAsRootNode}" />
               </p:commandLink>
               <p:commandLink id="pasteInsideNodeButton"
                              actionListener="#{nodeEditBean.pasteInsideNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.pasteInsideNodeEnabled}"
-                             update="@this topPanel mainform:tree nodeToolsPanel rootSelectionPanel rightPanel messagesPanel" ajax="true">
-                <t:graphicImage alt="#{cmsBundle.pasteInsideNode}" url="/common/cms/images/inside.png" title="#{cmsBundle.pasteInsideNode}" />
+                             update="@this topPanel :mainform:tree nodeToolsPanel rootSelectionPanel :mainform:rightPanel messagesPanel" ajax="true">
+                <h:graphicImage alt="#{cmsBundle.pasteInsideNode}" url="/common/cms/images/inside.png" title="#{cmsBundle.pasteInsideNode}" />
               </p:commandLink>
               <p:commandLink id="pasteBeforeNodeButton"
                              actionListener="#{nodeEditBean.pasteBeforeNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.pasteBeforeNodeEnabled}"
-                             update="@this topPanel mainform:tree nodeToolsPanel rootSelectionPanel rightPanel messagesPanel" ajax="true">
-                <t:graphicImage alt="#{cmsBundle.pasteBeforeNode}" url="/common/cms/images/before.png" title="#{cmsBundle.pasteBeforeNode}" />
+                             update="@this topPanel :mainform:tree nodeToolsPanel rootSelectionPanel :mainform:rightPanel messagesPanel" ajax="true">
+                <h:graphicImage alt="#{cmsBundle.pasteBeforeNode}" url="/common/cms/images/before.png" title="#{cmsBundle.pasteBeforeNode}" />
               </p:commandLink>
               <p:commandLink id="pasteAfterNodeButton"
                              actionListener="#{nodeEditBean.pasteAfterNode}" styleClass="imageButton"
                              rendered="#{nodeEditBean.pasteAfterNodeEnabled}"
-                             update="@this topPanel mainform:tree nodeToolsPanel rootSelectionPanel rightPanel messagesPanel" ajax="true">
-                <t:graphicImage alt="#{cmsBundle.pasteAfterNode}" url="/common/cms/images/after.png" title="#{cmsBundle.pasteAfterNode}" />
+                             update="@this topPanel :mainform:tree nodeToolsPanel rootSelectionPanel :mainform:rightPanel messagesPanel" ajax="true">
+                <h:graphicImage alt="#{cmsBundle.pasteAfterNode}" url="/common/cms/images/after.png" title="#{cmsBundle.pasteAfterNode}" />
               </p:commandLink>
-            </t:div>
+            </p:outputPanel>
             
-            <t:div styleClass="treePanel">
+            <div class="treePanel">
               <p:tree id="tree"
                     styleClass="tree" value="#{nodeEditBean.treeRoot}" var="node" dynamic="true" cache="false"
                     selectionMode="single">
                 <p:ajax event="expand" listener="#{nodeEditBean.onNodeExpand}" global="false" /> 
                 <p:ajax event="collapse" listener="#{nodeEditBean.onNodeCollapse}" global="false" />
-                <p:ajax event="select" update="@this toolbarRenderingButtons topPanel nodeToolsPanel rightPanel" listener="#{nodeEditBean.onNodeSelect}" global="false" />
+                <p:ajax event="select" update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:nodeToolsPanel :mainform:rightPanel" listener="#{nodeEditBean.onNodeSelect}" global="false" />
                 <p:treeNode type="Node">
-                  <t:div styleClass="menuItem">
-                    <t:div styleClass="#{node.boxStyleClass}">
+                  <div class="menuItem">
+                    <div class="#{node.boxStyleClass}">
                       <h:outputText value="#{node.boxText}" />
-                    </t:div>
-                    <t:div styleClass="#{node.styleClass}">
+                    </div>
+                    <div class="#{node.styleClass}">
                       <h:outputText value="#{node.label}" />
-                    </t:div>
-                    <t:div styleClass="css" rendered="#{node.customCSS}">
-                      <t:graphicImage url="/common/cms/images/css.png" 
+                    </div>
+                    <p:outputPanel styleClass="css" rendered="#{node.customCSS}">
+                      <h:graphicImage url="/common/cms/images/css.png" 
                                       alt="CSS" title="CSS" />
-                    </t:div>
-                  </t:div>
+                    </p:outputPanel>
+                  </div>
                 </p:treeNode>
               </p:tree>            
-            </t:div>
+            </div>
                  
-            <t:div forceId="true" id="fastSearchPanel" styleClass="fastSearchPanel">              
+            <div class="fastSearchPanel">              
               <p:outputLabel value="#{cmsBundle.search}:" styleClass="fsLabel" />
               <p:remoteCommand id="fastSearchCommand"
                                name="fastSearch" actionListener="#{nodeEditBean.fastSearch}" 
-                               update="@this leftPanel rightPanel"
+                               update="@this leftPanel :mainform:rightPanel"
                                oncomplete="treeScrollToFound()"/>
               <p:inputText value="#{nodeEditBean.inputSearch}" styleClass="fsInput" 
                            onkeypress="if (event.keyCode == 13) { fastSearch(); return false; }">
               </p:inputText>
-              <t:div class="collapseAllPanel">
+              <div class="collapseAllPanel">
                 <p:commandButton id="collapseAllButton"
                                  actionListener="#{nodeEditBean.collapseAllNodes}" 
                                  ajax="true" global="false"
-                                 update="@this mainform:tree"
+                                 update="@this :mainform:tree"
                                  styleClass="collapseAllLink"
                                  value="#{cmsBundle.collapseAll}" />
-              </t:div>
-            </t:div>
+              </div>
+            </div>
             
-          </t:div>
+          </p:outputPanel>
           
         </p:splitterPanel>  
 
         <p:splitterPanel size="75">
           
-          <t:div forceId="true" id="rightPanel" styleClass="rightPanel">
+          <p:outputPanel id="rightPanel" styleClass="rightPanel">
 
             <p:tabView activeIndex="#{nodeEditBean.activeTabIndex}">        
-              <p:ajax event="tabChange" listener="#{nodeEditBean.onTabChange}" update="@this mainform:tree rightPanel" />            
+              <p:ajax event="tabChange" listener="#{nodeEditBean.onTabChange}" update="@this :mainform:tree :mainform:rightPanel" />            
 
               <p:tab id="propertiesTab" title="#{cmsBundle.propertiesTab}">
                 <ui:include src="./panels/properties.xhtml" />  
@@ -197,7 +197,7 @@
 
             </p:tabView>  
             
-          </t:div>
+          </p:outputPanel>
           
         </p:splitterPanel>
         

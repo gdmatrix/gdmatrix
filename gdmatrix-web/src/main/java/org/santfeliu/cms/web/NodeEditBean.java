@@ -168,8 +168,8 @@ public class NodeEditBean extends FacesBean implements Serializable
   }
 
   //********** setters/getters *********
-
-  public List<NodeChangeItem> getFullNodeChangeItemList()
+  
+  public List<NodeChangeItem> getFullNodeChangeItemList() 
   {
     analyzeWorkspaceChange();
     if (fullNodeChangeItemList == null)
@@ -637,7 +637,7 @@ public class NodeEditBean extends FacesBean implements Serializable
     this.inputSearch = inputSearch;
   }
 
-  public TreeNode getTreeRoot() 
+  public TreeNode<NodeInfo> getTreeRoot() 
   {
     if (treeRoot == null)
     {
@@ -689,8 +689,8 @@ public class NodeEditBean extends FacesBean implements Serializable
         item.setIcon("ui-icon-triangle-1-e");        
         item.setCommand("#{nodeEditBean.selectMenuItem('" + cursor.getMid() + 
           "')}");
-        item.setUpdate(
-          "@this toolbarRenderingButtons topPanel leftPanel rightPanel");
+        item.setUpdate("@this @(.toolbarRenderingButtons) " + 
+          ":mainform:topPanel :mainform:leftPanel :mainform:rightPanel");
         item.setAjax(true);
         item.setStyleClass("item");
         item.setOncomplete("treeScrollToSelected()");
@@ -718,8 +718,8 @@ public class NodeEditBean extends FacesBean implements Serializable
   
   public void onNodeSelect(NodeSelectEvent event)
   {
-    TreeNode treeNode = event.getTreeNode();
-    String nodeId = ((NodeInfo)treeNode.getData()).getNodeId();
+    TreeNode<NodeInfo> treeNode = event.getTreeNode();
+    String nodeId = treeNode.getData().getNodeId();
     selectMenuItem(nodeId);
   }
 
@@ -2037,10 +2037,10 @@ public class NodeEditBean extends FacesBean implements Serializable
   
   // ********* Private methods ********
 
-  private void expandNode(TreeNode node)
+  private void expandNode(TreeNode<NodeInfo> node)
   {
     node.setExpanded(true);
-    getExpandedNodeIdSet().add(((NodeInfo)node.getData()).getNodeId());
+    getExpandedNodeIdSet().add(node.getData().getNodeId());
     for (TreeNode n : node.getChildren())
     {
       loadNode(n);      
@@ -2074,7 +2074,7 @@ public class NodeEditBean extends FacesBean implements Serializable
   
   private void expandNodeIdPath(String[] nodeIdPath, boolean expandLast)
   {
-    TreeNode auxNode = getTreeRoot();
+    TreeNode<NodeInfo> auxNode = getTreeRoot();
     for (String nodeId : nodeIdPath)
     {
       if (!expandLast && nodeId.equals(nodeIdPath[nodeIdPath.length - 1]))
@@ -2085,9 +2085,9 @@ public class NodeEditBean extends FacesBean implements Serializable
       else
       {      
         TreeNode nextNode = null;      
-        for (TreeNode n : auxNode.getChildren())
+        for (TreeNode<NodeInfo> n : auxNode.getChildren())
         {
-          if (((NodeInfo)n.getData()).getNodeId().equals(nodeId))
+          if (n.getData().getNodeId().equals(nodeId))
           {
             expandNode(n);
             nextNode = n;
@@ -2099,28 +2099,28 @@ public class NodeEditBean extends FacesBean implements Serializable
     }  
   }
 
-  private void collapseAllNodes(TreeNode node)
+  private void collapseAllNodes(TreeNode<NodeInfo> node)
   {
-    getExpandedNodeIdSet().remove(((NodeInfo)node.getData()).getNodeId());
+    getExpandedNodeIdSet().remove(node.getData().getNodeId());
     for (TreeNode child : node.getChildren())
     {
       collapseAllNodes(child);
-    }    
+    }
   }
 
-  private void setFullTreeState(TreeNode node, boolean expanded)
+  private void setFullTreeState(TreeNode<NodeInfo> node, boolean expanded)
   {
     node.setExpanded(expanded);
     for (TreeNode child : node.getChildren())
     {
       setFullTreeState(child, expanded);
     }
-  }  
+  }
   
-  private List<String> getChildrenNodeIds(TreeNode node)
+  private List<String> getChildrenNodeIds(TreeNode<NodeInfo> node)
   {
     List<String> result = new ArrayList();
-    String nodeId = ((NodeInfo)node.getData()).getNodeId();
+    String nodeId = node.getData().getNodeId();
     MenuItemCursor menuItem = getMenuModel().getMenuItem(nodeId);
     if (menuItem.hasChildren())
     {

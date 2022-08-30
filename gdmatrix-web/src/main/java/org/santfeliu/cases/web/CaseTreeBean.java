@@ -139,7 +139,7 @@ public class CaseTreeBean extends PageBean
   {    
   }
   
-  public TreeNode getRoot() 
+  public TreeNode<CaseInfo> getRoot() 
   {
     return root;
   }
@@ -312,7 +312,7 @@ public class CaseTreeBean extends PageBean
     }    
     if (includeSiblings)
     {
-      TreeNode parent = node.getParent();
+      TreeNode<CaseInfo> parent = node.getParent();
       for (TreeNode sibling : parent.getChildren())
       {
         if (sibling != node)
