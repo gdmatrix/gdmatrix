@@ -47,7 +47,7 @@ import org.santfeliu.web.obj.PageBean;
  */
 public abstract class RolesTreeBean extends PageBean
 {
-  private TreeNode root;
+  private TreeNode<NodeInfo> root;
   
   private String inputSearchText;
   private Set<String> foundRoles;
@@ -150,7 +150,7 @@ public abstract class RolesTreeBean extends PageBean
     }
   }
   
-  private void searchNodes(TreeNode node, String inputSearchString)
+  private void searchNodes(TreeNode<NodeInfo> node, String inputSearchString)
   {
     String roleId = getRoleId(node);
     if (roleId != null && roleId.toLowerCase().contains(inputSearchString))
@@ -165,7 +165,7 @@ public abstract class RolesTreeBean extends PageBean
     }    
   }
 
-  private void setFullTreeState(TreeNode node, boolean expanded)
+  private void setFullTreeState(TreeNode<NodeInfo> node, boolean expanded)
   {
     node.setExpanded(expanded);
     for (TreeNode child : node.getChildren())

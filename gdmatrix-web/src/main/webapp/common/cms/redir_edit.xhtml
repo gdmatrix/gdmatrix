@@ -2,42 +2,38 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:p="http://primefaces.org/ui">
 
   <ui:composition template="/topframe/topframe.xhtml">
     <ui:param name="css" value="/common/cms/css/cms.css" />    
     <ui:define name="page">
 
       <f:loadBundle basename="org.santfeliu.cms.web.resources.CMSBundle" var="cmsBundle" />
-      
-      <t:saveState value="#{redirEditBean}" />
-      <t:saveState value="#{cmsToolbarBean}" />      
-     
-      <t:div forceId="true" id="messagesPanel" styleClass="messagesPanel">
-        <p:growl id="messages" showDetail="false" />
-      </t:div>         
 
-      <t:div styleClass="redirFilePanel" 
+      <p:outputPanel id="messagesPanel" styleClass="messagesPanel">
+        <p:growl id="messages" showDetail="false" />
+      </p:outputPanel>         
+
+      <p:outputPanel styleClass="redirFilePanel" 
              rendered="#{redirEditBean.fileDocId != null and redirEditBean.fileContent != null}">
-        <t:div styleClass="buttonsPanel">
+        <div class="buttonsPanel">
           <p:commandLink actionListener="#{redirEditBean.save}" styleClass="imageButton"                         
                          update="@this messagesPanel" ajax="true">
-            <t:graphicImage alt="#{cmsBundle.save}" url="/common/cms/images/save.png" title="#{cmsBundle.save}" />
+            <h:graphicImage alt="#{cmsBundle.save}" url="/common/cms/images/save.png" title="#{cmsBundle.save}" />
           </p:commandLink>
           <p:commandLink actionListener="#{redirEditBean.revert}" styleClass="imageButton"                         
                          update="@this fileContentPanel messagesPanel" ajax="true">
-            <t:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
+            <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
           </p:commandLink>
-        </t:div>
-        <t:div forceId="true" id="fileContentPanel" styleClass="fileContentPanel">
+        </div>
+        <p:outputPanel id="fileContentPanel" styleClass="fileContentPanel">
           <h:inputTextarea value="#{redirEditBean.fileContent}" />             
-        </t:div>
-      </t:div>  
+        </p:outputPanel>
+      </p:outputPanel>  
        
-      <t:div rendered="#{not(redirEditBean.fileDocId != null and redirEditBean.fileContent != null)}">
+      <p:outputPanel rendered="#{not(redirEditBean.fileDocId != null and redirEditBean.fileContent != null)}">
         <h:outputText value="#{cmsBundle.noRedirFile}" />
-      </t:div>
+      </p:outputPanel>
       
     </ui:define>
   </ui:composition>

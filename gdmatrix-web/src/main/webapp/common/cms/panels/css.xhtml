@@ -1,44 +1,43 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:pe="http://primefaces.org/ui/extensions">
 
-  <t:div styleClass="nodeCSSPanel contentPanel" 
+  <p:outputPanel styleClass="nodeCSSPanel contentPanel" 
          rendered="#{nodeEditBean.cssTabSelected}">
-    <t:div rendered="#{not nodeEditBean.validCSS}">
+    <p:outputPanel rendered="#{not nodeEditBean.validCSS}">
       <h:outputText value="#{cmsBundle.invalidCSS}" />
-    </t:div>
-    <t:div forceId="true" id="cssToolsPanel" styleClass="buttonsPanel" 
+    </p:outputPanel>
+    <p:outputPanel id="cssToolsPanel" styleClass="buttonsPanel" 
            rendered="#{nodeEditBean.validCSS}">
       <p:commandLink actionListener="#{nodeEditBean.saveCSS}" styleClass="imageButton"
                      rendered="#{nodeEditBean.appendNodeEnabled}"
-                     update="@this mainform:tree cssToolsPanel messagesPanel" ajax="true">
-        <t:graphicImage alt="#{cmsBundle.saveCSS}" url="/common/cms/images/save.png" title="#{cmsBundle.saveCSS}" />
+                     update="@this :mainform:tree cssToolsPanel :mainform:messagesPanel" ajax="true">
+        <h:graphicImage alt="#{cmsBundle.saveCSS}" url="/common/cms/images/save.png" title="#{cmsBundle.saveCSS}" />
       </p:commandLink>
       <p:commandLink actionListener="#{nodeEditBean.revertCSS}" styleClass="imageButton"
                      rendered="#{nodeEditBean.appendNodeEnabled and nodeEditBean.customCSS}"
-                     update="@this cssTextPanel messagesPanel" ajax="true" global="false">
-        <t:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
+                     update="@this cssTextPanel :mainform:messagesPanel" ajax="true" global="false">
+        <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
       </p:commandLink>
       <p:commandLink actionListener="#{nodeEditBean.syncCSS}" styleClass="imageButton"
                      rendered="#{nodeEditBean.syncCssButtonRender}"
-                     update="@this messagesPanel" ajax="true">
-        <t:graphicImage alt="#{cmsBundle.sync}" url="/common/cms/images/sync_css.png" title="#{cmsBundle.sync}" />
+                     update="@this :mainform:messagesPanel" ajax="true">
+        <h:graphicImage alt="#{cmsBundle.sync}" url="/common/cms/images/sync_css.png" title="#{cmsBundle.sync}" />
       </p:commandLink>
       <h:outputLabel styleClass="noCSSLabel" rendered="#{not nodeEditBean.customCSS}" value="#{cmsBundle.noCustomCSS}" />
-    </t:div>
-    <t:div forceId="true" id="cssTextPanel" styleClass="cssTextPanel expand"
+    </p:outputPanel>
+    <p:outputPanel id="cssTextPanel" styleClass="cssTextPanel expand"
            rendered="#{nodeEditBean.validCSS}">
       <pe:codeMirror mode="css" 
                      theme="elegant"
                      value="#{nodeEditBean.cssText}"
                      lineNumbers="true"
                      matchBrackets="true" />      
-    </t:div>
+    </p:outputPanel>
 
-  </t:div>  
+  </p:outputPanel>  
 
 
 </ui:composition>  

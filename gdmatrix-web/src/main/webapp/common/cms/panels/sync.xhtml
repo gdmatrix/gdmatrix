@@ -2,39 +2,38 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:p="http://primefaces.org/ui">
 
-  <t:div styleClass="nodeSyncPanel contentPanel" 
+  <p:outputPanel styleClass="nodeSyncPanel contentPanel" 
          rendered="#{nodeEditBean.syncTabSelected}">
-    <t:div styleClass="noWorkspacesPanel" rendered="#{!nodeEditBean.syncNodeEnabled}">
+    <p:outputPanel styleClass="noWorkspacesPanel" rendered="#{!nodeEditBean.syncNodeEnabled}">
       <h:outputLabel value="#{cmsBundle.noWorkspacesToSync}" />
-    </t:div>
-    <t:div forceId="true" id="workspaceSelectionPanel" 
+    </p:outputPanel>
+    <p:outputPanel id="workspaceSelectionPanel" 
            styleClass="workspaceSelectionPanel flexRowPanel" 
            rendered="#{nodeEditBean.syncNodeEnabled}">
       <p:outputLabel value="#{cmsBundle.syncTo}:" for="toWorkspaceSelector" />
       <p:selectOneMenu id="toWorkspaceSelector"
                        value="#{nodeEditBean.toWorkspaceId}"
                        styleClass="select">
-        <p:ajax update="@this mainform:tree rightPanel" listener="#{nodeEditBean.switchToWorkspace}" />                
+        <p:ajax update="@this :mainform:tree :mainform:rightPanel" listener="#{nodeEditBean.switchToWorkspace}" />                
         <f:selectItems value="#{nodeEditBean.toWorkspaceItems}" />
       </p:selectOneMenu>
       <p:commandButton id="syncNodeButton"
                        value="#{cmsBundle.sync}"  
                        actionListener="#{nodeEditBean.syncNode}"
                        styleClass="imageButton"
-                       ajax="true" update="@this mainform:tree rightPanel messagesPanel"
+                       ajax="true" update="@this :mainform:tree :mainform:rightPanel :mainform:messagesPanel"
                        rendered="#{not nodeEditBean.nodeChangeItemListEmpty}" />
-    </t:div>
-    <t:div rendered="#{nodeEditBean.syncNodeEnabled and nodeEditBean.nodeChangeItemListEmpty}">
+    </p:outputPanel>
+    <p:outputPanel rendered="#{nodeEditBean.syncNodeEnabled and nodeEditBean.nodeChangeItemListEmpty}">
       <h:outputText value="#{cmsBundle.noNodesToSync}" styleClass="noNodesLabel" />      
-    </t:div>
-    <t:div styleClass="nodeSyncTitlePanel flexRowPanel" 
+    </p:outputPanel>
+    <p:outputPanel styleClass="nodeSyncTitlePanel flexRowPanel" 
            rendered="#{nodeEditBean.syncNodeEnabled and not nodeEditBean.nodeChangeItemListEmpty}">
       <h:outputText value="#{cmsBundle.nodesToSync}: #{nodeEditBean.nodeChangeItemList.size()}" styleClass="title" />
-    </t:div>
-    <t:div forceId="true" id="syncNodeListPanel" 
+    </p:outputPanel>
+    <p:outputPanel id="syncNodeListPanel" 
            styleClass="syncNodeListPanel expand" 
            rendered="#{nodeEditBean.syncNodeEnabled and not nodeEditBean.nodeChangeItemListEmpty}">
       <p:dataTable rowIndexVar="index"
@@ -70,7 +69,7 @@
         </p:column>
       </p:dataTable>        
 
-    </t:div>
-  </t:div>
+    </p:outputPanel>
+  </p:outputPanel>
 
 </ui:composition>  

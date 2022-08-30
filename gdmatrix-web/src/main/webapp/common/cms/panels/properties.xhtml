@@ -2,69 +2,68 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:p="http://primefaces.org/ui">
 
-  <t:div styleClass="nodePropertiesPanel contentPanel" 
+  <p:outputPanel styleClass="nodePropertiesPanel contentPanel" 
          rendered="#{nodeEditBean.propertiesTabSelected}">
-    <t:div styleClass="flexRowPanel wide">
+    <div class="flexRowPanel wide">
 
-      <t:div styleClass="buttonsPanel">
+      <div class="buttonsPanel">
         <p:commandLink actionListener="#{nodeEditBean.addProperty}" styleClass="imageButton"
                        rendered="#{nodeEditBean.addPropertyEnabled}"
                        update="@this userPropertyListPanel" ajax="true" global="false">
-          <t:graphicImage alt="#{cmsBundle.addProperty}" url="/common/cms/images/add.png" title="#{cmsBundle.addProperty}" />
+          <h:graphicImage alt="#{cmsBundle.addProperty}" url="/common/cms/images/add.png" title="#{cmsBundle.addProperty}" />
         </p:commandLink>
         <p:commandLink actionListener="#{nodeEditBean.saveProperties}" styleClass="imageButton"
                        rendered="#{nodeEditBean.savePropertiesEnabled}" 
-                       update="@this toolbarRenderingButtons topPanel mainform:tree rootSelectionPanel userPropertyListPanel messagesPanel" ajax="true">
-          <t:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
+                       update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel userPropertyListPanel :mainform:messagesPanel" ajax="true">
+          <h:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
         </p:commandLink>
         <p:commandLink actionListener="#{nodeEditBean.revertProperties}" styleClass="imageButton"
                        rendered="#{nodeEditBean.addPropertyEnabled}"
-                       update="@this userPropertyListPanel messagesPanel" ajax="true" global="false">
-          <t:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
+                       update="@this userPropertyListPanel :mainform:messagesPanel" ajax="true" global="false">
+          <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
         </p:commandLink>
         <p:commandLink actionListener="#{nodeEditBean.completeProperties}" styleClass="imageButton"
                        rendered="#{nodeEditBean.completePropertiesEnabled}"
                        update="@this userPropertyListPanel" ajax="true" global="false">
-          <t:graphicImage alt="#{cmsBundle.completeProperties}" url="/common/cms/images/complete.png" title="#{cmsBundle.completeProperties}" />
+          <h:graphicImage alt="#{cmsBundle.completeProperties}" url="/common/cms/images/complete.png" title="#{cmsBundle.completeProperties}" />
         </p:commandLink>
         <p:commandLink actionListener="#{nodeEditBean.switchPropertyHelp}" styleClass="#{nodeEditBean.helpButtonStyleClass}"
                        rendered="#{nodeEditBean.completePropertiesEnabled}"
                        update="@this userPropertyListPanel" ajax="true" global="false"
                        onmouseover="PF('propertiesTypeDialog').show();" 
                        onmouseout="PF('propertiesTypeDialog').hide();">
-          <t:graphicImage alt="Help" url="/common/cms/images/help.png"/>
+          <h:graphicImage alt="Help" url="/common/cms/images/help.png"/>
         </p:commandLink>
         <p:dialog header="#{cmsBundle.propertiesType}" 
                   widgetVar="propertiesTypeDialog"                   
                   closable="false">
-          <t:div styleClass="helpCaptionTable">
-            <t:div styleClass="propertyName inheritedAnnotated">
+          <div class="helpCaptionTable">
+            <div class="propertyName inheritedAnnotated">
               <h:outputText value="#{cmsBundle.inheritedAnnotatedProperties}" />
-            </t:div>
-            <t:div styleClass="propertyName directAnnotated">
+            </div>
+            <div class="propertyName directAnnotated">
               <h:outputText value="#{cmsBundle.ownAnnotatedProperties}" />
-            </t:div>
-            <t:div styleClass="propertyName">                          
+            </div>
+            <div class="propertyName">                          
               <h:outputText value="#{cmsBundle.additionalProperties}" />
-            </t:div>
-          </t:div>          
+            </div>
+          </div>          
         </p:dialog>
-      </t:div>
+      </div>
 
-      <t:div styleClass="nodeNamePanel">
+      <div class="nodeNamePanel">
         <p:outputLabel value="#{cmsBundle.name}:" styleClass="label" for="nodeNameInput" />
         <p:inputText id="nodeNameInput" value="#{nodeEditBean.nodeName}" styleClass="input" />
-      </t:div>          
+      </div>          
 
-    </t:div>
+    </div>
     
-    <t:div forceId="true" id="nodeActionPanel" styleClass="nodeActionPanel">
+    <p:outputPanel id="nodeActionPanel" styleClass="nodeActionPanel">
       <h:outputText value="#{cmsBundle.nodeActionUpper}" styleClass="title" />
-      <t:div styleClass="flexRowPanel">
-        <t:div styleClass="beanNamePanel">
+      <div class="flexRowPanel">
+        <div class="beanNamePanel">
           <p:outputLabel value="#{cmsBundle.beanName}:" 
                          for="beanNameSelector"
                          styleClass="label" />
@@ -74,8 +73,8 @@
             <p:ajax update="@this nodeActionPanel" listener="#{nodeEditBean.changeBeanName}" global="false" />
             <f:selectItems value="#{nodeEditBean.beanNames}" />
           </p:selectOneMenu>          
-        </t:div>
-        <t:div styleClass="beanActionPanel">
+        </div>
+        <div class="beanActionPanel">
           <p:outputLabel rendered="#{nodeEditBean.beanActionsRender}"
                          for="beanActionsSelector"
                          value="#{cmsBundle.beanAction}:" styleClass="label" />
@@ -85,15 +84,15 @@
                            styleClass="select">
             <f:selectItems value="#{nodeEditBean.beanActions}" />
           </p:selectOneMenu>          
-        </t:div>
-      </t:div>
-    </t:div>
+        </div>
+      </div>
+    </p:outputPanel>
 
-    <t:div styleClass="userPropertiesTitlePanel">
+    <div class="userPropertiesTitlePanel">
       <h:outputText value="#{cmsBundle.userPropertiesUpper}" />
-    </t:div>
+    </div>
 
-    <t:div forceId="true" id="userPropertyListPanel" styleClass="userPropertyListPanel expand">
+    <p:outputPanel id="userPropertyListPanel" styleClass="userPropertyListPanel expand">
       <h:dataTable styleClass="propertyTable"
                    rowClasses="property"
                    columnClasses="col1,col2,col3,col4"
@@ -104,9 +103,9 @@
           <p:inputText value="#{property.name}" styleClass="#{nodeEditBean.propertyNameStyleClass}" />
         </h:column>
         <h:column>
-          <t:dataList value="#{nodeEditBean.propertyValues}" var="propertyValue">
+          <p:dataList value="#{nodeEditBean.propertyValues}" var="propertyValue" itemType="none">
             <p:inputText value="#{propertyValue.value}" styleClass="#{nodeEditBean.propertyValueStyleClass}" />
-          </t:dataList>
+          </p:dataList>
           <h:outputText rendered="#{nodeEditBean.showPropertyHelp and nodeEditBean.propertyTipRender}"
                         value="#{nodeEditBean.propertyTip}"
                         styleClass="propertyTip"/>
@@ -114,23 +113,23 @@
         <h:column>
           <p:commandLink actionListener="#{nodeEditBean.addPropertyValue}" styleClass="imageButton"
                          rendered="#{nodeEditBean.addPropertyValueEnabled}"
-                         update="@this userPropertyListPanel" ajax="true" global="false">
-            <t:graphicImage alt="" url="/common/cms/images/add_mini.png" title="#{cmsBundle.addPropertyValue}" />
+                         update="@this @(.userPropertyListPanel)" ajax="true" global="false">
+            <h:graphicImage alt="" url="/common/cms/images/add_mini.png" title="#{cmsBundle.addPropertyValue}" />
           </p:commandLink>
         </h:column>
         <h:column>
           <p:commandLink actionListener="#{nodeEditBean.removeProperty}" styleClass="imageButton"
                          rendered="#{nodeEditBean.removePropertyEnabled}"
-                         update="@this userPropertyListPanel" ajax="true" global="false">
-            <t:graphicImage alt="" url="/common/cms/images/close_mini.png" title="#{cmsBundle.removeProperty}" />
+                         update="@this @(.userPropertyListPanel)" ajax="true" global="false">
+            <h:graphicImage alt="" url="/common/cms/images/close_mini.png" title="#{cmsBundle.removeProperty}" />
           </p:commandLink>
         </h:column>
       </h:dataTable>
       <h:outputLabel styleClass="noPropertiesLabel"
                      rendered="#{nodeEditBean.userPropertyListEmpty}"
                      value="#{cmsBundle.noProperties}" />                
-    </t:div>
+    </p:outputPanel>
 
-  </t:div>
+  </p:outputPanel>
 
 </ui:composition>
