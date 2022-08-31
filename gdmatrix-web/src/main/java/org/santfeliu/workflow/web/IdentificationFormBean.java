@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.workflow.web;
@@ -53,45 +53,45 @@ import org.santfeliu.workflow.form.IdentificationForm;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class IdentificationFormBean extends FormBean implements Serializable
 {
   private String message;
   private String prefix;
-  
+
   private String name;
   private String surname1;
   private String surname2;
-  
+
   private String documentType;
   private String documentNumber;
-  
+
   private String wayType;
   private String addressName;
   private String addressNumber;
-  private String addressBlock;  
-  private String addressStair; 
-  private String addressFloor; 
-  private String addressDoor;  
-  private String zipCode;  
+  private String addressBlock;
+  private String addressStair;
+  private String addressFloor;
+  private String addressDoor;
+  private String zipCode;
   private String city;
-  private String province;  
-  
-  private String phone;  
-  private String email;  
-  
+  private String province;
+
+  private String phone;
+  private String email;
+
   private transient HtmlSelectOneListbox documentTypeComponent;
   public static final String INVALID_NIF = "INVALID_NIF";
-  public static final String INVALID_NIE = "INVALID_NIE";  
-  public static final String INVALID_PASSPORT = "INVALID_PASSPORT";  
-  
+  public static final String INVALID_NIE = "INVALID_NIE";
+  public static final String INVALID_PASSPORT = "INVALID_PASSPORT";
+
   public IdentificationFormBean()
   {
-    if (documentTypeComponent == null) 
+    if (documentTypeComponent == null)
       documentTypeComponent = new HtmlSelectOneListbox();
   }
-  
+
   public void setMessage(String message)
   {
     this.message = message;
@@ -271,7 +271,7 @@ public class IdentificationFormBean extends FormBean implements Serializable
   {
     return email;
   }
-  
+
   public void setDocumentTypeComponent(HtmlSelectOneListbox documentTypeComponent)
   {
     this.documentTypeComponent = documentTypeComponent;
@@ -281,9 +281,9 @@ public class IdentificationFormBean extends FormBean implements Serializable
   {
     return documentTypeComponent;
   }
-  
+
   //Validators
-  public void validateDocumentNumber(FacesContext context, 
+  public void validateDocumentNumber(FacesContext context,
     UIComponent component, Object value)
     throws ValidatorException
   {
@@ -307,7 +307,7 @@ public class IdentificationFormBean extends FormBean implements Serializable
     if (value != null) prefix = String.valueOf(value);
     value = parameters.get("message");
     if (value != null) message = String.valueOf(value);
-      
+
     loadPreviousVariables();
     loadUserSessionBeanValues();
     return "identification_form";
@@ -317,7 +317,7 @@ public class IdentificationFormBean extends FormBean implements Serializable
   {
     return submitVariables();
   }
-  
+
   private void loadPreviousVariables()
   {
     InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
@@ -345,7 +345,7 @@ public class IdentificationFormBean extends FormBean implements Serializable
     phone = (String)variables.get(varPrefix + IdentificationForm.PHONE);
     email = (String)variables.get(varPrefix + IdentificationForm.EMAIL);
   }
-  
+
   private void loadUserSessionBeanValues()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -356,8 +356,8 @@ public class IdentificationFormBean extends FormBean implements Serializable
     if (surname1 == null)
     {
       String surname = userSessionBean.getSurname();
-      if (surname != null) 
-      { 
+      if (surname != null)
+      {
         int idx = surname.trim().indexOf(" ");
         if (idx > -1)
         {
@@ -370,17 +370,17 @@ public class IdentificationFormBean extends FormBean implements Serializable
         }
       }
     }
-    
+
     if (documentNumber == null)
     {
       documentNumber = userSessionBean.getNIF();
       documentType = "NIF";
     }
-    
+
     if (email == null)
       email = userSessionBean.getEmail();
   }
-  
+
   private Map submitVariables()
   {
     HashMap variables = new HashMap();
@@ -401,7 +401,7 @@ public class IdentificationFormBean extends FormBean implements Serializable
     variables.put(varPrefix + IdentificationForm.ADDRESS_STAIR, addressStair);
     variables.put(varPrefix + IdentificationForm.ADDRESS_FLOOR, addressFloor);
     variables.put(varPrefix + IdentificationForm.ADDRESS_DOOR, addressDoor);
-    String address = wayType + " " + addressName + " " + addressNumber + " " + 
+    String address = wayType + " " + addressName + " " + addressNumber + " " +
       addressBlock + " " + addressStair + " " + addressFloor + " " + addressDoor;
     variables.put(varPrefix + IdentificationForm.ADDRESS, address.trim());
     variables.put(varPrefix + IdentificationForm.POSTAL_CODE, zipCode);
@@ -411,7 +411,7 @@ public class IdentificationFormBean extends FormBean implements Serializable
     variables.put(varPrefix + IdentificationForm.EMAIL, email);
     return variables;
   }
-  
+
   private void validateNif(FacesContext context, Object value)
     throws ValidatorException
   {
@@ -420,7 +420,7 @@ public class IdentificationFormBean extends FormBean implements Serializable
     if (!matcher.matches())
     {
       String message = getLocalizedMessage(context, INVALID_NIF);
-      throw new ValidatorException(new FacesMessage(message));        
+      throw new ValidatorException(new FacesMessage(message));
     }
   }
 
@@ -431,21 +431,21 @@ public class IdentificationFormBean extends FormBean implements Serializable
     Matcher matcher = pattern.matcher(((String)value));
     if (!matcher.matches())
     {
-      String message = getLocalizedMessage(context, INVALID_NIE);    
-      throw new ValidatorException(new FacesMessage(message));  
+      String message = getLocalizedMessage(context, INVALID_NIE);
+      throw new ValidatorException(new FacesMessage(message));
     }
   }
-  
+
   private void validatePassport(FacesContext context, Object value)
     throws ValidatorException
   {
   }
-  
+
   private String getLocalizedMessage(FacesContext context, String key)
   {
     String messageBundleName = context.getApplication().getMessageBundle();
     Locale locale = context.getViewRoot().getLocale();
-    ResourceBundle messageBundle = 
+    ResourceBundle messageBundle =
       ResourceBundle.getBundle(messageBundleName, locale);
     String message = messageBundle.getString(key);
 

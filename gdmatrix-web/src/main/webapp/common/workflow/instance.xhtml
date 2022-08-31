@@ -19,8 +19,8 @@
       <t:saveState value="#{instanceListBean.endDate}" />
       <t:saveState value="#{instanceListBean.variables}" />
 
-      <t:div styleClass="workflowInstance">
-        <t:div styleClass="header">
+      <div class="workflowInstance">
+        <div class="header">
           <h:panelGroup styleClass="col1">
             <h:outputText value="#{workflowBundle.instance} #{instanceBean.instanceId}: "
               styleClass="instanceNumber"/>
@@ -47,45 +47,49 @@
               title="#{workflowBundle.exitLong}"
               ariaLabel="#{workflowBundle.exit}: #{workflowBundle.exitLong}" />
           </h:panelGroup>
-        </t:div>
+        </div>
 
-        <t:div rendered="#{instanceBean.errorDetected and not instanceBean.terminated}"
+        <h:panelGroup layout="block" 
+           rendered="#{instanceBean.errorDetected and not instanceBean.terminated}"
            styleClass="workflowError">
-          <t:graphicImage url="/common/workflow/images/warning.gif" alt="warning" title="warning" />
-          <h:outputText value="#{workflowBundle.errorDetected}" styleClass="errorMessage" />
-        </t:div>
+          <h:graphicImage url="/common/workflow/images/warning.gif" alt="warning" title="warning" />
+          <h:outputText value="#{workflowBundle.errorDetected}" />
+        </h:panelGroup>
 
-        <t:messages showSummary="true" styleClass="messages"
+        <h:messages showSummary="true" styleClass="messages"
            layout="list"
            warnClass="warnMessage"
            errorClass="errorMessage"
            fatalClass="fatalMessage" />
 
-        <t:div styleClass="form" rendered="#{instanceBean.headerFormEnabled}">
+        <h:panelGroup layout="block" 
+            styleClass="form" rendered="#{instanceBean.headerFormEnabled}">
           <sf:dynamicForm
             form="#{instanceBean.headerForm}"
             rendererTypes="HtmlFormRenderer,GenericFormRenderer"
             value="#{instanceBean.variablesUnmodificable}"
             translator="#{applicationBean.translator}"
             translationGroup="wf:instanceList" />
-        </t:div>
+        </h:panelGroup>
 
-        <t:div styleClass="workflowForms" rendered="#{instanceBean.showPendentForms}">
+        <h:panelGroup layout="block" 
+                      styleClass="workflowForms" rendered="#{instanceBean.showPendentForms}">
           <h:outputText value="#{workflowBundle.actions}:" />
-          <t:dataList itemStyleClass="#{instanceBean.formSelected ? 'selected' : ''}"
-            layout="unorderedList" value="#{instanceBean.pendentForms}" var="form">
+          <p:dataList itemStyleClass="#{instanceBean.formSelected ? 'selected' : ''}"
+            value="#{instanceBean.pendentForms}" var="form">
             <h:commandLink action="#{instanceBean.selectForm}" immediate="true">
               <h:outputText value="#{form.description}" />
             </h:commandLink>
-          </t:dataList>
-        </t:div>
+          </p:dataList>
+        </h:panelGroup>
 
-        <t:div styleClass="body">
+        <div class="body">
           <ui:insert name="form"></ui:insert>
-          <t:div styleClass="curtain" rendered="#{not instanceBean.formEnabled}" />
-        </t:div>
+          <h:panelGroup layout="block" styleClass="curtain" rendered="#{not instanceBean.formEnabled}" />
+        </div>
 
-        <t:div styleClass="#{instanceBean.anyFooterButtonEnabled ? 'footer' : 'footer_empty'}">
+        <h:panelGroup layout="block" 
+          styleClass="#{instanceBean.anyFooterButtonEnabled ? 'footer' : 'footer_empty'}">
           <h:panelGroup styleClass="col1">
             <h:commandLink value="#{workflowBundle.debugOn}"
               rendered="#{instanceBean.workflowAdmin and not instanceBean.debugModeEnabled}"
@@ -120,122 +124,127 @@
               title="#{workflowBundle.nextLong}"
               ariaLabel="#{workflowBundle.next}: #{workflowBundle.nextLong}" />
           </h:panelGroup>
-        </t:div>
-      </t:div>
-
-      <t:div style="overflow-x:auto">
-        <h:panelGroup styleClass="debugPanel"
-          rendered="#{instanceBean.debugModeEnabled and instanceBean.workflowAdmin}">
-
-          <div class="debugToolbar">
-            <h:commandLink value="#{workflowBundle.recover}" id="recover"
-              rendered="#{instanceBean.recoverEnabled}"
-              styleClass="workflowCommandLink recover" onclick="showOverlay()"
-              action="#{instanceBean.recover}" immediate="true"
-              title="#{workflowBundle.recover}" />
-            <h:commandLink value="#{workflowBundle.doStep}" styleClass="workflowCommandLink"
-              action="#{instanceBean.doStep}" immediate="true" onclick="showOverlay()" />
-            <h:commandLink value="#{workflowBundle.undoStep}" styleClass="workflowCommandLink"
-              action="#{instanceBean.undoStep}" immediate="true"  onclick="showOverlay()"/>
-            <h:commandLink value="#{workflowBundle.updateInstance}" styleClass="workflowCommandLink"
-              action="#{instanceBean.updateInstance}" immediate="true" onclick="showOverlay()" />
-          </div>
-
-          <p:tabView styleClass="debugTabs" dynamic="true"
-                     activeIndex="#{instanceBean.activeDebugTab}">
-            <p:tab title="Variables">
-              <t:dataTable var="instanceVar" value="#{instanceBean.variablesArray}"
-                styleClass="varTable" columnClasses="col1,col2">
-                <t:column>
-                  <f:facet name="header">
-                    <h:outputText value="#{workflowBundle.variable}" />
-                  </f:facet>
-                  <t:graphicImage url="/common/workflow/images/#{instanceBean.variableIcon}"
-                    styleClass="varIcon" title="" alt="" />
-                  <h:outputText value="#{instanceVar.key}"
-                    styleClass="#{instanceBean.variableStyle}" />
-                </t:column>
-                <t:column>
-                  <f:facet name="header">
-                    <h:outputText value="#{workflowBundle.value}" />
-                  </f:facet>
-                  <h:outputText value="#{instanceVar.value}" />
-                </t:column>
-              </t:dataTable>
-
-              <div style="padding: 6px 2px 6px 2px">
-                <h:outputText value="#{workflowBundle.setList}"/>
-                <h:inputText binding="#{instanceBean.inputText}"
-                  immediate="true" styleClass="set_variables" />
-                <h:commandLink value="#{workflowBundle.set}" styleClass="workflowCommandLink"
-                  action="#{instanceBean.setVariables}" immediate="true" />
-              </div>
-            </p:tab>
-
-            <p:tab title="Stack">
-              <p:dataList value="#{instanceBean.stackItems}" var="stackItem"
-                          styleClass="stackItems">
-                <ul class="stackItem">
-                  <li class="instanceId">INSTANCE_ID: <h:commandLink
-                      action="#{instanceBean.showInstance(stackItem.instanceId)}"
-                      value="#{stackItem.instanceId}" /></li>
-                  <li>WORKFLOW_NAME: <h:outputText value="#{stackItem.workflowName}" styleClass="value" /></li>
-                  <li>DESCRIPTION: <h:outputText value="#{stackItem.description}" styleClass="value" /></li>
-                  <li>ACTIVE_NODES: <h:outputText value="#{stackItem.activeNodes}" styleClass="value" /></li>
-                  <h:panelGroup rendered="#{stackItem.invokerNodeId != null}">
-                    <li>INVOKER_NODE_ID: <h:outputText value="#{stackItem.invokerNodeId}" styleClass="value" /></li>
-                  </h:panelGroup>
-                  <h:panelGroup rendered="#{stackItem.errors != null}">
-                    <li>ERRORS: <h:outputText value="#{stackItem.errors}" styleClass="value" /></li>
-                  </h:panelGroup>
-                </ul>
-              </p:dataList>
-            </p:tab>
-
-            <p:tab title="Events">
-              <p:dataList value="#{instanceBean.instanceEvents}" var="instanceEvent"
-                          styleClass="instanceEvents">
-                <ul class="instanceEvent">
-                  <li><strong>EVENTNUM: <h:outputText value="#{instanceEvent.eventNum}" styleClass="value" /></strong></li>
-                  <li>DATETIME: <h:outputText value="#{instanceEvent.dateTime}" styleClass="value">
-                      <f:converter converterId="DateTimeConverter" />
-                      <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
-                    </h:outputText>
-                  </li>
-                  <li>ACTOR: <h:outputText value="#{instanceEvent.actorName}" styleClass="value" /></li>
-                  <p:dataList value="#{instanceEvent.variableChange}" 
-                              var="variableChange"
-                              styleClass="variableChanges">
-                    <ul class="variableChange">
-                      <li>NAME: <h:outputText value="#{variableChange.name}" styleClass="value" /></li>
-                      <li>TYPE: <h:outputText value="#{variableChange.type}" styleClass="value" /></li>
-                      <li>OLDVALUE:
-                        <h:outputText value="#{variableChange.oldValue}" styleClass="value" 
-                          rendered="#{not instanceBean.isInstanceIdVariable(variableChange.name)}" />
-                        <h:commandLink
-                          action="#{instanceBean.showInstance(variableChange.oldValue)}"
-                          value="#{variableChange.oldValue}" 
-                          rendered="#{instanceBean.isInstanceIdVariable(variableChange.name)
-                                     and variableChange.oldValue != null}" /> 
-                      </li>
-                      <li>NEWVALUE: 
-                        <h:outputText value="#{variableChange.newValue}" styleClass="value" 
-                          rendered="#{not instanceBean.isInstanceIdVariable(variableChange.name)}" />
-                        <h:commandLink
-                          action="#{instanceBean.showInstance(variableChange.newValue)}"
-                          value="#{variableChange.newValue}" 
-                          rendered="#{instanceBean.isInstanceIdVariable(variableChange.name) 
-                                      and variableChange.newValue != null}" />              
-                      </li>
-                    </ul>
-                  </p:dataList>
-                </ul>
-              </p:dataList>
-            </p:tab>
-            
-          </p:tabView>
         </h:panelGroup>
-      </t:div>
+      </div>
+
+      <h:panelGroup layout="block" styleClass="debugPanel"  style="overflow-x:auto"
+        rendered="#{instanceBean.debugModeEnabled and instanceBean.workflowAdmin}">
+
+        <div class="debugToolbar">
+          <h:commandLink value="#{workflowBundle.recover}" id="recover"
+            rendered="#{instanceBean.recoverEnabled}"
+            styleClass="workflowCommandLink recover" onclick="showOverlay()"
+            action="#{instanceBean.recover}" immediate="true"
+            title="#{workflowBundle.recover}" />
+          <h:commandLink value="#{workflowBundle.doStep}" styleClass="workflowCommandLink"
+            action="#{instanceBean.doStep}" immediate="true" onclick="showOverlay()" />
+          <h:commandLink value="#{workflowBundle.undoStep}" styleClass="workflowCommandLink"
+            action="#{instanceBean.undoStep}" immediate="true"  onclick="showOverlay()"/>
+          <h:commandLink value="#{workflowBundle.updateInstance}" styleClass="workflowCommandLink"
+            action="#{instanceBean.updateInstance}" immediate="true" onclick="showOverlay()" />
+        </div>
+
+        <p:tabView styleClass="debugTabs" dynamic="true"
+                   activeIndex="#{instanceBean.activeDebugTab}">
+          <p:tab title="Variables">
+            <h:dataTable var="instanceVar" value="#{instanceBean.variablesArray}"
+              styleClass="varTable" columnClasses="col1,col2">
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="#{workflowBundle.variable}" />
+                </f:facet>
+                <h:outputText value="#{instanceVar.key}"
+                  styleClass="#{instanceBean.variableStyleClass}" />
+              </h:column>
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText value="#{workflowBundle.value}" />
+                </f:facet>
+                <h:outputText value="#{instanceVar.value}" />
+              </h:column>
+            </h:dataTable>
+
+            <div class="set_variables">
+              <h:outputText value="#{workflowBundle.setList}"/>
+              <h:inputText binding="#{instanceBean.inputText}" immediate="true" />
+              <h:commandLink value="#{workflowBundle.set}" styleClass="workflowCommandLink"
+                action="#{instanceBean.setVariables}" immediate="true" />
+            </div>
+          </p:tab>
+
+          <p:tab title="Stack">
+            <p:dataList value="#{instanceBean.stackItems}" var="stackItem"
+                        styleClass="stackItems">
+              <ul class="stackItem">
+                <li class="instanceId">INSTANCE_ID: <h:commandLink
+                    action="#{instanceBean.showInstance(stackItem.instanceId)}"
+                    value="#{stackItem.instanceId}" /></li>
+                <li>WORKFLOW_NAME: <h:outputText value="#{stackItem.workflowName}" styleClass="value" /></li>
+                <li>DESCRIPTION: <h:outputText value="#{stackItem.description}" styleClass="value" /></li>
+                <li>ACTIVE_NODES: <h:outputText value="#{stackItem.activeNodes}" styleClass="value" /></li>
+                <h:panelGroup rendered="#{stackItem.invokerNodeId != null}">
+                  <li>INVOKER_NODE_ID: <h:outputText value="#{stackItem.invokerNodeId}" styleClass="value" /></li>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{stackItem.errors != null}">
+                  <li>ERRORS: <h:outputText value="#{stackItem.errors}" styleClass="value" /></li>
+                </h:panelGroup>
+              </ul>
+            </p:dataList>
+          </p:tab>
+
+          <p:tab title="Events">
+            <p:dataList value="#{instanceBean.instanceEvents}" var="instanceEvent"
+                        styleClass="instanceEvents">
+              <ul class="instanceEvent">
+                <li><strong>EVENTNUM: <h:outputText value="#{instanceEvent.eventNum}" styleClass="value" /></strong></li>
+                <li>DATETIME: <h:outputText value="#{instanceEvent.dateTime}" styleClass="value">
+                    <f:converter converterId="DateTimeConverter" />
+                    <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+                  </h:outputText>
+                </li>
+                <li>ACTOR: <h:outputText value="#{instanceEvent.actorName}" styleClass="value" /></li>
+
+                <h:dataTable value="#{instanceEvent.variableChange}" 
+                             var="variableChange" columnClasses="col1,col2,col3"
+                             styleClass="variableChanges">
+                  <h:column>
+                    <f:facet name="header">
+                      <h:outputText value="#{workflowBundle.variable}" />                        
+                    </f:facet>
+                    <h:outputText value="#{variableChange.name}" 
+                                  styleClass="#{instanceBean.eventVariableStyleClass}" />
+                  </h:column>
+                  <h:column>
+                    <f:facet name="header">
+                      <h:outputText value="#{workflowBundle.oldValue}" />                        
+                    </f:facet>
+                    <h:outputText value="#{variableChange.oldValue}" styleClass="value" 
+                      rendered="#{not instanceBean.isInstanceIdVariable(variableChange.name)}" />
+                    <h:commandLink
+                      action="#{instanceBean.showInstance(variableChange.oldValue)}"
+                      value="#{variableChange.oldValue}" 
+                      rendered="#{instanceBean.isInstanceIdVariable(variableChange.name)
+                                 and variableChange.oldValue != null}" /> 
+                  </h:column>
+                  <h:column>
+                    <f:facet name="header">
+                      <h:outputText value="#{workflowBundle.newValue}" />                        
+                    </f:facet>
+                    <h:outputText value="#{variableChange.newValue}" styleClass="value" 
+                      rendered="#{not instanceBean.isInstanceIdVariable(variableChange.name)}" />
+                    <h:commandLink
+                      action="#{instanceBean.showInstance(variableChange.newValue)}"
+                      value="#{variableChange.newValue}" 
+                      rendered="#{instanceBean.isInstanceIdVariable(variableChange.name) 
+                                  and variableChange.newValue != null}" />                                    
+                  </h:column>
+                </h:dataTable>
+              </ul>
+            </p:dataList>
+          </p:tab>
+
+        </p:tabView>
+      </h:panelGroup>
 
     </ui:define>
   </ui:composition>

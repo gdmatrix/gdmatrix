@@ -19,7 +19,7 @@
         errorClass="errorMessage"
         fatalClass="fatalMessage" />
 
-      <t:div rendered="#{userSessionBean.anonymousUser}">
+      <h:panelGroup layout="block" rendered="#{userSessionBean.anonymousUser}">
         <sf:browser url="/documents/#{userSessionBean.selectedMenuItem.properties.loginDocId}"
            rendered="#{userSessionBean.selectedMenuItem.properties.loginDocId != null}"
            translator="#{applicationBean.translator}"
@@ -28,48 +28,48 @@
         <h:outputText value="#{workflowBundle.anonymousProcList}"
           rendered="#{userSessionBean.selectedMenuItem.properties.loginDocId == null}"
           styleClass="workflowMessage" />
-      </t:div>
+      </h:panelGroup>
 
-      <t:div styleClass="instanceList"
+      <h:panelGroup layout="block" styleClass="instanceList"
          rendered="#{not userSessionBean.anonymousUser}">
 
-        <t:div styleClass="filter">
-          <t:div styleClass="header">
+        <div class="filter">
+          <div class="header">
             <h:outputText value="#{workflowBundle.searchTitle}"
               styleClass="searchTitle"/>
-          </t:div>
+          </div>
 
-          <t:div styleClass="row">
+          <div class="row">
             <h:outputText value="#{workflowBundle.show}:" />
-            <t:selectOneMenu value="#{instanceListBean.state}" styleClass="stateSelector">
-              <f:selectItem itemLabel="#{workflowBundle.userPendentProceduresState}" itemValue="P" />
+            <h:selectOneMenu value="#{instanceListBean.state}" styleClass="stateSelector">
               <f:selectItem itemLabel="#{workflowBundle.userStartedProceduresState}" itemValue="S" />
+              <f:selectItem itemLabel="#{workflowBundle.userPendentProceduresState}" itemValue="P" />
               <f:selectItems value="#{instanceListBean.allSelectItems}" />
-            </t:selectOneMenu>
-          </t:div>
+            </h:selectOneMenu>
+          </div>
 
           <h:panelGroup rendered="#{instanceListBean.workflowAdmin}">
-            <t:div styleClass="row">
+            <div class="row">
               <h:outputText value="#{workflowBundle.withVariableName}:" />
               <h:inputText value="#{instanceListBean.variables[0].name}" styleClass="variableBox" />
               <h:outputText value="#{workflowBundle.andVariableValue}:" />
               <h:inputText value="#{instanceListBean.variables[0].value}" styleClass="variableBox" />
-            </t:div>
-            <t:div styleClass="row">
+            </div>
+            <div class="row">
               <h:outputText value="#{workflowBundle.withVariableName}:" />
               <h:inputText value="#{instanceListBean.variables[1].name}" styleClass="variableBox" />
               <h:outputText value="#{workflowBundle.andVariableValue}:" />
               <h:inputText value="#{instanceListBean.variables[1].value}" styleClass="variableBox" />
-            </t:div>
-            <t:div styleClass="row">
+            </div>
+            <div class="row">
               <h:outputText value="#{workflowBundle.withVariableName}:" />
               <h:inputText value="#{instanceListBean.variables[2].name}" styleClass="variableBox" />
               <h:outputText value="#{workflowBundle.andVariableValue}:" />
               <h:inputText value="#{instanceListBean.variables[2].value}" styleClass="variableBox" />
-            </t:div>
+            </div>
           </h:panelGroup>
 
-          <t:div styleClass="row">
+          <div class="row">
             <h:outputText value="#{workflowBundle.startedAfter}:" />
             <sf:calendar value="#{instanceListBean.startDate}"
               styleClass="calendarBox" buttonStyleClass="calendarButton"  />
@@ -81,8 +81,8 @@
             <h:commandButton value="#{workflowBundle.search}"
               action="#{instanceListBean.findInstances}"
               styleClass="searchButton" onclick="showOverlay();return true;" />
-          </t:div>
-        </t:div>
+          </div>
+        </div>
 
         <h:dataTable
           value="#{instanceListBean.instanceList}" 
@@ -163,16 +163,14 @@
           </f:facet>      
         </h:dataTable>
 
-        <t:div styleClass="userPanel">
-
+        <div class="userPanel">
           <h:outputLink
             value="/go.faces?xmid=#{userSessionBean.selectedMenuItem.properties.showCatalogueMid}"
             styleClass="workflowCommandLink"
             rendered="#{userSessionBean.selectedMenuItem.properties.showCatalogueMid != null}">
             <h:outputText value="#{workflowBundle.startProcedure}" />
           </h:outputLink>
-
-        </t:div>
+        </div>
 
         <h:panelGrid columns="2" styleClass="adminPanel"
           rendered="#{instanceListBean.workflowAdmin}">
@@ -199,9 +197,12 @@
             <sf:longCommandLink value="#{workflowBundle.show}"
               styleClass="workflowCommandLink"
               action="#{instanceListBean.showInstanceById}" />
+            <sf:longCommandLink value="#{workflowBundle.debug}"
+              styleClass="workflowCommandLink"
+              action="#{instanceListBean.debugInstanceById}" />
           </h:panelGroup>
         </h:panelGrid>
-      </t:div>
+      </h:panelGroup>
 
     </ui:define>
   </ui:composition>

@@ -53,11 +53,10 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
-import org.santfeliu.workflow.VariableListConverter;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 @CMSManagedBean
 public class InstanceListBean extends WebBean implements Serializable
@@ -88,7 +87,7 @@ public class InstanceListBean extends WebBean implements Serializable
   public InstanceListBean()
   {
     // setup inital filter parameters
-    state = "P";
+    state = "S";
     startDate = getDefaultStartDate();
     variables = new VariableFilter[VARIABLE_COUNT];
     for (int i = 0; i < VARIABLE_COUNT; i++)
@@ -350,7 +349,15 @@ public class InstanceListBean extends WebBean implements Serializable
   {
     InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
     instanceBean.setInstanceId(instanceId);
-    return instanceBean.forward();
+    return instanceBean.updateInstance();
+  }
+
+  public String debugInstanceById()
+  {
+    InstanceBean instanceBean = (InstanceBean)getBean("instanceBean");
+    instanceBean.setInstanceId(instanceId);
+    instanceBean.enableDebugMode();
+    return instanceBean.updateInstance(true);
   }
 
   // private methods

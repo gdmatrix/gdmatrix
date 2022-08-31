@@ -72,7 +72,7 @@ import org.santfeliu.workflow.form.Form;
 
 /**
  *
- * @author unknown
+ * @author lopezrj
  */
 public class BiometricFormBean extends FormBean
 {

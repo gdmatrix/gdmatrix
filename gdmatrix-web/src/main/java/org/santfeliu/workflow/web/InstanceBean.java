@@ -47,6 +47,7 @@ import javax.faces.component.html.HtmlInputText;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.matrix.workflow.InstanceEvent;
+import org.matrix.workflow.VariableChange;
 import org.matrix.workflow.WorkflowConstants;
 import org.matrix.workflow.WorkflowManagerPort;
 import org.matrix.workflow.WorkflowManagerService;
@@ -65,7 +66,7 @@ import static org.matrix.workflow.WorkflowConstants.*;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class InstanceBean extends FacesBean implements Serializable
 {
@@ -158,44 +159,59 @@ public class InstanceBean extends FacesBean implements Serializable
     return pendentForms.size() > 1;
   }
 
-  public String getVariableIcon()
+  public String getVariableStyleClass()
   {
-    String icon = null;
+    String type = "T";
     Map.Entry entry = (Map.Entry)getRequestMap().get("instanceVar");
     if (entry != null)
     {
+      String variableName = String.valueOf(entry.getKey());
       Object value = entry.getValue();
-      if (value instanceof String) icon = "text_type.gif";
-      if (value instanceof Number) icon = "number_type.gif";
-      if (value instanceof Boolean) icon = "boolean_type.gif";
+      if (value instanceof String) type = "T";
+      if (value instanceof Number) type = "N";
+      if (value instanceof Boolean) type = "B";
+      return getVariableStyleClass(variableName, type);
     }
-    return icon;
+    return null;
   }
 
-  public String getVariableStyle()
+  public String getEventVariableStyleClass()
   {
-    String styleClass = "normalVar";
-    Map.Entry entry = (Map.Entry)getRequestMap().get("instanceVar");
-    if (entry != null)
+    VariableChange variableChange =
+      (VariableChange)getRequestMap().get("variableChange");
+    if (variableChange != null)
     {
-      String variable = String.valueOf(entry.getKey());
-      if (variable.startsWith(WorkflowConstants.FORM_PREFIX))
-      {
-        styleClass = "formVar";
-      }
-      else if (variable.startsWith(WorkflowConstants.ERROR_PREFIX) ||
-        variable.equals(WorkflowConstants.ERRORS))
-      {
-        styleClass = "errorVar";
-      }
-      else if (variable.startsWith(WorkflowConstants.READ_ACCESS_PREFIX) ||
-        variable.startsWith(WorkflowConstants.WRITE_ACCESS_PREFIX) ||
-        variable.startsWith(WorkflowConstants.UPDATE_ONLY_PREFIX))
-      {
-        styleClass = "accessVar";
-      }
+      String variableName = variableChange.getName();
+      String type = variableChange.getType();
+      return getVariableStyleClass(variableName, type);
     }
-    return styleClass;
+    return null;
+  }
+
+  public String getVariableStyleClass(String variableName, String type)
+  {
+    String nameStyleClass = "normalVar";
+    if (variableName.startsWith(WorkflowConstants.FORM_PREFIX))
+    {
+      nameStyleClass = "formVar";
+    }
+    else if (variableName.startsWith(WorkflowConstants.ERROR_PREFIX) ||
+      variableName.equals(WorkflowConstants.ERRORS))
+    {
+      nameStyleClass = "errorVar";
+    }
+    else if (variableName.startsWith(WorkflowConstants.READ_ACCESS_PREFIX) ||
+      variableName.startsWith(WorkflowConstants.WRITE_ACCESS_PREFIX) ||
+      variableName.startsWith(WorkflowConstants.UPDATE_ONLY_PREFIX))
+    {
+      nameStyleClass = "accessVar";
+    }
+
+    String typeStyleClass = "text_type";
+    if ("N".equals(type)) typeStyleClass = "number_type";
+    if ("B".equals(type)) typeStyleClass = "boolean_type";
+
+    return nameStyleClass + " " + typeStyleClass;
   }
 
   public int getActiveDebugTab()
@@ -772,17 +788,31 @@ public class InstanceBean extends FacesBean implements Serializable
 
   public String updateInstance()
   {
+    return updateInstance(false);
+  }
+
+  public String updateInstance(boolean debug)
+  {
     try
     {
       WorkflowManagerPort port = getWorkflowManagerPort();
       this.variables =
         VariableListConverter.toMap(port.getVariables(instanceId));
+      activeDebugTab = 0;
       loadPendentForms();
-      return updateForm();
+      return updateForm(debug);
     }
     catch (Exception ex)
     {
-      return processException(ex);
+      if (debug)
+      {
+        error(ex);
+        return null;
+      }
+      else
+      {
+        return processException(ex);
+      }
     }
   }
 
@@ -811,21 +841,9 @@ public class InstanceBean extends FacesBean implements Serializable
   {
     if (this.instanceId.equals(instanceId)) return null;
 
-    try
-    {
-      WorkflowManagerPort port = getWorkflowManagerPort();
-      this.variables =
-        VariableListConverter.toMap(port.getVariables(instanceId));
-      this.instanceId = instanceId;
-      activeDebugTab = 0;
-      loadPendentForms();
-      return updateForm(true);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return null;
+    this.instanceId = instanceId;
+
+    return updateInstance(true);
   }
 
   public boolean isInstanceIdVariable(String name)
