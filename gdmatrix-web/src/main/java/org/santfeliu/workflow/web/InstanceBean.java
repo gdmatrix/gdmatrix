@@ -971,7 +971,8 @@ public class InstanceBean extends FacesBean implements Serializable
       WorkflowManagerPort port = getWorkflowManagerPort(true);
       Map vars = new HashMap();
       vars.put(ACCESS_TOKEN, accessToken);
-      port.setVariables(instanceId, VariableListConverter.toList(vars));
+      port.processInstance(instanceId,
+        VariableListConverter.toList(vars), false);
     }
     catch (Exception ex)
     {
@@ -999,8 +1000,8 @@ public class InstanceBean extends FacesBean implements Serializable
     addCreatorVariables(newVariables);
 
     newVariables.put(formName, FORWARD_STATE);
-    port.setVariables(instanceId,
-      VariableListConverter.toList(newVariables));
+    port.processInstance(instanceId,
+      VariableListConverter.toList(newVariables), false);
   }
 
   //********* private methods **********

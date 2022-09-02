@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.web.servlet;
@@ -58,9 +58,9 @@ public class PaymentServlet extends HttpServlet
   private static final String REF_SAL_PAGO_STC = "REF_SAL_PAGO_STC";
   private static final String ORIGEN = "ORIGEN";
   private static final String INSTANCEID = "instanceid";
-  
+
   protected static final Logger log = Logger.getLogger("PaymentServlet");
-  
+
 /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
    * methods.
@@ -99,14 +99,18 @@ public class PaymentServlet extends HttpServlet
           var.setType(WorkflowConstants.TEXT_TYPE);
           var.setValue(refPayment);
           list.add(var);
-          int result = port.setVariables(instanceId, list);
-          log.log(Level.INFO, "Payment reference {0} registered successfully with result {1} on instance {2}", new Object[]{refPayment, result, instanceId});
+          port.processInstance(instanceId, list, false);
+          log.log(Level.INFO,
+            "Payment reference {0} registered successfully with result {1} on instance {2}",
+            new Object[]{refPayment, list.size(), instanceId});
         }
         else
-          log.log(Level.INFO, "Instance was not waiting a response");       
+          log.log(Level.INFO, "Instance was not waiting a response");
       }
       else
-        log.log(Level.WARNING, "Payment reference {0} with origin {1} not processed on instance {2}", new Object[]{refPayment, origin, instanceId});
+        log.log(Level.WARNING,
+          "Payment reference {0} with origin {1} not processed on instance {2}",
+          new Object[]{refPayment, origin, instanceId});
     }
     catch (Exception ex)
     {
@@ -154,16 +158,16 @@ public class PaymentServlet extends HttpServlet
   public String getServletInfo()
   {
     return "Payment Servlet v1.0";
-  }  
-  
+  }
+
   private WorkflowManagerPort getWorkflowManagerPort()
     throws Exception
   {
     WSDirectory dir = WSDirectory.getInstance();
     WSEndpoint endpoint = dir.getEndpoint(WorkflowManagerService.class);
     String userId = MatrixConfig.getProperty("adminCredentials.userId");
-    String password = MatrixConfig.getProperty("adminCredentials.password");      
+    String password = MatrixConfig.getProperty("adminCredentials.password");
     return endpoint.getPort(WorkflowManagerPort.class, userId, password);
-  }  
+  }
 
 }

@@ -236,8 +236,8 @@ public class ValidServlet extends HttpServlet
         variables.put("result", result);
         variables.put(wfFormVariable, WorkflowConstants.FORWARD_STATE);
         WorkflowManagerPort wfPort = getWorkflowManagerPort(userSessionBean);
-        wfPort.setVariables(wfInstanceId,
-          VariableListConverter.toList(variables));
+        wfPort.processInstance(wfInstanceId,
+          VariableListConverter.toList(variables), false);
 
         // reset attributes
         userSessionBean.setAttribute(SIGID_ATTRIBUTE, null);

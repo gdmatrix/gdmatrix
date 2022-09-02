@@ -240,8 +240,7 @@ public class WorkflowManager implements WorkflowManagerPort
     try
     {
       engine.setVariables(instanceId,
-        VariableListConverter.toMap(variables),
-        getWorkflowUser(), false);
+        VariableListConverter.toMap(variables), getWorkflowUser(), false);
       return variables.size();
     }
     catch (Exception ex)

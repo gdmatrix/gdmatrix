@@ -49,6 +49,17 @@ import org.santfeliu.util.template.Template;
 import org.santfeliu.workflow.store.DataStore;
 import org.santfeliu.workflow.store.DataStoreConnection;
 import org.santfeliu.workflow.store.WorkflowStore;
+import static org.matrix.workflow.WorkflowConstants.ACTIVE_NODES;
+import static org.matrix.workflow.WorkflowConstants.ERRORS;
+import static org.matrix.workflow.WorkflowConstants.ERROR_PREFIX;
+import static org.matrix.workflow.WorkflowConstants.FORM_PREFIX;
+import static org.matrix.workflow.WorkflowConstants.START_DATE_TIME;
+import static org.matrix.workflow.WorkflowConstants.STATE;
+import static org.matrix.workflow.WorkflowConstants.UPDATE_ONLY_PREFIX;
+import static org.matrix.workflow.WorkflowConstants.WORKFLOW_AGENT_ROLE;
+import static org.santfeliu.workflow.WorkflowNode.END_OUTCOME;
+import static org.santfeliu.workflow.WorkflowNode.ERROR_OUTCOME;
+import static org.santfeliu.workflow.WorkflowNode.WAIT_OUTCOME;
 
 /**
  *
@@ -177,12 +188,11 @@ public class WorkflowEngine
           new WorkflowInstance(workflowName, workflowVersion, instanceId);
 
         // set START_DATE_TIME variable
-        variables.put(WorkflowConstants.START_DATE_TIME,
+        variables.put(START_DATE_TIME,
           TextUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
 
         // set UPDATE_ONLY_FORM rule
-        variables.put(WorkflowConstants.UPDATE_ONLY_PREFIX + "FORM",
-          WorkflowConstants.FORM_PREFIX + "%");
+        variables.put(UPDATE_ONLY_PREFIX + "FORM", FORM_PREFIX + "%");
         instance.putAll(variables);
 
         // set activeNodes with first nodeId
@@ -291,39 +301,36 @@ public class WorkflowEngine
     boolean returnVariables, WorkflowActor actor, int maxSteps)
     throws WorkflowException
   {
-    WorkflowInstance instance = new WorkflowInstance();
-    WorkflowEvent event = null;
+    if (variables != null)
+    {
+      setVariables(instanceId, variables, actor, false);
+    }
 
     // phase 1: setVariables / doStep
-    boolean moreSteps = maxSteps > 1;
-    if (variables == null)
-    {
-      event = doStep(instanceId, actor, moreSteps);
-    }
-    else
-    {
-      event = setVariables(instanceId, variables, actor, moreSteps);
-    }
+    boolean wakeUpAgent = maxSteps <= 1;
+    WorkflowEvent event = doStep(instanceId, actor, wakeUpAgent);
 
     // phase 2: do steps
     int numSteps = 1;
     while (event != null && numSteps < maxSteps)
     {
-      moreSteps = numSteps + 1 < maxSteps;
-      event = doStep(instanceId, actor, moreSteps);
+      wakeUpAgent = numSteps + 1 >= maxSteps;
+      event = doStep(instanceId, actor, wakeUpAgent);
       numSteps++;
     }
     if (event != null) // infinite loop detected
     {
       variables = new HashMap();
-      variables.put(WorkflowConstants.ACTIVE_NODES, null);
-      variables.put(WorkflowConstants.ERROR_PREFIX + "0",
+      variables.put(ACTIVE_NODES, null);
+      variables.put(ERROR_PREFIX + "0",
         "Infinite loop detected. Instance terminated.");
-      variables.put(WorkflowConstants.ERRORS, " 0 ");
-      setVariables(instanceId, variables, new WorkflowAdmin(), false);
+      variables.put(ERRORS, " 0 ");
+      setVariables(instanceId, variables, new WorkflowAdmin(), true);
     }
 
     // phase 3: return variables
+    WorkflowInstance instance = new WorkflowInstance();
+
     if (returnVariables)
     {
       getVariables(instanceId, instance, actor);
@@ -332,7 +339,7 @@ public class WorkflowEngine
   }
 
   public WorkflowEvent doStep(String instanceId, WorkflowActor actor,
-    boolean moreSteps) throws WorkflowException
+    boolean wakeUpAgent) throws WorkflowException
   {
     WorkflowEvent event = null;
     try
@@ -361,7 +368,7 @@ public class WorkflowEngine
         conn.commit();
 
         // wakeUp agent
-        if (processable && !(moreSteps && event != null))
+        if (wakeUpAgent && processable)
           wakeUpAgent(instance.getAgentName());
       }
       catch (Exception ex)
@@ -441,7 +448,7 @@ public class WorkflowEngine
   }
 
   public WorkflowEvent setVariables(String instanceId,
-    Map variables, WorkflowActor actor, boolean moreSteps)
+    Map variables, WorkflowActor actor, boolean wakeUpAgent)
     throws WorkflowException
   {
     WorkflowEvent event = null;
@@ -465,18 +472,18 @@ public class WorkflowEngine
 
         Workflow workflow = getWorkflow(instance);
 
-        boolean pendentNodes =
-          processActiveNodes(workflow, instance, actor, valueChanges);
-
         event = storeChanges(workflow, instance, actor, valueChanges, conn);
 
-        boolean processable = pendentNodes || event != null;
+        boolean processable = event != null;
 
-        conn.setInstanceProcessable(instanceId, processable);
+        if (processable)
+        {
+          conn.setInstanceProcessable(instanceId, processable);
+        }
         conn.commit();
 
         // wakeUp agent
-        if (processable && !(moreSteps && event != null))
+        if (processable && wakeUpAgent)
           wakeUpAgent(instance.getAgentName());
       }
       catch (Exception ex)
@@ -631,8 +638,7 @@ public class WorkflowEngine
     String workflowVersion = instance.getWorkflowVersion();
     try
     {
-      boolean forceWorkflowReload =
-        instance.containsKey(WorkflowConstants.ERRORS);
+      boolean forceWorkflowReload = instance.containsKey(ERRORS);
 
       // if workflow has errors, reload last workflow version
       workflow = workflowStore.getWorkflow(workflowName, workflowVersion,
@@ -678,7 +684,7 @@ public class WorkflowEngine
         activeNodeSet, nextActiveNodeSet, true);
 
       // update ACTIVE_NODES variable, if not set manually
-      if (valueChanges.contains(WorkflowConstants.ACTIVE_NODES))
+      if (valueChanges.contains(ACTIVE_NODES))
       {
         // direct update of ACTIVE_NODES (TerminateInstance)
         nextActiveNodeSet = parseActiveNodes(instance.getActiveNodes());
@@ -689,14 +695,14 @@ public class WorkflowEngine
         instance.setActiveNodes(nextActiveNodes);
       }
       // update STATE variable, if not set manually
-      if (!valueChanges.contains(WorkflowConstants.STATE))
+      if (!valueChanges.contains(STATE))
       {
         String stateValue = describeActiveNodes(nextActiveNodeSet, workflow);
-        instance.put(WorkflowConstants.STATE, stateValue);
+        instance.put(STATE, stateValue);
       }
       // update ERRORS variable
       String errors = getErrors(instance);
-      instance.put(WorkflowConstants.ERRORS, errors);
+      instance.put(ERRORS, errors);
     }
     return pendentNodes;
   }
@@ -800,13 +806,13 @@ public class WorkflowEngine
     try
     {
       // clear error
-      instance.put(WorkflowConstants.ERROR_PREFIX + node.getId(), null);
+      instance.put(ERROR_PREFIX + node.getId(), null);
       String outcome = ((NodeProcessor)node).process(instance, actor); // process node
-      if (WorkflowNode.END_OUTCOME.equals(outcome))
+      if (END_OUTCOME.equals(outcome))
       {
         // end this branch of execution
       }
-      else if (WorkflowNode.WAIT_OUTCOME.equals(outcome))
+      else if (WAIT_OUTCOME.equals(outcome))
       {
         wait = true;
       }
@@ -818,15 +824,15 @@ public class WorkflowEngine
     catch (Exception ex)
     {
       // set error
-      instance.put(WorkflowConstants.ERROR_PREFIX + node.getId(), ex.toString());
-      addNextNodes(node, WorkflowNode.ERROR_OUTCOME, newNodeSet);
+      instance.put(ERROR_PREFIX + node.getId(), ex.toString());
+      addNextNodes(node, ERROR_OUTCOME, newNodeSet);
     }
     return wait;
   }
 
   private String describeActiveNodes(Set nodeSet, Workflow workflow)
   {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     Iterator iter = nodeSet.iterator();
     while (iter.hasNext())
     {
@@ -858,8 +864,7 @@ public class WorkflowEngine
     for (WorkflowNode.Transition transition : transitions)
     {
       if (matchOutcome(outcome, transition.getOutcome()) ||
-        (transition.isAnyOutcome() &&
-        !WorkflowNode.ERROR_OUTCOME.equals(outcome)))
+        (transition.isAnyOutcome() && !ERROR_OUTCOME.equals(outcome)))
       {
         String nextNodeId = transition.getNextNodeId();
         set.add(nextNodeId);
@@ -914,10 +919,9 @@ public class WorkflowEngine
     while (iter.hasNext())
     {
       String variable = (String)iter.next();
-      if (variable.startsWith(WorkflowConstants.ERROR_PREFIX))
+      if (variable.startsWith(ERROR_PREFIX))
       {
-        String suffix = variable.substring(
-          WorkflowConstants.ERROR_PREFIX.length());
+        String suffix = variable.substring(ERROR_PREFIX.length());
         buffer.append(" ").append(suffix);
       }
     }
@@ -996,7 +1000,7 @@ public class WorkflowEngine
     Set nodeRoles = getRolesSet(node.getRoles(), instance);
 
     boolean onlyAgents = (nodeRoles.size() == 1 &&
-      nodeRoles.contains(WorkflowConstants.WORKFLOW_AGENT_ROLE));
+      nodeRoles.contains(WORKFLOW_AGENT_ROLE));
 
     return actor.hasAnyRole(nodeRoles) ||
       (actor.isWorkflowAdministrator() && !onlyAgents);
