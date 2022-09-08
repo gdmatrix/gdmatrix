@@ -46,7 +46,7 @@ public abstract class SearchBacking extends PageBacking
   
   protected SearchBacking()
   {
-    bigListHelper = new BigListHelper(this);   
+    bigListHelper = new BigListHelper(this);      
   }
   
   public String getSmartValue()
@@ -60,7 +60,7 @@ public abstract class SearchBacking extends PageBacking
   }  
   
   public abstract String smartSearch();
-
+  
   public abstract String clear();
 
   @Override
@@ -70,8 +70,18 @@ public abstract class SearchBacking extends PageBacking
   }
   
   public abstract String getFilterTypeId();
+    
+  public void reset()
+  {
+    clear();
+    bigListHelper.reset();
+  }
   
-  public abstract void refresh();
+  public void refresh()
+  {
+    reset();
+    bigListHelper.refresh();    
+  }
   
   public abstract String getOutcome();
   
@@ -81,11 +91,7 @@ public abstract class SearchBacking extends PageBacking
     String currentTypeId = getFilterTypeId();
     String menuItemTypeId = getMenuItemTypeId();    
     if (currentTypeId != null && !currentTypeId.equals(menuItemTypeId))
-    {
-      refresh();
-      bigListHelper.reset();
-      bigListHelper.refresh();
-    }
+      reset();
 
     return getOutcome();
   }  
@@ -110,17 +116,17 @@ public abstract class SearchBacking extends PageBacking
   
   public boolean isRenderBasicResults()
   {
-    return (objectBacking.getObjectId() != null);
+    return (getObjectBacking().getObjectId() != null);
   }
  
   public String getObjectId(Object row)
   {
-    return objectBacking.getObjectId(row);
+    return getObjectBacking().getObjectId(row);
   }
   
   public String getDescription(Object row)
   {
-    return objectBacking.getDescription(row);
+    return getObjectBacking().getDescription(row);
   }
     
   public String show(Object row)

@@ -28,17 +28,75 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.web.helper;
+package org.matrix.pf.web;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
- *
+ * Wrapper class of any object wanted to be used in a selectMenu components that 
+ * not implements equals method, tipically WS client stubs. Wrapping stubs into
+ * SelectEntity allows to be properly validated by selectMenu and other 
+ * Primefaces components.
+ * 
  * @author blanquepa
+ * @param <T>
  */
-public interface GroupablePage
+public class SelectEntity<T> implements Serializable
 {
-  public abstract GroupableHelper.GroupExtractor getGroupExtractor();  
+  private String id;
+  private T original;
 
-  public abstract int getPageSize();
+  public SelectEntity(String id, T original)
+  {
+    this.id = id;
+    this.original = original;
+  }
   
-  public GroupableHelper getGroupableHelper();
+  public String getId()
+  {
+    return id;
+  }
+
+  public void setId(String id)
+  {
+    this.id = id;
+  }
+
+  public T getOriginal()
+  {
+    return original;
+  }
+
+  public void setOriginal(T original)
+  {
+    this.original = original;
+  }
+  
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 79 * hash + Objects.hashCode(this.id);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+    {
+      return true;
+    }
+    if (obj == null)
+    {
+      return false;
+    }
+    if (getClass() != obj.getClass())
+    {
+      return false;
+    }
+    final SelectEntity other = (SelectEntity) obj;
+    return Objects.equals(this.id, other.id);
+  }  
 }

@@ -33,37 +33,42 @@ package org.matrix.pf.kernel;
 import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
+import org.matrix.kernel.AddressFilter;
+import org.matrix.kernel.AddressView;
 import org.matrix.kernel.KernelConstants;
-import org.matrix.kernel.Person;
-import org.matrix.kernel.PersonView;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
+import org.matrix.pf.web.SearchBacking;
 import org.matrix.web.WebUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
+import org.santfeliu.web.bean.CMSProperty;
 
 /**
  *
  * @author blanquepa
  */
-@CMSContent(typeId = "Person")
-@Named("personBacking")
-public class PersonBacking extends ObjectBacking
+@CMSContent(typeId = "Address")
+@Named("addressBacking")
+public class AddressBacking extends ObjectBacking
 {   
-  public PersonBacking()
+  @CMSProperty
+  public static final String DEFAULT_CITY_NAME = "defaultCityName";
+  
+  public AddressBacking()
   {
     super();  
   }
  
   @Override
-  public PersonSearchBacking getSearchBacking()
+  public SearchBacking getSearchBacking()
   {
-    return WebUtils.getBacking("personSearchBacking");
+    return WebUtils.getBacking("addressSearchBacking");
   }
 
   @Override
-  public String getObjectId(Object person)
+  public String getObjectId(Object address)
   {
-    return ((PersonView)person).getPersonId();
+    return ((AddressView)address).getAddressId();
   }
   
   @Override
@@ -71,18 +76,7 @@ public class PersonBacking extends ObjectBacking
   {
     return true;
   }
-  
-  @Override
-  public String getDescription()
-  {
-    PersonMainBacking mainBacking = 
-      WebUtils.getBacking("personMainBacking");
-    if (mainBacking != null)
-      return getDescription(mainBacking.getPerson());
-    else
-      return super.getDescription();
-  }
-  
+    
   @Override
   public String getDescription(String objectId)
   {
@@ -91,8 +85,16 @@ public class PersonBacking extends ObjectBacking
     {
       if (objectId != null && objectId.contains(";"))
         return objectId;
-      Person person = KernelConfigBean.getPortAsAdmin().loadPerson(objectId);
-      return getDescription(person);
+      
+      AddressFilter filter = new AddressFilter();
+      filter.getAddressIdList().add(objectId);      
+      List<AddressView> addressViews = 
+        KernelConfigBean.getPortAsAdmin().findAddressViews(filter);
+      if (!addressViews.isEmpty())
+      {
+        AddressView addressView = addressViews.get(0);
+        return getDescription(addressView);
+      }
     }
     catch (Exception ex)
     {
@@ -104,30 +106,14 @@ public class PersonBacking extends ObjectBacking
   @Override
   public String getDescription(Object obj)
   {
-    Person person = (Person)obj;
-    if (person == null) return "";
+    AddressView address = (AddressView)obj;
+    if (address == null) return "";
     StringBuilder buffer = new StringBuilder();
-    buffer.append(person.getName());
-    if (person.getFirstParticle() != null)
-    {
-      buffer.append(" ");
-      buffer.append(person.getFirstParticle());
-    }
-    if (person.getFirstSurname() != null)
-    {
-      buffer.append(" ");
-      buffer.append(person.getFirstSurname());
-    }
-    if (person.getSecondParticle() != null)
-    {
-      buffer.append(" ");
-      buffer.append(person.getSecondParticle());
-    }
-    if (person.getSecondSurname() != null)
-    {
-      buffer.append(" ");
-      buffer.append(person.getSecondSurname());
-    }
+    buffer.append(address.getDescription());
+    String city = address.getCity();
+    String province = address.getProvince();
+    StreetBacking streetBacking = WebUtils.getBacking("streetBacking");
+    streetBacking.getDescription(null, null, city, province);
     return buffer.toString();
   }  
   
@@ -152,7 +138,7 @@ public class PersonBacking extends ObjectBacking
   @Override
   public boolean remove(String objectId)
   {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    throw new UnsupportedOperationException("Not supported yet."); 
   }
      
 }

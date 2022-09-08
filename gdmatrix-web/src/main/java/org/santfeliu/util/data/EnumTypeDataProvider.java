@@ -71,6 +71,12 @@ public class EnumTypeDataProvider implements DataProvider
     DictionaryManagerPort port = endpoint.getPort(DictionaryManagerPort.class);
     EnumTypeItemFilter filter = new EnumTypeItemFilter();
     filter.setEnumTypeId(enumTypeId);
+    if (context != null && !context.isEmpty())
+    {
+      String value = (String) context.get("value");
+      if (value != null)
+        filter.setValue(value);
+    }
     List<EnumTypeItem> items = port.findEnumTypeItems(filter);
     Table table = new Table("value", "label", "title");
     for (EnumTypeItem item : items)

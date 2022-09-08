@@ -50,6 +50,8 @@ public class PersonSearchBacking extends SearchBacking
   
   private PersonFilter filter;
   
+  private PersonBacking personBacking;
+  
   public PersonSearchBacking()
   {
     super();
@@ -59,7 +61,7 @@ public class PersonSearchBacking extends SearchBacking
   @Override
   public void init()
   {
-    objectBacking = WebUtils.getInstance(PersonBacking.class);
+    personBacking = WebUtils.getBacking("personBacking");
     filter = new PersonFilter();
     smartValue = null;
   }
@@ -84,6 +86,12 @@ public class PersonSearchBacking extends SearchBacking
     this.filter.getPersonId().clear();
     if (personIds != null && !personIds.isEmpty())
       this.filter.getPersonId().addAll(personIds);
+  }
+
+  @Override
+  public PersonBacking getObjectBacking()
+  {
+    return personBacking;
   }
      
   @Override
@@ -185,13 +193,7 @@ public class PersonSearchBacking extends SearchBacking
   @Override
   public String getFilterTypeId()
   {
-    return getObjectBacking().getRootTypeId();
-  }
-
-  @Override
-  public void refresh()
-  {
-    init();
+    return personBacking.getRootTypeId();
   }
 
   @Override

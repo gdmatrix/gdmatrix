@@ -28,62 +28,28 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.web.helper;
-
-import org.matrix.pf.web.ObjectBacking;
+package org.matrix.pf.kernel;
 
 /**
  *
  * @author blanquepa
  */
-public interface TabPage
+public class KernelUtils
 {
-  public <T extends ObjectBacking> T getObjectBacking();
-  
-  
-  /**
-   * Responsible of retreive page data and other data related actions like 
-   * preload/postload actions. By default invokes only load().
-   */
-  
-  public default void populate()
+  public static String getContactTypeIconName(String contactTypeId)
   {
-    ObjectBacking objectBacking = getObjectBacking();
-    if (objectBacking != null && !objectBacking.isNew())
-      load();
-  }
-  
-  /**
-   * Action invoked to create an instance of the object wrapped in the page.
-   */
-  public void create();
-  
-  /**
-   * Responsible to retrieve the data from a source. 
-   * 
-   */
-  public void load();    
-  
-  /**
-   * Action invoked for the page to be shwon.
-   * @return Outcome 
-   */
-  public String show();
-  
-  /**
-   * Action invoked when save button is pressed
-   * @return 
-   */
-  public String store(); 
-  
-  /**
-   * Action invoked when cancel button is pressed
-   * @return 
-   */  
-  public String cancel();
-  
-  /**
-   * Action invoked to reset completely tab data
-   */
-  public void reset();
+    String result = null;
+    if (contactTypeId != null)
+    {
+      if (contactTypeId.endsWith("_TEL"))
+        result = "phone";
+      else if (contactTypeId.endsWith("_MOV"))
+        result = "mobile";
+      else if (contactTypeId.endsWith("_EMAI") || 
+        contactTypeId.endsWith("_MAIL") ||
+        contactTypeId.endsWith("_CCO"))
+        result = "envelope";
+    }
+    return result;
+  }  
 }

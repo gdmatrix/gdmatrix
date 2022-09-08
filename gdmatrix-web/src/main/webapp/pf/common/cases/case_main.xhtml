@@ -17,14 +17,14 @@
       <div class="formgrid grid pl-2">   
 <!--        
         <p:outputPanel styleClass="field col-12 md:col-4 lg:col-2"
-                       rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('caseId')}">
+                       rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('caseId')}">
           <p:outputLabel for="id" value="Id." />
           <p:inputText id="id" value="#{caseMainBacking.case.caseId}" 
                        styleClass="inputfield w-full" readonly="true"/>
         </p:outputPanel>    
 -->
         <p:outputPanel styleClass="field col-12 md:col-8" 
-                       rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('title')}">
+                       rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('title')}">
           <p:outputLabel for="title" value="#{caseMainBacking.typedHelper.getPropertyLabel('title', caseBundle.case_title)}" />
           <p:inputText id="title" value="#{caseMainBacking.case.title}" 
                        class="inputfield w-full"/>
@@ -37,7 +37,7 @@
       
       <div class="formgrid grid pl-2">  
         <p:outputPanel styleClass="field col col-12 md:col-4"
-                       rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('caseTypeId') and caseMainBacking.typedHelper.allTypes.size() > 1}">
+                       rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('caseTypeId') and caseMainBacking.typedHelper.allTypes.size() > 1}">
           <p:outputLabel for="case_type_id" value="#{caseMainBacking.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />    
           <p:selectOneMenu id="case_type_id" value="#{caseMainBacking.case.caseTypeId}"  
                            styleClass="inputfield w-full" filter="true" var="t"
@@ -59,17 +59,17 @@
           <!-- TODO: disable if not editable -->
           <p:datePicker id="start_date" value="#{caseMainBacking.startDateTime}" 
                         locale="#{caseMainBacking.language}" inputStyleClass="w-10"
-                        styleClass="inputfield w-full" showIcon="true" showTime="#{!caseMainBacking.typedHelper.isPropertyHidden('startTime')}"
+                        styleClass="inputfield w-full" showIcon="true" showTime="#{!caseMainBacking.tabHelper.isPropertyHidden('startTime')}"
                         monthNavigator="true" yearNavigator="true" />
         </p:outputPanel>     
 
         <p:outputPanel styleClass="field col col-12 md:col-12 lg:col-3"
-                       rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('endDate')}">
+                       rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('endDate')}">
           <p:outputLabel for="end_date" value="#{caseMainBacking.typedHelper.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
           <!-- TODO: disable if not editable -->
           <p:datePicker id="end_date" value="#{caseMainBacking.endDateTime}" 
                         locale="#{caseMainBacking.language}" inputStyleClass="w-10"
-                        styleClass="inputfield w-full" showIcon="true" showTime="#{!caseMainBacking.typedHelper.isPropertyHidden('endTime')}"
+                        styleClass="inputfield w-full" showIcon="true" showTime="#{!caseMainBacking.tabHelper.isPropertyHidden('endTime')}"
                         monthNavigator="true" yearNavigator="true" />
         </p:outputPanel> 
       </div>  
@@ -86,23 +86,23 @@
    
      
       <p:outputPanel styleClass="field col-12 md:col-12"
-                     rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('description')}">
+                     rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('description')}">
         <p:outputLabel for="description" value="#{caseMainBacking.typedHelper.getPropertyLabel('description', caseBundle.case_description)}"  />        
         <p:inputTextarea id="description" value="#{caseMainBacking.case.description}" 
                          styleClass="inputfield w-full" />
       </p:outputPanel> 
 
       <p:outputPanel styleClass="field col-12 md:col-12" 
-                     rendered="#{!caseMainBacking.typedHelper.isPropertyHidden('comments')}">
+                     rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('comments')}">
         <p:outputLabel for="comments" value="#{caseMainBacking.typedHelper.getPropertyLabel('comments', caseBundle.case_comments)}" />
         <p:inputTextarea id="comments" value="#{caseMainBacking.case.comments}" 
           styleClass="inputfield w-full" />
       </p:outputPanel> 
-    
+<!--
       <ui:include src="/pf/common/obj/object_form.xhtml">
         <ui:param name="backing" value="#{caseMainBacking}" />
       </ui:include>
-
+-->
     </h:panelGroup>
 
   </ui:define>

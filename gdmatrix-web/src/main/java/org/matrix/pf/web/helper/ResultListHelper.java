@@ -31,16 +31,27 @@
 package org.matrix.pf.web.helper;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.matrix.cases.Case;
 import org.matrix.dic.Property;
+import org.matrix.dic.PropertyDefinition;
+import org.matrix.dic.PropertyType;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
+import org.santfeliu.util.Table;
+import org.santfeliu.util.TextUtils;
+import org.santfeliu.util.data.DataProvider;
+import org.santfeliu.util.data.DataProviderFactory;
 import org.santfeliu.web.UserSessionBean;
 
 /**
@@ -240,12 +251,13 @@ public class ResultListHelper<T extends Serializable> implements Serializable
   }
   
   /**
-   * This list allows to component <p:columns> to show metadata values of  
-   * lists of Property fields.
+   * Allows to component <p:columns> show metadata values of List<Property> 
+   * fields.
    */
   public class ResultList extends ArrayList
   {
     private List list = new ArrayList();
+    private final Map<Object, Object> formattedValuesMap = new HashMap();    
     
     public ResultList(List list)
     {
@@ -284,7 +296,7 @@ public class ResultListHelper<T extends Serializable> implements Serializable
     
     public class Row extends HashMap<String, Object>
     {
-      private static final String FIELD_NAME = "property";
+      private static final String PROPERTY_FIELD_NAME = "property";
       private Object object;
       
       public Row(Object object)
@@ -311,13 +323,14 @@ public class ResultListHelper<T extends Serializable> implements Serializable
         Object obj = super.get(key);
         if (obj == null)
         {
-          Object properties = super.get(FIELD_NAME);
+          Object properties = super.get(PROPERTY_FIELD_NAME);
           if (properties != null && properties instanceof List)
           {
             List<Property> propList = (List<Property>) properties;
             obj = DictionaryUtils.getPropertyValue(propList, (String) key);
           }
         }
+        obj = formatValue(key, obj);        
 
         return obj;
       }
@@ -326,9 +339,98 @@ public class ResultListHelper<T extends Serializable> implements Serializable
       {
         return this.object;
       }
+      
+      private Object formatValue(Object key, Object value)
+      {
+        Object fValue = formattedValuesMap.get(key + "::" + value);
+        
+        if (fValue == null)
+        {
+          if (pageBacking instanceof Typed)
+          {
+            String typeId = ((Typed) pageBacking).getTypeId();
+            Type type = TypeCache.getInstance().getType(typeId);
+            PropertyDefinition pd = type.getPropertyDefinition((String) key);
+            if (pd != null)
+            {
+              PropertyType propType = pd.getType();
+              if (propType.equals(PropertyType.DATE))
+                fValue = formatDate(value);
+              else if (pd.getEnumTypeId() != null)
+                fValue = formatEnumType(pd.getEnumTypeId(), key, value);
+            }
+          } 
+          formattedValuesMap.put(key + "::" + value, fValue);
+        }
+        
+        return fValue != null ? fValue : value;
+      }
+      
+      private Object formatEnumType(String enumTypeId, Object key, Object value)
+      {
+        Object result = value;
+        
+//        String enumTypeId = pd.getEnumTypeId();
+        DataProviderFactory factory = DataProviderFactory.getInstance();
+        String ref = "enumtype:" + enumTypeId;
+        DataProvider provider;
+        try 
+        {
+          provider = factory.createProvider(ref);
+          HashMap context = new HashMap();
+          context.put("value", value);
+          Table data = provider.getData(context);
+          if (data != null && !data.isEmpty())
+          {
+            result = data.getElementAt(0, 1); //Label column of first value
+          }
+        }
+        catch (Exception ex) 
+        {
+          Logger.getLogger(ResultListHelper.class.getName()).
+            log(Level.SEVERE, null, ex);
+        }  
+        
+        return result;
+      }
+      
+      private Object formatDate(Object value)
+      {
+        return TextUtils.formatInternalDate((String) value, "dd/MM/yyyy");
+      }
          
     }
     
+  }
+  
+  public static void main(String[] args)
+  {
+    try
+    {
+      Case cas = new Case();
+      cas.setCaseId("1");
+      cas.setStartDate("20220101");
+      Property p = new Property();
+      p.setName("prop1");
+      p.getValue().add("value1");
+      cas.getProperty().add(p);
+      
+      System.out.println(PropertyUtils.getProperty(cas, "caseId"));
+      System.out.println(PropertyUtils.getPropertyType(cas, "startDate"));
+   
+    }
+    catch (IllegalAccessException ex)
+    {
+      Logger.getLogger(ResultListHelper.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (InvocationTargetException ex)
+    {
+      Logger.getLogger(ResultListHelper.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    catch (NoSuchMethodException ex)
+    {
+      Logger.getLogger(ResultListHelper.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
   
  

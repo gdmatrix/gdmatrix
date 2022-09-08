@@ -30,46 +30,66 @@
  */
 package org.matrix.pf.web;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Base64;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.SelectItem;
 
 /**
  *
  * @author blanquepa
  */
-@FacesConverter(value = "selectItemConverter")
-public class SelectItemConverter implements Converter<SelectItem>
+@FacesConverter(value = "universalConverter")
+public class UniversalConverter implements Converter
 {
-  private static final String SEPARATOR = "::";
   @Override
-  public SelectItem getAsObject(FacesContext context, UIComponent component, 
-    String value)
+  public String getAsString(FacesContext context, UIComponent component, 
+    Object entity)
   {
-    String label = value;
-    if (value != null && value.contains(SEPARATOR))
+    String result = null;
+        
+    try(ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);)
     {
-      String[] parts = value.split(SEPARATOR);
-      if (parts != null && parts.length == 2)
-      {
-        value = parts[0];
-        label = parts[1];
-      }
+      oos.writeObject(entity);      
+      result = Base64.getMimeEncoder().encodeToString(bos.toByteArray());
     }
-    
-    return new SelectItem(value, label);    
+    catch (IOException ex)
+    {
+      Logger.getLogger(UniversalConverter.class.getName())
+        .log(Level.SEVERE, null, ex);
+    }
+    return result;
   }
 
   @Override
-  public String getAsString(FacesContext context, UIComponent component, 
-    SelectItem value)
+  public Object getAsObject(FacesContext context, UIComponent component, 
+    String uuid)
   {
-    if (value == null)
-      return "";
+    Object result;  
+    try
+    {
+      byte[] ser = Base64.getMimeDecoder().decode(uuid);
     
-    return (String) value.getValue() + SEPARATOR + value.getLabel();
+      try(ByteArrayInputStream bis = new ByteArrayInputStream(ser);
+        ObjectInputStream ois = new ObjectInputStream(bis);)
+      {
+        result = (Object) ois.readObject();
+      }
+    }
+    catch (Exception ex)
+    {
+      result = uuid;
+    }
+    return result;
   }
-  
+ 
 }

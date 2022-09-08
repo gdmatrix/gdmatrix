@@ -13,7 +13,7 @@ body .loading-icon-container .ui-dialog-content
   padding: 1rem;
 }
 
-.loading-icon
+body .pi.loading-icon
 {
   font-size: 4rem;
 }

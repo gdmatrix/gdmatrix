@@ -74,7 +74,7 @@ public class CaseBacking extends ObjectBacking
   @Override
   public String getDescription()
   {
-    CaseMainBacking mainBacking = WebUtils.getInstance(CaseMainBacking.class);
+    CaseMainBacking mainBacking = WebUtils.getBacking("caseMainBacking");
     if (mainBacking != null)
       return getDescription(mainBacking.getCase());
     else

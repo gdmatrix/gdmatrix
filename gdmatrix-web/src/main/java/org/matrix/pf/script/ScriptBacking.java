@@ -35,6 +35,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ControllerBacking;
+import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.TabPage;
 import org.santfeliu.util.MatrixConfig;
@@ -64,6 +65,7 @@ public class ScriptBacking extends PageBacking
   private String protocol;
   private String port;   
   
+  private ObjectBacking objectBacking;
   
   public ScriptBacking()
   {
@@ -82,9 +84,9 @@ public class ScriptBacking extends PageBacking
       HttpUtils.getScheme(request);
     String defaultPort = 
       MatrixConfig.getProperty("org.santfeliu.web.defaultPort");
-    port = !"80".equals(defaultPort) ? ":" + defaultPort : "";        
+    port = !"80".equals(defaultPort) ? ":" + defaultPort : ""; 
   }
-  
+
   public String getXhtmlFormUrl()
   {
     //Avoid caching
@@ -108,6 +110,12 @@ public class ScriptBacking extends PageBacking
     populate();        
     return OUTCOME;    
   }  
+
+  @Override
+  public ObjectBacking getObjectBacking()
+  {
+    return objectBacking;
+  }
   
   @Override
   public String show(String page)
@@ -144,6 +152,12 @@ public class ScriptBacking extends PageBacking
   {
     call("reset");
   }  
+  
+  @Override
+  public String cancel()
+  {
+    return (String) call("cancel");
+  }   
 
   @Override
   public String getPageObjectId()

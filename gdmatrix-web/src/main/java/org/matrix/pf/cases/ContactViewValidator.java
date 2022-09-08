@@ -28,62 +28,28 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.web.helper;
+package org.matrix.pf.cases;
 
-import org.matrix.pf.web.ObjectBacking;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.FacesValidator;
+import javax.faces.validator.Validator;
+import javax.faces.validator.ValidatorException;
 
 /**
  *
  * @author blanquepa
  */
-public interface TabPage
+
+@FacesValidator("org.matrix.pf.cases.ContactViewValidator")
+public class ContactViewValidator implements Validator
 {
-  public <T extends ObjectBacking> T getObjectBacking();
-  
-  
-  /**
-   * Responsible of retreive page data and other data related actions like 
-   * preload/postload actions. By default invokes only load().
-   */
-  
-  public default void populate()
+
+  @Override
+  public void validate(FacesContext context, UIComponent component, Object value)
+    throws ValidatorException
   {
-    ObjectBacking objectBacking = getObjectBacking();
-    if (objectBacking != null && !objectBacking.isNew())
-      load();
+    System.out.println("validating: " + value);
   }
   
-  /**
-   * Action invoked to create an instance of the object wrapped in the page.
-   */
-  public void create();
-  
-  /**
-   * Responsible to retrieve the data from a source. 
-   * 
-   */
-  public void load();    
-  
-  /**
-   * Action invoked for the page to be shwon.
-   * @return Outcome 
-   */
-  public String show();
-  
-  /**
-   * Action invoked when save button is pressed
-   * @return 
-   */
-  public String store(); 
-  
-  /**
-   * Action invoked when cancel button is pressed
-   * @return 
-   */  
-  public String cancel();
-  
-  /**
-   * Action invoked to reset completely tab data
-   */
-  public void reset();
 }
