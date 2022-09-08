@@ -2,8 +2,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:sf="http://faces.santfeliu.org"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:sf="http://faces.santfeliu.org">
 
   <ui:composition template="/common/workflow/instance.xhtml">
 
@@ -11,14 +10,13 @@
 
       <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
 
-      <t:div styleClass="final_form">
-        <h:graphicImage url="#{instanceBean.finalIcon}" 
-          style="vertical-align:middle" alt="" />
+      <div class="final_form">
+        <h:graphicImage url="#{instanceBean.finalIcon}" style="vertical-align:middle" alt="" />
         <sf:outputText value="#{instanceBean.finalMessage}" 
           translator="#{instanceBean.translationEnabled ? applicationBean.translator : null}" 
           translationGroup="#{instanceBean.workflowName}"
           styleClass="workflowMessage" escape="false" />
-      </t:div>
+      </div>
 
     </ui:define>
   </ui:composition>

@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -423,9 +424,14 @@ public class InstanceBean extends FacesBean implements Serializable
         }
         if (message == null) // get default message
         {
-          ResourceBundle bundle = ResourceBundle.getBundle(
-            "org.santfeliu.workflow.web.resources.WorkflowBundle", getLocale());
-          message = bundle.getString("instanceTerminated");
+          message = getNodeProperty(TERMINATION_MESSAGE);
+          if (message == null)
+          {
+            Locale locale = getLocale();
+            ResourceBundle bundle = ResourceBundle.getBundle(
+              "org.santfeliu.workflow.web.resources.WorkflowBundle", locale);
+            message = bundle.getString("instanceTerminated");
+          }
         }
       }
       else // ERROR
@@ -437,9 +443,14 @@ public class InstanceBean extends FacesBean implements Serializable
         }
         if (message == null) // get default message
         {
-          ResourceBundle bundle = ResourceBundle.getBundle(
-            "org.santfeliu.workflow.web.resources.WorkflowBundle", getLocale());
-          message = bundle.getString("instanceTerminatedWithErrors");
+          message = getNodeProperty(FAIL_MESSAGE);
+          if (message == null)
+          {
+            Locale locale = getLocale();
+            ResourceBundle bundle = ResourceBundle.getBundle(
+              "org.santfeliu.workflow.web.resources.WorkflowBundle", locale);
+            message = bundle.getString("instanceTerminatedWithErrors");
+          }
         }
       }
     }
@@ -1166,5 +1177,13 @@ public class InstanceBean extends FacesBean implements Serializable
       password = userSessionBean.getPassword();
     }
     return endpoint.getPort(WorkflowManagerPort.class, userId, password);
+  }
+
+  private String getNodeProperty(String propertyName)
+  {
+    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
+    MenuItemCursor selectedMenuItem = menuModel.getSelectedMenuItem();
+
+    return selectedMenuItem.getProperty("workflow." + propertyName);
   }
 }

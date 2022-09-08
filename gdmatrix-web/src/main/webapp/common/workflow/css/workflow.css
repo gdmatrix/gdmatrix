@@ -272,6 +272,17 @@ A.consultButton:hover
 
 .workflowInstance .final_form img
 {
+  text-align: right;
+  box-sizing: border-box;
+  padding: 4px;
+  vertical-align: middle;
+}
+
+.workflowInstance .final_form span.workflowMessage
+{
+  width: calc(100% - 64px);
+  text-align: left;
+  display:inline-block;
   vertical-align: middle;
   padding: 4px;
 }
