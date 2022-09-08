@@ -12,7 +12,6 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="/templates/#{userSessionBean.template}/objects_template.xhtml">
@@ -37,15 +36,15 @@
                          action="#{templateBacking.searchBacking.smartSearch}"
                          process="@parent" 
                          ajax="#{objectPage == 'object_search' ? true : false}" 
-                         update="#{objectPage == 'object_search' ? 'mainform:full_results_table' : ''}"
+                         update="#{objectPage == 'object_search' ? ':mainform:search_results_panel' : ''}"
                          styleClass="ui-button-raised m-1" />
       </div>   
     </ui:define>  
     
     <!-- Basic results -->       
     <ui:define name="basic_results">
-      <p:panel header="Cerca recent" rendered="#{templateBacking.searchBacking.resultListHelper.rowCount > 0}">
-        <p:dataTable id="basic_results_table" value="#{templateBacking.searchBacking.resultListHelper.rows}" var="row"
+      <p:panel header="Cerca recent" rendered="#{templateBacking.basicResults != null}">
+        <p:dataTable id="basic_results_table" value="#{templateBacking.basicResults}" var="row"
             paginator="true" size="small" paginatorPosition="bottom" 
             first="#{templateBacking.searchBacking.resultListHelper.firstRowIndex}"
             rows="#{templateBacking.searchBacking.resultListHelper.pageSize}"
@@ -54,7 +53,7 @@
             styleClass="basic_results_table">
           <p:column>
             <p:commandLink action="#{templateBacking.show(row)}"
-                           ajax="false" update="mainform:central_column">
+                           ajax="false" update=":mainform:central_column">
               <h:outputText value="#{templateBacking.getDescription(row)}" />
             </p:commandLink>          
           </p:column>   
@@ -68,7 +67,7 @@
                    var="fav" size="small" styleClass="favorites_table">
         <p:column>
           <p:commandLink action="#{controllerBacking.show(fav.getValue())}" ajax="false" oncomplete="clickSlickDot(2);"
-                         update="mainform:object_header">
+                         update=":mainform:object_header">
             <h:outputText value="#{templateBacking.getDescription(fav)}" />
           </p:commandLink>
         </p:column>

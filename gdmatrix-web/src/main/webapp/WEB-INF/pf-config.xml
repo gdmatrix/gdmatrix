@@ -28,7 +28,7 @@
     <managed-bean-class>org.matrix.pf.kernel.PersonBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>     
-  
+    
   <managed-bean>
     <managed-bean-name>personSearchBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.kernel.PersonSearchBacking</managed-bean-class>
@@ -39,7 +39,36 @@
     <managed-bean-name>personMainBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.kernel.PersonMainBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>addressBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.AddressBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>addressSearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.AddressSearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>      
+  
+  <managed-bean>
+    <managed-bean-name>addressMainBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.AddressMainBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>    
+  
+  <managed-bean>
+    <managed-bean-name>streetBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.StreetBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>countryToStreetBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.CountryToStreetBacking</managed-bean-class>
+  </managed-bean>      
   
   <managed-bean>
     <managed-bean-name>caseBacking</managed-bean-name>
@@ -64,6 +93,12 @@
     <managed-bean-class>org.matrix.pf.cases.CasePersonsBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>
+  
+  <managed-bean>
+    <managed-bean-name>caseAddressesBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseAddressesBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>  
    
   <managed-bean>
     <managed-bean-name>scriptBacking</managed-bean-name>
@@ -116,7 +151,17 @@
     <navigation-case>
       <from-outcome>pf_person_addresses</from-outcome>
       <to-view-id>/pf/common/kernel/person_addresses.xhtml</to-view-id>
-    </navigation-case>     
+    </navigation-case>  
+    
+    <navigation-case>
+      <from-outcome>pf_address_search</from-outcome>
+      <to-view-id>/pf/common/kernel/address_search.xhtml</to-view-id>
+    </navigation-case>   
+    
+    <navigation-case>
+      <from-outcome>pf_address_main</from-outcome>
+      <to-view-id>/pf/common/kernel/address_main.xhtml</to-view-id>
+    </navigation-case>             
     
     <!-- Cases -->
     <navigation-case>
@@ -132,7 +177,12 @@
     <navigation-case>
       <from-outcome>pf_case_persons</from-outcome>
       <to-view-id>/pf/common/cases/case_persons.xhtml</to-view-id>
-    </navigation-case>                            
+    </navigation-case>      
+    
+    <navigation-case>
+      <from-outcome>pf_case_addresses</from-outcome>
+      <to-view-id>/pf/common/cases/case_addresses.xhtml</to-view-id>
+    </navigation-case>                                                   
        
     <!-- CMS -->    
         

@@ -63,8 +63,6 @@ import org.matrix.cases.CaseCase;
 import org.matrix.cases.CaseCaseFilter;
 import org.matrix.cases.CaseCaseView;
 import org.matrix.cases.CaseConstants;
-import org.matrix.cases.Demand;
-import org.matrix.cases.DemandFilter;
 import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
@@ -72,24 +70,25 @@ import org.matrix.cases.CaseEvent;
 import org.matrix.cases.CaseEventFilter;
 import org.matrix.cases.CaseEventView;
 import org.matrix.cases.CaseFilter;
-import org.matrix.cases.Intervention;
-import org.matrix.cases.InterventionFilter;
-import org.matrix.cases.InterventionView;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CaseManagerService;
+import org.matrix.cases.CaseMetaData;
 import org.matrix.cases.CasePerson;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
-import org.matrix.cases.Problem;
-import org.matrix.cases.ProblemFilter;
-import org.matrix.cases.ProblemView;
-import org.matrix.dic.Property;
-import org.matrix.cases.CaseMetaData;
+import org.matrix.cases.Demand;
+import org.matrix.cases.DemandFilter;
+import org.matrix.cases.Intervention;
+import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionProblem;
 import org.matrix.cases.InterventionProblemFilter;
 import org.matrix.cases.InterventionProblemView;
-import org.matrix.security.AccessControl;
+import org.matrix.cases.InterventionView;
+import org.matrix.cases.Problem;
+import org.matrix.cases.ProblemFilter;
+import org.matrix.cases.ProblemView;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
@@ -101,6 +100,7 @@ import org.matrix.kernel.KernelManagerPort;
 import org.matrix.kernel.KernelManagerService;
 import org.matrix.kernel.PersonFilter;
 import org.matrix.kernel.PersonView;
+import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
 import org.matrix.util.ExternalEntity;
 import org.matrix.util.WSDirectory;
@@ -1010,7 +1010,7 @@ public class CaseManager implements CaseManagerPort
 
       Query query = setQueryParameters("findCaseAddresses", filter);
 
-      List<DBCasePerson> dbRowList = query.getResultList();
+      List<DBCaseAddress> dbRowList = query.getResultList();
 
       if (dbRowList != null && !dbRowList.isEmpty())
       {
@@ -1018,7 +1018,7 @@ public class CaseManager implements CaseManagerPort
         Set<String> allCaseIds = new HashSet();
         
         //populate caseId filter
-        for (DBCasePerson dbRow : dbRowList)
+        for (DBCaseAddress dbRow : dbRowList)
         {
           allCaseIds.add(dbRow.getCaseId());
         }

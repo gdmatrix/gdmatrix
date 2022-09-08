@@ -11,7 +11,6 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:pe="http://primefaces.org/ui/extensions"
@@ -26,13 +25,13 @@
               <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-7xl mx-2 my-1"/>                
               <div class="mr-3">
                 <p:commandButton  
-                  icon="text-2xl ui-icon pi pi-star" 
+                  icon="text-2xl ui-icon pi pi-star-fill" 
                   action="#{templateBacking.unmarkFavorite}"
                   styleClass="rounded-button ui-button-flat"
                   rendered="#{templateBacking.favorite}" global="false"
                   process="@this" update="object_header favorites_table"/>                     
                 <p:commandButton 
-                  icon="text-2xl ui-icon pi pi-star-o" 
+                  icon="text-2xl ui-icon pi pi-star" 
                   action="#{templateBacking.markFavorite}"
                   styleClass="rounded-button ui-button-flat"
                   rendered="#{!templateBacking.favorite}" global="false"
@@ -90,28 +89,33 @@
         <c:forEach items="#{templateBacking.tabs}" var="tab">
           <p:menuitem id="tab#{tab.index}" value="#{tab.label}" ajax="false"
                       actionListener="#{templateBacking.doTabAction}"
-                      action="#{tab.executeAction()}" class="">
+                      action="#{tab.executeAction()}" >
             <f:attribute name="tab" value="#{tab}"></f:attribute>
           </p:menuitem>
         </c:forEach>
       </p:tabMenu>
       
-      <div class="flex-grow-1 overflow-auto" style="height:60vh"> <!-- TODO adjust to any screen size -->
+      <p:outputPanel styleClass="flex-grow-1 overflow-auto" style="height:60vh"> <!-- TODO adjust to any screen size -->
         <div class="tab p-3">
           <h:panelGroup id="form_panel">
             <ui:insert name="content"></ui:insert>  
           </h:panelGroup>          
         </div>
-
-        <div class="tab_footer text-right">
-          <p:commandButton action="#{templateBacking.store}" ajax="true" update="form_panel object_header growl"
-                           value="#{objectBundle.store}" icon="pi pi-save"
-                           styleClass="ui-button-raised m-1" />
-          <p:commandButton value="#{objectBundle.cancel}" icon="pi pi-undo" styleClass="ui-button-raised m-1">
-            <p:ajax update="form_panel growl" resetValues="true" />
-          </p:commandButton>      
-        </div>       
-      </div>
+        <p:scrollTop target="parent" threshold="50" styleClass="custom-scrolltop" icon="pi pi-arrow-up" />
+      </p:outputPanel>
+      
+      <div class="tab_footer text-right pt-3">
+        <p:commandButton action="#{templateBacking.store}" value="#{objectBundle.store}" 
+                         ajax="true" update="#{updateOnStore != null ? updateOnStore : 'form_panel object_header'} growl"
+                         icon="pi pi-save"
+                         styleClass="ui-button-raised m-1" />
+        <p:commandButton action="#{templateBacking.cancel}" value="#{objectBundle.cancel}" 
+                         ajax="true" immediate="true" global="false"
+                         update="#{updateOnCancel != null ? updateOnCancel : 'form_panel object_header'} growl"
+                         icon="pi pi-undo" styleClass="ui-button-raised m-1">
+          <p:ajax update="#{updateOnCancel != null ? updateOnCancel : 'form_panel'} growl" resetValues="true" global="false" />
+        </p:commandButton>      
+      </div>       
     </p:panel>
 
   </ui:define>

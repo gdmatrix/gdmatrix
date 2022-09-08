@@ -61,20 +61,21 @@ public class CaseSearchBacking extends SearchBacking
 
   public static final String OUTCOME = "pf_case_search";
   
+  private CaseBacking caseBacking;
+  
   private CaseFilter filter;
   private TypedHelper typedHelper;
   private FormHelper formHelper;
   
   public CaseSearchBacking()
-  {
-    //Let to super class constructor.    
+  {   
   }
   
   @PostConstruct
   @Override
   public void init()
   {
-    objectBacking = WebUtils.getInstance(CaseBacking.class);
+    caseBacking = WebUtils.getBacking("caseBacking");
     filter = new CaseFilter();
     String typeId = getMenuItemTypeId();
     if (typeId != null)
@@ -83,7 +84,7 @@ public class CaseSearchBacking extends SearchBacking
     typedHelper = new TypedHelper(this); 
     formHelper = new FormHelper(this, FormMode.SEARCH);    
   }
-
+  
   public CaseFilter getFilter()
   {
     return filter;
@@ -133,6 +134,12 @@ public class CaseSearchBacking extends SearchBacking
     if (date != null && filter != null)
       filter.setToDate(TextUtils.formatDate(date, "yyyyMMdd"));
   }   
+
+  @Override
+  public CaseBacking getObjectBacking()
+  {
+    return caseBacking;
+  }
   
   @Override
   public String show()
@@ -249,12 +256,6 @@ public class CaseSearchBacking extends SearchBacking
   }
 
   @Override
-  public void refresh()
-  {
-    init();
-  }
-
-  @Override
   public String getOutcome()
   {
     return OUTCOME;
@@ -263,7 +264,7 @@ public class CaseSearchBacking extends SearchBacking
   @Override
   public String getRootTypeId()
   {
-    return getObjectBacking().getRootTypeId();
+    return caseBacking.getRootTypeId();
   }
 
   @Override
@@ -275,7 +276,7 @@ public class CaseSearchBacking extends SearchBacking
   @Override
   public String getAdminRole()
   {
-    return getObjectBacking().getAdminRole();
+    return caseBacking.getAdminRole();
   }
 
   @Override
@@ -323,34 +324,5 @@ public class CaseSearchBacking extends SearchBacking
     }
   }
   
-//  public String getViewStartDate()
-//  {
-//    String date = "";
-//    CasePersonView row = (CasePersonView)getValue("#{row}");
-//    if (row != null)
-//    {
-//      date = row.getStartDate();
-//      date = TextUtils.formatDate(
-//        TextUtils.parseInternalDate(date), "dd/MM/yyyy");
-//    }
-//    return date;
-//  }
-//
-//  public String getViewEndDate()
-//  {
-//    String date = "";
-//    CasePersonView row = (CasePersonView)getValue("#{row}");
-//    if (row != null)
-//    {
-//      date = row.getEndDate();
-//      date = TextUtils.formatDate(
-//        TextUtils.parseInternalDate(date), "dd/MM/yyyy");
-//    }
-//    return date;
-//  }   
-
-
-
-
   
 }

@@ -40,5 +40,5 @@ public interface TypedTabPage extends Typed, TabPage
   public default String getAdminRole()
   {
     return getObjectBacking().getAdminRole();
-  }
+  }  
 }

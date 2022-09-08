@@ -3,7 +3,6 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 <!-- TODO: Create FacesFormRenderer
@@ -35,7 +34,7 @@
                    rendered="#{backing.formHelper.renderForm}">
       <sf:dynamicForm
         form="#{backing.formHelper.form}"
-        rendererTypes="#{backing.objectBacking.editable ? 'HtmlFormRenderer,GenericFormRenderer' : 'DisabledHtmlFormRenderer'}"
+        rendererTypes="FacesFormRenderer"
         value="#{backing.formHelper.data}" 
         rendered="#{not backing.formHelper.renderPropertyEditor}"
         translator="#{userSessionBean.translator}"

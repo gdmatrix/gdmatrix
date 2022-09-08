@@ -64,29 +64,31 @@ public class PersonMainBacking extends PageBacking
   public static final String OUTCOME = "pf_person_main";
   
   private Person person;
-  private TypedHelper typedHelper;
   private List<SelectItem> personParticleSelectItems;
   private transient List<SelectItem> countrySelectItems;  
   
+  //Helpers
+  private TypedHelper typedHelper;
+  
+  private PersonBacking personBacking;
+  
   public PersonMainBacking()
-  {
-    //Let to super class constructor.    
+  { 
   }
   
   @PostConstruct
   @Override
   public void init()
   {
-    objectBacking = WebUtils.getInstance(PersonBacking.class);
-    typedHelper = new TypedHelper(this);   
-
+    personBacking = WebUtils.getBacking("personBacking");
+    typedHelper = new TypedHelper(this); 
     populate();
   }
 
   @Override
   public String getRootTypeId()
   {
-    return objectBacking.getRootTypeId();
+    return personBacking.getRootTypeId();
   }
 
   @Override
@@ -100,7 +102,13 @@ public class PersonMainBacking extends PageBacking
   {
     return typedHelper;
   }
-  
+
+  @Override
+  public PersonBacking getObjectBacking()
+  {
+    return personBacking;
+  }
+
   public Person getPerson()
   {
     return person;
@@ -162,6 +170,7 @@ public class PersonMainBacking extends PageBacking
     person.setNationalityId((String) selectItem.getValue());
   }
   
+  //TODO: Backing
   public SelectItem getCitySelectItem()
   {
     CityBean cityBean = (CityBean)getBean("cityBean");
@@ -173,6 +182,12 @@ public class PersonMainBacking extends PageBacking
   public void setCitySelectItem(SelectItem selectItem)
   {
     person.setBirthCityId((String) selectItem.getValue());
+  }  
+  
+  public void selectCity(String cityId)
+  {
+    if (person != null)
+      person.setBirthCityId(cityId);      
   }  
   
   public List<SelectItem> completeCountry(String query)
@@ -220,7 +235,7 @@ public class PersonMainBacking extends PageBacking
   @Override
   public String show(String pageId)
   {
-    objectBacking.setObjectId(pageId);
+    personBacking.setObjectId(pageId);
     return show();
   }  
   
@@ -280,7 +295,7 @@ public class PersonMainBacking extends PageBacking
   @Override
   public String getPageObjectId()
   {
-    return objectBacking.getObjectId();
+    return personBacking.getObjectId();
   }
 
   @Override
@@ -302,8 +317,18 @@ public class PersonMainBacking extends PageBacking
   @Override
   public void reset()
   {
-    person = null;
+    if (personBacking.isNew())
+      create();
+    else
+      person = null;
   }
+  
+  @Override
+  public String cancel()
+  {
+    reset();
+    return null;
+  }  
   
   private CountryToStreetBean getCountryToStreetBean()
   {

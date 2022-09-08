@@ -87,11 +87,11 @@
                    styleClass="inputfield w-full"/>
     </p:outputPanel>    
     
-
+<!--
     <ui:include src="/pf/common/obj/object_form.xhtml">
       <ui:param name="backing" value="#{caseSearchBacking}" />
     </ui:include>
-
+-->
     
     <div class="buttons text-right">
       <p:commandButton value="#{objectBundle.clear}"
@@ -101,7 +101,7 @@
                        update="search_accordion"/>      
       <p:commandButton value="#{objectBundle.search}"
                        action="#{caseSearchBacking.search}"
-                       ajax="true" process="@parent" update="#{objectPage == 'object_search' ? 'mainform:full_results_table' :''}"
+                       ajax="true" process="@parent" update="#{objectPage == 'object_search' ? ':mainform:search_results_panel' :''}"
                        styleClass="ui-button-raised m-1" 
                        oncomplete="clickSlickDot(2)"/>
     </div>              

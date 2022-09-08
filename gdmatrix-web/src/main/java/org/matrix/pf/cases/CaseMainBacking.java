@@ -41,6 +41,7 @@ import org.matrix.dic.Property;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.DynamicFormTabPage;
 import org.matrix.pf.web.helper.FormHelper;
+import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
@@ -63,6 +64,9 @@ public class CaseMainBacking extends PageBacking
   private Case cas;
   private TypedHelper typedHelper;
   private FormHelper formHelper;
+  private TabHelper tabHelper;
+  
+  private CaseBacking caseBacking;
 
   public CaseMainBacking()
   {
@@ -70,18 +74,26 @@ public class CaseMainBacking extends PageBacking
   }
   
   @PostConstruct
+  @Override
   public void init()
   {
-    objectBacking = WebUtils.getInstance(CaseBacking.class); 
+    caseBacking = WebUtils.getBacking("caseBacking"); 
     
     typedHelper = new TypedHelper(this);  
     formHelper = new FormHelper(this, FormMode.EDIT);
+    tabHelper = new TabHelper(this);
+  }
+
+  @Override
+  public CaseBacking getObjectBacking()
+  {
+    return caseBacking;
   }
 
   @Override
   public String getRootTypeId()
   {
-    return objectBacking.getRootTypeId();
+    return caseBacking.getRootTypeId();
   }
 
   @Override
@@ -98,6 +110,11 @@ public class CaseMainBacking extends PageBacking
   {
     return typedHelper;
   } 
+
+  public TabHelper getTabHelper()
+  {
+    return tabHelper;
+  }
 
   @Override
   public void setTypeId(String typeId)
@@ -124,7 +141,7 @@ public class CaseMainBacking extends PageBacking
   @Override
   public String getPageObjectId()
   {
-    return objectBacking.getObjectId();
+    return caseBacking.getObjectId();
   }
 
   public Date getStartDateTime()
@@ -164,7 +181,7 @@ public class CaseMainBacking extends PageBacking
   @Override
   public String show(String pageId)
   {
-    objectBacking.setObjectId(pageId);
+    caseBacking.setObjectId(pageId);
     return show();
   }
   
@@ -228,6 +245,7 @@ public class CaseMainBacking extends PageBacking
     return null;    
   }
     
+  @Override
   public String cancel()
   {
     populate();

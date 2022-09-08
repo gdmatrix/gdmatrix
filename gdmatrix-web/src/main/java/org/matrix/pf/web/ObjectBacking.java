@@ -32,7 +32,6 @@ package org.matrix.pf.web;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -79,8 +78,6 @@ public abstract class ObjectBacking extends WebBacking
   public void init()
   {
     typedHelper = new TypedHelper(this); 
-    
-    loadTabs();
   }
 
   @Override
@@ -177,7 +174,7 @@ public abstract class ObjectBacking extends WebBacking
   public void loadTabs()
   {
     clearTabs();
-    List<String> tabsDef = typedHelper.getMultivaluedProperty(TABS_PROPERTY);
+    List<String> tabsDef = getMultivaluedProperty(TABS_PROPERTY);
     if (tabsDef != null)
     {    
       for (int i = 0; i < tabsDef.size(); i++)
@@ -229,6 +226,7 @@ public abstract class ObjectBacking extends WebBacking
     return getDescription(getObjectId());
   }
   
+  @Override
   public abstract String getAdminRole();
   
   public boolean isNew()
@@ -259,19 +257,9 @@ public abstract class ObjectBacking extends WebBacking
   
   public List<SelectItem> getFavorites(String objectTypeId)
   {
-    //TODO: when 2 descriptions are identical, put objectId before
-    List<SelectItem> items = new LinkedList<SelectItem>();
-//    items.add(new SelectItem(ControllerBean.NEW_OBJECT_ID, " ")); // blank row
+    List<SelectItem> items = new LinkedList<>();
     ObjectDescriptionCache cache = ObjectDescriptionCache.getInstance();
-//    for (String historyObjectId : objectHistory)
-//    {
-//      SelectItem item = new SelectItem();
-//      item.setValue(historyObjectId);
-//      String description = cache.getDescription(this, historyObjectId);
-//      item.setLabel(("".equals(description)) ? " " : description);
-//      item.setDescription(description);
-//      items.add(item);
-//    }
+
     try
     {
       UserPreferences userPreferences =
@@ -281,7 +269,7 @@ public abstract class ObjectBacking extends WebBacking
       if (!favoriteIdList.isEmpty())
       {
         boolean purge = userPreferences.mustPurgePreferences();
-        List<SelectItem> favorites = new ArrayList<SelectItem>();
+        List<SelectItem> favorites = new ArrayList<>();
         for (String favoriteObjectId : favoriteIdList)
         {
           String description = 
@@ -305,21 +293,12 @@ public abstract class ObjectBacking extends WebBacking
         }
         if (!favorites.isEmpty())
         {
-          Collections.sort(favorites, new Comparator()
-            {
-              public int compare(Object o1, Object o2)
-              {
-                SelectItem item1 = (SelectItem)o1;
-                SelectItem item2 = (SelectItem)o2;
-                return item1.getLabel().compareToIgnoreCase(item2.getLabel());
-              }
-            }
-          );
-          // separator row
-//          SelectItem separator = new SelectItem(ControllerBean.SEPARATOR_ID,
-//            "---------------------------");
-//          separator.setDisabled(true);
-//          items.add(separator);
+          Collections.sort(favorites, (Object o1, Object o2) ->
+          {
+            SelectItem item1 = (SelectItem)o1;
+            SelectItem item2 = (SelectItem)o2;
+            return item1.getLabel().compareToIgnoreCase(item2.getLabel());
+          });
           items.addAll(favorites);
         }
       }
@@ -378,37 +357,17 @@ public abstract class ObjectBacking extends WebBacking
     return result;
   }  
   
-  public void preStore()
-  {
-    //TODO executeTypeAction
-  }
-  
-  public void postStore()
-  {
-    //TODO executeTypeAction    
-  }  
-  
   public String store() 
   {
     try
     {
-      preStore(); //TODO: Perhaps detect if other tabs has benn modified
-      
-//      for (Tab tab : getTabs())
-//      {
-//        PageBacking pageBacking = 
-//          WebUtils.getBackingFromAction(tab.getAction());
-//        if (pageBacking instanceof TabPage)
-//          ((TabPage)pageBacking).store();
-//      }
-
+      //Executes store() of current tab.
+      //TODO: Maybe detect if other tabs has been modified
       Tab tab = getCurrentTab();
       PageBacking pageBacking = 
         WebUtils.getBackingFromAction(tab.getAction());
       if (pageBacking instanceof TabPage)
-        ((TabPage)pageBacking).store();
-
-      postStore();
+        return ((TabPage)pageBacking).store();
     }
     catch (Exception ex)
     {
@@ -417,6 +376,25 @@ public abstract class ObjectBacking extends WebBacking
     
     return null;
   }  
+  
+  public String cancel() 
+  {
+    try
+    {
+      //TODO: Maybe detect if other tabs has been modified
+      Tab tab = getCurrentTab();
+      PageBacking pageBacking = 
+        WebUtils.getBackingFromAction(tab.getAction());
+      if (pageBacking instanceof TabPage)
+        return ((TabPage)pageBacking).cancel();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
+    return null;
+  }   
 
   public List<String> getDerivedTypeIds()
   {

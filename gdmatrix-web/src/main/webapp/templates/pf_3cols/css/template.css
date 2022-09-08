@@ -5,7 +5,7 @@ html
 
 body
 {
-  background-color: var(--surface-a);
+  background-color: var(--surface-0);
 }
 
 body .loading-icon-container .ui-dialog-content
@@ -13,7 +13,7 @@ body .loading-icon-container .ui-dialog-content
   padding: 1rem;
 }
 
-.loading-icon
+body .pi.loading-icon
 {
   font-size: 4rem;
 }
@@ -70,6 +70,19 @@ body .loading-icon-container .ui-dialog-content
 .ui-chips-container
 {
   width: 100% !important;
+}
+
+body .ui-datatable .ui-datatable-footer,
+body .ui-datatable .ui-datatable-header
+{
+  padding: 0.25rem 1rem;
+}
+
+.ui-menu-button.ui-button-flat button
+{
+  background-color: transparent;
+  color: var(--primary-color);
+  border-color: transparent;  
 }
 
 :root {

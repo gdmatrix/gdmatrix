@@ -28,48 +28,63 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.web;
+package org.matrix.pf.web.helper;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
-import javax.faces.model.SelectItem;
+import java.io.Serializable;
+import org.apache.commons.lang.StringUtils;
+import org.matrix.pf.web.WebBacking;
 
 /**
  *
  * @author blanquepa
  */
-@FacesConverter(value = "selectItemConverter")
-public class SelectItemConverter implements Converter<SelectItem>
+public class TabHelper extends WebBacking
+  implements Serializable
 {
   private static final String SEPARATOR = "::";
-  @Override
-  public SelectItem getAsObject(FacesContext context, UIComponent component, 
-    String value)
-  {
-    String label = value;
-    if (value != null && value.contains(SEPARATOR))
-    {
-      String[] parts = value.split(SEPARATOR);
-      if (parts != null && parts.length == 2)
-      {
-        value = parts[0];
-        label = parts[1];
-      }
-    }
-    
-    return new SelectItem(value, label);    
-  }
+  
+  protected final TabPage backing;  
 
-  @Override
-  public String getAsString(FacesContext context, UIComponent component, 
-    SelectItem value)
+  public TabHelper(TabPage backing)
   {
-    if (value == null)
-      return "";
-    
-    return (String) value.getValue() + SEPARATOR + value.getLabel();
+    this.backing = backing;
   }
   
+  public boolean isPropertyHidden(String propName)
+  {
+    String value = getProperty("render" + StringUtils.capitalize(propName));
+    if (value != null)
+      return value.equalsIgnoreCase("false");
+    else if (backing instanceof TypedTabPage)
+    {
+      TypedHelper typedHelper = ((TypedTabPage) backing).getTypedHelper();
+      return typedHelper.isPropertyHidden(propName);
+    }
+    else
+      return false;
+  }
+  
+  @Override
+  public String getProperty(String name)
+  { 
+    String result = null;
+    int tabIndex = getCurrentTabIndex();
+    String propName = "tab" + String.valueOf(tabIndex) + SEPARATOR + name;
+    
+    String value = super.getProperty(propName);
+    if (value != null)
+      result = value;
+    else if (backing instanceof TypedTabPage)
+    {
+      propName = "_" + name;
+      TypedHelper typedHelper = ((TypedTabPage) backing).getTypedHelper();
+      result = typedHelper.getProperty(propName);
+    }
+    return result;
+  }
+  
+  public int getCurrentTabIndex()
+  {
+    return backing.getObjectBacking().getCurrentTab().getIndex();
+  }
 }

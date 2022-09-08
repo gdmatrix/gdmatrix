@@ -113,19 +113,14 @@ public class TypedHelper extends WebBacking
   }
 
   /**
-   * Get property from current node or dictionary definition.
+   * Get property from dictionary definition.
    * @param name
    * @return Property value.
    */
   @Override
   public String getProperty(String name)
   {
-    String value = super.getProperty(name);
-    if (value == null)
-    {
-      value = getFirstPropertyDefinitionValue(name);
-    }
-    return value;
+    return getFirstPropertyDefinitionValue(name);
   }
   
   /**
@@ -197,7 +192,7 @@ public class TypedHelper extends WebBacking
     }
     else
     {
-      return true;
+      return false;
     }
   }
 

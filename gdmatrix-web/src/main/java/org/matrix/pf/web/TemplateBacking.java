@@ -81,8 +81,19 @@ public class TemplateBacking extends WebBacking
   public SearchBacking getSearchBacking()
   {
     return getObjectBacking().getSearchBacking();
-  }  
+  } 
   
+  public List getBasicResults()
+  {
+    SearchBacking searchBacking = getSearchBacking();
+    String filterTypeId = searchBacking.getFilterTypeId();
+    String menuItemTypeId = getMenuItemTypeId();
+    if (filterTypeId.equals(menuItemTypeId))
+      return getSearchBacking().bigListHelper.getRows();
+    else
+      return null;
+  }
+    
   //Object tabs
   public List getTabs()
   {
@@ -286,6 +297,11 @@ public class TemplateBacking extends WebBacking
   public String store()
   {
     return getObjectBacking().store();
+  }
+  
+  public String cancel()
+  {
+    return getObjectBacking().cancel();
   }
   
   public String remove()

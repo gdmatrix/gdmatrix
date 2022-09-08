@@ -17,7 +17,7 @@
       <div class="formgrid grid pl-2">  
                 
         <div class="field col-12 md:col-4 lg:col-2">
-          <p:outputLabel for="id" value="Id. de persona" />
+          <p:outputLabel for="id" value="#{objectBundle.object_id}" />
           <p:inputText id="id" value="#{personMainBacking.person.personId}" 
                        styleClass="inputfield w-full" readonly="true" />
         </div>
@@ -116,6 +116,7 @@
       <div class="formgrid grid pl-2">       
        <div class="field col-12 md:col-9 lg:col-6">
           <h:outputLabel for="person_birthCity" value="#{kernelBundle.person_birthCity}:" />
+          
           <!--
           <p:cascadeSelect value="#{personMainBacking.person.birthCityId}" >
             <f:selectItems value="#{personMainBacking.citySelectItems}"/>
@@ -133,7 +134,7 @@
           </p:selectOneMenu> 
           -->
  
-          <p:autoComplete id="person_birthCity" styleClass="w-full" inputStyleClass="w-full"
+          <p:autoComplete id="person_birthCity" styleClass="w-11" inputStyleClass="w-full"
               value="#{personMainBacking.citySelectItem}" 
               maxResults="10" dropdown="false" dropdownMode="blank" cache="true"
               completeMethod="#{personMainBacking.completeCity}"
@@ -144,7 +145,13 @@
             <p:column>
               <h:outputText value="#{cityBean.getDescription(item.value)}" />
             </p:column>        
-          </p:autoComplete>     
+          </p:autoComplete>  
+          
+          <p:commandButton icon="pi pi-search" oncomplete="PF('countryToStreetDialog').show()"
+                           styleClass="ui-button-raised" 
+                           action="#{countryToStreetBacking.showCity(personMainBacking.citySelectItem.value)}"
+                           alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                           ajax="true" />             
      
         </div>
    
@@ -196,6 +203,25 @@
       </div>      
 
     </h:panelGroup>
+    
+    <p:dialog id="countryToStreetDialog" dynamic="true"  modal="true" 
+              widgetVar="countryToStreetDialog" styleClass="w-6">
+
+      <ui:include src="country_to_street.xhtml" />
+
+      <div class="text-right pt-3">
+        <p:commandButton value="#{objectBundle.select}" 
+                         icon="pi pi-check"
+                         oncomplete="PF('countryToStreetDialog').hide()" 
+                         action="#{personMainBacking.selectCity(countryToStreetBacking.cityId)}"
+                         update="person_birthCity" styleClass="ui-button-raised m-1"/> 
+        <p:commandButton value="#{objectBundle.close}" 
+                         icon="pi pi-times"
+                         onclick="PF('countryToStreetDialog').hide()" styleClass="ui-button-raised m-1"
+                         global="false"/>
+      </div>
+
+    </p:dialog>     
 
 
   </ui:define>

@@ -67,7 +67,8 @@ public class MenuTypesCache
     if (menuItem == null)
     {
       menuItem = getMenuItem(topWebMenuItem, typeId);
-      put(key, menuItem);
+      if (!menuItem.isNull())
+        put(key, menuItem);
     }    
     return menuItem;
   }
@@ -75,26 +76,26 @@ public class MenuTypesCache
   private void put(String typeId, MenuItemCursor menuItem)
   {
     menuItems.put(typeId, menuItem);
-  }  
-  
+  } 
+    
   private MenuItemCursor getMenuItem(MenuItemCursor menuItem, String typeId)
-  {
+  {    
+    if (matchTypeId(menuItem, typeId))
+        return menuItem;
+    
     MenuItemCursor auxMenuItem = menuItem.getClone();
-    if (!auxMenuItem.isNull())
+    if (auxMenuItem.moveFirstChild())
     {
-      boolean next = true;
-      while (next)
-      {
-        if (matchTypeId(auxMenuItem, typeId))
-          return auxMenuItem;
-        next = auxMenuItem.moveNext();
-      }
-      
-      auxMenuItem = menuItem.getClone().getFirstChild();
+      auxMenuItem = getMenuItem(auxMenuItem, typeId);
       if (!auxMenuItem.isNull())
-        return getMenuItem(auxMenuItem, typeId);
+        return auxMenuItem;
     }
-    return auxMenuItem;    
+
+    auxMenuItem = menuItem.getClone();
+    if (auxMenuItem.moveNext())
+      return getMenuItem(auxMenuItem, typeId);
+    else
+      return auxMenuItem; 
   }
 
   private boolean matchTypeId(MenuItemCursor mic, String typeId)
