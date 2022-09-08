@@ -64,6 +64,8 @@ import org.santfeliu.workflow.VariableListConverter;
 import org.santfeliu.workflow.form.Form;
 import org.santfeliu.workflow.form.FormFactory;
 import static org.matrix.workflow.WorkflowConstants.*;
+import static org.santfeliu.workflow.web.InstanceListBean.FAIL_MESSAGE_PROPERTY;
+import static org.santfeliu.workflow.web.InstanceListBean.TERMINATION_MESSAGE_PROPERTY;
 
 /**
  *
@@ -424,7 +426,7 @@ public class InstanceBean extends FacesBean implements Serializable
         }
         if (message == null) // get default message
         {
-          message = getNodeProperty(TERMINATION_MESSAGE);
+          message = getNodeProperty(TERMINATION_MESSAGE_PROPERTY);
           if (message == null)
           {
             Locale locale = getLocale();
@@ -443,7 +445,7 @@ public class InstanceBean extends FacesBean implements Serializable
         }
         if (message == null) // get default message
         {
-          message = getNodeProperty(FAIL_MESSAGE);
+          message = getNodeProperty(FAIL_MESSAGE_PROPERTY);
           if (message == null)
           {
             Locale locale = getLocale();
@@ -1184,6 +1186,6 @@ public class InstanceBean extends FacesBean implements Serializable
     MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
     MenuItemCursor selectedMenuItem = menuModel.getSelectedMenuItem();
 
-    return selectedMenuItem.getProperty("workflow." + propertyName);
+    return selectedMenuItem.getProperty(propertyName);
   }
 }

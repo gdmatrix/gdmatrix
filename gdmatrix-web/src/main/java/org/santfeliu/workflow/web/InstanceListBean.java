@@ -46,6 +46,7 @@ import org.matrix.workflow.VariableFilter;
 import org.matrix.workflow.WorkflowConstants;
 import org.matrix.workflow.WorkflowManagerPort;
 import org.matrix.workflow.WorkflowManagerService;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
@@ -53,6 +54,8 @@ import org.santfeliu.web.WebBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
+import static org.matrix.workflow.WorkflowConstants.FAIL_MESSAGE;
+import static org.matrix.workflow.WorkflowConstants.TERMINATION_MESSAGE;
 
 /**
  *
@@ -67,6 +70,14 @@ public class InstanceListBean extends WebBean implements Serializable
   public static final String EXIT_MID_PROPERTY = "exitMid";
   @CMSProperty
   public static final String EXIT_MID_ANONYMOUS_PROPERTY = "exitMidA";
+  @CMSProperty
+  public static final String FILTER_DAYS_PROPERTY = "filterDays";
+  @CMSProperty
+  public static final String TERMINATION_MESSAGE_PROPERTY =
+    "workflow." + TERMINATION_MESSAGE;
+  @CMSProperty
+  public static final String FAIL_MESSAGE_PROPERTY =
+    "workflow." + FAIL_MESSAGE;
 
   public static final String INSTANCEID_PARAM = "instanceid";
   public static final String ACCESS_TOKEN_PARAM = "access_token";
@@ -426,8 +437,29 @@ public class InstanceListBean extends WebBean implements Serializable
 
   private String getDefaultStartDate()
   {
-    long millis = System.currentTimeMillis() - (long)DAYS * 24L * 3600L * 1000L;
-    Date date = new Date(millis);
+    long millisPerDay = 24L * 3600L * 1000L;
+    long millis = (long)getFilterDays() * millisPerDay;
+    Date date = new Date(System.currentTimeMillis() - millis);
     return TextUtils.formatDate(date, "yyyyMMdd");
+  }
+
+  private int getFilterDays()
+  {
+    MenuModel menuModel = UserSessionBean.getCurrentInstance().getMenuModel();
+    MenuItemCursor selectedMenuItem = menuModel.getSelectedMenuItem();
+
+    String days = selectedMenuItem.getProperty(FILTER_DAYS_PROPERTY);
+    if (days != null)
+    {
+      try
+      {
+        return Integer.parseInt(days);
+      }
+      catch (NumberFormatException ex)
+      {
+        // ignore
+      }
+    }
+    return DAYS;
   }
 }
