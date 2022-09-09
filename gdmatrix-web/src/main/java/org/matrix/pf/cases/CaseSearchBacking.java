@@ -72,7 +72,6 @@ public class CaseSearchBacking extends SearchBacking
   }
   
   @PostConstruct
-  @Override
   public void init()
   {
     caseBacking = WebUtils.getBacking("caseBacking");
@@ -157,8 +156,7 @@ public class CaseSearchBacking extends SearchBacking
     String typeId = getMenuItemTypeId();
     if (typeId != null)
       filter.setCaseTypeId(typeId);
-    super.search();
-    return OUTCOME;
+    return super.search();
   }
   
   @Override
@@ -169,8 +167,7 @@ public class CaseSearchBacking extends SearchBacking
     String typeId = getMenuItemTypeId();
     if (typeId != null)
       filter.setCaseTypeId(typeId);    
-    super.search();
-    return OUTCOME;
+    return super.search();
   }
 
   @Override

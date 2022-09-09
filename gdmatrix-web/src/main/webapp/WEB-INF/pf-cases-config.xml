@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+  
+  <managed-bean>
+    <managed-bean-name>caseBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+  
+  <managed-bean>
+    <managed-bean-name>caseSearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseSearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+    
+  <managed-bean>
+    <managed-bean-name>caseMainBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseMainBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>          
+  
+  <managed-bean>
+    <managed-bean-name>casePersonsBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CasePersonsBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  
+  <managed-bean>
+    <managed-bean-name>caseAddressesBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseAddressesBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>  
+
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    
+    <navigation-case>
+      <from-outcome>pf_case_search</from-outcome>
+      <to-view-id>/pf/common/cases/case_search.xhtml</to-view-id>
+    </navigation-case> 
+    
+    <navigation-case>
+      <from-outcome>pf_case_main</from-outcome>
+      <to-view-id>/pf/common/cases/case_main.xhtml</to-view-id>
+    </navigation-case>    
+    
+    <navigation-case>
+      <from-outcome>pf_case_persons</from-outcome>
+      <to-view-id>/pf/common/cases/case_persons.xhtml</to-view-id>
+    </navigation-case>      
+    
+    <navigation-case>
+      <from-outcome>pf_case_addresses</from-outcome>
+      <to-view-id>/pf/common/cases/case_addresses.xhtml</to-view-id>
+    </navigation-case>                                                       
+                                   
+  </navigation-rule>
+
+</faces-config>

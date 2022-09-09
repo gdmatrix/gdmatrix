@@ -30,11 +30,10 @@
  */
 package org.matrix.pf.kernel;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
-import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.City;
@@ -47,18 +46,20 @@ import org.matrix.kernel.Province;
 import org.matrix.kernel.ProvinceFilter;
 import org.matrix.kernel.Street;
 import org.matrix.kernel.StreetFilter;
-import org.matrix.pf.web.WebBacking;
+import org.matrix.pf.web.PageBacking;
+import org.matrix.web.WebUtils;
+import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.ControllerBean;
+import org.santfeliu.web.obj.ObjectDescriptionCache;
 
 /**
  *
  * @author blanquepa
  */
 @Named("countryToStreetBacking")
-@ViewScoped
-public class CountryToStreetBacking extends WebBacking implements Serializable
+public class CountryToStreetBacking extends PageBacking implements Savable
 {
   private List<SelectItem> countrySelectItems;
   private List<SelectItem> provinceSelectItems;
@@ -80,9 +81,19 @@ public class CountryToStreetBacking extends WebBacking implements Serializable
   private boolean cityEditing;
   private boolean streetEditing;
   
+  private static final String OUTCOME = "pf_country_main";
+  
+  private CountryBacking countryBacking;
+  
   public CountryToStreetBacking()
   {  
   }
+  
+  @PostConstruct
+  public void init()
+  {
+    countryBacking = WebUtils.getBacking("countryBacking");
+  }  
   
   public boolean isCountryEditing()
   {
@@ -368,26 +379,38 @@ public class CountryToStreetBacking extends WebBacking implements Serializable
     if (countryEditing)
     {
       port.storeCountry(country);
-      countryEditing = false;   
-      loadCountrySelectItems(port);
+      countryEditing = false; 
+      countrySelectItems = null;
+      loadCountrySelectItems(port); //TODO: Replace item instead of reload all.
+      ObjectDescriptionCache.getInstance().clearDescription(
+        getObjectBacking(), country.getCountryId());
     }
     else if (provinceEditing)
     {
       port.storeProvince(province);
       provinceEditing = false;
+      provinceSelectItems = null;
       loadProvinceSelectItems(port, province.getCountryId());
+      ObjectDescriptionCache.getInstance().clearDescription(
+        getObjectBacking(), province.getProvinceId());      
     }
     else if (cityEditing)
     {
       port.storeCity(city);
       cityEditing = false;
+      citySelectItems = null;
       loadCitySelectItems(port, city.getProvinceId());
+      ObjectDescriptionCache.getInstance().clearDescription(
+        getObjectBacking(), city.getCityId());      
     }
     else if (streetEditing)
     {
       port.storeStreet(street);
       streetEditing = false;
+      streetSelectItems = null;
       loadStreetSelectItems(port, street.getCityId());
+      ObjectDescriptionCache.getInstance().clearDescription(
+        getObjectBacking(), street.getStreetId());      
     }
   }
   
@@ -591,6 +614,31 @@ public class CountryToStreetBacking extends WebBacking implements Serializable
       loadStreetSelectItems(port, street.getCityId());
       showCity(port, street.getCityId());
     }
+  }
+  
+  @Override
+  public CountryBacking getObjectBacking()
+  {
+    return countryBacking;
+  }
+
+  @Override
+  public String getPageObjectId()
+  {
+    return countryBacking.getObjectId();
+  }
+
+  @Override
+  public String show()
+  {
+    return show(getPageObjectId());
+  }
+
+  @Override
+  public String show(String objectId)
+  {
+    showCountry(objectId);
+    return OUTCOME;
   }
   
 }

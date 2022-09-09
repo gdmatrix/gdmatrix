@@ -42,6 +42,7 @@ import org.matrix.kernel.KernelConstants;
 import org.matrix.kernel.Province;
 import org.matrix.kernel.Street;
 import org.matrix.kernel.StreetFilter;
+import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.SearchBacking;
 import org.santfeliu.kernel.web.KernelConfigBean;
@@ -51,6 +52,7 @@ import org.santfeliu.web.obj.ControllerBean;
  *
  * @author blanquepa
  */
+@CMSContent(typeId = "Street")
 @Named("streetBacking")
 public class StreetBacking extends ObjectBacking
 {

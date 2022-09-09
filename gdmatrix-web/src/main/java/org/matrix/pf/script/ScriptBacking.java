@@ -69,11 +69,10 @@ public class ScriptBacking extends PageBacking
   
   public ScriptBacking()
   {
-    init();
+//    init();
   }
   
   @PostConstruct
-  @Override
   public final void init()
   {
     HttpServletRequest request = 

@@ -50,10 +50,10 @@ import org.matrix.cases.CasePersonView;
 import org.matrix.kernel.Contact;
 import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
-import org.matrix.kernel.Person;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
 import org.matrix.kernel.PersonFilter;
+import org.matrix.kernel.PersonView;
 import org.matrix.pf.kernel.KernelUtils;
 import org.matrix.pf.kernel.PersonBacking;
 import org.matrix.pf.web.PageBacking;
@@ -113,7 +113,6 @@ public class CasePersonsBacking extends PageBacking
   }
   
   @PostConstruct
-  @Override
   public void init()
   {
     caseBacking = WebUtils.getBacking("caseBacking");   
@@ -492,10 +491,12 @@ public class CasePersonsBacking extends PageBacking
       PersonFilter filter = new PersonFilter();
       filter.setFullName(query);
       filter.setMaxResults(10);
-      List<Person> persons = KernelConfigBean.getPort().findPersons(filter);
+      List<PersonView> persons =
+        KernelConfigBean.getPort().findPersonViews(filter);
+      
       if (persons != null)
       {       
-        for (Person person : persons)
+        for (PersonView person : persons)
         {
           String description = personBacking.getDescription(person);
           SelectItem item = new SelectItem(person.getPersonId(), description);

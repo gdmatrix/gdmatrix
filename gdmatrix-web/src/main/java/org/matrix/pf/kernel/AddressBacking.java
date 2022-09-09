@@ -49,7 +49,7 @@ import org.santfeliu.web.bean.CMSProperty;
  */
 @CMSContent(typeId = "Address")
 @Named("addressBacking")
-public class AddressBacking extends ObjectBacking
+public class AddressBacking extends ObjectBacking<AddressView>
 {   
   @CMSProperty
   public static final String DEFAULT_CITY_NAME = "defaultCityName";
@@ -66,9 +66,9 @@ public class AddressBacking extends ObjectBacking
   }
 
   @Override
-  public String getObjectId(Object address)
+  public String getObjectId(AddressView address)
   {
-    return ((AddressView)address).getAddressId();
+    return address.getAddressId();
   }
   
   @Override
@@ -76,7 +76,7 @@ public class AddressBacking extends ObjectBacking
   {
     return true;
   }
-    
+  
   @Override
   public String getDescription(String objectId)
   {
@@ -104,9 +104,8 @@ public class AddressBacking extends ObjectBacking
   }    
   
   @Override
-  public String getDescription(Object obj)
+  public String getDescription(AddressView address)
   {
-    AddressView address = (AddressView)obj;
     if (address == null) return "";
     StringBuilder buffer = new StringBuilder();
     buffer.append(address.getDescription());

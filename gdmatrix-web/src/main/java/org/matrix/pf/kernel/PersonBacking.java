@@ -34,7 +34,7 @@ import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.matrix.kernel.KernelConstants;
-import org.matrix.kernel.Person;
+import org.matrix.kernel.PersonFilter;
 import org.matrix.kernel.PersonView;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
@@ -47,7 +47,7 @@ import org.santfeliu.kernel.web.KernelConfigBean;
  */
 @CMSContent(typeId = "Person")
 @Named("personBacking")
-public class PersonBacking extends ObjectBacking
+public class PersonBacking extends ObjectBacking<PersonView>
 {   
   public PersonBacking()
   {
@@ -61,9 +61,9 @@ public class PersonBacking extends ObjectBacking
   }
 
   @Override
-  public String getObjectId(Object person)
+  public String getObjectId(PersonView person)
   {
-    return ((PersonView)person).getPersonId();
+    return person.getPersonId();
   }
   
   @Override
@@ -78,7 +78,7 @@ public class PersonBacking extends ObjectBacking
     PersonMainBacking mainBacking = 
       WebUtils.getBacking("personMainBacking");
     if (mainBacking != null)
-      return getDescription(mainBacking.getPerson());
+      return getDescription(mainBacking.getPerson().getPersonId());
     else
       return super.getDescription();
   }
@@ -91,8 +91,14 @@ public class PersonBacking extends ObjectBacking
     {
       if (objectId != null && objectId.contains(";"))
         return objectId;
-      Person person = KernelConfigBean.getPortAsAdmin().loadPerson(objectId);
-      return getDescription(person);
+      
+      PersonFilter filter = new PersonFilter();
+      filter.getPersonId().add(objectId);
+      List<PersonView> persons = 
+        KernelConfigBean.getPortAsAdmin().findPersonViews(filter);
+      
+      if (persons != null && !persons.isEmpty())
+        return getDescription(persons.get(0));
     }
     catch (Exception ex)
     {
@@ -102,33 +108,9 @@ public class PersonBacking extends ObjectBacking
   }    
   
   @Override
-  public String getDescription(Object obj)
+  public String getDescription(PersonView personView)
   {
-    Person person = (Person)obj;
-    if (person == null) return "";
-    StringBuilder buffer = new StringBuilder();
-    buffer.append(person.getName());
-    if (person.getFirstParticle() != null)
-    {
-      buffer.append(" ");
-      buffer.append(person.getFirstParticle());
-    }
-    if (person.getFirstSurname() != null)
-    {
-      buffer.append(" ");
-      buffer.append(person.getFirstSurname());
-    }
-    if (person.getSecondParticle() != null)
-    {
-      buffer.append(" ");
-      buffer.append(person.getSecondParticle());
-    }
-    if (person.getSecondSurname() != null)
-    {
-      buffer.append(" ");
-      buffer.append(person.getSecondSurname());
-    }
-    return buffer.toString();
+    return personView.getFullName();
   }  
   
   @Override

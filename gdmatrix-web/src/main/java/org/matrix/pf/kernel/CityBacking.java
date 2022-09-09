@@ -28,108 +28,92 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.cases;
+package org.matrix.pf.kernel;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.model.SelectItem;
 import javax.inject.Named;
-import org.matrix.cases.Case;
-import org.matrix.cases.CaseConstants;
-import org.matrix.pf.cms.CMSContent;
+import org.apache.commons.lang.StringUtils;
+import org.matrix.kernel.City;
+import org.matrix.kernel.CityFilter;
+import org.matrix.kernel.KernelConstants;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.SearchBacking;
 import org.matrix.web.WebUtils;
-import org.santfeliu.cases.web.CaseConfigBean;
+import org.santfeliu.kernel.web.KernelConfigBean;
 
 /**
  *
  * @author blanquepa
  */
-@CMSContent(typeId = "Case")
-@Named("caseBacking")
-public class CaseBacking extends ObjectBacking<Case>
+@Named("cityBacking")
+public class CityBacking extends ObjectBacking<City>
 {
-  public CaseBacking()
-  {
-    super();
-  }
-    
+
   @Override
-  public SearchBacking getSearchBacking()
+  public String getObjectId(City obj)
   {
-    return WebUtils.getInstance(CaseSearchBacking.class);
+    return obj.getCityId();
   }
 
   @Override
-  public String getObjectId(Case cas)
+  public String getDescription(City obj)
   {
-    return cas.getCaseId();
+    return obj.getName();
   }
-  
-  @Override
-  public String getDescription()
-  {
-    CaseMainBacking mainBacking = WebUtils.getBacking("caseMainBacking");
-    if (mainBacking != null)
-      return getDescription(mainBacking.getCase());
-    else
-      return super.getDescription();
-  }  
-  
+
   @Override
   public String getDescription(String objectId)
   {
-    String description = "";
-    objectId = super.getDescription(objectId);
-    try
+    String cityId = super.getDescription(objectId);
+    if (!StringUtils.isBlank(cityId))
     {
-      Case cas = CaseConfigBean.getPort().loadCase(objectId);
-      if (cas != null)
-        description = getDescription(cas);
+      City city = KernelConfigBean.getPort().loadCity(cityId);
+      return getDescription(city);
     }
-    catch (Exception ex)
-    {
-      error(ex.getMessage());
-    }
-    return description;
-  }
-  
-  @Override
-  public String getDescription(Case cas)
-  {
-    if (cas == null) return "";
-    return cas.getTitle();
-  }   
-
-  @Override
-  public String show()
-  {
-    return super.show(); 
-  }
-
-  @Override
-  public boolean remove(String objectId)
-  {
-    try
-    {
-      return CaseConfigBean.getPort().removeCase(objectId);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return false;
+    return cityId;
   }
 
   @Override
   public String getAdminRole()
   {
-    return CaseConstants.CASE_ADMIN_ROLE;
+    return KernelConstants.KERNEL_ADMIN_ROLE;
+  }
+
+  @Override
+  public SearchBacking getSearchBacking()
+  {
+    return WebUtils.getBacking("countrySearchBacking");
+  }
+
+  @Override
+  public boolean remove(String objectId)
+  {
+    throw new UnsupportedOperationException("Not supported.");
   }
   
-  @Override
-  public boolean isEditable()
+  public List<SelectItem> completeCity(String query)
   {
-    //TODO:
-    return true;
-  }  
-       
+    List<SelectItem> results = new ArrayList<>();
+    
+    CityFilter filter = new CityFilter();
+    if (query != null && query.length() > 1)
+    {
+      filter.setCityName("%" + query.toUpperCase() + "%");
+      List<City> cities = 
+        KernelConfigBean.getPort().findCities(filter);
+
+      if (cities != null && !cities.isEmpty())
+      {
+        for (City city : cities)
+        {
+          results.add(new SelectItem(city.getCityId(), city.getName()));
+        }
+      }
+    }
+
+    return results;
+  }   
+  
 }

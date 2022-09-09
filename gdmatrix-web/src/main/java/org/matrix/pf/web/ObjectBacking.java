@@ -53,8 +53,9 @@ import org.santfeliu.web.obj.ObjectDescriptionCache;
 /**
  *
  * @author blanquepa
+ * @param <T>
  */
-public abstract class ObjectBacking extends WebBacking
+public abstract class ObjectBacking<T> extends WebBacking
   implements Savable, Describable, Typed
 { 
   public static final String NEW_OBJECT_ID = "";
@@ -207,18 +208,9 @@ public abstract class ObjectBacking extends WebBacking
     return objectId;
   }
   
-  public abstract String getObjectId(Object obj);
-    
-
-  @Override
-  public String getDescription(String objectId)
-  {
-    if (objectId != null && objectId.startsWith("pf::"))
-      objectId = objectId.substring(4);    
-    return objectId;
-  }
-  
-  public abstract String getDescription(Object obj);
+  public abstract String getObjectId(T obj);
+      
+  public abstract String getDescription(T obj);
   
   @Override
   public String getDescription()

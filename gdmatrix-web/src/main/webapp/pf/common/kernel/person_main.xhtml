@@ -137,13 +137,13 @@
           <p:autoComplete id="person_birthCity" styleClass="w-11" inputStyleClass="w-full"
               value="#{personMainBacking.citySelectItem}" 
               maxResults="10" dropdown="false" dropdownMode="blank" cache="true"
-              completeMethod="#{personMainBacking.completeCity}"
+              completeMethod="#{cityBacking.completeCity}"
               converter="selectItemConverter"
               var="item" itemValue="#{item}" itemLabel="#{item.label}"
               minQueryLength="2" queryDelay="1000"
               onclick="this.setSelectionRange(0, this.value.length)">
             <p:column>
-              <h:outputText value="#{cityBean.getDescription(item.value)}" />
+              <h:outputText value="#{cityBacking.getDescription(item.value)}" />
             </p:column>        
           </p:autoComplete>  
           
@@ -157,21 +157,6 @@
    
         <div class="field col-12 md:col-6 lg:col-4">
           <h:outputLabel for="person_nationality" value="#{kernelBundle.person_nationality}:" />
-          <!--
-          <p:autoComplete id="person_nacionality" styleClass="w-full"
-              value="#{personMainBacking.countrySelectItem}" 
-              maxResults="10" dropdown="true" dropdownMode="blank"
-              completeMethod="#{personMainBacking.completeCountry}"
-              converter="selectItemConverter"
-              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-              minQueryLength="3" queryDelay="1000"
-              onclick="this.setSelectionRange(0, this.value.length)">
-            <p:column>
-              <h:outputText value="#{item.label}" />
-            </p:column>        
-          </p:autoComplete>  
-          -->
-
           <p:selectOneMenu id="person_nationality" value="#{personMainBacking.person.nationalityId}"  
                            styleClass="inputfield w-full"
                            filter="true" var="ct">

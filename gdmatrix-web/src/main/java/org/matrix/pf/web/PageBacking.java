@@ -30,7 +30,6 @@
  */
 package org.matrix.pf.web;
 
-import javax.annotation.PostConstruct;
 import org.santfeliu.faces.beansaver.Savable;
 
 /**
@@ -43,8 +42,8 @@ public abstract class PageBacking extends WebBacking implements Savable
   {
   }
   
-  @PostConstruct
-  public abstract void init();
+//  @PostConstruct
+//  public abstract void init();
     
   public abstract <T extends ObjectBacking> T getObjectBacking();
   

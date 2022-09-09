@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config xmlns="http://java.sun.com/JSF/Configuration">
+      
+  <managed-bean>
+    <managed-bean-name>personBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+    
+  <managed-bean>
+    <managed-bean-name>personSearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonSearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+    
+  <managed-bean>
+    <managed-bean-name>personMainBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonMainBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>addressBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.AddressBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>addressSearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.AddressSearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>      
+  
+  <managed-bean>
+    <managed-bean-name>addressMainBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.AddressMainBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>    
+  
+  <managed-bean>
+    <managed-bean-name>streetBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.StreetBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>  
+  
+  <managed-bean>
+    <managed-bean-name>countryBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.CountryBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>    
+  
+  <managed-bean>
+    <managed-bean-name>countrySearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.CountrySearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>        
+  
+  <managed-bean>
+    <managed-bean-name>cityBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.CityBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>    
+    
+  <managed-bean>
+    <managed-bean-name>countryToStreetBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.CountryToStreetBacking</managed-bean-class> 
+    <managed-bean-scope>request</managed-bean-scope>     
+  </managed-bean>      
+         
+  <navigation-rule>
+    <from-view-id>*</from-view-id>
+    
+    <!-- Kernel -->       
+    <navigation-case>
+      <from-outcome>pf_person_search</from-outcome>
+      <to-view-id>/pf/common/kernel/person_search.xhtml</to-view-id>
+    </navigation-case>   
+    
+    <navigation-case>
+      <from-outcome>pf_person_main</from-outcome>
+      <to-view-id>/pf/common/kernel/person_main.xhtml</to-view-id>
+    </navigation-case>         
+    
+    <navigation-case>
+      <from-outcome>pf_person_contacts</from-outcome>
+      <to-view-id>/pf/common/kernel/person_contacts.xhtml</to-view-id>
+    </navigation-case>    
+    
+    <navigation-case>
+      <from-outcome>pf_person_addresses</from-outcome>
+      <to-view-id>/pf/common/kernel/person_addresses.xhtml</to-view-id>
+    </navigation-case>  
+    
+    <navigation-case>
+      <from-outcome>pf_address_search</from-outcome>
+      <to-view-id>/pf/common/kernel/address_search.xhtml</to-view-id>
+    </navigation-case>   
+    
+    <navigation-case>
+      <from-outcome>pf_address_main</from-outcome>
+      <to-view-id>/pf/common/kernel/address_main.xhtml</to-view-id>
+    </navigation-case> 
+    
+    <navigation-case>
+      <from-outcome>pf_country_search</from-outcome>
+      <to-view-id>/pf/common/kernel/country_search.xhtml</to-view-id>
+    </navigation-case>    
+    
+    <navigation-case>
+      <from-outcome>pf_country_main</from-outcome>
+      <to-view-id>/pf/common/kernel/country_main.xhtml</to-view-id>
+    </navigation-case>                                                          
+                                     
+  </navigation-rule>
+
+</faces-config>

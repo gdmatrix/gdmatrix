@@ -48,6 +48,7 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.web.obj.ObjectDescriptionCache;
 
 /**
  *
@@ -241,7 +242,8 @@ public class TemplateBacking extends WebBacking
     
   public String getDescription()
   {
-    return getObjectBacking().getDescription();
+    ObjectDescriptionCache cache = ObjectDescriptionCache.getInstance();
+    return cache.getDescription(getObjectBacking(), getObjectId());
   }
   
   public String getPageHistoryDescription(PageHistory.Entry entry)

@@ -99,7 +99,7 @@ public abstract class SearchBacking extends PageBacking
   public String search()
   {
     populate();
-    return null;
+    return getOutcome(); 
   }  
 
   @Override

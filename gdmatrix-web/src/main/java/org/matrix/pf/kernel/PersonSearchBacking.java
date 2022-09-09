@@ -58,7 +58,6 @@ public class PersonSearchBacking extends SearchBacking
   }
   
   @PostConstruct
-  @Override
   public void init()
   {
     personBacking = WebUtils.getBacking("personBacking");
@@ -98,16 +97,14 @@ public class PersonSearchBacking extends SearchBacking
   public String search()
   {
     smartValue = convert(filter);
-    super.search();
-    return OUTCOME;
+    return super.search();
   }
   
   @Override
   public String smartSearch()
   {
     filter = convert(smartValue);  
-    super.search();
-    return OUTCOME;
+    return super.search();
   }
 
   @Override

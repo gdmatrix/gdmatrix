@@ -4,7 +4,9 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-
+  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+                var="kernelBundle" />
+    
   <p:panel id="placePickerPanel" header="#{kernelBundle.country_to_street_search}" styleClass="mb-2">
 
     <div class="formgrid grid">  
@@ -238,7 +240,7 @@
       <p:commandButton value="#{objectBundle.store}" 
                        icon="pi pi-check"
                        action="#{countryToStreetBacking.store}"
-                       ajax="true" update="editingPanels placePickerPanel" process="@form @this"
+                       ajax="true" update="object_header editingPanels placePickerPanel" process="@form @this"
                        styleClass="ui-button-raised m-1"/> 
       <p:commandButton value="#{objectBundle.close}" 
                        icon="pi pi-times"

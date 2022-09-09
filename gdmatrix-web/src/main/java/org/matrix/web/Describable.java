@@ -44,5 +44,10 @@ public interface Describable
   
   public String getDescription();
   
-  public String getDescription(String objectId);  
+  public default String getDescription(String objectId)
+  {
+    if (objectId != null && objectId.startsWith("pf::"))
+      objectId = objectId.substring(4);    
+    return objectId;
+  }
 }

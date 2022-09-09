@@ -22,84 +22,7 @@
     <managed-bean-class>org.matrix.pf.web.FormBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>    
-    
-  <managed-bean>
-    <managed-bean-name>personBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.kernel.PersonBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>     
-    
-  <managed-bean>
-    <managed-bean-name>personSearchBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.kernel.PersonSearchBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>     
-    
-  <managed-bean>
-    <managed-bean-name>personMainBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.kernel.PersonMainBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>   
-  
-  <managed-bean>
-    <managed-bean-name>addressBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.kernel.AddressBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>   
-  
-  <managed-bean>
-    <managed-bean-name>addressSearchBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.kernel.AddressSearchBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>      
-  
-  <managed-bean>
-    <managed-bean-name>addressMainBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.kernel.AddressMainBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>    
-  
-  <managed-bean>
-    <managed-bean-name>streetBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.kernel.StreetBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>   
-  
-  <managed-bean>
-    <managed-bean-name>countryToStreetBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.kernel.CountryToStreetBacking</managed-bean-class>
-  </managed-bean>      
-  
-  <managed-bean>
-    <managed-bean-name>caseBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.cases.CaseBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>     
-  
-  <managed-bean>
-    <managed-bean-name>caseSearchBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.cases.CaseSearchBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>     
-    
-  <managed-bean>
-    <managed-bean-name>caseMainBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.cases.CaseMainBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>          
-  
-  <managed-bean>
-    <managed-bean-name>casePersonsBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.cases.CasePersonsBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>
-  
-  <managed-bean>
-    <managed-bean-name>caseAddressesBacking</managed-bean-name>
-    <managed-bean-class>org.matrix.pf.cases.CaseAddressesBacking</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>  
-   
+       
   <managed-bean>
     <managed-bean-name>scriptBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.script.ScriptBacking</managed-bean-class>
@@ -132,61 +55,6 @@
   <navigation-rule>
     <from-view-id>*</from-view-id>
     
-    <!-- Kernel -->       
-    <navigation-case>
-      <from-outcome>pf_person_search</from-outcome>
-      <to-view-id>/pf/common/kernel/person_search.xhtml</to-view-id>
-    </navigation-case>   
-    
-    <navigation-case>
-      <from-outcome>pf_person_main</from-outcome>
-      <to-view-id>/pf/common/kernel/person_main.xhtml</to-view-id>
-    </navigation-case>         
-    
-    <navigation-case>
-      <from-outcome>pf_person_contacts</from-outcome>
-      <to-view-id>/pf/common/kernel/person_contacts.xhtml</to-view-id>
-    </navigation-case>    
-    
-    <navigation-case>
-      <from-outcome>pf_person_addresses</from-outcome>
-      <to-view-id>/pf/common/kernel/person_addresses.xhtml</to-view-id>
-    </navigation-case>  
-    
-    <navigation-case>
-      <from-outcome>pf_address_search</from-outcome>
-      <to-view-id>/pf/common/kernel/address_search.xhtml</to-view-id>
-    </navigation-case>   
-    
-    <navigation-case>
-      <from-outcome>pf_address_main</from-outcome>
-      <to-view-id>/pf/common/kernel/address_main.xhtml</to-view-id>
-    </navigation-case>             
-    
-    <!-- Cases -->
-    <navigation-case>
-      <from-outcome>pf_case_search</from-outcome>
-      <to-view-id>/pf/common/cases/case_search.xhtml</to-view-id>
-    </navigation-case> 
-    
-    <navigation-case>
-      <from-outcome>pf_case_main</from-outcome>
-      <to-view-id>/pf/common/cases/case_main.xhtml</to-view-id>
-    </navigation-case>    
-    
-    <navigation-case>
-      <from-outcome>pf_case_persons</from-outcome>
-      <to-view-id>/pf/common/cases/case_persons.xhtml</to-view-id>
-    </navigation-case>      
-    
-    <navigation-case>
-      <from-outcome>pf_case_addresses</from-outcome>
-      <to-view-id>/pf/common/cases/case_addresses.xhtml</to-view-id>
-    </navigation-case>                                                   
-       
-    <!-- CMS -->    
-        
-    <!-- Misc -->
     <navigation-case>
       <from-outcome>pf_script</from-outcome>
       <to-view-id>/pf/common/script/script.xhtml</to-view-id>

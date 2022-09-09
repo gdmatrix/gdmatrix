@@ -80,7 +80,7 @@ public class ObjectDescriptionCache implements Serializable
       String key = getKey(typeId, objectId);
       synchronized (map)
       {
-        String description = (String)map.get(key);
+        String description = (String) map.get(key);
         if (StringUtils.isBlank(description))
         {
           description = loadDescription(objectBean, objectId);

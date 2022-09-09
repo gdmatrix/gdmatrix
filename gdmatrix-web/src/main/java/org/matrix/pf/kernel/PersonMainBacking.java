@@ -30,15 +30,12 @@
  */
 package org.matrix.pf.kernel;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
-import org.matrix.kernel.City;
-import org.matrix.kernel.CityFilter;
 import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
@@ -47,8 +44,6 @@ import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.web.WebUtils;
 import org.santfeliu.faces.FacesUtils;
-import org.santfeliu.kernel.web.CityBean;
-import org.santfeliu.kernel.web.CountryBean;
 import org.santfeliu.kernel.web.CountryToStreetBean;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.util.TextUtils;
@@ -77,7 +72,6 @@ public class PersonMainBacking extends PageBacking
   }
   
   @PostConstruct
-  @Override
   public void init()
   {
     personBacking = WebUtils.getBacking("personBacking");
@@ -137,8 +131,8 @@ public class PersonMainBacking extends PageBacking
   {
     if (countrySelectItems == null)
     {
-      CountryToStreetBean countryToStreetBean = getCountryToStreetBean();
-      countrySelectItems = countryToStreetBean.getCountrySelectItems();
+      CountryBacking countryBacking = WebUtils.getBacking("countryBacking");
+      countrySelectItems = countryBacking.getCountrySelectItems();
     }
     return countrySelectItems;
   }
@@ -151,31 +145,20 @@ public class PersonMainBacking extends PageBacking
       for (SelectItem item : items)
       {
         if (value.equals(item.getValue()))
+        {
           return item.getLabel();
+        }
       }
     }
     return "";
   }
   
-  public SelectItem getCountrySelectItem()
-  {
-    CountryBean countryBean = (CountryBean)getBean("countryBean");
-    String id = person.getNationalityId();
-    String description = countryBean.getDescription(id);
-    return new SelectItem(id, description);
-  }
-  
-  public void setCountrySelectItem(SelectItem selectItem)
-  {
-    person.setNationalityId((String) selectItem.getValue());
-  }
-  
   //TODO: Backing
   public SelectItem getCitySelectItem()
   {
-    CityBean cityBean = (CityBean)getBean("cityBean");
+    CityBacking cityBacking  = WebUtils.getBacking("cityBacking");
     String id = person.getBirthCityId();
-    String description = cityBean.getDescription(id);
+    String description = cityBacking.getDescription(id);
     return new SelectItem(id, description);
   }
   
@@ -189,49 +172,7 @@ public class PersonMainBacking extends PageBacking
     if (person != null)
       person.setBirthCityId(cityId);      
   }  
-  
-  public List<SelectItem> completeCountry(String query)
-  {
-    List<SelectItem> results = new ArrayList<>();
     
-    //Query search
-    List<SelectItem> countries = getCountrySelectItems();
-    if (countries != null && !countries.isEmpty())
-    {
-      for (SelectItem item : countries)
-      {
-        String country = item.getLabel().toUpperCase();
-        if (country.contains(query.toUpperCase()))
-          results.add(item);
-      }
-    }
-
-    return results;
-  }   
-  
-  public List<SelectItem> completeCity(String query)
-  {
-    List<SelectItem> results = new ArrayList<>();
-    
-    CityFilter filter = new CityFilter();
-    if (query != null && query.length() > 1)
-    {
-      filter.setCityName("%" + query.toUpperCase() + "%");
-      List<City> cities = 
-        KernelConfigBean.getPort().findCities(filter);
-
-      if (cities != null && !cities.isEmpty())
-      {
-        for (City city : cities)
-        {
-          results.add(new SelectItem(city.getCityId(), city.getName()));
-        }
-      }
-    }
-
-    return results;
-  }     
-  
   @Override
   public String show(String pageId)
   {
