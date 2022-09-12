@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.Country;
 import org.matrix.kernel.CountryFilter;
 import org.matrix.kernel.KernelConstants;
+import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.SearchBacking;
 import org.matrix.web.WebUtils;
@@ -47,6 +48,7 @@ import org.santfeliu.kernel.web.KernelConfigBean;
  *
  * @author blanquepa
  */
+@CMSContent(typeId = "Country")
 @Named("countryBacking")
 public class CountryBacking extends ObjectBacking<Country>
 {

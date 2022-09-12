@@ -575,12 +575,13 @@ public class CountryToStreetBacking extends PageBacking implements Savable
   
   private void showCountry(KernelManagerPort port, String countryId)
   {
+    loadCountrySelectItems(port);
     if (!StringUtils.isBlank(countryId))
     {
       this.countryId = countryId;
       country = port.loadCountry(countryId);
+      loadProvinceSelectItems(port, countryId);      
     }
-    loadCountrySelectItems(port);
   }
 
   private void showProvince(KernelManagerPort port, String provinceId)
@@ -589,8 +590,9 @@ public class CountryToStreetBacking extends PageBacking implements Savable
     province = port.loadProvince(provinceId);
     if (countryId == null || !countryId.equals(province.getCountryId()))
     {
-      loadProvinceSelectItems(port, province.getCountryId());
+//      loadProvinceSelectItems(port, province.getCountryId());
       showCountry(port, province.getCountryId());
+      loadCitySelectItems(port, provinceId);
     }
   }  
   
@@ -600,8 +602,9 @@ public class CountryToStreetBacking extends PageBacking implements Savable
     city = port.loadCity(cityId);
     if (provinceId == null || !provinceId.equals(city.getProvinceId()))
     {
-      loadCitySelectItems(port, city.getProvinceId());
+//      loadCitySelectItems(port, city.getProvinceId());
       showProvince(port, city.getProvinceId());
+      loadStreetSelectItems(port, cityId);
     }
   }    
   
@@ -611,7 +614,7 @@ public class CountryToStreetBacking extends PageBacking implements Savable
     street = port.loadStreet(streetId);
     if (cityId == null || !cityId.equals(street.getCityId()))
     {
-      loadStreetSelectItems(port, street.getCityId());
+//      loadStreetSelectItems(port, street.getCityId());
       showCity(port, street.getCityId());
     }
   }
