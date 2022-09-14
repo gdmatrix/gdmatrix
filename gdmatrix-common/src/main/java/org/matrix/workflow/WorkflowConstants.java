@@ -61,6 +61,8 @@ public class WorkflowConstants
   public static final String TERMINATION_ICON = "TERMINATION_ICON";
   public static final String FAIL_MESSAGE = "FAIL_MESSAGE";
   public static final String FAIL_ICON = "FAIL_ICON";
+  public static final String TERMINATION_FORM = "TERMINATION_FORM";
+  public static final String FAIL_FORM = "FAIL_FORM";
   public static final String INVOKER_INSTANCE_ID = "INVOKER_INSTANCE_ID";
   public static final String INVOKER_NODE_ID = "INVOKER_NODE_ID";
   public static final String FORM_RENDERERS = "FORM_RENDERERS";
