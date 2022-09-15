@@ -68,6 +68,7 @@ import static org.santfeliu.workflow.web.InstanceListBean.FAIL_FORM_PROPERTY;
 import static org.santfeliu.workflow.web.InstanceListBean.FAIL_MESSAGE_PROPERTY;
 import static org.santfeliu.workflow.web.InstanceListBean.TERMINATION_FORM_PROPERTY;
 import static org.santfeliu.workflow.web.InstanceListBean.TERMINATION_MESSAGE_PROPERTY;
+import static org.santfeliu.workflow.web.InstanceListBean.HELP_BUTTON_URL_PROPERTY;
 
 /**
  *
@@ -339,11 +340,15 @@ public class InstanceBean extends FacesBean implements Serializable
     String url = null;
     if (variables != null)
     {
-      Object value = variables.get(WorkflowConstants.HELP_BUTTON_URL);
+      Object value = variables.get(HELP_BUTTON_URL);
       if (value instanceof String)
       {
         url = (String)value;
       }
+    }
+    if (url == null)
+    {
+      url = getNodeProperty(HELP_BUTTON_URL_PROPERTY);
     }
     return url;
   }

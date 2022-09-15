@@ -44,7 +44,6 @@ import org.matrix.workflow.InstanceFilter;
 import org.matrix.workflow.InstanceView;
 import org.matrix.workflow.VariableFilter;
 import org.matrix.workflow.WorkflowConstants;
-import static org.matrix.workflow.WorkflowConstants.FAIL_FORM;
 import org.matrix.workflow.WorkflowManagerPort;
 import org.matrix.workflow.WorkflowManagerService;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
@@ -58,6 +57,8 @@ import org.santfeliu.web.bean.CMSProperty;
 import static org.matrix.workflow.WorkflowConstants.FAIL_MESSAGE;
 import static org.matrix.workflow.WorkflowConstants.TERMINATION_FORM;
 import static org.matrix.workflow.WorkflowConstants.TERMINATION_MESSAGE;
+import static org.matrix.workflow.WorkflowConstants.FAIL_FORM;
+import static org.matrix.workflow.WorkflowConstants.HELP_BUTTON_URL;
 
 /**
  *
@@ -86,6 +87,9 @@ public class InstanceListBean extends WebBean implements Serializable
   @CMSProperty
   public static final String FAIL_FORM_PROPERTY =
     "workflow." + FAIL_FORM;
+  @CMSProperty
+  public static final String HELP_BUTTON_URL_PROPERTY =
+    "workflow." + HELP_BUTTON_URL;
 
 
   public static final String INSTANCEID_PARAM = "instanceid";
