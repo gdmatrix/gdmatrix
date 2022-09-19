@@ -7,8 +7,8 @@
                 template="case_common.xhtml">
 
   <ui:param name="objectPage" value="object" />
-  <ui:param name="updateOnCancel" value="edit_panel" />
-  <ui:param name="updateOnStore" value="edit_panel page_results_table" />  
+  <ui:param name="updateOnCancel" value="edit_panels" />
+  <ui:param name="updateOnStore" value="edit_panels page_results_table" />  
 
   <ui:define name="content">
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
@@ -95,9 +95,10 @@
                              rendered="#{row.casePersonId != null}"
                              styleClass="ui-button-raised m-1"                               
                              alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                             ajax="true" update=":mainform:edit_panel"/>
+                             ajax="true" update=":mainform:edit_panels"
+                             oncomplete="PF('editDataDialog').show()"/>
             <p:commandButton action="#{casePersonsBacking.removePerson(row)}"
-                             ajax="true" update="page_results_table :mainform:edit_panel"
+                             ajax="true" update="page_results_table :mainform:edit_panels"
                              icon="pi pi-trash"
                              alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                              rendered="#{row.casePersonId != null}"
@@ -108,35 +109,47 @@
       </p:dataTable>
 
       <!-- Person data panel -->
-      <p:outputPanel id="edit_panel">
-        <p:panel id="edit_person_form" rendered="#{casePersonsBacking.editing != null}"
+
+    </h:panelGroup>
+
+    <!-- Only works appendTo="@(form)" with one single form -->
+    <p:dialog id="edit_data_dialog" widgetVar="editDataDialog"
+              styleClass="w-9" style="max-height: 92vh;overflow-y: auto" 
+              modal="true" responsive="true" closable="true"
+              appendTo="@(form)" position="center center" >
+
+      <p:outputPanel id="edit_panels">
+
+        <p:panel id="edit_person_panel" rendered="#{casePersonsBacking.editing != null}"
                  header="#{caseBundle.casePersons_personData}"
                  styleClass="mt-2">
 
-          <div class="formgrid grid" >
+          <div class="ui-fluid formgrid grid" >
 
             <!-- Person -->
             <p:outputPanel styleClass="field col-12 md:col-6">  
               <p:outputLabel for="person"  
                              value="#{casePersonsBacking.typedHelper.getPropertyLabel('person', caseBundle.casePersons_person)}"
                              styleClass="w-full"/>
-              <p:autoComplete id="person" styleClass="inputfield w-11" inputStyleClass="w-11"
-                              value="#{casePersonsBacking.personSelectItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank"
-                              completeMethod="#{casePersonsBacking.completePerson}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              minQueryLength="3" queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{casePersonsBacking.onPersonSelect}" update="edit_panel" />                              
-                <p:column>                 
-                  <h:outputText value="#{item.label} (#{item.value})" />
-                </p:column>        
-              </p:autoComplete>             
-              <p:commandButton action="#{casePersonsBacking.search('Person', '#{casePersonsBacking.selectedPerson}')}"
-                               icon="pi pi-search" ajax="false" update="@form"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
+              <div class="ui-inputgroup">
+                <p:commandButton action="#{casePersonsBacking.search('Person', '#{casePersonsBacking.selectedPerson}')}"
+                                 icon="pi pi-search" ajax="false" update="@form"                              
+                                 alt="#{objectBundle.search}" title="#{objectBundle.search}" />                 
+                <p:autoComplete id="person"
+                                value="#{casePersonsBacking.personSelectItem}" 
+                                maxResults="10" dropdown="true" dropdownMode="blank"
+                                completeMethod="#{casePersonsBacking.completePerson}"
+                                converter="selectItemConverter"
+                                var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                                minQueryLength="3" queryDelay="1000"
+                                onclick="this.setSelectionRange(0, this.value.length)">
+                  <p:ajax event="itemSelect" listener="#{casePersonsBacking.onPersonSelect}" update="edit_panels" />                              
+                  <p:column>                 
+                    <h:outputText value="#{item.label} (#{item.value})" />
+                  </p:column>        
+                </p:autoComplete>             
+
+              </div>
             </p:outputPanel>         
 
             <!-- Type -->
@@ -146,100 +159,116 @@
                              value="#{casePersonsBacking.typedHelper.getPropertyLabel('casePersonTypeId', caseBundle.casePersons_type)}"
 
                              />
-              <p:selectOneMenu id="casePersonTypeId" styleClass="inputfield w-full"
+              <p:selectOneMenu id="casePersonTypeId" 
                                value="#{casePersonsBacking.editing.casePersonTypeId}"
-                               disabled="#{!caseBean.editable}">
+                               disabled="#{!caseBean.editable}" autoWidth="false">
                 <f:selectItems value="#{casePersonsBacking.typedHelper.allTypeItems}" />
               </p:selectOneMenu>
             </p:outputPanel>
 
             <!-- Dates -->
-            <p:outputPanel styleClass="field col-12 md:col-3"
+            <p:outputPanel styleClass="field col-12 md:col-2"
                            rendered="#{!casePersonsBacking.tabHelper.isPropertyHidden('startDate') and
                                        casePersonsBacking.editing.personId != null}">
               <p:outputLabel for="start_date" 
                              value="#{casePersonsBacking.typedHelper.getPropertyLabel('startDate', caseBundle.casePersons_startDate)}"/>
               <p:datePicker id="start_date" value="#{casePersonsBacking.startDate}" 
-                            locale="#{casePersonsBacking.language}" inputStyleClass="w-10"
-                            styleClass="inputfield w-full" showIcon="true"
+                            locale="#{casePersonsBacking.language}" 
+                            showIcon="true"
                             monthNavigator="true" yearNavigator="true" disabled="#{!caseBacking.editable}" />
             </p:outputPanel>
 
-            <p:outputPanel class="field col-12 md:col-3"
+            <p:outputPanel class="field col-12 md:col-2"
                            rendered="#{!casePersonsBacking.tabHelper.isPropertyHidden('endDate') and
                                        casePersonsBacking.editing.personId != null}">
               <p:outputLabel for="end_date" 
                              value="#{casePersonsBacking.typedHelper.getPropertyLabel('endDate', caseBundle.casePersons_endDate)}"/>
               <p:datePicker id="end_date" value="#{casePersonsBacking.endDate}" 
-                            locale="#{casePersonsBacking.language}" inputStyleClass="w-10"
-                            styleClass="inputfield w-full" showIcon="true"
+                            locale="#{casePersonsBacking.language}" 
+                            showIcon="true"
                             monthNavigator="true" yearNavigator="true" disabled="#{!caseBacking.editable}" />
             </p:outputPanel>
 
             <!-- Address -->
-            <p:outputPanel styleClass="field col-12 md:col-7" 
+            <p:outputPanel styleClass="field col-12 md:col-8" 
                            rendered="#{!casePersonsBacking.tabHelper.isPropertyHidden('addressId') and
                                        casePersonsBacking.editing.personId != null}">
 
               <p:outputLabel for="@next" value="#{caseBundle.casePersons_address} " />
-
-              <p:outputLabel styleClass="w-full flex">
-                <p:selectOneMenu id="addressId" value="#{casePersonsBacking.editing.addressId}"
-                                 styleClass="w-11" 
-                                 disabled="#{!caseBacking.editable}">
-                  <f:selectItems value="#{casePersonsBacking.personAddressSelectItems}" /> <!-- TODO: AddressBacking? -->
-                </p:selectOneMenu> 
-
+              <div class="ui-inputgroup">
                 <p:commandButton action="#{casePersonsBacking.search('Address', '#{casePersonsBacking.editing.addressId}')}"
                                  icon="pi pi-search" ajax="false" update="@form"
-                                 styleClass="ui-button-raised ml-2"  
+                                 styleClass="ui-button-raised"  
                                  alt="#{objectBundle.search}" title="#{objectBundle.search}"
-                                 disabled="#{!caseBean.editable}" />
-              </p:outputLabel>
+                                 disabled="#{!caseBean.editable}" />                
+                <p:selectOneMenu id="addressId" value="#{casePersonsBacking.editing.addressId}"
+                                 disabled="#{!caseBacking.editable}"
+                                 autoWidth="false">
+                  <f:selectItems value="#{casePersonsBacking.personAddressSelectItems}" /> <!-- TODO: AddressBacking? -->
+                </p:selectOneMenu> 
+              </div>
             </p:outputPanel> 
 
             <!-- Contacts -->
-            <p:outputPanel styleClass="field col-12 md:col-5" 
+            <p:outputPanel id="contacts_panel" styleClass="field col-12" 
                            rendered="#{casePersonsBacking.editing != null and 
                                        !casePersonsBacking.tabHelper.isPropertyHidden('personContacts') and
                                        casePersonsBacking.editing.personId != null}">
 
-              <h:outputLabel value="#{caseBundle.casePersons_personContacts}" />
-
-              <p:autoComplete id="contacts" styleClass="inputfield w-full" inputStyleClass="w-full"
-                              multiple="true" value="#{casePersonsBacking.selectedPersonContacts}"
-                              completeMethod="#{casePersonsBacking.completePersonContact}"                              
-                              var="contact" itemValue="#{contact}" itemLabel="#{contact.original.contactTypeLabel}: #{contact.original.value}"
-                              converter="universalConverter" 
-                              dropdown="true" dropdownMode="blank"
-                              minQueryLength="1" queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <f:attribute name="isRepresentantContact" value="false" />
-                <p:ajax event="itemSelect" listener="#{casePersonsBacking.onContactSelect}" update="edit_panel" global="false"/>                
-                <p:column>
-                  <span class="pi pi-#{casePersonsBacking.getContactIcon(contact.original)}" />
-                  <h:outputText styleClass="ml-2 vertical-align-middle" 
-                                value="#{contact.original.value}"/>
+              <p:dataTable id="contacts_table" var="contact" value="#{casePersonsBacking.selectedContacts}" 
+                           widgetVar="contactsTable" size="small" >   
+                <p:column headerText="#{caseBundle.casePersons_personContacts}" styleClass="w-11">
+                  <span class="pi pi-#{casePersonsBacking.getContactIcon(contact)} pr-2" />
+                  <h:outputText value="#{contact.value}"/>
+                </p:column> 
+                <p:column styleClass="w-1 text-center">
+                  <p:commandButton icon="pi pi-minus-circle" action="#{casePersonsBacking.removeContact(contact.contactId)}"
+                                   update="contacts_table" process="@this"/>
                 </p:column>
-              </p:autoComplete> 
-               
-              <!--
-              <p:selectManyMenu id="contacts" value="#{casePersonsBacking.selectedPersonContacts}"
-                                scrollHeight="140" filter="#{casePersonsBacking.personContacts.size() > 5}" filterMatchMode="contains"
-                                converter="universalConverter" 
-                                var="c"  showCheckbox="true">
-                <f:selectItems value="#{casePersonsBacking.personContacts}" var="contact" itemLabel="#{contact.original.contactTypeLabel}: #{contact.original.value}"
-                               itemValue="#{contact}" />
-
-                <p:column>
-                  <span class="pi pi-#{casePersonsBacking.getContactIcon(c.original)}" />
-                  <h:outputText styleClass="ml-2 vertical-align-middle" 
-                                value="#{c.original.value}"/>
-                </p:column>
-              </p:selectManyMenu>              
-              -->
+              </p:dataTable> 
             </p:outputPanel>
 
+            <p:outputPanel styleClass="field col-12" >
+              <p:autoComplete id="contact_new"
+                              multiple="false" value="#{casePersonsBacking.selectedContact}"
+                              completeMethod="#{casePersonsBacking.completeContact}"                              
+                              var="contact" itemValue="#{contact}" itemLabel="#{contact.value}"
+                              converter="universalConverter" forceSelection="true"
+                              dropdown="true" dropdownMode="blank" 
+                              minQueryLength="1" queryDelay="500" 
+                              onclick="this.setSelectionRange(0, this.value.length)">
+                <p:ajax event="itemSelect" listener="#{casePersonsBacking.onContactSelect}" update="contacts_panel" global="false"/>
+                <p:column>
+                  <span class="pi pi-#{casePersonsBacking.getContactIcon(contact)}" />
+                  <h:outputText styleClass="ml-2 vertical-align-middle" 
+                                value="#{contact.value}"/>
+                </p:column>                
+              </p:autoComplete>
+            </p:outputPanel>
+
+            <p:outputPanel styleClass="field col-12">
+              <p:commandButton icon="pi #{casePersonsBacking.renderNewContactPanel ? 'pi-minus-circle' : 'pi-plus-circle'}" 
+                               styleClass="ui-button-raised" action="#{casePersonsBacking.addNewContact}"
+                               ajax="true" update="@this new_contact_panel" process="@this" global="false"/> 
+            </p:outputPanel>              
+
+            <p:outputPanel id="new_contact_panel" styleClass="field col-12" >
+              <div class="ui-inputgroup">
+                <p:selectOneMenu id="contact_selector"  styleClass="w-full" 
+                                 value="#{casePersonsBacking.contactTypeId}"
+                                 autoWidth="false"
+                                 rendered="#{casePersonsBacking.renderNewContactPanel}">
+                  <f:selectItems value="#{casePersonsBacking.contactTypeSelectItems}" 
+                                 var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
+                </p:selectOneMenu>                 
+                <p:inputText value="#{casePersonsBacking.contactValue}" styleClass="w-full" 
+                             rendered="#{casePersonsBacking.renderNewContactPanel}"/>  
+
+                <p:commandButton icon="pi pi-minus-circle" 
+                               styleClass="ui-button-raised" 
+                               rendered="#{casePersonsBacking.renderNewContactPanel}"/> 
+              </div>
+            </p:outputPanel>
 
 
           </div>
@@ -251,82 +280,85 @@
                  header="#{caseBundle.casePersons_representantData}"
                  styleClass="mt-2">
 
-          <div class="formgrid grid" >            
+          <div class="ui-fluid formgrid grid" >            
 
             <!-- Representant person -->
-            <p:outputPanel styleClass="field col-12 md:col-6">  
+            <p:outputPanel styleClass="field col-12">  
               <p:outputLabel for="@next"  
                              value="#{casePersonsBacking.typedHelper.getPropertyLabel('representant', caseBundle.casePersons_representantPerson)}"
                              styleClass="w-full"/>
-              <p:autoComplete id="representant" styleClass="inputfield w-11" inputStyleClass="w-11"
-                              value="#{casePersonsBacking.representantSelectItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank"
-                              completeMethod="#{casePersonsBacking.completeRepresentant}"
-                              converter="selectItemConverter"
-                              var="repItem" itemValue="#{repItem}" itemLabel="#{repItem.label}"
-                              minQueryLength="3" queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{casePersonsBacking.onRepresentantSelect}" update="edit_panel"/>
-                <p:ajax event="clear" listener="#{casePersonBacking.onRepresentantClear}" update="edit_panel" />
-                <p:column>                 
-                  <h:outputText value="#{repItem.label} (#{repItem.value})" rendered="#{repItem.value != null}"/>
-                </p:column>        
-              </p:autoComplete>             
-              <p:commandButton action="#{casePersonsBacking.search('Person', '#{casePersonsBacking.selectedRepresentant}')}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}"
-                               update="@form"/> 
+              <div class="ui-inputgroup">
+                <p:commandButton action="#{casePersonsBacking.search('Person', '#{casePersonsBacking.selectedRepresentant}')}"
+                                 icon="pi pi-search" ajax="false"
+                                 styleClass=""                               
+                                 alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                                 update="@form"/>                   
+                <p:autoComplete id="representant" 
+                                value="#{casePersonsBacking.representantSelectItem}" 
+                                maxResults="10" dropdown="true" dropdownMode="blank"
+                                completeMethod="#{casePersonsBacking.completeRepresentant}"
+                                converter="selectItemConverter"
+                                var="repItem" itemValue="#{repItem}" itemLabel="#{repItem.label}"
+                                minQueryLength="3" queryDelay="1000"
+                                onclick="this.setSelectionRange(0, this.value.length)">
+                  <p:ajax event="itemSelect" listener="#{casePersonsBacking.onRepresentantSelect}" update="edit_panels"/>
+                  <p:ajax event="clear" listener="#{casePersonBacking.onRepresentantClear}" update="edit_panels" />
+                  <p:column>                 
+                    <h:outputText value="#{repItem.label} (#{repItem.value})" rendered="#{repItem.value != null}"/>
+                  </p:column>        
+                </p:autoComplete>             
 
+              </div>
             </p:outputPanel> 
 
-
             <!-- Representant address -->
-            <p:outputPanel styleClass="field col-12 md:col-7" 
+            <p:outputPanel styleClass="field col-12" 
                            rendered="#{!casePersonsBacking.tabHelper.isPropertyHidden('representantAddressId') and
                                        casePersonsBacking.editing.representantPersonId != null}">
 
               <p:outputLabel for="@next" value="#{caseBundle.casePersons_address} " />
 
-              <p:outputLabel styleClass="w-full flex">
-                <p:selectOneMenu id="representantAddressId" value="#{casePersonsBacking.editing.representantAddressId}"
-                                 styleClass="w-11" 
-                                 disabled="#{!caseBacking.editable}">
-                  <f:selectItems value="#{casePersonsBacking.representantAddressSelectItems}" /> <!-- TODO: AddressBacking? -->
-                </p:selectOneMenu> 
-
+              <div class="ui-inputgroup">
                 <p:commandButton action="#{casePersonsBacking.search('Address', '#{casePersonsBacking.editing.representantAddressId}')}"
                                  icon="pi pi-search" ajax="false" update="@form"
-                                 styleClass="ui-button-raised ml-2"  
+                                 styleClass="ui-button-raised"  
                                  alt="#{objectBundle.search}" title="#{objectBundle.search}"
                                  disabled="#{!caseBean.editable}" />
-              </p:outputLabel>
+
+                <p:selectOneMenu id="representantAddressId" value="#{casePersonsBacking.editing.representantAddressId}" 
+                                 disabled="#{!caseBacking.editable}"
+                                 autoWidth="false">
+                  <f:selectItems value="#{casePersonsBacking.representantAddressSelectItems}" /> <!-- TODO: AddressBacking? -->
+                </p:selectOneMenu> 
+              </div>
             </p:outputPanel> 
 
             <!-- Representant contacts -->
-            <p:outputPanel styleClass="field col-12 md:col-5" 
+            <p:outputPanel styleClass="field col-12" 
                            rendered="#{casePersonsBacking.editing != null and 
                                        !casePersonsBacking.tabHelper.isPropertyHidden('representantContacts') and
                                        casePersonsBacking.editing.representantPersonId != null}">
-
-              <p:outputLabel for="@next" value="#{caseBundle.casePersons_personContacts}" />
-              <p:autoComplete id="representantContacts" styleClass="inputfield w-full" inputStyleClass="w-full"
-                              multiple="true" value="#{casePersonsBacking.selectedRepresentantContacts}"
-                              completeMethod="#{casePersonsBacking.completeRepresentantContact}"                              
-                              var="repContact" itemValue="#{repContact}" itemLabel="#{repContact.original.contactTypeLabel}: #{repContact.original.value}"
-                              converter="universalConverter"
-                              dropdown="true" dropdownMode="blank"
-                              minQueryLength="1" queryDelay="1000" forceSelection="false"
-                              onclick="this.setSelectionRange(0, this.value.length)"
-                              >
-                <f:attribute name="isRepresentantContact" value="true" />
-                <p:ajax event="itemSelect" listener="#{casePersonsBacking.onContactSelect}" update="edit_panel" global="false"/>
-                <p:column>
-                  <span class="pi pi-#{casePersonsBacking.getContactIcon(repContact.original)}" />
-                  <h:outputText styleClass="ml-2 vertical-align-middle" 
-                                value="#{repContact.original.value}"/>
-                </p:column>
-              </p:autoComplete>  
+              <!--   
+                            <p:outputLabel for="@next" value="#{caseBundle.casePersons_personContacts}" />
+                         
+                            <p:autoComplete id="representantContacts"  inputStyleClass="w-full"
+                                            multiple="true" value="#{casePersonsBacking.selectedRepresentantContacts}"
+                                            completeMethod="#{casePersonsBacking.completeRepresentantContact}"                              
+                                            var="repContact" itemValue="#{repContact}" itemLabel="#{repContact.original.contactTypeLabel}: #{repContact.original.value}"
+                                            converter="universalConverter"
+                                            dropdown="true" dropdownMode="blank"
+                                            minQueryLength="1" queryDelay="1000" forceSelection="false"
+                                            onclick="this.setSelectionRange(0, this.value.length)"
+                                            >
+                              <f:attribute name="isRepresentantContact" value="true" />
+                              <p:ajax event="itemSelect" listener="#{casePersonsBacking.onContactSelect}" update="edit_panels" global="false"/>
+                              <p:column>
+                                <span class="pi pi-#{casePersonsBacking.getContactIcon(repContact.original)}" />
+                                <h:outputText styleClass="ml-2 vertical-align-middle" 
+                                              value="#{repContact.original.value}"/>
+                              </p:column>
+                            </p:autoComplete>  
+              -->
 
             </p:outputPanel>   
 
@@ -338,7 +370,7 @@
                  header="#{caseBundle.casePersons_otherData}"
                  styleClass="mt-2">
 
-          <div class="formgrid grid" >           
+          <div class="ui-fluid formgrid grid" >           
             <!-- Comments -->
             <p:outputPanel styleClass="field col-12" 
                            rendered="#{!casePersonsBacking.tabHelper.isPropertyHidden('comments') and
@@ -346,7 +378,7 @@
               <p:outputLabel for="comments" 
                              value="#{casePersonsBacking.typedHelper.getPropertyLabel('comments', caseBundle.casePersons_comments)}"/>
               <p:inputTextarea id="comments" value="#{casePersonsBacking.editing.comments}"
-                               styleClass="inputfield w-full" autoResize="false" />
+                               autoResize="false" />
             </p:outputPanel> 
 
             <!-- Import addresses -->
@@ -359,34 +391,24 @@
           </div>
         </p:panel>              
 
-        <!--
-                    <div class="field col-12 text-right">
-                      <p:commandButton action="#{casePersonsBacking.storePerson}" 
-                                       styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                                       disabled="#{!caseBean.editable}"
-                                       update="page_results_table edit_panel"/>
-                      <p:commandButton action="#{casePersonsBacking.cancel}" 
-                                       styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                                       immediate="true" update="edit_panel" global="false" />
-                    </div>
-        -->
 
-      </p:outputPanel>
-    </h:panelGroup>
+        <div class="field col-12 text-right">
+          <p:commandButton action="#{casePersonsBacking.storePerson}" 
+                           styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                           disabled="#{!caseBean.editable}"
+                           update="page_results_table edit_panels"
+                           oncomplete="PF('editDataDialog').hide()"/>
+          <p:commandButton action="#{casePersonsBacking.cancel}" 
+                           styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                           immediate="true" update="edit_panels" global="false" 
+                           oncomplete="PF('editDataDialog').hide()"/>
+        </div>
 
-    <p:dialog id="contactTypePicker" dynamic="true"  widgetVar="contactTypePicker"
-              styleClass="w-3" modal="true">
-      <h:outputText value="New contact: #{casePersonsBacking.newContactValue}" />
-      <p:dataTable var="ct" value="#{casePersonsBacking.contactTypeSelectItems}" size="small"
-                   selectionMode="single" selection="#{casePersonsBacking.newContactType}" rowKey="#{ct.value}">
-        <p:ajax event="rowSelect" listener="#{casePersonsBacking.onContactTypeSelect}" 
-                update=":mainform:edit_panel" 
-                oncomplete="PF('contactTypePicker').hide()"/>
-        <p:column headerText="Tipus de contacte">
-          <h:outputText value="#{ct.label}"/>
-        </p:column>
-      </p:dataTable>
-    </p:dialog>     
+
+      </p:outputPanel>      
+
+    </p:dialog> 
+
   </ui:define>
 
 

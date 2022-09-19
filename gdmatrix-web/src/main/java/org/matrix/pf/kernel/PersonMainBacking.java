@@ -164,7 +164,10 @@ public class PersonMainBacking extends PageBacking
   
   public void setCitySelectItem(SelectItem selectItem)
   {
-    person.setBirthCityId((String) selectItem.getValue());
+    if (selectItem != null)
+      person.setBirthCityId((String) selectItem.getValue());
+    else
+      person.setBirthCityId(null);
   }  
   
   public void selectCity(String cityId)

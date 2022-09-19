@@ -17,7 +17,7 @@
                 template="object_common.xhtml">
     
   <ui:define name="main">  
-    <p:panel>    
+    <p:panel id="object_panel" styleClass="object-panel">    
       <f:facet name="header">
         <div class="flex align-items-center">
           <div class="w-9">            
@@ -95,8 +95,8 @@
         </c:forEach>
       </p:tabMenu>
       
-      <p:outputPanel styleClass="flex-grow-1 overflow-auto" style="height:60vh"> <!-- TODO adjust to any screen size -->
-        <div class="tab p-3">
+      <p:outputPanel id="body_content" styleClass="body-content flex-grow-1 overflow-auto" > <!-- TODO adjust to any screen size -->
+        <div class="tab p-2">
           <h:panelGroup id="form_panel">
             <ui:insert name="content"></ui:insert>  
           </h:panelGroup>          

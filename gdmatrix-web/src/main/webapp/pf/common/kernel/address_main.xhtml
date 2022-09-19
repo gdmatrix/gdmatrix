@@ -14,7 +14,7 @@
 
     <h:panelGroup>
 
-      <div class="formgrid grid pl-2">  
+      <div class="ui-fluid formgrid grid">  
 
         <div class="field col-12 md:col-4">
           <p:outputLabel for="@next" value="#{kernelBundle.address_type}" />
@@ -30,25 +30,27 @@
           </p:selectOneMenu>          
         </div> 
 
-        <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="#{kernelBundle.street}" styleClass="w-full" />
-          <p:autoComplete id="street" styleClass="inputfield w-11" inputStyleClass="w-11"
-                          value="#{addressMainBacking.streetSelectItem}" 
-                          maxResults="10" dropdown="true" dropdownMode="blank"
-                          completeMethod="#{addressMainBacking.completeStreet}"
-                          converter="selectItemConverter"
-                          var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                          minQueryLength="3" queryDelay="1000"
-                          onclick="this.setSelectionRange(0, this.value.length)">
-            <p:column>                 
-              <h:outputText value="#{item.label} (#{item.value})" />
-            </p:column>        
-          </p:autoComplete>  
-          <p:commandButton icon="pi pi-search" oncomplete="PF('countryToStreetDialog').show()"
-                           styleClass="ui-button-raised" 
-                           action="#{countryToStreetBacking.showStreet(addressMainBacking.address.streetId)}"
-                           alt="#{objectBundle.search}" title="#{objectBundle.search}"
-                           ajax="true" update="placePickerPanel" />           
+        <div class="field col-12 md:col-8">
+          <p:outputLabel for="@next" value="#{kernelBundle.street}"  />
+          <div class="ui-inputgroup">
+            <p:commandButton icon="pi pi-search" oncomplete="PF('countryToStreetDialog').show()"
+                             styleClass="ui-button-raised" 
+                             action="#{countryToStreetBacking.showStreet(addressMainBacking.address.streetId)}"
+                             alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                             ajax="true" update="placePickerPanel" />    
+            <p:autoComplete id="street"
+                            value="#{addressMainBacking.streetSelectItem}" 
+                            maxResults="10" dropdown="true" dropdownMode="blank"
+                            completeMethod="#{addressMainBacking.completeStreet}"
+                            converter="selectItemConverter"
+                            var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                            minQueryLength="3" queryDelay="1000"
+                            onclick="this.setSelectionRange(0, this.value.length)">
+              <p:column>                 
+                <h:outputText value="#{item.label} (#{item.value})" />
+              </p:column>        
+            </p:autoComplete>  
+          </div>
         </div>   
 
 
@@ -140,8 +142,9 @@
       </div>   
 
       <p:dialog id="countryToStreetDialog" dynamic="true"  modal="true" 
-                widgetVar="countryToStreetDialog" styleClass="w-6">
-        
+                widgetVar="countryToStreetDialog" styleClass="w-6"
+                appendTo="@(form)">
+
         <ui:include src="country_to_street.xhtml" />
 
         <div class="text-right pt-3">
@@ -155,7 +158,7 @@
                            onclick="PF('countryToStreetDialog').hide()" styleClass="ui-button-raised m-1"
                            global="false"/>
         </div>
-            
+
       </p:dialog>   
 
     </h:panelGroup>

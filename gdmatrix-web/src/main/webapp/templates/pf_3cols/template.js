@@ -33,7 +33,7 @@ function initSlick()
 {
   var w = $(window).width();   
   destroyCarousel();
-  if (w <= 974)
+  if (w <= 991)
   {  
     $('.slick-columns').slick({
       dots: true,

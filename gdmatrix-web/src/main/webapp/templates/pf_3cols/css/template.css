@@ -8,9 +8,65 @@ body
   background-color: var(--surface-0);
 }
 
+
+/*
+body .ui-inputfield 
+{
+  padding: 0.3rem;
+}
+
+body .field
+{
+  margin: 0.2rem;
+}
+
+body .field > label
+{
+  margin-bottom: 0.2rem;
+}
+
+body .ui-selectonemenu
+{
+  height: 2rem;
+}
+
+body .ui-button.ui-button-icon-only
+{
+  width: 2rem;
+  height: 2.1rem;
+}
+
+body .ui-button.ui-button-icon-only.select-button
+{
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  left: -3px;
+}
+
+body .ui-button.ui-button-icon-only .ui-button-text
+{
+  padding: 0.2rem 0.2rem;
+}
+
+body .ui-calendar .ui-button.ui-button-icon-only
+{
+  left: -3px;
+}
+
+body .ui-autocomplete .ui-autocomplete-input.ui-autocomplete-dd-input
+{
+  height: 1.9rem;  
+}
+*/
+
+body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem a .ui-menuitem-text
+{
+  display: inline-block;
+}
+
 body .loading-icon-container .ui-dialog-content
 {
-  padding: 1rem;
+  padding: var(--content-padding);
 }
 
 body .pi.loading-icon
@@ -83,6 +139,41 @@ body .ui-datatable .ui-datatable-header
   background-color: transparent;
   color: var(--primary-color);
   border-color: transparent;  
+}
+
+@media only screen and (max-width: 992px) 
+{ 
+  .template-layout
+  {
+    height: calc(100vh - 100px);
+  }
+  
+  .object-panel .body-content
+  {
+    height: calc(100vh - 350px);  
+  }
+
+  .search-results-panel .body-content
+  {
+    height: calc(100vh - 240px);
+  }
+}
+
+@media only screen and (min-width: 992px) /* lg */ 
+{ 
+  .template-layout
+  {
+    height: calc(100vh - 80px);
+  }
+  .object-panel .body-content
+  {
+    height: calc(100vh - 301px);
+  }
+
+  .search-results-panel .body-content
+  {
+    height: calc(100vh - 191px);
+  }
 }
 
 :root {

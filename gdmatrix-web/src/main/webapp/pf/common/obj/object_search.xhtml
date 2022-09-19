@@ -16,8 +16,8 @@
                 template="object_common.xhtml">
 
   <ui:define name="main"> 
-    <p:panel id="search_results_panel" header="#{userSessionBean.selectedMenuItem.getProperty('label')}">
-
+    <p:panel id="search_results_panel" header="#{userSessionBean.selectedMenuItem.getProperty('label')}"
+             styleClass="object-search-panel">
       <f:facet name="header">
         <div class="flex align-items-center">
           <div class="w-9">
@@ -52,8 +52,8 @@
         </div>
       </f:facet>
 
-      <p:outputPanel id="body_content" styleClass="flex-grow-1 overflow-auto" style="height: 68vh">
-        
+      <p:outputPanel styleClass="body-content flex-grow-1 overflow-auto">
+               
         <ui:insert name="content" />
 
         <p:dataTable id="full_results_table" value="#{templateBacking.searchBacking.resultListHelper.resultList}" var="row"

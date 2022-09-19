@@ -35,6 +35,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.SelectItem;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -44,6 +45,8 @@ import javax.faces.model.SelectItem;
 public class SelectItemConverter implements Converter<SelectItem>
 {
   private static final String SEPARATOR = "::";
+  private static final String BLANK = "";
+  
   @Override
   public SelectItem getAsObject(FacesContext context, UIComponent component, 
     String value)
@@ -57,6 +60,8 @@ public class SelectItemConverter implements Converter<SelectItem>
         value = parts[0];
         label = parts[1];
       }
+      else
+        return new SelectItem(BLANK);
     }
     
     return new SelectItem(value, label);    
@@ -66,10 +71,14 @@ public class SelectItemConverter implements Converter<SelectItem>
   public String getAsString(FacesContext context, UIComponent component, 
     SelectItem value)
   {
-    if (value == null)
-      return "";
+    if (value != null && value.getValue() != null)
+    {
+      String itemValue = (String) value.getValue();
+      if (!StringUtils.isBlank(itemValue))
+        return itemValue + SEPARATOR + value.getLabel();
+    }
     
-    return (String) value.getValue() + SEPARATOR + value.getLabel();
+    return BLANK;
   }
   
 }
