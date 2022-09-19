@@ -625,7 +625,7 @@
         <column name="COLOR" length="6" />
       </basic>
       <basic name="filter">
-        <column name="FILTER" length="100" />
+        <column name="FILTER" length="500" />
       </basic>
       <basic name="code">
         <column name="CODE" length="3" />
