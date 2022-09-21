@@ -62,6 +62,7 @@ import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.web.WebUtils;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.dic.Type;
@@ -101,17 +102,14 @@ public class CasePersonsBacking extends PageBacking
   
   private List<ContactView> selectedContacts;
   private List<ContactView> selectedRepresentantContacts; 
-  
-  private ContactView selectedContact;
-  
+  private String contactTypeId;
+  private String contactValue; 
+  private String representantContactTypeId;
+  private String representantContactValue;     
+    
   private boolean importAddresses = false;
   private List<SelectItem> contactTypeSelectItems;
 
-  private boolean isRepresentantNewContact;
-  private String contactTypeId;
-  private String contactValue; 
-  private Contact newContact;
-  
   public CasePersonsBacking()
   { 
   }
@@ -123,7 +121,6 @@ public class CasePersonsBacking extends PageBacking
     typedHelper = new TypedHelper(this);
     resultListHelper = new ResultListHelper(this);
     tabHelper = new TabHelper(this);
-//    populate();
   }
   
   public CasePerson getEditing()
@@ -305,11 +302,11 @@ public class CasePersonsBacking extends PageBacking
     if (!personId.equals(personSelectItem.getValue()))
       personSelectItem = newPersonSelectItem(personId);
     contacts = getContacts(personId);
-//    contacts = new SelectEntityList(contacts, CONTACTID);
     personAddresses = getAddresses(editing.getAddressId(), personId);
     selectedContacts = null;
     editing.getContactId().clear();
-    editing.setAddressId(null);       
+    editing.setAddressId(null);      
+    showEditDialog();    
   }
   
   public List<SelectItem> completePerson(String query)
@@ -341,12 +338,12 @@ public class CasePersonsBacking extends PageBacking
     if (!personId.equals(personSelectItem.getValue()))
       representantSelectItem = newPersonSelectItem(personId);    
     representantContacts = getContacts(personId);
-//    representantContacts = new SelectEntityList(contacts, CONTACTID);
     representantAddresses = getAddresses(editing.getRepresentantAddressId(),
       editing.getRepresentantPersonId());
     selectedRepresentantContacts = null;
     editing.getRepresentantContactId().clear();
     editing.setRepresentantAddressId(null);
+    showEditDialog();
   }  
 
   public void onRepresentantClear()
@@ -380,38 +377,27 @@ public class CasePersonsBacking extends PageBacking
   {
     return representantAddresses;
   }
+  
+  public void setSelectedAddress(String addressId)
+  {
+    if (editing != null)
+    {
+      editing.setAddressId(addressId);
+      showEditDialog();
+    }
+  }
+  
+  public void setSelectedRepresentantAddress(String addressId)
+  {
+    if (editing != null)
+    {
+      editing.setRepresentantAddressId(addressId);
+      showEditDialog();
+    }
+  }  
 
   //Contacts
-
-  public List<ContactView> getContacts()
-  {
-    Collections.sort(contacts, (Object o1, Object o2) ->
-    {
-      if (o1 == null)
-        return -1;
-      if (o2 == null)
-        return 1;
-      
-      ContactView c1 = (ContactView) o1;
-      ContactView c2 = (ContactView) o2;
-      
-      String id1 = c1.getContactId();
-      String id2 = c2.getContactId();
-      
-      if (editing != null)
-      {
-        List<String> ids = editing.getContactId();
-        if (ids.contains(id1) && !ids.contains(id2))
-          return -1;
-        else if (!ids.contains(id1) && ids.contains(id2))
-          return 1;              
-      }
-      
-      return id1.compareTo(id2);
-    });   
-    return contacts;
-  }
- 
+  
   /**
    * 
    * @return the selected personal contacts.
@@ -431,7 +417,7 @@ public class CasePersonsBacking extends PageBacking
     ContactView remove = null;
     for (ContactView contact : selectedContacts)
     {
-      if (contactId.equals(contact.getContactId()))
+      if (contactId != null && contactId.equals(contact.getContactId()))
       {
         remove = contact;
         break;
@@ -445,14 +431,33 @@ public class CasePersonsBacking extends PageBacking
     }
   }
   
+  public void removeRepresentantContact(String contactId)
+  {
+    ContactView remove = null;
+    for (ContactView contact : selectedRepresentantContacts)
+    {
+      if (contactId != null && contactId.equals(contact.getContactId()))
+      {
+        remove = contact;
+        break;
+      }
+    }
+    
+    if (remove != null)
+    {
+      selectedRepresentantContacts.remove(remove);
+      editing.getRepresentantContactId().remove(contactId);
+    }
+  }  
+  
   public void setSelectedContact(ContactView selectedContact)
   {
-    this.selectedContact = selectedContact;
+    //Do nothing. Don't want to keep it.
   }
     
   public ContactView getSelectedContact()
   {
-    return selectedContact;
+    return null;
   }
      
   public List<ContactView> completeContact(String query)
@@ -460,9 +465,10 @@ public class CasePersonsBacking extends PageBacking
     return completeContact(query, contacts);
   }
   
-
-  
-
+  public List<ContactView> completeRepresentantContact(String query)
+  {
+    return completeContact(query, representantContacts);
+  }  
   
   private List<SelectItem> completePerson(String query, String personId)
   {
@@ -524,23 +530,43 @@ public class CasePersonsBacking extends PageBacking
     this.importAddresses = importAddresses;
   }
   
-  public boolean isRenderNewContactPanel()
-  {
-    return newContact != null;
-  }
   
   public void addNewContact()
   {
-    if (newContact == null)
+    if (contactTypeId != null && contactValue != null 
+      && !isContactsMaxSize(selectedContacts))
     {
-      newContact = new Contact();
+      Contact newContact = new Contact();
       newContact.setPersonId(editing.getPersonId());
-    }
-    else
-    {
-      newContact = null;
+      newContact.setContactTypeId(contactTypeId);
+      newContact.setValue(contactValue);
+      addNewContact(newContact, editing.getPersonId(), editing.getContactId(), 
+        contacts);
+      loadPersonContacts(); 
+      loadSelectedContacts();
+      contactTypeId = null;
+      contactValue = null;
     }
   }
+  
+  public void addNewRepresentantContact()
+  {
+    if (representantContactTypeId != null && representantContactValue != null 
+      && !isContactsMaxSize(selectedRepresentantContacts))
+    {
+      String personId = editing.getRepresentantPersonId();
+      Contact newContact = new Contact();
+      newContact.setPersonId(personId);
+      newContact.setContactTypeId(representantContactTypeId);
+      newContact.setValue(representantContactValue);
+      addNewContact(newContact, personId, editing.getRepresentantContactId(), 
+        contacts);
+      loadPersonContacts(); 
+      loadSelectedContacts();
+      representantContactTypeId = null;
+      representantContactValue = null;
+    }
+  }  
 
   public String getContactValue()
   {
@@ -561,11 +587,38 @@ public class CasePersonsBacking extends PageBacking
   {
     this.contactTypeId = typeId;
   }
+
+  public String getRepresentantContactTypeId()
+  {
+    return representantContactTypeId;
+  }
+
+  public void setRepresentantContactTypeId(String representantContactTypeId)
+  {
+    this.representantContactTypeId = representantContactTypeId;
+  }
+
+  public String getRepresentantContactValue()
+  {
+    return representantContactValue;
+  }
+
+  public void setRepresentantContactValue(String representantContactValue)
+  {
+    this.representantContactValue = representantContactValue;
+  }
+  
+  private void showEditDialog()
+  {
+    PrimeFaces current = PrimeFaces.current();
+    current.executeScript("PF('editDataDialog').show();");    
+  }
     
   @Override
   public String show(String pageId)
   {
     editPerson(pageId);
+    showEditDialog();
     return show();
   }  
   
@@ -578,6 +631,7 @@ public class CasePersonsBacking extends PageBacking
   
   public String editPerson(CasePersonView row)
   {
+    reset();
     String casePersonId = null;
     if (row != null)
       casePersonId = row.getCasePersonId();
@@ -587,6 +641,7 @@ public class CasePersonsBacking extends PageBacking
   
   public String createPerson()
   {
+    reset();    
     editing = new CasePerson();
     return null;
   }  
@@ -743,45 +798,17 @@ public class CasePersonsBacking extends PageBacking
   public void onContactSelect(SelectEvent<ContactView> event)
   {
     ContactView contactView = event.getObject();
-    if (!isContactsMaxSize())
+    if (!isContactsMaxSize(selectedContacts))
       addSelectedPersonContact(contactView);
   }
   
-  private void addSelectedPersonContact(ContactView selected)
-  {    
-    if (selectedContacts == null)
-      selectedContacts = new ArrayList<>();
-    selectedContacts.add(selected);
-    editing.getContactId().add(selected.getContactId());
-  }    
-  
-  private boolean isContactsMaxSize()
+  public void onRepresentantContactSelect(SelectEvent<ContactView> event)
   {
-    return selectedContacts != null && selectedContacts.size() >= 3;
+    ContactView contactView = event.getObject();
+    if (!isContactsMaxSize(selectedRepresentantContacts))
+      addSelectedRepresentantContact(contactView);    
   }
-  
-  public void onContactTypeSelect()
-  {
-    if (selectedContact != null)
-    {
-      Contact contact = new Contact();
-      contact.setContactTypeId(contactTypeId);
-      contact.setValue(selectedContact.getValue());
-
-      String personId = isRepresentantNewContact ?
-        editing.getRepresentantPersonId() : editing.getPersonId();
-      List<String> contactIds = isRepresentantNewContact ? 
-        editing.getRepresentantContactId() : editing.getContactId();
-      List<ContactView> contacts = isRepresentantNewContact ?
-        representantContacts : this.contacts;
-
-      String contactId = addNewContact(contact, personId, contactIds, contacts);
-      editing.getContactId().add(contactId);
-      this.loadSelectedContacts();      
-      this.loadPersonContacts();
-    }
-  }  
-    
+        
   private boolean isNew(CasePerson casePerson)
   {
     return (casePerson != null && casePerson.getCasePersonId() == null);
@@ -840,9 +867,7 @@ public class CasePersonsBacking extends PageBacking
     if (editing != null)
     {
       contacts = getContacts(editing.getPersonId());
-//      contacts = new SelectEntityList(contacts, CONTACTID);
-      representantContacts = getContacts(editing.getRepresentantPersonId());
-//      representantContacts = new SelectEntityList(contacts, CONTACTID);     
+      representantContacts = getContacts(editing.getRepresentantPersonId()); 
     }
   }
   
@@ -862,29 +887,31 @@ public class CasePersonsBacking extends PageBacking
     if (editing != null)
     {
       List<String> ids = editing.getContactId();
-      selectedContacts = findContactViews(ids);
+      selectedContacts = findContactViews(ids, contacts);
         
       ids = editing.getRepresentantContactId();
-      selectedRepresentantContacts = findContactViews(ids);
+      selectedRepresentantContacts = 
+        findContactViews(ids, representantContacts);
     }
   }
   
-  public List<ContactView> findContactViews(List<String> ids)
+  public List<ContactView> findContactViews(List<String> ids, 
+    List<ContactView> list)
   {
     List<ContactView> result = new ArrayList<>();
     for (String id : ids)
     {
-      ContactView contactView = findContactViewById(id);
+      ContactView contactView = findContactViewById(id, list);
       result.add(contactView);        
     } 
     return result;
   }  
   
-  public ContactView findContactViewById(String id)
+  public ContactView findContactViewById(String id, List<ContactView> list)
   {
     boolean found = false;
     ContactView entity = null;
-    Iterator<ContactView> iter = contacts.iterator();
+    Iterator<ContactView> iter = list.iterator();
     while (!found && iter.hasNext())
     {
       entity = iter.next();
@@ -1041,6 +1068,7 @@ public class CasePersonsBacking extends PageBacking
           // contact already exists in kernel
           contactId = contactView.getContactId();
         }
+        
         if (!contactIds.contains(contactId))
         {
           contactIds.add(contactId);
@@ -1055,6 +1083,27 @@ public class CasePersonsBacking extends PageBacking
       error(ex);
     }
     return contactId;
-  }       
+  }    
+  
+  private void addSelectedPersonContact(ContactView selected)
+  {    
+    if (selectedContacts == null)
+      selectedContacts = new ArrayList<>();
+    selectedContacts.add(selected);
+    editing.getContactId().add(selected.getContactId());
+  }
+  
+  private void addSelectedRepresentantContact(ContactView selected)
+  {    
+    if (selectedRepresentantContacts == null)
+      selectedRepresentantContacts = new ArrayList<>();
+    selectedRepresentantContacts.add(selected);
+    editing.getRepresentantContactId().add(selected.getContactId());
+  }
+    
+  private boolean isContactsMaxSize(List<ContactView> contacts)
+  {
+    return contacts != null && contacts.size() >= 3;
+  }  
     
 }

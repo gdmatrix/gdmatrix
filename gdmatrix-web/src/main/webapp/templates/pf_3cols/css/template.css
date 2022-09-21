@@ -106,7 +106,8 @@ body .pi.loading-icon
 
 .favorites_table thead,
 .recents_table thead,
-.basic_results_table thead
+.basic_results_table thead,
+.invisible_header_table thead
 {
   visibility: hidden;
 }

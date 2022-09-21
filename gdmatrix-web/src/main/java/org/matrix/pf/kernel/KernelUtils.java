@@ -49,6 +49,8 @@ public class KernelUtils
         contactTypeId.endsWith("_MAIL") ||
         contactTypeId.endsWith("_CCO"))
         result = "envelope";
+      else
+        result = "question-circle";
     }
     return result;
   }  
