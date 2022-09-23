@@ -30,6 +30,7 @@
  */
 package org.matrix.pf.web;
 
+import org.primefaces.PrimeFaces;
 import org.santfeliu.faces.beansaver.Savable;
 
 /**
@@ -54,7 +55,7 @@ public abstract class PageBacking extends WebBacking implements Savable
    * @return identifier
    */
   public abstract String getPageObjectId();
-  
+    
   public abstract String show();  
   
   public abstract String show(String objectId);
@@ -62,12 +63,25 @@ public abstract class PageBacking extends WebBacking implements Savable
   public String search(String targetObjectTypeId, String valueBinding)
   {
     return ControllerBacking.getCurrentInstance()
-      .search(targetObjectTypeId, valueBinding);
+      .search(targetObjectTypeId, getPageObjectId(), valueBinding);
   }
   
   public String getLanguage()
   {
     return getLocale().getLanguage();
+  }  
+  
+  protected void showDialog()
+  {
+    PrimeFaces current = PrimeFaces.current();
+    current.executeScript("PF('editDataDialog').show();");    
+  }  
+  
+  protected boolean isEditing(String pageObjectId)
+  {
+    String currentPageObjectId = getPageObjectId();    
+    return currentPageObjectId != null 
+      && currentPageObjectId.equals(pageObjectId);
   }
                
 }

@@ -177,6 +177,20 @@ body .ui-datatable .ui-datatable-header
   }
 }
 
+/*** Dialogs ***/
+body .ui-dialog .ui-dialog-titlebar .ui-dialog-title
+{
+  float: left;
+}
+
+body .edit_data_dialog
+{
+  max-height: 85%;
+  overflow-y: auto; 
+  width: 90% !important;
+  max-width: 1200px;  
+}
+
 :root {
   --text-color:#495057;
   --text-color-secondary:#6c757d;

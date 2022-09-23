@@ -62,7 +62,6 @@ import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.web.WebUtils;
-import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.dic.Type;
@@ -76,10 +75,15 @@ import org.santfeliu.util.TextUtils;
  *
  * @author blanquepa
  */
-@Named("casePersonsBacking")
+@Named
 public class CasePersonsBacking extends PageBacking 
   implements TypedTabPage, ResultListPage
 {
+  private static final String PERSON_BACKING = "personBacking";
+    
+    
+  private static final String OUTCOME = "pf_case_persons";
+  
   private static final String GROUPBY_PROPERTY = "groupBy";
   
   private CaseBacking caseBacking;
@@ -109,6 +113,7 @@ public class CasePersonsBacking extends PageBacking
     
   private boolean importAddresses = false;
   private List<SelectItem> contactTypeSelectItems;
+
 
   public CasePersonsBacking()
   { 
@@ -151,6 +156,16 @@ public class CasePersonsBacking extends PageBacking
       return editing.getCasePersonId();
     else
       return null;
+  }
+  
+  public String getPageObjectDescription()
+  {
+    if (editing != null)
+    {
+      PersonBacking personBacking = WebUtils.getBacking(PERSON_BACKING);
+      return personBacking.getDescription(editing.getPersonId());
+    }
+    return null;
   }
 
   @Override
@@ -306,7 +321,7 @@ public class CasePersonsBacking extends PageBacking
     selectedContacts = null;
     editing.getContactId().clear();
     editing.setAddressId(null);      
-    showEditDialog();    
+    showDialog();    
   }
   
   public List<SelectItem> completePerson(String query)
@@ -343,7 +358,7 @@ public class CasePersonsBacking extends PageBacking
     selectedRepresentantContacts = null;
     editing.getRepresentantContactId().clear();
     editing.setRepresentantAddressId(null);
-    showEditDialog();
+    showDialog();
   }  
 
   public void onRepresentantClear()
@@ -363,7 +378,7 @@ public class CasePersonsBacking extends PageBacking
 
   public List<SelectItem> getFavorites()
   {
-    PersonBacking personBacking = WebUtils.getBacking("personBacking");
+    PersonBacking personBacking = WebUtils.getBacking(PERSON_BACKING);
     return personBacking.getFavorites();     
   }      
 
@@ -383,7 +398,7 @@ public class CasePersonsBacking extends PageBacking
     if (editing != null)
     {
       editing.setAddressId(addressId);
-      showEditDialog();
+      showDialog();
     }
   }
   
@@ -392,7 +407,7 @@ public class CasePersonsBacking extends PageBacking
     if (editing != null)
     {
       editing.setRepresentantAddressId(addressId);
-      showEditDialog();
+      showDialog();
     }
   }  
 
@@ -473,7 +488,7 @@ public class CasePersonsBacking extends PageBacking
   private List<SelectItem> completePerson(String query, String personId)
   {
     ArrayList<SelectItem> items = new ArrayList();
-    PersonBacking personBacking = WebUtils.getBacking("personBacking");
+    PersonBacking personBacking = WebUtils.getBacking(PERSON_BACKING);
     
     //Add current item
     if (!isNew(editing))
@@ -607,31 +622,25 @@ public class CasePersonsBacking extends PageBacking
   {
     this.representantContactValue = representantContactValue;
   }
-  
-  private void showEditDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('editDataDialog').show();");    
-  }
-    
+   
   @Override
-  public String show(String pageId)
+  public String show(String pageObjectId)
   {
-    editPerson(pageId);
-    showEditDialog();
-    return show();
+    editPerson(pageObjectId);
+    showDialog();
+    return (isEditing(pageObjectId) ? OUTCOME : show());
   }  
   
   @Override
   public String show()
   {    
     populate();
-    return "pf_case_persons";
+    return OUTCOME;
   }
   
   public String editPerson(CasePersonView row)
   {
-    reset();
+//    reset();
     String casePersonId = null;
     if (row != null)
       casePersonId = row.getCasePersonId();
@@ -818,7 +827,7 @@ public class CasePersonsBacking extends PageBacking
   {
     try
     {
-      if (casePersonId != null)
+      if (casePersonId != null && !isEditing(casePersonId))
       {
         editing = CaseConfigBean.getPort().loadCasePerson(casePersonId);
         loadPersonSelectItem();
@@ -826,7 +835,7 @@ public class CasePersonsBacking extends PageBacking
         loadSelectedContacts();
         loadAddresses();        
       }
-      else
+      else if (casePersonId == null)
       {
         editing = new CasePerson();
       }
@@ -855,7 +864,7 @@ public class CasePersonsBacking extends PageBacking
   
   private SelectItem newPersonSelectItem(String personId)
   {
-    PersonBacking personBacking = WebUtils.getBacking("personBacking");    
+    PersonBacking personBacking = WebUtils.getBacking(PERSON_BACKING);    
     
     String description = 
       personBacking.getDescription(personId);
@@ -922,6 +931,7 @@ public class CasePersonsBacking extends PageBacking
   
   private List<SelectItem> getAddresses(String addressId, String personId)
   {
+    //TODO: AddressBacking
     AddressBean addressBean = WebUtils.getBacking("addressBean");
     return addressBean.getSelectItems(addressId, personId);     
   }

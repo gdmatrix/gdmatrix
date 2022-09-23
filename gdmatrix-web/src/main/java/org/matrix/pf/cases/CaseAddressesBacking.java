@@ -40,9 +40,14 @@ import org.matrix.cases.CaseAddress;
 import org.matrix.cases.CaseAddressFilter;
 import org.matrix.cases.CaseAddressView;
 import org.matrix.cases.CaseManagerPort;
+import org.matrix.cases.CasePerson;
+import org.matrix.cases.CasePersonFilter;
+import org.matrix.cases.CasePersonView;
 import org.matrix.kernel.AddressFilter;
 import org.matrix.kernel.AddressView;
 import org.matrix.kernel.ContactView;
+import org.matrix.kernel.PersonAddressFilter;
+import org.matrix.kernel.PersonAddressView;
 import org.matrix.pf.kernel.AddressBacking;
 import org.matrix.pf.kernel.KernelUtils;
 import org.matrix.pf.web.PageBacking;
@@ -63,11 +68,18 @@ import org.santfeliu.util.TextUtils;
  *
  * @author blanquepa
  */
-@Named("caseAddresssBacking")
+@Named
 public class CaseAddressesBacking extends PageBacking 
   implements TypedTabPage, ResultListPage
 {
   private static final String GROUPBY_PROPERTY = "groupBy";
+  
+  private static final String CASE_BACKING = "caseBacking";
+  private static final String ADDRESS_BACKING = "addressBacking";
+  
+  private static final String ROOT_TYPE_ID = "CaseAddress";
+  
+  private static final String OUTCOME = "pf_case_addresses";  
   
   private CaseBacking caseBacking;
   
@@ -77,20 +89,21 @@ public class CaseAddressesBacking extends PageBacking
   private TabHelper tabHelper;
   
   private CaseAddress editing;
+  private String editingDescription;
   
   private SelectItem addressSelectItem;
 
   private boolean importPersons = false;
+
   
   public CaseAddressesBacking()
   {
-    //Let to super class constructor.   
   }
   
   @PostConstruct
   public void init()
   {
-    caseBacking = WebUtils.getBacking("caseBacking");   
+    caseBacking = WebUtils.getBacking(CASE_BACKING);   
     typedHelper = new TypedHelper(this);
     resultListHelper = new ResultListHelper(this);
     tabHelper = new TabHelper(this);
@@ -121,10 +134,21 @@ public class CaseAddressesBacking extends PageBacking
       return null;
   }
 
+
+  public String getPageObjectDescription()
+  {
+    if (editing != null)
+    {
+      AddressBacking addressBacking = WebUtils.getBacking(ADDRESS_BACKING);
+      return addressBacking.getDescription(editing.getAddressId());
+    }
+    return null;
+  }
+  
   @Override
   public String getRootTypeId()
   {
-    return "CaseAddress";
+    return ROOT_TYPE_ID;
   }
 
   @Override
@@ -256,7 +280,7 @@ public class CaseAddressesBacking extends PageBacking
 
   public List<SelectItem> getFavorites()
   {
-    AddressBacking addressBacking = WebUtils.getBacking("addressBacking");
+    AddressBacking addressBacking = WebUtils.getBacking(ADDRESS_BACKING);
     return addressBacking.getFavorites();     
   }      
     
@@ -268,7 +292,7 @@ public class CaseAddressesBacking extends PageBacking
   private List<SelectItem> completeAddress(String query, String addressId)
   {
     ArrayList<SelectItem> items = new ArrayList();
-    AddressBacking addressBacking = WebUtils.getBacking("addressBacking");
+    AddressBacking addressBacking = WebUtils.getBacking(ADDRESS_BACKING);
     
     //Add current item
     if (!isNew(editing))
@@ -320,21 +344,26 @@ public class CaseAddressesBacking extends PageBacking
   {
     this.importPersons = importPersons;
   }
-    
   
-  @Override
-  public String show(String pageId)
+  public void setSelectedAddress(String addressId)
   {
-    editAddress(pageId);
-    return show();
+    editing.setAddressId(addressId);
+    showDialog();
+  }
+    
+  @Override
+  public String show(String pageObjectId)
+  {
+    editAddress(pageObjectId);
+    showDialog();
+    return isEditing(pageObjectId) ? OUTCOME : show();
   }  
   
   @Override
   public String show()
-  {    
-    reset();
+  {
     populate();
-    return "pf_case_addresses";
+    return OUTCOME;
   }
   
   public String editAddress(CaseAddressView row)
@@ -384,26 +413,21 @@ public class CaseAddressesBacking extends PageBacking
         return null;
       
       //Address must be selected
-      if (editing.getAddressId() == null || 
-        editing.getAddressId().isEmpty())
-      {
+      if (editing.getAddressId() == null || editing.getAddressId().isEmpty())
         throw new Exception("ADDRESS_MUST_BE_SELECTED"); 
-      }
                             
       String caseId = caseBacking.getObjectId();
       editing.setCaseId(caseId);
       
       if (editing.getCaseAddressTypeId() == null)
-      {
         editing.setCaseAddressTypeId(typedHelper.getTypeId());
-      }
                   
       CaseManagerPort port = CaseConfigBean.getPort();
       port.storeCaseAddress(editing);
       
       if (importPersons)
       {
-//        importPersonsFromEditingAddress();
+        importPersonsFromEditingAddress();
         importPersons = false;
       }      
 
@@ -479,12 +503,12 @@ public class CaseAddressesBacking extends PageBacking
   {
     try
     {
-      if (caseAddressId != null)
+      if (caseAddressId != null && !isEditing(caseAddressId))
       {
         editing = CaseConfigBean.getPort().loadCaseAddress(caseAddressId);
         loadAddressSelectItem();     
       }
-      else
+      else if (caseAddressId == null)
       {
         editing = new CaseAddress();
       }
@@ -500,7 +524,7 @@ public class CaseAddressesBacking extends PageBacking
   {
     if (editing != null)
     {
-      AddressBacking addressBacking = (AddressBacking) getBean("addressBacking");
+      AddressBacking addressBacking = WebUtils.getBacking(ADDRESS_BACKING);
       
       if (editing.getAddressId() != null)
       {
@@ -512,37 +536,64 @@ public class CaseAddressesBacking extends PageBacking
     }
   }  
   
-//  public void importPersonsFromEditingAddress()
-//  {
-//    if (editingAddress != null)
-//    {
-//      String addressId = editingAddress.getAddressId();
-//      if (addressId != null)
-//      {
-//        try
-//        {
-//          List<String> personIdList = getCurrentCasePersonsList();
-//          List<PersonAddressView> personAddressViewList = 
-//            getPersonAddressViewList(addressId);
-//          for (PersonAddressView personAddressView : personAddressViewList)
-//          {
-//            String personId = personAddressView.getPerson().getPersonId();
-//            if (!personIdList.contains(personId))
-//            {
-//              CasePerson casePerson = new CasePerson();
-//              casePerson.setCaseId(getObjectId());
-//              casePerson.setPersonId(personId);
-//              CaseConfigBean.getPort().storeCasePerson(casePerson);
-//            }
-//          }
-//          getControllerBean().clearBean("casePersonsBean");
-//        }
-//        catch(Exception ex)
-//        {
-//          error(ex);
-//        }
-//      }
-//    }
-//  }  
+  private void importPersonsFromEditingAddress()
+  {
+    if (editing != null)
+    {
+      String addressId = editing.getAddressId();
+      if (addressId != null)
+      {
+        try
+        {
+          List<String> personIdList = getCurrentCasePersonsList();
+          List<PersonAddressView> personAddressViewList = 
+            getPersonAddressViewList(addressId);
+          for (PersonAddressView personAddressView : personAddressViewList)
+          {
+            String personId = personAddressView.getPerson().getPersonId();
+            if (!personIdList.contains(personId))
+            {
+              CasePerson casePerson = new CasePerson();
+              casePerson.setCaseId(caseBacking.getObjectId());
+              casePerson.setPersonId(personId);
+              CaseConfigBean.getPort().storeCasePerson(casePerson);
+            }
+          }
+          CasePersonsBacking casePersonsBacking = 
+            WebUtils.getBacking("casePersonsBacking");
+          casePersonsBacking.reset();
+        }
+        catch(Exception ex)
+        {
+          error(ex);
+        }
+      }
+    }   
+  }  
+  
+    
+  private List<String> getCurrentCasePersonsList()
+    throws Exception
+  {
+    CasePersonFilter casePersonFilter = new CasePersonFilter();
+    casePersonFilter.setCaseId(caseBacking.getObjectId());
+    List<CasePersonView> casePersonViewList = 
+      CaseConfigBean.getPort().findCasePersonViews(casePersonFilter);
+    List<String> personIdList = new ArrayList();
+    for(CasePersonView casePersonView : casePersonViewList)
+    {
+      personIdList.add(casePersonView.getPersonView().getPersonId());
+    }
+    
+    return personIdList;
+  }   
+  
+  private List<PersonAddressView> getPersonAddressViewList(String personId)
+    throws Exception
+  {
+    PersonAddressFilter filter = new PersonAddressFilter();
+    filter.setPersonId(personId);
+    return KernelConfigBean.getPortAsAdmin().findPersonAddressViews(filter);
+  }  
 
 }

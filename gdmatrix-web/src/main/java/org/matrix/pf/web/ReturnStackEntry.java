@@ -42,7 +42,7 @@ public class ReturnStackEntry implements StackEntry
   private final String returnTypeId;
   private final String objectId;
   private final Integer tabIndex;
-  private final String pageId;
+  private final String pageObjectId;
   private final String valueBinding;
 
   public ReturnStackEntry(String searchTypeId, String returnTypeId,String objectId, Integer tabIndex, 
@@ -53,7 +53,7 @@ public class ReturnStackEntry implements StackEntry
     this.objectId = objectId;
     this.valueBinding = valueBinding;
     this.tabIndex = tabIndex;
-    this.pageId = pageId;
+    this.pageObjectId = pageId;
   }
 
   public String getSearchTypeId()
@@ -81,9 +81,9 @@ public class ReturnStackEntry implements StackEntry
     return tabIndex;
   }
 
-  public String getPageId()
+  public String getPageObjectId()
   {
-    return pageId;
+    return pageObjectId;
   }
 
 }

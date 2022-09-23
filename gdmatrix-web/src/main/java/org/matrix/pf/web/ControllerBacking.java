@@ -169,7 +169,8 @@ public class ControllerBacking extends WebBacking implements Savable
     return outcome;      
   }
     
-  public String search(String targetObjectTypeId, String valueBinding)
+  public String search(String targetObjectTypeId, String returnPageObjectId, 
+    String valueBinding)
   { 
     String outcome = null;
     MenuItemCursor currentMenuItem = getSelectedMenuItem();    
@@ -180,9 +181,10 @@ public class ControllerBacking extends WebBacking implements Savable
     String returnObjectId = objectBacking.getObjectId();
     Tab currentTab = objectBacking.getCurrentTab();
     Integer returnTabIndex = currentTab.getIndex();
-    String returnPageId = null; //TODO
-    ReturnStackEntry entry = new ReturnStackEntry(targetObjectTypeId, 
-      returnTypeId, returnObjectId, returnTabIndex, returnPageId, valueBinding);
+//    String returnPageId = null; //TODO
+    ReturnStackEntry entry = 
+      new ReturnStackEntry(targetObjectTypeId, returnTypeId, returnObjectId, 
+        returnTabIndex, returnPageObjectId, valueBinding);
     returnStack.push(entry);    
 
     //Manage page history
@@ -211,11 +213,12 @@ public class ControllerBacking extends WebBacking implements Savable
     String returnTypeId = entry.getReturnTypeId();
     String returnObjectId = entry.getObjectId();
     Integer returnTabIndex = entry.getTabIndex();
-    String returnPageId = entry.getPageId();
+    String returnPageObjectId = entry.getPageObjectId();
     String valueBinding = entry.getValueBinding(); 
     setValueBinding(valueBinding, selectedObjectId);
         
-    return show(returnTypeId, returnObjectId, returnTabIndex, returnPageId);
+    return show(returnTypeId, returnObjectId, returnTabIndex, 
+      returnPageObjectId);
   }
 
   public ObjectBacking getObjectBacking(String typeId)

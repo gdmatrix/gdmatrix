@@ -7,8 +7,8 @@
                 template="case_common.xhtml">
 
   <ui:param name="objectPage" value="object" />
-  <ui:param name="updateOnCancel" value="edit_panel" />
-  <ui:param name="updateOnStore" value="edit_panel page_results_table" />  
+  <ui:param name="updateOnCancel" value="edit_panels" />
+  <ui:param name="updateOnStore" value="edit_panels page_results_table" />  
 
   <ui:define name="content">
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
@@ -45,7 +45,9 @@
                   </p:menuitem> 
                 </p:menuButton>  
                 <p:commandButton icon="pi pi-plus-circle text-xl" styleClass="ui-button-flat" 
-                                 action="#{caseAddressesBacking.createAddress}" ajax="false"
+                                 action="#{caseAddressesBacking.createAddress}" 
+                                 ajax="true" update=":mainform:edit_panels"
+                                 oncomplete="PF('editDataDialog').show()"
                                  alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
               </div>              
             </div>
@@ -68,7 +70,7 @@
                   exportHeaderValue="#{caseBundle.caseAddresses_address}">
           <h:outputText value="#{row.addressView.description}"/>
         </p:column>
-       
+
         <p:column headerText="#{caseBundle.caseAddresses_type}" styleClass="w-3"
                   exportHeaderValue="#{caseBundle.caseAddresses_type}">
           <h:outputText value="#{caseAddressesBacking.caseAddressTypeId}"/>
@@ -95,9 +97,10 @@
                              rendered="#{row.caseAddressId != null}"
                              styleClass="ui-button-raised m-1"                               
                              alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                             ajax="true" update=":mainform:edit_panel"/>
+                             ajax="true" update=":mainform:edit_panels"
+                             oncomplete="PF('editDataDialog').show()"/>
             <p:commandButton action="#{caseAddressesBacking.removeAddress(row)}"
-                             ajax="true" update="page_results_table :mainform:edit_panel"
+                             ajax="true" update="page_results_table"
                              icon="pi pi-trash"
                              alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                              rendered="#{row.caseAddressId != null}"
@@ -107,19 +110,34 @@
         </p:column> 
       </p:dataTable>
 
-      <!-- Address data panel -->
-      <p:outputPanel id="edit_panel">
-        <p:panel id="edit_address_form" rendered="#{caseAddressesBacking.editing != null}"
-                 styleClass="mt-2">
+    </h:panelGroup>   
+  </ui:define>
 
-          <div class="formgrid grid" >
+  <!-- Address data panel -->
 
-            <!-- Address -->
-            <p:outputPanel styleClass="field col-12 md:col-6">  
-              <p:outputLabel for="address"  
-                             value="#{caseAddressesBacking.typedHelper.getPropertyLabel('address', caseBundle.caseAddresses_address)}"
-                             styleClass="w-full"/>
-              <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-11"
+  <ui:param name="editDescription" value="#{caseAddressesBacking.pageObjectDescription}" /> 
+  <ui:param name="editStyle" value="max-width:800px" />
+
+  <ui:define name="edit_dialog">
+
+    <p:outputPanel id="edit_panels">
+      <p:panel id="edit_address_form" rendered="#{caseAddressesBacking.editing != null}"
+               styleClass="mt-2">
+
+        <div class="ui-fluid formgrid grid" >
+
+          <!-- Address -->
+          <p:outputPanel styleClass="field col-12 md:col-6">  
+            <p:outputLabel for="address"  
+                           value="#{caseAddressesBacking.typedHelper.getPropertyLabel('address', caseBundle.caseAddresses_address)}"
+                           styleClass="w-full"/>
+            <div class="ui-inputgroup">
+              <p:commandButton action="#{caseAddressesBacking.search('Address', '#{caseAddressesBacking.selectedAddress}')}"
+                               icon="pi pi-search" ajax="false"
+                               styleClass="ui-button-raised"                               
+                               alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                               update="@form"/>               
+              <p:autoComplete id="address"
                               value="#{caseAddressesBacking.addressSelectItem}" 
                               maxResults="10" dropdown="true" dropdownMode="blank"
                               completeMethod="#{caseAddressesBacking.completeAddress}"
@@ -127,84 +145,90 @@
                               var="item" itemValue="#{item}" itemLabel="#{item.label}"
                               minQueryLength="3" queryDelay="1000"
                               onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{caseAddressesBacking.onAddressSelect}" update="edit_panel"/>
+                <p:ajax event="itemSelect" listener="#{caseAddressesBacking.onAddressSelect}" update="edit_panels"/>
                 <p:column>                 
                   <h:outputText value="#{item.label} (#{item.value})" />
                 </p:column>        
               </p:autoComplete>             
-              <p:commandButton action="#{caseAddressesBacking.search('Address', '#{caseAddressesBacking.editing.addressId}')}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}"
-                               update="@form"/> 
 
-            </p:outputPanel>         
+            </div>
+          </p:outputPanel>         
 
-            <!-- Type -->
-            <p:outputPanel styleClass="field col-12 md:col-6" 
-                           rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('caseAddressTypeId')}">
-              <p:outputLabel for="caseAddressTypeId" 
-                             value="#{caseAddressesBacking.typedHelper.getPropertyLabel('caseAddressTypeId', caseBundle.caseAddresses_type)}"
+          <!-- Type -->
+          <!-- TODO: WS Errors
+          <p:outputPanel styleClass="field col-12 md:col-6" 
+                         rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('caseAddressTypeId')}">
+            <p:outputLabel for="caseAddressTypeId" 
+                           value="#{caseAddressesBacking.typedHelper.getPropertyLabel('caseAddressTypeId', caseBundle.caseAddresses_type)}"
 
-                             />
-              <p:selectOneMenu id="caseAddressTypeId" styleClass="inputfield w-full"
-                               value="#{caseAddressesBacking.editing.caseAddressTypeId}"
-                               disabled="#{!caseBean.editable}"
-                               >
-                <f:selectItems value="#{caseAddressesBacking.typedHelper.allTypeItems}" />
-              </p:selectOneMenu>
-            </p:outputPanel>
+                           />
+            <p:selectOneMenu id="caseAddressTypeId" styleClass="inputfield w-full"
+                             value="#{caseAddressesBacking.editing.caseAddressTypeId}"
+                             disabled="#{!caseBean.editable}"
+                             >
+              <f:selectItems value="#{caseAddressesBacking.typedHelper.allTypeItems}" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+          -->
 
-            <!-- Dates -->
-            <p:outputPanel styleClass="field col-12 md:col-3"
-                           rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('startDate') and
-                                       caseAddressesBacking.editing.addressId != null}">
-              <p:outputLabel for="start_date" 
-                             value="#{caseAddressesBacking.typedHelper.getPropertyLabel('startDate', caseBundle.caseAddresses_startDate)}"/>
-              <p:datePicker id="start_date" value="#{caseAddressesBacking.startDate}" 
-                            locale="#{caseAddressesBacking.language}" inputStyleClass="w-10"
-                            styleClass="inputfield w-full" showIcon="true"
-                            monthNavigator="true" yearNavigator="true" disabled="#{!caseBacking.editable}" />
-            </p:outputPanel>
+          <!-- Dates -->
+          <p:outputPanel styleClass="field col-12 md:col-3"
+                         rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('startDate') and
+                                     caseAddressesBacking.editing.addressId != null}">
+            <p:outputLabel for="start_date" 
+                           value="#{caseAddressesBacking.typedHelper.getPropertyLabel('startDate', caseBundle.caseAddresses_startDate)}"/>
+            <p:datePicker id="start_date" value="#{caseAddressesBacking.startDate}" 
+                          locale="#{caseAddressesBacking.language}" 
+                          showIcon="true"
+                          monthNavigator="true" yearNavigator="true" disabled="#{!caseBacking.editable}" />
+          </p:outputPanel>
 
-            <p:outputPanel class="field col-12 md:col-3"
-                           rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('endDate') and
-                                       caseAddressesBacking.editing.addressId != null}">
-              <p:outputLabel for="end_date" 
-                             value="#{caseAddressesBacking.typedHelper.getPropertyLabel('endDate', caseBundle.caseAddresses_endDate)}"/>
-              <p:datePicker id="end_date" value="#{caseAddressesBacking.endDate}" 
-                            locale="#{caseAddressesBacking.language}" inputStyleClass="w-10"
-                            styleClass="inputfield w-full" showIcon="true"
-                            monthNavigator="true" yearNavigator="true" disabled="#{!caseBacking.editable}" />
-            </p:outputPanel>
+          <p:outputPanel class="field col-12 md:col-3"
+                         rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('endDate') and
+                                     caseAddressesBacking.editing.addressId != null}">
+            <p:outputLabel for="end_date" 
+                           value="#{caseAddressesBacking.typedHelper.getPropertyLabel('endDate', caseBundle.caseAddresses_endDate)}"/>
+            <p:datePicker id="end_date" value="#{caseAddressesBacking.endDate}" 
+                          locale="#{caseAddressesBacking.language}" showIcon="true"
+                          monthNavigator="true" yearNavigator="true" disabled="#{!caseBacking.editable}" />
+          </p:outputPanel>
 
-          </div>
+        </div>
 
-          <div class="formgrid grid" >           
-            <!-- Comments -->
-            <p:outputPanel styleClass="field col-12" 
-                           rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('comments') and
-                                       caseAddressesBacking.editing.addressId != null}">
-              <p:outputLabel for="comments" 
-                             value="#{caseAddressesBacking.typedHelper.getPropertyLabel('comments', caseBundle.caseAddresses_comments)}"/>
-              <p:inputTextarea id="comments" value="#{caseAddressesBacking.editing.comments}"
-                               styleClass="inputfield w-full" autoResize="false" />
-            </p:outputPanel> 
+        <!-- Comments -->
+        <p:outputPanel styleClass="field col-12" 
+                       rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('comments') and
+                                   caseAddressesBacking.editing.addressId != null}">
+          <p:outputLabel for="comments" 
+                         value="#{caseAddressesBacking.typedHelper.getPropertyLabel('comments', caseBundle.caseAddresses_comments)}"/>
+          <p:inputTextarea id="comments" value="#{caseAddressesBacking.editing.comments}"
+                           styleClass="inputfield w-full" autoResize="false" />
+        </p:outputPanel> 
 
-            <!-- Import persons -->
-            <p:outputPanel styleClass="field-checkbox col-12"
-                           rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('importPersons') and
-                                       caseAddressesBacking.editing.addressId != null}">            
-              <p:selectBooleanCheckbox value="#{caseAddressesBacking.importPersons}" 
-                                       itemLabel="#{caseBundle.caseAddresses_importPersons}"/>
-            </p:outputPanel>
-          </div>
-        </p:panel>              
+        <!-- Import persons -->
+        <p:outputPanel styleClass="field-checkbox col-12"
+                       rendered="#{!caseAddressesBacking.tabHelper.isPropertyHidden('importPersons') and
+                                   caseAddressesBacking.editing.addressId != null}">            
+          <p:selectBooleanCheckbox value="#{caseAddressesBacking.importPersons}" 
+                                   itemLabel="#{caseBundle.caseAddresses_importPersons}"/>
+        </p:outputPanel>
 
-      </p:outputPanel>
-    </h:panelGroup>
-   
-  </ui:define>
+      </p:panel>       
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{caseAddressesBacking.storeAddress}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         disabled="#{!caseBean.editable}"
+                         update="page_results_table edit_panels"
+                         oncomplete="PF('editDataDialog').hide()"/>
+        <p:commandButton action="#{caseAddressesBacking.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                         immediate="true" update="edit_panels" global="false" 
+                         oncomplete="PF('editDataDialog').hide()"/>
+      </div>      
+
+    </p:outputPanel>
+  </ui:define>      
 
 
 </ui:composition>
