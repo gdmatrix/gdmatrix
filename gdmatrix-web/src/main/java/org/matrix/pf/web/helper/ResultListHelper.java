@@ -61,8 +61,10 @@ import org.santfeliu.web.UserSessionBean;
  */
 public class ResultListHelper<T extends Serializable> implements Serializable
 {
-  public static final int PAGE_SIZE = 10;
+  public static final int PAGE_SIZE = 10;  
   public static final String PAGE_SIZE_PROPERTY = "pageSize";
+  public static final int MAX_SIZE = 0;
+  public static final String MAX_SIZE_PROPERTY = "maxSize";
   public static final String COLUMNS_TEMPLATE = "columnsTemplate";
   
   protected ResultListPage pageBacking;
@@ -125,8 +127,8 @@ public class ResultListHelper<T extends Serializable> implements Serializable
   
   protected void populate()
   {
-    rows = pageBacking.getResults(firstRowIndex, getPageSize());
-  }   
+    rows = pageBacking.getResults(firstRowIndex, getMaxSize());
+  }
   
   public int getFirstRowIndex()
   {
@@ -161,6 +163,16 @@ public class ResultListHelper<T extends Serializable> implements Serializable
       return Integer.parseInt(pageSize);
     else
       return PAGE_SIZE;
+  }   
+
+  public int getMaxSize()
+  {
+    String maxSize = UserSessionBean.getCurrentInstance().getMenuModel()
+      .getSelectedMenuItem().getProperty(MAX_SIZE_PROPERTY);
+    if (maxSize != null)
+      return Integer.parseInt(maxSize);
+    else
+      return MAX_SIZE;
   }   
   
   public List<ColumnModel> getColumns() 
