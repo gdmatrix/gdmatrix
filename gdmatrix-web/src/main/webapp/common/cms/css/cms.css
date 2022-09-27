@@ -741,26 +741,30 @@ a.imageButton img:hover
   flex-direction:column
 }
 
-.nodeConfigPanel .systemConfigPanel
+.nodeConfigPanel .systemConfigPanel,
+.nodeConfigPanel .templateConfigPanel
 {
   display:flex;
   flex-direction:column;
   height:100%
 }
 
-.nodeConfigPanel .systemConfigPanel .buttonsPanel
+.nodeConfigPanel .systemConfigPanel .buttonsPanel,
+.nodeConfigPanel .templateConfigPanel .buttonsPanel
 {
   flex-grow:0;
 }
 
-.nodeConfigPanel .systemConfigPanel .formgrid
+.nodeConfigPanel .systemConfigPanel .propertyListContainer,
+.nodeConfigPanel .templateConfigPanel .propertyListContainer
 {
   flex-grow:1;
   position:relative;
   overflow:auto
 }
 
-.nodeConfigPanel .formgrid .propertyList
+.nodeConfigPanel .systemConfigPanel .propertyList,
+.nodeConfigPanel .templateConfigPanel .propertyList
 {
   position:absolute;
   width: 100%;

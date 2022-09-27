@@ -48,16 +48,23 @@ public class ConfigFormsBacking extends WebBacking
   private static final String TEMPLATES_PATH = "/templates/"; 
   private static final String CONFIG_FILENAME = "/config.xhtml";
   private static final String NOT_FOUND = "/common/util/not_found.xhtml";
-  
+
   public ConfigFormsBacking()
   {
   }
-  
+
   public String storeForms()
   {
+    getSystemConfigBacking().store();
     return null;
   }
-  
+
+  public String revertForms()
+  {
+    getSystemConfigBacking().revertProperties();
+    return null;
+  }
+
   public String getFrameForm()
   {
     return getForm(getFrameFormPath());
@@ -113,6 +120,11 @@ public class ConfigFormsBacking extends WebBacking
     }
   }
   
+  private SystemConfigBacking getSystemConfigBacking()
+  {
+    return (SystemConfigBacking)getBean("systemConfigBacking");
+  }
+
   public class Form
   {
     private String name;

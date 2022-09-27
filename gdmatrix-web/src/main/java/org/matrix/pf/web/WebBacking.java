@@ -33,6 +33,7 @@ package org.matrix.pf.web;
 import java.util.List;
 import javax.inject.Named;
 import static org.matrix.web.WebUtils.OBJECT_TYPEID_PROPERTY;
+import org.santfeliu.cms.web.NodeEditBean;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
@@ -105,7 +106,7 @@ public class WebBacking extends FacesBean
       getDirectMultivaluedProperty(name) : 
       getMultivaluedProperty(name));
   }  
-  
+
   protected boolean render(String property, boolean defaultValue)
   {
     String propValue = getProperty(property);
@@ -118,6 +119,11 @@ public class WebBacking extends FacesBean
   protected boolean render(String propertyName)
   {
     return render(propertyName, true);
-  }  
+  }
+
+  protected NodeEditBean getNodeEditBean()
+  {
+    return (NodeEditBean)getBean("nodeEditBean");
+  }
      
 }

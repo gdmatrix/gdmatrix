@@ -40,10 +40,10 @@ import org.santfeliu.web.bean.CMSProperty;
 
 /**
  *
- * @author blanquepa
+ * @author lopezrj-sf
  */
-@Named("pfTemplateConfigBacking")
-public class PFTemplateConfigBacking extends WebBacking
+@Named("pf_3colsTemplateConfigBacking")
+public class PF3ColsTemplateConfigBacking extends WebBacking
 {
   @CMSProperty
   public static final String ICON = "icon";
@@ -59,8 +59,8 @@ public class PFTemplateConfigBacking extends WebBacking
   public static final String OBJECT_BACKING = "objectBacking"; 
   @CMSProperty
   public static final String PAGE_SIZE = "pageSize"; 
-
-  public PFTemplateConfigBacking()
+  
+  public PF3ColsTemplateConfigBacking()
   {
   }
   
@@ -73,7 +73,7 @@ public class PFTemplateConfigBacking extends WebBacking
   {
     getConfigHelper().setProperty(ICON, icon);
   }
-
+  
   public String getLMenu()
   {
     return getProperty(LMENU, true);
@@ -83,12 +83,12 @@ public class PFTemplateConfigBacking extends WebBacking
   {
     getConfigHelper().setProperty(LMENU, lmenu);
   } 
-  
+
   public String getDefaultLMenu()
   {
     return "false";
   }  
-
+  
   public List<String> getLanguage()
   {
     return getMultivaluedProperty(LANGUAGE, true);
@@ -128,7 +128,7 @@ public class PFTemplateConfigBacking extends WebBacking
   {
     getConfigHelper().setProperty(OBJECT_TYPE_ID, objectTypeId);
   } 
-
+  
   public String getObjectBacking()
   {
     return getProperty(OBJECT_BACKING, true);
@@ -138,7 +138,7 @@ public class PFTemplateConfigBacking extends WebBacking
   {
     getConfigHelper().setProperty(OBJECT_BACKING, objectBacking);
   } 
-
+  
   public String getPageSize()
   {
     return getProperty(PAGE_SIZE, true);
@@ -169,6 +169,6 @@ public class PFTemplateConfigBacking extends WebBacking
   {
     return ((SystemConfigBacking)getBean("systemConfigBacking")).
       getConfigHelper();
-  }
+  }  
   
 }

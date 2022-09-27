@@ -47,6 +47,12 @@
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>   
         
+  <managed-bean>
+    <managed-bean-name>pf_3colsTemplateConfigBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cms.PF3ColsTemplateConfigBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>           
+                        
   <converter>
     <converter-id>selectItemConverter</converter-id>
     <converter-class>org.matrix.pf.web.SelectItemConverter</converter-class>

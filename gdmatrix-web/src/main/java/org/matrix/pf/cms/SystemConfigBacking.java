@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -50,10 +49,8 @@ import org.matrix.security.RoleFilter;
 import org.matrix.security.Role;
 import org.santfeliu.cms.CNode;
 import org.santfeliu.cms.web.NodeEditBean;
-import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.security.web.SecurityConfigBean;
-import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBeanIntrospector;
 import org.santfeliu.web.bean.CMSProperty;
@@ -318,24 +315,44 @@ public class SystemConfigBacking extends WebBacking
   
   public String getTopWeb()
   {
-    return getBooleanProperty(TOPWEB, false);
+    return getProperty(TOPWEB, true);
   }
   
   public void setTopWeb(String topWeb)
   {
-    setBooleanProperty(TOPWEB, topWeb, false);
+    configHelper.setProperty(TOPWEB, topWeb);
+  }
+  
+  public String getInheritedTopWeb()
+  {
+    return getProperty(TOPWEB, false);
+  }
+
+  public String getDefaultTopWeb()
+  {
+    return "false";
   }
 
   //RENDERED
   
   public String getRendered()
   {
-    return getBooleanProperty(RENDERED, true);
+    return getProperty(RENDERED, true);
   }
   
   public void setRendered(String rendered)
   {
-    setBooleanProperty(RENDERED, rendered, true);
+    configHelper.setProperty(RENDERED, rendered);
+  }
+  
+  public String getInheritedRendered()
+  {
+    return getProperty(RENDERED, false);
+  }
+
+  public String getDefaultRendered()
+  {
+    return "true";
   }
   
   //TOPIC
@@ -502,34 +519,10 @@ public class SystemConfigBacking extends WebBacking
       error(ex);
     }
   }
-  
-  public void goToParentNode(String propertyNames)
+
+  public CMSConfigHelper getConfigHelper() 
   {
-    String nodeId = null;
-    boolean found = false;
-    List<String> propertyNameList = Arrays.asList(propertyNames.split(","));
-    MenuItemCursor cursor = 
-      UserSessionBean.getCurrentInstance().getSelectedMenuItem();
-    while (cursor.moveParent() && !found)
-    {
-      for (String propertyName : propertyNameList)
-      {
-        if (cursor.getDirectProperty(propertyName) != null)
-        {
-          nodeId = cursor.getMid();
-          found = true;
-        }
-      }
-    }
-    if (nodeId != null)
-    {    
-      getNodeEditBean().goToNode(nodeId);
-    }
-  }
-  
-  private NodeEditBean getNodeEditBean()
-  {
-    return (NodeEditBean)getBean("nodeEditBean"); 
+    return configHelper;
   }
   
   private List<Role> getAllRoles()
@@ -543,19 +536,6 @@ public class SystemConfigBacking extends WebBacking
     {
       return new ArrayList();      
     }
-  }
-  
-  private String getBooleanProperty(String name, boolean defaultValue)
-  {
-    String value = getDirectProperty(name);
-    return (value != null ? value : Boolean.toString(defaultValue));
-  }
-  
-  private void setBooleanProperty(String name, String value, 
-    boolean defaultValue)
-  {
-    configHelper.setProperty(name, 
-      (defaultValue != Boolean.parseBoolean(value) ? value : null));    
   }
 
 }

@@ -41,6 +41,8 @@ import org.matrix.cms.Property;
 import org.santfeliu.cms.CMSCache;
 import org.santfeliu.cms.CNode;
 import org.santfeliu.cms.web.CMSConfigBean;
+import org.santfeliu.cms.web.NodeEditBean;
+import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.ApplicationBean;
@@ -50,7 +52,7 @@ import org.santfeliu.web.UserSessionBean;
  *
  * @author blanquepa
  */
-public class CMSConfigHelper implements Serializable
+public class CMSConfigHelper extends FacesBean implements Serializable
 {
   private final Map<String, Property> properties = new HashMap<>();
   
@@ -72,8 +74,8 @@ public class CMSConfigHelper implements Serializable
     if (value != null && !value.trim().isEmpty())
       prop.getValue().add(value);
     properties.put(key, prop);
-  }  
-  
+  }
+
   public void saveProperties()
     throws Exception
   {
@@ -163,6 +165,11 @@ public class CMSConfigHelper implements Serializable
     return (description != null ? 
       description : (label != null ? label : mic.getMid()));
   }
+  
+  public NodeEditBean getNodeEditBean()
+  {
+    return (NodeEditBean)getBean("nodeEditBean");
+  }
 
   private MenuItemCursor getCursor()
   {
@@ -181,7 +188,7 @@ public class CMSConfigHelper implements Serializable
     String workspaceId = UserSessionBean.getCurrentInstance().getWorkspaceId();
     CNode cNode = cmsCache.getWorkspace(workspaceId).getNode(mid);
     return cNode.getRoot().getNodeId();
-  }  
+  }
   
   //TODO: Keep properties sorted as original node
   public class MergedNode

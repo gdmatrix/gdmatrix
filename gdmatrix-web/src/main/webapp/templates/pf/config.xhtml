@@ -13,39 +13,39 @@
         
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Tipus objecte"/>
-          <p:inputText id="objectTypeIdInput" value="#{pf_3colsTemplateConfigBacking.objectTypeId}" styleClass="p-2 w-full" />
+          <p:inputText id="objectTypeIdInput" value="#{pfTemplateConfigBacking.objectTypeId}" styleClass="p-2 w-full" />
         </div>
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Backing objecte"/>
-          <p:inputText id="objectBackingInput" value="#{pf_3colsTemplateConfigBacking.objectBacking}" styleClass="p-2 w-full" />
+          <p:inputText id="objectBackingInput" value="#{pfTemplateConfigBacking.objectBacking}" styleClass="p-2 w-full" />
         </div>
-                
+
         <div class="field col-12">
           <p:outputLabel for="lmenuInput" value="Visible al menú de l'esquerra?" />
-          <p:selectOneRadio id="lmenuInput" value="#{pf_3colsTemplateConfigBacking.LMenu}" unselectable="true">
+          <p:selectOneRadio id="lmenuInput" value="#{pfTemplateConfigBacking.LMenu}" unselectable="true">
             <f:selectItem itemLabel="Sí" itemValue="true" />
             <f:selectItem itemLabel="No" itemValue="false" />
-          </p:selectOneRadio>  
-          <h:outputText value="(#{pf_3colsTemplateConfigBacking.defaultLMenu})" 
+          </p:selectOneRadio>
+          <h:outputText value="(#{pfTemplateConfigBacking.defaultLMenu})" 
                         styleClass="inheritedProperty" 
-                        rendered="#{pf_3colsTemplateConfigBacking.LMenu == null}" />                    
-        </div>
+                        rendered="#{pfTemplateConfigBacking.LMenu == null}" />          
+        </div>        
         
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Icona"/>
-          <p:inputText id="iconInput" value="#{pf_3colsTemplateConfigBacking.icon}" styleClass="p-2 w-full" />
-        </div>        
-        
+          <p:inputText id="iconInput" value="#{pfTemplateConfigBacking.icon}" styleClass="p-2 w-full" />
+        </div>
+
         <div class="field col-12 md:col-3">
           <p:outputLabel for="@next" value="Files per pàgina"/>
-          <p:inputText id="pageSizeInput" value="#{pf_3colsTemplateConfigBacking.pageSize}" styleClass="p-2 w-full" />
+          <p:inputText id="pageSizeInput" value="#{pfTemplateConfigBacking.pageSize}" styleClass="p-2 w-full" />
         </div>
-                
+
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Idiomes suportats" />
-          <p:autoComplete id="languageACInput" multiple="true" value="#{pf_3colsTemplateConfigBacking.language}"
-                          completeMethod="#{pf_3colsTemplateConfigBacking.completeLanguage}"
+          <p:autoComplete id="languageACInput" multiple="true" value="#{pfTemplateConfigBacking.language}"
+                          completeMethod="#{pfTemplateConfigBacking.completeLanguage}"
                           var="language" itemLabel="#{language}" itemValue="#{language}"
                           forceSelection="false" scrollHeight="250" class="w-full">
             <p:column>
@@ -53,29 +53,29 @@
             </p:column>
           </p:autoComplete>
           <p:commandLink actionListener="#{nodeEditBean.goToParentNode('language')}" styleClass="imageButton"
-                         rendered="#{pf_3colsTemplateConfigBacking.language.size() == 0 and 
-                                     pf_3colsTemplateConfigBacking.inheritedLanguage.size() > 0}"
+                         rendered="#{pfTemplateConfigBacking.language.size() == 0 and 
+                                     pfTemplateConfigBacking.inheritedLanguage.size() > 0}"
                          update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">        
-            <h:outputText value="#{pf_3colsTemplateConfigBacking.inheritedLanguage}" 
+            <h:outputText value="#{pfTemplateConfigBacking.inheritedLanguage}" 
                           styleClass="inheritedProperty" />        
           </p:commandLink>
         </div>
         
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Text últim login OK"/>
-          <p:inputText id="lastSuccessLoginDTInput" value="#{pf_3colsTemplateConfigBacking.lastSuccessLoginDT}" styleClass="p-2 w-full" />
+          <p:inputText id="lastSuccessLoginDTInput" value="#{pfTemplateConfigBacking.lastSuccessLoginDT}" styleClass="p-2 w-full" />
           <p:commandLink actionListener="#{nodeEditBean.goToParentNode('last_success_login_dt')}" styleClass="imageButton"
-                         rendered="#{pf_3colsTemplateConfigBacking.lastSuccessLoginDT == null and 
-                                     pf_3colsTemplateConfigBacking.inheritedLastSuccessLoginDT != null}"
+                         rendered="#{pfTemplateConfigBacking.lastSuccessLoginDT == null and 
+                                     pfTemplateConfigBacking.inheritedLastSuccessLoginDT != null}"
                          update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
-            <h:outputText value="(#{pf_3colsTemplateConfigBacking.inheritedLastSuccessLoginDT})" 
+            <h:outputText value="(#{pfTemplateConfigBacking.inheritedLastSuccessLoginDT})" 
                           styleClass="inheritedProperty" />
           </p:commandLink>                  
-        </div>        
-                        
+        </div>
+                               
       </div>
         
-    </div> 
+    </div>     
   
   </p:outputPanel>    
     

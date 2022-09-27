@@ -2033,8 +2033,32 @@ public class NodeEditBean extends FacesBean implements Serializable
     resetPropertiesPanel();
     resetCssPanel();
     resetSyncPanel();
-  }  
-  
+  }
+
+  public void goToParentNode(String propertyNames)
+  {
+    String nodeId = null;
+    boolean found = false;
+    List<String> propertyNameList = Arrays.asList(propertyNames.split(","));
+    MenuItemCursor cursor = 
+      UserSessionBean.getCurrentInstance().getSelectedMenuItem();
+    while (cursor.moveParent() && !found)
+    {
+      for (String propertyName : propertyNameList)
+      {
+        if (cursor.getDirectProperty(propertyName) != null)
+        {
+          nodeId = cursor.getMid();
+          found = true;
+        }
+      }
+    }
+    if (nodeId != null)
+    {
+      goToNode(nodeId);
+    }
+  }
+
   // ********* Private methods ********
 
   private void expandNode(TreeNode<NodeInfo> node)

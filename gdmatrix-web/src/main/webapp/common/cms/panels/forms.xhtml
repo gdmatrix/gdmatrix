@@ -11,12 +11,12 @@
       <div class="buttonsPanel">
         <p:commandLink actionListener="#{configFormsBacking.storeForms}" styleClass="imageButton"
                        rendered="#{nodeEditBean.savePropertiesEnabled}" 
-                       update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel @(.userPropertyListPanel) :mainform:messagesPanel" ajax="true">
+                       update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel @(.userPropertyListPanel) @(.nodeConfigPanel) :mainform:messagesPanel" ajax="true">
           <h:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
         </p:commandLink>
-        <p:commandLink actionListener="#{nodeEditBean.revertProperties}" styleClass="imageButton"
+        <p:commandLink actionListener="#{configFormsBacking.revertForms}" styleClass="imageButton"
                        rendered="#{nodeEditBean.addPropertyEnabled}"
-                       update="@this @(.userPropertyListPanel) :mainform:messagesPanel" ajax="true" global="false">
+                       update="@this @(.nodeConfigPanel) :mainform:messagesPanel" ajax="true" global="false">
           <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
         </p:commandLink>
       </div>

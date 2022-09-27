@@ -7,27 +7,16 @@
   
   <p:outputPanel styleClass="systemConfigPanel">
 
-    <div class="buttonsPanel">
-      <p:commandLink actionListener="#{systemConfigBacking.store()}" styleClass="imageButton"
-                     update="@this @(.toolbarRenderingButtons) :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel @(.userPropertyListPanel) @(.editFormsPanel) :mainform:messagesPanel" ajax="true">
-        <h:graphicImage alt="#{cmsBundle.saveProperties}" url="/common/cms/images/save.png" title="#{cmsBundle.saveProperties}" />
-      </p:commandLink>
-      <p:commandLink actionListener="#{systemConfigBacking.revertProperties}" styleClass="imageButton"
-                     update="@this @(.systemConfigPanel) :mainform:messagesPanel" ajax="true" global="false">
-        <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
-      </p:commandLink>        
-    </div>      
+    <div class="propertyListContainer">
 
-    <div class="formgrid grid">
+      <div class="propertyList ui-fluid formgrid grid">
 
-      <div class="propertyList">
-
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Etiqueta"/>
           <p:inputText id="label" value="#{systemConfigBacking.label}" styleClass="p-2 w-full" />
         </div>
 
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Descripció"/>
           <p:inputText id="description" value="#{systemConfigBacking.description}" styleClass="p-2 w-full" />
         </div>
@@ -41,6 +30,11 @@
           </p:selectOneMenu> 
         </div>      
 
+        <div class="field col-12 md:col-3">
+          <p:outputLabel for="@next" value="Topic"/>
+          <p:inputText id="topic" value="#{systemConfigBacking.topic}" styleClass="p-2 w-full" />
+        </div>        
+        
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Frame" />
           <p:selectOneMenu id="frame" value="#{systemConfigBacking.frame}" class="w-full p-2">
@@ -48,7 +42,7 @@
             <f:selectItems value="#{systemConfigBacking.getFolders('/frames')}" var="folder"
                            itemLabel="#{folder.fileName}" itemValue="#{folder.fileName}"/>
           </p:selectOneMenu>        
-          <p:commandLink actionListener="#{systemConfigBacking.goToParentNode('frame')}" styleClass="imageButton"
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('frame')}" styleClass="imageButton"
                          rendered="#{systemConfigBacking.frame == null and systemConfigBacking.inheritedFrame != null}"
                          update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
             <h:outputText value="(#{systemConfigBacking.inheritedFrame})" 
@@ -63,7 +57,7 @@
             <f:selectItems value="#{systemConfigBacking.getFolders('/templates')}" var="folder"
                            itemLabel="#{folder.fileName}" itemValue="#{folder.fileName}"/>      
           </p:selectOneMenu>
-          <p:commandLink actionListener="#{systemConfigBacking.goToParentNode('template,section')}" styleClass="imageButton"
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('template,section')}" styleClass="imageButton"
                          rendered="#{systemConfigBacking.template == null and systemConfigBacking.inheritedTemplate != null}"
                          update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
             <h:outputText value="(#{systemConfigBacking.inheritedTemplate})" 
@@ -71,7 +65,7 @@
           </p:commandLink>
         </div> 
 
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Rols de lectura (multi)" />
           <p:autoComplete id="rolesSelectAC" multiple="true" value="#{systemConfigBacking.rolesSelect}"
                           completeMethod="#{systemConfigBacking.completeRole}"
@@ -81,7 +75,7 @@
               <h:outputText value="#{role}"/>
             </p:column>
           </p:autoComplete>
-          <p:commandLink actionListener="#{systemConfigBacking.goToParentNode('roles.select')}" styleClass="imageButton"
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('roles.select')}" styleClass="imageButton"
                          rendered="#{systemConfigBacking.rolesSelect.size() == 0 and systemConfigBacking.inheritedRolesSelect.size() > 0}"
                          update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">        
             <h:outputText value="#{systemConfigBacking.inheritedRolesSelect}" 
@@ -89,7 +83,7 @@
           </p:commandLink>
         </div>
 
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Rols d'escriptura (multi)" />
           <p:autoComplete id="rolesUpdateAC" multiple="true" value="#{systemConfigBacking.rolesUpdate}"
                           completeMethod="#{systemConfigBacking.completeRole}"
@@ -99,7 +93,7 @@
               <h:outputText value="#{role}"/>
             </p:column>
           </p:autoComplete>
-          <p:commandLink actionListener="#{systemConfigBacking.goToParentNode('roles.update')}" styleClass="imageButton"
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('roles.update')}" styleClass="imageButton"
                          rendered="#{systemConfigBacking.rolesUpdate.size() == 0 and systemConfigBacking.inheritedRolesUpdate.size() > 0}"
                          update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">                
             <h:outputText value="#{systemConfigBacking.inheritedRolesUpdate}" 
@@ -107,25 +101,55 @@
           </p:commandLink>
         </div>
 
-        <div class="field-checkbox col-12">
-          <p:selectBooleanCheckbox id="topWeb" value="#{systemConfigBacking.topWeb}" />
+        <div class="field col-12 md:col-3">
           <p:outputLabel for="topWeb" value="És node topWeb?" />
+          <p:selectOneRadio id="topWeb" value="#{systemConfigBacking.topWeb}" unselectable="true">
+            <f:selectItem itemLabel="Sí" itemValue="true" />
+            <f:selectItem itemLabel="No" itemValue="false" />
+          </p:selectOneRadio>
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('topWeb')}" styleClass="imageButton"
+                         rendered="#{systemConfigBacking.topWeb == null and systemConfigBacking.inheritedTopWeb != null}"
+                         update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
+            <h:outputText value="(#{systemConfigBacking.inheritedTopWeb})" 
+                          styleClass="inheritedProperty" />
+          </p:commandLink>
+          <h:outputText value="(#{systemConfigBacking.defaultTopWeb})" 
+                        styleClass="inheritedProperty" 
+                        rendered="#{systemConfigBacking.topWeb == null and systemConfigBacking.inheritedTopWeb == null}" /> 
         </div>   
 
-        <div class="field-checkbox col-12">
-          <p:selectBooleanCheckbox id="rendered" value="#{systemConfigBacking.rendered}" />
+        <div class="field col-12 md:col-3">
           <p:outputLabel for="rendered" value="Rendered?" />
+          <p:selectOneRadio id="rendered" value="#{systemConfigBacking.rendered}" unselectable="true">
+            <f:selectItem itemLabel="Sí" itemValue="true" />
+            <f:selectItem itemLabel="No" itemValue="false" />
+          </p:selectOneRadio>
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('rendered')}" styleClass="imageButton"
+                         rendered="#{systemConfigBacking.rendered == null and systemConfigBacking.inheritedRendered != null}"
+                         update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
+            <h:outputText value="(#{systemConfigBacking.inheritedRendered})" 
+                          styleClass="inheritedProperty" />
+          </p:commandLink> 
+          <h:outputText value="(#{systemConfigBacking.defaultRendered})" 
+                        styleClass="inheritedProperty" 
+                        rendered="#{systemConfigBacking.rendered == null and systemConfigBacking.inheritedRendered == null}" />          
         </div>   
 
-        <div class="field col-12">
-          <p:outputLabel for="@next" value="Topic"/>
-          <p:inputText id="topic" value="#{systemConfigBacking.topic}" styleClass="p-2 w-full" />
-        </div>
-
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value="Enabled"/>
+          <p:inputText id="enabled" value="#{systemConfigBacking.enabled}" styleClass="p-2 w-full" />
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('enabled')}" styleClass="imageButton"
+                         rendered="#{systemConfigBacking.enabled == null and systemConfigBacking.inheritedEnabled != null}"
+                         update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
+            <h:outputText value="(#{systemConfigBacking.inheritedEnabled})" 
+                          styleClass="inheritedProperty" />
+          </p:commandLink>        
+        </div>        
+        
+        <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="URL"/>
           <p:inputText id="url" value="#{systemConfigBacking.url}" styleClass="p-2 w-full" />
-          <p:commandLink actionListener="#{systemConfigBacking.goToParentNode('url')}" styleClass="imageButton"
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('url')}" styleClass="imageButton"
                          rendered="#{systemConfigBacking.url == null and systemConfigBacking.inheritedUrl != null}"
                          update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
             <h:outputText value="(#{systemConfigBacking.inheritedUrl})" 
@@ -133,7 +157,7 @@
           </p:commandLink>        
         </div>
 
-        <div class="field col-12 md:col-6">
+        <div class="field col-12 md:col-3">
           <p:outputLabel for="@next" value="Target"/>
           <p:selectOneMenu value="#{systemConfigBacking.target}"
                            class="w-full p-2" 
@@ -143,24 +167,13 @@
           </p:selectOneMenu> 
         </div>      
 
-        <div class="field col-12">
-          <p:outputLabel for="@next" value="Enabled"/>
-          <p:inputText id="enabled" value="#{systemConfigBacking.enabled}" styleClass="p-2 w-full" />
-          <p:commandLink actionListener="#{systemConfigBacking.goToParentNode('enabled')}" styleClass="imageButton"
-                         rendered="#{systemConfigBacking.enabled == null and systemConfigBacking.inheritedEnabled != null}"
-                         update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
-            <h:outputText value="(#{systemConfigBacking.inheritedEnabled})" 
-                          styleClass="inheritedProperty" />
-          </p:commandLink>        
-        </div>
-
-        <div class="field col-12 md:col-6">
+        <div class="field col-12 md:col-3">
           <p:outputLabel for="@next" value="Certificat requerit" />
           <p:selectOneMenu id="certificateRequired" value="#{systemConfigBacking.certificateRequired}" class="w-full p-2">
             <f:selectItem itemLabel="" itemValue="" />
             <f:selectItems value="#{systemConfigBacking.requiredCertificates}" />
           </p:selectOneMenu>        
-          <p:commandLink actionListener="#{systemConfigBacking.goToParentNode('certificateRequired')}" styleClass="imageButton"
+          <p:commandLink actionListener="#{nodeEditBean.goToParentNode('certificateRequired')}" styleClass="imageButton"
                          rendered="#{systemConfigBacking.certificateRequired == null and systemConfigBacking.inheritedCertificateRequired != null}"
                          update="@this :mainform:topPanel :mainform:tree :mainform:nodeToolsPanel :mainform:rightPanel" ajax="true" global="false">
             <h:outputText value="(#{systemConfigBacking.inheritedCertificateRequired})" 
