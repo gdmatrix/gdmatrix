@@ -21,8 +21,26 @@
     <managed-bean-name>personMainBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.kernel.PersonMainBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
-  </managed-bean>   
+  </managed-bean>
   
+  <managed-bean>
+    <managed-bean-name>personAddressesBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonAddressesBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>          
+
+  <managed-bean>
+    <managed-bean-name>personContactsBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonContactsBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>          
+
+  <managed-bean>
+    <managed-bean-name>personCasesBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.PersonCasesBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+
   <managed-bean>
     <managed-bean-name>addressBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.kernel.AddressBacking</managed-bean-class>
@@ -89,12 +107,17 @@
       <from-outcome>pf_person_contacts</from-outcome>
       <to-view-id>/pf/common/kernel/person_contacts.xhtml</to-view-id>
     </navigation-case>    
-    
+
     <navigation-case>
       <from-outcome>pf_person_addresses</from-outcome>
       <to-view-id>/pf/common/kernel/person_addresses.xhtml</to-view-id>
     </navigation-case>  
-    
+
+    <navigation-case>
+      <from-outcome>pf_person_cases</from-outcome>
+      <to-view-id>/pf/common/kernel/person_cases.xhtml</to-view-id>
+    </navigation-case>                                                                                                                  
+
     <navigation-case>
       <from-outcome>pf_address_search</from-outcome>
       <to-view-id>/pf/common/kernel/address_search.xhtml</to-view-id>
