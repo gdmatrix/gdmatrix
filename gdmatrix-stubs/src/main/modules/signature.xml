@@ -5,7 +5,7 @@
   wsdlLocation="../services/signature?wsdl"
   service="SignatureManagerService"
   port="SignatureManagerPort"
-  version="1.0"
+  version="1.1"
   status="REVISION"
   authors="Ricard Real">
 
@@ -47,6 +47,40 @@
       <property name="algorithm" type="xs:string" minOccurs="1">
       </property>
     </struct>
+
+    <struct name="DocumentValidation">
+      <property name="valid" type="xs:boolean">
+      </property>
+      <property name="signatureValidation" type="signature:SignatureValidation" 
+                minOccurs="0" maxOccurs="unbounded">
+      </property>
+    </struct>
+
+    <struct name="SignatureValidation">
+      <property name="signatureId" type="xs:string">
+      </property>
+      <property name="format" type="xs:string" minOccurs="0">
+      </property>
+      <property name="signer" type="xs:string" minOccurs="0">
+      </property>
+      <property name="signingDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="expirationDateTime" type="mx:dateTime" minOccurs="0">
+      </property>
+      <property name="valid" type="xs:boolean">
+      </property>
+      <property name="validationDetail" type="signature:ValidationDetail" 
+                minOccurs="0" maxOccurs="unbounded">
+      </property>
+    </struct>
+    
+    <struct name="ValidationDetail">
+      <property name="code" type="xs:string">        
+      </property>
+      <property name="message" type="xs:string">        
+      </property>
+    </struct>
+    
   </types>
 
   <operations>
@@ -96,6 +130,17 @@
       </response>
     </operation>
 
+    <operation name="addSignatureWithAlgorithm">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="certData" type="xs:base64Binary">
+      </parameter>
+      <parameter name="signAlgorithm" type="xs:string">
+      </parameter>
+      <response name="dataToSign" type="xs:base64Binary">
+      </response>
+    </operation>
+
     <operation name="endSignature">
       <parameter name="sigId" type="xs:string">
       </parameter>
@@ -115,7 +160,8 @@
     <operation name="digestData">
       <parameter name="sigId" type="xs:string">
       </parameter>
-      <response name="dataHash" type="signature:DataHash" minOccurs="0" maxOccurs="unbounded">
+      <response name="dataHash" type="signature:DataHash" 
+                minOccurs="0" maxOccurs="unbounded">
       </response>
     </operation>
 
@@ -157,6 +203,16 @@
       <parameter name="properties" type="signature:PropertyList">
       </parameter>
       <response name="return" type="xs:string">
+      </response>
+    </operation>
+
+    <operation name="validateDocument">
+      <parameter name="sigId" type="xs:string">
+      </parameter>
+      <parameter name="option" type="xs:string" 
+                 minOccurs="0" maxOccurs="unbounded">
+      </parameter>
+      <response name="documentValidation" type="signature:DocumentValidation">
       </response>
     </operation>
 

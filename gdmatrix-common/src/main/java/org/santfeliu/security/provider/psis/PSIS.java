@@ -31,7 +31,7 @@
 package org.santfeliu.security.provider.psis;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +51,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.BindingProvider;
 import oasis.names.tc.dss._1_0.core.schema.Base64Data;
+import oasis.names.tc.dss._1_0.core.schema.Base64Signature;
 import oasis.names.tc.dss._1_0.core.schema.DocumentHash;
 import oasis.names.tc.dss._1_0.core.schema.DocumentType;
 import oasis.names.tc.dss._1_0.core.schema.DocumentWithSignature;
@@ -65,27 +66,23 @@ import oasis.names.tc.dss._1_0.core.schema.ReturnUpdatedSignature;
 import oasis.names.tc.dss._1_0.core.schema.SignRequest;
 import oasis.names.tc.dss._1_0.core.schema.SignResponse;
 import oasis.names.tc.dss._1_0.core.schema.SignatureObjectType;
-import oasis.names.tc.dss._1_0.core.schema.SignaturePtr;
+import oasis.names.tc.dss._1_0.core.schema.Timestamp;
 import oasis.names.tc.dss._1_0.core.schema.VerifyRequest;
 import oasis.names.tc.dss._1_0.core.schema.VerifyResponse;
 import oasis.names.tc.dss._1_0.core.wsdl.DigitalSignatureService;
 import oasis.names.tc.dss._1_0.core.wsdl.SOAPport;
+import oasis.names.tc.dss._1_0.profiles.xss.ReturnSignedResponse;
 import oasis.names.tc.dss._1_0.profiles.xss.ReturnX509CertificateInfo;
 import oasis.names.tc.dss._1_0.profiles.xss.X509CertificateInfo;
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
-import org.apache.commons.io.IOUtils;
-import org.apache.xml.security.Init;
-import org.apache.xml.security.utils.XMLUtils;
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.util.MatrixConfig;
-import org.santfeliu.util.net.HttpClient;
-import org.santfeliu.util.template.Template;
+import org.santfeliu.ws.WSTracer;
 import org.w3._2000._09.xmldsig_.DigestMethodType;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -106,7 +103,7 @@ public class PSIS implements SecurityProvider
   public static final String CMS_TIMESTAMP =
     "urn:ietf:rfc:3161";
   public static final String XML_TIMESTAMP =
-    "urn:oasis:names:tc:dss:1.0:profiles:timestamping";
+    "oasis:names:tc:dss:1.0:core:schema:XMLTimeStampToken";
 
   public PSIS()
   {
@@ -248,96 +245,84 @@ public class PSIS implements SecurityProvider
   @Override
   public boolean validateSignatureCMS(byte[] cms, OutputStream out)
   {
-    try
-    {
-      String template = readFile(
-        "org/santfeliu/security/provider/psis/XMLValidateCMS.xml");
-
-      Map variables = new HashMap();
-      variables.put("SIGNATURE", Base64.getMimeEncoder().encodeToString(cms));
-      String message = Template.create(template).merge(variables);
-
-      HttpClient client = new HttpClient();
-      client.setURL(dssServiceURL);
-      client.setConnectTimeout(CONNECT_TIMEOUT);
-      client.setReadTimeout(READ_TIMEOUT);
-      client.doPost(message.getBytes());
-
-      Document document = client.getContentAsXML();
-      Node response = document.getFirstChild().getFirstChild().getFirstChild();
-      Node resultNode = response.getFirstChild();
-      Node resultMajorNode = resultNode.getFirstChild();
-      Node resultMinorNode = resultMajorNode.getNextSibling();
-
-      String resultMajor = resultMajorNode.getTextContent();
-      String resultMinor = resultMinorNode.getTextContent();
-
-      System.out.println("ResultMajor:" + resultMajor);
-      System.out.println("ResultMinor:" + resultMinor);
-      if (out != null)
-      {
-        if (!Init.isInitialized()) Init.init();
-        out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".getBytes());
-        XMLUtils.outputDOM(response, out);
-      }
-      return resultMinor != null && resultMinor.contains(":valid:");
-    }
-    catch (Exception ex)
-    {
-      throw new RuntimeException("security:SIGNATURE_VALIDATION_ERROR");
-    }
-  }
-
-  @Override
-  public boolean validateSignatureXML(Document signature, OutputStream out)
-  {
-    // TODO: not finished
     SOAPport port = service.getDssPortSoap();
 
     Map requestContext = ((BindingProvider)port).getRequestContext();
     requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
       dssServiceURL);
     requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
-    requestContext.put("com.sun.xml.ws.request.timeout", READ_TIMEOUT);
+    requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
 
     VerifyRequest request = new VerifyRequest();
     request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:XSS");
 
-    // InputDocuments
+    Base64Signature signatureb64 = new Base64Signature();
+    signatureb64.setType("urn:ietf:rfc:3369");
+    signatureb64.setValue(cms);
+
+    SignatureObjectType signatureObject = new SignatureObjectType();
+    signatureObject.setBase64Signature(signatureb64);
+
+    request.setSignatureObject(signatureObject);
+
+    OptionalInputs optInputs = new OptionalInputs();
+    ReturnSignedResponse signResp = new ReturnSignedResponse();
+    optInputs.getServicePolicyOrClaimedIdentityOrLanguage().add(signResp);
+
+    request.setOptionalInputs(optInputs);
+
+    VerifyResponse response = port.verify(request);
+    Result result = response.getResult();
+
+    String resultMajor = result.getResultMajor();
+    String resultMinor = result.getResultMinor();
+
+    System.out.println("ResultMajor:" + resultMajor);
+    System.out.println("ResultMinor:" + resultMinor);
+
+    return resultMinor != null && resultMinor.contains(":valid:");
+  }
+
+  @Override
+  public boolean validateSignatureXML(Element signature, OutputStream out)
+  {
+    SOAPport port = service.getDssPortSoap();
+
+    Map requestContext = ((BindingProvider)port).getRequestContext();
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+      dssServiceURL);
+    requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+    requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
+
+    VerifyRequest request = new VerifyRequest();
+    request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:XSS");
+
     InputDocuments inputDocuments = new InputDocuments();
     DocumentType doc = new DocumentType();
     doc.setID("doc");
     doc.setRefURI("");
+
     InlineXMLType inline = new InlineXMLType();
-    inline.setAny(signature.getDocumentElement());
+    inline.setAny(signature);
     doc.setInlineXML(inline);
     inputDocuments.getDocumentOrTransformedDataOrDocumentHash().add(doc);
     request.setInputDocuments(inputDocuments);
 
-    // OptionalInputs
-    /*
-    OptionalInputs oi = new OptionalInputs();
-    JAXBElement elem = new JAXBElement(
-      new QName("urn:oasis:names:tc:dss:1.0:core:schema",
-      "ReturnProcessingDetails"), Object.class, null);
-    oi.getServicePolicyOrClaimedIdentityOrLanguage().add(elem);
-    request.setOptionalInputs(oi);
-    */
-    SignatureObjectType so = new SignatureObjectType();
-    SignaturePtr sp = new SignaturePtr();
-    sp.setWhichDocument(doc);
-    sp.setXPath("Signature");
-    so.setSignaturePtr(sp);
-    request.setSignatureObject(so);
-
     VerifyResponse response = port.verify(request);
-    System.out.println(response.getResult().getResultMinor());
-    System.out.println(response.getResult().getResultMajor());
-    if (response.getResult().getResultMessage() != null)
+
+    Result result = response.getResult();
+
+    String resultMajor = result.getResultMajor();
+    String resultMinor = result.getResultMinor();
+
+    System.out.println("ResultMajor:" + resultMajor);
+    System.out.println("ResultMinor:" + resultMinor);
+
+    if (result.getResultMessage() != null)
     {
-      System.out.println(response.getResult().getResultMessage().getValue());
+      System.out.println(result.getResultMessage().getValue());
     }
-    return false;
+    return resultMinor != null && resultMinor.contains(":valid:");
   }
 
   @Override
@@ -351,7 +336,7 @@ public class PSIS implements SecurityProvider
     requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
       dssPdfServiceURL);
     requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
-    requestContext.put("com.sun.xml.ws.request.timeout", READ_TIMEOUT);
+    requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
 
     VerifyRequest request = new VerifyRequest();
     request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:DSS_PDF");
@@ -386,6 +371,81 @@ public class PSIS implements SecurityProvider
   }
 
   @Override
+  public boolean preserveSignatureXML(Element signature, OutputStream out)
+  {
+    SOAPport port = service.getDssPortSoap();
+
+    Map requestContext = ((BindingProvider)port).getRequestContext();
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+      dssServiceURL);
+    requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+    requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
+
+    VerifyRequest request = new VerifyRequest();
+    request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:XSS");
+
+    InputDocuments inputDocuments = new InputDocuments();
+    DocumentType doc = new DocumentType();
+    doc.setID("doc");
+    doc.setRefURI("");
+
+    InlineXMLType inline = new InlineXMLType();
+    inline.setAny(signature);
+    doc.setInlineXML(inline);
+    inputDocuments.getDocumentOrTransformedDataOrDocumentHash().add(doc);
+    request.setInputDocuments(inputDocuments);
+
+    OptionalInputs optInputs = new OptionalInputs();
+    ReturnUpdatedSignature rt = new ReturnUpdatedSignature();
+    rt.setType("urn:oasis:names:tc:dss:1.0:profiles:XAdES:forms:ES-LTV");
+    optInputs.getServicePolicyOrClaimedIdentityOrLanguage().add(rt);
+    request.setOptionalInputs(optInputs);
+
+    // Execució del servei
+    VerifyResponse response = port.verify(request);
+    JAXB.marshal(response.getResult(), System.out);
+    Result result = response.getResult();
+
+    if (result != null)
+    {
+      String resultMajor = result.getResultMajor();
+      String resultMinor = result.getResultMinor();
+
+      System.out.println("ResultMajor:" + resultMajor);
+      System.out.println("ResultMinor:" + resultMinor);
+
+      boolean valid = resultMinor != null && resultMinor.contains(":valid:");
+
+      //if (valid)
+      {
+        OptionalOutputs optOutputs = response.getOptionalOutputs();
+        List docWithSignature = optOutputs
+          .getDocumentWithSignatureOrVerifyManifestResultsOrProcessingDetails();
+        if (docWithSignature != null && !docWithSignature.isEmpty())
+        {
+          DocumentWithSignature docSig =
+            (DocumentWithSignature) docWithSignature.get(0);
+          Base64Data sig = docSig.getDocument().getBase64Data();
+
+          try
+          {
+            out.write(sig.getValue());
+            out.flush();
+            out.close();
+          }
+          catch (IOException ex)
+          {
+            Logger.getLogger(PSIS.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+          }
+        }
+      }
+      return valid;
+    }
+    return false;
+  }
+
+  @Override
   public boolean preserveSignaturePDF(byte[] pdf, OutputStream out)
   {
     String docMimeType = "application/pdf";
@@ -396,7 +456,7 @@ public class PSIS implements SecurityProvider
     requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
       dssPdfServiceURL);
     requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
-    requestContext.put("com.sun.xml.ws.request.timeout", READ_TIMEOUT);
+    requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
 
     VerifyRequest request = new VerifyRequest();
     request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:DSS_PDF");
@@ -417,7 +477,7 @@ public class PSIS implements SecurityProvider
 
     request.setOptionalInputs(optInputs);
 
-    // Execució del servei
+    // Service execution
     VerifyResponse response = port.verify(request);
     Result result = response.getResult();
 
@@ -455,10 +515,8 @@ public class PSIS implements SecurityProvider
           }
         }
       }
-
       return valid;
     }
-
     return false;
   }
 
@@ -474,7 +532,7 @@ public class PSIS implements SecurityProvider
       requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
         dssServiceURL);
       requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
-      requestContext.put("com.sun.xml.ws.request.timeout", READ_TIMEOUT);
+      requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
 
       SignRequest request = new SignRequest();
       request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:timestamping");
@@ -513,12 +571,12 @@ public class PSIS implements SecurityProvider
         "X509Certificate"), byte[].class, certEncoded);
 
       X509DataType x509Data = new X509DataType();
+      x509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName()
+        .add(x509Certificate);
+
       JAXBElement x509Data2 =
         new JAXBElement(new QName("http://www.w3.org/2000/09/xmldsig#",
         "X509Data"), X509DataType.class, x509Data);
-
-      x509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName()
-        .add(x509Certificate);
 
       ki.getContent().add(x509Data2);
 
@@ -537,17 +595,27 @@ public class PSIS implements SecurityProvider
       request.setInputDocuments(io);
 
       SignResponse response = port.sign(request);
-      System.out.println(response.getResult().getResultMinor());
-      System.out.println(response.getResult().getResultMajor());
+      Result result = response.getResult();
+
+      String resultMajor = result.getResultMajor();
+      String resultMinor = result.getResultMinor();
+
+      System.out.println("ResultMajor:" + resultMajor);
+      System.out.println("ResultMinor:" + resultMinor);
       if (response.getResult().getResultMessage() != null)
       {
         System.out.println(response.getResult().getResultMessage().getValue());
       }
-      return response.getSignatureObject().
-        getTimestamp().getRFC3161TimeStampToken();
+      if (resultMajor != null && resultMajor.contains(":Success"))
+      {
+        Timestamp timestamp = response.getSignatureObject().getTimestamp();
+        return timestamp.getRFC3161TimeStampToken();
+      }
+      throw new Exception(resultMajor);
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       throw new RuntimeException("TIMESTAMP_GENERATOR_ERROR");
     }
   }
@@ -558,38 +626,98 @@ public class PSIS implements SecurityProvider
   {
     try
     {
-      String template = readFile(
-        "org/santfeliu/security/provider/psis/XMLTSCreation.xml");
+      SOAPport port = service.getDssPortSoap();
+
+      Map requestContext = ((BindingProvider)port).getRequestContext();
+      requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+        dssServiceURL);
+      requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+      requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, READ_TIMEOUT);
+
+      SignRequest request = new SignRequest();
+      request.setProfile("urn:oasis:names:tc:dss:1.0:profiles:timestamping");
+
+      InputDocuments io = new InputDocuments();
+      DocumentHash hash = new DocumentHash();
+      hash.setID("Doc");
+      hash.setDigestValue(digest);
+      DigestMethodType dm = new DigestMethodType();
+      dm.setAlgorithm(digestMethod);
+      hash.setDigestMethod(dm);
+      io.getDocumentOrTransformedDataOrDocumentHash().add(hash);
+
+      OptionalInputs oi = new OptionalInputs();
+
+      KeySelector ks = new KeySelector();
+      oi.getServicePolicyOrClaimedIdentityOrLanguage().add(ks);
+
+      KeyInfoType ki = new KeyInfoType();
+      ks.setKeyInfo(ki);
 
       if (certEncoded == null)
       {
-        String certBase64 =
-          readFile("org/santfeliu/security/provider/psis/tst.cer");
-        certEncoded = Base64.getMimeDecoder().decode(certBase64);
+        try
+        {
+          String certBase64 = readFile(
+            "org/santfeliu/security/provider/psis/tst.cer");
+          certEncoded = Base64.getMimeDecoder().decode(certBase64);
+        }
+        catch (Exception ex)
+        {
+          throw new RuntimeException(ex);
+        }
       }
-      Map variables = new HashMap();
-      variables.put("DIGEST_METHOD", digestMethod);
-      variables.put("DIGEST_VALUE", Base64.getMimeEncoder().
-        encodeToString(digest));
-      variables.put("CERTIFICATE", Base64.getMimeEncoder().
-        encodeToString(certEncoded));
-      String message = Template.create(template).merge(variables);
+      JAXBElement x509Certificate =
+        new JAXBElement(new QName("http://www.w3.org/2000/09/xmldsig#",
+        "X509Certificate"), byte[].class, certEncoded);
 
-      HttpClient client = new HttpClient();
-      client.setURL(dssServiceURL);
-      client.setConnectTimeout(CONNECT_TIMEOUT);
-      client.setReadTimeout(READ_TIMEOUT);
-      client.doPost(message.getBytes());
+      X509DataType x509Data = new X509DataType();
+      x509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName()
+        .add(x509Certificate);
 
-      Document doc = client.getContentAsXML();
-      NodeList nodeList = doc.getElementsByTagNameNS(
-        "http://www.w3.org/2000/09/xmldsig#", "Signature");
+      JAXBElement x509Data2 =
+        new JAXBElement(new QName("http://www.w3.org/2000/09/xmldsig#",
+        "X509Data"), X509DataType.class, x509Data);
 
-      if (nodeList.getLength() == 1)
+      ki.getContent().add(x509Data2);
+
+      JAXBElement signType =
+        new JAXBElement(new QName("urn:oasis:names:tc:dss:1.0:core:schema",
+        "SignatureType"), String.class, XML_TIMESTAMP);
+      oi.getServicePolicyOrClaimedIdentityOrLanguage().add(signType);
+      request.setOptionalInputs(oi);
+
+      request.setInputDocuments(io);
+
+      WSTracer tracer = WSTracer.bind((BindingProvider)port);
+
+      SignResponse response = port.sign(request);
+      Result result = response.getResult();
+
+      String resultMajor = result.getResultMajor();
+      String resultMinor = result.getResultMinor();
+
+      System.out.println("ResultMajor:" + resultMajor);
+      System.out.println("ResultMinor:" + resultMinor);
+      if (response.getResult().getResultMessage() != null)
       {
-        return (Element)nodeList.item(0);
+        System.out.println(response.getResult().getResultMessage().getValue());
       }
-      return null;
+      if (resultMajor != null && resultMajor.contains(":Success"))
+      {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
+        byte[] message = tracer.getInboundMessage();
+        Document doc = db.parse(new ByteArrayInputStream(message));
+        NodeList nodeList = doc.getElementsByTagNameNS(
+          "http://www.w3.org/2000/09/xmldsig#", "Signature");
+        if (nodeList.getLength() == 1)
+        {
+          return (Element)nodeList.item(0);
+        }
+      }
+      throw new Exception(resultMajor);
     }
     catch (Exception ex)
     {
@@ -678,7 +806,7 @@ public class PSIS implements SecurityProvider
     javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
     Document document = db.parse(new FileInputStream(filename));
 
-    validateSignatureXML(document, null);
+    validateSignatureXML(document.getDocumentElement(), null);
   }
 
   private void testCreateTimeStamp() throws Exception
@@ -692,22 +820,96 @@ public class PSIS implements SecurityProvider
 
   public static void main(String args[])
   {
-    try
-    {
-      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.pdf.serviceURL",
-        "http://psisbeta.catcert.net/psis/catcert-test/dsspdf"
-        //"http://psis.catcert.net/psis/catcert/dss"
-        );
-      PSIS psis = new PSIS();
-      File file = new File("C:\\projectes\\PAdESJava1.6\\src\\prova.pdf");
-      byte[] data = IOUtils.toByteArray(new FileInputStream(file));
-      boolean valid =
-        psis.preserveSignaturePDF(data, System.out);
-      System.out.println("Valid:" + valid);
-    }
-    catch (Exception ex)
-    {
-      ex.printStackTrace();
-    }
+//    try
+//    {
+//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
+//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
+//      PSIS psis = new PSIS();
+//      MessageDigest md = MessageDigest.getInstance("SHA-256");
+//      md.reset();
+//      md.update("HOLA".getBytes());
+//      byte[] digest = md.digest();
+//
+//      System.out.println("Valid:" + psis.validateSignatureCMS(digest, System.out));
+//    }
+//    catch (Exception ex)
+//    {
+//      ex.printStackTrace();
+//    }
+
+//    try
+//    {
+//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
+//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
+//      PSIS psis = new PSIS();
+//      MessageDigest md = MessageDigest.getInstance("SHA-256");
+//      md.reset();
+//      md.update("HOLA".getBytes());
+//      byte[] digest = md.digest();
+//
+//      byte[] ts =
+//        psis.createCMSTimeStamp(digest, "http://www.w3.org/2001/04/xmlenc#sha256", null);
+//      System.out.println(Base64.getEncoder().encodeToString(ts));
+//    }
+//    catch (Exception ex)
+//    {
+//      ex.printStackTrace();
+//    }
+
+//    try
+//    {
+//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
+//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
+//      PSIS psis = new PSIS();
+//      MessageDigest md = MessageDigest.getInstance("SHA-256");
+//      md.reset();
+//      md.update("HOLA".getBytes());
+//      byte[] digest = md.digest();
+//
+//      Element element =
+//        psis.createXMLTimeStamp(digest, "http://www.w3.org/2001/04/xmlenc#sha256", null);
+//      System.out.println(element);
+//    }
+//    catch (Exception ex)
+//    {
+//      ex.printStackTrace();
+//    }
+
+//    try
+//    {
+//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
+//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
+//      PSIS psis = new PSIS();
+//      XMLSignedDocument sdoc = new XMLSignedDocument();
+//      sdoc.parseDocument(new FileInputStream(new File("c:/Users/realor/Desktop/VALID.xml")));
+//      Element signature = sdoc.getSignature(0).getElement();
+//
+//      boolean valid =
+//        psis.preserveSignatureXML(signature, System.out);
+//      System.out.println("Valid:" + valid);
+//    }
+//    catch (Exception ex)
+//    {
+//      ex.printStackTrace();
+//    }
+
+
+//    try
+//    {
+//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.pdf.serviceURL",
+//        "http://psisbeta.catcert.net/psis/catcert-test/dsspdf"
+//        //"http://psis.catcert.net/psis/catcert/dss"
+//        );
+//      PSIS psis = new PSIS();
+//      File file = new File("C:\\projectes\\PAdESJava1.6\\src\\prova.pdf");
+//      byte[] data = IOUtils.toByteArray(new FileInputStream(file));
+//      boolean valid =
+//        psis.preserveSignaturePDF(data, System.out);
+//      System.out.println("Valid:" + valid);
+//    }
+//    catch (Exception ex)
+//    {
+//      ex.printStackTrace();
+//    }
   }
 }

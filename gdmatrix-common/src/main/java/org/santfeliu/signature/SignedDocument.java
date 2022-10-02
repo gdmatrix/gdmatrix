@@ -36,6 +36,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 import org.matrix.signature.DataHash;
+import org.matrix.signature.DocumentValidation;
 
 
 /**
@@ -44,6 +45,22 @@ import org.matrix.signature.DataHash;
  */
 public interface SignedDocument
 {
+  public static String SHA1_RSA_ALGO = "SHA1withRSA";
+  public static String SHA256_RSA_ALGO = "SHA256withRSA";
+
+  // option codes for validateDocument method
+  public static String PRESERVE_OPTION = "preserve";
+  public static String VALIDATE_DATA_HASHES_OPTION = "validate_data_hashes";
+
+  // ValidationDetail codes
+  public static String SIGNATURE_PRESERVED_CODE = "info:signature_preserved";
+  public static String CERTIFICATE_NOT_PRESENT_CODE = "warn:certificate_not_present";
+  public static String DATA_NOT_INTACT_CODE = "error:data_not_intact";
+  public static String INVALID_FORMAT_CODE = "error:invalid_format";
+  public static String UNTRUSTED_SIGNATURE_CODE = "error:untrusted_signature";
+  public static String UNTRUSTED_CERTIFICATE_CODE = "error:untrusted_certificate";
+  public static String UNEXPECTED_EXCEPTION_CODE = "error:unexpected_exception";
+
   public void newDocument() throws Exception;
 
   public void parseDocument(InputStream is) throws Exception;
@@ -51,7 +68,7 @@ public interface SignedDocument
   public String addData(String dataType, byte[] data, Map properties)
     throws Exception;
 
-  public byte[] addSignature(X509Certificate cert,
+  public byte[] addSignature(X509Certificate cert, String signAlgorithm,
     String policyId, String policyDigest) throws Exception;
 
   public void setSignatureValue(byte[] signatureData)
@@ -64,7 +81,7 @@ public interface SignedDocument
 
   public void addExternalSignature(byte[] signature) throws Exception;
 
-  public boolean verifyDocument() throws Exception;
+  public DocumentValidation validate(List<String> options) throws Exception;
 
   public void writeDocument(OutputStream os) throws Exception;
 

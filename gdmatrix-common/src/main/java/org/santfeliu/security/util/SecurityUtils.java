@@ -67,7 +67,7 @@ public class SecurityUtils
       String providerClassName = MatrixConfig.getProperty(
         "org.santfeliu.security.provider.className");
       Class cls = Class.forName(providerClassName);
-      defaultSecurityProvider = (SecurityProvider)cls.newInstance();
+      defaultSecurityProvider = (SecurityProvider)cls.getConstructor().newInstance();
       String secret = MatrixConfig.getProperty(
         "org.santfeliu.security.urlCredentialsCipher.secret");
       urlCredentialsCipher = new URLCredentialsCipher(secret);

@@ -34,7 +34,6 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -51,6 +50,7 @@ import java.security.Provider;
 import java.security.Security;
 import java.security.Signature;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
@@ -85,6 +85,7 @@ public class MicroSigner extends JFrame
   public static final String END_TAG = "END";
 
   public static final String ERROR_PREFIX = "ERROR: ";
+  public static final String SIGN_ALGO = "SHA256withRSA";
 
   // must be static to prevent provider reloading
   private static final HashMap providers = new HashMap();
@@ -128,15 +129,12 @@ public class MicroSigner extends JFrame
       // ignore
     }
 
-    SwingUtilities.invokeLater(new Runnable()
+    SwingUtilities.invokeLater(() ->
     {
-      public void run()
-      {
-        MicroSigner microSigner = new MicroSigner();
-        microSigner.setSize(600, 300);
-        microSigner.setLocationRelativeTo(null);
-        microSigner.setVisible(true);
-      }
+      MicroSigner microSigner = new MicroSigner();
+      microSigner.setSize(600, 300);
+      microSigner.setLocationRelativeTo(null);
+      microSigner.setVisible(true);
     });
   }
 
@@ -215,12 +213,9 @@ public class MicroSigner extends JFrame
     this.password = null;
     this.signResult = "";
 
-    Thread workThread = new Thread(new Runnable()
+    Thread workThread = new Thread(() ->
     {
-      public void run()
-      {
-        doSignatureProcess();
-      }
+      doSignatureProcess();
     });
     workThread.start();
   }
@@ -300,32 +295,33 @@ public class MicroSigner extends JFrame
 
     LOGGER.info("loading configuration...");
     InputStream is = new FileInputStream(file);
-    ObjectInputStream ois = new ObjectInputStream(is);
-    String tag = String.valueOf(ois.readObject());
-    while (!tag.equals(END_TAG))
+    try (ObjectInputStream ois = new ObjectInputStream(is))
     {
-      LOGGER.log(Level.INFO, "tag: {0}", tag);
-      if (tag.equals(KEYSTORE_TAG))
+      String tag = String.valueOf(ois.readObject());
+      while (!tag.equals(END_TAG))
       {
-        String provClassName = (String)ois.readObject();
-        String ksType = (String)ois.readObject();
-        String ksPath = (String)ois.readObject();
-        String ksPassword = (String)ois.readObject();
-        try
+        LOGGER.log(Level.INFO, "tag: {0}", tag);
+        if (tag.equals(KEYSTORE_TAG))
         {
-          KeyStoreNode ksNode = loadKeyStore(provClassName, ksType,
-                                             ksPath, ksPassword, null);
-          mainPanel.addKeyStoreNode(ksNode);
+          String provClassName = (String)ois.readObject();
+          String ksType = (String)ois.readObject();
+          String ksPath = (String)ois.readObject();
+          String ksPassword = (String)ois.readObject();
+          try
+          {
+            KeyStoreNode ksNode = loadKeyStore(provClassName, ksType,
+              ksPath, ksPassword, null);
+            mainPanel.addKeyStoreNode(ksNode);
+          }
+          catch (Throwable t)
+          {
+            LOGGER.info(t.getMessage());
+          }
         }
-        catch (Throwable t)
-        {
-          LOGGER.info(t.getMessage());
-        }
+        else throw new IOException("Invalid tag");
+        tag = String.valueOf(ois.readObject());
       }
-      else throw new IOException("Invalid tag");
-      tag = String.valueOf(ois.readObject());
     }
-    ois.close();
     return true;
   }
 
@@ -336,25 +332,26 @@ public class MicroSigner extends JFrame
 
     LOGGER.info("saving configuration...");
     OutputStream os = new FileOutputStream(file);
-    ObjectOutputStream oos = new ObjectOutputStream(os);
-    DefaultMutableTreeNode root = mainPanel.getRoot();
-    int numKeyStores = root.getChildCount();
-    for (int i = 0; i < numKeyStores; i++)
+    try (ObjectOutputStream oos = new ObjectOutputStream(os))
     {
-      KeyStoreNode ksNode = (KeyStoreNode)root.getChildAt(i);
-      String provClassName = ksNode.getProviderClassName();
-      String ksType = ksNode.getKeyStoreType();
-      String ksPath = ksNode.getKeyStorePath();
-      String ksPassword = ksNode.getKeyStorePassword();
+      DefaultMutableTreeNode root = mainPanel.getRoot();
+      int numKeyStores = root.getChildCount();
+      for (int i = 0; i < numKeyStores; i++)
+      {
+        KeyStoreNode ksNode = (KeyStoreNode)root.getChildAt(i);
+        String provClassName = ksNode.getProviderClassName();
+        String ksType = ksNode.getKeyStoreType();
+        String ksPath = ksNode.getKeyStorePath();
+        String ksPassword = ksNode.getKeyStorePassword();
 
-      oos.writeObject(KEYSTORE_TAG);
-      oos.writeObject(provClassName);
-      oos.writeObject(ksType);
-      oos.writeObject(ksPath);
-      oos.writeObject(ksPassword);
+        oos.writeObject(KEYSTORE_TAG);
+        oos.writeObject(provClassName);
+        oos.writeObject(ksType);
+        oos.writeObject(ksPath);
+        oos.writeObject(ksPassword);
+      }
+      oos.writeObject(END_TAG);
     }
-    oos.writeObject(END_TAG);
-    oos.close();
   }
 
   private void initComponents() throws Exception
@@ -372,23 +369,15 @@ public class MicroSigner extends JFrame
     signButton.setIcon(new ImageIcon(getClass().getResource("resources/images/signature.gif")));
     cancelButton.setIcon(new ImageIcon(getClass().getResource("resources/images/cancel.gif")));
     buttonsPanel.add(cancelButton);
-    signButton.addActionListener(new ActionListener()
+    signButton.addActionListener((ActionEvent event) ->
     {
-      @Override
-      public void actionPerformed(ActionEvent event)
-      {
-        signDocument();
-        signButton.setEnabled(false);
-      }
+      signDocument();
+      signButton.setEnabled(false);
     });
-    cancelButton.addActionListener(new ActionListener()
+    cancelButton.addActionListener((ActionEvent event) ->
     {
-      @Override
-      public void actionPerformed(ActionEvent event)
-      {
-        signResult = "CANCEL";
-        terminate();
-      }
+      signResult = "CANCEL";
+      terminate();
     });
     this.addWindowListener(new WindowAdapter()
     {
@@ -438,23 +427,20 @@ public class MicroSigner extends JFrame
   private void selectCertificate() throws Exception // ET-wait
   {
     swingException = null;
-    SwingUtilities.invokeAndWait(new Runnable()
+    SwingUtilities.invokeAndWait(() ->
     {
-      public void run()
+      certificateNode = mainPanel.getSelectedCertificateNode();
+      if (certificateNode == null)
       {
-        certificateNode = mainPanel.getSelectedCertificateNode();
-        if (certificateNode == null)
-        {
-          swingException =
-            new Exception(MicroSigner.getLocalizedText("NoCertSelected"));
-        }
-        else
-        {
-          mainPanel.setEnableInputs(false);
-          setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-          String message = MicroSigner.getLocalizedText("ValidatingCertificate");
-          mainPanel.showMessage(message);
-        }
+        swingException =
+          new Exception(MicroSigner.getLocalizedText("NoCertSelected"));
+      }
+      else
+      {
+        mainPanel.setEnableInputs(false);
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        String message = MicroSigner.getLocalizedText("ValidatingCertificate");
+        mainPanel.showMessage(message);
       }
     });
     if (swingException != null) throw swingException;
@@ -463,45 +449,42 @@ public class MicroSigner extends JFrame
   private void sendCertificate() throws Exception // WT
   {
     X509Certificate certificate = certificateNode.getCertificate();
-    dataToSign = sigClient.addSignature(sigId, certificate.getEncoded());
+    dataToSign = sigClient.addSignatureWithAlgorithm(sigId,
+      certificate.getEncoded(), SIGN_ALGO);
   }
 
   private void enterPIN() throws Exception // ET-wait
   {
     swingException = null;
-    SwingUtilities.invokeAndWait(new Runnable()
+    SwingUtilities.invokeAndWait(() ->
     {
-      @Override
-      public void run()
+      String message = MicroSigner.getLocalizedText("EnteringPIN");
+      mainPanel.showMessage(message);
+      KeyStoreNode keyStoreNode = (KeyStoreNode)certificateNode.getParent();
+      password = null;
+      boolean cancel = false;
+      if (keyStoreNode.isAskForPIN())
       {
-        String message = MicroSigner.getLocalizedText("EnteringPIN");
+        SecretDialog dialog = new SecretDialog(mainPanel.getFrame());
+        dialog.setText(MicroSigner.getLocalizedText("EnterPIN"));
+        dialog.setLocationRelativeTo(mainPanel);
+        dialog.setVisible(true);
+        String PIN = dialog.getSecret();
+        if (PIN != null)
+        {
+          password = PIN.toCharArray();
+        }
+        else cancel = true;
+      }
+      if (cancel)
+      {
+        swingException =
+          new Exception(MicroSigner.getLocalizedText("PINNotEntered"));
+      }
+      else
+      {
+        message = MicroSigner.getLocalizedText("Signing");
         mainPanel.showMessage(message);
-        KeyStoreNode keyStoreNode = (KeyStoreNode)certificateNode.getParent();
-        password = null;
-        boolean cancel = false;
-        if (keyStoreNode.isAskForPIN())
-        {
-          SecretDialog dialog = new SecretDialog(mainPanel.getFrame());
-          dialog.setText(MicroSigner.getLocalizedText("EnterPIN"));
-          dialog.setLocationRelativeTo(mainPanel);
-          dialog.setVisible(true);
-          String PIN = dialog.getSecret();
-          if (PIN != null)
-          {
-            password = PIN.toCharArray();
-          }
-          else cancel = true;
-        }
-        if (cancel)
-        {
-          swingException =
-            new Exception(MicroSigner.getLocalizedText("PINNotEntered"));
-        }
-        else
-        {
-          message = MicroSigner.getLocalizedText("Signing");
-          mainPanel.showMessage(message);
-        }
       }
     });
     if (swingException != null) throw swingException;
@@ -512,22 +495,21 @@ public class MicroSigner extends JFrame
     KeyStoreNode keyStoreNode = (KeyStoreNode)certificateNode.getParent();
     KeyStore keyStore = keyStoreNode.getKeyStore();
     String alias = certificateNode.getAlias();
-    Signature signature = Signature.getInstance("SHA1withRSA");
 
-    signature.initSign((PrivateKey)keyStore.getKey(alias, password));
+    Signature signature = Signature.getInstance(SIGN_ALGO);
+    PrivateKey privateKey = (PrivateKey)keyStore.getKey(alias, password);
+    signature.initSign(privateKey);
     signature.update(dataToSign);
     signatureData = signature.sign();
+    System.out.println(Base64.getEncoder().encodeToString(signatureData));
   }
 
   private void showSignature() // ET-later
   {
-    SwingUtilities.invokeLater(new Runnable()
+    SwingUtilities.invokeLater(() ->
     {
-      public void run()
-      {
-        mainPanel.showSignature(
-          certificateNode.getCertificate(), signatureData);
-      }
+      mainPanel.showSignature(
+        certificateNode.getCertificate(), signatureData);
     });
   }
 
@@ -545,12 +527,9 @@ public class MicroSigner extends JFrame
 
   private void close() // ET-later
   {
-    SwingUtilities.invokeLater(new Runnable()
+    SwingUtilities.invokeLater(() ->
     {
-      public void run()
-      {
-        terminate();
-      }
+      terminate();
     });
   }
 
@@ -615,14 +594,10 @@ public class MicroSigner extends JFrame
             (X509Certificate)keyStore.getCertificate(alias);
           if (cert != null)
           {
-            boolean[] usage = cert.getKeyUsage();
-            if (usage == null || usage[0]) //digital signature;
-            {
-              CertificateNode certNode = new CertificateNode();
-              certNode.setAlias(alias);
-              certNode.setCertificate(cert);
-              ksNode.add(certNode);
-            }
+            CertificateNode certNode = new CertificateNode();
+            certNode.setAlias(alias);
+            certNode.setCertificate(cert);
+            ksNode.add(certNode);
           }
         }
       }
@@ -638,7 +613,8 @@ public class MicroSigner extends JFrame
     {
       LOGGER.log(
         Level.INFO, "Loading class {0}", provClassName);
-      provider = (Provider)Class.forName(provClassName).newInstance();
+      provider = (Provider)Class.forName(provClassName)
+        .getConstructor().newInstance();
       LOGGER.info(provider.toString());
     }
     finally

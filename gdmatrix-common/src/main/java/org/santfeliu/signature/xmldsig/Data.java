@@ -47,7 +47,7 @@ import org.w3c.dom.Node;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class Data // ElementProxy
 {

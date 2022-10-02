@@ -207,6 +207,13 @@ public class SignatureServlet extends HttpServlet
             (String)in.readObject(), // sigId
             (byte[])in.readObject()); // certData
         }
+        else if (operation.equalsIgnoreCase("addSignatureWithAlgorithm"))
+        {
+          result = port.addSignatureWithAlgorithm(
+            (String)in.readObject(), // sigId
+            (byte[])in.readObject(), // certData
+            (String)in.readObject());
+        }
         else if (operation.equalsIgnoreCase("endSignature"))
         {
           result = port.endSignature(

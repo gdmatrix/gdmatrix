@@ -275,8 +275,22 @@
               </wsdlFiles>
             </configuration>            
           </execution>        
+          <execution>
+            <id>wsimport_PSIS</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <keep>true</keep>
+              <wsdlDirectory>src/main/resources/org/santfeliu/security/provider/psis</wsdlDirectory>
+              <wsdlFiles>
+                <wsdlFile>PSIS.wsdl</wsdlFile>           
+              </wsdlFiles>
+            </configuration>            
+          </execution>        
         </executions>
-      </plugin>       
+      </plugin> 
     </plugins>
   </build>
 </project>

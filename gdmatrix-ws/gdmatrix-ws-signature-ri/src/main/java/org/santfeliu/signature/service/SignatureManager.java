@@ -1,40 +1,40 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.signature.service;
 
 import java.io.ByteArrayInputStream;
+import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,18 +42,14 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.annotation.Resource;
-
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-
 import javax.xml.ws.WebServiceContext;
 import org.matrix.signature.DataHash;
-
+import org.matrix.signature.DocumentValidation;
 import org.matrix.signature.PropertyList;
 import org.matrix.signature.SignatureManagerPort;
-
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.security.util.SecurityUtils;
 import org.santfeliu.signature.PropertyListConverter;
@@ -65,6 +61,9 @@ import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.ws.WSProperties;
 import org.santfeliu.ws.annotations.Initializer;
 import org.santfeliu.ws.annotations.SingleInstance;
+import static java.util.Collections.EMPTY_LIST;
+import static org.santfeliu.signature.SignedDocument.SHA256_RSA_ALGO;
+import static org.santfeliu.signature.SignedDocument.PRESERVE_OPTION;
 
 
 /**
@@ -94,12 +93,12 @@ public class SignatureManager implements SignatureManagerPort
   public static final String USER_SIGN_HASH = "userSignHash";
   public static final String SYSTEM_SIGN_OID = "systemSignOID";
   public static final String SYSTEM_SIGN_HASH = "systemSignHash";
-  
+
   // document properties
   public static final String SIGNED_DOCUMENT_TYPE = "type";
   public static final String SIGNING_REQUEST_TIME = "SigningRequestTime";
   public static final String SIGNERS = "signers";
-  
+
   // other constants
   public static final String SIGNER_ID = "SERIALNUMBER";
 
@@ -120,8 +119,8 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      LOGGER.info("SignatureManager init");    
-      
+      LOGGER.info("SignatureManager init");
+
       WSProperties props =
         new WSProperties(endpointName, SignatureManager.class);
 
@@ -131,7 +130,7 @@ public class SignatureManager implements SignatureManagerPort
       userSignHash = props.getString(USER_SIGN_HASH);
       systemSignOID = props.getString(SYSTEM_SIGN_OID);
       systemSignHash = props.getString(SYSTEM_SIGN_HASH);
-      
+
       if (storeClassName == null)
         throw new Exception("UNDEFINED_STORE_CLASS_NAME");
 
@@ -177,7 +176,7 @@ public class SignatureManager implements SignatureManagerPort
       String docType = sdoc.getType();
       byte[] data = sdoc.getData();
       Map properties = PropertyListConverter.toMap(sdoc.getProperties());
-  
+
       SignedDocument document = createDocumentInstance(docType);
       document.parseDocument(new ByteArrayInputStream(data));
       if (properties != null)
@@ -185,7 +184,7 @@ public class SignatureManager implements SignatureManagerPort
         document.getProperties().putAll(properties);
       }
       // verify document signatures
-      if (!document.verifyDocument())
+      if (!document.validate(EMPTY_LIST).isValid())
       {
         throw new RuntimeException("signature:INVALID_SIGNATURE");
       }
@@ -228,17 +227,17 @@ public class SignatureManager implements SignatureManagerPort
       LOGGER.log(Level.INFO, "getDocument: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
       Map properties = document.getProperties();
-  
+
       ByteArrayOutputStream os = new ByteArrayOutputStream();
       document.writeDocument(os);
-      
-      org.matrix.signature.SignedDocument sdoc = 
+
+      org.matrix.signature.SignedDocument sdoc =
         new org.matrix.signature.SignedDocument();
-  
+
       sdoc.setType((String)properties.get(SIGNED_DOCUMENT_TYPE));
       sdoc.setData(os.toByteArray());
       sdoc.setProperties(PropertyListConverter.toPropertyList(properties));
-  
+
       return sdoc;
     }
     catch (Exception ex)
@@ -246,7 +245,7 @@ public class SignatureManager implements SignatureManagerPort
       throw new RuntimeException(ex);
     }
   }
-  
+
   @Override
   public String setDocumentProperties(String sigId, PropertyList propertyList)
   {
@@ -267,18 +266,18 @@ public class SignatureManager implements SignatureManagerPort
       throw new RuntimeException(ex);
     }
   }
-  
+
   @Override
-  public String addData(String sigId, String dataType, 
+  public String addData(String sigId, String dataType,
     byte[] data, PropertyList propertyList)
   {
     try
     {
-      LOGGER.log(Level.INFO, "addData: sigId:{0} dataType:{1}", 
+      LOGGER.log(Level.INFO, "addData: sigId:{0} dataType:{1}",
         new Object[]{sigId, dataType});
       SignedDocument document = store.loadSignedDocument(sigId);
       Map properties = PropertyListConverter.toMap(propertyList);
-  
+
       int signatureState = getSignatureState(document);
       if (signatureState == SIGNATURE_PENDENT)
       {
@@ -291,13 +290,13 @@ public class SignatureManager implements SignatureManagerPort
       }
       String result = document.addData(dataType, data, properties);
       store.updateSignedDocument(sigId, document);
-  
+
       return result;
     }
     catch (RuntimeException ex)
     {
       throw ex;
-    }    
+    }
     catch (Exception ex)
     {
       throw new RuntimeException(ex);
@@ -307,11 +306,19 @@ public class SignatureManager implements SignatureManagerPort
   @Override
   public byte[] addSignature(String sigId, byte[] certData)
   {
+    return addSignatureWithAlgorithm(sigId, certData,
+      SignedDocument.SHA1_RSA_ALGO);
+  }
+
+  @Override
+  public byte[] addSignatureWithAlgorithm(String sigId, byte[] certData,
+    String signAlgo)
+  {
     try
     {
       LOGGER.log(Level.INFO, "addSignature: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
-  
+
       int signatureState = getSignatureState(document);
       if (signatureState == SIGNATURE_PENDENT)
       {
@@ -325,7 +332,7 @@ public class SignatureManager implements SignatureManagerPort
       CertificateFactory cf = CertificateFactory.getInstance("X509");
       X509Certificate cert = (X509Certificate)
         cf.generateCertificate(new ByteArrayInputStream(certData));
-  
+
       String signerNIF = null; // the NIF or NIE
       String signerCIF = null; // the CIF
       if (validateCertificate)
@@ -333,10 +340,9 @@ public class SignatureManager implements SignatureManagerPort
         Map attributes = new HashMap();
         // validate in CATCert
         LOGGER.log(Level.INFO, "validating certificate sigId:{0}", sigId);
-        boolean valid = false;
 
         SecurityProvider provider = SecurityUtils.getSecurityProvider();
-        valid = provider.validateCertificate(certData, attributes);
+        boolean valid = provider.validateCertificate(certData, attributes);
 
         if (!valid) throw new RuntimeException("INVALID_CERTIFICATE");
         signerNIF = (String)attributes.get(SecurityProvider.NIF);
@@ -350,15 +356,15 @@ public class SignatureManager implements SignatureManagerPort
       String signerList = (String)document.getProperties().get(SIGNERS);
       if (!isValidSigner(signerNIF, signerCIF, signerList))
         throw new RuntimeException("signature:INVALID_SIGNER");
-  
-      byte[] dataToSign = document.addSignature(cert, 
+
+      byte[] dataToSign = document.addSignature(cert, signAlgo,
         userSignOID, userSignHash);
-  
+
       document.getProperties().put(SIGNING_REQUEST_TIME,
         String.valueOf(System.currentTimeMillis()));
-  
+
       store.updateSignedDocument(sigId, document);
-  
+
       return dataToSign;
     }
     catch (RuntimeException ex)
@@ -378,15 +384,15 @@ public class SignatureManager implements SignatureManagerPort
     {
       LOGGER.log(Level.INFO, "endSignature: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
-      
+
       int signatureState = getSignatureState(document);
       if (signatureState == SIGNATURE_PENDENT)
       {
         document.setSignatureValue(signatureData);
         document.getProperties().remove(SIGNING_REQUEST_TIME);
-  
+
         // verify document signatures
-        if (document.verifyDocument()) // is OK
+        if (document.validate(EMPTY_LIST).isValid()) // is OK
         {
           store.updateSignedDocument(sigId, document);
           return "signature is valid";
@@ -424,9 +430,9 @@ public class SignatureManager implements SignatureManagerPort
     {
       LOGGER.log(Level.INFO, "addSystemSignature: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
-  
+
       if (name == null) throw new RuntimeException("UNDEFINED_CERTIFICATE");
- 
+
       int signatureState = getSignatureState(document);
       if (signatureState == SIGNATURE_PENDENT)
       {
@@ -439,18 +445,19 @@ public class SignatureManager implements SignatureManagerPort
       }
 
       CertificateStore certStore = CertificateStore.getInstance(name);
-      
+
       X509Certificate certificate = certStore.getCertificate();
-      byte[] dataToSign = document.addSignature(certificate, 
+      byte[] dataToSign = document.addSignature(certificate, SHA256_RSA_ALGO,
         systemSignOID, systemSignHash);
-      Signature signature = Signature.getInstance("SHA1withRSA");
-      signature.initSign(certStore.getPrivateKey());
+      Signature signature = Signature.getInstance(SHA256_RSA_ALGO);
+      PrivateKey privateKey = certStore.getPrivateKey();
+      signature.initSign(privateKey);
       signature.update(dataToSign);
       byte[] signatureData = signature.sign();
       document.setSignatureValue(signatureData);
-  
+
       // verify document signatures
-      if (document.verifyDocument()) // is OK
+      if (document.validate(EMPTY_LIST).isValid()) // is OK
       {
         store.updateSignedDocument(sigId, document);
         return "signature is valid";
@@ -477,11 +484,11 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      LOGGER.log(Level.INFO, "abortSignature: sigId:{0}", sigId);  
+      LOGGER.log(Level.INFO, "abortSignature: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
-  
+
       int signatureState = getSignatureState(document);
-      if (signatureState == SIGNATURE_PENDENT || 
+      if (signatureState == SIGNATURE_PENDENT ||
           signatureState == SIGNATURE_TIMEOUT)
       {
         document.removeSignature();
@@ -501,13 +508,13 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      LOGGER.log(Level.INFO, "digestData: sigId:{0}", sigId);  
-      SignedDocument document = store.loadSignedDocument(sigId);  
+      LOGGER.log(Level.INFO, "digestData: sigId:{0}", sigId);
+      SignedDocument document = store.loadSignedDocument(sigId);
       return document.digestData();
     }
     catch (RuntimeException ex)
     {
-      throw ex;  
+      throw ex;
     }
     catch (Exception ex)
     {
@@ -520,35 +527,46 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      LOGGER.log(Level.INFO, "addExternalSignature: sigId:{0}", sigId);  
+      LOGGER.log(Level.INFO, "addExternalSignature: sigId:{0}", sigId);
       SignedDocument document = store.loadSignedDocument(sigId);
-  
+
       int signatureState = getSignatureState(document);
-      if (signatureState == SIGNATURE_PENDENT || 
+      if (signatureState == SIGNATURE_PENDENT ||
           signatureState == SIGNATURE_TIMEOUT)
       {
         throw new RuntimeException("signature:INVALID_SIGNATURE_STATE");
       }
       document.addExternalSignature(signature);
-      store.updateSignedDocument(sigId, document);
-      return "done";
+
+      // verify document signatures
+      if (document.validate(EMPTY_LIST).isValid()) // is OK
+      {
+        store.updateSignedDocument(sigId, document);
+        return "signature is valid";
+      }
+      else
+      {
+        document.removeSignature(); // undo signature
+        store.updateSignedDocument(sigId, document);
+        throw new Exception("signature:INVALID_SIGNATURE");
+      }
     }
     catch (RuntimeException ex)
     {
-      throw ex;  
+      throw ex;
     }
     catch (Exception ex)
     {
       throw new RuntimeException(ex);
     }
   }
-  
+
   @Override
   public String endDocument(String sigId, PropertyList propertyList)
   {
     try
     {
-      LOGGER.log(Level.INFO, "endDocument: sigId:{0}", sigId);    
+      LOGGER.log(Level.INFO, "endDocument: sigId:{0}", sigId);
       Map properties = PropertyListConverter.toMap(propertyList);
       SignedDocument document = store.loadSignedDocument(sigId);
       if (properties != null)
@@ -588,10 +606,38 @@ public class SignatureManager implements SignatureManagerPort
   {
     try
     {
-      LOGGER.log(Level.INFO, "abortDocument: sigId:{0}", sigId);   
+      LOGGER.log(Level.INFO, "abortDocument: sigId:{0}", sigId);
       store.deleteSignedDocument(sigId);
-    
+
       return "document destroyed";
+    }
+    catch (Exception ex)
+    {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  @Override
+  public DocumentValidation validateDocument(String sigId, List<String> options)
+  {
+    try
+    {
+      LOGGER.log(Level.INFO, "addSystemSignature: sigId:{0}", sigId);
+      SignedDocument document = store.loadSignedDocument(sigId);
+
+      DocumentValidation documentValidation = document.validate(options);
+
+      boolean preserve = options.contains(PRESERVE_OPTION);
+
+      if (documentValidation.isValid() && preserve)
+      {
+        store.updateSignedDocument(sigId, document);
+      }
+      return documentValidation;
+    }
+    catch (RuntimeException ex)
+    {
+      throw ex;
     }
     catch (Exception ex)
     {
@@ -612,7 +658,7 @@ public class SignatureManager implements SignatureManagerPort
     while (!valid && tokenizer.hasMoreTokens())
     {
       String token = tokenizer.nextToken();
-      valid = token.equalsIgnoreCase(signerNIF) || 
+      valid = token.equalsIgnoreCase(signerNIF) ||
         token.equalsIgnoreCase(signerCIF);
     }
     return valid;
@@ -640,7 +686,7 @@ public class SignatureManager implements SignatureManagerPort
     return document;
   }
 
-  private SignedDocumentStore createStore(String storeClassName, 
+  private SignedDocumentStore createStore(String storeClassName,
     Properties properties) throws Exception
   {
     Class storeClass = Class.forName(storeClassName);
@@ -653,7 +699,7 @@ public class SignatureManager implements SignatureManagerPort
   {
     String stime = (String)document.getProperties().get(SIGNING_REQUEST_TIME);
     if (stime == null) return NO_SIGNATURE;
-    
+
     long time = Long.parseLong(stime);
     return (System.currentTimeMillis() - time < 60000) ?
       SIGNATURE_PENDENT : SIGNATURE_TIMEOUT;
