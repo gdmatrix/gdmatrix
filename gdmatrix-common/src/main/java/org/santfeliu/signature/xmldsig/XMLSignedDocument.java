@@ -1397,11 +1397,15 @@ public class XMLSignedDocument implements SignedDocument
 
   private List<Element> getSignatureTimeStampElements(XMLSignature signature)
   {
+    List<Element> elements = new ArrayList<>();
+
     Element signatureValue = (Element)findNode(
       signature.getElement().getFirstChild(),
       XMLDSIG_NS + ":" + Constants._TAG_SIGNATUREVALUE);
 
-    return List.of(signatureValue);
+    elements.add(signatureValue);
+
+    return elements;
   }
 
   private List<Element> getSigAndRefsTimeStampElements(XMLSignature signature)
