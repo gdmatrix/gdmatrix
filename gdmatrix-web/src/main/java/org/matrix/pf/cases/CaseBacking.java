@@ -31,6 +31,7 @@
 package org.matrix.pf.cases;
 
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseConstants;
 import org.matrix.pf.cms.CMSContent;
@@ -65,6 +66,16 @@ public class CaseBacking extends ObjectBacking<Case>
   }
   
   @Override
+  public String getTypeId()
+  {
+    CaseMainBacking mainBacking = WebUtils.getBacking("caseMainBacking"); 
+    if (mainBacking != null)
+      return mainBacking.getTypeId();
+    else
+      return super.getTypeId();    
+  }  
+  
+  @Override
   public String getDescription()
   {
     CaseMainBacking mainBacking = WebUtils.getBacking("caseMainBacking");
@@ -79,6 +90,8 @@ public class CaseBacking extends ObjectBacking<Case>
   {
     String description = "";
     objectId = super.getDescription(objectId);
+    if (StringUtils.isBlank(objectId))
+      return description;
     try
     {
       Case cas = CaseConfigBean.getPort().loadCase(objectId);

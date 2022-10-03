@@ -85,8 +85,13 @@ public class ScriptBacking extends PageBacking
       MatrixConfig.getProperty("org.santfeliu.web.defaultPort");
     port = !"80".equals(defaultPort) ? ":" + defaultPort : ""; 
   }
-
+  
   public String getXhtmlFormUrl()
+  {
+    return getXhtmlFormUrl(pageName);
+  }    
+
+  public String getXhtmlFormUrl(String pageName)
   {
     //Avoid caching
     String nocache = getProperty("nocache");
@@ -174,7 +179,7 @@ public class ScriptBacking extends PageBacking
       {
         try
         {
-          return scriptBean.call(method);
+          return scriptBean.call(method, args);
         }
         catch (Exception ex)
         {

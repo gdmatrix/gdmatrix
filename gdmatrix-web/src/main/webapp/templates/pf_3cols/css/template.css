@@ -177,6 +177,12 @@ body .ui-datatable .ui-datatable-header
   }
 }
 
+/*** DataTables ***/
+.ui-datatable table
+{
+  table-layout: auto;
+}
+
 /*** Dialogs ***/
 body .ui-dialog .ui-dialog-titlebar .ui-dialog-title
 {

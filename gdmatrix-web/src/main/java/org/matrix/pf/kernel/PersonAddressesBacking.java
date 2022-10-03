@@ -221,6 +221,13 @@ public class PersonAddressesBacking extends PageBacking
   public void setSelectedAddress(String addressId)
   {
     editing.setAddressId(addressId);
+    if (addressSelectItem == null || 
+      !addressId.equals(addressSelectItem.getValue()))
+    {
+      AddressBacking addressBacking = WebUtils.getBacking(ADDRESS_BACKING);    
+      String description = addressBacking.getDescription(addressId);
+      addressSelectItem = new SelectItem(addressId, description);       
+    }    
     showDialog();
   }
   

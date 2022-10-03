@@ -66,7 +66,7 @@ public class MenuTypesCache
     MenuItemCursor menuItem = menuItems.get(key);
     if (menuItem == null)
     {
-      menuItem = getMenuItem(topWebMenuItem, typeId);
+      menuItem = getMenuItem(topWebMenuItem.getFirstChild(), typeId);
       if (!menuItem.isNull())
         put(key, menuItem);
     }    

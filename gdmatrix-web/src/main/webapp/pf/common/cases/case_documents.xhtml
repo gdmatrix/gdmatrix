@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                template="case_common.xhtml">
+
+  <ui:param name="objectPage" value="object" />
+  <ui:param name="updateOnCancel" value="edit_panels" />
+  <ui:param name="updateOnStore" value="edit_panels page_results_table" />  
+
+  <ui:define name="content">
+    <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                  var="caseBundle" />
+
+    <h:panelGroup>
+      <!-- Results table -->
+
+
+    </h:panelGroup>   
+  </ui:define>
+
+  <!-- Address data panel -->
+
+  <ui:param name="editDescription" value="#{caseDocumentsBacking.pageObjectDescription}" /> 
+  <ui:param name="editStyle" value="max-width:800px" />
+
+  <ui:define name="edit_dialog">
+
+    <p:outputPanel id="edit_panels">
+      <p:panel id="edit_document_form" rendered="#{caseDocumentsBacking.editing != null}"
+               styleClass="mt-2">
+      </p:panel>       
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{caseDocumentsBacking.storeDocument}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         disabled="#{!caseBean.editable}"
+                         update="page_results_table edit_panels"
+                         oncomplete="PF('editDataDialog').hide()"/>
+        <p:commandButton action="#{caseDocumentsBacking.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                         immediate="true" update="edit_panels" global="false" 
+                         oncomplete="PF('editDataDialog').hide()"/>
+      </div>      
+
+    </p:outputPanel>
+  </ui:define>      
+
+
+</ui:composition>

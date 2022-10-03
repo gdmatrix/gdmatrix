@@ -360,16 +360,25 @@ public class ResultListHelper<T extends Serializable> implements Serializable
         {
           if (pageBacking instanceof Typed)
           {
-            String typeId = ((Typed) pageBacking).getTypeId();
-            Type type = TypeCache.getInstance().getType(typeId);
-            PropertyDefinition pd = type.getPropertyDefinition((String) key);
-            if (pd != null)
+            String skey = String.valueOf(key);
+            if (skey.endsWith("TypeId")) //It's a typeId field
             {
-              PropertyType propType = pd.getType();
-              if (propType.equals(PropertyType.DATE))
-                fValue = formatDate(value);
-              else if (pd.getEnumTypeId() != null)
-                fValue = formatEnumType(pd.getEnumTypeId(), key, value);
+              Type keyType = TypeCache.getInstance().getType(skey); 
+              fValue = keyType.getDescription();
+            }
+            else
+            {
+              String typeId = ((Typed) pageBacking).getTypeId();
+              Type type = TypeCache.getInstance().getType(typeId);
+              PropertyDefinition pd = type.getPropertyDefinition((String) key);
+              if (pd != null)
+              {
+                PropertyType propType = pd.getType();
+                if (propType.equals(PropertyType.DATE))
+                  fValue = formatDate(value);
+                else if (pd.getEnumTypeId() != null)
+                  fValue = formatEnumType(pd.getEnumTypeId(), key, value);
+              }
             }
           } 
           formattedValuesMap.put(key + "::" + value, fValue);

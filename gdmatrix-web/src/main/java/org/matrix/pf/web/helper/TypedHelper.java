@@ -51,8 +51,10 @@ import org.santfeliu.dic.web.TypeBean;
 public class TypedHelper extends WebBacking
   implements Serializable
 {
-  private static final String TYPE_BEAN = "typeBean";
+  public static final String TYPEID_SEPARATOR = ";";
   
+  private static final String TYPE_BEAN = "typeBean";
+
   protected final Typed backing;
 
   public TypedHelper(Typed backing)
@@ -63,7 +65,8 @@ public class TypedHelper extends WebBacking
   public String getTypeId()
   {
     String objectTypeId = backing.getTypeId();
-    return objectTypeId != null ? objectTypeId : backing.getRootTypeId();
+    return (objectTypeId != null && !objectTypeId.contains(TYPEID_SEPARATOR)) ?
+      objectTypeId : backing.getRootTypeId();
   }
 
   public List<Type> getAllTypes()

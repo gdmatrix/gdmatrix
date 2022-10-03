@@ -80,8 +80,8 @@ public class CasePersonsBacking extends PageBacking
   implements TypedTabPage, ResultListPage
 {
   private static final String PERSON_BACKING = "personBacking";
-    
-    
+  private static final String CASE_BACKING = "caseBacking";
+  
   private static final String OUTCOME = "pf_case_persons";
   
   private static final String GROUPBY_PROPERTY = "groupBy";
@@ -122,7 +122,7 @@ public class CasePersonsBacking extends PageBacking
   @PostConstruct
   public void init()
   {
-    caseBacking = WebUtils.getBacking("caseBacking");   
+    caseBacking = WebUtils.getBacking(CASE_BACKING);   
     typedHelper = new TypedHelper(this);
     resultListHelper = new ResultListHelper(this);
     tabHelper = new TabHelper(this);
@@ -314,8 +314,11 @@ public class CasePersonsBacking extends PageBacking
   public void setSelectedPerson(String personId)
   {
     editing.setPersonId(personId);    
-    if (!personId.equals(personSelectItem.getValue()))
+    if (personSelectItem == null || 
+      !personId.equals(personSelectItem.getValue()))
+    {
       personSelectItem = newPersonSelectItem(personId);
+    }
     contacts = getContacts(personId);
     personAddresses = getAddresses(editing.getAddressId(), personId);
     selectedContacts = null;

@@ -31,13 +31,15 @@
                          ajax="#{objectPage == 'object_search' ? true : false}"
                          action="#{templateBacking.searchBacking.clear}"
                          styleClass="ui-button-raised m-1"
-                         update="search_accordion"/>      
+                         update="search_accordion"
+                         oncomplete="clickSlickDot(2);"/>      
         <p:commandButton id="default_button" value="#{objectBundle.search}"
                          action="#{templateBacking.searchBacking.smartSearch}"
                          process="@parent" 
                          ajax="#{objectPage == 'object_search' ? true : false}" 
                          update="#{objectPage == 'object_search' ? ':mainform:search_results_panel' : ''}"
-                         styleClass="ui-button-raised m-1" />
+                         styleClass="ui-button-raised m-1" 
+                         oncomplete="clickSlickDot(2);"/>
       </div>   
     </ui:define>  
     
@@ -64,7 +66,8 @@
     <!-- Favorites -->
     <ui:define name="favorites">
       <p:dataTable id="favorites_table" value="#{templateBacking.favorites}"
-                   var="fav" size="small" styleClass="favorites_table">
+                   var="fav" size="small" styleClass="favorites_table"
+                    paginator="true" paginatorPosition="bottom">
         <p:column>
           <p:commandLink action="#{controllerBacking.show(fav.getValue())}" ajax="false" oncomplete="clickSlickDot(2);"
                          update=":mainform:object_header">

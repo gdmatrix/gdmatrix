@@ -15,16 +15,35 @@
 
       <div class="ui-fluid formgrid grid">   
 
-        <p:outputPanel styleClass="field col-12 md:col-7" 
+        <p:outputPanel styleClass="field col-12 md:col-6" 
                        rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('title')}">
           <p:outputLabel for="title" value="#{caseMainBacking.typedHelper.getPropertyLabel('title', caseBundle.case_title)}" />
           <p:inputText id="title" value="#{caseMainBacking.case.title}" 
                        class="inputfield w-full"/>
+        </p:outputPanel> 
+        
+        <p:outputPanel styleClass="field col-6 md:col-3">
+          <p:outputLabel for="start_date" value="#{caseMainBacking.typedHelper.getPropertyLabel('startDate', caseBundle.case_startDate)}" />
+          <!-- TODO: disable if not editable -->
+          <p:datePicker id="start_date" value="#{caseMainBacking.startDateTime}" 
+                        locale="#{caseMainBacking.language}" 
+                        showIcon="true" showTime="#{!caseMainBacking.tabHelper.isPropertyHidden('startTime')}"
+                        monthNavigator="true" yearNavigator="true" />
         </p:outputPanel>     
+
+        <p:outputPanel styleClass="field col-6 md:col-3"
+                       rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('endDate')}">
+          <p:outputLabel for="end_date" value="#{caseMainBacking.typedHelper.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
+          <!-- TODO: disable if not editable -->
+          <p:datePicker id="end_date" value="#{caseMainBacking.endDateTime}" 
+                        locale="#{caseMainBacking.language}" 
+                        showIcon="true" showTime="#{!caseMainBacking.tabHelper.isPropertyHidden('endTime')}"
+                        monthNavigator="true" yearNavigator="true" />
+        </p:outputPanel>         
 
 
       <!--TODO: isRenderType -->
-        <p:outputPanel styleClass="field col-12 md:col-5"
+        <p:outputPanel styleClass="field col-12 md:col-6"
                        rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('caseTypeId') and caseMainBacking.typedHelper.allTypes.size() > 1}">
           <p:outputLabel for="case_type_id" value="#{caseMainBacking.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />    
           <p:selectOneMenu id="case_type_id" value="#{caseMainBacking.case.caseTypeId}"  
@@ -42,24 +61,7 @@
           </p:selectOneMenu>
         </p:outputPanel>  
         
-        <p:outputPanel styleClass="field col-6">
-          <p:outputLabel for="start_date" value="#{caseMainBacking.typedHelper.getPropertyLabel('startDate', caseBundle.case_startDate)}" />
-          <!-- TODO: disable if not editable -->
-          <p:datePicker id="start_date" value="#{caseMainBacking.startDateTime}" 
-                        locale="#{caseMainBacking.language}" 
-                        showIcon="true" showTime="#{!caseMainBacking.tabHelper.isPropertyHidden('startTime')}"
-                        monthNavigator="true" yearNavigator="true" />
-        </p:outputPanel>     
 
-        <p:outputPanel styleClass="field col-6"
-                       rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('endDate')}">
-          <p:outputLabel for="end_date" value="#{caseMainBacking.typedHelper.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
-          <!-- TODO: disable if not editable -->
-          <p:datePicker id="end_date" value="#{caseMainBacking.endDateTime}" 
-                        locale="#{caseMainBacking.language}" 
-                        showIcon="true" showTime="#{!caseMainBacking.tabHelper.isPropertyHidden('endTime')}"
-                        monthNavigator="true" yearNavigator="true" />
-        </p:outputPanel> 
 
       
       <p:outputPanel rendered="#{caseMainBacking.showAuditProperties and caseMainBean.creationDateTime != null}">
