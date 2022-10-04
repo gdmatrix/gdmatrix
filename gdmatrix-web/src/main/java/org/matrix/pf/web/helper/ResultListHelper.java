@@ -31,7 +31,6 @@
 package org.matrix.pf.web.helper;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,7 +40,6 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.matrix.cases.Case;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
@@ -363,8 +361,10 @@ public class ResultListHelper<T extends Serializable> implements Serializable
             String skey = String.valueOf(key);
             if (skey.endsWith("TypeId")) //It's a typeId field
             {
-              Type keyType = TypeCache.getInstance().getType(skey); 
-              fValue = keyType.getDescription();
+              String svalue = String.valueOf(value);
+              Type keyType = TypeCache.getInstance().getType(svalue); 
+              if (keyType != null)                
+                fValue = keyType.getDescription();
             }
             else
             {
@@ -391,7 +391,6 @@ public class ResultListHelper<T extends Serializable> implements Serializable
       {
         Object result = value;
         
-//        String enumTypeId = pd.getEnumTypeId();
         DataProviderFactory factory = DataProviderFactory.getInstance();
         String ref = "enumtype:" + enumTypeId;
         DataProvider provider;
@@ -422,37 +421,5 @@ public class ResultListHelper<T extends Serializable> implements Serializable
          
     }
     
-  }
-  
-  public static void main(String[] args)
-  {
-    try
-    {
-      Case cas = new Case();
-      cas.setCaseId("1");
-      cas.setStartDate("20220101");
-      Property p = new Property();
-      p.setName("prop1");
-      p.getValue().add("value1");
-      cas.getProperty().add(p);
-      
-      System.out.println(PropertyUtils.getProperty(cas, "caseId"));
-      System.out.println(PropertyUtils.getPropertyType(cas, "startDate"));
-   
-    }
-    catch (IllegalAccessException ex)
-    {
-      Logger.getLogger(ResultListHelper.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    catch (InvocationTargetException ex)
-    {
-      Logger.getLogger(ResultListHelper.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    catch (NoSuchMethodException ex)
-    {
-      Logger.getLogger(ResultListHelper.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
-  
- 
+  } 
 }

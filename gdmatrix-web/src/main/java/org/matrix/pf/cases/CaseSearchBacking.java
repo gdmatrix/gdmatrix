@@ -30,7 +30,6 @@
  */
 package org.matrix.pf.cases;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -38,16 +37,12 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
-import org.matrix.dic.Property;
 import static org.matrix.pf.cases.CaseConfigBacking.LOAD_METADATA_PROPERTY;
 import org.matrix.pf.web.SearchBacking;
-import org.matrix.pf.web.helper.DynamicFormPage;
-import org.matrix.pf.web.helper.FormHelper;
 import org.matrix.pf.web.helper.Typed;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
-import org.santfeliu.form.builder.TypeFormBuilder.FormMode;
 import org.santfeliu.util.TextUtils;
 
 /**
@@ -56,7 +51,7 @@ import org.santfeliu.util.TextUtils;
  */
 @Named("caseSearchBacking")
 public class CaseSearchBacking extends SearchBacking 
-  implements Typed, DynamicFormPage
+  implements Typed
 {
 
   public static final String OUTCOME = "pf_case_search";
@@ -65,7 +60,6 @@ public class CaseSearchBacking extends SearchBacking
   
   private CaseFilter filter;
   private TypedHelper typedHelper;
-  private FormHelper formHelper;
   
   public CaseSearchBacking()
   {   
@@ -81,7 +75,6 @@ public class CaseSearchBacking extends SearchBacking
       filter.setCaseTypeId(typeId);    
     smartValue = null;
     typedHelper = new TypedHelper(this); 
-    formHelper = new FormHelper(this, FormMode.SEARCH);    
   }
   
   public CaseFilter getFilter()
@@ -144,14 +137,12 @@ public class CaseSearchBacking extends SearchBacking
   public String show()
   {
     String outcome = super.show();
-    formHelper.postSubmit(getProperties());
     return outcome;
   }
      
   @Override
   public String search()
   {
-    formHelper.preSubmit(getProperties());
     smartValue = convert(filter);
     String typeId = getMenuItemTypeId();
     if (typeId != null)
@@ -161,8 +152,7 @@ public class CaseSearchBacking extends SearchBacking
   
   @Override
   public String smartSearch()
-  {
-    formHelper.preSubmit(getProperties());    
+  {     
     filter = convert(smartValue); 
     String typeId = getMenuItemTypeId();
     if (typeId != null)
@@ -281,30 +271,7 @@ public class CaseSearchBacking extends SearchBacking
   {
     return typedHelper;
   }  
-  
-  //DynamicFormPage methods
-
-  @Override
-  public FormHelper getFormHelper()
-  {
-    return formHelper;
-  } 
-  
-  @Override
-  public void setTypeId(String typeId)
-  {
-    filter.setCaseTypeId(typeId);
-  }
-
-  @Override
-  public List<Property> getProperties()
-  {
-    if (filter != null)
-      return filter.getProperty();
-    else
-      return Collections.emptyList();
-  }
- 
+   
   //TODO: Move to SearchBean
   private void loadMetadata(List<Case> results) throws Exception
   {

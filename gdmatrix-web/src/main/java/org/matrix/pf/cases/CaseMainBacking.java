@@ -30,23 +30,18 @@
  */
 package org.matrix.pf.cases;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseConstants;
-import org.matrix.dic.Property;
 import org.matrix.pf.web.PageBacking;
-import org.matrix.pf.web.helper.DynamicFormTabPage;
-import org.matrix.pf.web.helper.FormHelper;
 import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
+import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.form.builder.TypeFormBuilder.FormMode;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
 
@@ -56,14 +51,13 @@ import org.santfeliu.web.UserSessionBean;
  */
 @Named("caseMainBacking")
 public class CaseMainBacking extends PageBacking
-  implements DynamicFormTabPage
+  implements TypedTabPage
 {
   public static final String SHOW_AUDIT_PROPERTIES = "_showAuditProperties";
   public static final String OUTCOME = "pf_case_main";  
   
   private Case cas;
   private TypedHelper typedHelper;
-  private FormHelper formHelper;
   private TabHelper tabHelper;
   
   private CaseBacking caseBacking;
@@ -79,7 +73,6 @@ public class CaseMainBacking extends PageBacking
     caseBacking = WebUtils.getBacking("caseBacking"); 
     
     typedHelper = new TypedHelper(this);  
-    formHelper = new FormHelper(this, FormMode.EDIT);
     tabHelper = new TabHelper(this);
   }
 
@@ -113,18 +106,6 @@ public class CaseMainBacking extends PageBacking
   public TabHelper getTabHelper()
   {
     return tabHelper;
-  }
-
-  @Override
-  public void setTypeId(String typeId)
-  {
-    this.cas.setCaseTypeId(typeId);
-  }
-
-  @Override
-  public FormHelper getFormHelper()
-  {
-    return formHelper;
   }
 
   public Case getCase()
@@ -196,15 +177,6 @@ public class CaseMainBacking extends PageBacking
   {
     create();
   }
-
-  @Override
-  public List<Property> getProperties()
-  {
-    if (cas != null)
-      return cas.getProperty();
-    else
-      return Collections.emptyList();
-  }
   
   @Override
   public void create()
@@ -231,7 +203,7 @@ public class CaseMainBacking extends PageBacking
   }  
   
   @Override
-  public String doStore()
+  public String store()
   {
     try
     {
