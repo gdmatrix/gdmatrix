@@ -195,8 +195,10 @@ public class WorkflowInstance extends HashMap
       WorkflowConstants.EXIT_BUTTON_ENABLED.equals(variable) ||
       WorkflowConstants.DESTROY_BUTTON_ENABLED.equals(variable) ||
       WorkflowConstants.TERMINATION_MESSAGE.equals(variable) ||
+      WorkflowConstants.TERMINATION_FORM.equals(variable) ||
       WorkflowConstants.TERMINATION_ICON.equals(variable) ||
       WorkflowConstants.FAIL_MESSAGE.equals(variable) ||
+      WorkflowConstants.FAIL_FORM.equals(variable) ||
       WorkflowConstants.FAIL_ICON.equals(variable) ||
       WorkflowConstants.TRANSLATION_ENABLED.equals(variable) ||
       WorkflowConstants.START_DATE_TIME.equals(variable) ||

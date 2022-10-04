@@ -10,7 +10,8 @@
 
       <f:loadBundle basename="org.santfeliu.workflow.web.resources.WorkflowBundle" var="workflowBundle" />
 
-      <h:panelGroup layout="block" class="final_form" rendered="#{instanceBean.finalFormSelector == null}">
+      <h:panelGroup layout="block" class="final_form" 
+                    rendered="#{instanceBean.finalFormSelector == null}">
         <h:graphicImage url="#{instanceBean.finalIcon}" style="vertical-align:middle" alt="" />
         <sf:outputText value="#{instanceBean.finalMessage}" 
           translator="#{instanceBean.translationEnabled ? applicationBean.translator : null}" 
@@ -18,8 +19,11 @@
           styleClass="workflowMessage" escape="false" />
       </h:panelGroup>
 
-      <h:panelGroup layout="block" class="final_form" rendered="#{instanceBean.finalFormSelector != null}">
+      <h:panelGroup layout="block" class="final_form" 
+                    rendered="#{instanceBean.finalFormSelector != null}">
         <sf:dynamicForm form="#{instanceBean.finalForm}"
+          rendererTypes="#{instanceBean.formRenderers}"
+          value="#{instanceBean.variables}"
           translator="#{instanceBean.translationEnabled ? applicationBean.translator : null}" 
           translationGroup="#{instanceBean.workflowName}" />
       </h:panelGroup>
