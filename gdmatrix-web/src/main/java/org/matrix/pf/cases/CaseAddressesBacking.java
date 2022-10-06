@@ -43,6 +43,7 @@ import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CasePerson;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.AddressFilter;
 import org.matrix.kernel.AddressView;
 import org.matrix.kernel.ContactView;
@@ -76,9 +77,7 @@ public class CaseAddressesBacking extends PageBacking
   
   private static final String CASE_BACKING = "caseBacking";
   private static final String ADDRESS_BACKING = "addressBacking";
-  
-  private static final String ROOT_TYPE_ID = "CaseAddress";
-  
+    
   private static final String OUTCOME = "pf_case_addresses";  
   
   private CaseBacking caseBacking;
@@ -147,7 +146,7 @@ public class CaseAddressesBacking extends PageBacking
   @Override
   public String getRootTypeId()
   {
-    return ROOT_TYPE_ID;
+    return DictionaryConstants.CASE_ADDRESS_TYPE;
   }
 
   @Override

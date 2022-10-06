@@ -36,6 +36,7 @@ import javax.inject.Named;
 import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.Document;
 import org.matrix.pf.doc.DocumentBacking;
 import org.matrix.pf.web.PageBacking;
@@ -58,9 +59,7 @@ public class CaseDocumentsBacking extends PageBacking
 {
   private static final String CASE_BACKING = "caseBacking";
   private static final String DOCUMENT_BACKING = "documentBacking";
-  
-  private static final String ROOT_TYPE_ID = "CaseDocument";
-  
+    
   private static final String OUTCOME = "pf_case_documents";  
   
   private CaseBacking caseBacking;
@@ -119,7 +118,7 @@ public class CaseDocumentsBacking extends PageBacking
     if (editing != null)
     {
       DocumentBacking addressBacking = WebUtils.getBacking(DOCUMENT_BACKING);
-      return addressBacking.getDescription(editing.getDocId());
+      return getDescription(addressBacking, editing.getDocId());
     }
     return null;
   }
@@ -127,7 +126,7 @@ public class CaseDocumentsBacking extends PageBacking
   @Override
   public String getRootTypeId()
   {
-    return ROOT_TYPE_ID;
+    return DictionaryConstants.CASE_DOCUMENT_TYPE;
   }
 
   @Override

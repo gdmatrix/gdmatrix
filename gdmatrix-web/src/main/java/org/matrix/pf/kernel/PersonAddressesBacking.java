@@ -116,7 +116,7 @@ public class PersonAddressesBacking extends PageBacking
     if (editing != null)
     {
       AddressBacking addressBacking = WebUtils.getBacking(ADDRESS_BACKING);
-      return addressBacking.getDescription(editing.getAddressId());
+      return getDescription(addressBacking, editing.getAddressId());
     }
     return null;
   }
@@ -182,7 +182,7 @@ public class PersonAddressesBacking extends PageBacking
     {
       String description = "";
       if (addressId != null)
-        description = addressBacking.getDescription(addressId);
+        description = getDescription(addressBacking, addressId);
       items.add(new SelectItem(addressId, description));
     }
         
@@ -225,7 +225,7 @@ public class PersonAddressesBacking extends PageBacking
       !addressId.equals(addressSelectItem.getValue()))
     {
       AddressBacking addressBacking = WebUtils.getBacking(ADDRESS_BACKING);    
-      String description = addressBacking.getDescription(addressId);
+      String description = getDescription(addressBacking, addressId);
       addressSelectItem = new SelectItem(addressId, description);       
     }    
     showDialog();
@@ -401,7 +401,7 @@ public class PersonAddressesBacking extends PageBacking
       if (editing.getAddressId() != null)
       {
         String description = 
-          addressBacking.getDescription(editing.getAddressId());
+          getDescription(addressBacking, editing.getAddressId());
         addressSelectItem = 
           new SelectItem(editing.getAddressId(), description);
       }

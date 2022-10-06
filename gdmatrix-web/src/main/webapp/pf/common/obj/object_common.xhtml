@@ -69,7 +69,8 @@
                    var="fav" size="small" styleClass="favorites_table"
                     paginator="true" paginatorPosition="bottom">
         <p:column>
-          <p:commandLink action="#{controllerBacking.show(fav.getValue())}" ajax="false" oncomplete="clickSlickDot(2);"
+          <p:commandLink action="#{controllerBacking.show(fav.getValue())}" 
+                         ajax="false" oncomplete="clickSlickDot(2);"
                          update=":mainform:object_header">
             <h:outputText value="#{templateBacking.getDescription(fav)}" />
           </p:commandLink>

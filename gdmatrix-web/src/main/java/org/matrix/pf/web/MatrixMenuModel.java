@@ -60,7 +60,12 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
     {
       DefaultSubMenu.Builder builder = DefaultSubMenu.builder()
         .label(label);
-
+      
+      //Icon
+      String icon = mic.getProperty("icon");
+      if (!StringUtils.isBlank(icon))
+        builder.icon(icon);
+      
       DefaultSubMenu submenu = builder.build();
 
       submenu.getElements().addAll(getElements(mic.getFirstChild()));

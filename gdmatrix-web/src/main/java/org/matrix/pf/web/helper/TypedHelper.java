@@ -204,11 +204,8 @@ public class TypedHelper extends WebBacking
     try
     {
       TypeBean typeBean = WebUtils.getBacking(TYPE_BEAN);
-      if (!backing.getRootTypeId().equals(backing.getTypeId()))
-      {
-        return typeBean.getAllSelectItems(getTypeId(),
-          backing.getAdminRole(), actions, true);
-      }
+      return typeBean.getAllSelectItems(getTypeId(),
+        backing.getAdminRole(), actions, true);
     }
     catch (Exception ex)
     {

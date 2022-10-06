@@ -33,11 +33,14 @@ package org.matrix.pf.kernel;
 import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.KernelConstants;
+import org.matrix.kernel.Person;
 import org.matrix.kernel.PersonFilter;
 import org.matrix.kernel.PersonView;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
+import org.matrix.web.Describable;
 import org.matrix.web.WebUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
 
@@ -47,7 +50,8 @@ import org.santfeliu.kernel.web.KernelConfigBean;
  */
 @CMSContent(typeId = "Person")
 @Named("personBacking")
-public class PersonBacking extends ObjectBacking<PersonView>
+public class PersonBacking extends ObjectBacking<PersonView> 
+  implements Describable
 {   
   public PersonBacking()
   {
@@ -75,10 +79,10 @@ public class PersonBacking extends ObjectBacking<PersonView>
   @Override
   public String getDescription()
   {
-    PersonMainBacking mainBacking = 
-      WebUtils.getBacking("personMainBacking");
-    if (mainBacking != null)
-      return getDescription(mainBacking.getPerson().getPersonId());
+    PersonMainBacking mainBacking = WebUtils.getBacking("personMainBacking");
+    Person person = mainBacking.getPerson();
+    if (person != null)
+      return getDescription(person);
     else
       return super.getDescription();
   }
@@ -111,7 +115,20 @@ public class PersonBacking extends ObjectBacking<PersonView>
   public String getDescription(PersonView personView)
   {
     return personView.getFullName();
-  }  
+  } 
+  
+  public String getDescription(Person person)
+  {
+    String name = person.getName();
+    String particle1 = person.getFirstParticle();
+    String particle2 = person.getSecondParticle();    
+    String surname1 = person.getFirstSurname();
+    String surname2 = person.getSecondSurname();
+
+    return name + (StringUtils.isBlank(particle1) ? "" : " " + particle1) 
+      + " " + surname1 + (StringUtils.isBlank(particle2) ? "" : " " + particle2)
+      + " " + (StringUtils.isBlank(surname2) ? "" : " " + surname2);
+  }
   
   @Override
   public List<SelectItem> getFavorites()

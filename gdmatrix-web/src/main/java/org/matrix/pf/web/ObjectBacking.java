@@ -68,11 +68,14 @@ public abstract class ObjectBacking<T> extends WebBacking
   protected Integer tabIndex;  
   
   protected TypedHelper typedHelper;
+  
+  ObjectDescriptionCache descriptionCache;  
 
   protected ObjectBacking()
   {
     tabs = new ArrayList<>();    
     tabIndex = 0; 
+    descriptionCache = ObjectDescriptionCache.getInstance();    
   }
   
   @PostConstruct
@@ -93,10 +96,15 @@ public abstract class ObjectBacking<T> extends WebBacking
     return getMenuItemTypeId();
   }
       
+  /**
+   * Legacy function only used by Describable for compatibility with classes 
+   * derived from ObjectBean. It's equivalent to getRootTypeId function.
+   * @return 
+   */
   @Override
   public String getObjectTypeId()
   {
-    return getTypeId();
+    return getRootTypeId();
   }
   
   @Override
@@ -244,13 +252,12 @@ public abstract class ObjectBacking<T> extends WebBacking
   
   public List<SelectItem> getFavorites()
   {
-    return getFavorites(getObjectTypeId());
+    return getFavorites(getTypeId());
   }
   
   public List<SelectItem> getFavorites(String objectTypeId)
   {
     List<SelectItem> items = new LinkedList<>();
-    ObjectDescriptionCache cache = ObjectDescriptionCache.getInstance();
 
     try
     {
@@ -265,7 +272,7 @@ public abstract class ObjectBacking<T> extends WebBacking
         for (String favoriteObjectId : favoriteIdList)
         {
           String description = 
-            cache.getDescription(this, "pf::" + favoriteObjectId);
+            descriptionCache.getDescription(this, "pf::" + favoriteObjectId);
           if (description != null && !description.isEmpty())
           {
             SelectItem item = new SelectItem();
@@ -278,7 +285,7 @@ public abstract class ObjectBacking<T> extends WebBacking
           {
             if (purge)
             {
-              userPreferences.removePreference(getObjectTypeId(),
+              userPreferences.removePreference(getTypeId(),
                 favoriteObjectId);
             }
           }

@@ -32,11 +32,13 @@ package org.matrix.pf.web;
 
 import java.util.List;
 import javax.inject.Named;
+import org.matrix.web.Describable;
 import static org.matrix.web.WebUtils.OBJECT_TYPEID_PROPERTY;
 import org.santfeliu.cms.web.NodeEditBean;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.web.obj.ObjectDescriptionCache;
 
 /**
  *
@@ -125,5 +127,11 @@ public class WebBacking extends FacesBean
   {
     return (NodeEditBean)getBean("nodeEditBean");
   }
+  
+  protected String getDescription(Describable describable, String objectId)
+  {
+    ObjectDescriptionCache cache = ObjectDescriptionCache.getInstance();
+    return cache.getDescription(describable, objectId);
+  }    
      
 }

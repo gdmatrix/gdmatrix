@@ -155,7 +155,7 @@ public class TemplateBacking extends WebBacking
   public boolean isFavorite()
   {
     ObjectBacking objectBacking = getObjectBacking();
-    String objectTypeId = objectBacking.getObjectTypeId();
+    String objectTypeId = objectBacking.getTypeId();
     String objectId = objectBacking.getObjectId();
     return isObjectFavorite(objectTypeId, objectId);
   }
@@ -163,7 +163,7 @@ public class TemplateBacking extends WebBacking
   public String markFavorite()
   {   
     ObjectBacking objectBacking = getObjectBacking();    
-    String objectTypeId = objectBacking.getObjectTypeId();
+    String objectTypeId = objectBacking.getTypeId();
     String objectId = objectBacking.getObjectId();    
     return markObjectAsFavorite(objectTypeId, objectId);
   }
@@ -171,7 +171,7 @@ public class TemplateBacking extends WebBacking
   public String unmarkFavorite()
   {  
     ObjectBacking objectBacking = getObjectBacking();    
-    String objectTypeId = objectBacking.getObjectTypeId();
+    String objectTypeId = objectBacking.getTypeId();
     String objectId = objectBacking.getObjectId();        
     return unmarkObjectAsFavorite(objectTypeId, objectId);
   } 
@@ -220,7 +220,7 @@ public class TemplateBacking extends WebBacking
       ObjectBacking targetBacking = 
         ControllerBacking.getCurrentInstance().getObjectBacking(typeId);
       if (targetBacking != null)
-        label = targetBacking.getDescription(objectId);
+        label = getDescription(targetBacking, objectId);
     }
     
     return encodeDescription(label, objectId);
@@ -268,7 +268,7 @@ public class TemplateBacking extends WebBacking
   
   public String getTypeDescription()
   {
-    String typeId = getObjectBacking().getObjectTypeId();
+    String typeId = getObjectBacking().getTypeId();
     return getTypeDescription(typeId);
   }
   

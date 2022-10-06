@@ -73,7 +73,7 @@ public class ControllerProxy
 
       if (objectBacking != null)
       {
-        String currentTypeId = objectBacking.getObjectTypeId();     
+        String currentTypeId = objectBacking.getTypeId();     
         if (currentTypeId != null)
         {
           controllerBacking.getPageHistory()

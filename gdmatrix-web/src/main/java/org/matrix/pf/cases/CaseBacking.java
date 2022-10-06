@@ -68,19 +68,25 @@ public class CaseBacking extends ObjectBacking<Case>
   @Override
   public String getTypeId()
   {
-    CaseMainBacking mainBacking = WebUtils.getBacking("caseMainBacking"); 
-    if (mainBacking != null)
-      return mainBacking.getTypeId();
+    if (isNew()) //New object or search page.
+      return getMenuItemTypeId();
     else
-      return super.getTypeId();    
+    {
+      CaseMainBacking mainBacking = WebUtils.getBacking("caseMainBacking"); 
+      if (mainBacking != null)
+        return mainBacking.getTypeId();
+    }
+      
+    return super.getTypeId();    
   }  
   
   @Override
   public String getDescription()
   {
     CaseMainBacking mainBacking = WebUtils.getBacking("caseMainBacking");
-    if (mainBacking != null)
-      return getDescription(mainBacking.getCase());
+    Case cas = mainBacking.getCase();
+    if (cas != null)
+      return getDescription(cas);
     else
       return super.getDescription();
   }  
@@ -115,6 +121,9 @@ public class CaseBacking extends ObjectBacking<Case>
   @Override
   public String show()
   {
+    CaseMainBacking main = WebUtils.getBacking("caseMainBacking");
+    if (main != null && !main.getTypeId().equals(getMenuItemTypeId()))
+      main.reset();
     return super.show(); 
   }
 

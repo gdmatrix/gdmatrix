@@ -46,6 +46,7 @@ import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CasePerson;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Contact;
 import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
@@ -163,7 +164,7 @@ public class CasePersonsBacking extends PageBacking
     if (editing != null)
     {
       PersonBacking personBacking = WebUtils.getBacking(PERSON_BACKING);
-      return personBacking.getDescription(editing.getPersonId());
+      return getDescription(personBacking, editing.getPersonId());
     }
     return null;
   }
@@ -171,7 +172,7 @@ public class CasePersonsBacking extends PageBacking
   @Override
   public String getRootTypeId()
   {
-    return "CasePerson";
+    return DictionaryConstants.CASE_PERSON_TYPE;
   }
   
   @Override

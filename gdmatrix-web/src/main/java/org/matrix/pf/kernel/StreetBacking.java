@@ -36,6 +36,7 @@ import java.util.ResourceBundle;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.City;
 import org.matrix.kernel.CityFilter;
 import org.matrix.kernel.KernelConstants;
@@ -170,7 +171,7 @@ public class StreetBacking extends ObjectBacking
   @Override
   public String getTypeId()
   {
-    return "Street";
+    return DictionaryConstants.STREET_TYPE;
   }
 
   public List<SelectItem> completeStreet(String query, String currentStreetId)

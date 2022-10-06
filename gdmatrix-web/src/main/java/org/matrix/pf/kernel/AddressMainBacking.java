@@ -213,8 +213,7 @@ public class AddressMainBacking extends PageBacking
 
     if (address != null)
     {
-      String description = 
-        streetBacking.getDescription(streetId);
+      String description = getDescription(streetBacking, streetId);
       streetSelectItem = 
         new SelectItem(streetId, description);
     }    

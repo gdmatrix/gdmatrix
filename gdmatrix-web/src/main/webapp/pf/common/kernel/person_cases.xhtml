@@ -67,7 +67,7 @@
         <p:column styleClass="w-2 text-right" exportable="false">
           <h:panelGroup>            
             <p:commandButton icon="mi mi-icon-show mi-invert-color" styleClass="ui-button-raised" 
-                             action="#{controllerBacking.show('Case', row.caseObject.caseId)}" 
+                             action="#{controllerBacking.show(row.caseObject.caseTypeId, row.caseObject.caseId)}" 
                              immediate="true" ajax="false" 
                              alt="#{objectBundle.show}" title="#{objectBundle.show}"/>  
           </h:panelGroup>

@@ -158,7 +158,7 @@ public class PersonMainBacking extends PageBacking
   {
     CityBacking cityBacking  = WebUtils.getBacking("cityBacking");
     String id = person.getBirthCityId();
-    String description = cityBacking.getDescription(id);
+    String description = getDescription(cityBacking, id);
     return new SelectItem(id, description);
   }
   

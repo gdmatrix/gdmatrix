@@ -151,7 +151,7 @@ public class PageHistory extends org.santfeliu.web.obj.PageHistory
       MenuItemCursor cursor = userSessionBean.getMenuModel().getMenuItem(mid);
       ObjectBacking objectBacking = WebUtils.getBacking(cursor);  
       if (objectBacking == null) return null;
-      String key = objectBacking.getObjectTypeId().toLowerCase();
+      String key = objectBacking.getTypeId().toLowerCase();
       return (String)UserSessionBean.getCurrentInstance().getObjectIcons().
         get(key);
     }

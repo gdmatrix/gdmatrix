@@ -42,6 +42,12 @@
   </managed-bean>    
   
   <managed-bean>
+    <managed-bean-name>caseInterventionsBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.cases.CaseInterventionsBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
     <managed-bean-name>caseDocumentsBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.cases.CaseDocumentsBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
@@ -74,6 +80,11 @@
       <from-outcome>pf_case_cases</from-outcome>
       <to-view-id>/pf/common/cases/case_cases.xhtml</to-view-id>
     </navigation-case>  
+    
+    <navigation-case>
+      <from-outcome>pf_case_interventions</from-outcome>
+      <to-view-id>/pf/common/cases/case_interventions.xhtml</to-view-id>
+    </navigation-case>      
     
     <navigation-case>
       <from-outcome>pf_case_documents</from-outcome>

@@ -45,7 +45,7 @@ import org.santfeliu.jmx.JMXUtils;
  */
 public class ObjectDescriptionCache implements Serializable
 {
-  private static final int MAX_SIZE = 200;
+  private static final int MAX_SIZE = 1000;
   private static final ObjectDescriptionCache defaultInstance = 
     new ObjectDescriptionCache();
 
@@ -68,7 +68,7 @@ public class ObjectDescriptionCache implements Serializable
     return defaultInstance;
   }
 
-  public String getDescription(Describable objectBean, String objectId)
+  public String getDescription(Describable describable, String objectId)
   {
     if (ControllerBean.NEW_OBJECT_ID.equals(objectId))
     {
@@ -76,14 +76,14 @@ public class ObjectDescriptionCache implements Serializable
     }
     else
     {
-      String typeId = objectBean.getObjectTypeId();
+      String typeId = describable.getObjectTypeId();
       String key = getKey(typeId, objectId);
       synchronized (map)
       {
         String description = (String) map.get(key);
         if (StringUtils.isBlank(description))
         {
-          description = loadDescription(objectBean, objectId);
+          description = loadDescription(describable, objectId);
           map.put(key, description);
         }
         return description;
@@ -91,9 +91,9 @@ public class ObjectDescriptionCache implements Serializable
     }
   }
 
-  public void clearDescription(Describable objectBean, String objectId)
+  public void clearDescription(Describable describable, String objectId)
   {
-    String typeId = objectBean.getObjectTypeId();
+    String typeId = describable.getObjectTypeId();
     String key = getKey(typeId, objectId);
     synchronized (map)
     {
@@ -106,22 +106,22 @@ public class ObjectDescriptionCache implements Serializable
   private String getKey(String typeId, String objectId)
   {
     StringBuilder builder = new StringBuilder(typeId);
-    builder.append(":");
+    builder.append(";");
     builder.append(objectId);
     return builder.toString();
   }
 
-  private String loadDescription(Describable objectBean, String objectId)
+  private String loadDescription(Describable describable, String objectId)
   {
     String description;
-    String currentObjectId = objectBean.getObjectId();
+    String currentObjectId = describable.getObjectId();
     if (currentObjectId != null && currentObjectId.equals(objectId))
     {
-      description = objectBean.getDescription();
+      description = describable.getDescription();
     }
     else
     {
-      description = objectBean.getDescription(objectId);
+      description = describable.getDescription(objectId);
     }
     return description;
   }

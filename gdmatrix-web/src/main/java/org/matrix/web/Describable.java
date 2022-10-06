@@ -38,16 +38,16 @@ package org.matrix.web;
  */
 public interface Describable
 {
-  public String getObjectTypeId();
+  public String getObjectTypeId(); 
     
   public String getObjectId();
   
   public String getDescription();
-  
+    
   public default String getDescription(String objectId)
   {
     if (objectId != null && objectId.startsWith("pf::"))
-      objectId = objectId.substring(4);    
+      objectId = objectId.substring(4); 
     return objectId;
   }
 }

@@ -41,13 +41,12 @@ import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.matrix.cases.Case;
-import org.matrix.cases.CaseCase;
-import org.matrix.cases.CaseCaseFilter;
-import org.matrix.cases.CaseCaseView;
-import org.matrix.cases.CaseFilter;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
+import org.matrix.cases.Intervention;
+import org.matrix.cases.InterventionFilter;
+import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.pf.script.ScriptBacking;
 import org.matrix.pf.web.ControllerBacking;
@@ -57,11 +56,14 @@ import org.matrix.pf.web.helper.ResultListPage;
 import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
+import org.matrix.web.Describable;
 import org.matrix.web.WebUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.Visibility;
 import org.santfeliu.cases.web.CaseConfigBean;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.bean.CMSProperty;
 
@@ -70,11 +72,11 @@ import org.santfeliu.web.bean.CMSProperty;
  * @author blanquepa
  */
 @Named
-public class CaseCasesBacking extends PageBacking
-  implements TypedTabPage, ResultListPage
+public class CaseInterventionsBacking extends PageBacking
+  implements TypedTabPage, ResultListPage, Describable
 {
   private static final String CASE_BACKING = "caseBacking";
-  private static final String OUTCOME = "pf_case_cases";
+  private static final String OUTCOME = "pf_case_interventions";
   
   private static final String BLANK_PAGE = "/pf/common/obj/blank.xhtml";
 
@@ -86,13 +88,15 @@ public class CaseCasesBacking extends PageBacking
 
   //Helpers
   private TypedHelper typedHelper;
-  private ResultListHelper<CaseCaseView> resultListHelper;
+  private ResultListHelper<InterventionView> resultListHelper;
   private TabHelper tabHelper;
 
-  private CaseCase editing;
-  private SelectItem caseSelectItem;
+  private Intervention editing;
+  private SelectItem interventionSelectItem;
+  
+  private List<SelectItem> interventions;
 
-  public CaseCasesBacking()
+  public CaseInterventionsBacking()
   {
   }
 
@@ -103,15 +107,16 @@ public class CaseCasesBacking extends PageBacking
     typedHelper = new TypedHelper(this);
     resultListHelper = new ResultListHelper(this);
     tabHelper = new TabHelper(this);
+    interventions = null;
     populate();
   }
 
-  public CaseCase getEditing()
+  public Intervention getEditing()
   {
     return editing;
   }
 
-  public void setEditing(CaseCase editing)
+  public void setEditing(Intervention editing)
   {
     this.editing = editing;
   }
@@ -154,7 +159,7 @@ public class CaseCasesBacking extends PageBacking
   {
     if (editing != null)
     {
-      return editing.getCaseCaseId();
+      return editing.getIntId();
     }
     else
     {
@@ -166,7 +171,7 @@ public class CaseCasesBacking extends PageBacking
   {
     if (editing != null)
     {
-      return getDescription(caseBacking, editing.getCaseId());
+      return getDescription(editing.getIntId());
     }
     return null;
   }
@@ -174,7 +179,7 @@ public class CaseCasesBacking extends PageBacking
   @Override
   public String getRootTypeId()
   {
-    return DictionaryConstants.CASE_CASE_TYPE;
+    return DictionaryConstants.INTERVENTION_TYPE;
   }
 
   @Override
@@ -190,7 +195,7 @@ public class CaseCasesBacking extends PageBacking
   }
 
   @Override
-  public ResultListHelper<CaseCaseView> getResultListHelper()
+  public ResultListHelper<InterventionView> getResultListHelper()
   {
     return resultListHelper;
   }
@@ -206,7 +211,7 @@ public class CaseCasesBacking extends PageBacking
     return tabHelper;
   }
 
-  public List<CaseCaseView> getRows()
+  public List<InterventionView> getRows()
   {
     return resultListHelper.getRows();
   }
@@ -214,7 +219,7 @@ public class CaseCasesBacking extends PageBacking
   public String getRowStartDate()
   {
     String date = "";
-    CaseCaseView row = WebUtils.evaluateExpression("#{row}");
+    InterventionView row = WebUtils.evaluateExpression("#{row}");
     if (row != null)
     {
       date = row.getStartDate();
@@ -227,7 +232,7 @@ public class CaseCasesBacking extends PageBacking
   public String getRowEndDate()
   {
     String date = "";
-    CaseCaseView row = WebUtils.evaluateExpression("#{row}");
+    InterventionView row = WebUtils.evaluateExpression("#{row}");
     if (row != null)
     {
       date = row.getEndDate();
@@ -254,29 +259,18 @@ public class CaseCasesBacking extends PageBacking
       return BLANK_PAGE;
   }
   
-  public String show(CaseCaseView row)
+  public String show(InterventionView row)
   {
-    String typeId;
-    String caseId;
+    String typeId = row.getIntTypeId();
+    String caseId = row.getCaseId();
     
-    if (isReverseRelation(row))
-    {
-      typeId = row.getMainCase().getCaseTypeId();
-      caseId = row.getMainCase().getCaseId();
-    }
-    else
-    {
-      typeId = row.getRelCase().getCaseTypeId();
-      caseId = row.getRelCase().getCaseId(); 
-    }
- 
     return ControllerBacking.getCurrentInstance().show(typeId, caseId);
   }  
 
   @Override
   public String show(String pageObjectId)
   {
-    editCase(pageObjectId);
+    editIntervention(pageObjectId);
     showDialog();
     return isEditing(pageObjectId) ? OUTCOME : show();
   }
@@ -288,35 +282,35 @@ public class CaseCasesBacking extends PageBacking
     return OUTCOME;
   }
 
-  public String editCase(CaseCaseView row)
+  public String editIntervention(InterventionView row)
   {
-    String caseCaseId = null;
+    String intId = null;
     if (row != null)
-      caseCaseId = row.getCaseCaseId();
+      intId = row.getIntId();
 
-    return editCase(caseCaseId);
+    return editIntervention(intId);
   } 
   
-  public String createCase()
+  public String createIntervention()
   {
-    editing = new CaseCase();
+    editing = new Intervention();
     return null;
   }  
   
-  public String removeCase(CaseCaseView row)
+  public String removeIntervention(InterventionView row)
   {
     try
     {
       if (row == null)
-        throw new Exception("CASE_MUST_BE_SELECTED");
+        throw new Exception("INTERVENTION_MUST_BE_SELECTED");
       
-      String rowCaseCaseId = row.getCaseCaseId();
+      String rowIntId = row.getIntId();
       
-      if (editing != null && rowCaseCaseId.equals(editing.getCaseCaseId()))
+      if (editing != null && rowIntId.equals(editing.getIntId()))
         editing = null;
       
       CaseManagerPort port = CaseConfigBean.getPort();
-      port.removeCaseCase(rowCaseCaseId);
+      port.removeIntervention(rowIntId);
       
       return show();
     }
@@ -327,25 +321,18 @@ public class CaseCasesBacking extends PageBacking
     return null;
   }  
 
-  public String storeCase()
+  public String storeIntervention()
   {
     try
     {
       if (editing == null)
         return null;
-      
-      //Case must be selected
-      if (editing.getCaseId() == null || editing.getCaseId().isEmpty())
-        throw new Exception("CASE_MUST_BE_SELECTED"); 
-                            
+                                  
       String caseId = caseBacking.getObjectId();
       editing.setCaseId(caseId);
-      
-      if (editing.getCaseCaseTypeId() == null)
-        editing.setCaseCaseTypeId(typedHelper.getTypeId());
-                  
+                        
       CaseManagerPort port = CaseConfigBean.getPort();
-      port.storeCaseCase(editing);
+      port.storeIntervention(editing);
        
       cancel();
       return show();
@@ -359,7 +346,7 @@ public class CaseCasesBacking extends PageBacking
     
 
   @Override
-  public List<CaseCaseView> getResults(int firstResult, int maxResults)
+  public List<InterventionView> getResults(int firstResult, int maxResults)
   {
     try
     {
@@ -367,9 +354,9 @@ public class CaseCasesBacking extends PageBacking
       String[] params = typeId.split(TypedHelper.TYPEID_SEPARATOR);
       if (params != null && params.length == 2)
       {
-        String cpTypeId1 = params[0];
-        String cpTypeId2 = params[1];
-        return getResultsByPersons(cpTypeId1, cpTypeId2, maxResults);
+        String cpTypeId = params[0];
+        String intTypeId = params[1];
+        return getResultsByPersons(cpTypeId, intTypeId, maxResults);
       }
       else
       {
@@ -386,7 +373,7 @@ public class CaseCasesBacking extends PageBacking
   @Override
   public String store()
   {
-    return storeCase();
+    return storeIntervention();
   }
 
   @Override
@@ -398,7 +385,7 @@ public class CaseCasesBacking extends PageBacking
   @Override
   public void create()
   {
-    editing = new CaseCase();
+    editing = new Intervention();
   }
 
   @Override
@@ -420,14 +407,15 @@ public class CaseCasesBacking extends PageBacking
     Visibility visibility = event.getVisibility();
     if (Visibility.VISIBLE.equals(visibility))
     {
-      CaseCaseView row = (CaseCaseView) event.getData();
+      InterventionView row = (InterventionView) event.getData();
       if (row != null)
       {
         try
         {
-          Case relCase = 
-            CaseConfigBean.getPort().loadCase(row.getRelCase().getCaseId());
-          row.setRelCase(relCase);
+          Intervention intervention = 
+            CaseConfigBean.getPort().loadIntervention(row.getIntId());
+          row.getProperty().clear();
+          row.getProperty().addAll(intervention.getProperty());
         }
         catch (Exception ex)
         {
@@ -438,125 +426,60 @@ public class CaseCasesBacking extends PageBacking
   }
   
   //Case selection
-  public void setSelectedCase(String caseId)
+  public void setSelectedIntervention(String intId)
   {
-    editing.setRelCaseId(caseId);
-    if (caseSelectItem == null || 
-      !caseId.equals(caseSelectItem.getValue()))
+    editing.setIntId(intId);
+    if (interventionSelectItem == null || 
+      !intId.equals(interventionSelectItem.getValue()))
     {    
-      String description = caseBacking.getDescription(caseId);
-      caseSelectItem = new SelectItem(caseId, description);       
+      String description = caseBacking.getDescription(intId);
+      interventionSelectItem = new SelectItem(intId, description);       
     }    
     showDialog();
   }  
   
-  public SelectItem getCaseSelectItem()
+  public SelectItem getInterventionSelectItem()
   {
-    return caseSelectItem;
+    return interventionSelectItem;
   }
   
-  public void setCaseSelectItem(SelectItem item)
+  public void setInterventionSelectItem(SelectItem item)
   {
-    caseSelectItem = item;
-    editing.setRelCaseId((String) item.getValue());
+    interventionSelectItem = item;
+    editing.setIntId((String) item.getValue());
   }
   
-  public void onCaseSelect(SelectEvent<SelectItem> event) 
+  public void onInterventionSelect(SelectEvent<SelectItem> event) 
   {
     SelectItem item = event.getObject();
-    String caseId = (String) item.getValue();
-    editing.setCaseId(caseId);
+    String interventionId = (String) item.getValue();
+    editing.setCaseId(interventionId);
   }  
   
-  public List<SelectItem> completeCase(String query)
-  {
-    List<SelectItem> results = new ArrayList<>();
-    try
-    {
-      results = completeCase(query, editing.getCaseId());
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return results;
-  } 
-
   //Related via CasePerson or others
   public boolean isIndirectRelation()
   {
     String typeId = getTypeId();
     return typeId != null && typeId.contains(TypedHelper.TYPEID_SEPARATOR);
   }
-  
-  //Relataion created with revCase as main case.
-  public boolean isReverseRelation(CaseCaseView caseCase)
+           
+  private boolean isNew(Intervention intervention)
   {
-    return caseCase != null 
-      && caseBacking.getObjectId().equals(caseCase.getRelCase().getCaseId())
-      && !caseBacking.getObjectId().equals(caseCase.getMainCase().getCaseId());
-  } 
-  
-
-  
-  private List<SelectItem> completeCase(String query, String caseId) 
-    throws Exception
-  {
-    ArrayList<SelectItem> items = new ArrayList<>();
-    
-    //Add current item
-    if (!isNew(editing))
-    {
-      String description = "";
-      if (caseId != null)
-        description = caseBacking.getDescription(caseId);
-      items.add(new SelectItem(caseId, description));
-    }
-        
-    //Query search
-    if (query != null && query.length() >= 3)
-    {
-      CaseFilter filter = new CaseFilter();
-      filter.setTitle("%" + query + "%");
-      filter.setMaxResults(10);
-      List<Case> cases = 
-        CaseConfigBean.getPort().findCases(filter);
-      if (cases != null)
-      {       
-        for (Case cas : cases)
-        {
-          String description = caseBacking.getDescription(cas);
-          SelectItem item = new SelectItem(cas.getCaseId(), description);
-          items.add(item);
-        }
-      }
-    }
-    else
-    {
-      //Add favorites
-      items.addAll(caseBacking.getFavorites()); 
-    }
-    
-    return items;
-  }  
-      
-  private boolean isNew(CaseCase caseCase)
-  {
-    return (caseCase != null && caseCase.getCaseCaseId() == null);
+    return (intervention != null && intervention.getIntId() == null);
   }
 
-  private String editCase(String caseCaseId)
+  private String editIntervention(String intId)
   {
     try
     {
-      if (caseCaseId != null && !isEditing(caseCaseId))
+      if (intId != null && !isEditing(intId))
       {
-        editing = CaseConfigBean.getPort().loadCaseCase(caseCaseId);   
-        loadCaseSelectItem();
+        editing = CaseConfigBean.getPort().loadIntervention(intId);   
+        loadInterventionSelectItem();
       }
-      else if (caseCaseId == null)
+      else if (intId == null)
       {
-        editing = new CaseCase();
+        editing = new Intervention();
       }
     }
     catch(Exception ex)
@@ -566,64 +489,39 @@ public class CaseCasesBacking extends PageBacking
     return null;
   } 
   
-  private void loadCaseSelectItem()
+  private void loadInterventionSelectItem()
   {
     if (editing != null)
     {      
-      if (editing.getRelCaseId() != null)
+      if (editing.getIntId() != null)
       {
-        String description = 
-          caseBacking.getDescription(editing.getRelCaseId());
-        caseSelectItem = 
-          new SelectItem(editing.getRelCaseId(), description);
+        String description = getDescription(this, editing.getIntId());
+        interventionSelectItem = 
+          new SelectItem(editing.getIntId(), description);
       }
     }
   }    
 
-  private List<CaseCaseView> getResultsByDefault(int firstResult, int maxResults)
-    throws Exception
+  private List<InterventionView> getResultsByDefault(int firstResult, 
+    int maxResults) throws Exception
   {
-    CaseCaseFilter filter = new CaseCaseFilter();
+    InterventionFilter filter = new InterventionFilter();
     filter.setCaseId(caseBacking.getObjectId());
-    filter.setCaseCaseTypeId(getTypeId());
+    filter.setIntTypeId(getTypeId());
     filter.setFirstResult(firstResult);
     filter.setMaxResults(maxResults);
-    List<CaseCaseView> results = 
-      CaseConfigBean.getPort().findCaseCaseViews(filter);
+    List<InterventionView> results = 
+      CaseConfigBean.getPort().findInterventionViews(filter);
       
-    //Reverse cases
-    if (maxResults == 0 || results.size() < maxResults)
-    {
-      filter = new CaseCaseFilter();
-      filter.setRelCaseId(caseBacking.getObjectId());
-      filter.setCaseCaseTypeId(getTypeId());        
-      filter.setFirstResult(firstResult);
-      filter.setMaxResults(maxResults);        
-      List<CaseCaseView> revResults = 
-        CaseConfigBean.getPort().findCaseCaseViews(filter);
-    
-      if (revResults != null && !revResults.isEmpty())
-      {
-        if (maxResults == 0)
-          maxResults = results.size() + revResults.size();
-        int revCount = revResults.size();
-        
-        for (int i = 0; i < revCount && results.size() <= maxResults; i++)
-        {
-          results.add(revResults.get(i));
-        }
-      }
-    }
-
     return results;
   }
 
-  private List<CaseCaseView> getResultsByPersons(String typeId1, String typeId2,
-    int maxResults) throws Exception
+  private List<InterventionView> getResultsByPersons(String cpTypeId, 
+          String intTypeId, int maxResults) throws Exception
   {
     CasePersonFilter filter = new CasePersonFilter();
     filter.setCaseId(caseBacking.getObjectId());
-    filter.setCasePersonTypeId(typeId1);
+    filter.setCasePersonTypeId(cpTypeId);
     filter.setMaxResults(maxResults);
     List<CasePersonView> casePersons
       = CaseConfigBean.getPort().findCasePersonViews(filter);
@@ -634,25 +532,48 @@ public class CaseCasesBacking extends PageBacking
     
     for (String personId : matcher.getPersonIds())
     {
-      filter = new CasePersonFilter();
-      filter.setPersonId(personId);
-      filter.setCasePersonTypeId(typeId2);
-      filter.setMaxResults(maxResults);
-      casePersons = CaseConfigBean.getPort().findCasePersonViews(filter);
-      matcher.addIfMatch(casePersons);
+      InterventionFilter filter2 = new InterventionFilter();
+      filter2.setPersonId(personId);
+      filter2.setIntTypeId(intTypeId);
+      filter2.setMaxResults(maxResults);
+      List<InterventionView> interventionList = 
+        CaseConfigBean.getPort().findInterventionViews(filter2);
+      matcher.addIfMatch(interventionList);
     }
 
     return matcher.getResults();
   }
-  
 
-  
+  @Override
+  public String getObjectTypeId()
+  {
+    return editing != null ? editing.getIntTypeId() : getTypeId();
+  }
+
+  @Override
+  public String getObjectId()
+  {
+    return editing != null ? editing.getIntId() : null;
+  }
+
+  @Override 
+  public String getDescription()
+  {
+    if (editing != null)
+    {
+      Type type = TypeCache.getInstance().getType(editing.getIntTypeId());
+      return type.getDescription();
+    }
+    else
+      return "";
+  }
+    
   private class CaseMatcher
   {
     private Case mainCase;
     private final Map<String, List<Period>> map = new HashMap<>();
     
-    private TreeMap<String, CaseCaseView> results = new TreeMap<>();
+    private TreeMap<String, InterventionView> results = new TreeMap<>();
     
     public CaseMatcher(Case mainCase, List<CasePersonView> casePersons)
     {
@@ -668,46 +589,47 @@ public class CaseCasesBacking extends PageBacking
       return map.keySet();
     }
     
-    public void addIfMatch(List<CasePersonView> casePersons)
+    public void addIfMatch(List<InterventionView> interventions)
     {
-      for (CasePersonView casePerson : casePersons)
+      for (InterventionView intervention : interventions)
       {
-        addIfMatch(casePerson);
+        addIfMatch(intervention);
       }      
     }
     
-    public List<CaseCaseView> getResults()
+    public List<InterventionView> getResults()
     {
-      List<CaseCaseView> list = new ArrayList<>();
+      List<InterventionView> list = new ArrayList<>();
       list.addAll(results.values());
       return list;
     }    
     
-    private void addIfMatch(CasePersonView casePerson)
+    private void addIfMatch(InterventionView intervention)
     {
-      String key = casePerson.getPersonView().getPersonId() + ";" +
-        casePerson.getStartDate() + ";" + casePerson.getEndDate();
-      CaseCaseView item = results.get(key);
-      if (item == null && isWithinRange(casePerson))
+      String key = intervention.getPersonView().getPersonId() + ";" +
+        intervention.getStartDate() + ";" + intervention.getEndDate();
+      InterventionView item = results.get(key);
+      if (item == null && isWithinRange(intervention))
       {
-        CaseCaseView caseCaseView = new CaseCaseView();
-        caseCaseView.setCaseCaseTypeId(getRootTypeId());
-        caseCaseView.setMainCase(mainCase);
-        caseCaseView.setRelCase(casePerson.getCaseObject());
+        InterventionView interventionView = new InterventionView();
+        interventionView.setIntTypeId(intervention.getIntTypeId());
+        interventionView.setCaseId(mainCase.getCaseId());
+        interventionView.setIntId(intervention.getIntId());
+        interventionView.setPersonView(intervention.getPersonView());
         //TODO: Merge fechas
-        caseCaseView.setStartDate(casePerson.getStartDate());
-        caseCaseView.setEndDate(casePerson.getEndDate());
-        results.put(key, caseCaseView);
+        interventionView.setStartDate(intervention.getStartDate());
+        interventionView.setEndDate(intervention.getEndDate());
+        results.put(key, interventionView);
       }
     }
     
-    private boolean isWithinRange(CasePersonView casePerson)
+    private boolean isWithinRange(InterventionView intervention)
     {
-      String personId = casePerson.getPersonView().getPersonId();
+      String personId = intervention.getPersonView().getPersonId();
       List<Period> list = map.get(personId);
       for (Period period : list)
       {
-        if (period.isWithinRange(casePerson))
+        if (period.isWithinRange(intervention))
           return true;
       }
       return false;
@@ -763,13 +685,14 @@ public class CaseCasesBacking extends PageBacking
       this.endDate = endDate;
     }
 
-    public boolean isWithinRange(CasePersonView casePerson)
+    public boolean isWithinRange(InterventionView intervention)
     {
-      Date cpStart = TextUtils.parseInternalDate(casePerson.getStartDate());
-      Date cpEnd = TextUtils.parseInternalDate(casePerson.getEndDate());
+      Date cpStart = TextUtils.parseInternalDate(intervention.getStartDate());
+      Date cpEnd = TextUtils.parseInternalDate(intervention.getEndDate());
       return (startDate == null || cpEnd == null || startDate.getTime() <= cpEnd.getTime()) 
         && (endDate == null || cpStart == null || endDate.getTime() >= cpStart.getTime());
     }    
   }
+  
 
 }

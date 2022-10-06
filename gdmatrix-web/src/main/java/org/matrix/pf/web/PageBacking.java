@@ -55,7 +55,7 @@ public abstract class PageBacking extends WebBacking implements Savable
    * @return identifier
    */
   public abstract String getPageObjectId();
-    
+      
   public abstract String show();  
   
   public abstract String show(String objectId);
@@ -83,5 +83,5 @@ public abstract class PageBacking extends WebBacking implements Savable
     return currentPageObjectId != null 
       && currentPageObjectId.equals(pageObjectId);
   }
-               
+                 
 }
