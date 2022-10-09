@@ -46,17 +46,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.x509.AccessDescription;
+import org.bouncycastle.asn1.x509.AuthorityInformationAccess;
 import org.bouncycastle.asn1.x509.CRLDistPoint;
 import org.bouncycastle.asn1.x509.DistributionPoint;
 import org.bouncycastle.asn1.x509.DistributionPointName;
+import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.santfeliu.util.MatrixConfig;
 
 /**
@@ -94,39 +100,101 @@ public class CACertificateStore
   }
 
   public X509Certificate getIssuerCertificate(X509Certificate cert)
+    throws Exception
   {
     for (X509Certificate caCert : caCerts)
     {
-      if (caCert.getSubjectX500Principal().equals(
-        cert.getIssuerX500Principal()))
+      if (caCert.getSubjectX500Principal().equals(cert.getIssuerX500Principal()))
       {
-        return caCert;
+        long caCertNotBefore = caCert.getNotBefore().getTime();
+        long caCertNotAfter = caCert.getNotAfter().getTime();
+        long certNotBefore = cert.getNotBefore().getTime();
+
+        if (caCertNotBefore <= certNotBefore &&
+           certNotBefore <= caCertNotAfter)
+        {
+          return caCert;
+        }
+      }
+    }
+
+    byte[] extBytes = cert.getExtensionValue(Extension.authorityInfoAccess.getId());
+    if (extBytes == null) return null;
+
+    AuthorityInformationAccess aia = AuthorityInformationAccess.getInstance(
+      JcaX509ExtensionUtils.parseExtensionValue(extBytes));
+
+    // look for URL to download the issuer's certificate
+    AccessDescription[] descriptions = aia.getAccessDescriptions();
+    for (AccessDescription ad : descriptions)
+    {
+      if (ad.getAccessMethod().equals(X509ObjectIdentifiers.id_ad_caIssuers))
+      {
+        GeneralName location = ad.getAccessLocation();
+        if (location.getTagNo() == GeneralName.uniformResourceIdentifier)
+        {
+          String issuerUrl = location.getName().toString();
+          LOGGER.log(Level.INFO, "Downloading CA certificate from {0}...",
+            issuerUrl);
+
+          URL url = new URL(issuerUrl);
+          CertificateFactory cf = CertificateFactory.getInstance("X509");
+          X509Certificate caCert =
+            (X509Certificate) cf.generateCertificate(url.openStream());
+          caCerts.add(caCert);
+          return caCert;
+        }
       }
     }
     return null;
   }
 
-  public List<X509Certificate> getCertificateChain(X509Certificate cert)
+  public void addCertificateChainAndCRLs(X509Certificate cert,
+    List<X509Certificate> certList, Map<String, X509CRL> crlMap)
+    throws Exception
   {
-    List<X509Certificate> certChain = new ArrayList<>();
-    X509Certificate issuer = getIssuerCertificate(cert);
-    while (issuer != null && issuer != cert)
+    if (!isCertificateInList(cert, certList))
     {
-      certChain.add(issuer);
-      cert = issuer;
-      issuer = getIssuerCertificate(cert);
+      certList.add(cert);
+      getCertificateCRL(cert, crlMap);
     }
-    return certChain;
+    X509Certificate issuerCert = getIssuerCertificate(cert);
+    while (issuerCert != null && issuerCert != cert)
+    {
+      if (!isCertificateInList(issuerCert, certList))
+      {
+        certList.add(issuerCert);
+        getCertificateCRL(cert, crlMap);
+      }
+      cert = issuerCert;
+      issuerCert = getIssuerCertificate(cert);
+    }
   }
 
-  public X509CRL getCertificateCRL(X509Certificate cert) throws Exception
+  public boolean isCertificateInList(X509Certificate cert,
+    List<X509Certificate> certList)
+  {
+    for (X509Certificate c : certList)
+    {
+      if (c.getSubjectX500Principal().equals(cert.getSubjectX500Principal())
+        && c.getSerialNumber().equals(cert.getSerialNumber()))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public X509CRL getCertificateCRL(X509Certificate cert,
+    Map<String, X509CRL> crlMap) throws Exception
   {
     byte[] crlDPExtensionValue = cert.getExtensionValue("2.5.29.31");
     if (crlDPExtensionValue == null) return null;
 
     ASN1InputStream asn1In = new ASN1InputStream(crlDPExtensionValue);
     DEROctetString crlDEROctetString = (DEROctetString)asn1In.readObject();
-    ASN1InputStream asn1InOctets = new ASN1InputStream(crlDEROctetString.getOctets());
+    ASN1InputStream asn1InOctets =
+      new ASN1InputStream(crlDEROctetString.getOctets());
     ASN1Primitive crlDERObject = asn1InOctets.readObject();
     CRLDistPoint distPoint = CRLDistPoint.getInstance(crlDERObject);
     List<String> crlUrls = new ArrayList<>();
@@ -135,7 +203,8 @@ public class CACertificateStore
       DistributionPointName dpn = dp.getDistributionPoint();
       if (dpn != null && dpn.getType() == DistributionPointName.FULL_NAME)
       {
-        GeneralName[] genNames = GeneralNames.getInstance(dpn.getName()).getNames();
+        GeneralName[] genNames =
+          GeneralNames.getInstance(dpn.getName()).getNames();
         for (GeneralName genName : genNames)
         {
           if (genName.getTagNo() == GeneralName.uniformResourceIdentifier)
@@ -149,12 +218,17 @@ public class CACertificateStore
     }
     for (String crlUrl : crlUrls)
     {
+      X509CRL crl = crlMap == null ? null : crlMap.get(crlUrl);
+      if (crl != null) return crl;
+
       try
       {
         URL url = new URL(crlUrl);
         InputStream crlStream = url.openStream();
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        return (X509CRL)cf.generateCRL(crlStream);
+        crl = (X509CRL)cf.generateCRL(crlStream);
+        if (crlMap != null) crlMap.put(crlUrl, crl);
+        return crl;
       }
       catch (IOException | CRLException | CertificateException ex)
       {

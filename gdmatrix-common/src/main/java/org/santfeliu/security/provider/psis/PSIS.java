@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
@@ -92,6 +93,8 @@ import org.w3c.dom.NodeList;
  */
 public class PSIS implements SecurityProvider
 {
+  private static final Logger LOGGER = Logger.getLogger("PSIS");
+
   private static final int CONNECT_TIMEOUT = 30000; // 30 seconds
   private static final int READ_TIMEOUT = 300000; // 5 minutes
   private static DigitalSignatureService service;
@@ -277,8 +280,8 @@ public class PSIS implements SecurityProvider
     String resultMajor = result.getResultMajor();
     String resultMinor = result.getResultMinor();
 
-    System.out.println("ResultMajor:" + resultMajor);
-    System.out.println("ResultMinor:" + resultMinor);
+    LOGGER.log(Level.FINE, "ResultMajor: {0}", resultMajor);
+    LOGGER.log(Level.FINE, "ResultMinor: {0}", resultMinor);
 
     return resultMinor != null && resultMinor.contains(":valid:");
   }
@@ -315,12 +318,13 @@ public class PSIS implements SecurityProvider
     String resultMajor = result.getResultMajor();
     String resultMinor = result.getResultMinor();
 
-    System.out.println("ResultMajor:" + resultMajor);
-    System.out.println("ResultMinor:" + resultMinor);
+    LOGGER.log(Level.FINE, "ResultMajor: {0}", resultMajor);
+    LOGGER.log(Level.FINE, "ResultMinor: {0}", resultMinor);
 
     if (result.getResultMessage() != null)
     {
-      System.out.println(result.getResultMessage().getValue());
+      LOGGER.log(Level.FINE, "ResultMessage: {0}",
+        result.getResultMessage().getValue());
     }
     return resultMinor != null && resultMinor.contains(":valid:");
   }
@@ -358,8 +362,8 @@ public class PSIS implements SecurityProvider
       String resultMajor = result.getResultMajor();
       String resultMinor = result.getResultMinor();
 
-      System.out.println("ResultMajor:" + resultMajor);
-      System.out.println("ResultMinor:" + resultMinor);
+      LOGGER.log(Level.FINE, "ResultMajor: {0}", resultMajor);
+      LOGGER.log(Level.FINE, "ResultMinor: {0}", resultMinor);
 
       if (out != null)
         JAXB.marshal(response.getResult(), out);
@@ -411,8 +415,8 @@ public class PSIS implements SecurityProvider
       String resultMajor = result.getResultMajor();
       String resultMinor = result.getResultMinor();
 
-      System.out.println("ResultMajor:" + resultMajor);
-      System.out.println("ResultMinor:" + resultMinor);
+      LOGGER.log(Level.FINE, "ResultMajor: {0}", resultMajor);
+      LOGGER.log(Level.FINE, "ResultMinor: {0}", resultMinor);
 
       boolean valid = resultMinor != null && resultMinor.contains(":valid:");
 
@@ -486,8 +490,8 @@ public class PSIS implements SecurityProvider
       String resultMajor = result.getResultMajor();
       String resultMinor = result.getResultMinor();
 
-      System.out.println("ResultMajor:" + resultMajor);
-      System.out.println("ResultMinor:" + resultMinor);
+      LOGGER.log(Level.FINE, "ResultMajor: {0}", resultMajor);
+      LOGGER.log(Level.FINE, "ResultMinor: {0}", resultMinor);
 
       boolean valid = resultMinor != null && resultMinor.contains(":valid:");
 
@@ -526,6 +530,7 @@ public class PSIS implements SecurityProvider
   {
     try
     {
+      // call to PSIS service
       SOAPport port = service.getDssPortSoap();
 
       Map requestContext = ((BindingProvider)port).getRequestContext();
@@ -600,11 +605,13 @@ public class PSIS implements SecurityProvider
       String resultMajor = result.getResultMajor();
       String resultMinor = result.getResultMinor();
 
-      System.out.println("ResultMajor:" + resultMajor);
-      System.out.println("ResultMinor:" + resultMinor);
+      LOGGER.log(Level.FINE, "ResultMajor: {0}", resultMajor);
+      LOGGER.log(Level.FINE, "ResultMinor: {0}", resultMinor);
+
       if (response.getResult().getResultMessage() != null)
       {
-        System.out.println(response.getResult().getResultMessage().getValue());
+        LOGGER.log(Level.FINE, "ResultMessage: {0}",
+          result.getResultMessage().getValue());
       }
       if (resultMajor != null && resultMajor.contains(":Success"))
       {
@@ -615,7 +622,6 @@ public class PSIS implements SecurityProvider
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
       throw new RuntimeException("TIMESTAMP_GENERATOR_ERROR");
     }
   }
@@ -697,11 +703,13 @@ public class PSIS implements SecurityProvider
       String resultMajor = result.getResultMajor();
       String resultMinor = result.getResultMinor();
 
-      System.out.println("ResultMajor:" + resultMajor);
-      System.out.println("ResultMinor:" + resultMinor);
+      LOGGER.log(Level.FINE, "ResultMajor: {0}", resultMajor);
+      LOGGER.log(Level.FINE, "ResultMinor: {0}", resultMinor);
+
       if (response.getResult().getResultMessage() != null)
       {
-        System.out.println(response.getResult().getResultMessage().getValue());
+        LOGGER.log(Level.FINE, "ResultMessage: {0}",
+          result.getResultMessage().getValue());
       }
       if (resultMajor != null && resultMajor.contains(":Success"))
       {
@@ -751,21 +759,22 @@ public class PSIS implements SecurityProvider
   {
     try
     {
-      System.out.println("Initializing PSIS client...");
+      LOGGER.info("Initializing PSIS client...");
       Class cls = getClass();
       String className = cls.getName();
       int index = className.lastIndexOf(".");
       String path = "/" + className.substring(0, index).replace('.', '/');
       URL wsdlLocation = cls.getResource(path + "/PSIS.wsdl");
 
-      System.out.println("PSIS WSDL: " + wsdlLocation);
+      LOGGER.log(Level.INFO, "PSIS WSDL: {0}", wsdlLocation);
 
       dssServiceURL = MatrixConfig.getProperty(
         "org.santfeliu.security.provider.PSIS.serviceURL");
-      System.out.println("PSIS URL: " + dssServiceURL);
+      LOGGER.log(Level.INFO, "PSIS URL: {0}", dssServiceURL);
+
       dssPdfServiceURL = MatrixConfig.getProperty(
         "org.santfeliu.security.provider.PSIS.pdf.serviceURL");
-      System.out.println("PSIS PDF URL: " + dssPdfServiceURL);
+      LOGGER.log(Level.INFO, "PSIS PDF URL: {0}", dssPdfServiceURL);
 
       QName qname = new QName("urn:oasis:names:tc:dss:1.0:core:wsdl",
         "digitalSignatureService");
@@ -809,107 +818,18 @@ public class PSIS implements SecurityProvider
     validateSignatureXML(document.getDocumentElement(), null);
   }
 
-  private void testCreateTimeStamp() throws Exception
+  private void testCreateCMSTimeStamp() throws Exception
   {
-    byte[] digest = new byte[16];
+    MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
+      "http://psisbeta.catcert.net/psis/catcert-test/dss");
+    PSIS psis = new PSIS();
+    MessageDigest md = MessageDigest.getInstance("SHA-256");
+    md.reset();
+    md.update("HOLA".getBytes());
+    byte[] digest = md.digest();
 
-    Element elem = createXMLTimeStamp(digest,
-      "http://www.w3.org/2000/09/xmldsig#sha1", null);
-    System.out.println(elem);
-  }
-
-  public static void main(String args[])
-  {
-//    try
-//    {
-//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
-//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
-//      PSIS psis = new PSIS();
-//      MessageDigest md = MessageDigest.getInstance("SHA-256");
-//      md.reset();
-//      md.update("HOLA".getBytes());
-//      byte[] digest = md.digest();
-//
-//      System.out.println("Valid:" + psis.validateSignatureCMS(digest, System.out));
-//    }
-//    catch (Exception ex)
-//    {
-//      ex.printStackTrace();
-//    }
-
-//    try
-//    {
-//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
-//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
-//      PSIS psis = new PSIS();
-//      MessageDigest md = MessageDigest.getInstance("SHA-256");
-//      md.reset();
-//      md.update("HOLA".getBytes());
-//      byte[] digest = md.digest();
-//
-//      byte[] ts =
-//        psis.createCMSTimeStamp(digest, "http://www.w3.org/2001/04/xmlenc#sha256", null);
-//      System.out.println(Base64.getEncoder().encodeToString(ts));
-//    }
-//    catch (Exception ex)
-//    {
-//      ex.printStackTrace();
-//    }
-
-//    try
-//    {
-//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
-//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
-//      PSIS psis = new PSIS();
-//      MessageDigest md = MessageDigest.getInstance("SHA-256");
-//      md.reset();
-//      md.update("HOLA".getBytes());
-//      byte[] digest = md.digest();
-//
-//      Element element =
-//        psis.createXMLTimeStamp(digest, "http://www.w3.org/2001/04/xmlenc#sha256", null);
-//      System.out.println(element);
-//    }
-//    catch (Exception ex)
-//    {
-//      ex.printStackTrace();
-//    }
-
-//    try
-//    {
-//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
-//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
-//      PSIS psis = new PSIS();
-//      XMLSignedDocument sdoc = new XMLSignedDocument();
-//      sdoc.parseDocument(new FileInputStream(new File("c:/Users/realor/Desktop/VALID.xml")));
-//      Element signature = sdoc.getSignature(0).getElement();
-//
-//      boolean valid =
-//        psis.preserveSignatureXML(signature, System.out);
-//      System.out.println("Valid:" + valid);
-//    }
-//    catch (Exception ex)
-//    {
-//      ex.printStackTrace();
-//    }
-
-
-//    try
-//    {
-//      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.pdf.serviceURL",
-//        "http://psisbeta.catcert.net/psis/catcert-test/dsspdf"
-//        //"http://psis.catcert.net/psis/catcert/dss"
-//        );
-//      PSIS psis = new PSIS();
-//      File file = new File("C:\\projectes\\PAdESJava1.6\\src\\prova.pdf");
-//      byte[] data = IOUtils.toByteArray(new FileInputStream(file));
-//      boolean valid =
-//        psis.preserveSignaturePDF(data, System.out);
-//      System.out.println("Valid:" + valid);
-//    }
-//    catch (Exception ex)
-//    {
-//      ex.printStackTrace();
-//    }
+    byte[] ts = psis.createCMSTimeStamp(digest,
+      "http://www.w3.org/2001/04/xmlenc#sha256", null);
+    System.out.println(Base64.getEncoder().encodeToString(ts));
   }
 }

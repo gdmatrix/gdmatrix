@@ -54,7 +54,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -91,13 +90,15 @@ import org.santfeliu.util.MatrixConfig;
 import org.matrix.signature.DocumentValidation;
 import org.matrix.signature.SignatureValidation;
 import org.w3c.dom.Attr;
-import static org.apache.xml.security.algorithms.MessageDigestAlgorithm.ALGO_ID_DIGEST_SHA256;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Store;
 import org.matrix.signature.ValidationDetail;
+import org.santfeliu.security.util.TimeStampService;
 import org.santfeliu.util.TextUtils;
+import static org.apache.xml.security.algorithms.MessageDigestAlgorithm.ALGO_ID_DIGEST_SHA1;
+import static org.apache.xml.security.algorithms.MessageDigestAlgorithm.ALGO_ID_DIGEST_SHA256;
 
 /**
  *
@@ -141,8 +142,8 @@ public class XMLSignedDocument implements SignedDocument
   private Document doc;
   private Element root;
   private String BaseURI;
-  private final ArrayList datas = new ArrayList();
-  private final ArrayList<XMLSignature> signatures = new ArrayList<>();
+  private final List<Data> datas = new ArrayList<>();
+  private final List<XMLSignature> signatures = new ArrayList<>();
   private final Map properties = new HashMap();
 
   static final String CHARSET = "UTF-8";
@@ -166,6 +167,7 @@ public class XMLSignedDocument implements SignedDocument
   static final String XADES122_URI = "http://uri.etsi.org/01903/v1.2.2#";
   static final String XADES141_URI = "http://uri.etsi.org/01903/v1.4.1#";
   static final String DSS_URI = "urn:oasis:names:tc:dss:1.0:core:schema";
+  static final String VALID_URI = "http://www.aoc.cat/validador-identitats";
   static final String SIGNED_PROPERTIES_URI = "http://uri.etsi.org/01903#SignedProperties";
 
   static final String XMLDSIG_NS = "ds";
@@ -270,7 +272,8 @@ public class XMLSignedDocument implements SignedDocument
     doc = db.parse(is);
     root = (Element)doc.getFirstChild();
 
-    Node sdocNode = findNode(doc.getFirstChild(), TAG_SIGNED_DOCUMENT);
+    Element sdocNode = findElement(doc.getFirstChild(),
+      null, TAG_SIGNED_DOCUMENT);
     Attr versionAttr = (Attr)sdocNode.getAttributes().getNamedItem(ATT_VERSION);
     if (versionAttr != null)
     {
@@ -278,22 +281,22 @@ public class XMLSignedDocument implements SignedDocument
     }
 
     // load Data sections
-    Node dfNode = findNode(sdocNode.getFirstChild(), TAG_DATA);
-    while (dfNode != null)
+    Element dataElement = findElement(sdocNode.getFirstChild(), null, TAG_DATA);
+    while (dataElement != null)
     {
-      Data data = new Data((Element)dfNode, BaseURI);
+      Data data = new Data(dataElement, BaseURI);
       datas.add(data);
-      dfNode = findNode(dfNode.getNextSibling(), TAG_DATA);
+      dataElement = findElement(dataElement.getNextSibling(), null, TAG_DATA);
     }
     // load Signatures
-    Node sigNode = findNode(sdocNode.getFirstChild(),
-      XMLDSIG_NS + ":" + Constants._TAG_SIGNATURE);
-    while (sigNode != null)
+    Element sigElement = findElement(sdocNode.getFirstChild(),
+      XMLDSIG_URI, Constants._TAG_SIGNATURE);
+    while (sigElement != null)
     {
-      XMLSignature signature = new XMLSignature((Element)sigNode, BaseURI);
+      XMLSignature signature = new XMLSignature(sigElement, BaseURI);
       signatures.add(signature);
-      sigNode = findNode(sigNode.getNextSibling(),
-        XMLDSIG_NS + ":" + Constants._TAG_SIGNATURE);
+      sigElement = findElement(sigElement.getNextSibling(),
+        XMLDSIG_URI, Constants._TAG_SIGNATURE);
     }
 
     registerElementIds();
@@ -392,9 +395,9 @@ public class XMLSignedDocument implements SignedDocument
     XMLSignature signature = signatures.get(signatures.size() - 1);
 
     // ------------- adding signatureData --------------
-    Element signatureValueElem = (Element)findNode(
+    Element signatureValueElem = findElement(
       signature.getElement().getFirstChild(),
-      XMLDSIG_NS + ":" + Constants._TAG_SIGNATUREVALUE);
+      XMLDSIG_URI, Constants._TAG_SIGNATUREVALUE);
 
     // set signatureValueId
     signatureValueElem.setAttribute("Id", getUniqueId());
@@ -485,8 +488,7 @@ public class XMLSignedDocument implements SignedDocument
     javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
     Document signDoc = db.parse(is);
     Element documentElement = signDoc.getDocumentElement();
-    if (!documentElement.getNodeName().
-      equals(XMLDSIG_NS + ":" + Constants._TAG_SIGNATURE))
+    if (!documentElement.getLocalName().equals(Constants._TAG_SIGNATURE))
       throw new Exception("INVALID_SIGNATURE_FORMAT");
 
     Element signatureElement = (Element)doc.importNode(documentElement, true);
@@ -495,6 +497,20 @@ public class XMLSignedDocument implements SignedDocument
     XMLSignature signature = new XMLSignature(signatureElement, BaseURI);
     signatures.add(signature);
 
+    // replace catcert XMLTimeStamp (xades-1.2.2)
+    NodeList nodeList = signatureElement.getElementsByTagNameNS(XADES122_URI,
+      TAG_SIGNATURE_TIMESTAMP);
+    if (nodeList.getLength() > 0)
+    {
+      Element oldTimeStampElement = (Element)nodeList.item(0);
+      if (oldTimeStampElement.getNextSibling() == null)
+      {
+        oldTimeStampElement.getParentNode().removeChild(oldTimeStampElement);
+
+        addTimeStamp(signature, XADES122_URI, TAG_SIGNATURE_TIMESTAMP,
+          getSignatureTimeStampElements(signature), true);
+      }
+    }
     registerElementIds();
   }
 
@@ -571,7 +587,16 @@ public class XMLSignedDocument implements SignedDocument
 
   public Data getData(int index)
   {
-    return (Data)datas.get(index);
+    return datas.get(index);
+  }
+
+  public Data getDataById(String id)
+  {
+    for (Data data : datas)
+    {
+      if (data.getId().equals(id)) return data;
+    }
+    return null;
   }
 
   public XMLSignature getSignature(int index)
@@ -590,6 +615,12 @@ public class XMLSignedDocument implements SignedDocument
     try
     {
       boolean preserve = options.contains(PRESERVE_OPTION);
+
+      if (!validateDataHashes(signature))
+      {
+        addValidationDetail(signatureValidation,
+          DATA_NOT_INTACT_CODE, "Data not intact.");
+      }
 
       SignedInfo signedInfo = signature.getSignedInfo();
       int numRef = signedInfo.getLength();
@@ -614,7 +645,7 @@ public class XMLSignedDocument implements SignedDocument
           if (!signature.checkSignatureValue(signingCertificate))
           {
             addValidationDetail(signatureValidation,
-              DATA_NOT_INTACT_CODE, "Data not intact.");
+              DATA_NOT_INTACT_CODE, "Signature invalid.");
           }
         }
         else
@@ -700,13 +731,20 @@ public class XMLSignedDocument implements SignedDocument
       }
       else
       {
+        List<X509Certificate> certList = new ArrayList<>();
+        Map<String, X509CRL> crlMap = new HashMap<>();
+
+        CACertificateStore caStore = CACertificateStore.getInstance();
+
+        caStore.addCertificateChainAndCRLs(signingCertificate, certList, crlMap);
+
         // XADES-T -----------------------------------------------------------
 
         nodeList = unsignedPropsElement.getElementsByTagNameNS(xadesUri,
           TAG_SIGNATURE_TIMESTAMP);
 
         boolean addSignatureTimeStamp = false;
-        Element xmlTimeStampElement = null;
+        Element oldTimeStampElement = null;
 
         if (nodeList.getLength() == 0)
         {
@@ -727,7 +765,7 @@ public class XMLSignedDocument implements SignedDocument
               timeStampElement.getElementsByTagNameNS(xadesUri,
               TAG_XML_TIMESTAMP).getLength() > 0)
           {
-            xmlTimeStampElement = timeStampElement;
+            oldTimeStampElement = timeStampElement;
             addSignatureTimeStamp = true;
           }
         }
@@ -737,10 +775,10 @@ public class XMLSignedDocument implements SignedDocument
           if (isValidCertificate(signingCertificate))
           {
             // signing certificate is still valid today
-            if (xmlTimeStampElement != null)
+            if (oldTimeStampElement != null)
             {
               // previous XMLTimeStamp exists, replace by EncapsultatedTimeStamp.
-              xmlTimeStampElement.getParentNode().removeChild(xmlTimeStampElement);
+              oldTimeStampElement.getParentNode().removeChild(oldTimeStampElement);
               LOGGER.log(Level.INFO,
                 "SignatureTimeStamp of type XMLTimeStamp was removed.");
             }
@@ -749,7 +787,7 @@ public class XMLSignedDocument implements SignedDocument
             LOGGER.log(Level.INFO,
               "Added a SignatureTimeStamp of type {0}", TIMESTAMP_FORMAT);
           }
-          else if (xmlTimeStampElement == null)
+          else if (oldTimeStampElement == null)
           {
             addValidationDetail(signatureValidation,
               UNTRUSTED_SIGNATURE_CODE,
@@ -762,49 +800,13 @@ public class XMLSignedDocument implements SignedDocument
         if (nodeList.getLength() > 0)
         {
           Element timeStampElement = (Element)nodeList.item(0);
-          addTimeStampDates(xadesUri, timeStampElement,
-            signingDates, expirationDates);
+          loadTimeStampInfo(xadesUri, timeStampElement,
+            signingDates, expirationDates, certList, crlMap);
 
           signatureValidation.setFormat("XADES-T");
         }
 
         // XADES-C -----------------------------------------------------------
-
-        CACertificateStore caStore = CACertificateStore.getInstance();
-
-        List<X509Certificate> certChain = Collections.EMPTY_LIST;
-        List<X509Certificate> allCerts = Collections.EMPTY_LIST;
-        List<X509CRL> crls = Collections.EMPTY_LIST;
-
-        if (preserve)
-        {
-          certChain = caStore.getCertificateChain(signingCertificate);
-          if (certChain.isEmpty())
-          {
-            addValidationDetail(signatureValidation,
-              UNTRUSTED_CERTIFICATE_CODE,
-              "Signing certificate not trusted: {0}",
-              signingCertificate.getIssuerDN().getName());
-          }
-          else
-          {
-            allCerts = new ArrayList<>();
-            crls = new ArrayList<>();
-
-            allCerts.add(signingCertificate);
-            allCerts.addAll(certChain);
-
-            for (X509Certificate certCrl : allCerts)
-            {
-              X509CRL crl = caStore.getCertificateCRL(certCrl);
-
-              if (crl != null)
-              {
-                crls.add(crl);
-              }
-            }
-          }
-        }
 
         if (unsignedPropsElement.getElementsByTagNameNS(
             xadesUri, TAG_COMPLETE_CERT_REFS).getLength() > 0)
@@ -813,22 +815,21 @@ public class XMLSignedDocument implements SignedDocument
         }
         else if (preserve)
         {
-          Element compCertRefsElement =
-            signature.getDocument().createElementNS(xadesUri,
+          Element compCertRefsElement = doc.createElementNS(xadesUri,
             XADES_NS + ":" + TAG_COMPLETE_CERT_REFS);
           compCertRefsElement.setAttribute("Id", getUniqueId());
           compCertRefsElement.setIdAttribute("Id", true);
 
           unsignedPropsElement.appendChild(compCertRefsElement);
 
-          Element certRefsElement =
-            signature.getDocument().createElementNS(xadesUri,
+          Element certRefsElement = doc.createElementNS(xadesUri,
             XADES_NS + ":" + TAG_CERT_REFS);
           compCertRefsElement.appendChild(certRefsElement);
 
-          for (X509Certificate issuer : certChain)
+          for (int i = 1; i < certList.size(); i++)
           {
-            Element certElement = createCertDigest(xadesUri, issuer);
+            X509Certificate cert = certList.get(i);
+            Element certElement = createCertDigest(xadesUri, cert);
             certRefsElement.appendChild(certElement);
           }
           signatureValidation.setFormat("XADES-C");
@@ -841,77 +842,20 @@ public class XMLSignedDocument implements SignedDocument
         }
         else if (preserve)
         {
-          Element compRevRefsElement =
-            signature.getDocument().createElementNS(xadesUri,
+          Element compRevRefsElement = doc.createElementNS(xadesUri,
             XADES_NS + ":" + TAG_COMPLETE_REV_REFS);
           compRevRefsElement.setAttribute("Id", getUniqueId());
           compRevRefsElement.setIdAttribute("Id", true);
           unsignedPropsElement.appendChild(compRevRefsElement);
 
-          Element crlRefsElement =
-            signature.getDocument().createElementNS(xadesUri,
+          Element crlRefsElement = doc.createElementNS(xadesUri,
             XADES_NS + ":" + TAG_CRL_REFS);
           compRevRefsElement.appendChild(crlRefsElement);
 
-          for (X509CRL crl : crls)
+          for (X509CRL crl : crlMap.values())
           {
-            Element crlRefElement =
-              signature.getDocument().createElementNS(xadesUri,
-              XADES_NS + ":" + TAG_CRL_REF);
+            Element crlRefElement = this.createCRLDigest(xadesUri, crl);
             crlRefsElement.appendChild(crlRefElement);
-
-            Element digAlgValueElement =
-              signature.getDocument().createElementNS(xadesUri,
-              XADES_NS + ":" + TAG_DIGEST_ALG_VALUE);
-            crlRefElement.appendChild(digAlgValueElement);
-
-            Element digMethodElement =
-              signature.getDocument().createElementNS(xadesUri,
-              XMLDSIG_NS + ":" + TAG_DIGEST_METHOD);
-
-            MessageDigest md = MessageDigest.getInstance(HASH_ALGO);
-            md.reset();
-            md.update(crl.getEncoded());
-            byte[] digest = md.digest();
-
-            digMethodElement.setAttribute("Algorithm", HASH_ALGO_ID);
-            digAlgValueElement.appendChild(digMethodElement);
-
-            Element digValueElement =
-              signature.getDocument().createElementNS(xadesUri,
-              XMLDSIG_NS + ":" + TAG_DIGEST_VALUE);
-            digValueElement.setTextContent(
-              Base64.getEncoder().encodeToString(digest));
-            digAlgValueElement.appendChild(digValueElement);
-
-            Element crlIdElement =
-              signature.getDocument().createElementNS(xadesUri,
-              XADES_NS + ":" + TAG_CRL_IDENTIFIER);
-            crlRefElement.appendChild(crlIdElement);
-
-            Element crlIssuerElement =
-              signature.getDocument().createElementNS(xadesUri,
-              XADES_NS + ":" + TAG_CRL_ISSUER);
-            crlIssuerElement.setTextContent(crl.getIssuerX500Principal().getName());
-            crlIdElement.appendChild(crlIssuerElement);
-
-            Element crlIssueTimeElement =
-              signature.getDocument().createElementNS(xadesUri,
-              XADES_NS + ":" + TAG_CRL_ISSUE_TIME);
-            crlIssueTimeElement.setTextContent(formatISODate(crl.getThisUpdate()));
-            crlIdElement.appendChild(crlIssueTimeElement);
-
-            Element crlNumberElement =
-              signature.getDocument().createElementNS(xadesUri,
-              XADES_NS + ":" + TAG_CRL_NUMBER);
-            byte[] value = crl.getExtensionValue("2.5.29.20");
-
-            ASN1OctetString octetString = ASN1OctetString.getInstance(value);
-            CRLNumber crlNumber = CRLNumber.getInstance(octetString.getOctets());
-            BigInteger number = crlNumber.getCRLNumber();
-
-            crlNumberElement.setTextContent(number.toString());
-            crlIdElement.appendChild(crlNumberElement);
           }
           signatureValidation.setFormat("XADES-C");
         }
@@ -935,8 +879,8 @@ public class XMLSignedDocument implements SignedDocument
         if (nodeList.getLength() > 0)
         {
           Element timeStampElement = (Element)nodeList.item(0);
-          addTimeStampDates(xadesUri, timeStampElement,
-            signingDates, expirationDates);
+          loadTimeStampInfo(xadesUri, timeStampElement,
+            signingDates, expirationDates, certList, crlMap);
         }
 
         // XADES-XL -------------------------------------------------------------
@@ -948,17 +892,15 @@ public class XMLSignedDocument implements SignedDocument
         }
         else if (preserve)
         {
-          Element certValuesElement =
-            signature.getDocument().createElementNS(xadesUri,
+          Element certValuesElement = doc.createElementNS(xadesUri,
             XADES_NS + ":" + TAG_CERT_VALUES);
           certValuesElement.setAttribute("Id", getUniqueId());
           certValuesElement.setIdAttribute("Id", true);
           unsignedPropsElement.appendChild(certValuesElement);
 
-          for (X509Certificate certValue : allCerts)
+          for (X509Certificate certValue : certList)
           {
-            Element encapCertElement =
-              signature.getDocument().createElementNS(xadesUri,
+            Element encapCertElement = doc.createElementNS(xadesUri,
               XADES_NS + ":" + TAG_ENC_509_CERT);
             certValuesElement.appendChild(encapCertElement);
             byte[] certEncoded = certValue.getEncoded();
@@ -975,22 +917,19 @@ public class XMLSignedDocument implements SignedDocument
         }
         else if (preserve)
         {
-          Element revValuesElement =
-            signature.getDocument().createElementNS(xadesUri,
+          Element revValuesElement = doc.createElementNS(xadesUri,
             XADES_NS + ":" + TAG_REV_VALUES);
           revValuesElement.setAttribute("Id", getUniqueId());
           revValuesElement.setIdAttribute("Id", true);
           unsignedPropsElement.appendChild(revValuesElement);
 
-          Element crlValuesElement =
-            signature.getDocument().createElementNS(xadesUri,
+          Element crlValuesElement = doc.createElementNS(xadesUri,
             XADES_NS + ":" + TAG_CRL_VALUES);
           revValuesElement.appendChild(crlValuesElement);
 
-          for (X509CRL crl : crls)
+          for (X509CRL crl : crlMap.values())
           {
-            Element crlValueElement =
-              signature.getDocument().createElementNS(xadesUri,
+            Element crlValueElement = doc.createElementNS(xadesUri,
               XADES_NS + ":" + XMLSignedDocument.TAG_ENCAP_CRL_VALUE);
             crlValuesElement.appendChild(crlValueElement);
             byte[] crlEncoded = crl.getEncoded();
@@ -1020,8 +959,8 @@ public class XMLSignedDocument implements SignedDocument
         for (int i = 0; i < archiveTSCount; i++)
         {
           Element timeStampElement = (Element)nodeList.item(i);
-          addTimeStampDates(xadesUri, timeStampElement,
-            signingDates, expirationDates);
+          loadTimeStampInfo(xadesUri, timeStampElement,
+            signingDates, expirationDates, certList, crlMap);
         }
 
         if (archiveTSCount > 0)
@@ -1052,6 +991,7 @@ public class XMLSignedDocument implements SignedDocument
     }
     catch (Exception ex)
     {
+      ex.printStackTrace();
       addValidationDetail(signatureValidation,
         UNEXPECTED_EXCEPTION_CODE,
         "Error validating signature: {0}", ex.toString());
@@ -1090,31 +1030,31 @@ public class XMLSignedDocument implements SignedDocument
     ObjectContainer obj = new ObjectContainer(doc);
     obj.setId(getUniqueId());
 
-    Element qualPropElement =
-      doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_QUALIFYING_PROPERTIES);
+    Element qualPropElement = doc.createElementNS(XADES_URI,
+      XADES_NS + ":" + TAG_QUALIFYING_PROPERTIES);
     obj.appendChild(qualPropElement);
     qualPropElement.setAttributeNS(Constants.NamespaceSpecNS,
       "xmlns:" + XADES_NS, XADES_URI);
     qualPropElement.setAttribute("Target", "#" + signatureId);
 
-    Element sigPropElement =
-      doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNED_PROPERTIES);
+    Element sigPropElement = doc.createElementNS(XADES_URI,
+      XADES_NS + ":" + TAG_SIGNED_PROPERTIES);
     qualPropElement.appendChild(sigPropElement);
     sigPropElement.setAttribute("Id", signedPropertiesId);
     sigPropElement.setIdAttribute("Id", true);
 
-    Element signaturePropElement =
-      doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNED_SIGNATURE_PROPERTIES);
+    Element signaturePropElement = doc.createElementNS(XADES_URI,
+      XADES_NS + ":" + TAG_SIGNED_SIGNATURE_PROPERTIES);
     sigPropElement.appendChild(signaturePropElement);
 
-    Element sigTimeElement =
-      doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNING_TIME);
+    Element sigTimeElement = doc.createElementNS(XADES_URI,
+      XADES_NS + ":" + TAG_SIGNING_TIME);
     signaturePropElement.appendChild(sigTimeElement);
 
     sigTimeElement.setTextContent(formatISODate(new Date()));
 
-    Element sigCertElement =
-      doc.createElementNS(XADES_URI, XADES_NS + ":" + TAG_SIGNING_CERTIFICATE);
+    Element sigCertElement = doc.createElementNS(XADES_URI,
+      XADES_NS + ":" + TAG_SIGNING_CERTIFICATE);
     signaturePropElement.appendChild(sigCertElement);
 
     Element certElement = createCertDigest(XADES_URI, cert);
@@ -1187,23 +1127,23 @@ public class XMLSignedDocument implements SignedDocument
     List<DataHash> dataHashes = digestData();
     for (DataHash dataHash : dataHashes)
     {
-      Element documentElement =
-        doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_DOCUMENT);
+      Element documentElement = doc.createElementNS(MATRIX_URI,
+        MATRIX_NS + ":" + TAG_MATRIX_DOCUMENT);
       documentsElement.appendChild(documentElement);
 
-      Element nameElement =
-        doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_NAME);
+      Element nameElement = doc.createElementNS(MATRIX_URI,
+        MATRIX_NS + ":" + TAG_MATRIX_NAME);
       nameElement.setTextContent(dataHash.getName());
       documentElement.appendChild(nameElement);
 
-      Element hashElement =
-        doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_HASH);
+      Element hashElement = doc.createElementNS(MATRIX_URI,
+        MATRIX_NS + ":" + TAG_MATRIX_HASH);
       hashElement.setTextContent(
         Base64.getMimeEncoder().encodeToString(dataHash.getHash()));
       documentElement.appendChild(hashElement);
 
-      Element algorithmElement =
-        doc.createElementNS(MATRIX_URI, MATRIX_NS + ":" + TAG_MATRIX_ALGORITHM);
+      Element algorithmElement = doc.createElementNS(MATRIX_URI,
+        MATRIX_NS + ":" + TAG_MATRIX_ALGORITHM);
       algorithmElement.setTextContent(dataHash.getAlgorithm());
       documentElement.appendChild(algorithmElement);
     }
@@ -1213,10 +1153,11 @@ public class XMLSignedDocument implements SignedDocument
   private Element createCertDigest(String xadesUri, X509Certificate cert)
     throws Exception
   {
-    Element certElement = doc.createElementNS(xadesUri, XADES_NS + ":" + TAG_CERT);
+    Element certElement = doc.createElementNS(xadesUri,
+      XADES_NS + ":" + TAG_CERT);
 
-    Element certDigestElement =
-      doc.createElementNS(xadesUri, XADES_NS + ":" + TAG_CERT_DIGEST);
+    Element certDigestElement = doc.createElementNS(xadesUri,
+      XADES_NS + ":" + TAG_CERT_DIGEST);
     certElement.appendChild(certDigestElement);
 
     Element digestMethodElement =
@@ -1252,6 +1193,61 @@ public class XMLSignedDocument implements SignedDocument
     return certElement;
   }
 
+  private Element createCRLDigest(String xadesUri, X509CRL crl)
+    throws Exception
+  {
+    Element crlRefElement = doc.createElementNS(xadesUri,
+      XADES_NS + ":" + TAG_CRL_REF);
+
+    Element digAlgValueElement = doc.createElementNS(xadesUri,
+      XADES_NS + ":" + TAG_DIGEST_ALG_VALUE);
+    crlRefElement.appendChild(digAlgValueElement);
+
+    Element digMethodElement = doc.createElementNS(xadesUri,
+      XMLDSIG_NS + ":" + TAG_DIGEST_METHOD);
+
+    MessageDigest md = MessageDigest.getInstance(HASH_ALGO);
+    md.reset();
+    md.update(crl.getEncoded());
+    byte[] digest = md.digest();
+
+    digMethodElement.setAttribute("Algorithm", HASH_ALGO_ID);
+    digAlgValueElement.appendChild(digMethodElement);
+
+    Element digValueElement = doc.createElementNS(xadesUri,
+      XMLDSIG_NS + ":" + TAG_DIGEST_VALUE);
+    digValueElement.setTextContent(
+      Base64.getEncoder().encodeToString(digest));
+    digAlgValueElement.appendChild(digValueElement);
+
+    Element crlIdElement = doc.createElementNS(xadesUri,
+      XADES_NS + ":" + TAG_CRL_IDENTIFIER);
+    crlRefElement.appendChild(crlIdElement);
+
+    Element crlIssuerElement = doc.createElementNS(xadesUri,
+      XADES_NS + ":" + TAG_CRL_ISSUER);
+    crlIssuerElement.setTextContent(crl.getIssuerX500Principal().getName());
+    crlIdElement.appendChild(crlIssuerElement);
+
+    Element crlIssueTimeElement = doc.createElementNS(xadesUri,
+      XADES_NS + ":" + TAG_CRL_ISSUE_TIME);
+    crlIssueTimeElement.setTextContent(formatISODate(crl.getThisUpdate()));
+    crlIdElement.appendChild(crlIssueTimeElement);
+
+    Element crlNumberElement = doc.createElementNS(xadesUri,
+      XADES_NS + ":" + TAG_CRL_NUMBER);
+    byte[] value = crl.getExtensionValue("2.5.29.20");
+
+    ASN1OctetString octetString = ASN1OctetString.getInstance(value);
+    CRLNumber crlNumber = CRLNumber.getInstance(octetString.getOctets());
+    BigInteger number = crlNumber.getCRLNumber();
+
+    crlNumberElement.setTextContent(number.toString());
+    crlIdElement.appendChild(crlNumberElement);
+
+    return crlRefElement;
+  }
+
   private void addTimeStamp(XMLSignature signature, String tsUri, String tsName,
     List<Element> signedElements, boolean addIncludes) throws Exception
   {
@@ -1270,8 +1266,7 @@ public class XMLSignedDocument implements SignedDocument
         TAG_UNSIGNED_SIGNATURE_PROPERTIES);
     Element unsigSignaturePropElement = (Element)nodeList.item(0);
 
-    Element timeStampElement =
-      doc.createElementNS(tsUri, tsNs + ":" + tsName);
+    Element timeStampElement = doc.createElementNS(tsUri, tsNs + ":" + tsName);
     timeStampElement.setAttribute("Id", getUniqueId());
     timeStampElement.setIdAttribute("Id", true);
     if (tsNs.equals(XADES141_NS))
@@ -1300,13 +1295,11 @@ public class XMLSignedDocument implements SignedDocument
         else throw new Exception("Unsupported external reference");
       }
 
-      System.out.println(signedElement.getNodeName() + " -> " + id + " " + refData);
-
       if (addIncludes)
       {
         // add Include (explict)
-        Element include = doc.createElementNS(
-          xadesUri, XADES_NS + ":" + TAG_INCLUDE);
+        Element include = doc.createElementNS(xadesUri,
+          XADES_NS + ":" + TAG_INCLUDE);
 
         include.setAttribute("referencedData", String.valueOf(refData));
         include.setAttribute("URI", "#" + id);
@@ -1324,12 +1317,13 @@ public class XMLSignedDocument implements SignedDocument
 
     byte[] digestTst = calculateElementsDigest(signedElements);
     SecurityProvider provider = SecurityUtils.getSecurityProvider();
+    TimeStampService timeStampService = SecurityUtils.getTimeStampService();
 
     if (TAG_XML_TIMESTAMP.equals(TIMESTAMP_FORMAT))
     {
       // XMLTimeStamp
-      Element XMLTimeStamp = doc.createElementNS(
-        xadesUri, XADES_NS + ":" + TAG_XML_TIMESTAMP);
+      Element XMLTimeStamp = doc.createElementNS(xadesUri,
+        XADES_NS + ":" + TAG_XML_TIMESTAMP);
       XMLTimeStamp.setAttribute("xmlns:dss",
         "urn:oasis:names:tc:dss:1.0:core:schema");
       timeStampElement.appendChild(XMLTimeStamp);
@@ -1342,12 +1336,20 @@ public class XMLSignedDocument implements SignedDocument
     else
     {
       // CMSTimeStamp
-      Element CMSTimeStamp = doc.createElementNS(
-        xadesUri, XADES_NS + ":" + TAG_ENCAPSULATED_TIMESTAMP);
+      Element CMSTimeStamp = doc.createElementNS(xadesUri,
+        XADES_NS + ":" + TAG_ENCAPSULATED_TIMESTAMP);
 
       timeStampElement.appendChild(CMSTimeStamp);
 
-      byte[] cms = provider.createCMSTimeStamp(digestTst, HASH_ALGO_ID, null);
+      byte[] cms;
+      if (timeStampService != null)
+      {
+        cms = timeStampService.timestamp(digestTst, HASH_ALGO).getEncoded();
+      }
+      else
+      {
+        cms = provider.createCMSTimeStamp(digestTst, HASH_ALGO_ID, null);
+      }
       CMSTimeStamp.setTextContent(Base64.getEncoder().encodeToString(cms));
     }
   }
@@ -1399,9 +1401,9 @@ public class XMLSignedDocument implements SignedDocument
   {
     List<Element> elements = new ArrayList<>();
 
-    Element signatureValue = (Element)findNode(
+    Element signatureValue = findElement(
       signature.getElement().getFirstChild(),
-      XMLDSIG_NS + ":" + Constants._TAG_SIGNATUREVALUE);
+      XMLDSIG_URI, Constants._TAG_SIGNATUREVALUE);
 
     elements.add(signatureValue);
 
@@ -1413,9 +1415,9 @@ public class XMLSignedDocument implements SignedDocument
     List<Element> elements = new ArrayList<>();
 
     // SignatureValue
-    Element signatureValue = (Element)findNode(
+    Element signatureValue = findElement(
       signature.getElement().getFirstChild(),
-      XMLDSIG_NS + ":" + Constants._TAG_SIGNATUREVALUE);
+      XMLDSIG_URI, Constants._TAG_SIGNATUREVALUE);
     elements.add(signatureValue);
 
     // UnsignedSignatureProperties in order of appearance
@@ -1455,9 +1457,9 @@ public class XMLSignedDocument implements SignedDocument
     elements.add(signedInfoElement);
 
     // SignatureValue
-    Element signatureValue = (Element)findNode(
+    Element signatureValue = findElement(
       signature.getElement().getFirstChild(),
-      XMLDSIG_NS + ":" + Constants._TAG_SIGNATUREVALUE);
+      XMLDSIG_URI, Constants._TAG_SIGNATUREVALUE);
     elements.add(signatureValue);
 
     // KeyInfo
@@ -1515,29 +1517,123 @@ public class XMLSignedDocument implements SignedDocument
     }
   }
 
-  private void addTimeStampDates(String xadesUri, Element timeStampElement,
-    List<Date> signingDates, List<Date> expirationDates) throws Exception
+  private boolean validateDataHashes(XMLSignature signature)
+    throws Exception
   {
+    Element signatureElement = signature.getElement();
+
+    NodeList nodeList;
+
+    nodeList = signatureElement.getElementsByTagNameNS(MATRIX_URI, "document");
+
+    boolean valid = true;
+
+    // MATRIX signatures
+    for (int i = 0; i < nodeList.getLength() && valid; i++)
+    {
+      Node node = nodeList.item(i).getFirstChild();
+      String name = findElement(node,
+        MATRIX_URI, TAG_MATRIX_NAME).getTextContent();
+      String hash = findElement(node,
+        MATRIX_URI, TAG_MATRIX_HASH).getTextContent();
+      String algorithm = findElement(node,
+        MATRIX_URI, TAG_MATRIX_ALGORITHM).getTextContent();
+
+      // TODO: validate external references
+      if (name.startsWith("http")) continue;
+
+      Data data = getDataById(name);
+      if (data == null)
+        throw new Exception("Invalid data reference: " + name);
+
+      String hashAlgorithmURN;
+      if ("SHA-1".equals(algorithm))
+      {
+        hashAlgorithmURN = ALGO_ID_DIGEST_SHA1;
+      }
+      else if ("SHA-256".equals(algorithm))
+      {
+        hashAlgorithmURN = ALGO_ID_DIGEST_SHA256;
+      }
+      else throw new Exception("Unsupported hash algorithm " + algorithm);
+
+      byte[] digest = data.digest(hashAlgorithmURN);
+      String digestBase64 = Base64.getEncoder().encodeToString(digest);
+
+      valid = digestBase64.equals(hash);
+    }
+
+    // VALID signatures
+    nodeList = signatureElement.getElementsByTagNameNS(VALID_URI,
+      "evidenciaSignaturaOrdinaria");
+    if (nodeList.getLength() > 0)
+    {
+      Node node = nodeList.item(0).getFirstChild();
+      node = findElement(node, VALID_URI, "document");
+
+      while (node != null && valid)
+      {
+        Node child = node.getFirstChild();
+        node = findElement(node.getNextSibling(), VALID_URI, "document");
+
+        String name = findElement(child,
+          VALID_URI, "nom").getTextContent();
+        String hash = findElement(child,
+          VALID_URI, "resum").getTextContent();
+        String algorithm = findElement(child,
+          VALID_URI, "algorisme").getTextContent();
+
+        // TODO: validate external references
+        if (name.startsWith("http")) continue;
+
+        Data data = getDataById(name);
+        if (data == null)
+          throw new Exception("Invalid data reference: " + name);
+
+        String hashAlgorithmURN;
+        if ("SHA-1".equals(algorithm))
+        {
+          hashAlgorithmURN = ALGO_ID_DIGEST_SHA1;
+        }
+        else if ("SHA-256".equals(algorithm))
+        {
+          hashAlgorithmURN = ALGO_ID_DIGEST_SHA256;
+        }
+        else throw new Exception("Unsupported hash algorithm " + algorithm);
+
+        byte[] digest = data.digest(hashAlgorithmURN);
+        String digestBase64 = Base64.getEncoder().encodeToString(digest);
+
+        valid = digestBase64.equals(hash);
+      }
+    }
+
+    return valid;
+  }
+
+  private void loadTimeStampInfo(String xadesUri, Element timeStampElement,
+    List<Date> signingDates, List<Date> expirationDates,
+    List<X509Certificate> certList, Map<String, X509CRL> crlMap)
+    throws Exception
+  {
+    byte[] certEncoded;
+
     NodeList nodeList = timeStampElement
       .getElementsByTagNameNS(DSS_URI, "CreationTime");
     if (nodeList.getLength() > 0)
     {
-      // XMLTimeStamps
+      // XMLTimeStamp
       Element creationTimeElement = (Element)nodeList.item(0);
       String creationTime = creationTimeElement.getTextContent();
       signingDates.add(parseISODate(creationTime));
 
       nodeList = timeStampElement.getElementsByTagNameNS(XMLDSIG_URI,
         "X509Certificate");
-      if (nodeList.getLength() > 0)
-      {
-        String certBase64 = ((Element)nodeList.item(0)).getTextContent();
-        byte[] certEncoded = Base64.getDecoder().decode(certBase64);
-        CertificateFactory cf = CertificateFactory.getInstance("X509");
-        X509Certificate tsCert = (X509Certificate)cf.generateCertificate(
-          new ByteArrayInputStream(certEncoded));
-        expirationDates.add(tsCert.getNotAfter());
-      }
+      if (nodeList.getLength() == 0)
+        throw new Exception("The certificate of the timestamp is not present.");
+
+      String certBase64 = ((Element)nodeList.item(0)).getTextContent();
+      certEncoded = Base64.getDecoder().decode(certBase64);
     }
     else
     {
@@ -1554,10 +1650,18 @@ public class XMLSignedDocument implements SignedDocument
 
         Store<X509CertificateHolder> certificates = tsToken.getCertificates();
         Collection<X509CertificateHolder> matches = certificates.getMatches(null);
-        Date expirationDate = matches.iterator().next().getNotAfter();
-        expirationDates.add(expirationDate);
+        certEncoded = matches.iterator().next().getEncoded();
       }
+      else throw new Exception("Invalid timestamp");
     }
+
+    CertificateFactory cf = CertificateFactory.getInstance("X509");
+    X509Certificate tsCert = (X509Certificate)cf.generateCertificate(
+      new ByteArrayInputStream(certEncoded));
+    expirationDates.add(tsCert.getNotAfter());
+
+    CACertificateStore caStore = CACertificateStore.getInstance();
+    caStore.addCertificateChainAndCRLs(tsCert, certList, crlMap);
   }
 
   private void addValidationDetail(SignatureValidation signatureValidation,
@@ -1588,23 +1692,23 @@ public class XMLSignedDocument implements SignedDocument
     }
   }
 
-  private Node findNode(Node node, String name)
+  private Element findElement(Node node, String uri, String localName)
   {
-    boolean stop = false;
-    while (node != null && !stop)
+    while (node != null)
     {
-      String nodeName = node.getNodeName();
-      if (nodeName != null)
+      if (node instanceof Element)
       {
-        if (nodeName.equalsIgnoreCase(name)) stop = true;
-        else node = node.getNextSibling();
+        Element child = (Element)node;
+
+        if ((uri == null || uri.equals(child.getNamespaceURI())) &&
+          child.getLocalName().equals(localName))
+        {
+          return child;
+        }
       }
-      else
-      {
-        node = node.getNextSibling();
-      }
+      node = node.getNextSibling();
     }
-    return node;
+    return null;
   }
 
   private Date getExpirationDate(
@@ -1680,7 +1784,11 @@ public class XMLSignedDocument implements SignedDocument
       MatrixConfig.setProperty("org.santfeliu.security.provider.className",
         PSIS.class.getName());
 
-      MatrixConfig.setProperty("org.santfeliu.security.urlCredentialsCipher.secret", "A2b25T939");
+      MatrixConfig.setProperty("org.santfeliu.security.urlCredentialsCipher.secret",
+        "A2b25T939");
+
+      MatrixConfig.setProperty("org.santfeliu.security.tspURL",
+        "http://timestamp.sectigo.com/qualified");
 
       XMLSignedDocument doc = new XMLSignedDocument();
       doc.parseDocument(new FileInputStream("c:/Users/realor/Desktop/signatures/VALID_1.3.xml"));
