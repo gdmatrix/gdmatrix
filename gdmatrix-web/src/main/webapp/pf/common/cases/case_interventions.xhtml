@@ -4,7 +4,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                template="case_common.xhtml">
+                template="case_common.xhtml"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <ui:param name="objectPage" value="object" />
   <ui:param name="updateOnCancel" value="edit_panels" />
@@ -18,7 +19,7 @@
       <!-- Results table -->
       <p:dataTable id="page_results_table" value="#{caseInterventionsBacking.rows}" rowKey="#{row.intId}"
                    var="row" stripedRows="true" paginator="true" pageLinks="5"
-                    showGridlines="true"
+                   showGridlines="true"
                    size="small" paginatorPosition="bottom" 
                    rowIndexVar="firstRow" 
                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -53,27 +54,27 @@
             </div>
           </div>
         </f:facet>
-        
+
         <p:column style="width:2rem" rendered="#{caseInterventionsBacking.renderXhtmlForm}">
           <p:rowToggler />
         </p:column>
-        
+
         <p:column headerText="#{caseBundle.caseInterventions_id}" styleClass="w-1"
                   exportHeaderValue="#{caseBundle.caseInterventions_id}">
 
           <h:outputText value="#{row.intId}" />
         </p:column> 
-       
+
         <p:column headerText="#{caseBundle.caseInterventions_type}" styleClass="w-5"
                   exportHeaderValue="#{caseBundle.caseInterventions_type}">
           <h:outputText value="#{templateBacking.getTypeDescription(row.intTypeId)}"/>
         </p:column>  
-        
+
         <p:column headerText="#{caseBundle.caseInterventions_person}" styleClass="w-2"
                   exportHeaderValue="#{caseBundle.caseInterventions_person}">
           <h:outputText value="#{row.personView.fullName}" rendered="#{row.personView != null}"/>
         </p:column>          
-        
+
         <p:column headerText="#{caseBundle.caseInterventions_startDate}" styleClass="w-1"
                   exportHeaderValue="#{caseBundle.caseInterventions_startDate}">
           <h:outputText value="#{caseInterventionsBacking.rowStartDate}"/>
@@ -83,7 +84,7 @@
                   exportHeaderValue="#{caseBundle.caseInterventions_endDate}">
           <h:outputText value="#{caseInterventionsBacking.rowEndDate}"/>
         </p:column>        
-        
+
         <p:column styleClass="w-2 text-right" exportable="false">
           <h:panelGroup>
             <div class="btn-group">              
@@ -108,7 +109,7 @@
         <p:rowExpansion rendered="#{caseInterventionsBacking.renderXhtmlForm}">
           <ui:include rendered="#{caseInterventionsBacking.renderXhtmlForm}" src="#{caseInterventionsBacking.xhtmlFormUrl}" />
         </p:rowExpansion>
-        
+
         <p:ajax event="rowToggle" listener="#{caseInterventionsBacking.onRowToggle}" />
       </p:dataTable>
 
@@ -117,7 +118,7 @@
 
   <!-- Address data panel -->
 
-  <ui:param name="editDescription" value="#{caseInterventionsBacking.pageObjectDescription}" /> 
+  <ui:param name="editDescription" value="#{caseInterventionsBacking.description}" /> 
   <ui:param name="editStyle" value="max-width:800px" />
 
   <ui:define name="edit_dialog">
@@ -125,12 +126,12 @@
     <p:outputPanel id="edit_panels">
       <p:panel id="edit_document_form" rendered="#{caseInterventionsBacking.editing != null}"
                styleClass="mt-2">
-        
+
         <div class="ui-fluid formgrid grid" >        
-        
+
           <p:outputPanel styleClass="field col-12 md:col-6">  
             <p:outputLabel for="@next"  
-                           value="#{caseInterventionsBacking.typedHelper.getPropertyLabel('case', caseBundle.caseInterventions_case)}"
+                           value="#{caseInterventionsBacking.typedHelper.getPropertyLabel('intTypeId', caseBundle.caseInterventions_type)}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">
               <p:selectOneMenu id="intTypeId" 
@@ -140,7 +141,7 @@
               </p:selectOneMenu>             
             </div>
           </p:outputPanel>     
-          
+
           <!-- Dates -->
           <p:outputPanel styleClass="field col-12 md:col-3"
                          rendered="#{!caseInterventionsBacking.tabHelper.isPropertyHidden('startDate')}">
@@ -160,9 +161,20 @@
                           locale="#{caseInterventionsBacking.language}" 
                           showIcon="true"
                           monthNavigator="true" yearNavigator="true" disabled="#{!caseBacking.editable}" />
-          </p:outputPanel>          
-        
+          </p:outputPanel>  
+
         </div>
+
+    <p:tabView dynamic="true">
+      <c:forEach items="#{caseInterventionsBacking.scriptFormHelper.formTabs}" var="form">
+        <p:tab title="#{form.name}">
+          <ui:include src="#{form.url}">
+            <ui:param name="backing" value="#{caseInterventionsBacking}" />
+          </ui:include>
+        </p:tab>
+      </c:forEach>
+    </p:tabView>        
+
       </p:panel>       
 
       <div class="field col-12 text-right">
@@ -178,6 +190,9 @@
       </div>      
 
     </p:outputPanel>
+
+
+
   </ui:define>      
 
 

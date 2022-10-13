@@ -239,12 +239,12 @@ public class CaseCasesBacking extends PageBacking
   
   public boolean isRenderXhtmlForm()
   {
-    return tabHelper.getProperty(SCRIPT_NAME) != null;
+    return getProperty(SCRIPT_NAME) != null;
   }
   
   public String getXhtmlFormUrl()
   {
-    String scriptName = tabHelper.getProperty(SCRIPT_NAME);   
+    String scriptName = getProperty(SCRIPT_NAME);   
     if (scriptName != null)
     {
       ScriptBacking scriptBacking = WebUtils.getBacking("scriptBacking");

@@ -120,10 +120,12 @@ public class TypedHelper extends WebBacking
    * @param name
    * @return Property value.
    */
-  @Override
   public String getProperty(String name)
   {
-    return getFirstPropertyDefinitionValue(name);
+    String value = super.getMenuItemProperty(name);
+    if (value == null)
+      value = getFirstPropertyDefinitionValue(name);
+    return value;
   }
   
   /**
@@ -131,14 +133,12 @@ public class TypedHelper extends WebBacking
    * @param name
    * @return List of values.
    */
-  @Override
   public List<String> getMultivaluedProperty(String name)
   {
-    List<String> values = super.getMultivaluedProperty(name);
+    List<String> values = super.getMultivaluedMenuItemProperty(name);
     if (values == null || values.isEmpty())
-    {
       values = getPropertyDefinitionValue(name);
-    }
+
     return values;
   }  
 
@@ -213,5 +213,6 @@ public class TypedHelper extends WebBacking
     }
     return Collections.emptyList();
   }
+
 
 }

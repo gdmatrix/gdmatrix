@@ -108,7 +108,7 @@ public class SystemConfigBacking extends WebBacking
   
   public String getLabel()
   {
-    return getDirectProperty(LABEL);
+    return getDirectMenuItemProperty(LABEL);
   }
   
   public void setLabel(String label)
@@ -120,7 +120,7 @@ public class SystemConfigBacking extends WebBacking
   
   public String getDescription()
   {
-    return getDirectProperty(DESCRIPTION);
+    return getDirectMenuItemProperty(DESCRIPTION);
   }
   
   public void setDescription(String description)
@@ -132,7 +132,7 @@ public class SystemConfigBacking extends WebBacking
   
   public String getAction()
   {
-    return getDirectProperty(ACTION);
+    return getDirectMenuItemProperty(ACTION);
   }
   
   public void setAction(String action)
@@ -359,7 +359,7 @@ public class SystemConfigBacking extends WebBacking
   
   public String getTopic()
   {
-    return getDirectProperty(TOPIC);
+    return getDirectMenuItemProperty(TOPIC);
   }
   
   public void setTopic(String topic)
@@ -388,7 +388,7 @@ public class SystemConfigBacking extends WebBacking
   
   public String getTarget()
   {
-    return getDirectProperty(TARGET);
+    return getDirectMenuItemProperty(TARGET);
   }
   
   public void setTarget(String target)

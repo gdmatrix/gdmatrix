@@ -37,15 +37,12 @@ import org.santfeliu.faces.beansaver.Savable;
  *
  * @author blanquepa
  */
-public abstract class PageBacking extends WebBacking implements Savable 
+public abstract class PageBacking extends WebBacking implements Savable
 {       
   protected PageBacking()
   {
   }
-  
-//  @PostConstruct
-//  public abstract void init();
-    
+      
   public abstract <T extends ObjectBacking> T getObjectBacking();
   
   /** Get identifier of the main object managed by the page. Usually:

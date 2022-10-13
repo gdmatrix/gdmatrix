@@ -30,11 +30,13 @@
  */
 package org.matrix.pf.web.helper;
 
+import java.util.List;
+
 /**
  *
  * @author blanquepa
  */
-public interface Typed
+public interface Typed extends Page
 {
   public String getRootTypeId();
     
@@ -42,5 +44,17 @@ public interface Typed
 
   public String getAdminRole();
   
-  public TypedHelper getTypedHelper();   
+  public TypedHelper getTypedHelper(); 
+
+  @Override
+  public default String getProperty(String name)
+  {
+    return getTypedHelper().getProperty(name);
+  }
+    
+  @Override
+  public default List<String> getMultivaluedProperty(String name)
+  {
+    return getTypedHelper().getMultivaluedProperty(name);
+  }    
 }

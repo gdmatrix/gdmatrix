@@ -291,7 +291,7 @@ public class CasePersonsBacking extends PageBacking
   
   public boolean isRenderGroupedResults()
   {
-    return tabHelper.getProperty(GROUPBY_PROPERTY) != null;
+    return getProperty(GROUPBY_PROPERTY) != null;
   }  
   
   //Person selection

@@ -133,6 +133,7 @@ public class PersonAddressesBacking extends PageBacking
     return resultListHelper;
   }  
   
+  @Override
   public TabHelper getTabHelper()
   {
     return tabHelper;

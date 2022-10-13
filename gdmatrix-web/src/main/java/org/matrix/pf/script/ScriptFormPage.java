@@ -28,39 +28,19 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.web.helper;
+package org.matrix.pf.script;
 
+import org.matrix.pf.web.helper.*;
 import java.util.List;
+import org.matrix.dic.Property;
 
 /**
  *
  * @author blanquepa
  */
-public interface TypedTabPage extends Typed, TabPage
-{    
-  @Override
-  public default String getAdminRole()
-  {
-    return getObjectBacking().getAdminRole();
-  } 
+public interface ScriptFormPage extends Typed
+{  
+  public ScriptFormHelper getScriptFormHelper();
   
-  @Override
-  public default String getProperty(String name)
-  {
-    String value = getTabHelper().getProperty(name);
-    if (value == null)
-      value = getTypedHelper().getProperty(name);
-    
-    return value;
-  }
-  
-  @Override
-  public default List<String> getMultivaluedProperty(String name)
-  {
-    List<String> value = getTabHelper().getMultivaluedProperty(name);
-    if (value == null)
-      value = getTypedHelper().getMultivaluedProperty(name);
-    
-    return value;
-  }    
+  public List<Property> getProperties();  
 }

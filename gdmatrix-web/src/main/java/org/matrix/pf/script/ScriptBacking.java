@@ -37,6 +37,7 @@ import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ControllerBacking;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.PageBacking;
+import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TabPage;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.HttpUtils;
@@ -67,14 +68,17 @@ public class ScriptBacking extends PageBacking
   
   private ObjectBacking objectBacking;
   
+  private TabHelper tabHelper;
+  
   public ScriptBacking()
   {
-//    init();
   }
   
   @PostConstruct
   public final void init()
   {
+    this.objectBacking = 
+      ControllerBacking.getCurrentInstance().getObjectBacking();    
     HttpServletRequest request = 
       (HttpServletRequest)getExternalContext().getRequest();
     contextPath = request.getContextPath();
@@ -84,6 +88,7 @@ public class ScriptBacking extends PageBacking
     String defaultPort = 
       MatrixConfig.getProperty("org.santfeliu.web.defaultPort");
     port = !"80".equals(defaultPort) ? ":" + defaultPort : ""; 
+    tabHelper = new TabHelper(this);
   }
   
   public String getXhtmlFormUrl()
@@ -195,5 +200,11 @@ public class ScriptBacking extends PageBacking
     return (ScriptBean) 
       UserSessionBean.getCurrentInstance().getSb().get(name);
   }     
+
+  @Override
+  public TabHelper getTabHelper()
+  {
+    return tabHelper;
+  }
  
 }

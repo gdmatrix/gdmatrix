@@ -48,7 +48,7 @@ public abstract class SearchBacking extends PageBacking
   {
     bigListHelper = new BigListHelper(this);      
   }
-  
+
   public String getSmartValue()
   {
     return smartValue;
@@ -70,7 +70,12 @@ public abstract class SearchBacking extends PageBacking
   }
   
   public abstract String getFilterTypeId();
-    
+
+  public String getProperty(String name)
+  {
+    return getMenuItemProperty(name);
+  }
+  
   public void reset()
   {
     clear();
@@ -161,5 +166,5 @@ public abstract class SearchBacking extends PageBacking
   {
     bigListHelper.search();    
   }
-   
+     
 }

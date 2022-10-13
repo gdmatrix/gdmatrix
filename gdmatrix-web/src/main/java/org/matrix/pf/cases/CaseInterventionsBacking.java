@@ -48,6 +48,8 @@ import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Property;
+import org.matrix.pf.script.ScriptFormHelper;
 import org.matrix.pf.script.ScriptBacking;
 import org.matrix.pf.web.ControllerBacking;
 import org.matrix.pf.web.PageBacking;
@@ -66,6 +68,7 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.bean.CMSProperty;
+import org.matrix.pf.script.ScriptFormPage;
 
 /**
  *
@@ -73,7 +76,7 @@ import org.santfeliu.web.bean.CMSProperty;
  */
 @Named
 public class CaseInterventionsBacking extends PageBacking
-  implements TypedTabPage, ResultListPage, Describable
+  implements TypedTabPage, ResultListPage, Describable, ScriptFormPage
 {
   private static final String CASE_BACKING = "caseBacking";
   private static final String OUTCOME = "pf_case_interventions";
@@ -82,7 +85,7 @@ public class CaseInterventionsBacking extends PageBacking
 
 
   @CMSProperty
-  public static final String SCRIPT_NAME = "scriptName";
+  public static final String SCRIPT_NAME = "rowScriptName";
 
   private CaseBacking caseBacking;
 
@@ -90,12 +93,11 @@ public class CaseInterventionsBacking extends PageBacking
   private TypedHelper typedHelper;
   private ResultListHelper<InterventionView> resultListHelper;
   private TabHelper tabHelper;
+  private ScriptFormHelper scriptFormHelper;
 
   private Intervention editing;
   private SelectItem interventionSelectItem;
   
-  private List<SelectItem> interventions;
-
   public CaseInterventionsBacking()
   {
   }
@@ -106,9 +108,9 @@ public class CaseInterventionsBacking extends PageBacking
     caseBacking = WebUtils.getBacking(CASE_BACKING);
     typedHelper = new TypedHelper(this);
     resultListHelper = new ResultListHelper(this);
-    tabHelper = new TabHelper(this);
-    interventions = null;
+    tabHelper = new TabHelper(this); 
     populate();
+    scriptFormHelper = new ScriptFormHelper(this);       
   }
 
   public Intervention getEditing()
@@ -167,15 +169,6 @@ public class CaseInterventionsBacking extends PageBacking
     }
   }
 
-  public String getPageObjectDescription()
-  {
-    if (editing != null)
-    {
-      return getDescription(editing.getIntId());
-    }
-    return null;
-  }
-
   @Override
   public String getRootTypeId()
   {
@@ -206,6 +199,7 @@ public class CaseInterventionsBacking extends PageBacking
     return typedHelper;
   }
 
+  @Override
   public TabHelper getTabHelper()
   {
     return tabHelper;
@@ -244,12 +238,12 @@ public class CaseInterventionsBacking extends PageBacking
   
   public boolean isRenderXhtmlForm()
   {
-    return tabHelper.getProperty(SCRIPT_NAME) != null;
+    return getProperty(SCRIPT_NAME) != null;
   }
   
   public String getXhtmlFormUrl()
   {
-    String scriptName = tabHelper.getProperty(SCRIPT_NAME);   
+    String scriptName = getProperty(SCRIPT_NAME);   
     if (scriptName != null)
     {
       ScriptBacking scriptBacking = WebUtils.getBacking("scriptBacking");
@@ -330,7 +324,9 @@ public class CaseInterventionsBacking extends PageBacking
                                   
       String caseId = caseBacking.getObjectId();
       editing.setCaseId(caseId);
-                        
+      
+      scriptFormHelper.mergeProperties();
+  
       CaseManagerPort port = CaseConfigBean.getPort();
       port.storeIntervention(editing);
        
@@ -567,7 +563,19 @@ public class CaseInterventionsBacking extends PageBacking
     else
       return "";
   }
-    
+
+  @Override
+  public ScriptFormHelper getScriptFormHelper()
+  {
+    return scriptFormHelper;
+  }
+
+  @Override
+  public List<Property> getProperties()
+  {
+    return editing.getProperty();
+  }
+        
   private class CaseMatcher
   {
     private Case mainCase;
@@ -694,5 +702,8 @@ public class CaseInterventionsBacking extends PageBacking
     }    
   }
   
+  
+    
+
 
 }

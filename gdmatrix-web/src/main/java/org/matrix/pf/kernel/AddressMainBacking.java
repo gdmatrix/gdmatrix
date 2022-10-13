@@ -36,6 +36,7 @@ import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.matrix.kernel.Address;
 import org.matrix.pf.web.PageBacking;
+import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.web.WebUtils;
@@ -56,6 +57,7 @@ public class AddressMainBacking extends PageBacking
   
   //Helpers
   private TypedHelper typedHelper;
+  private TabHelper tabHelper;
   
   //ObjectBacking
   AddressBacking addressBacking;
@@ -69,6 +71,7 @@ public class AddressMainBacking extends PageBacking
   {
     addressBacking = WebUtils.getBacking("addressBacking");
     typedHelper = new TypedHelper(this); 
+    tabHelper = new TabHelper(this);
     populate();
   }
 
@@ -94,6 +97,12 @@ public class AddressMainBacking extends PageBacking
   public TypedHelper getTypedHelper()
   {
     return typedHelper;
+  }
+
+  @Override
+  public TabHelper getTabHelper()
+  {
+    return tabHelper;
   }
 
   public Address getAddress()

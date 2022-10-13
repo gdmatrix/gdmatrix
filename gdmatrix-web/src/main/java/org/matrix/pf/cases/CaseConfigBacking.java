@@ -55,7 +55,7 @@ public class CaseConfigBacking extends WebBacking
   
   public String getLoadMetadata()
   {
-    return getProperty(LOAD_METADATA_PROPERTY);
+    return getMenuItemProperty(LOAD_METADATA_PROPERTY);
   }
   
   public void setLoadMetadata(String loadMetadata)
@@ -65,7 +65,7 @@ public class CaseConfigBacking extends WebBacking
   
   public String getRenderSearchExpression()
   {
-    return getProperty(RENDER_SEARCH_EXPRESSION_PROPERTY);
+    return getMenuItemProperty(RENDER_SEARCH_EXPRESSION_PROPERTY);
   }
   
   public void setRenderSearchExpression(String renderSearchExpression)

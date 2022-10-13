@@ -69,28 +69,28 @@ public class WebBacking extends FacesBean
     return getClass().getAnnotation(Named.class).value();  
   }
   
-  protected String getProperty(String name)
+  protected String getMenuItemProperty(String name)
   {
     MenuItemCursor menuItem =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     return menuItem.getProperty(name);
   }
   
-  protected List<String> getMultivaluedProperty(String name)
+  protected List<String> getMultivaluedMenuItemProperty(String name)
   {
     MenuItemCursor menuItem =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     return menuItem.getMultiValuedProperty(name);    
   }
   
-  protected String getDirectProperty(String name)
+  protected String getDirectMenuItemProperty(String name)
   {
     MenuItemCursor menuItem =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     return menuItem.getDirectProperty(name);
   }  
 
-  protected List<String> getDirectMultivaluedProperty(String name)
+  protected List<String> getDirectMultivaluedMenuItemProperty(String name)
   {
     MenuItemCursor menuItem =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
@@ -99,21 +99,23 @@ public class WebBacking extends FacesBean
   
   protected String getProperty(String name, boolean direct)
   {
-    return (direct ? getDirectProperty(name) : getProperty(name));
+    return (direct ? 
+      getDirectMenuItemProperty(name) : 
+      getMenuItemProperty(name));
   }
   
   protected List<String> getMultivaluedProperty(String name, boolean direct)
   {
     return (direct ? 
-      getDirectMultivaluedProperty(name) : 
-      getMultivaluedProperty(name));
+      getDirectMultivaluedMenuItemProperty(name) : 
+      getMultivaluedMenuItemProperty(name));
   }  
 
   protected boolean render(String property, boolean defaultValue)
   {
-    String propValue = getProperty(property);
+    String propValue = getMenuItemProperty(property);
     if (propValue != null)
-      return Boolean.valueOf(propValue);
+      return Boolean.parseBoolean(propValue);
     else
       return defaultValue;
   }

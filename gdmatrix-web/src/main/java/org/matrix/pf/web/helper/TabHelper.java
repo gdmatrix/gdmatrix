@@ -31,6 +31,7 @@
 package org.matrix.pf.web.helper;
 
 import java.io.Serializable;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.pf.web.WebBacking;
 
@@ -42,9 +43,10 @@ public class TabHelper extends WebBacking
   implements Serializable
 {
   private static final String SEPARATOR = "::";
+  private static final String PREFIX = "tab";
   
   protected final TabPage backing;  
-
+  
   public TabHelper(TabPage backing)
   {
     this.backing = backing;
@@ -64,24 +66,31 @@ public class TabHelper extends WebBacking
       return false;
   }
   
-  @Override
   public String getProperty(String name)
   { 
     String result = null;
     int tabIndex = getCurrentTabIndex();
-    String propName = "tab" + String.valueOf(tabIndex) + SEPARATOR + name;
+    String propName = PREFIX + String.valueOf(tabIndex) + SEPARATOR + name;
     
-    String value = super.getProperty(propName);
+    String value = getMenuItemProperty(propName);
     if (value != null)
       result = value;
-    else if (backing instanceof TypedTabPage)
-    {
-      propName = "_" + name;
-      TypedHelper typedHelper = ((TypedTabPage) backing).getTypedHelper();
-      result = typedHelper.getProperty(propName);
-    }
+    
     return result;
   }
+  
+  public List<String> getMultivaluedProperty(String name)
+  { 
+    List<String> result = null;
+    int tabIndex = getCurrentTabIndex();
+    String propName = PREFIX + String.valueOf(tabIndex) + SEPARATOR + name;
+    
+    List<String> value = getMultivaluedMenuItemProperty(propName);
+    if (value != null)
+      result = value;
+    
+    return result;
+  }  
   
   public int getCurrentTabIndex()
   {

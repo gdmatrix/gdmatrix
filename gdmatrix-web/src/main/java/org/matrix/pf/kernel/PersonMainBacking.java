@@ -40,6 +40,7 @@ import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
 import org.matrix.pf.web.PageBacking;
+import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.web.WebUtils;
@@ -64,6 +65,7 @@ public class PersonMainBacking extends PageBacking
   
   //Helpers
   private TypedHelper typedHelper;
+  private TabHelper tabHelper;
   
   private PersonBacking personBacking;
   
@@ -75,7 +77,8 @@ public class PersonMainBacking extends PageBacking
   public void init()
   {
     personBacking = WebUtils.getBacking("personBacking");
-    typedHelper = new TypedHelper(this); 
+    typedHelper = new TypedHelper(this);
+    tabHelper = new TabHelper(this);
     populate();
   }
 
@@ -95,6 +98,11 @@ public class PersonMainBacking extends PageBacking
   public TypedHelper getTypedHelper()
   {
     return typedHelper;
+  }
+
+  public TabHelper getTabHelper()
+  {
+    return tabHelper;
   }
 
   @Override

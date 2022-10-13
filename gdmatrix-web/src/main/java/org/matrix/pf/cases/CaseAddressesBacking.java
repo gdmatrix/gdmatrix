@@ -284,7 +284,7 @@ public class CaseAddressesBacking extends PageBacking
     
   public boolean isRenderGroupedResults()
   {
-    return tabHelper.getProperty(GROUPBY_PROPERTY) != null;
+    return getProperty(GROUPBY_PROPERTY) != null;
   }
   
   private List<SelectItem> completeAddress(String query, String addressId)

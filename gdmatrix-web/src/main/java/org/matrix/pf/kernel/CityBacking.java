@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.City;
 import org.matrix.kernel.CityFilter;
 import org.matrix.kernel.KernelConstants;
+import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.SearchBacking;
 import org.matrix.web.WebUtils;
@@ -47,7 +48,8 @@ import org.santfeliu.kernel.web.KernelConfigBean;
  *
  * @author blanquepa
  */
-@Named("cityBacking")
+@CMSContent(typeId = "City")
+@Named
 public class CityBacking extends ObjectBacking<City>
 {
 

@@ -30,22 +30,21 @@
  */
 package org.matrix.pf.web.helper;
 
+import java.util.List;
 import org.matrix.pf.web.ObjectBacking;
 
 /**
  *
  * @author blanquepa
  */
-public interface TabPage
+public interface TabPage extends Page
 {
-  public <T extends ObjectBacking> T getObjectBacking();
-  
+  public <T extends ObjectBacking> T getObjectBacking(); 
   
   /**
-   * Responsible of retreive page data and other data related actions like 
+   * Responsible of retrieve page data and other data related actions like 
    * preload/postload actions. By default invokes only load().
    */
-  
   public default void populate()
   {
     ObjectBacking objectBacking = getObjectBacking();
@@ -86,4 +85,18 @@ public interface TabPage
    * Action invoked to reset completely tab data
    */
   public void reset();
+  
+  public TabHelper getTabHelper();
+  
+  @Override
+  public default String getProperty(String name)
+  {
+    return getTabHelper().getProperty(name);
+  }  
+  
+  @Override
+  public default List<String> getMultivaluedProperty(String name)
+  {
+    return getTabHelper().getMultivaluedProperty(name);
+  }    
 }

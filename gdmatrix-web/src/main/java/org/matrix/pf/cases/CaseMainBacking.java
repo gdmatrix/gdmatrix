@@ -31,10 +31,13 @@
 package org.matrix.pf.cases;
 
 import java.util.Date;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseConstants;
+import org.matrix.dic.Property;
+import org.matrix.pf.script.ScriptFormHelper;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
@@ -44,6 +47,7 @@ import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
+import org.matrix.pf.script.ScriptFormPage;
 
 /**
  *
@@ -51,7 +55,7 @@ import org.santfeliu.web.UserSessionBean;
  */
 @Named("caseMainBacking")
 public class CaseMainBacking extends PageBacking
-  implements TypedTabPage
+  implements TypedTabPage, ScriptFormPage
 {
   public static final String SHOW_AUDIT_PROPERTIES = "_showAuditProperties";
   public static final String OUTCOME = "pf_case_main";  
@@ -59,6 +63,7 @@ public class CaseMainBacking extends PageBacking
   private Case cas;
   private TypedHelper typedHelper;
   private TabHelper tabHelper;
+  private ScriptFormHelper scriptFormHelper;
   
   private CaseBacking caseBacking;
 
@@ -74,6 +79,7 @@ public class CaseMainBacking extends PageBacking
     
     typedHelper = new TypedHelper(this);  
     tabHelper = new TabHelper(this);
+    scriptFormHelper = new ScriptFormHelper(this);
   }
 
   @Override
@@ -103,9 +109,16 @@ public class CaseMainBacking extends PageBacking
     return typedHelper;
   } 
 
+  @Override
   public TabHelper getTabHelper()
   {
     return tabHelper;
+  }
+
+  @Override
+  public ScriptFormHelper getScriptFormHelper()
+  {
+    return scriptFormHelper;
   }
 
   public Case getCase()
@@ -207,6 +220,8 @@ public class CaseMainBacking extends PageBacking
   {
     try
     {
+      //TODO: Incremental store (in helper?)
+      scriptFormHelper.mergeProperties();
       CaseConfigBean.getPort().storeCase(cas);
     }
     catch (Exception ex)
@@ -214,6 +229,12 @@ public class CaseMainBacking extends PageBacking
       error(ex);
     }
     return null;    
+  }
+  
+  @Override
+  public List<Property> getProperties()
+  {
+    return cas.getProperty();
   }
     
   @Override
