@@ -79,8 +79,9 @@
 
   <named-query name="countCasePolicies">
     <query>
-      SELECT count(cp) FROM CasePolicy cp
-      WHERE
+      SELECT count(cp) FROM CasePolicy cp, Policy pol
+      WHERE cp.policyId = pol.policyId AND
+      (pol.policyTypeId = :policyTypeId OR :policyTypeId IS NULL) AND
       (cp.caseId = :caseId OR :caseId IS NULL) AND
       (cp.policyId = :policyId OR :policyId IS NULL) AND
       (cp.activationDate &lt;= :activationDate OR :activationDate IS NULL) AND
@@ -106,6 +107,7 @@
     <query>
       SELECT cp, pol FROM CasePolicy cp, Policy pol
       WHERE cp.policyId = pol.policyId AND
+      (pol.policyTypeId = :policyTypeId OR :policyTypeId IS NULL) AND
       (cp.caseId = :caseId OR :caseId IS NULL) AND
       (cp.policyId = :policyId OR :policyId IS NULL) AND
       (cp.activationDate &lt;= :activationDate OR :activationDate IS NULL) AND
@@ -130,8 +132,9 @@
 
   <named-query name="countDocumentPolicies">
     <query>
-      SELECT count(dp) FROM DocumentPolicy dp
-      WHERE
+      SELECT count(dp) FROM DocumentPolicy dp, Policy pol
+      WHERE dp.policyId = pol.policyId AND
+      (pol.policyTypeId = :policyTypeId OR :policyTypeId IS NULL) AND
       (dp.docId = :docId OR :docId IS NULL) AND
       (dp.policyId = :policyId OR :policyId IS NULL) AND
       (dp.activationDate &lt;= :activationDate OR :activationDate IS NULL) AND
@@ -157,6 +160,7 @@
     <query>
       SELECT dp, pol FROM DocumentPolicy dp, Policy pol
       WHERE dp.policyId = pol.policyId AND
+      (pol.policyTypeId = :policyTypeId OR :policyTypeId IS NULL) AND
       (dp.docId = :docId OR :docId IS NULL) AND
       (dp.policyId = :policyId OR :policyId IS NULL) AND
       (dp.activationDate &lt;= :activationDate OR :activationDate IS NULL) AND

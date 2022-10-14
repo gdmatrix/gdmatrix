@@ -89,15 +89,15 @@ public class DefaultDocumentConverter implements DocumentConverter
     md.setProperty("codi_referencia", doc.getDocId());
 
     String classId = "UNDEFINED";
-    List<String> classIdList = doc.getClassId();
-    if (classIdList != null && classIdList.size() > 0)
-      classId = classIdList.get(0);
-    md.setProperty("codi_classificacio", classId);
+//    List<String> classIdList = doc.getClassId();
+//    if (classIdList != null && classIdList.size() > 0)
+//      classId = classIdList.get(0);
+//    md.setProperty("codi_classificacio", classId);
 //    md.setProperty("titol_serie_documental",
 //      DocumentUtils.getPropertyValue(doc, "classTitle"));
-    String classTitle = DocumentUtils.getPropertyValue(doc, "classTitle");
-    md.setProperty("titol_serie_documental",
-      classTitle != null ? classTitle : classId);
+//    String classTitle = DocumentUtils.getPropertyValue(doc, "classTitle");
+//    md.setProperty("titol_serie_documental",
+//      classTitle != null ? classTitle : classId);
 
 
     md.setProperty("numero_document", doc.getDocId());

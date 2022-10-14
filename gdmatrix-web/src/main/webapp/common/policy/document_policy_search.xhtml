@@ -34,6 +34,14 @@
                        image="#{userSessionBean.icons.search}"
                        alt="#{objectBundle.search}" title="#{objectBundle.search}" />
     </h:panelGroup>
+
+    <h:outputText value="#{policyBundle.documentPolicySearch_type}:" />
+    <h:panelGroup>
+      <t:selectOneMenu value="#{documentPolicySearchBean.filter.policyTypeId}"
+                       styleClass="selectBox" style="width:70%">
+        <f:selectItems value="#{policySearchBean.typeSelectItems}" />
+      </t:selectOneMenu>
+    </h:panelGroup>
     
     <h:outputText value="#{policyBundle.documentPolicySearch_state}:" />
     <t:selectOneMenu value="#{documentPolicySearchBean.filter.state}"

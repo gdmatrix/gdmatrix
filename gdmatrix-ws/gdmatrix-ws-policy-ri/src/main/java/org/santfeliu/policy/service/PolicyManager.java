@@ -868,6 +868,8 @@ public class PolicyManager implements PolicyManagerPort
   {
     query.setParameter("caseId", filter.getCaseId());
     query.setParameter("policyId", filter.getPolicyId());
+    query.setParameter("policyTypeId",
+      getWSEndpoint().toLocalId(Type.class, filter.getPolicyTypeId()));
     query.setParameter("activationDate", filter.getActivationDate());
 
     query.setParameter("startCreationDateTime",
@@ -904,6 +906,8 @@ public class PolicyManager implements PolicyManagerPort
   {
     query.setParameter("docId", filter.getDocId());
     query.setParameter("policyId", filter.getPolicyId());
+    query.setParameter("policyTypeId",
+      getWSEndpoint().toLocalId(Type.class, filter.getPolicyTypeId()));
     query.setParameter("activationDate", filter.getActivationDate());
 
     query.setParameter("startCreationDateTime",

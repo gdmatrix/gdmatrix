@@ -17,8 +17,8 @@ public class AddCasePITCommand extends PITCommand
   private String caseVar;
   private String converterVar;
   private String type = MetsConstants.OTHER_MDTYPE_VALUE;
-  private String vocabulary = "urn:iarxiu:2.0:vocabularies:catcert:Voc_document";
-  
+  private String vocabulary = "urn:iarxiu:2.0:vocabularies:catcert:Voc_expedient";
+
   public File getFile()
   {
     return file;
@@ -58,7 +58,7 @@ public class AddCasePITCommand extends PITCommand
   {
     this.vocabulary = vocabulary;
   }
-  
+
   public String getConverterVar()
   {
     return converterVar;

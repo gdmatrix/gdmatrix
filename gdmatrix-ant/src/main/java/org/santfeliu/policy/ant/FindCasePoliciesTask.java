@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.policy.ant;
@@ -65,6 +65,7 @@ public class FindCasePoliciesTask extends WSTask
 {
   //input
   protected String state;
+  protected String policyTypeId;
   protected String startDateVar;
   //output
   protected String casePolViewVar;
@@ -112,6 +113,16 @@ public class FindCasePoliciesTask extends WSTask
     this.state = state;
   }
 
+  public String getPolicyTypeId()
+  {
+    return policyTypeId;
+  }
+
+  public void setPolicyTypeId(String policyTypeId)
+  {
+    this.policyTypeId = policyTypeId;
+  }
+
   public void addForEachCasePolicy(Sequential forEachCasePolicy)
   {
     this.forEachCasePolicy = forEachCasePolicy;
@@ -128,7 +139,7 @@ public class FindCasePoliciesTask extends WSTask
     String startDate = (String)getVariable(startDateVar);
 
     List<CasePolicyView> cpvList =
-      findCasePolicyViews(port, startDate, policyState);
+      findCasePolicyViews(port, startDate, policyState, policyTypeId);
     for (CasePolicyView cpv : cpvList)
     {
       List<DocumentPolicyView> docPolViewList =
@@ -142,12 +153,12 @@ public class FindCasePoliciesTask extends WSTask
 
         List<CaseDocumentView> dvList =
           findCaseDocumentViews(casePort, cpv.getCase().getCaseId());
-        
+
         for (CaseDocumentView cdv : dvList)
         {
           List<DocumentPolicyView> auxDocPolViewList =
             findDocumentPolicyViews(port, cdv.getDocument().getDocId(),
-            startDate, policyState);
+            startDate, policyState, policyTypeId);
 
           DocumentManagerPort docPort = getDocumentPort();
           populateDocument(docPort, cdv);
@@ -160,7 +171,6 @@ public class FindCasePoliciesTask extends WSTask
 
         setVariable(docPolViewListVar, docPolViewList);
 
-//        for (Task task : tasks) task.perform();
         forEachCasePolicy.perform();
 
         //Policies states could be change during task execution. It stores
@@ -202,10 +212,11 @@ public class FindCasePoliciesTask extends WSTask
   }
 
   private List<CasePolicyView> findCasePolicyViews(PolicyManagerPort port,
-    String activationDate, PolicyState policyState)
+    String activationDate, PolicyState policyState, String policyTypeId)
   {
     CasePolicyFilter filter = new CasePolicyFilter();
     filter.setState(policyState);
+    filter.setPolicyTypeId(policyTypeId);
     filter.setActivationDate(activationDate);
     filter.setFirstResult(0);
     filter.setMaxResults(0);
@@ -214,10 +225,12 @@ public class FindCasePoliciesTask extends WSTask
   }
 
   private List<DocumentPolicyView> findDocumentPolicyViews(PolicyManagerPort port,
-    String docId, String activationDate, PolicyState policyState)
+    String docId, String activationDate, PolicyState policyState,
+    String policyTypeId)
   {
     DocumentPolicyFilter docPolFilter = new DocumentPolicyFilter();
     docPolFilter.setState(policyState);
+    docPolFilter.setPolicyTypeId(policyTypeId);
     docPolFilter.setActivationDate(activationDate);
     docPolFilter.setDocId(docId);
     return port.findDocumentPolicyViews(docPolFilter);

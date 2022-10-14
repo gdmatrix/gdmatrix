@@ -30,7 +30,6 @@
  */
 package org.santfeliu.policy.web;
 
-import org.matrix.policy.ClassPolicyView;
 import org.matrix.policy.PolicyManagerPort;
 import org.matrix.policy.Policy;
 import org.santfeliu.web.obj.ObjectBean;
