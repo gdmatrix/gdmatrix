@@ -48,7 +48,6 @@ import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.web.obj.ObjectDescriptionCache;
 
 /**
  *
@@ -242,13 +241,12 @@ public class TemplateBacking extends WebBacking
     
   public String getDescription()
   {
-    ObjectDescriptionCache cache = ObjectDescriptionCache.getInstance();
-    return cache.getDescription(getObjectBacking(), getObjectId());
+    return ObjectDescriptions.getDescription(getObjectBacking(), getObjectId());
   }
   
   public String getPageHistoryDescription(PageHistory.Entry entry)
   {
-    String label = null;
+    String label;
     String objectId = entry.getObjectId();
     if (StringUtils.isBlank(objectId))
       label = entry.getTitle();
@@ -256,9 +254,9 @@ public class TemplateBacking extends WebBacking
       label = entry.getDescription();
     
     if (StringUtils.isBlank(label))
-      label = getDescription(entry.getTypeId(), objectId);
-    
-    return label;
+      return getDescription(entry.getTypeId(), objectId);
+    else
+      return encodeDescription(label, objectId);
   }    
   
   public String getObjectId()

@@ -40,6 +40,7 @@ import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
 import org.matrix.pf.web.PageBacking;
+import org.matrix.pf.web.MainPage;
 import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
@@ -55,7 +56,7 @@ import org.santfeliu.util.TextUtils;
  */
 @Named("personMainBacking")
 public class PersonMainBacking extends PageBacking 
-  implements TypedTabPage
+  implements TypedTabPage, MainPage
 {
   public static final String OUTCOME = "pf_person_main";
   

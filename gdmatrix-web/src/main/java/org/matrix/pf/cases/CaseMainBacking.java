@@ -48,6 +48,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.UserSessionBean;
 import org.matrix.pf.script.ScriptFormPage;
+import org.matrix.pf.web.MainPage;
 
 /**
  *
@@ -55,7 +56,7 @@ import org.matrix.pf.script.ScriptFormPage;
  */
 @Named("caseMainBacking")
 public class CaseMainBacking extends PageBacking
-  implements TypedTabPage, ScriptFormPage
+  implements TypedTabPage, ScriptFormPage, MainPage
 {
   public static final String SHOW_AUDIT_PROPERTIES = "_showAuditProperties";
   public static final String OUTCOME = "pf_case_main";  

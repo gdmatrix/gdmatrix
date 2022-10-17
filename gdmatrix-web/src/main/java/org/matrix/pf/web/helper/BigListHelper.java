@@ -47,12 +47,6 @@ public class BigListHelper extends ResultListHelper implements Serializable
     super(searchPage);
   }
     
-  public void refresh()
-  {
-    createDynamicColumns();     
-    populate(); 
-  }  
-    
   public int getCacheSize()
   {
     if (getPageSize() != PAGE_SIZE)

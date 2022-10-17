@@ -40,6 +40,7 @@ import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CasePersonFilter;
@@ -76,7 +77,7 @@ import org.matrix.pf.script.ScriptFormPage;
  */
 @Named
 public class CaseInterventionsBacking extends PageBacking
-  implements TypedTabPage, ResultListPage, Describable, ScriptFormPage
+  implements TypedTabPage, ResultListPage, ScriptFormPage, Describable
 {
   private static final String CASE_BACKING = "caseBacking";
   private static final String OUTCOME = "pf_case_interventions";
@@ -564,6 +565,38 @@ public class CaseInterventionsBacking extends PageBacking
       return "";
   }
 
+  @Override
+  public String getDescription(String objectId)
+  {
+    String description = objectId;
+    if (StringUtils.isBlank(objectId))
+      return description;
+    try
+    {
+      Intervention intervention = 
+        CaseConfigBean.getPort().loadIntervention(objectId);
+      if (intervention != null)
+        description = getDescription(intervention);
+    }
+    catch (Exception ex)
+    {
+      error(ex.getMessage());
+    }
+    return description;    
+  }
+  
+  public String getDescription(Intervention intervention)
+  {
+    if (intervention != null)
+    {
+      Type type = TypeCache.getInstance().getType(intervention.getIntTypeId());
+      return type.getDescription();      
+    }
+    else
+      return "";
+  }
+  
+  
   @Override
   public ScriptFormHelper getScriptFormHelper()
   {

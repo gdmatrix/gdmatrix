@@ -48,7 +48,6 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.web.obj.ObjectDescriptionCache;
 
 /**
  *
@@ -69,13 +68,10 @@ public abstract class ObjectBacking<T> extends WebBacking
   
   protected TypedHelper typedHelper;
   
-  ObjectDescriptionCache descriptionCache;  
-
   protected ObjectBacking()
   {
     tabs = new ArrayList<>();    
     tabIndex = 0; 
-    descriptionCache = ObjectDescriptionCache.getInstance();    
   }
   
   @PostConstruct
@@ -270,9 +266,9 @@ public abstract class ObjectBacking<T> extends WebBacking
         boolean purge = userPreferences.mustPurgePreferences();
         List<SelectItem> favorites = new ArrayList<>();
         for (String favoriteObjectId : favoriteIdList)
-        {
+        {        
           String description = 
-            descriptionCache.getDescription(this, "pf::" + favoriteObjectId);
+            ObjectDescriptions.getDescription(this, favoriteObjectId);
           if (description != null && !description.isEmpty())
           {
             SelectItem item = new SelectItem();
@@ -358,22 +354,31 @@ public abstract class ObjectBacking<T> extends WebBacking
   
   public String store() 
   {
+    String outcome = null;
     try
     {
       //Executes store() of current tab.
       //TODO: Maybe detect if other tabs has been modified
       Tab tab = getCurrentTab();
-      PageBacking pageBacking = 
-        WebUtils.getBackingFromAction(tab.getAction());
+      PageBacking pageBacking = WebUtils.getBackingFromAction(tab.getAction());
+      
       if (pageBacking instanceof TabPage)
-        return ((TabPage)pageBacking).store();
+        outcome = ((TabPage)pageBacking).store();
+      
+      if (pageBacking instanceof MainPage)
+      {
+        String pageObjectId = pageBacking.getPageObjectId();
+        ObjectDescriptions.clearDescription(this, pageObjectId);
+        getSearchBacking().refresh();       
+        return outcome;        
+      }
     }
     catch (Exception ex)
     {
       error(ex);
     }
     
-    return null;
+    return outcome;
   }  
   
   public String cancel() 

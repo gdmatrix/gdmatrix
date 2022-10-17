@@ -52,12 +52,6 @@ public class DocumentBacking extends ObjectBacking<Document>
   }
 
   @Override
-  public String getDescription(Document obj)
-  {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-  }
-
-  @Override
   public String getAdminRole()
   {
     throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -74,5 +68,19 @@ public class DocumentBacking extends ObjectBacking<Document>
   {
     throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
   }
+
+  @Override
+  public String getDescription(String objectId)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+  }
+
+  @Override
+  public String getDescription(Document obj)
+  {
+    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+  }
+
+
   
 }

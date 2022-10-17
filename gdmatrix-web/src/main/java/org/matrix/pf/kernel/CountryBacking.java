@@ -68,13 +68,12 @@ public class CountryBacking extends ObjectBacking<Country>
   @Override
   public String getDescription(String objectId)
   {
-    String countryId = super.getDescription(objectId);
-    if (!StringUtils.isBlank(countryId))
+    if (!StringUtils.isBlank(objectId))
     {
-      Country country = KernelConfigBean.getPort().loadCountry(countryId);
+      Country country = KernelConfigBean.getPort().loadCountry(objectId);
       return getDescription(country);
     }
-    return countryId;
+    return objectId;
   }
 
   @Override

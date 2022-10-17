@@ -123,6 +123,12 @@ public class ResultListHelper<T extends Serializable> implements Serializable
     columns = null;
   }  
   
+  public void refresh()
+  {
+    createDynamicColumns();     
+    populate(); 
+  }  
+        
   protected void populate()
   {
     rows = pageBacking.getResults(firstRowIndex, getMaxSize());

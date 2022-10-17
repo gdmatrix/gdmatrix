@@ -40,7 +40,6 @@ import org.matrix.kernel.PersonFilter;
 import org.matrix.kernel.PersonView;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
-import org.matrix.web.Describable;
 import org.matrix.web.WebUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
 
@@ -51,7 +50,6 @@ import org.santfeliu.kernel.web.KernelConfigBean;
 @CMSContent(typeId = "Person")
 @Named("personBacking")
 public class PersonBacking extends ObjectBacking<PersonView> 
-  implements Describable
 {   
   public PersonBacking()
   {
@@ -90,7 +88,6 @@ public class PersonBacking extends ObjectBacking<PersonView>
   @Override
   public String getDescription(String objectId)
   {
-    objectId = super.getDescription(objectId);
     try
     {
       if (objectId != null && objectId.contains(";"))

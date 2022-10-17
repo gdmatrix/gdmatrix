@@ -68,13 +68,12 @@ public class CityBacking extends ObjectBacking<City>
   @Override
   public String getDescription(String objectId)
   {
-    String cityId = super.getDescription(objectId);
-    if (!StringUtils.isBlank(cityId))
+    if (!StringUtils.isBlank(objectId))
     {
-      City city = KernelConfigBean.getPort().loadCity(cityId);
+      City city = KernelConfigBean.getPort().loadCity(objectId);
       return getDescription(city);
     }
-    return cityId;
+    return objectId;
   }
 
   @Override

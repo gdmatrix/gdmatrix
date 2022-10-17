@@ -80,7 +80,6 @@ public class AddressBacking extends ObjectBacking<AddressView>
   @Override
   public String getDescription(String objectId)
   {
-    objectId = super.getDescription(objectId);
     try
     {
       if (objectId != null && objectId.contains(";"))

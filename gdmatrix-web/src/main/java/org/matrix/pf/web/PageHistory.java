@@ -31,11 +31,11 @@
 package org.matrix.pf.web;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 import org.matrix.web.Describable;
 import org.matrix.web.WebUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.web.obj.ObjectDescriptionCache;
 
 /**
  *
@@ -113,18 +113,26 @@ public class PageHistory extends org.santfeliu.web.obj.PageHistory
       String description = null;
 
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();      
-      MenuItemCursor cursor = userSessionBean.getMenuModel().getMenuItem(mid);      
-      WebBacking webBacking = WebUtils.getBacking(cursor);  
-      
-      if (webBacking != null && webBacking instanceof Describable 
-        && objectId != null)
+      MenuItemCursor cursor = userSessionBean.getMenuModel().getMenuItem(mid);  
+      try
       {
-        ObjectDescriptionCache cache = ObjectDescriptionCache.getInstance();
-        description = cache.getDescription((Describable) webBacking, objectId);
+        Describable webBacking = WebUtils.getBacking(cursor);  
+        if (webBacking != null && objectId != null)
+        {
+          description = 
+            ObjectDescriptions.getDescription(webBacking, objectId);
+        }
       }
+      catch (Exception ex)
+      {
+        java.util.logging.Logger.getLogger(PageHistory.class.getName()).
+          log(Level.SEVERE, null, ex);
+      }
+
       return description;
     }
-
+    
+    
     @Override
     public String show()
     {

@@ -95,7 +95,6 @@ public class CaseBacking extends ObjectBacking<Case>
   public String getDescription(String objectId)
   {
     String description = "";
-    objectId = super.getDescription(objectId);
     if (StringUtils.isBlank(objectId))
       return description;
     try

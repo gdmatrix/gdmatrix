@@ -36,6 +36,7 @@ import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.matrix.kernel.Address;
 import org.matrix.pf.web.PageBacking;
+import org.matrix.pf.web.MainPage;
 import org.matrix.pf.web.helper.TabHelper;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
@@ -48,7 +49,7 @@ import org.santfeliu.kernel.web.KernelConfigBean;
  */
 @Named("addressMainBacking")
 public class AddressMainBacking extends PageBacking 
-  implements TypedTabPage
+  implements TypedTabPage, MainPage
 {
   public static final String OUTCOME = "pf_address_main";
     

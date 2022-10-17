@@ -38,7 +38,6 @@ import org.santfeliu.cms.web.NodeEditBean;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.web.obj.ObjectDescriptionCache;
 
 /**
  *
@@ -132,8 +131,7 @@ public class WebBacking extends FacesBean
   
   protected String getDescription(Describable describable, String objectId)
   {
-    ObjectDescriptionCache cache = ObjectDescriptionCache.getInstance();
-    return cache.getDescription(describable, objectId);
+    return ObjectDescriptions.getDescription(describable, objectId);
   }    
      
 }

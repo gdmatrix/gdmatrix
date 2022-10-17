@@ -45,6 +45,8 @@ import org.santfeliu.jmx.JMXUtils;
  */
 public class ObjectDescriptionCache implements Serializable
 {
+  private static final String PREFIX_SEPARATOR = "::";
+  
   private static final int MAX_SIZE = 1000;
   private static final ObjectDescriptionCache defaultInstance = 
     new ObjectDescriptionCache();
@@ -67,7 +69,7 @@ public class ObjectDescriptionCache implements Serializable
   {
     return defaultInstance;
   }
-
+  
   public String getDescription(Describable describable, String objectId)
   {
     if (ControllerBean.NEW_OBJECT_ID.equals(objectId))
@@ -121,6 +123,11 @@ public class ObjectDescriptionCache implements Serializable
     }
     else
     {
+      if (objectId != null && objectId.contains(PREFIX_SEPARATOR))
+      {
+        objectId = objectId.substring(objectId.indexOf(PREFIX_SEPARATOR) 
+          + PREFIX_SEPARATOR.length()); 
+      }
       description = describable.getDescription(objectId);
     }
     return description;
