@@ -32,15 +32,22 @@ package org.matrix.pf.script;
 
 import org.matrix.pf.web.helper.*;
 import java.util.List;
+import java.util.Map;
 import org.matrix.dic.Property;
+import org.matrix.pf.script.ScriptFormHelper.Field;
 
 /**
  *
  * @author blanquepa
  */
-public interface ScriptFormPage extends Typed
+public interface ScriptFormPage extends TypedPage
 {  
   public ScriptFormHelper getScriptFormHelper();
   
-  public List<Property> getProperties();  
+  public List<Property> getProperties();
+
+  public default Map<String, Field> getProperty()
+  {
+    return getScriptFormHelper().getFieldMap();
+  }
 }

@@ -200,7 +200,7 @@ public class StreetBacking extends ObjectBacking
       }
       else
       {
-        cityName = getProperty(AddressBacking.DEFAULT_CITY_NAME);
+        cityName = getMenuItemProperty(AddressBacking.DEFAULT_CITY_NAME);
       }
 
       if (cityName != null)

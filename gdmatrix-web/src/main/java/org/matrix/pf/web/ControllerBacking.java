@@ -35,7 +35,6 @@ import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.web.ReturnStack;
 import org.matrix.web.WebUtils;
 import org.santfeliu.faces.beansaver.Savable;
@@ -49,6 +48,8 @@ import org.santfeliu.web.UserSessionBean;
 @Named("controllerBacking")
 public class ControllerBacking extends WebBacking implements Savable
 {
+  public static final String SEARCH_PAGE = "SEARCH_PAGE";
+  
   private PageHistory pageHistory = new PageHistory();  
   private ReturnStack<ReturnStackEntry> returnStack = new ReturnStack();
   
@@ -141,7 +142,7 @@ public class ControllerBacking extends WebBacking implements Savable
         targetObjectBacking.setTabIndex(tabIndex);  
 
         PageBacking targetPageBacking;
-        if (!StringUtils.isBlank(objectId)) //Allows ObjectBacking.NEW_OBJECT_ID value
+        if (objectId != null && !SEARCH_PAGE.equals(objectId)) //Allows ObjectBacking.NEW_OBJECT_ID value
         {
           ObjectBacking currentObjectBacking = getObjectBacking();    
           if (currentObjectBacking.equals(targetObjectBacking) &&
@@ -157,7 +158,7 @@ public class ControllerBacking extends WebBacking implements Savable
           else
             outcome = tab.executeAction();     
         }
-        else //SearchBacking
+        else if (SEARCH_PAGE.equals(objectId))//SearchBacking
         {
           SearchBacking targetSearchBacking = 
             (SearchBacking) targetObjectBacking.getSearchBacking();
@@ -193,7 +194,7 @@ public class ControllerBacking extends WebBacking implements Savable
     
     if (!targetMenuItem.isNull())
     {
-      pageHistory.visit(targetMenuItem.getMid(), null, returnTypeId);
+      pageHistory.visit(targetMenuItem.getMid(), SEARCH_PAGE, returnTypeId);
 
       ObjectBacking targetObjectBacking = getObjectBacking(targetMenuItem); 
       SearchBacking searchPage = targetObjectBacking.getSearchBacking();

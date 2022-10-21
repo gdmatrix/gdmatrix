@@ -36,31 +36,23 @@ import java.util.List;
  *
  * @author blanquepa
  */
-public interface TypedTabPage extends Typed, TabPage
-{    
+public interface TypedTabPage extends TypedPage, TabPage
+{
   @Override
-  public default String getAdminRole()
+  public default String getConfigTypeId()
   {
-    return getObjectBacking().getAdminRole();
-  } 
-  
+    return getObjectBacking().getTabTypeId();
+  }
+    
   @Override
   public default String getProperty(String name)
   {
-    String value = getTabHelper().getProperty(name);
-    if (value == null)
-      value = getTypedHelper().getProperty(name);
-    
-    return value;
+    return getTypedHelper().getProperty(name);
   }
   
   @Override
   public default List<String> getMultivaluedProperty(String name)
-  {
-    List<String> value = getTabHelper().getMultivaluedProperty(name);
-    if (value == null)
-      value = getTypedHelper().getMultivaluedProperty(name);
-    
-    return value;
+  {    
+    return getTypedHelper().getMultivaluedProperty(name);
   }    
 }

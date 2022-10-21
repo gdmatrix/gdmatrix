@@ -39,7 +39,7 @@ import org.matrix.pf.web.ObjectBacking;
  */
 public interface TabPage extends Page
 {
-  public <T extends ObjectBacking> T getObjectBacking(); 
+
   
   /**
    * Responsible of retrieve page data and other data related actions like 
@@ -64,7 +64,7 @@ public interface TabPage extends Page
   public void load();    
   
   /**
-   * Action invoked for the page to be shwon.
+   * Action invoked for the page to be shown.
    * @return Outcome 
    */
   public String show();

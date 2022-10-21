@@ -99,8 +99,8 @@ public class ScriptBacking extends PageBacking
   public String getXhtmlFormUrl(String pageName)
   {
     //Avoid caching
-    String nocache = getProperty("nocache");
-    String caching = nocache != null && !nocache.equalsIgnoreCase("false") ? 
+    String nocache = getMenuItemProperty("nocache");
+    String caching = nocache == null || nocache.equalsIgnoreCase("true") ? 
       "&nocache=true" : "";
 
     return protocol + "://" + serverName + port + contextPath + FORM_SERVLET 

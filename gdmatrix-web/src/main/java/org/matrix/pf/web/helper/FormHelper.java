@@ -340,7 +340,8 @@ public class FormHelper extends FacesBean implements Serializable
   private boolean isUserAdmin()
   {    
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    return userSessionBean.isUserInRole(backing.getAdminRole());
+    String adminRole = backing.getObjectBacking().getAdminRole();
+    return userSessionBean.isUserInRole(adminRole);
   }  
   
   private boolean isCurrentTypeUndefined()

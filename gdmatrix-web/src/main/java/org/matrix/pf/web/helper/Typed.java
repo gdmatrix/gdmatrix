@@ -30,31 +30,28 @@
  */
 package org.matrix.pf.web.helper;
 
-import java.util.List;
-
 /**
- *
+ * Implemented by any class that has to deal with instances of a typed object.
+ * 
  * @author blanquepa
  */
-public interface Typed extends Page
+public interface Typed
 {
+  /**
+   * @return the root type of the object managed by implementing bean.
+   */
   public String getRootTypeId();
-    
-  public String getTypeId();
-
-  public String getAdminRole();
   
-  public TypedHelper getTypedHelper(); 
-
-  @Override
-  public default String getProperty(String name)
-  {
-    return getTypedHelper().getProperty(name);
-  }
-    
-  @Override
-  public default List<String> getMultivaluedProperty(String name)
-  {
-    return getTypedHelper().getMultivaluedProperty(name);
-  }    
+  /**
+   * @return the configured typeId that is the reference of implementing bean.  
+   * 
+   */
+  public String getConfigTypeId();
+  
+  /**
+   * @return the current or the selected typeId of the object managed by 
+   * implementing bean.
+   *  
+   */
+  public String getTypeId();
 }

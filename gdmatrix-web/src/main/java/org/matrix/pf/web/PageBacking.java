@@ -30,6 +30,7 @@
  */
 package org.matrix.pf.web;
 
+import org.matrix.pf.web.helper.Page;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.faces.beansaver.Savable;
 
@@ -37,12 +38,13 @@ import org.santfeliu.faces.beansaver.Savable;
  *
  * @author blanquepa
  */
-public abstract class PageBacking extends WebBacking implements Savable
+public abstract class PageBacking extends WebBacking implements Page, Savable
 {       
   protected PageBacking()
   {
   }
       
+  @Override
   public abstract <T extends ObjectBacking> T getObjectBacking();
   
   /** Get identifier of the main object managed by the page. Usually:

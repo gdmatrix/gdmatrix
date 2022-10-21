@@ -40,6 +40,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import static org.matrix.pf.web.ControllerBacking.SEARCH_PAGE;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.MenuElement;
@@ -86,7 +87,7 @@ public class TemplateBacking extends WebBacking
   public List getBasicResults()
   {
     SearchBacking searchBacking = getSearchBacking();
-    String filterTypeId = searchBacking.getFilterTypeId();
+    String filterTypeId = searchBacking.getTypeId();
     String menuItemTypeId = getMenuItemTypeId();
     if (filterTypeId.equals(menuItemTypeId))
       return getSearchBacking().bigListHelper.getRows();
@@ -248,7 +249,7 @@ public class TemplateBacking extends WebBacking
   {
     String label;
     String objectId = entry.getObjectId();
-    if (StringUtils.isBlank(objectId))
+    if (StringUtils.isBlank(objectId) || SEARCH_PAGE.equals(objectId))
       label = entry.getTitle();
     else
       label = entry.getDescription();
@@ -317,6 +318,7 @@ public class TemplateBacking extends WebBacking
   //Private methods
   private String encodeDescription(String label, String objectId)
   {
+    objectId = SEARCH_PAGE.equals(objectId) ? null : objectId;
     return label + 
       (!StringUtils.isBlank(objectId) ? " (" + objectId + ")" : "");    
   }

@@ -32,6 +32,7 @@ package org.matrix.web;
 
 import org.matrix.pf.web.ControllerBacking;
 import org.matrix.pf.web.ObjectBacking;
+import org.matrix.pf.web.PageHistory;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.obj.ControllerBean;
@@ -68,16 +69,16 @@ public class ControllerProxy
     else if (controller instanceof ControllerBacking)
     {
       ControllerBacking controllerBacking = (ControllerBacking) controller;
-      ObjectBacking objectBacking = 
-        controllerBacking.getObjectBacking(menuItem);
+      ObjectBacking currentObjectBacking = controllerBacking.getObjectBacking();
 
-      if (objectBacking != null)
+      if (currentObjectBacking != null)
       {
-        String currentTypeId = objectBacking.getTypeId();     
+        String currentTypeId = currentObjectBacking.getConfigTypeId();     
         if (currentTypeId != null)
         {
-          controllerBacking.getPageHistory()
-            .visit(menuItem.getMid(), null, currentTypeId);
+          PageHistory pageHistory = controllerBacking.getPageHistory();
+          pageHistory.visit(menuItem.getMid(), ControllerBacking.SEARCH_PAGE, 
+            currentTypeId);
         }
       }
     }

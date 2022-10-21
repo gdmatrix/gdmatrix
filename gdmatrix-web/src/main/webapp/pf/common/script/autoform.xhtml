@@ -5,17 +5,17 @@
 
 
   <div class="ui-fluid formgrid grid">             
-    <ui:repeat value="#{backing.scriptFormHelper.getFields()}" var="field">
+    <ui:repeat value="#{backing.scriptFormHelper.fields}" var="field">
 
       <p:outputPanel styleClass="field col-12 md:col-4" >
         <p:outputLabel for="@next" class="w-full" style="#{field.label == field.name ? 'color:red' : ''}"
                        value="#{field.label}"/>
         <!-- TEXT SINGLE -->
         <p:inputText value="#{field.value}" 
-                     disabled="#{!caseBacking.editable or field.readOnly}" 
+                     disabled="#{!backing.objectBacking.editable or field.readOnly}" 
                      rendered="#{field.type == 'TEXT' and field.size le 80 and not field.enumType and not field.multiple}"/>
         <p:inputTextarea value="#{field.value}" maxlength="#{field.size}" autoResize="true"
-                         disabled="#{!caseBacking.editable or field.readOnly}" 
+                         disabled="#{!backing.objectBacking.editable or field.readOnly}" 
                          rendered="#{field.type == 'TEXT' and field.size gt 80 and not field.enumType and not field.multiple}"/>
         <!-- TEXT MULTIPLE -->
         <p:chips value="#{field.listValue}" rendered="#{field.type == 'TEXT' and not field.enumType and field.multiple}" />
@@ -23,24 +23,24 @@
         <!-- BOOLEAN -->
         <p:toggleSwitch value="#{field.booleanValue}"
                         rendered="#{field.type == 'BOOLEAN'}"
-                        disabled="#{!caseBacking.editable or field.readOnly}"/> 
+                        disabled="#{!backing.objectBacking.editable or field.readOnly}"/> 
 
         <!-- NUMERIC -->
         <p:spinner value="#{field.value}" rendered="#{field.type == 'NUMERIC'}"
-                  disabled="#{!caseBacking.editable or field.readOnly}" />
+                  disabled="#{!backing.objectBacking.editable or field.readOnly}" />
 
         <!-- DATE -->
         <p:datePicker value="#{field.dateValue}" rendered="#{field.type == 'DATE'}"
                       locale="#{backing.language}" 
                       showIcon="true" 
                       monthNavigator="true" yearNavigator="true"
-                      disabled="#{!caseBacking.editable or field.readOnly}"/>
+                      disabled="#{!backing.objectBacking.editable or field.readOnly}"/>
 
         <!-- ENUMTYPES SINGLE -->
         <p:selectOneMenu value="#{field.value}" 
                          rendered="#{field.type == 'TEXT' and field.enumType and not field.multiple}"
                          filter="true"  autoWidth="false"
-                         disabled="#{!caseBacking.editable or field.readOnly}">
+                         disabled="#{!backing.objectBacking.editable or field.readOnly}">
           <f:selectItem itemLabel="" itemValue=""/>
           <f:selectItems value="#{field.enumTypes}" />          
         </p:selectOneMenu>  
@@ -49,7 +49,7 @@
                               rendered="#{field.type == 'TEXT' and field.enumType and field.multiple}"
                               filter="true" filterMatchMode="startsWith" 
                               multiple="true" 
-                              disabled="#{!caseBacking.editable or field.readOnly}">
+                              disabled="#{!backing.objectBacking.editable or field.readOnly}">
           <f:selectItems value="#{field.enumTypes}"/>
         </p:selectCheckboxMenu>                
 

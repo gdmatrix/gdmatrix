@@ -7,6 +7,7 @@
                 template="person_common.xhtml">
 
   <ui:param name="objectPage" value="object" />
+  <ui:param name="updateOnStore" value="form_panel object_header favorites_table basic_results_table" />
 
   <ui:define name="content">
     <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
@@ -48,7 +49,7 @@
         <p:outputLabel for="name" value="#{kernelBundle.person_name}" />        
         <p:inputText id="name" value="#{personMainBacking.person.name}"   />
       </div>   
-
+      
       <div class="field col-12 md:col-2 xl:col-2">
         <p:outputLabel for="first_particle" value="#{kernelBundle.person_particle}" />
         <p:selectOneMenu id="first_particle" value="#{personMainBacking.person.firstParticle}">

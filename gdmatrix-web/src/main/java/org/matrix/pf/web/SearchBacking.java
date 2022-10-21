@@ -69,8 +69,8 @@ public abstract class SearchBacking extends PageBacking
     return bigListHelper;
   }
   
-  public abstract String getFilterTypeId();
-
+  public abstract String getTypeId();
+  
   public String getProperty(String name)
   {
     return getMenuItemProperty(name);
@@ -93,7 +93,7 @@ public abstract class SearchBacking extends PageBacking
   @Override
   public String show()
   {
-    String currentTypeId = getFilterTypeId();
+    String currentTypeId = getTypeId();
     String menuItemTypeId = getMenuItemTypeId();    
     if (currentTypeId != null && !currentTypeId.equals(menuItemTypeId))
       reset();

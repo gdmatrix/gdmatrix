@@ -186,7 +186,7 @@ public class CaseCasesBacking extends PageBacking
   @Override
   public String getTypeId()
   {
-    return caseBacking.getPageTypeId();
+    return caseBacking.getTabTypeId();
   }
 
   @Override
@@ -691,7 +691,7 @@ public class CaseCasesBacking extends PageBacking
       if (item == null && isWithinRange(casePerson))
       {
         CaseCaseView caseCaseView = new CaseCaseView();
-        caseCaseView.setCaseCaseTypeId(getRootTypeId());
+        caseCaseView.setCaseCaseTypeId(getConfigTypeId());
         caseCaseView.setMainCase(mainCase);
         caseCaseView.setRelCase(casePerson.getCaseObject());
         //TODO: Merge fechas

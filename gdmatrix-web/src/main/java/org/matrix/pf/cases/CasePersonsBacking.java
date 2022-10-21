@@ -178,7 +178,7 @@ public class CasePersonsBacking extends PageBacking
   @Override
   public String getTypeId()
   {
-    return caseBacking.getPageTypeId();
+    return caseBacking.getTabTypeId();
   }
   
   @Override

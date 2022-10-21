@@ -188,7 +188,7 @@ public class PersonSearchBacking extends SearchBacking
   }
 
   @Override
-  public String getFilterTypeId()
+  public String getTypeId()
   {
     return personBacking.getRootTypeId();
   }

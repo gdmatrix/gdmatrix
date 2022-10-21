@@ -76,8 +76,7 @@ public class CaseMainBacking extends PageBacking
   @PostConstruct
   public void init()
   {
-    caseBacking = WebUtils.getBacking("caseBacking"); 
-    
+    caseBacking = WebUtils.getBacking("caseBacking");     
     typedHelper = new TypedHelper(this);  
     tabHelper = new TabHelper(this);
     scriptFormHelper = new ScriptFormHelper(this);
@@ -208,6 +207,7 @@ public class CaseMainBacking extends PageBacking
       try
       {
         cas = CaseConfigBean.getPort().loadCase(caseId);
+        scriptFormHelper.reload();
       }
       catch (Exception ex)
       {

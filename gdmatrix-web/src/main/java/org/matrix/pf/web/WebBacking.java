@@ -33,6 +33,7 @@ package org.matrix.pf.web;
 import java.util.List;
 import javax.inject.Named;
 import org.matrix.web.Describable;
+import org.matrix.web.WebUtils;
 import static org.matrix.web.WebUtils.OBJECT_TYPEID_PROPERTY;
 import org.santfeliu.cms.web.NodeEditBean;
 import org.santfeliu.faces.FacesBean;
@@ -70,30 +71,22 @@ public class WebBacking extends FacesBean
   
   protected String getMenuItemProperty(String name)
   {
-    MenuItemCursor menuItem =
-      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
-    return menuItem.getProperty(name);
+    return WebUtils.getMenuItemProperty(name);
   }
   
   protected List<String> getMultivaluedMenuItemProperty(String name)
   {
-    MenuItemCursor menuItem =
-      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
-    return menuItem.getMultiValuedProperty(name);    
+    return WebUtils.getMultivaluedMenuItemProperty(name);    
   }
   
   protected String getDirectMenuItemProperty(String name)
   {
-    MenuItemCursor menuItem =
-      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
-    return menuItem.getDirectProperty(name);
+    return WebUtils.getDirectMenuItemProperty(name);
   }  
 
   protected List<String> getDirectMultivaluedMenuItemProperty(String name)
   {
-    MenuItemCursor menuItem =
-      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
-    return menuItem.getDirectMultiValuedProperty(name);
+    return WebUtils.getDirectMultivaluedMenuItemProperty(name);
   }
   
   protected String getProperty(String name, boolean direct)

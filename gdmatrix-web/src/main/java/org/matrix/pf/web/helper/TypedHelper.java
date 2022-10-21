@@ -32,6 +32,7 @@ package org.matrix.pf.web.helper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.faces.model.SelectItem;
@@ -55,9 +56,9 @@ public class TypedHelper extends WebBacking
   
   private static final String TYPE_BEAN = "typeBean";
 
-  protected final Typed backing;
+  protected final TypedPage backing;
 
-  public TypedHelper(Typed backing)
+  public TypedHelper(TypedPage backing)
   {
     this.backing = backing;
   }
@@ -66,9 +67,9 @@ public class TypedHelper extends WebBacking
   {
     String objectTypeId = backing.getTypeId();
     return (objectTypeId != null && !objectTypeId.contains(TYPEID_SEPARATOR)) ?
-      objectTypeId : backing.getRootTypeId();
+      objectTypeId : backing.getConfigTypeId();
   }
-
+  
   public List<Type> getAllTypes()
   {
     TypeCache tc = TypeCache.getInstance();
@@ -104,7 +105,7 @@ public class TypedHelper extends WebBacking
     propName = "render" + StringUtils.capitalize(propName);
     String value = getFirstPropertyDefinitionValue(propName);
     boolean defValue = (value == null || !value.equalsIgnoreCase("false"));
-    return super.render(propName, defValue);
+    return render(propName, defValue);
   }
 
   public String getPropertyLabel(String propName, String altName)
@@ -122,20 +123,31 @@ public class TypedHelper extends WebBacking
    */
   public String getProperty(String name)
   {
-    String value = super.getMenuItemProperty(name);
+    String value;
+    if (backing instanceof TabPage)
+      value = ((TabPage)backing).getTabHelper().getProperty(name);
+    else
+      value = getMenuItemProperty(name);
+    
     if (value == null)
       value = getFirstPropertyDefinitionValue(name);
+    
     return value;
   }
   
   /**
-   * Get property from current node or dictionary definition.
+   * Get multi-valued property from dictionary definition.
    * @param name
    * @return List of values.
    */
   public List<String> getMultivaluedProperty(String name)
   {
-    List<String> values = super.getMultivaluedMenuItemProperty(name);
+    List<String> values;
+    if (backing instanceof TabPage)
+      values = ((TabPage)backing).getTabHelper().getMultivaluedProperty(name);
+    else
+      values = getMultivaluedMenuItemProperty(name);
+    
     if (values == null || values.isEmpty())
       values = getPropertyDefinitionValue(name);
 
@@ -155,7 +167,18 @@ public class TypedHelper extends WebBacking
       = getPropertyDefinition(getTypeId(), propName);
     if (pd != null)
     {
-      return pd.getValue();
+      List<String> values = pd.getValue();
+      if (values != null && values.size() == 1)
+      {
+        String value = values.get(0);
+        if (value != null && value.contains(";"))
+        {
+          String[] parts = value.split(";");
+          return Arrays.asList(parts);
+        }
+      }
+      
+      return values;
     }
     else
     {
@@ -203,9 +226,10 @@ public class TypedHelper extends WebBacking
   {
     try
     {
+      String typeId = backing.getConfigTypeId();
       TypeBean typeBean = WebUtils.getBacking(TYPE_BEAN);
-      return typeBean.getAllSelectItems(getTypeId(),
-        backing.getAdminRole(), actions, true);
+      String adminRole = backing.getObjectBacking().getAdminRole();
+      return typeBean.getAllSelectItems(typeId, adminRole, actions, true);
     }
     catch (Exception ex)
     {

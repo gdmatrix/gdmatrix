@@ -39,8 +39,8 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import static org.matrix.pf.cases.CaseConfigBacking.LOAD_METADATA_PROPERTY;
 import org.matrix.pf.web.SearchBacking;
-import org.matrix.pf.web.helper.Typed;
 import org.matrix.pf.web.helper.TypedHelper;
+import org.matrix.pf.web.helper.TypedPage;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.util.TextUtils;
@@ -51,7 +51,7 @@ import org.santfeliu.util.TextUtils;
  */
 @Named("caseSearchBacking")
 public class CaseSearchBacking extends SearchBacking 
-  implements Typed
+  implements TypedPage
 {
 
   public static final String OUTCOME = "pf_case_search";
@@ -144,9 +144,12 @@ public class CaseSearchBacking extends SearchBacking
   public String search()
   {
     smartValue = convert(filter);
-    String typeId = getMenuItemTypeId();
-    if (typeId != null)
-      filter.setCaseTypeId(typeId);
+    if (StringUtils.isBlank(filter.getCaseTypeId()))
+    {
+      String typeId = getMenuItemTypeId();
+      if (typeId != null)
+        filter.setCaseTypeId(typeId);
+    }
     return super.search();
   }
   
@@ -237,7 +240,7 @@ public class CaseSearchBacking extends SearchBacking
   }
 
   @Override
-  public String getFilterTypeId()
+  public String getTypeId()
   {
     return filter != null ? filter.getCaseTypeId() : getMenuItemTypeId();
   }
@@ -249,21 +252,15 @@ public class CaseSearchBacking extends SearchBacking
   }
   
   @Override
+  public String getConfigTypeId()
+  {
+    return getMenuItemTypeId();
+  }
+  
+  @Override
   public String getRootTypeId()
   {
     return caseBacking.getRootTypeId();
-  }
-
-  @Override
-  public String getTypeId()
-  {
-    return getFilterTypeId();
-  }
-
-  @Override
-  public String getAdminRole()
-  {
-    return caseBacking.getAdminRole();
   }
 
   @Override

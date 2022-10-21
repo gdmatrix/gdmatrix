@@ -92,7 +92,7 @@ public class CountrySearchBacking extends SearchBacking
   }
 
   @Override
-  public String getFilterTypeId()
+  public String getTypeId()
   {
     return countryBacking.getRootTypeId();
   }

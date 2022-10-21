@@ -1419,7 +1419,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       @Override
       public ScriptBean remove(Object key)
       {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        return scriptBeans.remove(key); 
       }
 
       @Override
@@ -1431,9 +1431,9 @@ public final class UserSessionBean extends FacesBean implements Serializable
       @Override
       public void clear()
       {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        scriptBeans.clear();
       }
-
+      
       @Override
       public Set keySet()
       {

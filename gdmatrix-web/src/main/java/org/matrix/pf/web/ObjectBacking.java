@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import org.matrix.pf.cms.CMSContent;
@@ -74,34 +73,17 @@ public abstract class ObjectBacking<T> extends WebBacking
     tabIndex = 0; 
   }
   
-  @PostConstruct
-  public void init()
-  {
-    typedHelper = new TypedHelper(this); 
-  }
-
-  @Override
-  public TypedHelper getTypedHelper()
-  {
-    return typedHelper;
-  }
-
   @Override
   public String getTypeId()
   {
     return getMenuItemTypeId();
   }
-      
-  /**
-   * Legacy function only used by Describable for compatibility with classes 
-   * derived from ObjectBean. It's equivalent to getRootTypeId function.
-   * @return 
-   */
+  
   @Override
-  public String getObjectTypeId()
+  public String getConfigTypeId()
   {
-    return getRootTypeId();
-  }
+    return getMenuItemTypeId();
+  }  
   
   @Override
   public String getRootTypeId()
@@ -111,7 +93,20 @@ public abstract class ObjectBacking<T> extends WebBacking
       return annotation.typeId();
     else
       return null;
+  }  
+      
+  /**
+   * Legacy function only used by Describable for compatibility with classes 
+   * derived from ObjectBean. It's equivalent to getRootTypeId function.
+   * @return typeId
+   */
+  @Override
+  public String getObjectTypeId()
+  {
+    return getRootTypeId();
   }
+  
+  public abstract String getAdminRole();
     
   public List<Tab> getTabs()
   {
@@ -138,8 +133,8 @@ public abstract class ObjectBacking<T> extends WebBacking
   
   public Tab getCurrentTab()
   {
-    if (this.tabs != null)
-      return this.tabs.get(tabIndex);
+    if (tabs != null && !tabs.isEmpty())
+      return tabs.get(tabIndex);
     else
       return null;
   }
@@ -179,7 +174,7 @@ public abstract class ObjectBacking<T> extends WebBacking
   public void loadTabs()
   {
     clearTabs();
-    List<String> tabsDef = getMultivaluedProperty(TABS_PROPERTY);
+    List<String> tabsDef = getMultivaluedMenuItemProperty(TABS_PROPERTY);
     if (tabsDef != null)
     {    
       for (int i = 0; i < tabsDef.size(); i++)
@@ -196,7 +191,7 @@ public abstract class ObjectBacking<T> extends WebBacking
   }
   
   
-  public String getPageTypeId()
+  public String getTabTypeId()
   {
     return getCurrentTab().getTypeId();
   }
@@ -221,10 +216,7 @@ public abstract class ObjectBacking<T> extends WebBacking
   {
     return getDescription(getObjectId());
   }
-  
-  @Override
-  public abstract String getAdminRole();
-  
+    
   public boolean isNew()
   {
     return NEW_OBJECT_ID.equals(getObjectId());
@@ -248,7 +240,7 @@ public abstract class ObjectBacking<T> extends WebBacking
   
   public List<SelectItem> getFavorites()
   {
-    return getFavorites(getTypeId());
+    return getFavorites(getConfigTypeId());
   }
   
   public List<SelectItem> getFavorites(String objectTypeId)

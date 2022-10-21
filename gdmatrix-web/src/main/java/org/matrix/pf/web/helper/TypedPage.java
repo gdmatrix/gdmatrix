@@ -31,24 +31,25 @@
 package org.matrix.pf.web.helper;
 
 import java.util.List;
-import org.matrix.pf.web.ObjectBacking;
-import org.matrix.web.WebUtils;
 
 /**
- *
+ * Implemented by page beans that manages typed objects.
+ * 
  * @author blanquepa
  */
-public interface Page
-{ 
-  public <T extends ObjectBacking> T getObjectBacking();
-    
+public interface TypedPage extends Typed, Page
+{   
+  public TypedHelper getTypedHelper(); 
+       
+  @Override
   public default String getProperty(String name)
   {
-    return WebUtils.getMenuItemProperty(name);
+    return getTypedHelper().getProperty(name);
   }
-
+    
+  @Override
   public default List<String> getMultivaluedProperty(String name)
   {
-    return WebUtils.getMultivaluedMenuItemProperty(name);
-  }
+    return getTypedHelper().getMultivaluedProperty(name);
+  }    
 }

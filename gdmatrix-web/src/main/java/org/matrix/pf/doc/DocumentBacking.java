@@ -32,6 +32,7 @@ package org.matrix.pf.doc;
 
 import javax.inject.Named;
 import org.matrix.doc.Document;
+import org.matrix.doc.DocumentConstants;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.SearchBacking;
@@ -54,7 +55,7 @@ public class DocumentBacking extends ObjectBacking<Document>
   @Override
   public String getAdminRole()
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    return DocumentConstants.DOC_ADMIN_ROLE;
   }
 
   @Override

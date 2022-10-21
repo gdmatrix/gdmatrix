@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
@@ -61,11 +62,15 @@ public class ScriptFormHelper implements Serializable
   public static final String SCRIPT_NAME = "scriptName";
   @CMSProperty
   public static final String PROPERTY_ORDER = "propertyOrder";
-  public static final String AUTOFORM = "/pf/common/script/autoform.xhtml";
+  public static final String AUTOFORM_NAME = "auto";
+  public static final String AUTOFORM_URL = "/pf/common/script/autoform.xhtml";
+  
+  private static final String STRING_SEPARATOR = "::";  
   
   private final ScriptFormPage backing;
   
   private List<Field> fields;
+  private Map<String, Field> fieldMap;
   
   public ScriptFormHelper(ScriptFormPage backing)
   {
@@ -74,13 +79,13 @@ public class ScriptFormHelper implements Serializable
   
   public List<Field> getFields()
   {//TODO: Merge PropertyDefinitions with properties to allow create new.
-    loadFields();
     return fields;
   }
   
   public void reload()
   {
     loadFields();
+    //TODO: clear ScriptBean scope
   }
   
   public void mergeProperties()
@@ -102,22 +107,59 @@ public class ScriptFormHelper implements Serializable
   public List<FormTab> getFormTabs()
   {
     List<FormTab> results = new ArrayList();
+ 
     List<String> scripts = backing.getMultivaluedProperty(SCRIPT_NAME);
-    for (String script : scripts)
+    if (scripts == null || scripts.isEmpty())
+      results.add(new FormTab(AUTOFORM_NAME, AUTOFORM_URL));
+    else
     {
-      ScriptBacking scriptBacking = WebUtils.getBacking("scriptBacking");
-      FormTab formTab = 
-        new FormTab("FORM", scriptBacking.getXhtmlFormUrl(script));
-      results.add(formTab);
+      for (String script : scripts)
+      {
+        String[] parts = script.split(STRING_SEPARATOR);
+        String name = parts[0];
+        String label = (parts.length == 2 ? parts[1] : parts[0]);
+        if (name.equals(AUTOFORM_NAME))
+          results.add(new FormTab(label, AUTOFORM_URL));   
+        else
+        {
+          ScriptBacking scriptBacking = WebUtils.getBacking("scriptBacking");
+          FormTab formTab = 
+            new FormTab(label, scriptBacking.getXhtmlFormUrl(name));
+          results.add(formTab);
+        }
+      }
     }
-    results.add(new FormTab("Autoform", AUTOFORM));
     
     return results;
-  }  
+  }
+  
+  public void onTypeIdChange(ValueChangeEvent event)
+  {
+    String oldTypeId = (String) event.getOldValue();
+    String newTypeId = (String) event.getNewValue();
+    if (isCurrentTypeUndefined() || !oldTypeId.equals(newTypeId))
+      reload();
+  }
+  
+  public void onTypeIdChange()
+  {
+    reload();
+  }
+  
+  private boolean isCurrentTypeUndefined()
+  {
+    String currentTypeId = backing.getTypeId();
+    return isTypeUndefined(currentTypeId);
+  } 
+
+    private boolean isTypeUndefined(String typeId)
+  {
+    return typeId == null || typeId.length() == 0;
+  }   
   
   private void loadFields()
   {
-    Map<String, Field> fieldMap = new HashMap();
+    fieldMap = new HashMap();
     List<Property> properties = backing.getProperties();
     String typeId = backing.getTypeId();
     
@@ -199,10 +241,19 @@ public class ScriptFormHelper implements Serializable
       fields = sorted;
     } 
     
+    
+  }
+  
+  public Map<String, Field> getFieldMap()
+  {
+    return this.fieldMap;
+  }  
 
+  public void setFieldMap(Map<String, Field> fieldMap)
+  {
+    this.fieldMap = fieldMap;
   }
     
-  
   private List<Property> toProperties()
   {
     List<Property> properties = new ArrayList();
@@ -221,8 +272,6 @@ public class ScriptFormHelper implements Serializable
     return properties;
   }
 
-
-  
   public class Field implements Serializable
   {
     private final PropertyDefinition propDef;

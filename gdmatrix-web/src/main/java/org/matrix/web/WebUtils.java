@@ -30,12 +30,14 @@
  */
 package org.matrix.web;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.web.UserSessionBean;
 
 /**
  *
@@ -110,6 +112,34 @@ public class WebUtils
     }   
     
     return auxMenuItem;
-  }    
+  }
+  
+  public static String getMenuItemProperty(String name)
+  {
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    return menuItem.getProperty(name);
+  }
+  
+  public static List<String> getMultivaluedMenuItemProperty(String name)
+  {
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    return menuItem.getMultiValuedProperty(name);    
+  }
+  
+  public static String getDirectMenuItemProperty(String name)
+  {
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    return menuItem.getDirectProperty(name);
+  }  
+
+  public static List<String> getDirectMultivaluedMenuItemProperty(String name)
+  {
+    MenuItemCursor menuItem =
+      UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
+    return menuItem.getDirectMultiValuedProperty(name);
+  }  
 
 }

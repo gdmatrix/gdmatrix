@@ -68,15 +68,13 @@ public class CaseBacking extends ObjectBacking<Case>
   @Override
   public String getTypeId()
   {
-    if (isNew()) //New object or search page.
-      return getMenuItemTypeId();
-    else
+    if (!isNew()) //If not object or search page.
     {
       CaseMainBacking mainBacking = WebUtils.getBacking("caseMainBacking"); 
       if (mainBacking != null)
         return mainBacking.getTypeId();
     }
-      
+    
     return super.getTypeId();    
   }  
   

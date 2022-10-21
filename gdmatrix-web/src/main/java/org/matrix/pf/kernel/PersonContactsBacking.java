@@ -132,7 +132,7 @@ public class PersonContactsBacking extends PageBacking
   @Override
   public String getTypeId()
   {
-    return personBacking.getPageTypeId();
+    return personBacking.getTabTypeId();
   }
   
   @Override
@@ -147,6 +147,7 @@ public class PersonContactsBacking extends PageBacking
     return typedHelper;
   }  
 
+  @Override
   public TabHelper getTabHelper()
   {
     return tabHelper;

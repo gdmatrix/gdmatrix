@@ -8,6 +8,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <ui:param name="objectPage" value="object" />
+  <ui:param name="updateOnStore" value="form_panel object_header favorites_table basic_results_table" />  
 
   <ui:define name="content">
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
@@ -48,8 +49,8 @@
                      rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('caseTypeId') and caseMainBacking.typedHelper.allTypes.size() > 1}">
         <p:outputLabel for="case_type_id" value="#{caseMainBacking.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />    
         <p:selectOneMenu id="case_type_id" value="#{caseMainBacking.case.caseTypeId}"  
-                         styleClass="inputfield w-full" filter="true" var="t"
-                         valueChangeListener="#{caseMainBacking.formHelper.onTypeIdChange}" >
+                         styleClass="inputfield w-full" filter="true" var="t" >
+          <p:ajax listener="#{caseMainBacking.scriptFormHelper.onTypeIdChange}" update="@form"/>
           <f:selectItems value="#{caseMainBacking.typedHelper.allTypes}" 
                          var="type" itemLabel="#{type.description}" 
                          itemValue="#{type.typeId}" />
@@ -79,18 +80,17 @@
         <p:inputTextarea id="description" value="#{caseMainBacking.case.description}" 
                          styleClass="inputfield w-full" />
       </p:outputPanel> 
-
+      
       <p:outputPanel styleClass="field col-12 md:col-12" 
                      rendered="#{!caseMainBacking.tabHelper.isPropertyHidden('comments')}">
         <p:outputLabel for="comments" value="#{caseMainBacking.typedHelper.getPropertyLabel('comments', caseBundle.case_comments)}" />
         <p:inputTextarea id="comments" value="#{caseMainBacking.case.comments}" 
                          styleClass="inputfield w-full" />
       </p:outputPanel> 
-
     </div>
     
-    <p:tabView dynamic="true">
-      <c:forEach items="#{caseMainBacking.scriptFormHelper.formTabs}" var="form">
+    <p:tabView dynamic="true" id="script_forms" cache="true" >
+      <c:forEach items="#{caseMainBacking.scriptFormHelper.formTabs}" var="form" >
         <p:tab title="#{form.name}">
           <ui:include src="#{form.url}">
             <ui:param name="backing" value="#{caseMainBacking}" />

@@ -240,7 +240,7 @@ public class AddressSearchBacking extends SearchBacking
   }
 
   @Override
-  public String getFilterTypeId()
+  public String getTypeId()
   {
     return addressBacking.getRootTypeId();
   }

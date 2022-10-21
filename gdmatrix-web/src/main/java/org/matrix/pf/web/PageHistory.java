@@ -32,6 +32,7 @@ package org.matrix.pf.web;
 
 import java.io.Serializable;
 import java.util.logging.Level;
+import static org.matrix.pf.web.ControllerBacking.SEARCH_PAGE;
 import org.matrix.web.Describable;
 import org.matrix.web.WebUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
@@ -80,30 +81,13 @@ public class PageHistory extends org.santfeliu.web.obj.PageHistory
       String title = null;
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
       MenuItemCursor cursor = userSessionBean.getMenuModel().getMenuItem(mid);
-//      WebBacking webBacking = WebUtils.getBacking(cursor); 
-      if (objectId == null) // search
+      if (objectId == null || SEARCH_PAGE.equals(objectId)) // search
       {        
         title = cursor.getProperty("title");
         if (title == null)
           title = cursor.getLabel();
-//        if (webBacking instanceof ObjectBacking)
-//        {
-//          SearchBacking searchBacking = 
-//            ((ObjectBacking)webBacking).getSearchBacking();
-//          if (searchBacking != null)
-//          {
-//            title = cursor.getProperty("title"); //TODO
-//          }
-//        }
       }
 
-//      if (title == null)
-//      {
-//        if (webBacking != null && webBacking instanceof Describable)
-//        {
-//          title = ((Describable)webBacking).getDescription(objectId);
-//        }
-//      }
       return title;
     }
     
@@ -117,7 +101,8 @@ public class PageHistory extends org.santfeliu.web.obj.PageHistory
       try
       {
         Describable webBacking = WebUtils.getBacking(cursor);  
-        if (webBacking != null && objectId != null)
+        if (webBacking != null && objectId != null 
+          && !SEARCH_PAGE.equals(objectId))
         {
           description = 
             ObjectDescriptions.getDescription(webBacking, objectId);

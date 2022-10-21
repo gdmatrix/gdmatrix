@@ -21,7 +21,7 @@
                    rendered="#{!caseSearchBacking.typedHelper.isPropertyHidden('caseTypeId') and caseSearchBacking.typedHelper.allTypes.size() > 1}">
       <p:outputLabel for="@next" value="#{caseSearchBacking.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />    
       <p:selectOneMenu id="typeId" value="#{caseSearchBacking.filter.caseTypeId}"  
-                       styleClass="inputfield w-full" filter="true" var="t">
+                       styleClass="inputfield w-full" filter="true" var="t" autoWidth="false">
         <f:selectItems value="#{caseSearchBacking.typedHelper.allTypes}" 
                        var="type" itemLabel="#{type.description}" 
                        itemValue="#{type.typeId}" />
@@ -101,7 +101,8 @@
                        update="search_accordion"/>      
       <p:commandButton value="#{objectBundle.search}"
                        action="#{caseSearchBacking.search}"
-                       ajax="true" process="@parent" update="#{objectPage == 'object_search' ? ':mainform:search_results_panel' :''}"
+                       ajax="#{objectPage == 'object_search' ? true : false}"
+                       process="@parent" update="#{objectPage == 'object_search' ? ':mainform:search_results_panel' :''}"
                        styleClass="ui-button-raised m-1" 
                        oncomplete="clickSlickDot(2)"/>
     </div>              
