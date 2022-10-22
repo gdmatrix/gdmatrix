@@ -832,6 +832,7 @@ public class PolicyManager implements PolicyManagerPort
 
   private void applyFilter(Query query, PolicyFilter filter)
   {
+    query.setParameter("policyId", filter.getPolicyId());
     query.setParameter("title", addWildcards(filter.getTitle()));
     query.setParameter("description", addWildcards(filter.getDescription()));
     query.setParameter("policyTypeId",

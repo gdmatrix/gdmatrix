@@ -30,6 +30,7 @@
  */
 package org.santfeliu.policy.web;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -109,6 +110,28 @@ public class DocumentPoliciesBean extends PageBean
   public void setMessageList(List<LogRecord> messageList)
   {
     this.messageList = messageList;
+  }
+
+  public String getFormattedMessage(LogRecord record)
+  {
+    try
+    {
+      String formattedMessage;
+      if (record.getParameters() == null)
+      {
+        formattedMessage = record.getMessage();
+      }
+      else
+      {
+        formattedMessage =
+          MessageFormat.format(record.getMessage(), record.getParameters());
+      }
+      return formattedMessage;
+    }
+    catch (Exception ex)
+    {
+      return ex.toString();
+    }
   }
 
   public Date getRowActivationDate()

@@ -134,7 +134,7 @@ public class PolicyMainBean extends DynamicTypifiedPageBean
   public String getHelpUrl()
   {
     String helpUrl = getProperty(HELP_URL_PROPERTY);
-    if (helpUrl != null) helpUrl = "/common/policy/help.jsp";
+    if (helpUrl == null) helpUrl = "/common/policy/help.jsp";
 
     return helpUrl;
   }

@@ -163,6 +163,8 @@
     </struct>
 
     <struct name="PolicyFilter">
+      <property name="policyId" type="xs:string" minOccurs="0">
+      </property>
       <property name="title" type="xs:string" minOccurs="0">
       </property>
       <property name="description" type="xs:string" minOccurs="0">

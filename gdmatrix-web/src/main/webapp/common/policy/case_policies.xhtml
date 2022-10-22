@@ -267,10 +267,10 @@
 
       <t:div rendered="#{not empty casePoliciesBean.messageList}" styleClass="analyzer">
         <t:dataList value="#{casePoliciesBean.messageList}" var="row" layout="simple" rowIndexVar="rowIndex">
-          <h:outputText value="#{row.message}" styleClass="#{row.level.name} #{rowIndex % 2 == 0 ? 'row0' : 'row1'}" />
+          <h:outputText value="#{casePoliciesBean.getFormattedMessage(row)}" 
+                        styleClass="#{row.level.name} #{rowIndex % 2 == 0 ? 'row0' : 'row1'}" />
         </t:dataList>
       </t:div>
-
 
     </ui:define>
   </ui:composition>

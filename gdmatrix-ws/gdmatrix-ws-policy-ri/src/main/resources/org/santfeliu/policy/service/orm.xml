@@ -9,7 +9,8 @@
   <named-query name="countPolicies">
     <query>
       SELECT count(pol) FROM Policy pol
-      WHERE (UPPER(pol.title) LIKE :title OR :title IS NULL) AND
+      WHERE (pol.policyId = :policyId OR :policyId IS NULL) AND
+      (UPPER(pol.title) LIKE :title OR :title IS NULL) AND
       (UPPER(pol.description) LIKE :description OR :description IS NULL) AND
       (pol.policyTypeId = :policyTypeId OR :policyTypeId IS NULL) AND
       (pol.activationDateExpression LIKE :activationDateExpression OR
@@ -24,7 +25,8 @@
   <named-query name="findPolicies">
     <query>
       SELECT pol FROM Policy pol
-      WHERE (UPPER(pol.title) LIKE :title OR :title IS NULL) AND
+      WHERE (pol.policyId = :policyId OR :policyId IS NULL) AND
+      (UPPER(pol.title) LIKE :title OR :title IS NULL) AND
       (UPPER(pol.description) LIKE :description OR :description IS NULL) AND
       (pol.policyTypeId = :policyTypeId OR :policyTypeId IS NULL) AND
       (pol.activationDateExpression LIKE :activationDateExpression OR
