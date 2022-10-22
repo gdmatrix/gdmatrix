@@ -13,6 +13,7 @@
   font-size: 12px;
   font-family: "Courier New", Monospaced;
   word-wrap: break-word;
+  padding: 2px;
 }
 
 .analyzer span.row0
@@ -24,3 +25,32 @@
 {
   background-color:white;
 }
+
+.analyzer span.INFO
+{
+  color: black;
+}
+
+.analyzer span.WARNING
+{
+  color: orange;
+}
+
+.analyzer span.SEVERE
+{
+  color: red;
+}
+
+.analyzer span.FINE,
+.analyzer span.FINER,
+.analyzer span.DEBUG
+{
+  color: #a0a0a0;
+}
+
+.analyzer span:hover
+{
+  background-color: #707070;
+  color: white;
+}
+

@@ -36,6 +36,7 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.policy.Policy;
 import org.matrix.policy.PolicyManagerPort;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.DynamicTypifiedPageBean;
 
 /**
@@ -44,6 +45,9 @@ import org.santfeliu.web.obj.DynamicTypifiedPageBean;
  */
 public class PolicyMainBean extends DynamicTypifiedPageBean
 {
+  @CMSProperty
+  public static final String HELP_URL_PROPERTY = "help_url";
+
   private Policy policy;
 
   public PolicyMainBean()
@@ -125,6 +129,14 @@ public class PolicyMainBean extends DynamicTypifiedPageBean
       setCurrentTypeId(policy.getPolicyTypeId());
       setFormDataFromProperties(policy.getProperty());
     }
+  }
+
+  public String getHelpUrl()
+  {
+    String helpUrl = getProperty(HELP_URL_PROPERTY);
+    if (helpUrl != null) helpUrl = "/common/policy/help.jsp";
+
+    return helpUrl;
   }
 
   public String searchType()

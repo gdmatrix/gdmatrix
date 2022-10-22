@@ -99,7 +99,7 @@
   <t:div>
     <h:outputText value="#{policyBundle.policyMain_date}:" styleClass="textBox"
       style="vertical-align:top" />
-    <h:outputLink value="/common/policy/help.jsp" target="_blank"
+    <h:outputLink value="#{policyMainBean.helpUrl}" target="_blank"
       accesskey="h" style="margin-left:4px">
       <h:graphicImage value="/images/help.png"
         style="border:none" alt="help" />
@@ -113,7 +113,7 @@
   <t:div>
     <h:outputText value="#{policyBundle.policyMain_condition}:" styleClass="textBox"
       style="vertical-align:top" />
-    <h:outputLink value="/common/policy/help.jsp" target="_blank"
+    <h:outputLink value="#{policyMainBean.helpUrl}" target="_blank"
       accesskey="h" style="margin-left:4px">
       <h:graphicImage value="/images/help.png"
         style="border:none" alt="help" />
