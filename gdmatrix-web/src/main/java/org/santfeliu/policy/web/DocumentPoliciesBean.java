@@ -309,7 +309,6 @@ public class DocumentPoliciesBean extends PageBean
         if (scriptName == null) scriptName = "analyzer";
 
         client.executeScript(scriptName);
-        getMessageList().addAll(handler.getLogRecords());
       }
       catch (Exception screx)
       {
@@ -317,6 +316,7 @@ public class DocumentPoliciesBean extends PageBean
       }
       finally
       {
+        getMessageList().addAll(handler.getLogRecords());
         LOGGER.removeHandler(handler);
       }
 

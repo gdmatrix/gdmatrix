@@ -309,6 +309,7 @@ public class CasePoliciesBean extends PageBean
       }
       finally
       {
+        getMessageList().addAll(handler.getLogRecords());
         LOGGER.removeHandler(handler);
       }
 
