@@ -301,7 +301,6 @@ public class CasePoliciesBean extends PageBean
         if (scriptName == null) scriptName = "analyzer";
 
         client.executeScript(scriptName);
-        getMessageList().addAll(handler.getLogRecords());
       }
       catch (Exception screx)
       {
