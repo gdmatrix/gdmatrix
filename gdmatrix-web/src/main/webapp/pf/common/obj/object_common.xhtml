@@ -31,13 +31,13 @@
                          ajax="#{objectPage == 'object_search' ? true : false}"
                          action="#{templateBacking.searchBacking.clear}"
                          styleClass="ui-button-raised m-1"
-                         update="search_accordion"
+                         update=":mainform:search_results_panel search_accordion"
                          oncomplete="clickSlickDot(2);"/>      
         <p:commandButton id="default_button" value="#{objectBundle.search}"
                          action="#{templateBacking.searchBacking.smartSearch}"
                          process="@parent" 
                          ajax="#{objectPage == 'object_search' ? true : false}" 
-                         update="#{objectPage == 'object_search' ? ':mainform:search_results_panel' : ''}"
+                         update="#{objectPage == 'object_search' ? ':mainform:search_results_panel search_accordion' : ''}"
                          styleClass="ui-button-raised m-1" 
                          oncomplete="clickSlickDot(2);"/>
       </div>   

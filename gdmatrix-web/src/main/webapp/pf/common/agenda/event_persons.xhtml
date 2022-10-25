@@ -1,0 +1,223 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                template="event_common.xhtml">
+
+  <ui:param name="objectPage" value="object" />
+  <ui:param name="updateOnCancel" value="edit_panels" />
+  <ui:param name="updateOnStore" value="edit_panels page_results_table" />  
+
+  <ui:define name="content">
+    <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
+                  var="agendaBundle" />
+
+    <h:panelGroup>
+
+      <!-- Results table -->
+      <p:dataTable id="page_results_table" value="#{eventPersonsBacking.resultListHelper.rows}" 
+                   var="row" stripedRows="true" paginator="true" pageLinks="5"
+                   resizableColumns="false" showGridlines="true" 
+                   size="small" paginatorPosition="bottom" 
+                   rowIndexVar="firstRow" 
+                   first="#{eventPersonsBacking.resultListHelper.firstRowIndex}"
+                   rows="#{eventPersonsBacking.resultListHelper.pageSize}"
+                   multiViewState="true"                   
+                   paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                   currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                   rowsPerPageTemplate="5,10,25,50">
+
+        <f:facet name="header">
+          <div class="flex align-items-center">
+            <div class="w-9">
+
+            </div>          
+            <div class="flex flex-row-reverse w-3">    
+              <div class="m-1">
+                <p:menuButton icon="pi pi-file-excel text-xl" styleClass="ui-menu-button ui-button-flat"
+                              rendered="#{eventPersonsBacking.resultListHelper.rowCount > 0}" >
+                  <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf text-xl" styleClass="m-1 ui-button-flat" ajax="false"
+                              rendered="#{eventPersonsBacking.resultListHelper.rowCount > 0}">
+                    <p:dataExporter type="pdf" target="page_results_table" fileName="results" pageOnly="true"/>
+                  </p:menuitem>
+                  <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel text-xl" styleClass="m-1 ui-button-flat" ajax="false"
+                              rendered="#{eventPersonsBacking.resultListHelper.rowCount > 0}">
+                    <p:dataExporter type="csv" target="page_results_table" fileName="results" pageOnly="true" />
+                  </p:menuitem> 
+                </p:menuButton>  
+                <p:commandButton icon="pi pi-plus-circle text-xl" styleClass="ui-button-flat" 
+                                 action="#{eventPersonsBacking.createPerson}" 
+                                 ajax="true" update=":mainform:edit_panels"
+                                 oncomplete="PF('editDataDialog').show()"
+                                 alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
+              </div>              
+            </div>
+          </div>
+        </f:facet>      
+
+        <p:headerRow field="attendantTypeId" expandable="true"
+                     expanded="true" rendered="#{eventPersonsBacking.renderGroupedResults}">
+          <p:column colspan="6" >
+            <h:outputText styleClass="ml-2" value="#{eventPersonsBacking.attendantTypeId}"/>
+          </p:column>
+        </p:headerRow>        
+
+        <p:column headerText="#{agendaBundle.attendants_id}" styleClass="w-1"
+                  exportHeaderValue="#{agendaBundle.attendants_id}">
+          <h:outputText value="#{row.personId}" />
+        </p:column> 
+
+        <p:column headerText="#{agendaBundle.attendants_person}" styleClass="w-3"
+                  exportHeaderValue="#{agendaBundle.attendants_person}">
+          <h:outputText value="#{row.personView.fullName}"/>
+        </p:column>
+
+        <p:column headerText="#{agendaBundle.attendants_type}" styleClass="w-3"
+                  exportHeaderValue="#{agendaBundle.attendants_type}">
+          <h:outputText value="#{eventPersonsBacking.attendantTypeId}"/>
+        </p:column>          
+
+        <p:column headerText="#{agendaBundle.attendants_attended}" styleClass="w-3"
+                  exportHeaderValue="#{agendaBundle.attendants_attended}">
+          <h:outputText value="#{eventPersonsBacking.attendedLabel}"/>
+        </p:column>          
+        
+        <p:column styleClass="w-2 text-right" exportable="false">
+          <h:panelGroup>
+            <p:commandButton icon="mi mi-icon-show mi-invert-color" styleClass="ui-button-raised" 
+                             action="#{controllerBacking.show('Person', row.personId)}" 
+                             immediate="true" ajax="false" 
+                             alt="#{objectBundle.show}" title="#{objectBundle.show}"/>               
+            <p:commandButton action="#{eventPersonsBacking.editPerson(row)}"
+                             icon="pi pi-pencil"
+                             rendered="#{row.attendantId != null}"
+                             styleClass="ui-button-raised m-1"                               
+                             alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                             ajax="true" process="@this" update=":mainform:edit_panels page_results_table"
+                             oncomplete="PF('editDataDialog').show()"/>
+            <p:commandButton action="#{eventPersonsBacking.removePerson(row)}"
+                             ajax="true" process="@this" update="page_results_table :mainform:growl"
+                             icon="pi pi-trash"
+                             alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                             rendered="#{row.attendantId != null}"
+                             styleClass="ui-button-raised m-1"
+                             onclick="return confirm('#{objectBundle.confirm_remove}');"/>            
+          </h:panelGroup>          
+        </p:column> 
+      </p:dataTable>
+
+      <!-- Person data panel -->
+
+    </h:panelGroup>
+
+  </ui:define>
+
+  <ui:param name="editDescription" value="#{eventPersonsBacking.pageObjectDescription}" />
+  
+  <ui:define name="edit_dialog">
+
+    <p:outputPanel id="edit_panels">
+ 
+      <p:panel id="edit_person_panel" rendered="#{eventPersonsBacking.editing != null}"
+               header="#{agendaBundle.attendants_personData}"
+               styleClass="mt-2">
+
+        <div class="ui-fluid formgrid grid" >
+
+          <!-- Type -->
+          <p:outputPanel styleClass="field col-12 md:col-6" 
+                         rendered="#{!eventPersonsBacking.tabHelper.isPropertyHidden('attendantTypeId')}">
+            <p:outputLabel for="attendantTypeId" 
+                           value="#{eventPersonsBacking.typedHelper.getPropertyLabel('attendantTypeId', agendaBundle.attendants_type)}" />
+            <p:selectOneMenu id="attendantTypeId" 
+                             value="#{eventPersonsBacking.editing.attendantTypeId}"
+                             disabled="#{!eventBacking.editable}" autoWidth="false">
+              <f:selectItems value="#{eventPersonsBacking.typedHelper.allTypeItems}" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+
+          <!-- Person -->
+          <p:outputPanel styleClass="field col-12 md:col-6">  
+            <p:outputLabel for="person"  
+                           value="#{eventPersonsBacking.typedHelper.getPropertyLabel('person', agendaBundle.attendants_person)}" />
+            <div class="ui-inputgroup">
+              <p:commandButton action="#{eventPersonsBacking.search('Person', '#{eventPersonsBacking.selectedPerson}')}"
+                               icon="pi pi-search" ajax="false" update="@form"                              
+                               alt="#{objectBundle.search}" title="#{objectBundle.search}" />                 
+              <p:autoComplete id="person"
+                              value="#{eventPersonsBacking.personSelectItem}" 
+                              maxResults="10" dropdown="true" dropdownMode="blank"
+                              completeMethod="#{eventPersonsBacking.completePerson}"
+                              converter="selectItemConverter"
+                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                              minQueryLength="3" queryDelay="1000"
+                              onclick="this.setSelectionRange(0, this.value.length)"
+                              disabled="#{!eventBacking.editable}">
+                <p:ajax event="itemSelect" listener="#{eventPersonsBacking.onPersonSelect}" />                              
+                <p:column>                 
+                  <h:outputText value="#{item.label} (#{item.value})" />
+                </p:column>        
+              </p:autoComplete>             
+
+            </div>
+          </p:outputPanel>         
+
+          <!-- Hidden -->
+          <p:outputPanel styleClass="field-checkbox col-12"
+                         rendered="#{!eventPersonsBacking.tabHelper.isPropertyHidden('hidden') and
+                                     eventPersonsBacking.editing.personId != null}">            
+            <p:selectBooleanCheckbox value="#{eventPersonsBacking.hidden}" 
+                                     itemLabel="#{agendaBundle.attendants_hidden}"
+                                     disabled="#{!eventBacking.editable}" />            
+          </p:outputPanel>
+          
+          <!-- Attended -->
+          <p:outputPanel styleClass="field col-12 md:col-6" 
+                         rendered="#{!eventPersonsBacking.tabHelper.isPropertyHidden('attended')}">
+            <p:outputLabel for="attended" 
+                           value="#{eventPersonsBacking.typedHelper.getPropertyLabel('attended', agendaBundle.attendants_attended)}" />
+            <p:selectOneMenu id="attended" 
+                             value="#{eventPersonsBacking.editing.attended}"
+                             disabled="#{!eventBacking.editable}" autoWidth="false">
+              <f:selectItem itemLabel=" " itemValue="" />
+              <f:selectItem itemLabel="NO" itemValue="N" />
+              <f:selectItem itemLabel="SI" itemValue="S" />
+              <f:selectItem itemLabel="FJ" itemValue="J" />
+            </p:selectOneMenu>
+          </p:outputPanel>          
+          
+          <!-- Comments -->
+          <p:outputPanel styleClass="field col-12" 
+                         rendered="#{!eventPersonsBacking.tabHelper.isPropertyHidden('comments') and
+                                     eventPersonsBacking.editing.personId != null}">
+            <p:outputLabel for="comments" 
+                           value="#{eventPersonsBacking.typedHelper.getPropertyLabel('comments', agendaBundle.attendants_comments)}"/>
+            <p:inputTextarea id="comments" value="#{eventPersonsBacking.editing.comments}"
+                             autoResize="false" 
+                             onkeypress="checkMaxLength(this, #{attendantsBean.propertySize.comments})" 
+                             readonly="#{not eventBacking.editable}" />
+          </p:outputPanel> 
+          
+        </div>
+
+      </p:panel>              
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{eventPersonsBacking.storePerson}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         disabled="#{!eventBacking.editable}"
+                         update="page_results_table edit_panels :mainform:growl" 
+                         oncomplete="PF('editDataDialog').hide()" />
+        <p:commandButton action="#{eventPersonsBacking.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                         immediate="true" update="edit_panels :mainform:growl" global="false"
+                         oncomplete="PF('editDataDialog').hide()" />
+      </div>
+
+    </p:outputPanel>      
+
+  </ui:define>
+
+</ui:composition>

@@ -62,7 +62,7 @@
       <p:commandButton value="#{objectBundle.search}"
                        action="#{personSearchBacking.search}"                       
                        ajax="#{objectPage == 'object_search' ? true : false}" 
-                       update="#{objectPage == 'object_search' ? ':mainform:full_results_table' :''}"
+                       update="#{objectPage == 'object_search' ? ':mainform:full_results_table smart_value' :''}"
                        styleClass="ui-button-raised m-1" />
     </div>              
   </ui:define>            

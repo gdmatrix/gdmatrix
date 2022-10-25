@@ -23,7 +23,8 @@
                    size="small" paginatorPosition="bottom" 
                    rowIndexVar="firstRow"
                    first="#{personAddressesBacking.resultListHelper.firstRowIndex}"
-                   rows="#{personAddressesBacking.resultListHelper.pageSize}"                   
+                   rows="#{personAddressesBacking.resultListHelper.pageSize}"
+                   multiViewState="true"                   
                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                    currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                    rowsPerPageTemplate="5,10,25,50">
@@ -70,7 +71,7 @@
                              immediate="true" ajax="false" 
                              alt="#{objectBundle.show}" title="#{objectBundle.show}"/>  
             <p:commandButton action="#{personAddressesBacking.removeAddress(row)}"
-                             ajax="true" update="page_results_table"
+                             ajax="true" update="page_results_table :mainform:growl"
                              icon="pi pi-trash"
                              alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                              rendered="#{row.personAddressId != null}"
@@ -126,11 +127,11 @@
         <p:commandButton action="#{personAddressesBacking.storeAddress}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
-                         update="page_results_table edit_panels"
+                         update="page_results_table edit_panels :mainform:growl"
                          oncomplete="PF('editDataDialog').hide()"/>
         <p:commandButton action="#{personAddressesBacking.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update="edit_panels" global="false" 
+                         immediate="true" update="edit_panels :mainform:growl" global="false" 
                          oncomplete="PF('editDataDialog').hide()"/>
       </div>          
 

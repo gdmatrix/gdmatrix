@@ -205,6 +205,7 @@ public class PersonMainBacking extends PageBacking
     try
     {
       KernelConfigBean.getPort().storePerson(person);
+      info("STORE_OBJECT");      
     }
     catch (Exception ex)
     {
@@ -280,6 +281,7 @@ public class PersonMainBacking extends PageBacking
   public String cancel()
   {
     reset();
+    info("CANCEL_OBJECT");          
     return null;
   }  
   

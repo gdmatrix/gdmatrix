@@ -1,0 +1,126 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/pf/common/obj/#{objectPage}.xhtml">
+
+  <ui:define name="advanced_filter">
+    <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle" 
+                  var="agendaBundle" />   
+    
+    <!-- EventId -->    
+    <p:outputPanel styleClass="field">
+      <p:outputLabel for="@next" value="#{agendaBundle.event_id}" />
+      <p:chips id="eventId" value="#{eventSearchBacking.eventId}"
+               addOnPaste="true" separator=","
+               class="inputfield w-full ui-fluid"/>
+    </p:outputPanel>
+    
+    <!-- TypeId -->    
+    <p:outputPanel styleClass="field" 
+                   rendered="#{!eventSearchBacking.typedHelper.isPropertyHidden('eventTypeId') and eventSearchBacking.typedHelper.allTypes.size() > 1}">
+      <p:outputLabel for="@next" value="#{eventSearchBacking.typedHelper.getPropertyLabel('eventTypeId', agendaBundle.event_type)}" />    
+      <p:selectOneMenu id="typeId" value="#{eventSearchBacking.searchEventTypeId}"  
+                       styleClass="inputfield w-full" filter="true" filterMatchMode="contains"
+                       style="min-width:inherit !important" var="t">
+        <f:selectItems value="#{eventSearchBacking.typedHelper.allTypes}" 
+                       var="type" itemLabel="#{type.description}#{eventSearchBacking.isPublicType(type.typeId) ? ' Ⓦ' : ''}" 
+                       itemValue="#{type.typeId}" />  
+        <p:column>
+          <h:outputText value="#{typeBean.getDescription(t)}#{eventSearchBacking.isPublicType(t) ? ' Ⓦ' : ''}" />
+        </p:column>
+      </p:selectOneMenu>
+    </p:outputPanel>     
+
+    <!-- Content -->    
+    <p:outputPanel styleClass="field" rendered="#{!eventSearchBacking.typedHelper.isPropertyHidden('content')}">
+      <p:outputLabel for="@next" value="#{eventSearchBacking.typedHelper.getPropertyLabel('content', agendaBundle.event_content)}" />        
+      <p:inputText id="title" value="#{eventSearchBacking.filter.content}" 
+                   class="inputfield w-full" />
+    </p:outputPanel>  
+
+    <!-- Dates -->    
+    <p:fieldset legend="#{eventSearchBacking.typedHelper.getPropertyLabel('date', agendaBundle.eventSearch_date)}" 
+                toggleable="true">
+      <p:outputPanel styleClass="formgrid grid">
+
+        <p:outputPanel styleClass="field col-12">   
+          <p:selectOneMenu id="dateComparator" value="#{eventSearchBacking.filter.dateComparator}"
+                           styleClass="inputfield w-full" style="vertical-align:middle">
+            <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="1" />
+            <f:selectItem itemLabel="#{agendaBundle.event_endDate}" itemValue="2" />
+            <f:selectItem itemLabel="#{agendaBundle.eventSearch_activeDate}" itemValue="3" />
+          </p:selectOneMenu>      
+        </p:outputPanel>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_from} " />
+          <p:datePicker id="start_date" value="#{eventSearchBacking.fromDate}" 
+                        locale="#{eventSearchBacking.language}" inputStyleClass="w-12"
+                        styleClass="inputfield w-full" showIcon="false" 
+                        monthNavigator="true" yearNavigator="true" />  
+        </div>
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to} " />
+          <p:datePicker id="end_date" value="#{eventSearchBacking.toDate}" 
+                        locale="#{eventSearchBacking.language}" inputStyleClass="w-12"
+                        styleClass="inputfield w-full" showIcon="false" 
+                        monthNavigator="true" yearNavigator="true" />  
+        </div>
+      </p:outputPanel>      
+    </p:fieldset>
+   
+    <!-- ThemeId -->    
+    <p:outputPanel styleClass="field" rendered="#{!eventSearchBacking.typedHelper.isPropertyHidden('theme')}">
+      <p:outputLabel for="@next" value="#{eventSearchBacking.typedHelper.getPropertyLabel('theme', agendaBundle.event_themeId)}:" />
+      <p:selectOneMenu id="themeId" value="#{eventSearchBacking.themeId}"
+        styleClass="inputfield w-full" style="min-width:inherit !important"
+        filter="true" filterMatchMode="contains">
+        <f:selectItems value="#{eventSearchBacking.themeSelectItems}" />
+      </p:selectOneMenu>
+    </p:outputPanel>
+
+    <!-- PersonId -->
+    <p:outputPanel styleClass="field" rendered="#{!eventSearchBacking.typedHelper.isPropertyHidden('person')}">
+      <p:outputLabel for="@next" value="#{eventSearchBacking.typedHelper.getPropertyLabel('person', agendaBundle.event_personId)}:" />
+      <div class="ui-inputgroup">                 
+        <p:commandButton action="#{eventSearchBacking.search('Person', '#{eventSearchBacking.selectedPerson}')}"
+                         icon="pi pi-search" ajax="false"
+                         styleClass="ui-button-raised"                               
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                         update="@form" /> 
+        <p:autoComplete id="person" styleClass="inputfield w-11" inputStyleClass="w-10"
+                        value="#{eventSearchBacking.personSelectItem}" 
+                        maxResults="10" dropdown="true" dropdownMode="blank"
+                        completeMethod="#{eventSearchBacking.completePerson}"
+                        converter="selectItemConverter"
+                        var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                        minQueryLength="3" queryDelay="1000"
+                        onclick="this.setSelectionRange(0, this.value.length)">
+          <p:ajax event="itemSelect" listener="#{eventSearchBacking.onPersonSelect}" update="@this"/>
+          <p:column>                 
+            <h:outputText value="#{item.label} (#{item.value})" />
+          </p:column>        
+        </p:autoComplete>           
+      </div>      
+
+    </p:outputPanel>
+    
+    <div class="buttons text-right">
+      <p:commandButton value="#{objectBundle.clear}"
+                       ajax="#{ajax}"
+                       action="#{eventSearchBacking.clear}"
+                       styleClass="ui-button-raised m-1"
+                       update="search_accordion"/>      
+      <p:commandButton value="#{objectBundle.search}"
+                       action="#{eventSearchBacking.search}"
+                       ajax="true" process="@parent" update="#{objectPage == 'object_search' ? ':mainform:search_results_panel start_date smart_value' :''}"
+                       styleClass="ui-button-raised m-1" 
+                       oncomplete="clickSlickDot(2)"/>
+    </div>
+    
+  </ui:define>
+
+</ui:composition>
+

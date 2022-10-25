@@ -422,8 +422,13 @@ public class ResultListHelper<T extends Serializable> implements Serializable
       
       private Object formatDate(Object value)
       {
-        return TextUtils.formatInternalDate((String) value, "dd/MM/yyyy");
-      }
+        if (value == null) return null;
+        
+        String sValue = (String)value;        
+        String pattern = (sValue.length() == 14 ? "dd/MM/yyyy HH:mm:ss" : 
+          "dd/MM/yyyy");
+        return TextUtils.formatInternalDate(sValue, pattern);
+      }      
          
     }
     

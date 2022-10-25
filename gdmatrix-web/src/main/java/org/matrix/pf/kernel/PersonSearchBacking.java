@@ -112,6 +112,7 @@ public class PersonSearchBacking extends SearchBacking
   {
     filter = new PersonFilter();
     smartValue = null;
+    bigListHelper.reset();
     return null;
   }
   

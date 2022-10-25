@@ -97,7 +97,12 @@
       <groupId>org.primefaces.extensions</groupId>
       <artifactId>resources-codemirror</artifactId>
       <version>6.1.1</version>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <groupId>org.primefaces.extensions</groupId>
+      <artifactId>resources-ckeditor</artifactId>
+      <version>11.0.6</version>        
+    </dependency>
     <dependency>
       <groupId>org.primefaces.themes</groupId>
       <artifactId>smoothness</artifactId>

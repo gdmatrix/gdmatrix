@@ -20,9 +20,10 @@
       <p:dataTable id="page_results_table" value="#{personContactsBacking.rows}" 
                    var="row" stripedRows="true" paginator="true" pageLinks="5"
                    resizableColumns="false" showGridlines="true"
-                   size="small" paginatorPosition="bottom" 
+                   size="small" paginatorPosition="bottom"                   
                    first="#{personContactsBacking.resultListHelper.firstRowIndex}"
-                   rows="#{personContactsBacking.resultListHelper.pageSize}"                   
+                   rows="#{personContactsBacking.resultListHelper.pageSize}" 
+                   multiViewState="true"
                    rowIndexVar="firstRow"
                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                    currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
@@ -77,7 +78,7 @@
                              ajax="true" update=":mainform:edit_panels"
                              oncomplete="PF('editDataDialog').show()" />
             <p:commandButton action="#{personContactsBacking.removeContact(row)}"
-                             ajax="true" update="page_results_table :mainform:edit_panels"
+                             ajax="true" update="page_results_table :mainform:edit_panels :mainform:growl"
                              icon="pi pi-trash"
                              alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                              rendered="#{row.contactId != null}"
@@ -129,11 +130,11 @@
         <p:commandButton action="#{personContactsBacking.storeContact}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
-                         update="page_results_table edit_panels"
+                         update="page_results_table edit_panels :mainform:growl"
                          oncomplete="PF('editDataDialog').hide()"/>
         <p:commandButton action="#{personContactsBacking.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update="edit_panels" global="false" 
+                         immediate="true" update="edit_panels :mainform:growl" global="false" 
                          oncomplete="PF('editDataDialog').hide()"/>
       </div>
 

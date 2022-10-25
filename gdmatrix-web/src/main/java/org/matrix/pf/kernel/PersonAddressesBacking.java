@@ -278,6 +278,7 @@ public class PersonAddressesBacking extends PageBacking
       KernelManagerPort port = KernelConfigBean.getPort();
       port.removePersonAddress(rowPersonAddressId);
       
+      info("REMOVE_OBJECT");      
       return show();
     }
     catch (Exception ex)
@@ -304,7 +305,9 @@ public class PersonAddressesBacking extends PageBacking
       editing.setPersonId(personId);
       KernelManagerPort port = KernelConfigBean.getPort();
       port.storePersonAddress(editing);
-      cancel();
+      editing = null;
+      addressSelectItem = null;
+      info("STORE_OBJECT");      
       return show();
     }
     catch (Exception ex)
@@ -356,6 +359,7 @@ public class PersonAddressesBacking extends PageBacking
   {
     editing = null;
     addressSelectItem = null;
+    info("CANCEL_OBJECT");          
     return null;
   }  
   

@@ -209,6 +209,7 @@ public class PersonContactsBacking extends PageBacking
       KernelManagerPort port = KernelConfigBean.getPort();
       port.removeContact(rowContactId);
       
+      info("REMOVE_OBJECT");          
       return show();
     }
     catch (Exception ex)
@@ -235,8 +236,9 @@ public class PersonContactsBacking extends PageBacking
       contact.setContactTypeId(editing.getContactTypeId());
       contact.setValue(editing.getValue());
       contact.setComments(editing.getComments());
-      KernelConfigBean.getPort().storeContact(contact);      
-      cancel();
+      KernelConfigBean.getPort().storeContact(contact);
+      editing = null;      
+      info("STORE_OBJECT");      
       return show();
     }
     catch (Exception ex)
@@ -286,6 +288,7 @@ public class PersonContactsBacking extends PageBacking
   public String cancel()
   {
     editing = null;
+    info("CANCEL_OBJECT");    
     return null;
   }  
   
