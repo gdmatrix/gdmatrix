@@ -1,40 +1,40 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.matrix.dic;
 
-import java.awt.Event;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.matrix.agenda.Attendant;
+import org.matrix.agenda.Event;
 import org.matrix.agenda.EventDocument;
 import org.matrix.agenda.EventPlace;
 import org.matrix.agenda.EventTheme;
@@ -167,7 +167,7 @@ public class DictionaryConstants
   /* doc module */
   public static final String DOCUMENT_TYPE =
     Document.class.getSimpleName();
-  public static final String CONTENT_TYPE = 
+  public static final String CONTENT_TYPE =
     Content.class.getSimpleName();
 
   /* edu module */
@@ -229,7 +229,7 @@ public class DictionaryConstants
     PersonDocument.class.getSimpleName();
   public static final String PERSON_PERSON_TYPE =
     PersonPerson.class.getSimpleName();
-  
+
 
   /* news module */
   public static final String NEW_TYPE =
@@ -264,7 +264,7 @@ public class DictionaryConstants
     SignedDocument.class.getSimpleName();
 
   /* sql module */
-  
+
   /* survey module */
   // (duplicated with forum)
   //public static final String SURVEY_ANSWER_TYPE =
@@ -352,8 +352,8 @@ public class DictionaryConstants
 
     // add rootTypeIds
     rootTypeIds.addAll(rootTypeClasses.keySet());
-    
-    // derivable root types    
+
+    // derivable root types
     derivableTypeIds.add(CASE_TYPE);
     derivableTypeIds.add(DEMAND_TYPE);
     derivableTypeIds.add(PROBLEM_TYPE);
@@ -366,7 +366,7 @@ public class DictionaryConstants
     derivableTypeIds.add(CASE_EVENT_TYPE);
     derivableTypeIds.add(CLASS_TYPE);
     derivableTypeIds.add(NEW_DOCUMENT_TYPE);
-    
+
     // standardActions
     standardActions.add(CREATE_ACTION);
     standardActions.add(READ_ACTION);

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.matrix.util;
@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
-import org.santfeliu.util.MatrixConfig;
 
 /**
  *
@@ -51,11 +50,11 @@ public class WSDirectory
   static final String PREFIX_SEPARATOR = ":";
   static final String NAMESPACE_SUFFIX = ".matrix.org/";
   static final Map<URL, WSDirectory> instances =
-    Collections.synchronizedMap(new HashMap<URL, WSDirectory>());  
+    Collections.synchronizedMap(new HashMap<URL, WSDirectory>());
   static URL defaultInstanceURL;
 
   final HashMap<String, WSEndpoint> endpointsByName = new HashMap<>();
-  final HashMap<QName, ArrayList<WSEndpoint>> endpointsByQName = 
+  final HashMap<QName, ArrayList<WSEndpoint>> endpointsByQName =
     new HashMap<>();
 
   private URL url;
@@ -99,17 +98,14 @@ public class WSDirectory
   {
     try
     {
-      if (url == null) 
+      if (url == null)
       {
-        String wsDirectoryURL = MatrixConfig.getProperty("wsdirectory.url");
-        if (wsDirectoryURL == null)
-          wsDirectoryURL = "http://localhost/wsdirectory";
-        url = new URL(wsDirectoryURL);
+        url = new URL("http://localhost/wsdirectory");
       }
       WSDirectory directory = new WSDirectory();
       directory.url = url;
       InputStream is = url.openStream();
-      WSDirectoryLoader loader = new WSDirectoryLoader();      
+      WSDirectoryLoader loader = new WSDirectoryLoader();
       loader.load(is, directory);
       return directory;
     }
@@ -265,7 +261,7 @@ public class WSDirectory
   }
 
   /**
-   * Gets a list of the external entities that have a reference to the given 
+   * Gets a list of the external entities that have a reference to the given
    *   entityClass and globalId
    * @param entityClass the entity class
    * @param globalId the globalId
@@ -275,12 +271,12 @@ public class WSDirectory
   public List<ExternalEntity> getExternalEntities(Class entityClass,
     String globalId, QName serviceName)
   {
-    return getExternalEntities(entityClass.getSimpleName(), globalId, 
+    return getExternalEntities(entityClass.getSimpleName(), globalId,
       serviceName);
   }
-  
+
   /**
-   * Gets a list of the external entities that have a reference to the given 
+   * Gets a list of the external entities that have a reference to the given
    *   entity name and globalId
    * @param entityName the entity name
    * @param globalId the globalId
@@ -324,7 +320,7 @@ public class WSDirectory
   }
 
   /**
-   * Indicates if an entity id is local 
+   * Indicates if an entity id is local
    * @param entityName the entity name
    * @param id the id
    * @return true if local, false otherwise
@@ -336,7 +332,7 @@ public class WSDirectory
   }
 
   /**
-   * Indicates if an entity id is global 
+   * Indicates if an entity id is global
    * @param entityName the entity name
    * @param id the id
    * @return true if global, false otherwise
