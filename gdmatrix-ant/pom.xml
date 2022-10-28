@@ -16,7 +16,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-stubs</artifactId>
+      <artifactId>gdmatrix-aoc</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -101,16 +101,20 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <finalName>GDMatrixANTJavaInstall</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
         <executions>
           <execution>
-            <id>copy-libs</id>
+            <id>java-assembly</id>
             <goals>
               <goal>single</goal>
             </goals>
             <phase>package</phase>
             <configuration>
               <descriptors>
-                <descriptor>src/main/assembly/package.xml</descriptor>
+                <descriptor>src/main/assembly/java-assembly.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>

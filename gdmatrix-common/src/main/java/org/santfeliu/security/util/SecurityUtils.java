@@ -43,6 +43,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.util.MatrixConfig;
@@ -75,7 +76,7 @@ public class SecurityUtils
       urlCredentialsCipher = new URLCredentialsCipher(secret);
 
       String tspUrl = MatrixConfig.getProperty("org.santfeliu.security.tspURL");
-      if (tspUrl != null)
+      if (!StringUtils.isBlank(tspUrl))
       {
         String tspUsername = MatrixConfig.getProperty(
         "org.santfeliu.security.tspUsername");

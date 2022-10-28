@@ -84,7 +84,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.x509.CRLNumber;
-import org.santfeliu.security.provider.psis.PSIS;
 import org.santfeliu.signature.certificate.CACertificateStore;
 import org.santfeliu.util.MatrixConfig;
 import org.matrix.signature.DocumentValidation;
@@ -1316,8 +1315,6 @@ public class XMLSignedDocument implements SignedDocument
     timeStampElement.appendChild(canonicalizationMethod);
 
     byte[] digestTst = calculateElementsDigest(signedElements);
-    SecurityProvider provider = SecurityUtils.getSecurityProvider();
-    TimeStampService timeStampService = SecurityUtils.getTimeStampService();
 
     if (TAG_XML_TIMESTAMP.equals(TIMESTAMP_FORMAT))
     {
@@ -1327,6 +1324,8 @@ public class XMLSignedDocument implements SignedDocument
       XMLTimeStamp.setAttribute("xmlns:dss",
         "urn:oasis:names:tc:dss:1.0:core:schema");
       timeStampElement.appendChild(XMLTimeStamp);
+
+      SecurityProvider provider = SecurityUtils.getSecurityProvider();
 
       Element sigTimeStamp =
         provider.createXMLTimeStamp(digestTst, HASH_ALGO_ID, null);
@@ -1342,12 +1341,14 @@ public class XMLSignedDocument implements SignedDocument
       timeStampElement.appendChild(CMSTimeStamp);
 
       byte[] cms;
+      TimeStampService timeStampService = SecurityUtils.getTimeStampService();
       if (timeStampService != null)
       {
         cms = timeStampService.timestamp(digestTst, HASH_ALGO).getEncoded();
       }
       else
       {
+        SecurityProvider provider = SecurityUtils.getSecurityProvider();
         cms = provider.createCMSTimeStamp(digestTst, HASH_ALGO_ID, null);
       }
       CMSTimeStamp.setTextContent(Base64.getEncoder().encodeToString(cms));
@@ -1777,13 +1778,6 @@ public class XMLSignedDocument implements SignedDocument
   {
     try
     {
-      MatrixConfig.setProperty("org.santfeliu.security.provider.PSIS.serviceURL",
-//        "http://psisbeta.catcert.net/psis/catcert-test/dss");
-        "http://psis.catcert.net/psis/catcert/dss");
-
-      MatrixConfig.setProperty("org.santfeliu.security.provider.className",
-        PSIS.class.getName());
-
       MatrixConfig.setProperty("org.santfeliu.security.urlCredentialsCipher.secret",
         "A2b25T939");
 
