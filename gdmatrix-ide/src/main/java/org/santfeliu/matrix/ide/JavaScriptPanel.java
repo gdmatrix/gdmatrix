@@ -34,7 +34,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -126,26 +125,18 @@ public class JavaScriptPanel extends TextPanel
     runButton.setText("Run");
     runButton.setIcon(new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/run.gif")));
-    runButton.addActionListener(new ActionListener()
+    runButton.addActionListener((ActionEvent e) ->
     {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        runButton_actionPerformed(e);
-      }
+      runButton_actionPerformed(e);
     });
     toolBar.add(runButton, null);
 
     stopButton.setText("Stop");
     stopButton.setIcon(new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/stop.gif")));
-    stopButton.addActionListener(new ActionListener()
+    stopButton.addActionListener((ActionEvent e) ->
     {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        stopButton_actionPerformed(e);
-      }
+      stopButton_actionPerformed(e);
     });
     toolBar.add(stopButton, null);
     stopButton.setEnabled(false);
@@ -197,6 +188,7 @@ public class JavaScriptPanel extends TextPanel
         code = textPane.getText();
       }
       runner = new JavaScriptRunner(code, outputTextArea);
+      runner.getVariables().put("ide", getMainPanel().getIDE());
       runner.setResultConsumer(result ->
       {
         runner = null;
