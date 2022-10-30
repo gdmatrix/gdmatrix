@@ -38,6 +38,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javax.swing.JTextArea;
@@ -81,7 +82,11 @@ public class JavaScriptRunner extends Thread
   {
     Context cx = ContextFactory.getGlobal().enterContext();
     OutputHandler handler = new OutputHandler();
+    handler.setFilter(record ->
+      JavaScriptRunner.this.getId() == record.getThreadID());
+    handler.setLevel(Level.ALL);
     LOGGER.addHandler(handler);
+    LOGGER.setLevel(Level.ALL);
     try
     {
       variables.put("output", new PrintWriter(new OutputWriter()));
@@ -192,7 +197,7 @@ public class JavaScriptRunner extends Thread
     @Override
     public void publish(LogRecord record)
     {
-      if (JavaScriptRunner.this.getId() == record.getThreadID())
+      if (isLoggable(record))
       {
         String level = record.getLevel().getName();
         String formattedMessage;

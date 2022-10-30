@@ -42,30 +42,19 @@ import java.util.logging.LogRecord;
 public class ListHandler extends Handler
 {
   private final List<LogRecord> logRecords = new ArrayList<>();
-  private Thread loggingThread;
 
   public List<LogRecord> getLogRecords()
   {
     return logRecords;
   }
 
-  public Thread getLoggingThread()
-  {
-    return loggingThread;
-  }
-
-  public void setLoggingThread(Thread loggingThread)
-  {
-    this.loggingThread = loggingThread;
-  }
-
   @Override
   public void publish(LogRecord record)
   {
-    if (loggingThread != null && loggingThread.getId() != record.getThreadID())
-      return;
-
-    logRecords.add(record);
+    if (isLoggable(record))
+    {
+      logRecords.add(record);
+    }
   }
 
   @Override

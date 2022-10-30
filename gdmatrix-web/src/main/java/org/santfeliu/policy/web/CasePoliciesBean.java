@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -285,8 +286,11 @@ public class CasePoliciesBean extends PageBean
     try
     {
       ListHandler handler = new ListHandler();
-      handler.setLoggingThread(Thread.currentThread());
+      handler.setFilter(record ->
+        record.getThreadID() == Thread.currentThread().getId());
+      handler.setLevel(Level.ALL);
       LOGGER.addHandler(handler);
+      LOGGER.setLevel(Level.ALL);
 
       String caseId = getObjectId();
 

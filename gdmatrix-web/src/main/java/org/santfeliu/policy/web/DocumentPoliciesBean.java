@@ -292,8 +292,11 @@ public class DocumentPoliciesBean extends PageBean
     try
     {
       ListHandler handler = new ListHandler();
-      handler.setLoggingThread(Thread.currentThread());
+      handler.setFilter(record ->
+        record.getThreadID() == Thread.currentThread().getId());
+      handler.setLevel(Level.ALL);
       LOGGER.addHandler(handler);
+      LOGGER.setLevel(Level.ALL);
 
       String[] id = DocumentConfigBean.fromObjectId(getObjectId());
       String docId = id[0];
