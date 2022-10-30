@@ -28,32 +28,32 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.util;
+package org.santfeliu.util.log;
 
-import java.io.File;
+import java.util.logging.Filter;
+import java.util.logging.LogRecord;
 
 /**
  *
  * @author realor
  */
-public class FileDataSource extends javax.activation.FileDataSource
+public class ThreadFilter implements Filter
 {
-  private String mimeType;
+  private final long threadId;
 
-  public FileDataSource(File file)
+  public ThreadFilter()
   {
-    this(file, MimeTypeMap.getMimeTypeMap().getContentType(file));
+    this.threadId = Thread.currentThread().getId();
   }
 
-  public FileDataSource(File file, String mimeType)
+  public ThreadFilter(long threadId)
   {
-    super(file);
-    this.mimeType = mimeType;
+    this.threadId = threadId;
   }
 
   @Override
-  public String getContentType()
+  public boolean isLoggable(LogRecord record)
   {
-    return mimeType == null ? super.getContentType() : mimeType;
+    return record.getThreadID() == threadId;
   }
 }

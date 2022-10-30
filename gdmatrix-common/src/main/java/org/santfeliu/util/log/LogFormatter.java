@@ -28,7 +28,7 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.job.service;
+package org.santfeliu.util.log;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
