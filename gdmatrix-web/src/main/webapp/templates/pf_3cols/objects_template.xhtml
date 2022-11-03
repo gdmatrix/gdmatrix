@@ -23,10 +23,10 @@
   <ui:define name="left_column">
     <p:outputPanel id="search_panel" class="search_panel_layout">
       <p:accordionPanel id="search_accordion" widgetVar="basic" activeIndex="#{templateBacking.searchPanelIndex}">
-        <p:tab title="Cerca ràpida">
+        <p:tab title="Cerca ràpida" id="smart_search">
           <ui:insert name="smart_filter"></ui:insert>  
         </p:tab>      
-        <p:tab title="Cerca avançada"> 
+        <p:tab title="Cerca avançada" id="advanced_search"> 
           <ui:insert name="advanced_filter"></ui:insert>
         </p:tab>   
       </p:accordionPanel>

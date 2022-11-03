@@ -216,17 +216,19 @@ public class AddressSearchBacking extends SearchBacking
     
   private String convert(AddressFilter filter)
   {
-    String value = null;
+    String value;
     if (!filter.getAddressIdList().isEmpty())
       value = filter.getAddressIdList().get(0);
     else 
     {
+      StringBuilder sbValue = new StringBuilder();
       if (!StringUtils.isBlank(filter.getStreetTypeId()))
-        value = filter.getStreetTypeId();
+        sbValue.append(filter.getStreetTypeId());
       if (!StringUtils.isBlank(filter.getStreetName()))
-        value = value + " " + filter.getStreetName();
+        sbValue.append(" ").append(filter.getStreetName());
       if (!StringUtils.isBlank(filter.getNumber()))
-        value = value + ", " + filter.getNumber();
+        sbValue.append(", ").append(filter.getNumber());
+      value = sbValue.toString().trim();
     }
     return value;
   }

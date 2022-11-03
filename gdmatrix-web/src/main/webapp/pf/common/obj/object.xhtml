@@ -67,13 +67,14 @@
             </div>             
             <div class="m-1">
               <p:commandButton  icon="text-lg pi pi-undo" styleClass="rounded-button ui-button-flat"
-                                title="#{objectBundle.cancel}" alt="#{objectBundle.cancel}">
-                <p:ajax update="form_panel growl" resetValues="true" />
-              </p:commandButton>  
+                                action="#{templateBacking.cancel}"                                 
+                                title="#{objectBundle.cancel}" alt="#{objectBundle.cancel}"
+                                update="#{updateOnCancel != null ? updateOnCancel : 'form_panel'} growl" resetValues="true" global="false" /> 
             </div>        
             <div class="m-1">
               <p:commandButton icon="text-lg ui-icon pi pi-save" styleClass="rounded-button ui-button-flat" 
-                               action="#{templateBacking.store}" ajax="true" update="form_panel object_header growl"
+                               action="#{templateBacking.store}" ajax="true" 
+                               update="#{updateOnStore != null ? updateOnStore : 'form_panel object_header favorites_table basic_results_table'} growl"
                                title="#{objectBundle.store}" alt="#{objectBundle.store}"/>
             </div>             
             <div class="m-1">
@@ -106,15 +107,12 @@
       
       <div class="tab_footer text-right pt-3">
         <p:commandButton action="#{templateBacking.store}" value="#{objectBundle.store}" 
-                         ajax="true" update="#{updateOnStore != null ? updateOnStore : 'form_panel object_header favorites_table'} growl"
+                         ajax="true" update="#{updateOnStore != null ? updateOnStore : 'form_panel object_header favorites_table basic_results_table'} growl"
                          icon="pi pi-save"
                          styleClass="ui-button-raised m-1" />
-        <p:commandButton action="#{templateBacking.cancel}" value="#{objectBundle.cancel}" 
-                         ajax="true" immediate="true" global="false"
-                         update="#{updateOnCancel != null ? updateOnCancel : 'form_panel object_header'} growl"
-                         icon="pi pi-undo" styleClass="ui-button-raised m-1">
-          <p:ajax update="#{updateOnCancel != null ? updateOnCancel : 'form_panel'} growl" resetValues="true" global="false" />
-        </p:commandButton>      
+        <p:commandButton action="#{templateBacking.cancel}" value="#{objectBundle.cancel}"                                                   
+                         icon="pi pi-undo" styleClass="ui-button-raised m-1"
+                         update="#{updateOnCancel != null ? updateOnCancel : 'form_panel'} growl" resetValues="true" global="false" />
       </div>       
     </p:panel>
     

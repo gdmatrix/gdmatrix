@@ -156,7 +156,9 @@ public class AddressMainBacking extends PageBacking
   {
     try
     {
-      KernelConfigBean.getPort().storeAddress(address);
+      address = KernelConfigBean.getPort().storeAddress(address);
+      addressBacking.setObjectId(address.getAddressId());
+      info("STORE_OBJECT");
     }
     catch (Exception ex)
     {
@@ -207,7 +209,8 @@ public class AddressMainBacking extends PageBacking
   @Override
   public String cancel()
   {
-    reset();
+    populate();
+    info("CANCEL_OBJECT");    
     return null;
   }  
   

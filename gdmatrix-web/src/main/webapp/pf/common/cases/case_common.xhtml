@@ -6,6 +6,7 @@
                 template="/pf/common/obj/#{objectPage}.xhtml">
   
   <ui:define name="advanced_filter">
+    <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle" 
                   var="caseBundle" />    
     <!-- CaseId -->
@@ -99,10 +100,11 @@
                        action="#{caseSearchBacking.clear}"
                        styleClass="ui-button-raised m-1"
                        update="search_accordion"/>      
-      <p:commandButton value="#{objectBundle.search}"
+      <p:commandButton id="advanced_search_button"
+                       value="#{objectBundle.search}"
                        action="#{caseSearchBacking.search}"
                        ajax="#{objectPage == 'object_search' ? true : false}"
-                       process="@parent" update="#{objectPage == 'object_search' ? ':mainform:search_results_panel' :''}"
+                       process="@parent" update="#{objectPage == 'object_search' ? ':mainform:search_results_panel smart_value' :''}"
                        styleClass="ui-button-raised m-1" 
                        oncomplete="clickSlickDot(2)"/>
     </div>              

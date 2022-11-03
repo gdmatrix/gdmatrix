@@ -334,6 +334,7 @@ public abstract class ObjectBacking<T> extends WebBacking
         if (remove(getObjectId()))
           result = getSearchBacking().show();
         postRemove();
+        removed();
       }
     }
     catch (Exception ex)
@@ -401,6 +402,21 @@ public abstract class ObjectBacking<T> extends WebBacking
   public Type getSelectedType()
   {
     return TypeCache.getInstance().getType(getTypeId());
-  }  
+  }
+
+  // perform history cleanup, refresh search bean and shows a message
+  private void removed()
+  {    
+    UserSessionBean userSessionBean = 
+      UserSessionBean.getCurrentInstance();
+    userSessionBean.getUserPreferences().removePreference(getRootTypeId(), 
+      getObjectId());
+    setObjectId(NEW_OBJECT_ID);
+    TemplateBacking templateBacking = 
+      WebUtils.getBacking("templateBacking");          
+    templateBacking.getRecentHistory().reset();
+    getSearchBacking().refresh();
+    info("REMOVE_OBJECT");    
+  }
         
 }

@@ -6,6 +6,7 @@
                 template="/pf/common/obj/#{objectPage}.xhtml">
 
   <ui:define name="advanced_filter">
+    <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
     <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
                   var="kernelBundle" />      
     <div class="field">
@@ -76,10 +77,11 @@
                        action="#{addressSearchBacking.clear}"
                        styleClass="ui-button-raised m-1"
                        update="search_accordion"/>      
-      <p:commandButton value="#{objectBundle.search}"
+      <p:commandButton id="advanced_search_button"
+                       value="#{objectBundle.search}"
                        action="#{addressSearchBacking.search}"                       
                        ajax="#{objectPage == 'object_search' ? true : false}" 
-                       update="#{objectPage == 'object_search' ? ':mainform:full_results_table' :''}"
+                       update="#{objectPage == 'object_search' ? ':mainform:full_results_table smart_value' :''}"
                        styleClass="ui-button-raised m-1" />
     </div>              
   </ui:define>            

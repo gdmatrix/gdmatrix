@@ -223,7 +223,9 @@ public class CaseMainBacking extends PageBacking
     {
       //TODO: Incremental store (in helper?)
       scriptFormHelper.mergeProperties();
-      CaseConfigBean.getPort().storeCase(cas);
+      cas = CaseConfigBean.getPort().storeCase(cas);
+      caseBacking.setObjectId(cas.getCaseId());
+      info("STORE_OBJECT");      
     }
     catch (Exception ex)
     {
@@ -242,6 +244,7 @@ public class CaseMainBacking extends PageBacking
   public String cancel()
   {
     populate();
+    info("CANCEL_OBJECT");    
     return null;
   }
   

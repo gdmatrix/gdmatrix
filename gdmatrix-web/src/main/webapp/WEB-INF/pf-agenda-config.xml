@@ -28,6 +28,30 @@
     <managed-bean-class>org.matrix.pf.agenda.EventPersonsBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>  
+
+  <managed-bean>
+    <managed-bean-name>eventThemesBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.agenda.EventThemesBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>    
+      
+  <managed-bean>
+    <managed-bean-name>themeBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.agenda.ThemeBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+    
+  <managed-bean>
+    <managed-bean-name>themeSearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.agenda.ThemeSearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>     
+    
+  <managed-bean>
+    <managed-bean-name>themeMainBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.agenda.ThemeMainBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>  
   
   <navigation-rule>
     <from-view-id>*</from-view-id>
@@ -46,7 +70,22 @@
       <from-outcome>pf_event_persons</from-outcome>
       <to-view-id>/pf/common/agenda/event_persons.xhtml</to-view-id>
     </navigation-case>         
-                                    
+
+    <navigation-case>
+      <from-outcome>pf_event_themes</from-outcome>
+      <to-view-id>/pf/common/agenda/event_themes.xhtml</to-view-id>
+    </navigation-case>         
+                       
+    <navigation-case>
+      <from-outcome>pf_theme_search</from-outcome>
+      <to-view-id>/pf/common/agenda/theme_search.xhtml</to-view-id>
+    </navigation-case>   
+    
+    <navigation-case>
+      <from-outcome>pf_theme_main</from-outcome>
+      <to-view-id>/pf/common/agenda/theme_main.xhtml</to-view-id>
+    </navigation-case>                                                                                 
+                                                                                                                                                                          
   </navigation-rule>
 
 </faces-config>

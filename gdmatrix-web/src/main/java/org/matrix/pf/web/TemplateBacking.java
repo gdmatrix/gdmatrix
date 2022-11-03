@@ -155,7 +155,7 @@ public class TemplateBacking extends WebBacking
   public boolean isFavorite()
   {
     ObjectBacking objectBacking = getObjectBacking();
-    String objectTypeId = objectBacking.getTypeId();
+    String objectTypeId = objectBacking.getRootTypeId();
     String objectId = objectBacking.getObjectId();
     return isObjectFavorite(objectTypeId, objectId);
   }
@@ -163,7 +163,7 @@ public class TemplateBacking extends WebBacking
   public String markFavorite()
   {   
     ObjectBacking objectBacking = getObjectBacking();    
-    String objectTypeId = objectBacking.getTypeId();
+    String objectTypeId = objectBacking.getRootTypeId();
     String objectId = objectBacking.getObjectId();    
     return markObjectAsFavorite(objectTypeId, objectId);
   }
@@ -171,7 +171,7 @@ public class TemplateBacking extends WebBacking
   public String unmarkFavorite()
   {  
     ObjectBacking objectBacking = getObjectBacking();    
-    String objectTypeId = objectBacking.getTypeId();
+    String objectTypeId = objectBacking.getRootTypeId();
     String objectId = objectBacking.getObjectId();        
     return unmarkObjectAsFavorite(objectTypeId, objectId);
   } 

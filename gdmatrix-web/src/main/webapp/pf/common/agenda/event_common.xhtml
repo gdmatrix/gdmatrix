@@ -6,6 +6,7 @@
                 template="/pf/common/obj/#{objectPage}.xhtml">
 
   <ui:define name="advanced_filter">
+    <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
     <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle" 
                   var="agendaBundle" />   
     
@@ -113,7 +114,8 @@
                        action="#{eventSearchBacking.clear}"
                        styleClass="ui-button-raised m-1"
                        update="search_accordion"/>      
-      <p:commandButton value="#{objectBundle.search}"
+      <p:commandButton id="advanced_search_button"
+                       value="#{objectBundle.search}"
                        action="#{eventSearchBacking.search}"
                        ajax="true" process="@parent" update="#{objectPage == 'object_search' ? ':mainform:search_results_panel start_date smart_value' :''}"
                        styleClass="ui-button-raised m-1" 

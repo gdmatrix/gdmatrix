@@ -34,8 +34,8 @@ import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.matrix.agenda.AgendaConstants;
-import org.matrix.agenda.Event;
-import org.matrix.agenda.EventFilter;
+import org.matrix.agenda.Theme;
+import org.matrix.agenda.ThemeFilter;
 import org.matrix.pf.cms.CMSContent;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.web.WebUtils;
@@ -46,52 +46,33 @@ import org.santfeliu.util.MatrixConfig;
  *
  * @author lopezrj-sf
  */
-@CMSContent(typeId = "Event")
-@Named("eventBacking")
-public class EventBacking extends ObjectBacking<Event>
+@CMSContent(typeId = "Theme")
+@Named("themeBacking")
+public class ThemeBacking extends ObjectBacking<Theme>
 {   
-  public EventBacking()
+  public ThemeBacking()
   {
     super();  
   }
  
   @Override
-  public EventSearchBacking getSearchBacking()
+  public ThemeSearchBacking getSearchBacking()
   {
-    return WebUtils.getBacking("eventSearchBacking");
+    return WebUtils.getBacking("themeSearchBacking");
+  }
+  
+  @Override
+  public String getObjectId(Theme theme)
+  {
+    return theme.getThemeId();
   }
 
   @Override
-  public String getObjectId(Event event)
-  {
-    return event.getEventId();
-  }
-  
-  @Override
-  public String getTypeId()
-  {    
-    if (!isNew()) //If not object or search page.
-    {
-      EventMainBacking mainBacking = WebUtils.getBacking("eventMainBacking"); 
-      if (mainBacking != null)
-        return mainBacking.getTypeId();
-    }    
-      
-    return super.getTypeId();    
-  }  
-  
-  @Override
-  public boolean hasCustomHeader()
-  {
-    return true;
-  }
-  
-  @Override
   public String getDescription()
   {
-    EventMainBacking mainBacking = WebUtils.getBacking("eventMainBacking");
+    ThemeMainBacking mainBacking = WebUtils.getBacking("themeMainBacking");
     if (mainBacking != null)
-      return getDescription(mainBacking.getEvent().getEventId());
+      return getDescription(mainBacking.getTheme().getThemeId());
     else
       return super.getDescription();
   }
@@ -104,15 +85,15 @@ public class EventBacking extends ObjectBacking<Event>
       if ((objectId != null && objectId.contains(";")) || "".equals(objectId))
         return objectId;
       
-      EventFilter filter = new EventFilter();
-      filter.getEventId().add(objectId);
+      ThemeFilter filter = new ThemeFilter();
+      filter.setThemeId(objectId);
       String userId = MatrixConfig.getProperty("adminCredentials.userId");
       String password = MatrixConfig.getProperty("adminCredentials.password");      
-      List<Event> events = 
-        AgendaConfigBean.getPort(userId, password).findEvents(filter);
+      List<Theme> themes = 
+        AgendaConfigBean.getPort(userId, password).findThemesFromCache(filter);
       
-      if (events != null && !events.isEmpty())
-        return getDescription(events.get(0));      
+      if (themes != null && !themes.isEmpty())
+        return getDescription(themes.get(0));      
     }
     catch (Exception ex)
     {
@@ -122,11 +103,11 @@ public class EventBacking extends ObjectBacking<Event>
   }    
   
   @Override
-  public String getDescription(Event event)
+  public String getDescription(Theme theme)
   {
-    if (event == null) return "";    
-    return event.getSummary();
-  }
+    if (theme == null) return "";    
+    return theme.getDescription();
+  }  
   
   @Override
   public List<SelectItem> getFavorites()
@@ -151,7 +132,7 @@ public class EventBacking extends ObjectBacking<Event>
   {
     try
     {
-      return AgendaConfigBean.getPort().removeEvent(objectId);
+      return AgendaConfigBean.getPort().removeTheme(objectId);
     }
     catch (Exception ex)
     {

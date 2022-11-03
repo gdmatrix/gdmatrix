@@ -105,6 +105,7 @@ public class EventMainBacking extends PageBacking
     return typedHelper;
   } 
 
+  @Override
   public TabHelper getTabHelper()
   {
     return tabHelper;
@@ -262,7 +263,8 @@ public class EventMainBacking extends PageBacking
   {
     try
     {
-      AgendaConfigBean.getPort().storeEvent(event);
+      event = AgendaConfigBean.getPort().storeEvent(event);
+      eventBacking.setObjectId(event.getEventId());
       info("STORE_OBJECT");
     }
     catch (Exception ex)

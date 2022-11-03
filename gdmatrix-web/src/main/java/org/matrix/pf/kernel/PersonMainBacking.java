@@ -46,7 +46,6 @@ import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedTabPage;
 import org.matrix.web.WebUtils;
 import org.santfeliu.faces.FacesUtils;
-import org.santfeliu.kernel.web.CountryToStreetBean;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.util.TextUtils;
 
@@ -101,6 +100,7 @@ public class PersonMainBacking extends PageBacking
     return typedHelper;
   }
 
+  @Override
   public TabHelper getTabHelper()
   {
     return tabHelper;
@@ -204,8 +204,9 @@ public class PersonMainBacking extends PageBacking
   {
     try
     {
-      KernelConfigBean.getPort().storePerson(person);
-      info("STORE_OBJECT");      
+      person = KernelConfigBean.getPort().storePerson(person);
+      personBacking.setObjectId(person.getPersonId());
+      info("STORE_OBJECT");
     }
     catch (Exception ex)
     {
@@ -280,15 +281,9 @@ public class PersonMainBacking extends PageBacking
   @Override
   public String cancel()
   {
-    reset();
-    info("CANCEL_OBJECT");          
+    populate();
+    info("CANCEL_OBJECT");
     return null;
-  }  
-  
-  private CountryToStreetBean getCountryToStreetBean()
-  {
-    return (CountryToStreetBean) getBean("countryToStreetBean");    
   }
-
 
 }
