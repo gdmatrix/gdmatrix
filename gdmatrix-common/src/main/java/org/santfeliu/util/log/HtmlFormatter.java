@@ -142,7 +142,7 @@ public class HtmlFormatter extends Formatter
     sb.append("<style>\n");
     sb.append("body { font-family: Monospace, Courier New; font-size: 14px; }\n");
     sb.append("div.INFO { color: black; }\n");
-    sb.append("div.WARNING { color: #404000; }\n");
+    sb.append("div.WARNING { color: #a0a000; }\n");
     sb.append("div.SEVERE { color: red; }\n");
     sb.append("div.FINE { color: #808080; }\n");
     sb.append("div.FINER { color: #a0a0a0; }\n");
