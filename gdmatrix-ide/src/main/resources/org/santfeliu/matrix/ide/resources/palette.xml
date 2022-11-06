@@ -131,20 +131,29 @@
   </category>
 
   <category name="javascript" displayName="Javascript">
+    <element name="addDate" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
+      <attribute name="text">addDate(date, incr, units)</attribute>
+    </element>
     <element name="blankNull" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">blankNull(text)</attribute>
     </element>
     <element name="decimalFormat" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">decimalFormat(value, format)</attribute>
     </element>
-    <element name="wsport" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
-      <attribute name="text">wsport(module, userId, password, wsdirURL)</attribute>
-    </element>
-    <element name="addDate" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
-      <attribute name="text">addDate(date, incr, units)</attribute>
-    </element>
     <element name="htmlEncode" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">htmlEncode(text)</attribute>
+    </element>
+    <element name="includeScript" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
+      <attribute name="text">includeScript(fileReference)</attribute>
+    </element>
+    <element name="today" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
+      <attribute name="text">today(dateFormat)</attribute>
+    </element>
+    <element name="urlEncode" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
+      <attribute name="text">urlEncode(url)</attribute>
+    </element>
+    <element name="wsport" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
+      <attribute name="text">wsport(module, userId, password, wsdirURL)</attribute>
     </element>
     <element name="xmlEncode" icon="/org/santfeliu/matrix/ide/resources/images/method.gif">
       <attribute name="text">xmlEncode(text)</attribute>

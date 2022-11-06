@@ -345,7 +345,7 @@ public class MainPanel extends JPanel
         {
           if (actionId.startsWith("-"))
           {
-            toolBar.addSeparator();
+            toolBar.addSeparator(new Dimension(8, 20));
           }
           else
           {
@@ -836,40 +836,36 @@ public class MainPanel extends JPanel
 
     toolBar.setBorderPainted(false);
 
-    PropertyChangeListener listener = new PropertyChangeListener()
+    PropertyChangeListener listener = (PropertyChangeEvent evt) ->
     {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt)
+      DocumentPanel panel = getActivePanel();
+      try
       {
-        DocumentPanel panel = getActivePanel();
-        try
+        if (editObject != null)
         {
-          if (editObject != null)
-          {
-            Property prop = (Property)evt.getSource();
-            prop.writeToObject(editObject);
-            panel.objectPropertyChanged(editObject, prop);
+          Property prop = (Property)evt.getSource();
+          prop.writeToObject(editObject);
+          panel.objectPropertyChanged(editObject, prop);
 
-            if (!loadingObjectProperties)
+          if (!loadingObjectProperties)
+          {
+            panel.setModified(true);
+            UndoManager undoManager = panel.getUndoManager();
+            if (undoManager != null)
             {
-              panel.setModified(true);
-              UndoManager undoManager = panel.getUndoManager();
-              if (undoManager != null)
-              {
-                BeanUndoableEdit edit = new BeanUndoableEdit(editObject);
-                edit.propertyChange(prop.getName(),
-                  evt.getOldValue(), evt.getNewValue());
-                undoManager.addEdit(edit);
-              }
+              BeanUndoableEdit edit = new BeanUndoableEdit(editObject);
+              edit.propertyChange(prop.getName(),
+                evt.getOldValue(), evt.getNewValue());
+              undoManager.addEdit(edit);
             }
           }
         }
-        catch (Exception ex)
-        {
-        }
-        updateActions();
-        panel.repaint();
       }
+      catch (Exception ex)
+      {
+      }
+      updateActions();
+      panel.repaint();
     };
 
     sheet.addPropertySheetChangeListener(listener);

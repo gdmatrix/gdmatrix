@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -73,6 +73,7 @@ import javax.swing.text.EditorKit;
 import javax.swing.undo.UndoManager;
 import org.santfeliu.swing.palette.Palette;
 import org.santfeliu.swing.text.TextEditor;
+import org.santfeliu.swing.undo.DelayUndoManager;
 
 /**
  *
@@ -83,7 +84,14 @@ public abstract class TextPanel extends DocumentPanel
   protected BorderLayout borderLayout = new BorderLayout();
   protected TextEditor textEditor = new TextEditor();
   protected UndoHandler undoHandler = new UndoHandler();
-  protected UndoManager undoManager = new UndoManager();
+  protected DelayUndoManager undoManager = new DelayUndoManager()
+  {
+    @Override
+    public void onNewEdit()
+    {
+      getMainPanel().updateActions();
+    }
+  };
   protected int findIndexStart = 0;
   protected int findIndexEnd = 0;
 
@@ -114,13 +122,9 @@ public abstract class TextPanel extends DocumentPanel
     textPane.getDocument().removeUndoableEditListener(undoHandler);
     textPane.getDocument().addUndoableEditListener(undoHandler);
     textPane.setCaretPosition(0);
-    SwingUtilities.invokeLater(new Runnable() 
+    SwingUtilities.invokeLater(() ->
     {
-      @Override
-      public void run()
-      {
-        textPane.requestFocus();        
-      }
+      textPane.requestFocus();
     });
   }
 
@@ -128,9 +132,8 @@ public abstract class TextPanel extends DocumentPanel
   public void open(InputStream is) throws Exception
   {
     StringBuilder buffer = new StringBuilder();
-    BufferedReader reader =
-      new BufferedReader(new InputStreamReader(is, getCharset()));
-    try
+    try (BufferedReader reader = new BufferedReader(
+      new InputStreamReader(is, getCharset())))
     {
       String line = reader.readLine();
       while (line != null)
@@ -139,10 +142,6 @@ public abstract class TextPanel extends DocumentPanel
         buffer.append("\n");
         line = reader.readLine();
       }
-    }
-    finally
-    {
-      reader.close();
     }
     textEditor.getTextPane().setText(buffer.toString());
     undoManager.discardAllEdits();
@@ -156,6 +155,12 @@ public abstract class TextPanel extends DocumentPanel
   {
     String text = textEditor.getTextPane().getText();
     os.write(text.getBytes(getCharset()));
+  }
+
+  @Override
+  public void close()
+  {
+    undoManager.discardAllEdits();
   }
 
   @Override
@@ -280,7 +285,6 @@ public abstract class TextPanel extends DocumentPanel
     public void undoableEditHappened(UndoableEditEvent e)
     {
       undoManager.addEdit(e.getEdit());
-      getMainPanel().updateActions();
     }
   }
 
@@ -298,7 +302,7 @@ public abstract class TextPanel extends DocumentPanel
     getMainPanel().setEditObject(null);
     Font font = textEditor.getTextPane().getFont();
     if (!font.equals(Options.getEditorFont()))
-    {      
+    {
       textEditor.getTextPane().setFont(getEditorFont());
       textEditor.repaint();
     }
@@ -325,7 +329,7 @@ public abstract class TextPanel extends DocumentPanel
           if (textLines == null)
           {
             textLines = getTextLines(pageFormat, metrics, g);
-            int linesPerPage = 
+            int linesPerPage =
               (int)(pageFormat.getImageableHeight() / lineHeight);
             int numBreaks = (textLines.size() - 1) / linesPerPage;
             pageBreaks = new int[numBreaks];
@@ -388,7 +392,7 @@ public abstract class TextPanel extends DocumentPanel
     return getEditorFont().deriveFont(10f);
   }
 
-  protected List<String> getTextLines(PageFormat pageFormat, 
+  protected List<String> getTextLines(PageFormat pageFormat,
     FontMetrics metrics, Graphics g)
   {
     ArrayList<String> lines = new ArrayList();
@@ -466,7 +470,7 @@ public abstract class TextPanel extends DocumentPanel
       }
     });
 
-    DropTarget dropTarget = new DropTarget(textEditor.getTextPane(), 
+    DropTarget dropTarget = new DropTarget(textEditor.getTextPane(),
       new DropTargetAdapter()
     {
       @Override
@@ -475,7 +479,7 @@ public abstract class TextPanel extends DocumentPanel
         try
         {
           Transferable transferable = event.getTransferable();
-          String text = 
+          String text =
             (String)transferable.getTransferData(DataFlavor.stringFlavor);
           event.dropComplete(true);
           JTextPane textPane = textEditor.getTextPane();
@@ -491,7 +495,7 @@ public abstract class TextPanel extends DocumentPanel
     });
     dropTarget.setActive(true);
     textEditor.getTextPane().setDropTarget(dropTarget);
-    
+
     textEditor.getTextPane().addMouseListener(new MouseAdapter()
     {
       @Override

@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -66,7 +66,7 @@ public class OptionsDialog extends javax.swing.JDialog
     initComponents();
     loadLanguageComboBox();
     loadLAFComboBox();
-    loadOptions();    
+    loadOptions();
   }
 
   public boolean showDialog(Component component)
@@ -85,7 +85,8 @@ public class OptionsDialog extends javax.swing.JDialog
    */
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+  private void initComponents()
+  {
     java.awt.GridBagConstraints gridBagConstraints;
 
     basePanel = new javax.swing.JPanel();
@@ -103,6 +104,9 @@ public class OptionsDialog extends javax.swing.JDialog
     fontSamplePanel = new javax.swing.JPanel();
     fontSampleTextField = new javax.swing.JTextField();
     changeFontButton = new javax.swing.JButton();
+    editorPanel = new javax.swing.JPanel();
+    indentSpacesLabel = new javax.swing.JLabel();
+    indentSpacesSpinner = new javax.swing.JSpinner();
     workflowPanel = new javax.swing.JPanel();
     workflowFixURLLabel = new javax.swing.JLabel();
     updateRulesPanel = new javax.swing.JPanel();
@@ -110,15 +114,13 @@ public class OptionsDialog extends javax.swing.JDialog
     fixRulesButton = new javax.swing.JButton();
     fixWorkflowLabel = new javax.swing.JLabel();
     workflowFixOnOpenCheckBox = new javax.swing.JCheckBox();
-    formPanel = new javax.swing.JPanel();
-    rolesPanel = new javax.swing.JPanel();
     southPanel = new javax.swing.JPanel();
     acceptButton = new javax.swing.JButton();
     cancelButton = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Options");
-    setMinimumSize(new java.awt.Dimension(400, 300));
+    setMinimumSize(new java.awt.Dimension(400, 240));
 
     basePanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 1, 1, 1));
     basePanel.setLayout(new java.awt.BorderLayout());
@@ -211,8 +213,10 @@ public class OptionsDialog extends javax.swing.JDialog
 
     changeFontButton.setText("...");
     changeFontButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-    changeFontButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    changeFontButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         changeFontButtonActionPerformed(evt);
       }
     });
@@ -230,6 +234,20 @@ public class OptionsDialog extends javax.swing.JDialog
     generalPanel.add(fontSamplePanel, gridBagConstraints);
 
     tabbedPane.addTab("General", generalPanel);
+
+    editorPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+    editorPanel.setLayout(new java.awt.GridBagLayout());
+
+    indentSpacesLabel.setText("Number of spaces per indent:");
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+    editorPanel.add(indentSpacesLabel, gridBagConstraints);
+    gridBagConstraints = new java.awt.GridBagConstraints();
+    gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+    gridBagConstraints.weightx = 1.0;
+    editorPanel.add(indentSpacesSpinner, gridBagConstraints);
+
+    tabbedPane.addTab("Editor", editorPanel);
 
     workflowPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
     workflowPanel.setLayout(new java.awt.GridBagLayout());
@@ -251,8 +269,10 @@ public class OptionsDialog extends javax.swing.JDialog
 
     fixRulesButton.setText("...");
     fixRulesButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-    fixRulesButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    fixRulesButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         fixRulesButtonActionPerformed(evt);
       }
     });
@@ -284,25 +304,23 @@ public class OptionsDialog extends javax.swing.JDialog
 
     tabbedPane.addTab("Workflow", workflowPanel);
 
-    formPanel.setLayout(new java.awt.GridBagLayout());
-    tabbedPane.addTab("Form", formPanel);
-
-    rolesPanel.setLayout(new java.awt.GridBagLayout());
-    tabbedPane.addTab("Roles graph", rolesPanel);
-
     basePanel.add(tabbedPane, java.awt.BorderLayout.CENTER);
 
     acceptButton.setText("Accept");
-    acceptButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    acceptButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         acceptButtonActionPerformed(evt);
       }
     });
     southPanel.add(acceptButton);
 
     cancelButton.setText("Cancel");
-    cancelButton.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
+    cancelButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
         cancelButtonActionPerformed(evt);
       }
     });
@@ -360,6 +378,7 @@ public class OptionsDialog extends javax.swing.JDialog
     String fixOnOpen = Options.get("workflowFixOnOpen");
     workflowFixOnOpenCheckBox.setSelected("true".equals(fixOnOpen));
     updateEditorFont(Options.getEditorFont());
+    indentSpacesSpinner.setValue(Options.getIndentSpaces());
   }
 
   private void saveOptions()
@@ -371,12 +390,13 @@ public class OptionsDialog extends javax.swing.JDialog
     String newLafClassName =
       ((LookAndFeelInfo) lafComboBox.getSelectedItem()).getClassName();
     Options.set("lafClassName", newLafClassName);
-    Locale locale = (Locale) languageComboBox.getSelectedItem();
+    Locale locale = (Locale)languageComboBox.getSelectedItem();
     Options.set("language", locale.getLanguage());
     if (editorFont != null)
     {
       Options.setEditorFont(editorFont);
     }
+    Options.setIndentSpaces((Integer)indentSpacesSpinner.getValue());
   }
 
   private void updateEditorFont(Font font)
@@ -395,23 +415,19 @@ public class OptionsDialog extends javax.swing.JDialog
    */
   public static void main(String args[])
   {
-    java.awt.EventQueue.invokeLater(new Runnable()
+    java.awt.EventQueue.invokeLater(() ->
     {
-
-      public void run()
+      OptionsDialog dialog = new OptionsDialog(new javax.swing.JFrame(), true);
+      dialog.addWindowListener(new java.awt.event.WindowAdapter()
       {
-        OptionsDialog dialog = new OptionsDialog(new javax.swing.JFrame(), true);
-        dialog.addWindowListener(new java.awt.event.WindowAdapter()
-        {
 
-          @Override
-          public void windowClosing(java.awt.event.WindowEvent e)
-          {
-            System.exit(0);
-          }
-        });
-        dialog.setVisible(true);
-      }
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent e)
+        {
+          System.exit(0);
+        }
+      });
+      dialog.setVisible(true);
     });
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -419,13 +435,15 @@ public class OptionsDialog extends javax.swing.JDialog
   private javax.swing.JPanel basePanel;
   private javax.swing.JButton cancelButton;
   private javax.swing.JButton changeFontButton;
+  private javax.swing.JPanel editorPanel;
   private javax.swing.JButton fixRulesButton;
   private javax.swing.JLabel fixWorkflowLabel;
   private javax.swing.JLabel fontLabel;
   private javax.swing.JPanel fontSamplePanel;
   private javax.swing.JTextField fontSampleTextField;
-  private javax.swing.JPanel formPanel;
   private javax.swing.JPanel generalPanel;
+  private javax.swing.JLabel indentSpacesLabel;
+  private javax.swing.JSpinner indentSpacesSpinner;
   private javax.swing.JComboBox lafComboBox;
   private javax.swing.JLabel lafLabel;
   private javax.swing.JPanel lafPanel;
@@ -434,7 +452,6 @@ public class OptionsDialog extends javax.swing.JDialog
   private javax.swing.JPanel languagePanel;
   private javax.swing.JLabel restartLabel1;
   private javax.swing.JLabel restartLabel2;
-  private javax.swing.JPanel rolesPanel;
   private javax.swing.JPanel southPanel;
   private javax.swing.JTabbedPane tabbedPane;
   private javax.swing.JPanel updateRulesPanel;
