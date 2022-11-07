@@ -89,6 +89,8 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.function.Predicate;
+import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
@@ -113,7 +115,7 @@ public class MainPanel extends JPanel
   private BorderLayout mainLayout = new BorderLayout();
   private JSplitPane splitPane = new FlatSplitPane();
   private JSplitPane rightSplitPane = new FlatSplitPane();
-  private JPanel statusBar = new JPanel();
+  private JLabel statusBar = new JLabel();
   private TabbedPane tabbedPane = new TabbedPane();
   private PropertySheetPanel sheet = new PropertySheetPanel();
   private Palette palette = new Palette();
@@ -752,6 +754,26 @@ public class MainPanel extends JPanel
     return ide;
   }
 
+  public void showStatus(DocumentPanel panel)
+  {
+    if (panel.getConnectionUrl() != null)
+    {
+      statusBar.setText("Location: " + panel.getConnectionUrl() +
+        " - docId / version: " + panel.getDocId() + " / " + panel.getVersion());
+    }
+    else if (panel.getDirectory() != null)
+    {
+      String extension = panel.getDocumentType().getExtension();
+     String separator = System.getProperty("file.separator");
+      statusBar.setText("Location: " + panel.getDirectory() + separator +
+        panel.getDisplayName() + "." + extension);
+    }
+    else
+    {
+      statusBar.setText("Not yet saved.");
+    }
+  }
+
   public boolean confirmExit()
   {
     boolean exit = true;
@@ -802,6 +824,8 @@ public class MainPanel extends JPanel
     add(splitPane, BorderLayout.CENTER);
     add(statusBar, BorderLayout.SOUTH);
 
+    statusBar.setBorder(new EmptyBorder(2, 2, 2, 2));
+
     northPanel.add(toolBar);
     northPanel.add(zoomPanel);
     northPanel.add(connPanel);
@@ -815,17 +839,13 @@ public class MainPanel extends JPanel
     splitPane.setDividerSize(2);
     splitPane.setVisible(false);
     splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
-    new PropertyChangeListener()
-    {
-      @Override
-      public void propertyChange(PropertyChangeEvent pce)
+      (PropertyChangeEvent pce) ->
       {
         if (splitPane.getRightComponent().isVisible())
         {
           dividerLocation = splitPane.getDividerLocation();
         }
-      }
-    });
+      });
 
     rightSplitPane.setBorder(BorderFactory.createEmptyBorder());
     rightSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -904,15 +924,16 @@ public class MainPanel extends JPanel
     });
 
     tabbedPane.setShowCloseButton(true);
-    tabbedPane.addChangeListener(new ChangeListener()
+    tabbedPane.addChangeListener((ChangeEvent e) ->
     {
-      public void stateChanged(ChangeEvent e)
+      DocumentPanel panel = getActivePanel();
+      if (panel != null)
       {
-        DocumentPanel panel = getActivePanel();
-        if (panel != null) panel.activate();
-        updateActions();
-        updateZoomPanel();
+        panel.activate();
+        showStatus(panel);
       }
+      updateActions();
+      updateZoomPanel();
     });
   }
 }
