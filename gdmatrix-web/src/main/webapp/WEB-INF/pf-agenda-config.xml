@@ -36,6 +36,12 @@
   </managed-bean>    
       
   <managed-bean>
+    <managed-bean-name>eventPlacesBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.agenda.EventPlacesBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>    
+      
+  <managed-bean>
     <managed-bean-name>themeBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.agenda.ThemeBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
@@ -76,6 +82,11 @@
       <to-view-id>/pf/common/agenda/event_themes.xhtml</to-view-id>
     </navigation-case>         
                        
+    <navigation-case>
+      <from-outcome>pf_event_places</from-outcome>
+      <to-view-id>/pf/common/agenda/event_places.xhtml</to-view-id>
+    </navigation-case>
+
     <navigation-case>
       <from-outcome>pf_theme_search</from-outcome>
       <to-view-id>/pf/common/agenda/theme_search.xhtml</to-view-id>

@@ -238,12 +238,14 @@ public class PersonContactsBacking extends PageBacking
       contact.setComments(editing.getComments());
       KernelConfigBean.getPort().storeContact(contact);
       editing = null;      
-      info("STORE_OBJECT");      
+      info("STORE_OBJECT");
+      hideDialog();
       return show();
     }
     catch (Exception ex)
     {
       error(ex);
+      showDialog();
     }
     return null;
   }

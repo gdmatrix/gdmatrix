@@ -1,0 +1,99 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/pf/common/obj/#{objectPage}.xhtml">
+
+  <ui:define name="advanced_filter">
+    <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
+                  var="kernelBundle" />
+    
+    <div class="field">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_id}" />
+      <p:chips id="roomId" value="#{roomSearchBacking.roomId}"
+               addOnPaste="true" separator=","
+               class="inputfield w-full ui-fluid"/>
+    </div>
+    
+    <div class="field">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />        
+      <p:inputText id="roomName" value="#{roomSearchBacking.filter.roomName}" 
+                   class="inputfield w-full" />
+    </div>
+    
+    <div class="field">    
+      <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
+      <p:selectOneMenu id="roomTypeId" value="#{roomSearchBacking.filter.roomTypeId}"  
+                       filter="true" var="t"
+                       styleClass="inputfield w-full">        
+        <f:selectItem itemValue="" itemLabel="#{kernelBundle.room_allTypes}" />
+        <f:selectItems value="#{roomSearchBacking.typedHelper.allTypes}" var="type" 
+                       itemLabel="#{type.description}" itemValue="#{type.typeId}" />
+        <p:column>
+          <h:outputText value="#{t != '' ? typeBean.getDescription(t) : kernelBundle.room_allTypes}" />
+        </p:column>            
+      </p:selectOneMenu>      
+    </div>
+    
+    <div class="field">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_address}:" />
+      <div class="ui-inputgroup">                 
+        <p:commandButton action="#{roomSearchBacking.search('Address', '#{roomSearchBacking.selectedAddress}')}"
+                         icon="pi pi-search" ajax="false"
+                         styleClass="ui-button-raised"                               
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                         update="@form" /> 
+        <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-10"
+                        value="#{roomSearchBacking.addressSelectItem}" 
+                        maxResults="10" dropdown="true" dropdownMode="blank"
+                        completeMethod="#{roomSearchBacking.completeAddress}"
+                        converter="selectItemConverter"
+                        var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                        minQueryLength="0" queryDelay="1000"
+                        onclick="this.setSelectionRange(0, this.value.length)">
+          <p:ajax event="itemSelect" listener="#{roomSearchBacking.onAddressSelect}" update="@this"/>
+          <p:ajax event="clear" listener="#{roomSearchBacking.onAddressClear}" update="@this"/>
+          <p:column>
+            <h:outputText value="#{item.label} (#{item.value})" />
+          </p:column>        
+        </p:autoComplete>           
+      </div>
+    </div>
+
+    <div class="field">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />        
+      <p:inputText id="roomCapacity" value="#{roomSearchBacking.filter.capacity}" 
+                   class="inputfield w-full" />
+    </div>
+
+    <div class="field">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
+      <p:inputText id="roomSpaceId" value="#{roomSearchBacking.filter.spaceId}" 
+                   class="inputfield w-full"/>
+    </div>   
+
+    <div class="field">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
+      <p:inputText id="roomComments" value="#{roomSearchBacking.filter.comments}" 
+                   class="inputfield w-full"/>
+    </div>   
+
+ 
+    <div class="buttons text-right">
+      <p:commandButton value="#{objectBundle.clear}"
+                       ajax="#{ajax}"
+                       action="#{roomSearchBacking.clear}"
+                       styleClass="ui-button-raised m-1"
+                       update="search_accordion"/>      
+      <p:commandButton id="advanced_search_button"
+                       value="#{objectBundle.search}"
+                       action="#{roomSearchBacking.search}"                       
+                       ajax="#{objectPage == 'object_search' ? true : false}" 
+                       update="#{objectPage == 'object_search' ? ':mainform:full_results_table smart_value' :''}"
+                       styleClass="ui-button-raised m-1" />
+    </div>              
+  </ui:define>            
+
+</ui:composition>

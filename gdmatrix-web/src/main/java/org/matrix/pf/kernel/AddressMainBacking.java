@@ -219,7 +219,12 @@ public class AddressMainBacking extends PageBacking
     StreetBacking streetBacking = WebUtils.getBacking("streetBacking");
     return streetBacking.completeStreet(query, address.getStreetId());
   }
-  
+
+  public void onStreetClear() 
+  {
+    address.setStreetId(null);
+  }  
+
   private void loadStreetSelectItem(String streetId)
   {
     StreetBacking streetBacking = WebUtils.getBacking("streetBacking");

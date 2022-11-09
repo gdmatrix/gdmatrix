@@ -161,6 +161,11 @@ public class PersonAddressesBacking extends PageBacking
     String addressId = (String) item.getValue();
     editing.setAddressId(addressId);
   }  
+
+  public void onAddressClear() 
+  {
+    editing.setAddressId(null);
+  }  
   
   public List<SelectItem> completeAddress(String query)
   {
@@ -193,11 +198,11 @@ public class PersonAddressesBacking extends PageBacking
       AddressFilter filter = new AddressFilter();
       filter.setStreetName("\"" + query + "\"");
       filter.setMaxResults(10);
-      List<AddressView> addresss = 
+      List<AddressView> addresses = 
         KernelConfigBean.getPort().findAddressViews(filter);
-      if (addresss != null)
+      if (addresses != null)
       {       
-        for (AddressView address : addresss)
+        for (AddressView address : addresses)
         {
           String description = addressBacking.getDescription(address);
           SelectItem item = new SelectItem(address.getAddressId(), description);
@@ -307,12 +312,14 @@ public class PersonAddressesBacking extends PageBacking
       port.storePersonAddress(editing);
       editing = null;
       addressSelectItem = null;
-      info("STORE_OBJECT");      
+      info("STORE_OBJECT");
+      hideDialog();
       return show();
     }
     catch (Exception ex)
     {
       error(ex);
+      showDialog();
     }
     return null;
   }

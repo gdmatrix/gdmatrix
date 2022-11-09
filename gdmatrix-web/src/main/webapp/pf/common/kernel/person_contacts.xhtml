@@ -130,8 +130,7 @@
         <p:commandButton action="#{personContactsBacking.storeContact}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
-                         update="page_results_table edit_panels :mainform:growl"
-                         oncomplete="PF('editDataDialog').hide()"/>
+                         update="page_results_table edit_panels :mainform:growl" />
         <p:commandButton action="#{personContactsBacking.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                          immediate="true" update="edit_panels :mainform:growl" global="false" 

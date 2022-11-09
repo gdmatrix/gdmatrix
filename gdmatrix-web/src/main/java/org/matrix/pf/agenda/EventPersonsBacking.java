@@ -162,6 +162,7 @@ public class EventPersonsBacking extends PageBacking
     return typedHelper;
   }  
 
+  @Override
   public TabHelper getTabHelper()
   {
     return tabHelper;
@@ -223,6 +224,11 @@ public class EventPersonsBacking extends PageBacking
     String personId = (String)item.getValue();
     setSelectedPerson(personId);
   }  
+
+  public void onPersonClear() 
+  {
+    editing.setPersonId(null);    
+  }
   
   public void setSelectedPerson(String personId)
   {
@@ -372,11 +378,13 @@ public class EventPersonsBacking extends PageBacking
       personSelectItem = null; 
     
       info("STORE_OBJECT");
+      hideDialog();
       return show();
     }
     catch (Exception ex)
     {     
       error(ex);
+      showDialog();
     }
     return null;
   }

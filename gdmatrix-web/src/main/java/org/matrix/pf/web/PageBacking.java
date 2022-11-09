@@ -75,6 +75,12 @@ public abstract class PageBacking extends WebBacking implements Page, Savable
     PrimeFaces current = PrimeFaces.current();
     current.executeScript("PF('editDataDialog').show();");    
   }  
+
+  protected void hideDialog()
+  {
+    PrimeFaces current = PrimeFaces.current();
+    current.executeScript("PF('editDataDialog').hide();");    
+  }
   
   protected boolean isEditing(String pageObjectId)
   {

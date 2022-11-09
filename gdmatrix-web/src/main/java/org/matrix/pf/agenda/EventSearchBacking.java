@@ -393,9 +393,14 @@ public class EventSearchBacking extends SearchBacking
   {
     SelectItem item = event.getObject();
     String personId = (String)item.getValue();
-    filter.setPersonId(personId);    
-  }  
-  
+    filter.setPersonId(personId);
+  }
+
+  public void onPersonClear() 
+  {
+    filter.setPersonId(null);
+  }
+
   public List<SelectItem> completePerson(String query)
   {
     ArrayList<SelectItem> items = new ArrayList();

@@ -113,9 +113,10 @@
                               minQueryLength="3" queryDelay="1000"
                               onclick="this.setSelectionRange(0, this.value.length)">
                 <p:ajax event="itemSelect" listener="#{personAddressesBacking.onAddressSelect}" update="edit_panels"/>
-                <p:column>                 
+                <p:ajax event="clear" listener="#{personAddressesBacking.onAddressClear}" update="edit_panels"/>
+                <p:column>
                   <h:outputText value="#{item.label} (#{item.value})" />
-                </p:column>        
+                </p:column>
               </p:autoComplete>           
             </div>
           </p:outputPanel>         
@@ -127,8 +128,7 @@
         <p:commandButton action="#{personAddressesBacking.storeAddress}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
-                         update="page_results_table edit_panels :mainform:growl"
-                         oncomplete="PF('editDataDialog').hide()"/>
+                         update="page_results_table edit_panels :mainform:growl" />
         <p:commandButton action="#{personAddressesBacking.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                          immediate="true" update="edit_panels :mainform:growl" global="false" 

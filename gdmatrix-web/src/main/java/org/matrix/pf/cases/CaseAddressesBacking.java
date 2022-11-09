@@ -173,6 +173,7 @@ public class CaseAddressesBacking extends PageBacking
     return typedHelper;
   }  
 
+  @Override
   public TabHelper getTabHelper()
   {
     return tabHelper;
@@ -307,11 +308,11 @@ public class CaseAddressesBacking extends PageBacking
       AddressFilter filter = new AddressFilter();
       filter.setDescription(query);
       filter.setMaxResults(10);
-      List<AddressView> addresss = 
+      List<AddressView> addresses = 
         KernelConfigBean.getPort().findAddressViews(filter);
-      if (addresss != null)
+      if (addresses != null)
       {       
-        for (AddressView address : addresss)
+        for (AddressView address : addresses)
         {
           String description = addressBacking.getDescription(address);
           SelectItem item = new SelectItem(address.getAddressId(), description);

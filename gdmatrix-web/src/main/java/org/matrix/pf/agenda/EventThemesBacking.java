@@ -159,7 +159,12 @@ public class EventThemesBacking extends PageBacking
     String themeId = (String)item.getValue();
     setSelectedTheme(themeId);
   }  
-    
+
+  public void onThemeClear() 
+  {
+    editing.setThemeId(null);    
+  }  
+  
   public void setSelectedTheme(String themeId)
   {
     editing.setThemeId(themeId);
@@ -297,11 +302,13 @@ public class EventThemesBacking extends PageBacking
       themeSelectItem = null; 
     
       info("STORE_OBJECT");
+      hideDialog();
       return show();
     }
     catch (Exception ex)
     {     
       error(ex);
+      showDialog();
     }
     return null;
   }

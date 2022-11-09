@@ -60,6 +60,24 @@
   </managed-bean>    
   
   <managed-bean>
+    <managed-bean-name>roomBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.RoomBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>   
+  
+  <managed-bean>
+    <managed-bean-name>roomSearchBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.RoomSearchBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>      
+  
+  <managed-bean>
+    <managed-bean-name>roomMainBacking</managed-bean-name>
+    <managed-bean-class>org.matrix.pf.kernel.RoomMainBacking</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
+  
+  <managed-bean>
     <managed-bean-name>streetBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.kernel.StreetBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
@@ -127,7 +145,17 @@
       <from-outcome>pf_address_main</from-outcome>
       <to-view-id>/pf/common/kernel/address_main.xhtml</to-view-id>
     </navigation-case> 
+
+    <navigation-case>
+      <from-outcome>pf_room_search</from-outcome>
+      <to-view-id>/pf/common/kernel/room_search.xhtml</to-view-id>
+    </navigation-case>   
     
+    <navigation-case>
+      <from-outcome>pf_room_main</from-outcome>
+      <to-view-id>/pf/common/kernel/room_main.xhtml</to-view-id>
+    </navigation-case>    
+            
     <navigation-case>
       <from-outcome>pf_country_search</from-outcome>
       <to-view-id>/pf/common/kernel/country_search.xhtml</to-view-id>

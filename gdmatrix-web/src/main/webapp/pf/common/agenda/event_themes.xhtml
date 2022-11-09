@@ -115,8 +115,9 @@
                               minQueryLength="3" queryDelay="1000"
                               onclick="this.setSelectionRange(0, this.value.length)"
                               disabled="#{!themeBacking.editable}">
-                <p:ajax event="itemSelect" listener="#{eventThemesBacking.onThemeSelect}" />                              
-                <p:column>                 
+                <p:ajax event="itemSelect" listener="#{eventThemesBacking.onThemeSelect}" />
+                <p:ajax event="clear" listener="#{eventThemesBacking.onThemeClear}" />
+                <p:column>
                   <h:outputText value="#{item.label} (#{item.value})" />
                 </p:column>        
               </p:autoComplete>             
@@ -132,8 +133,7 @@
         <p:commandButton action="#{eventThemesBacking.storeEventTheme()}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!themeBacking.editable}"
-                         update="page_results_table edit_panels :mainform:growl" 
-                         oncomplete="PF('editDataDialog').hide()" />
+                         update="page_results_table edit_panels :mainform:growl" />
         <p:commandButton action="#{eventThemesBacking.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                          immediate="true" update="edit_panels :mainform:growl" global="false"

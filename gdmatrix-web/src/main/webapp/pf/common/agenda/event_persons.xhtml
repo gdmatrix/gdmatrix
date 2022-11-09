@@ -155,7 +155,8 @@
                               minQueryLength="3" queryDelay="1000"
                               onclick="this.setSelectionRange(0, this.value.length)"
                               disabled="#{!eventBacking.editable}">
-                <p:ajax event="itemSelect" listener="#{eventPersonsBacking.onPersonSelect}" />                              
+                <p:ajax event="itemSelect" listener="#{eventPersonsBacking.onPersonSelect}" />
+                <p:ajax event="clear" listener="#{eventPersonsBacking.onPersonClear}" />                
                 <p:column>                 
                   <h:outputText value="#{item.label} (#{item.value})" />
                 </p:column>        
@@ -208,8 +209,7 @@
         <p:commandButton action="#{eventPersonsBacking.storePerson}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!eventBacking.editable}"
-                         update="page_results_table edit_panels :mainform:growl" 
-                         oncomplete="PF('editDataDialog').hide()" />
+                         update="page_results_table edit_panels :mainform:growl" />
         <p:commandButton action="#{eventPersonsBacking.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                          immediate="true" update="edit_panels :mainform:growl" global="false"
