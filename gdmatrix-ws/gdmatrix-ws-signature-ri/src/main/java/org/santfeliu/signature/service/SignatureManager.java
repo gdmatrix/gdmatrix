@@ -629,7 +629,8 @@ public class SignatureManager implements SignatureManagerPort
 
       boolean preserve = options.contains(PRESERVE_OPTION);
 
-      if (documentValidation.isValid() && preserve)
+      if (preserve && documentValidation.isValid() &&
+        !documentValidation.getSignatureValidation().isEmpty())
       {
         store.updateSignedDocument(sigId, document);
       }
