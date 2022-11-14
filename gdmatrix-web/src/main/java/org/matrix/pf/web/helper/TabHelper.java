@@ -33,6 +33,8 @@ package org.matrix.pf.web.helper;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.pf.web.ObjectBacking;
+import org.matrix.pf.web.Tab;
 import org.matrix.pf.web.WebBacking;
 
 /**
@@ -70,11 +72,14 @@ public class TabHelper extends WebBacking
   { 
     String result = null;
     int tabIndex = getCurrentTabIndex();
-    String propName = PREFIX + String.valueOf(tabIndex) + SEPARATOR + name;
+    if (tabIndex >= 0)
+    {
+      String propName = PREFIX + String.valueOf(tabIndex) + SEPARATOR + name;
     
-    String value = getMenuItemProperty(propName);
-    if (value != null)
-      result = value;
+      String value = getMenuItemProperty(propName);
+      if (value != null)
+        result = value;
+    }  
     
     return result;
   }
@@ -83,17 +88,28 @@ public class TabHelper extends WebBacking
   { 
     List<String> result = null;
     int tabIndex = getCurrentTabIndex();
-    String propName = PREFIX + String.valueOf(tabIndex) + SEPARATOR + name;
+    if (tabIndex >= 0)
+    {
+      String propName = PREFIX + String.valueOf(tabIndex) + SEPARATOR + name;
     
-    List<String> value = getMultivaluedMenuItemProperty(propName);
-    if (value != null)
-      result = value;
+      List<String> value = getMultivaluedMenuItemProperty(propName);
+      if (value != null)
+        result = value;
+    }
     
     return result;
   }  
   
   public int getCurrentTabIndex()
   {
-    return backing.getObjectBacking().getCurrentTab().getIndex();
+    int index = -1;
+    ObjectBacking objectBacking = backing.getObjectBacking();
+    if (objectBacking != null)
+    {
+      Tab currentTab = objectBacking.getCurrentTab();
+      if (currentTab != null)
+        index = currentTab.getIndex();
+    }
+    return index;
   }
 }

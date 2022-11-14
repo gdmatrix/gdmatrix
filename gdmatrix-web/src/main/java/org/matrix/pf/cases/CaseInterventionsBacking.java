@@ -51,7 +51,6 @@ import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.matrix.pf.script.ScriptFormHelper;
-import org.matrix.pf.script.ScriptBacking;
 import org.matrix.pf.web.ControllerBacking;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.ResultListHelper;
@@ -94,7 +93,7 @@ public class CaseInterventionsBacking extends PageBacking
   private TypedHelper typedHelper;
   private ResultListHelper<InterventionView> resultListHelper;
   private TabHelper tabHelper;
-  private ScriptFormHelper scriptFormHelper;
+  private ScriptFormHelper scriptHelper;
 
   private Intervention editing;
   private SelectItem interventionSelectItem;
@@ -111,7 +110,7 @@ public class CaseInterventionsBacking extends PageBacking
     resultListHelper = new ResultListHelper(this);
     tabHelper = new TabHelper(this); 
     populate();
-    scriptFormHelper = new ScriptFormHelper(this);       
+    scriptHelper = new ScriptFormHelper(this);       
   }
 
   public Intervention getEditing()
@@ -246,10 +245,7 @@ public class CaseInterventionsBacking extends PageBacking
   {
     String scriptName = getProperty(SCRIPT_NAME);   
     if (scriptName != null)
-    {
-      ScriptBacking scriptBacking = WebUtils.getBacking("scriptBacking");
-      return scriptBacking.getXhtmlFormUrl(scriptName);
-    }
+      return scriptHelper.getXhtmlFormUrl(scriptName);
     else
       return BLANK_PAGE;
   }
@@ -325,9 +321,7 @@ public class CaseInterventionsBacking extends PageBacking
                                   
       String caseId = caseBacking.getObjectId();
       editing.setCaseId(caseId);
-      
-      scriptFormHelper.mergeProperties();
-  
+        
       CaseManagerPort port = CaseConfigBean.getPort();
       port.storeIntervention(editing);
        
@@ -368,9 +362,23 @@ public class CaseInterventionsBacking extends PageBacking
   }
 
   @Override
-  public String store()
+  public String save()
   {
     return storeIntervention();
+  }
+  
+  @Override
+  public String store()
+  {
+    try
+    {
+      scriptHelper.callStore();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return null;
   }
 
   @Override
@@ -597,16 +605,18 @@ public class CaseInterventionsBacking extends PageBacking
   }
   
   
-  @Override
-  public ScriptFormHelper getScriptFormHelper()
+  public ScriptFormHelper getScriptHelper()
   {
-    return scriptFormHelper;
+    return scriptHelper;
   }
 
   @Override
   public List<Property> getProperties()
   {
-    return editing.getProperty();
+    List<Property> properties = null;
+    if (editing != null)
+      properties = editing.getProperty();
+    return properties;
   }
         
   private class CaseMatcher

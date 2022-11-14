@@ -49,7 +49,7 @@ import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.pf.script.ScriptBacking;
+import org.matrix.pf.script.ScriptHelper;
 import org.matrix.pf.web.ControllerBacking;
 import org.matrix.pf.web.PageBacking;
 import org.matrix.pf.web.helper.ResultListHelper;
@@ -97,7 +97,7 @@ public class CaseCasesBacking extends PageBacking
   }
 
   @PostConstruct
-  public void init()
+  public final void init()
   {
     caseBacking = WebUtils.getBacking(CASE_BACKING);
     typedHelper = new TypedHelper(this);
@@ -247,8 +247,8 @@ public class CaseCasesBacking extends PageBacking
     String scriptName = getProperty(SCRIPT_NAME);   
     if (scriptName != null)
     {
-      ScriptBacking scriptBacking = WebUtils.getBacking("scriptBacking");
-      return scriptBacking.getXhtmlFormUrl(scriptName);
+      ScriptHelper scriptHelper = new ScriptHelper();
+      return scriptHelper.getXhtmlFormUrl(scriptName);
     }
     else
       return BLANK_PAGE;
@@ -466,7 +466,12 @@ public class CaseCasesBacking extends PageBacking
     SelectItem item = event.getObject();
     String caseId = (String) item.getValue();
     editing.setCaseId(caseId);
-  }  
+  } 
+  
+  public void onCaseClear()
+  {
+    editing.setCaseId(null);
+  }
   
   public List<SelectItem> completeCase(String query)
   {

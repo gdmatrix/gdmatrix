@@ -118,10 +118,11 @@ public class CaseBacking extends ObjectBacking<Case>
   @Override
   public String show()
   {
+    super.loadTabs();
     CaseMainBacking main = WebUtils.getBacking("caseMainBacking");
     if (main != null && !main.getTypeId().equals(getMenuItemTypeId()))
       main.reset();
-    return super.show(); 
+    return getSearchBacking().show(); 
   }
 
   @Override

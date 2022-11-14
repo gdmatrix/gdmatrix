@@ -70,6 +70,7 @@ public class HtmlForm implements Form, Serializable
   Map<String, HtmlView> viewsByRef = new HashMap();
   Map context;
   long expires = 0;
+  String lastModified;
   public static final String TEXT_FORMAT = "text";
   public static final String NUMBER_FORMAT = "number";
   public static final String BOOLEAN_FORMAT = "boolean";
@@ -120,6 +121,18 @@ public class HtmlForm implements Form, Serializable
     this.expires = expires;
   }
 
+  @Override
+  public String getLastModified()
+  {
+    return lastModified;
+  }
+
+  @Override
+  public void setLastModified(String lastModified)
+  {
+    this.lastModified = lastModified;
+  }
+  
   public void setProperty(String name, Object value)
   {
     properties.put(name, value);

@@ -64,7 +64,7 @@ public class CaseMainBacking extends PageBacking
   private Case cas;
   private TypedHelper typedHelper;
   private TabHelper tabHelper;
-  private ScriptFormHelper scriptFormHelper;
+  private ScriptFormHelper scriptHelper;
   
   private CaseBacking caseBacking;
 
@@ -79,7 +79,7 @@ public class CaseMainBacking extends PageBacking
     caseBacking = WebUtils.getBacking("caseBacking");     
     typedHelper = new TypedHelper(this);  
     tabHelper = new TabHelper(this);
-    scriptFormHelper = new ScriptFormHelper(this);
+    scriptHelper = new ScriptFormHelper(this);
   }
 
   @Override
@@ -115,10 +115,9 @@ public class CaseMainBacking extends PageBacking
     return tabHelper;
   }
 
-  @Override
-  public ScriptFormHelper getScriptFormHelper()
+  public ScriptFormHelper getScriptHelper()
   {
-    return scriptFormHelper;
+    return scriptHelper;
   }
 
   public Case getCase()
@@ -181,8 +180,16 @@ public class CaseMainBacking extends PageBacking
   @Override
   public String show()
   {
-    populate(); 
-    return OUTCOME;
+    try
+    {
+      populate();
+      scriptHelper.show();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return OUTCOME;    
   }
   
   @Override
@@ -194,38 +201,46 @@ public class CaseMainBacking extends PageBacking
   @Override
   public void create()
   {
-    cas = new Case();   
-    cas.setCaseTypeId(getMenuItemTypeId());
+    try
+    {
+      cas = new Case();
+      cas.setCaseTypeId(getMenuItemTypeId());
+      scriptHelper.refreshForms();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
-  
+    
   @Override
   public void load()
   {
-    String caseId = getPageObjectId();
-    if (caseId != null)
+    try
     {
-      try
-      {
+      String caseId = getPageObjectId();
+      if (caseId != null)        
         cas = CaseConfigBean.getPort().loadCase(caseId);
-        scriptFormHelper.reload();
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
     }
   }  
+  
+  @Override
+  public String save() throws Exception
+  {
+    CaseConfigBean.getPort().storeCase(cas);
+    return null;
+  }
   
   @Override
   public String store()
   {
     try
     {
-      //TODO: Incremental store (in helper?)
-      scriptFormHelper.mergeProperties();
-      cas = CaseConfigBean.getPort().storeCase(cas);
-      caseBacking.setObjectId(cas.getCaseId());
-      info("STORE_OBJECT");      
+      scriptHelper.callStore();
     }
     catch (Exception ex)
     {
@@ -237,14 +252,16 @@ public class CaseMainBacking extends PageBacking
   @Override
   public List<Property> getProperties()
   {
-    return cas.getProperty();
+    List<Property> properties = null;
+    if (cas != null)
+      properties = cas.getProperty();
+    return properties;
   }
     
   @Override
   public String cancel()
   {
     populate();
-    info("CANCEL_OBJECT");    
     return null;
   }
   
@@ -282,5 +299,5 @@ public class CaseMainBacking extends PageBacking
     String dateTime = 
       TextUtils.concatDateAndTime(date, time);
     return TextUtils.parseInternalDate(dateTime);    
-  }  
+  }        
 }

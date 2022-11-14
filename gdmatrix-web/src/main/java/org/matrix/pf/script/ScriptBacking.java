@@ -32,16 +32,9 @@ package org.matrix.pf.script;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 import org.matrix.pf.cms.CMSContent;
-import org.matrix.pf.web.ControllerBacking;
 import org.matrix.pf.web.ObjectBacking;
 import org.matrix.pf.web.PageBacking;
-import org.matrix.pf.web.helper.TabHelper;
-import org.matrix.pf.web.helper.TabPage;
-import org.santfeliu.util.MatrixConfig;
-import org.santfeliu.web.HttpUtils;
-import org.santfeliu.web.UserSessionBean;
 
 /**
  * @author blanquepa
@@ -49,83 +42,65 @@ import org.santfeliu.web.UserSessionBean;
 @CMSContent(typeId = "Script")
 @Named("scriptBacking")
 public class ScriptBacking extends PageBacking 
-  implements TabPage
+  implements ScriptPage
 {
   private static final String OUTCOME = "pf_script"; 
-  private static final String FORM_SERVLET = "/form/";
-  private static final String FORM_RENDERER_CLASS = 
-    "org.santfeliu.web.servlet.form.EchoFormRenderer"; 
   
   protected String pageName;
   protected String label;  
   protected String beanName; //Name of the scriptBean 
   
-  //Form URL construction
-  private String contextPath;
-  private String serverName;
-  private String protocol;
-  private String port;   
-  
-  private ObjectBacking objectBacking;
-  
-  private TabHelper tabHelper;
-  
+  protected ScriptHelper scriptHelper;
+
   public ScriptBacking()
   {
   }
   
   @PostConstruct
-  public final void init()
-  {
-    this.objectBacking = 
-      ControllerBacking.getCurrentInstance().getObjectBacking();    
-    HttpServletRequest request = 
-      (HttpServletRequest)getExternalContext().getRequest();
-    contextPath = request.getContextPath();
-    serverName = HttpUtils.getServerName(request);
-    protocol = "localhost".equals(serverName) ? "http" : 
-      HttpUtils.getScheme(request);
-    String defaultPort = 
-      MatrixConfig.getProperty("org.santfeliu.web.defaultPort");
-    port = !"80".equals(defaultPort) ? ":" + defaultPort : ""; 
-    tabHelper = new TabHelper(this);
+  public void init()
+  { 
+    scriptHelper = new ScriptHelper(this);
   }
   
-  public String getXhtmlFormUrl()
-  {
-    return getXhtmlFormUrl(pageName);
-  }    
-
-  public String getXhtmlFormUrl(String pageName)
-  {
-    //Avoid caching
-    String nocache = getMenuItemProperty("nocache");
-    String caching = nocache == null || nocache.equalsIgnoreCase("true") ? 
-      "&nocache=true" : "";
-
-    return protocol + "://" + serverName + port + contextPath + FORM_SERVLET 
-      + "?selector=xhtml:" + pageName
-      + "&renderer=" + FORM_RENDERER_CLASS 
-      + caching;       
-  }  
-  
-  public String show(String pageName, String beanName)
-  {
-    this.objectBacking = 
-      ControllerBacking.getCurrentInstance().getObjectBacking();
-    this.pageName = pageName;
-    this.label = getSelectedMenuItem().getLabel(); 
-    this.beanName = beanName != null ? beanName : null;
-    populate();        
-    return OUTCOME;    
-  }  
-
   @Override
   public ObjectBacking getObjectBacking()
   {
-    return objectBacking;
+    return null;
   }
+
+  @Override
+  public String getScriptPageName()
+  {
+    return pageName;
+  }
+
+  @Override
+  public String getScriptBackingName()
+  {
+    return beanName;
+  }
+
+  public String getXhtmlFormUrl()
+  {
+    return scriptHelper.getXhtmlFormUrl(pageName);
+  }    
   
+  public String show(String pageName, String beanName)
+  {
+    try
+    {
+      this.pageName = pageName;
+      this.label = getSelectedMenuItem().getLabel();
+      this.beanName = beanName != null ? beanName : null;    
+      scriptHelper.show();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return OUTCOME;
+  } 
+
   @Override
   public String show(String page)
   {
@@ -136,75 +111,26 @@ public class ScriptBacking extends PageBacking
   public String show()
   {
     return show(null);
-  }  
+  } 
   
-  @Override
-  public void create()
-  {
-    call("create"); 
-  }
-
-  @Override
-  public void load()
-  {
-    call("populate");
-  }
-
-  @Override
-  public String store()
-  {
-    return (String) call("store");
-  }
-
-  @Override
-  public void reset()
-  {
-    call("reset");
-  }  
-  
-  @Override
-  public String cancel()
-  {
-    return (String) call("cancel");
-  }   
-
   @Override
   public String getPageObjectId()
   {
-    return (String) call("getObjectId"); 
-  } 
-  
-  protected Object call(String method, Object... args)
-  {
-    if (method != null && beanName != null)
+    String objectId = null;
+    try 
     {
-      ScriptBean scriptBean = getScriptBean(beanName);
-      
-      if (scriptBean.containsKey(method))
-      {
-        try
-        {
-          return scriptBean.call(method, args);
-        }
-        catch (Exception ex)
-        {
-          error(ex);
-        }
-      }
+      objectId = (String) scriptHelper.call("getObjectId");
     }
-    return null;
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    return objectId;
   } 
-  
-  private ScriptBean getScriptBean(String name)
-  {
-    return (ScriptBean) 
-      UserSessionBean.getCurrentInstance().getSb().get(name);
-  }     
 
-  @Override
-  public TabHelper getTabHelper()
+  public ScriptHelper getScriptHelper()
   {
-    return tabHelper;
+    return scriptHelper;
   }
- 
+     
 }

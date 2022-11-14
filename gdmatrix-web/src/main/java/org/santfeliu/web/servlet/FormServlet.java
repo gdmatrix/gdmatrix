@@ -85,10 +85,17 @@ public class FormServlet extends HttpServlet
           form = instance.getForm(selector, data, true);
           if (form != null)
           {
+            Date lastModifiedDate = new Date();            
+            String formLastModified = form.getLastModified();
+            if (formLastModified != null)
+            {
+              SimpleDateFormat fdf = new SimpleDateFormat("yyyyMMddHHmmss");
+              lastModifiedDate= fdf.parse(formLastModified);
+            }
             SimpleDateFormat df = 
               new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
-            String lastModified = df.format(new Date());      
+            String lastModified = df.format(lastModifiedDate);             
             resp.setHeader("last-modified", lastModified);
           }
         }

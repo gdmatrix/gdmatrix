@@ -89,10 +89,7 @@ public class PersonBacking extends ObjectBacking<PersonView>
   public String getDescription(String objectId)
   {
     try
-    {
-      if (objectId != null && objectId.contains(";"))
-        return objectId;
-      
+    {      
       PersonFilter filter = new PersonFilter();
       filter.getPersonId().add(objectId);
       List<PersonView> persons = 

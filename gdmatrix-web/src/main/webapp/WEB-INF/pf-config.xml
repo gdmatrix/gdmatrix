@@ -22,7 +22,7 @@
     <managed-bean-class>org.matrix.pf.web.FormBacking</managed-bean-class>
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>    
-       
+               
   <managed-bean>
     <managed-bean-name>scriptBacking</managed-bean-name>
     <managed-bean-class>org.matrix.pf.script.ScriptBacking</managed-bean-class>

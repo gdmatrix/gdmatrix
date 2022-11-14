@@ -48,8 +48,11 @@ public interface TabPage extends Page
   public default void populate()
   {
     ObjectBacking objectBacking = getObjectBacking();
-    if (objectBacking != null && !objectBacking.isNew())
+    if (objectBacking != null && !objectBacking.isNew() 
+      || objectBacking == null)
+    {
       load();
+    }
   }
   
   /**

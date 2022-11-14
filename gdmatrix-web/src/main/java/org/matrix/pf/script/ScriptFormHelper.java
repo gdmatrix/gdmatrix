@@ -32,6 +32,7 @@ package org.matrix.pf.script;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +43,8 @@ import javax.faces.model.SelectItem;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
-import org.matrix.web.WebUtils;
+import org.matrix.pf.web.PageBacking;
+import org.primefaces.event.TabChangeEvent;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.Table;
@@ -56,61 +58,218 @@ import org.santfeliu.web.bean.CMSProperty;
  * @author blanquepa
  */
 
-public class ScriptFormHelper implements Serializable
+public class ScriptFormHelper extends ScriptHelper implements Serializable
 {
   @CMSProperty
   public static final String SCRIPT_NAME = "scriptName";
   @CMSProperty
   public static final String PROPERTY_ORDER = "propertyOrder";
+  
   public static final String AUTOFORM_NAME = "auto";
+  public static final String AUTOFORM_LABEL = "Automatic";  
   public static final String AUTOFORM_URL = "/pf/common/script/autoform.xhtml";
   
+  private static final String SEARCH_VALUE_BINDING = "_searchValueBinding";
+  
   private static final String STRING_SEPARATOR = "::";  
-  
-  private final ScriptFormPage backing;
-  
-  private List<Field> fields;
-  private Map<String, Field> fieldMap;
+    
+  private Integer formTabIndex = 0;
+  private List<FormTab> formTabs;
+    
+  private FormFields formFields;
+
   
   public ScriptFormHelper(ScriptFormPage backing)
   {
+    super(backing);
+  }
+
+  @Override
+  protected ScriptFormPage getBacking()
+  {
+    return (ScriptFormPage) backing;
+  }
+  
+  protected void setBacking(ScriptFormPage backing)  
+  {
     this.backing = backing;
   }
-  
-  public List<Field> getFields()
-  {//TODO: Merge PropertyDefinitions with properties to allow create new.
-    return fields;
-  }
-  
-  public void reload()
+
+  public Integer getActiveIndex()
   {
-    loadFields();
-    //TODO: clear ScriptBean scope
+    return formTabIndex;
   }
-  
-  public void mergeProperties()
+
+  public void setActiveIndex(Integer activeIndex)
   {
-    Map<String, Property> map = new HashMap<>();
-    List<Property> properties = backing.getProperties();
-    for (Property prop : properties)
-    {
-      map.put(prop.getName(), prop);
-    }
-    for (Property prop : toProperties())
-    {
-      map.put(prop.getName(), prop);
-    }
-    backing.getProperties().clear();
-    backing.getProperties().addAll(map.values());
+    this.formTabIndex = activeIndex;
   }
   
   public List<FormTab> getFormTabs()
   {
-    List<FormTab> results = new ArrayList();
+    return this.formTabs;
+  }
+  
+  public FormFields getFormFields()
+  {
+    return formFields;
+  }
+
+  public void setFormFields(FormFields formFields)
+  {
+    this.formFields = formFields;
+  }  
+  
+  //Autoform public methods
+  public List<Field> getFields()
+  {
+    List<String> order = backing.getMultivaluedProperty(PROPERTY_ORDER);
+    if (order != null && !order.isEmpty())        
+      return formFields.getFieldList(order);
+    else
+      return formFields.getFieldList();
+  }
+    
+  public void refreshForms()
+  {
+    loadFormTabs(); 
+    clearData();    
+    loadFields();
+  }
+    
+  public void onTypeIdChange(ValueChangeEvent event)
+  {
+    String oldTypeId = (String) event.getOldValue();
+    String newTypeId = (String) event.getNewValue();
+    if (isCurrentTypeUndefined() || !oldTypeId.equals(newTypeId))
+      refreshForms();
+  }
+  
+  public void onTypeIdChange()
+  {
+    refreshForms();
+  }
+    
+  @Override
+  public void show() throws Exception
+  {
+    loadFormTabs();
+    clearData();        
+    loadFields();
+    call("load");
+  }
+  
+  public String callStore() throws Exception
+  {
+    mergeProperties();
+    call("preStore");
+    String outcome = getBacking().save();
+    call("postStore");
+    return outcome; 
+  }
+  
+   
+  public void onFormTabChange(TabChangeEvent event)
+  {
+    try
+    {
+      call("load");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }    
+      
+  public String search(String targetObjectTypeId, String valueBinding, 
+    String scriptMethod)
+  {
+    outdata.put(SEARCH_VALUE_BINDING, scriptMethod);
+    return ((PageBacking)backing).search(targetObjectTypeId, valueBinding);
+  }
+  
+  public void setValueBinding(String value)
+  {
+    String scriptMethod = (String) outdata.get(SEARCH_VALUE_BINDING);
+    if (scriptMethod != null)
+    {
+      try
+      {
+        call(scriptMethod, value);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+  
+  @Override
+  protected String getScriptPageName()
+  {
+     FormTab formTab = getCurrentFormTab();
  
-    List<String> scripts = backing.getMultivaluedProperty(SCRIPT_NAME);
+     if (formTab != null && !AUTOFORM_NAME.equals(formTab.getName()))
+      return formTab.getName();
+     else
+      return super.getScriptPageName();
+  }
+  
+  private void clearData()
+  {
+    boolean allowClear = true;
+
+    //Not refresh while search and return
+    String scriptMethod = (String) outdata.get(SEARCH_VALUE_BINDING);
+    if (scriptMethod != null)
+    {
+      outdata.remove(SEARCH_VALUE_BINDING);
+      allowClear = false;
+    }
+
+    if (allowClear)
+    {
+      data.clear();
+      outdata.clear();
+    }
+  }
+  
+  private void mergeProperties()
+  {
+    Map<String, Property> map = new HashMap<>();
+    
+    //Add backing properties
+    List<Property> properties = getBacking().getProperties();
+    for (Property prop : properties)
+    {
+      map.put(prop.getName(), prop);
+    }
+
+    //Add persistent data map
+    for (Object key : data.keySet())
+    {
+      Object value = data.get(key);
+      String name = (String)key;
+      Property prop = new Property();
+      prop.setName(name);
+      if (value instanceof Collection)
+        prop.getValue().addAll((List<String>) value);
+      else
+        prop.getValue().add((String) value);
+      map.put(name, prop);
+    }
+
+    getBacking().getProperties().clear();
+    getBacking().getProperties().addAll(map.values());
+  }
+  
+  private void loadFormTabs()
+  {
+    formTabs = new ArrayList<>();
+ 
+    List<String> scripts = getBacking().getMultivaluedProperty(SCRIPT_NAME);
     if (scripts == null || scripts.isEmpty())
-      results.add(new FormTab(AUTOFORM_NAME, AUTOFORM_URL));
+      formTabs.add(new FormTab(AUTOFORM_NAME, AUTOFORM_LABEL, AUTOFORM_URL));
     else
     {
       for (String script : scripts)
@@ -119,87 +278,86 @@ public class ScriptFormHelper implements Serializable
         String name = parts[0];
         String label = (parts.length == 2 ? parts[1] : parts[0]);
         if (name.equals(AUTOFORM_NAME))
-          results.add(new FormTab(label, AUTOFORM_URL));   
+          formTabs.add(new FormTab(AUTOFORM_NAME, label, AUTOFORM_URL));   
         else
         {
-          ScriptBacking scriptBacking = WebUtils.getBacking("scriptBacking");
           FormTab formTab = 
-            new FormTab(label, scriptBacking.getXhtmlFormUrl(name));
-          results.add(formTab);
+            new FormTab(name, label, getXhtmlFormUrl(name));
+          formTabs.add(formTab);
         }
       }
     }
-    
-    return results;
-  }
-  
-  public void onTypeIdChange(ValueChangeEvent event)
-  {
-    String oldTypeId = (String) event.getOldValue();
-    String newTypeId = (String) event.getNewValue();
-    if (isCurrentTypeUndefined() || !oldTypeId.equals(newTypeId))
-      reload();
-  }
-  
-  public void onTypeIdChange()
-  {
-    reload();
-  }
+  }  
   
   private boolean isCurrentTypeUndefined()
   {
-    String currentTypeId = backing.getTypeId();
+    String currentTypeId = getBacking().getTypeId();
     return isTypeUndefined(currentTypeId);
   } 
 
-    private boolean isTypeUndefined(String typeId)
+  private boolean isTypeUndefined(String typeId)
   {
     return typeId == null || typeId.length() == 0;
   }   
   
   private void loadFields()
   {
-    fieldMap = new HashMap();
-    List<Property> properties = backing.getProperties();
-    String typeId = backing.getTypeId();
+    formFields = new FormFields(); 
     
-    Map<String, PropertyDefinition> pds = new HashMap<>();
-    
-    if (fields == null) 
-      fields = new ArrayList();
-    else
-      fields.clear();
-    
-    Type type = TypeCache.getInstance().getType(typeId);
-    
-    for (Property property : properties)
-    {
-      PropertyDefinition propDef = 
-        type.getPropertyDefinition(property.getName());
-      Object value;
+    //Get dynamic properties from backing bean
+    List<Property> properties = getBacking().getProperties();
 
-      if (propDef != null)
+    String typeId = getBacking().getTypeId();
+    Type type = TypeCache.getInstance().getType(typeId);
+    Map<String, PropertyDefinition> pds = new HashMap<>();    
+    
+    //For every property create its Field and add in on FormFields
+    if (properties != null)
+    {
+      for (Property property : properties)
       {
-        if (propDef.getMaxOccurs() != 1)
-          value = property.getValue();
+        PropertyDefinition propDef = 
+          type.getPropertyDefinition(property.getName());
+        Field field; 
+        Object value;
+
+        if (propDef != null)
+        {
+          if (propDef.getMaxOccurs() != 1)
+            value = property.getValue();
+          else
+            value = property.getValue().get(0);
+          field = new Field(propDef, value);          
+        }
         else
+        {
           value = property.getValue().get(0);
+          field = new Field(property.getName(), value);
+        }
+        pds.put(property.getName(), propDef);      
+        
+        formFields.add(property.getName(), field);
       }
-      else
-      {
-        propDef = new PropertyDefinition();
-        propDef.setName(property.getName());
-        propDef.setDescription(property.getName());
-        propDef.setType(PropertyType.TEXT);
-        propDef.setMaxOccurs(1);
-        value = property.getValue().get(0);
-      }
-      pds.put(property.getName(), propDef);      
-      Field field = new Field(propDef, value);
-      fields.add(field);
-      fieldMap.put(property.getName(), field);
     }
     
+    //Add data map variables
+    if (formTabs != null && !formTabs.isEmpty() && formTabIndex != null)
+    {
+      for (Object key : data.keySet())
+      {
+        Field field = formFields.get(key);
+        if (field == null)
+        {
+          String name = (String) key;
+          field = new Field(name, data.get(key));
+        }
+        else
+          field.setValue(data.get(key));     
+        formFields.add(key, field);           
+      }
+    }    
+    
+    //Add all PropertyDefinition not present as properties to List and Map.
     for (PropertyDefinition pd : type.getPropertyDefinition())
     {
       if (!pd.isHidden() && !pd.isReadOnly())
@@ -208,88 +366,199 @@ public class ScriptFormHelper implements Serializable
         if (mapped == null)
         {
           Field field = new Field(pd, null);
-          fields.add(field);
-          fieldMap.put(pd.getName(), field);          
+          formFields.add(pd.getName(), field);          
         }
       }
     }
-    
-    Collections.sort(fields, (Field f1, Field f2) ->
-    {
-      if (f1 != null && f2 != null)
-        return f1.getName().compareTo(f2.getName());
-      else if (f1 == null)
-        return 1;
-      else
-        return -1;
-    });    
-    
-    List<String> order = backing.getMultivaluedProperty(PROPERTY_ORDER);
-    if (order != null && !order.isEmpty())
-    {
-      List<Field> sorted = new ArrayList();
-      for (String propName : order)
-      {
-        Field field = fieldMap.get(propName);
-        if (field != null)
-        {
-          sorted.add(field);
-          fields.remove(field);
-        }
-      }
-      sorted.addAll(fields);
-      fields = sorted;
-    } 
-    
-    
+  }  
+  
+  private FormTab getCurrentFormTab()
+  {
+    FormTab formTab = null;
+    if (formTabs != null && !formTabs.isEmpty())
+      formTab =  formTabs.get(formTabIndex);
+    return formTab;
   }
   
-  public Map<String, Field> getFieldMap()
+  public class FormTab implements Serializable
   {
-    return this.fieldMap;
-  }  
-
-  public void setFieldMap(Map<String, Field> fieldMap)
-  {
-    this.fieldMap = fieldMap;
-  }
+    private final String name;
+    private final String label;
+    private final String url;
     
-  private List<Property> toProperties()
-  {
-    List<Property> properties = new ArrayList();
-    
-    for (Field field : fields)
+    public FormTab(String name, String label, String url)
     {
-      Property prop = new Property();
-      prop.setName(field.getName());
-      if (field.isMultiple())
-        prop.getValue().addAll((List<String>) field.getValue());
-      else
-        prop.getValue().add((String) field.getValue());
-      properties.add(prop);
+      this.name = name;
+      this.label = label;
+      this.url = url;
     }
-    
-    return properties;
-  }
 
+    public String getName()
+    {
+      return name;
+    }
+
+    public String getLabel()
+    {
+      return label;
+    }
+
+    public String getUrl()
+    {
+      return url;
+    }
+  }    
+    
+  public class FormFields implements Serializable
+  {
+    private List<Field> list;  
+    private final Map<String, Field> map;
+
+    public FormFields()
+    {
+      list = new ArrayList<>();
+      map = new HashMap<>();
+    }
+
+    public Field get(Object key)
+    {
+      if (key == null)
+        return null;
+  
+      Field field = map.get((String) key);
+      if (field != null)
+        return field;  
+      else   
+        field = (Field) add(key, null);
+  
+      return field;
+    }
+  
+    public Object add(Object key, Field field)
+    {
+      String skey = (String) key;    
+      if (field == null)
+      {
+        PropertyDefinition propDef = new PropertyDefinition();
+        propDef.setName(skey);
+        propDef.setDescription(skey);
+        propDef.setReadOnly(false);
+        propDef.setHidden(false);
+        propDef.setType(PropertyType.TEXT);
+        propDef.setMaxOccurs(1);
+        field = new Field(propDef, null);      
+      }
+
+      if (map.containsKey(skey))
+        list.remove(map.get(skey));
+
+      map.put(skey, field); //Map allows TRANSIENT variables 
+      if (!skey.startsWith("_"))
+        list.add((Field) field);
+
+
+      return field;
+    }
+
+    public List<Field> getFieldList()
+    {
+      //Initial sort by name
+      Collections.sort(list, (Field f1, Field f2) ->
+      {
+        if (f1 != null && f2 != null)
+          return f1.getName().compareTo(f2.getName());
+        else if (f1 == null)
+          return 1;
+        else
+          return -1;
+      }); 
+
+      return list;
+    }
+
+    public List<Field> getFieldList(List<String> order)
+    {    
+      //Sort by PROPERTY_ORDER 
+      if (order != null && !order.isEmpty())
+      {
+        List<Field> sorted = new ArrayList();
+        for (String propName : order)
+        {
+          Field field = map.get(propName);
+          if (field != null)
+          {
+            sorted.add(field);
+            list.remove(field);
+          }
+        }
+        sorted.addAll(list);
+        list = sorted;
+      }     
+
+      return list;
+    }
+
+    public List<Property> getPropertyList()
+    {
+      List<Property> properties = new ArrayList();
+
+      for (Field field : list)
+      {
+        if (!field.getName().startsWith("_"))
+        {
+          Property prop = new Property();
+          prop.setName(field.getName());
+          if (field.isMultiple())
+            prop.getValue().addAll((List<String>) field.getValue());
+          else
+            prop.getValue().add((String) field.getStringValue());
+          properties.add(prop);
+        }
+      }
+
+      return properties;
+    }  
+  }  
+  
   public class Field implements Serializable
   {
     private final PropertyDefinition propDef;
-    private Object value;
-
-    public Field(PropertyDefinition propDef, Object value)
+    
+    public Field(String name, Object value)
     {
-      this.propDef = propDef;
+      propDef = new PropertyDefinition();
+      propDef.setName(name);
+      propDef.setDescription(name);
+      propDef.setType(PropertyType.TEXT);
+      propDef.setMaxOccurs(1);        
+
       if (value != null)
-        this.value = value;
+        setDataValue(value);
       else
       {
         if (propDef.getValue() != null && !propDef.getValue().isEmpty())
         {
           if (propDef.getMaxOccurs() != 1)
-            this.value = propDef.getValue();
+            setDataValue(propDef.getValue());
           else
-            this.value = propDef.getValue().get(0);
+            setDataValue(propDef.getName());
+        }
+      }      
+    }
+
+    public Field(PropertyDefinition propDef, Object value)
+    {
+      this.propDef = propDef;
+      if (value != null)
+        setDataValue(value);
+      else
+      {
+        if (propDef.getValue() != null && !propDef.getValue().isEmpty())
+        {
+          if (propDef.getMaxOccurs() != 1)
+            setDataValue(propDef.getValue());
+          else
+            setDataValue(propDef.getName());
         }
       }
     }
@@ -303,41 +572,45 @@ public class ScriptFormHelper implements Serializable
     {
       return propDef.getDescription();
     }
-    
+
     public boolean getBooleanValue()
     {
-      String sv = String.valueOf(value);
+      String sv = String.valueOf(getDataValue());
       return Boolean.parseBoolean(sv);
     }
-    
+
     public void setBooleanValue(boolean b)
     {
-      value = String.valueOf(b);
+      setDataValue(String.valueOf(b));
     }
-    
+
     public Date getDateValue()
     {
-      return TextUtils.parseInternalDate((String) value);
+      return TextUtils.parseInternalDate((String) getDataValue());
     }
-    
+
     public void setDateValue(Date date)
     {
-      value = TextUtils.formatDate(date, "yyyyMMddHHmmss");
+      setDataValue(TextUtils.formatDate(date, "yyyyMMddHHmmss"));
     }
-    
+
     public List getListValue()
     {
+      Object value = getDataValue();
       if (value instanceof List)
         return (List) value;
       else
         return Collections.emptyList();
     }
-    
+
     public void setListValue(List list)
     {
-      value = list;
+      if (list != null)
+        setDataValue(list);
+      else
+        setDataValue(Collections.EMPTY_LIST);
     }
-        
+
     public List<SelectItem> getEnumTypes() throws Exception
     {
       List<SelectItem> result = new ArrayList();
@@ -362,68 +635,72 @@ public class ScriptFormHelper implements Serializable
 
       return result;
     }  
-           
+
     public Object getValue()
     {
-      return value;
+      return getDataValue();
     }
 
     public void setValue(Object value)
     {
-      this.value = value;
+      if (value != null)
+        setDataValue(value);
+      else
+        setDataValue(null);
+    }
+
+    public String getStringValue()
+    {
+      Object value = getDataValue();
+      if (value != null)
+      {
+        if (value instanceof SelectItem)
+          return (String) ((SelectItem) value).getValue();
+        else 
+          return String.valueOf(value);
+      }
+      else
+        return null;
     }
 
     public String getType()
     {
       return propDef.getType().toString();
     }
-    
+
     public boolean isMultiple()
     {
       return propDef.getMaxOccurs() != 1;
     }
-    
+
     public int getMaxOccurs()
     {
       return propDef.getMaxOccurs();
     }
-    
+
     public boolean isEnumType()
     {
       return propDef.getEnumTypeId() != null;
     }
-    
+
     public int getSize()
     {
       return propDef.getSize();
     }
-    
+
     public boolean isReadOnly()
     {
       return propDef.isReadOnly();
     }
-        
-  }
-  
-  public class FormTab
-  {
-    private final String name;
-    private final String url;
-
-    public FormTab(String name, String url)
+    
+    private Object getDataValue()
     {
-      this.name = name;
-      this.url = url;
+      return data.get(propDef.getName());
     }
-
-    public String getName()
+    
+    private void setDataValue(Object value)
     {
-      return name;
+      data.put(propDef.getName(), value);
     }
-
-    public String getUrl()
-    {
-      return url;
-    }
-  }  
+  }    
 }

@@ -272,6 +272,11 @@ public class CaseAddressesBacking extends PageBacking
     editing.setAddressId(addressId);
   }  
   
+  public void onAddressClear()
+  {
+    editing.setAddressId(null);
+  }
+  
   public List<SelectItem> completeAddress(String query)
   {
     return completeAddress(query, editing.getAddressId());

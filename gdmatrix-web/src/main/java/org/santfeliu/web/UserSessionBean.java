@@ -58,7 +58,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.matrix.cms.CMSConstants;
 import org.matrix.doc.DocumentConstants;
-import org.matrix.pf.script.ScriptBean;
 import org.matrix.security.SecurityConstants;
 import org.matrix.web.ControllerProxy;
 import org.santfeliu.agenda.client.AgendaManagerClient;
@@ -155,8 +154,6 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   private transient String selectedMid;
   private transient MenuModel menuModel;
-  
-  private final Map<String, ScriptBean> scriptBeans = new HashMap<>();  
 
   public UserSessionBean()
   {
@@ -1364,97 +1361,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     
     return DEFAULT_PRIMEFACES_THEME;
   }  
-    
-  //ScriptBeans
-  public Map getSb()
-  {
-    return new Map()
-    {
-      @Override
-      public Object get(Object key)
-      {
-        String beanName = (String) key;
-        ScriptBean bean;
-        if (scriptBeans.containsKey(beanName))
-        {
-          bean = scriptBeans.get(beanName);
-        }
-        else
-        {
-          bean = new ScriptBean(beanName);
-          scriptBeans.put(beanName, bean);
-        }
-        return bean;      
-      }
-
-      @Override
-      public Object put(Object key, Object value)
-      {
-        throw new UnsupportedOperationException("Not supported yet."); 
-      }      
-      @Override
-      public int size()
-      {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      @Override
-      public boolean isEmpty()
-      {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      @Override
-      public boolean containsKey(Object key)
-      {
-        throw new UnsupportedOperationException("Not supported yet."); 
-      }
-
-      @Override
-      public boolean containsValue(Object value)
-      {
-        throw new UnsupportedOperationException("Not supported yet."); 
-      }
-
-      @Override
-      public ScriptBean remove(Object key)
-      {
-        return scriptBeans.remove(key); 
-      }
-
-      @Override
-      public void putAll(Map m)
-      {
-        throw new UnsupportedOperationException("Not supported yet."); 
-      }
-
-      @Override
-      public void clear()
-      {
-        scriptBeans.clear();
-      }
       
-      @Override
-      public Set keySet()
-      {
-        throw new UnsupportedOperationException("Not supported yet."); 
-      }
-
-      @Override
-      public Collection values()
-      {
-        throw new UnsupportedOperationException("Not supported yet."); 
-      }
-
-      @Override
-      public Set entrySet()
-      {
-        throw new UnsupportedOperationException("Not supported yet."); 
-      }
-    };
-  }
-  
-  
   //Action executed from showObject command in common_script.js
   public String jumpToObject()
   {

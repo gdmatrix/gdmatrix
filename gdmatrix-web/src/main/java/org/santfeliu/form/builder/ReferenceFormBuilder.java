@@ -109,6 +109,7 @@ public class ReferenceFormBuilder extends MatrixFormBuilder
 
           Form form = (Form)entry.formClass.newInstance();
           form.read(getDocumentStream(contentId));
+          form.setLastModified(document.getChangeDateTime());
           setup(form);
           return form;
         }

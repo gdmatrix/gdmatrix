@@ -60,6 +60,7 @@ public class XhtmlForm implements Form
   Map<String, Object> properties = new HashMap();  
   private String code;
   private Map context;
+  private String lastModified;
   
   public XhtmlForm()
   {
@@ -158,6 +159,18 @@ public class XhtmlForm implements Form
   {
     return context;
   }
+  
+  @Override
+  public String getLastModified()
+  {
+    return lastModified;
+  }
+
+  @Override
+  public void setLastModified(String lastModified)
+  {
+    this.lastModified = lastModified;
+  }  
 
   @Override
   public boolean isOutdated()

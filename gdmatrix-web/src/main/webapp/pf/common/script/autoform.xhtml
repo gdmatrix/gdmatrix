@@ -5,7 +5,7 @@
 
 
   <div class="ui-fluid formgrid grid">             
-    <ui:repeat value="#{backing.scriptFormHelper.fields}" var="field">
+    <ui:repeat value="#{backing.scriptHelper.fields}" var="field">
 
       <p:outputPanel styleClass="field col-12 md:col-4" >
         <p:outputLabel for="@next" class="w-full" style="#{field.label == field.name ? 'color:red' : ''}"
@@ -27,7 +27,7 @@
 
         <!-- NUMERIC -->
         <p:spinner value="#{field.value}" rendered="#{field.type == 'NUMERIC'}"
-                  disabled="#{!backing.objectBacking.editable or field.readOnly}" />
+                   disabled="#{!backing.objectBacking.editable or field.readOnly}" />
 
         <!-- DATE -->
         <p:datePicker value="#{field.dateValue}" rendered="#{field.type == 'DATE'}"

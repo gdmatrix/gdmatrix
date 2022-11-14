@@ -81,10 +81,7 @@ public class AddressBacking extends ObjectBacking<AddressView>
   public String getDescription(String objectId)
   {
     try
-    {
-      if (objectId != null && objectId.contains(";"))
-        return objectId;
-      
+    {      
       AddressFilter filter = new AddressFilter();
       filter.getAddressIdList().add(objectId);      
       List<AddressView> addressViews = 

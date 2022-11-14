@@ -50,7 +50,7 @@
         <p:outputLabel for="case_type_id" value="#{caseMainBacking.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />    
         <p:selectOneMenu id="case_type_id" value="#{caseMainBacking.case.caseTypeId}"  
                          styleClass="inputfield w-full" filter="true" var="t" >
-          <p:ajax listener="#{caseMainBacking.scriptFormHelper.onTypeIdChange}" update="@form"/>
+          <p:ajax listener="#{caseMainBacking.scriptHelper.onTypeIdChange}" update="@form"/>
           <f:selectItems value="#{caseMainBacking.typedHelper.allTypes}" 
                          var="type" itemLabel="#{type.description}" 
                          itemValue="#{type.typeId}" />
@@ -88,10 +88,11 @@
                          styleClass="inputfield w-full" />
       </p:outputPanel> 
     </div>
-    
-    <p:tabView dynamic="true" id="script_forms" cache="true" >
-      <c:forEach items="#{caseMainBacking.scriptFormHelper.formTabs}" var="form" >
-        <p:tab title="#{form.name}">
+            
+    <p:tabView dynamic="true" id="script_forms" cache="true" activeIndex="#{caseMainBacking.scriptHelper.activeIndex}">
+      <p:ajax event="tabChange" listener="#{caseMainBacking.scriptHelper.onFormTabChange}" update="script_forms"/>
+      <c:forEach items="#{caseMainBacking.scriptHelper.formTabs}" var="form" >
+        <p:tab title="#{form.label}">
           <ui:include src="#{form.url}">
             <ui:param name="backing" value="#{caseMainBacking}" />
           </ui:include>

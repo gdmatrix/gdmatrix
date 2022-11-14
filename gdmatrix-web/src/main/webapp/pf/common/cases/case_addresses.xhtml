@@ -146,6 +146,7 @@
                               minQueryLength="3" queryDelay="1000"
                               onclick="this.setSelectionRange(0, this.value.length)">
                 <p:ajax event="itemSelect" listener="#{caseAddressesBacking.onAddressSelect}" update="edit_panels"/>
+                <p:ajax event="clear" listener="#{caseAddressesBacking.onAddressClear}" update="@this"/>
                 <p:column>                 
                   <h:outputText value="#{item.label} (#{item.value})" />
                 </p:column>        

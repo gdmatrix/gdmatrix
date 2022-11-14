@@ -30,13 +30,11 @@
  */
 package org.matrix.pf.script;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import org.mozilla.javascript.Context;
 import org.santfeliu.faces.FacesBean;
@@ -48,15 +46,21 @@ import org.santfeliu.web.UserSessionBean;
  *
  * @author blanquepa
  */
-public class ScriptBean extends FacesBean implements Map<String, Object>
+public class ScriptBean extends FacesBean 
+  implements Map<String, Object>, Serializable
 {
   private final String scriptName;
   private WebScriptableBase scope;
 
-  public ScriptBean(String scriptName)
-  {
-    initScope(scriptName);    
+  public ScriptBean(String scriptName) throws Exception
+  {     
     this.scriptName = scriptName;
+    initScope(scriptName);      
+  }
+
+  public String getScriptName()
+  {
+    return scriptName;
   }
 
   public Object call(String method, Object... args) throws Exception
@@ -68,13 +72,17 @@ public class ScriptBean extends FacesBean implements Map<String, Object>
   //Map implementation methods
   public Object get(String key)
   {
+    if (scope == null)
+      return null;
+    
     return ScriptClient.unwrap(scope.get(key, scope));
   }
 
   @Override
   public Object put(String key, Object value)
   {
-    scope.put(key, scope, value);
+    if (scope != null)
+      scope.put(key, scope, value);
     return null;
   }
 
@@ -87,7 +95,10 @@ public class ScriptBean extends FacesBean implements Map<String, Object>
   @Override
   public int size()
   {
-    return scope.getAllIds().length;
+    if (scope == null || scope.getPersistentVariables().isEmpty())
+      return 0;
+    
+    return scope.getPersistentVariables().size();
   }
 
   @Override
@@ -99,6 +110,9 @@ public class ScriptBean extends FacesBean implements Map<String, Object>
   @Override
   public boolean containsKey(Object key)
   {
+    if (scope == null)
+      return false;
+    
     return scope.has((String) key, scope);
   }
 
@@ -111,7 +125,12 @@ public class ScriptBean extends FacesBean implements Map<String, Object>
   @Override
   public Object remove(Object key)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    if (scope == null)
+      return null;
+    
+    if (scope.has((String) key, scope));
+      scope.delete((String) key);
+    return key;
   }
 
   @Override
@@ -129,40 +148,35 @@ public class ScriptBean extends FacesBean implements Map<String, Object>
   @Override
   public Set<String> keySet()
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    if (scope != null)
+      return scope.getPersistentVariables().keySet();
+    else
+      return Collections.emptySet();
   }
 
   @Override
   public Collection<Object> values()
   {
-    List<Object> values = new ArrayList<>();
-    for (int i = 0; i < size(); i++)
-    {
-      values.add(scope.get(i, scope));
-    }
-    return values;
+    if (scope != null && !scope.getPersistentVariables().isEmpty())
+      return scope.getPersistentVariables().values();
+    else
+      return Collections.emptyList();
   }
 
   @Override
   public Set<Map.Entry<String, Object>> entrySet()
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    if (scope != null)
+      return scope.getPersistentVariables().entrySet();
+    else
+      return Collections.emptySet();
   }  
   
   //Private methods
-  private void initScope(String scriptName)
+  private void initScope(String scriptName) throws Exception
   {
     if (scope == null)
-    {
-      try
-      {
-        execute(scriptName);
-      }
-      catch (Exception ex)
-      {
-        Logger.getLogger(ScriptBean.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    }
+      execute(scriptName); //Force script compilation
   }  
   
   private String toString(Object[] args)
@@ -192,28 +206,38 @@ public class ScriptBean extends FacesBean implements Map<String, Object>
   {
     return execute(scriptName, null);
   }
-  
+    
   private Object execute(String scriptName, String methodExpr) throws Exception
   {
-    Context context = Context.enter();
-    if (scope == null)
-      scope = new WebScriptableBase(context);
+    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BEGIN " 
+      + (methodExpr != null ? scriptName + "." + methodExpr : scriptName));
     
-    ScriptClient client = new ScriptClient(context, scope);
-    client.put("userSessionBean", UserSessionBean.getCurrentInstance());
-    FacesContext facesContext = getFacesContext();
-    if (facesContext != null)
+    try
     {
-      client.put("facesContext", facesContext);
-      client.put("externalContext", getExternalContext());
-      client.put("request", getExternalContext().getRequest());
-      client.put("application", getApplication());
-    }
-    
-    if (methodExpr != null)
-      return client.executeScript(scriptName, methodExpr);   
-    else
-      return client.executeScript(scriptName);
-  }
+      Context context = Context.enter();
+      if (scope == null)
+        scope = new WebScriptableBase(context);
+      
+      ScriptClient client = new ScriptClient(context, scope);
+      client.put("userSessionBean", UserSessionBean.getCurrentInstance());
+      FacesContext facesContext = getFacesContext();
+      if (facesContext != null)
+      {
+        client.put("facesContext", facesContext);
+        client.put("externalContext", getExternalContext());
+        client.put("request", getExternalContext().getRequest());
+        client.put("application", getApplication());
+      }
 
+      if (methodExpr != null)
+        return client.executeScript(scriptName, methodExpr);   
+      else
+        return client.executeScript(scriptName);
+    }
+    finally
+    {
+      System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END " + (methodExpr != null ? scriptName + "." + methodExpr : scriptName));        
+    }
+  }
+  
 }

@@ -164,16 +164,17 @@
           </p:outputPanel>  
 
         </div>
-
-    <p:tabView dynamic="true">
-      <c:forEach items="#{caseInterventionsBacking.scriptFormHelper.formTabs}" var="form">
-        <p:tab title="#{form.name}">
-          <ui:include src="#{form.url}">
-            <ui:param name="backing" value="#{caseInterventionsBacking}" />
-          </ui:include>
-        </p:tab>
-      </c:forEach>
-    </p:tabView>        
+        
+      <p:tabView dynamic="true" id="script_forms" cache="true" activeIndex="#{caseInterventionsBacking.scriptHelper.activeIndex}">
+        <p:ajax event="tabChange" listener="#{caseInterventionsBacking.scriptHelper.onFormTabChange}" update="script_forms"/>
+        <c:forEach items="#{caseInterventionsBacking.scriptHelper.formTabs}" var="form" >
+          <p:tab title="#{form.label}">
+            <ui:include src="#{form.url}">
+              <ui:param name="backing" value="#{caseInterventionsBacking}" />
+            </ui:include>
+          </p:tab>
+        </c:forEach>
+      </p:tabView>          
 
       </p:panel>       
 

@@ -69,6 +69,8 @@ public interface Form
 
   // Change control
   boolean isOutdated();
+  String getLastModified();
+  void setLastModified(String date);
 
   // submit
   void submit(Map data);

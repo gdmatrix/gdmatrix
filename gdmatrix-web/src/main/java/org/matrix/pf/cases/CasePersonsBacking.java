@@ -312,6 +312,11 @@ public class CasePersonsBacking extends PageBacking
     setSelectedPerson(personId);
   }  
   
+  public void onPersonClear()
+  {
+    setSelectedPerson(null);
+  }
+  
   public void setSelectedPerson(String personId)
   {
     editing.setPersonId(personId);    
@@ -814,7 +819,7 @@ public class CasePersonsBacking extends PageBacking
     if (!isContactsMaxSize(selectedContacts))
       addSelectedPersonContact(contactView);
   }
-  
+    
   public void onRepresentantContactSelect(SelectEvent<ContactView> event)
   {
     ContactView contactView = event.getObject();
