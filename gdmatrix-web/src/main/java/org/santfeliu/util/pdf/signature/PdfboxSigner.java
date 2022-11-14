@@ -54,17 +54,18 @@ import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.examples.signature.ValidationTimeStamp;
 import org.apache.pdfbox.examples.signature.validation.AddValidationInformation;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.xml.XmpSerializer;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -78,15 +79,14 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
-
-import org.apache.xmpbox.xml.XmpSerializer;
-
 /**
  *
  * @author blanquepa
  */
 public class PdfboxSigner extends PDFSigner
 { 
+  private static final int PREFERRED_SIGNATURE_SIZE = 20000;
+  
   @Override
   protected void doSign(InputStream is, OutputStream os, 
     SignatureLevel sigLevel, DigestAlgorithm digAlg, EncryptionAlgorithm encAlg, 
@@ -124,7 +124,10 @@ public class PdfboxSigner extends PDFSigner
       signInterface = new SignatureInterfaceImpl(keyStore, ksPassword);
       signInterface.setTsaUrl(this.tsaUrl);
       signInterface.setAlgorithm(digAlg, encAlg);
-      document.addSignature(signature, signInterface);
+      
+      SignatureOptions signatureOptions = new SignatureOptions();
+      signatureOptions.setPreferredSignatureSize(PREFERRED_SIGNATURE_SIZE);      
+      document.addSignature(signature, signInterface, signatureOptions);
      
       if (sigLevel.equals(SignatureLevel.LT)
         || sigLevel.equals(SignatureLevel.LTA))
