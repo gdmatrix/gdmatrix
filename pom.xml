@@ -51,6 +51,7 @@
     <module>gdmatrix-modgen</module>
     <module>gdmatrix-stubs</module>
     <module>gdmatrix-common</module>
+    <module>gdmatrix-aoc</module>
     <module>gdmatrix-ws</module>
     <module>gdmatrix-ant</module>
     <module>gdmatrix-web</module>

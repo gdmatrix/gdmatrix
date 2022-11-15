@@ -103,7 +103,9 @@ public class SaveInPackageAction extends BaseAction
           panel.setConnectionUrl(null);
           panel.setDirectory(file.getParentFile());
           panel.setModified(false);
-          getIDE().getMainPanel().updateActions();
+          MainPanel mainPanel = getIDE().getMainPanel();
+          mainPanel.updateActions();
+          mainPanel.showStatus(panel);
         }
       }
     }

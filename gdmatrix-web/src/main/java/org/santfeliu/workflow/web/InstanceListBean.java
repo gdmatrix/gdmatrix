@@ -55,7 +55,10 @@ import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import static org.matrix.workflow.WorkflowConstants.FAIL_MESSAGE;
+import static org.matrix.workflow.WorkflowConstants.TERMINATION_FORM;
 import static org.matrix.workflow.WorkflowConstants.TERMINATION_MESSAGE;
+import static org.matrix.workflow.WorkflowConstants.FAIL_FORM;
+import static org.matrix.workflow.WorkflowConstants.HELP_BUTTON_URL;
 
 /**
  *
@@ -78,6 +81,16 @@ public class InstanceListBean extends WebBean implements Serializable
   @CMSProperty
   public static final String FAIL_MESSAGE_PROPERTY =
     "workflow." + FAIL_MESSAGE;
+  @CMSProperty
+  public static final String TERMINATION_FORM_PROPERTY =
+    "workflow." + TERMINATION_FORM;
+  @CMSProperty
+  public static final String FAIL_FORM_PROPERTY =
+    "workflow." + FAIL_FORM;
+  @CMSProperty
+  public static final String HELP_BUTTON_URL_PROPERTY =
+    "workflow." + HELP_BUTTON_URL;
+
 
   public static final String INSTANCEID_PARAM = "instanceid";
   public static final String ACCESS_TOKEN_PARAM = "access_token";

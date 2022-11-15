@@ -300,19 +300,20 @@
   </context-param>
   <context-param>
     <param-name>org.santfeliu.security.provider.className</param-name>
-    <param-value>org.santfeliu.security.provider.psis.PSIS</param-value>
+    <param-value>cat.aoc.psis.PSIS</param-value>
   </context-param>
   <context-param>
-    <param-name>org.santfeliu.security.provider.PSIS.serviceURL</param-name>
+    <param-name>cat.aoc.psis.serviceURL</param-name>
     <param-value>http://psis.catcert.net/psis/catcert/dss</param-value>
   </context-param>
   <context-param>
-    <param-name>org.santfeliu.security.provider.PSIS.pdf.serviceURL</param-name>
+    <param-name>cat.aoc.psis.pdf.serviceURL</param-name>
     <param-value>http://psis.catcert.net/psis/catcert/dsspdf</param-value>
-  </context-param>  
+  </context-param>
   <context-param>
     <param-name>org.santfeliu.security.tspURL</param-name>
-    <param-value>http://psis.catcert.net/psis/catcert/tsp</param-value>
+<!--    <param-value>http://psis.catcert.net/psis/catcert/tsp</param-value>-->
+    <param-value>http://timestamp.sectigo.com/qualified</param-value>
   </context-param>
   <context-param>
     <param-name>org.santfeliu.security.urlCredentialsCipher.secret</param-name>

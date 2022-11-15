@@ -51,6 +51,8 @@ public class JavaScriptDocument extends HighlightedDocument
 
   static
   {
+    keywordsSet.add("abstract");
+    keywordsSet.add("await");
     keywordsSet.add("boolean");
     keywordsSet.add("break");
     keywordsSet.add("byte");
@@ -60,25 +62,29 @@ public class JavaScriptDocument extends HighlightedDocument
     keywordsSet.add("class");
     keywordsSet.add("const");
     keywordsSet.add("continue");
+    keywordsSet.add("debugger");
     keywordsSet.add("default");
+    keywordsSet.add("delete");
     keywordsSet.add("do");
-    keywordsSet.add("double");
     keywordsSet.add("else");
+    keywordsSet.add("enum");
+    keywordsSet.add("export");
     keywordsSet.add("extends");
     keywordsSet.add("false");
     keywordsSet.add("final");
     keywordsSet.add("finally");
-    keywordsSet.add("float");
     keywordsSet.add("for");
+    keywordsSet.add("float");
     keywordsSet.add("function");
-    keywordsSet.add("goto");
     keywordsSet.add("if");
+    keywordsSet.add("goto");
     keywordsSet.add("implements");
     keywordsSet.add("import");
-    keywordsSet.add("instanceof");
     keywordsSet.add("in");
+    keywordsSet.add("instanceof");
     keywordsSet.add("int");
     keywordsSet.add("interface");
+    keywordsSet.add("let");
     keywordsSet.add("long");
     keywordsSet.add("native");
     keywordsSet.add("new");
@@ -89,21 +95,23 @@ public class JavaScriptDocument extends HighlightedDocument
     keywordsSet.add("public");
     keywordsSet.add("return");
     keywordsSet.add("short");
-    keywordsSet.add("static");
     keywordsSet.add("super");
     keywordsSet.add("switch");
+    keywordsSet.add("static");
     keywordsSet.add("synchronized");
     keywordsSet.add("this");
     keywordsSet.add("throw");
     keywordsSet.add("throws");
-    keywordsSet.add("transient");
     keywordsSet.add("true");
+    keywordsSet.add("transient");
     keywordsSet.add("try");
+    keywordsSet.add("typeof");
     keywordsSet.add("var");
     keywordsSet.add("void");
     keywordsSet.add("volatile");
     keywordsSet.add("while");
     keywordsSet.add("with");
+    keywordsSet.add("yield");
   }
 
   public JavaScriptDocument()

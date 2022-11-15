@@ -34,8 +34,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.function.Consumer;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import org.mozilla.javascript.Context;
@@ -50,6 +55,9 @@ import org.santfeliu.util.script.ScriptableBase;
  */
 public class JavaScriptRunner extends Thread
 {
+  public static final Logger LOGGER =
+    Logger.getLogger(JavaScriptRunner.class.getSimpleName());
+
   private final String code;
   private final JTextArea outputTextArea;
   private final HashMap variables = new HashMap();
@@ -73,9 +81,17 @@ public class JavaScriptRunner extends Thread
   public void run()
   {
     Context cx = ContextFactory.getGlobal().enterContext();
+    OutputHandler handler = new OutputHandler();
+    handler.setFilter(record ->
+      JavaScriptRunner.this.getId() == record.getThreadID());
+    handler.setLevel(Level.ALL);
+    LOGGER.addHandler(handler);
+    LOGGER.setLevel(Level.ALL);
     try
     {
       variables.put("output", new PrintWriter(new OutputWriter()));
+      variables.put("logger", LOGGER);
+
       startMillis = System.currentTimeMillis();
       Scriptable scope = new ScriptableBase(cx, variables);
       result = cx.evaluateString(scope, code, "", 1, null);
@@ -90,6 +106,8 @@ public class JavaScriptRunner extends Thread
     }
     finally
     {
+      LOGGER.removeHandler(handler);
+
       executionTime = System.currentTimeMillis() - startMillis;
 
       Context.exit();
@@ -136,24 +154,31 @@ public class JavaScriptRunner extends Thread
     }
   }
 
+  private void outputText(String text)
+  {
+    SwingUtilities.invokeLater(() ->
+    {
+      outputTextArea.append(text);
+    });
+
+    // give time to EVT to update JTextArea
+    try
+    {
+      Thread.sleep(1);
+    }
+    catch (InterruptedException ex)
+    {
+      // ignore
+    }
+  }
+
   class OutputWriter extends Writer
   {
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException
     {
-      final String text = new String(cbuf, off, len);
-      SwingUtilities.invokeLater(() ->
-      {
-        outputTextArea.append(text);
-      });
-      try
-      {
-        Thread.sleep(1);
-      }
-      catch (InterruptedException ex)
-      {
-        //ignore;
-      }
+      String text = new String(cbuf, off, len);
+      outputText(text);
     }
 
     @Override
@@ -163,6 +188,39 @@ public class JavaScriptRunner extends Thread
 
     @Override
     public void close() throws IOException
+    {
+    }
+  }
+
+  class OutputHandler extends Handler
+  {
+    @Override
+    public void publish(LogRecord record)
+    {
+      if (isLoggable(record))
+      {
+        String level = record.getLevel().getName();
+        String formattedMessage;
+        if (record.getParameters() == null)
+        {
+          formattedMessage = record.getMessage();
+        }
+        else
+        {
+          formattedMessage =
+            MessageFormat.format(record.getMessage(), record.getParameters());
+        }
+        outputText(level + ": " + formattedMessage + "\n");
+      }
+    }
+
+    @Override
+    public void flush()
+    {
+    }
+
+    @Override
+    public void close() throws SecurityException
     {
     }
   }

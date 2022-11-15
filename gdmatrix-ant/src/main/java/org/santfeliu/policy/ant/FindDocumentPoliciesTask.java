@@ -58,8 +58,11 @@ import org.santfeliu.doc.util.DocumentUtils;
  */
 public class FindDocumentPoliciesTask extends WSTask
 {
+  //input
   protected String state;
+  protected String policyTypeId;
   protected String startDateVar;
+  //output
   protected String docPolViewVar;
   protected boolean excludeCaseDocuments;
 
@@ -105,6 +108,16 @@ public class FindDocumentPoliciesTask extends WSTask
     this.state = state;
   }
 
+  public String getPolicyTypeId()
+  {
+    return policyTypeId;
+  }
+
+  public void setPolicyTypeId(String policyTypeId)
+  {
+    this.policyTypeId = policyTypeId;
+  }
+
   public void addForEachDocumentPolicy(Sequential forEachDocumentPolicy)
   {
     this.forEachDocumentPolicy = forEachDocumentPolicy;
@@ -120,7 +133,7 @@ public class FindDocumentPoliciesTask extends WSTask
     String activationDate = (String)getVariable(startDateVar);
     PolicyState policyState = PolicyState.valueOf(state);
     List<DocumentPolicyView> pvList =
-      findDocumentPolicyViews(port, activationDate, policyState);
+      findDocumentPolicyViews(port, activationDate, policyState, policyTypeId);
 
     for (DocumentPolicyView pv : pvList)
     {
@@ -194,10 +207,11 @@ public class FindDocumentPoliciesTask extends WSTask
   }
 
   private List<DocumentPolicyView> findDocumentPolicyViews(PolicyManagerPort port,
-    String activationDate, PolicyState policyState)
+    String activationDate, PolicyState policyState, String policyTypeId)
   {
     DocumentPolicyFilter filter = new DocumentPolicyFilter();
     filter.setState(policyState);
+    filter.setPolicyTypeId(policyTypeId);
     filter.setActivationDate(activationDate);
     filter.setFirstResult(0);
     filter.setMaxResults(0);

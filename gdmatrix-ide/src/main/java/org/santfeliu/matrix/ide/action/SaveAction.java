@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import javax.swing.Action;
 import org.santfeliu.matrix.ide.DocumentPanel;
+import org.santfeliu.matrix.ide.MainPanel;
 import org.santfeliu.matrix.ide.MatrixIDE;
 
 
@@ -69,7 +70,9 @@ public class SaveAction extends BaseAction
           panel.setConnectionUrl(null);
           panel.setDirectory(file.getParentFile());
           panel.setModified(false);
-          getIDE().getMainPanel().updateActions();
+          MainPanel mainPanel = getIDE().getMainPanel();
+          mainPanel.updateActions();
+          mainPanel.showStatus(panel);
         }
       }
     }

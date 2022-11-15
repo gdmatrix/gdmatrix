@@ -34,17 +34,16 @@ import java.security.MessageDigest;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Collection;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.security.SecurityProvider;
 import org.santfeliu.util.MatrixConfig;
@@ -57,6 +56,7 @@ import org.santfeliu.util.MatrixConfig;
 public class SecurityUtils
 {
   private static SecurityProvider defaultSecurityProvider;
+  private static TimeStampService defaultTimeStampService;
   private static URLCredentialsCipher urlCredentialsCipher;
   public static final String REPRESENTANT_PATTERN = "\\(R: (\\w+)\\)";
 
@@ -67,10 +67,26 @@ public class SecurityUtils
       String providerClassName = MatrixConfig.getProperty(
         "org.santfeliu.security.provider.className");
       Class cls = Class.forName(providerClassName);
-      defaultSecurityProvider = (SecurityProvider)cls.newInstance();
+
+      defaultSecurityProvider =
+        (SecurityProvider)cls.getConstructor().newInstance();
       String secret = MatrixConfig.getProperty(
         "org.santfeliu.security.urlCredentialsCipher.secret");
+
       urlCredentialsCipher = new URLCredentialsCipher(secret);
+
+      String tspUrl = MatrixConfig.getProperty("org.santfeliu.security.tspURL");
+      if (!StringUtils.isBlank(tspUrl))
+      {
+        String tspUsername = MatrixConfig.getProperty(
+        "org.santfeliu.security.tspUsername");
+
+        String tspPassword = MatrixConfig.getProperty(
+        "org.santfeliu.security.tspPassword");
+
+        defaultTimeStampService = new TimeStampService(tspUrl,
+          tspUsername, tspPassword);
+      }
     }
     catch (Exception ex)
     {
@@ -81,6 +97,11 @@ public class SecurityUtils
   public static SecurityProvider getSecurityProvider()
   {
     return defaultSecurityProvider;
+  }
+
+  public static TimeStampService getTimeStampService()
+  {
+    return defaultTimeStampService;
   }
 
   public static URLCredentialsCipher getURLCredentialsCipher()

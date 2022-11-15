@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.elections.swing;
@@ -56,7 +56,7 @@ import org.santfeliu.elections.Results;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class PieChartPanel extends JPanel
 {
@@ -85,18 +85,18 @@ public class PieChartPanel extends JPanel
     chartPanel = new ChartPanel(createChart(new DefaultPieDataset()));
     this.add(chartPanel, BorderLayout.CENTER);
   }
-  
+
   public void updateData(Results results)
-  {  
+  {
     JFreeChart chart = chartPanel.getChart();
     PiePlot3D plot = (PiePlot3D)chart.getPlot();
     plot.setDataset(createDataset(results));
     setPlotSectionsSettings(plot, results);
   }
-  
-  private PieDataset createDataset(Results results) 
+
+  private PieDataset createDataset(Results results)
   {
-    DefaultPieDataset dataset = new DefaultPieDataset();    
+    DefaultPieDataset dataset = new DefaultPieDataset();
     if (results != null)
     {
       Collection parties = results.getParties();
@@ -117,13 +117,13 @@ public class PieChartPanel extends JPanel
       }
       if (defaultPartyVotes > 0) // Altres
         dataset.setValue(DEFAULTPARTYABBR, defaultPartyVotes);
-      
+
       setBlankVotes(dataset, results);
     }
-    
+
     return dataset;
   }
-  
+
   private JFreeChart createChart(PieDataset dataset)
   {
     JFreeChart chart = ChartFactory.createPieChart3D(
@@ -133,17 +133,17 @@ public class PieChartPanel extends JPanel
         true,
         false
     );
-    
+
     PiePlot3D plot = (PiePlot3D) chart.getPlot();
     plot.setLabelFont(new Font("SansSerif", Font.PLAIN, 12));
     plot.setNoDataMessage("No hi ha dades");
     plot.setCircular(true);
     plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0} ({2})",
       new DecimalFormat(), new DecimalFormat("#0.00%")));
-        
+
     return chart;
   }
-  
+
   private void setPlotSectionsSettings(PiePlot3D plot, Results results)
   {
     Collection parties = results.getParties();
@@ -156,11 +156,11 @@ public class PieChartPanel extends JPanel
     }
     plot.setSectionPaint(BLANKSLABEL, Color.LIGHT_GRAY);
   }
-  
+
   private void setBlankVotes(DefaultPieDataset dataset, Results results)
   {
     int blankVotes = results.getBlankVotes();
     if (blankVotes > 0) // Blank votes
-      dataset.setValue(BLANKSLABEL, blankVotes);        
-  }  
+      dataset.setValue(BLANKSLABEL, blankVotes);
+  }
 }

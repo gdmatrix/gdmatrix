@@ -44,7 +44,8 @@ public class JavascriptJob extends AbstractJob
 {
 
   @Override
-  public void doExecute(JobExecutionContext context) throws JobExecutionException
+  public void doExecute(JobExecutionContext context) 
+    throws JobExecutionException
   {
     try
     {
@@ -58,10 +59,9 @@ public class JavascriptJob extends AbstractJob
         client.put(key, params.get(key));
       }      
 
-      log(Level.INFO, 
-        "Executing " + filename + " script with parameters: " + params);
+      log(Level.INFO, "Executing {0} script.", new Object[]{filename});
       Object result = client.executeScript(filename);
-      log(Level.INFO, (String) result);
+      log(Level.INFO, String.valueOf(result));
       
       context.setResult(result);
     } 

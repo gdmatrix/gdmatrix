@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.matrix.ide;
@@ -129,19 +129,19 @@ public class SaveDocumentDialog extends javax.swing.JDialog
         if (urlChange)
         {
           //Load source document
-          ConnectionParameters fromConnParams = 
+          ConnectionParameters fromConnParams =
             mainPanel.getConnectionPanel().getConnectionByUrl(panelUrl);
-          DocumentManagerClient fromClient = 
+          DocumentManagerClient fromClient =
             mainPanel.getDocumentManagerClient(fromConnParams);
-          document = fromClient.loadDocument(panel.getDocId(), 
-            panel.getVersion());                    
+          document = fromClient.loadDocument(panel.getDocId(),
+            panel.getVersion());
           docIdValueLabel.setText(getTargetDocIdValueLabel(panel, client));
         }
         else
         {
           document = client.loadDocument(panel.getDocId(), panel.getVersion());
-          docIdValueLabel.setText(panel.getDocId() + " / " + 
-            panel.getVersion());          
+          docIdValueLabel.setText(panel.getDocId() + " / " +
+            panel.getVersion());
         }
         for (org.matrix.dic.Property property : document.getProperty())
         {
@@ -209,20 +209,20 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     pack();
     setVisible(true);
   }
-  
-  private String getTargetDocIdValueLabel(DocumentPanel panel, 
+
+  private String getTargetDocIdValueLabel(DocumentPanel panel,
     DocumentManagerClient targetClient)
   {
     DocumentType documentType = panel.getDocumentType();
     String propName = documentType.getPropertyName();
     String docTypeId = documentType.getDocTypeId();
     DocumentFilter filter = new DocumentFilter();
-    filter.setDocTypeId(docTypeId);          
+    filter.setDocTypeId(docTypeId);
     filter.setVersion(0); // last version
     filter.setRolesDisabled(true); // disable role check
     Property prop = new Property();
     prop.setName(propName);
-    if (panel.getDisplayName() != null && 
+    if (panel.getDisplayName() != null &&
       panel.getDisplayName().trim().length() > 0)
     {
       prop.getValue().add(panel.getDisplayName());
@@ -232,7 +232,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
     int count = docList.size();
     if (count == 1) // document already exists with that name
     {
-      return docList.get(0).getDocId() + " / " + 
+      return docList.get(0).getDocId() + " / " +
         docList.get(0).getVersion();
     }
     else if (count > 1)
@@ -241,9 +241,9 @@ public class SaveDocumentDialog extends javax.swing.JDialog
       return "MULTIPLE DOCUMENTS";
     }
     else
-    {  
+    {
       return "NEW DOCUMENT";
-    }    
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -540,7 +540,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
           if (option == JOptionPane.NO_OPTION)
           {
             panel.setName(oldName);
-            panel.setDescription(oldDescription);            
+            panel.setDescription(oldDescription);
             return;
           }
         }
@@ -627,7 +627,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
         AccessControl ac = new AccessControl();
         ac.setRoleId(executeRole);
         ac.setAction(DictionaryConstants.EXECUTE_ACTION);
-        document.getAccessControl().add(ac);        
+        document.getAccessControl().add(ac);
       }
 
       // save document source into DataHandler
@@ -649,6 +649,7 @@ public class SaveDocumentDialog extends javax.swing.JDialog
       panel.setVersion(document.getVersion());
       panel.setModified(false);
       mainPanel.updateActions();
+      mainPanel.showStatus(panel);
     }
     catch (Exception ex)
     {

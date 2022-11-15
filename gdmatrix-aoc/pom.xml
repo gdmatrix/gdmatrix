@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.matrix</groupId>
+    <artifactId>gdmatrix</artifactId>
+    <version>3.0</version>
+  </parent>
+  <artifactId>gdmatrix-aoc</artifactId>
+  <version>3.0</version>
+  <packaging>jar</packaging>
+  <description>AOC (Administracio Oberta de Catalunya) services.</description>
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gdmatrix-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+    </dependency>       
+    <dependency>
+      <groupId>org.apache.xmlbeans</groupId>
+      <artifactId>xmlbeans</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+    <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=.\wss4j-1.6.19.gdmatrix.jar -DgroupId=org.apache.ws.security -DartifactId=wss4j -Dversion=1.6.19.gdmatrix -DlocalRepositoryPath=.\repository -Dpackaging=jar -->
+    <dependency>
+      <groupId>org.apache.ws.security</groupId>
+      <artifactId>wss4j</artifactId>
+      <version>1.6.19.gdmatrix</version>
+    </dependency>    
+    <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=C:\gdmatrix\lib\ingest-service.jar -DgroupId=org.santfeliu -DartifactId=iarxiu-ingest-service -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=C:\gdmatrix\m2 -->
+    <dependency>
+      <groupId>org.santfeliu</groupId>
+      <artifactId>iarxiu-ingest-service</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=C:\gdmatrix\lib\xmltypes.jar -DgroupId=org.santfeliu -DartifactId=iarxiu-xmltypes -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=C:\gdmatrix\m2 -->
+    <dependency>
+      <groupId>org.santfeliu</groupId>
+      <artifactId>iarxiu-xmltypes</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ws</groupId>
+      <artifactId>spring-ws-security</artifactId>
+      <version>2.4.4.RELEASE</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.helger.maven</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>2.6.2</version>
+        <executions>
+          <execution>
+            <id>wsimport_PSIS</id>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+            <configuration>
+              <verbose>true</verbose>
+              <keep>true</keep>
+              <wsdlDirectory>src/main/resources/cat/aoc/psis</wsdlDirectory>
+              <wsdlFiles>
+                <wsdlFile>PSIS.wsdl</wsdlFile> 
+              </wsdlFiles>
+            </configuration>            
+          </execution>        
+        </executions>
+      </plugin> 
+    </plugins>
+  </build>
+
+</project>

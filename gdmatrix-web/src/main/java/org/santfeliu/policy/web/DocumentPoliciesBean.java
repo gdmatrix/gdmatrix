@@ -30,13 +30,14 @@
  */
 package org.santfeliu.policy.web;
 
-import java.io.File;
-import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import javax.faces.model.SelectItem;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.policy.DocumentPolicyFilter;
@@ -44,16 +45,13 @@ import org.matrix.policy.DocumentPolicy;
 import org.matrix.policy.DocumentPolicyView;
 import org.matrix.policy.PolicyManagerPort;
 import org.matrix.policy.PolicyState;
-import org.santfeliu.ant.AntLauncher;
-import org.santfeliu.ant.Message;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.faces.FacesUtils;
-import org.santfeliu.faces.menu.model.MenuModel;
-import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.TextUtils;
-import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.util.log.ListHandler;
+import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.bean.CMSManagedBean;
 import org.santfeliu.web.bean.CMSProperty;
 import org.santfeliu.web.obj.PageBean;
@@ -66,19 +64,12 @@ import org.santfeliu.web.obj.PageBean;
 public class DocumentPoliciesBean extends PageBean
 {
   @CMSProperty
-  public static final String ANALYZER_FILES_PROPERTY = "document_analyzer.files";
-  @CMSProperty
-  public static final String ANALYZER_TARGET_PROPERTY = "document_analyzer.target";
-  @CMSProperty
-  public static final String ANALYZER_VERBOSITY_PROPERTY = "document_analyzer.verbosity";
-  @CMSProperty
-  public static final String ANALYZER_PROPERTIES_PROPERTY = "document_analyzer.properties";
-
-  public static final String ANT_DIR_PROPERTY = "antDir";
+  public static final String ANALYZER_SCRIPT_PROPERTY = "analyzer";
+  public static final Logger LOGGER = Logger.getLogger("document_analyzer");
 
   private DocumentPolicy editingDocumentPolicy;
   private List<DocumentPolicyView> rows;
-  private transient List<String> messageList = new ArrayList<String>();
+  private transient List<LogRecord> messageList = new ArrayList<>();
 
   public DocumentPoliciesBean()
   {
@@ -110,15 +101,37 @@ public class DocumentPoliciesBean extends PageBean
     this.rows = rows;
   }
 
-  public List<String> getMessageList()
+  public List<LogRecord> getMessageList()
   {
-    if (messageList == null) messageList = new ArrayList<String>();
+    if (messageList == null) messageList = new ArrayList<>();
     return messageList;
   }
 
-  public void setMessageList(List<String> messageList)
+  public void setMessageList(List<LogRecord> messageList)
   {
     this.messageList = messageList;
+  }
+
+  public String getFormattedMessage(LogRecord record)
+  {
+    try
+    {
+      String formattedMessage;
+      if (record.getParameters() == null)
+      {
+        formattedMessage = record.getMessage();
+      }
+      else
+      {
+        formattedMessage =
+          MessageFormat.format(record.getMessage(), record.getParameters());
+      }
+      return formattedMessage;
+    }
+    catch (Exception ex)
+    {
+      return ex.toString();
+    }
   }
 
   public Date getRowActivationDate()
@@ -278,62 +291,39 @@ public class DocumentPoliciesBean extends PageBean
   {
     try
     {
-      int maxVerbosityLevel = getMaxVerbosityLevel();
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      MenuModel menuModel = userSessionBean.getMenuModel();
+      ListHandler handler = new ListHandler();
+      handler.setFilter(record ->
+        record.getThreadID() == Thread.currentThread().getId());
+      handler.setLevel(Level.ALL);
+      LOGGER.addHandler(handler);
+      LOGGER.setLevel(Level.ALL);
 
-      List<String> antFiles = menuModel.getSelectedMenuItem().
-        getMultiValuedProperty(ANALYZER_FILES_PROPERTY);
-      if (!antFiles.isEmpty())
+      String[] id = DocumentConfigBean.fromObjectId(getObjectId());
+      String docId = id[0];
+
+      try
       {
-        String[] fileArray = (String[])antFiles.toArray(
-          new String[antFiles.size()]);
+        ScriptClient client = new ScriptClient();
+        client.put("docId", docId);
+        client.put("logger", LOGGER);
+        client.refreshCache();
 
-        String antTarget = menuModel.getSelectedMenuItem().
-          getProperty(ANALYZER_TARGET_PROPERTY);
+        String scriptName = getProperty(ANALYZER_SCRIPT_PROPERTY);
+        if (scriptName == null) scriptName = "analyzer";
 
-        // preparing ant properties
-        HashMap properties = new HashMap();
-        List<String> nameValuePairs = menuModel.getSelectedMenuItem().
-          getMultiValuedProperty(ANALYZER_PROPERTIES_PROPERTY);
-        for (String nameValuePair : nameValuePairs)
-        {
-          int index = nameValuePair.indexOf("=");
-          if (index > 0)
-          {
-            String name = nameValuePair.substring(0, index);
-            String value = nameValuePair.substring(index + 1);
-            properties.put(name, value);
-          }
-        }
-        String[] id = DocumentConfigBean.fromObjectId(getObjectId());
-        String docId = id[0];
-        properties.put("docId", docId);
-
-        File antDir = null;
-        String dir = System.getProperty(ANT_DIR_PROPERTY);
-        if (dir != null)
-        {
-          antDir = new File(dir);
-        }
-        String wsDir = MatrixConfig.getProperty("wsdirectory.url");
-        URL wsDirectory = new URL(wsDir);
-
-        String userId = MatrixConfig.getProperty("adminCredentials.userId");
-        String password = MatrixConfig.getProperty("adminCredentials.password");
-
-        List<Message> messages = AntLauncher.execute(fileArray, antTarget,
-          properties, wsDirectory, userId, password, antDir);
-
-        for (Message message : messages)
-        {
-          if (message.getLevel() <= maxVerbosityLevel)
-          {
-            getMessageList().add(message.getMessage());
-          }
-        }
-        load();
+        client.executeScript(scriptName);
       }
+      catch (Exception screx)
+      {
+        LOGGER.log(Level.SEVERE, screx.toString());
+      }
+      finally
+      {
+        getMessageList().addAll(handler.getLogRecords());
+        LOGGER.removeHandler(handler);
+      }
+
+      load();
     }
     catch (Exception ex)
     {
@@ -344,25 +334,6 @@ public class DocumentPoliciesBean extends PageBean
   public void reloadPolicies()
   {
     load();
-  }
-
-  public int getMaxVerbosityLevel()
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuModel menuModel = userSessionBean.getMenuModel();
-    String value = menuModel.getSelectedMenuItem().
-      getProperty(ANALYZER_VERBOSITY_PROPERTY);
-    if (value != null)
-    {
-      try
-      {
-        return Integer.parseInt(value);
-      }
-      catch (NumberFormatException ex)
-      {
-      }
-    }
-    return Integer.MAX_VALUE;
   }
 
   public List<SelectItem> getPolicySelectItems()

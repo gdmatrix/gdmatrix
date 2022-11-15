@@ -16,7 +16,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>gdmatrix-stubs</artifactId>
+      <artifactId>gdmatrix-aoc</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -49,10 +49,16 @@
       <version>3.1</version>
     </dependency>       
     <dependency>
-        <groupId>org.apache.xmlbeans</groupId>
-        <artifactId>xmlbeans</artifactId>
-        <version>3.1.0</version>
+      <groupId>org.apache.xmlbeans</groupId>
+      <artifactId>xmlbeans</artifactId>
+      <version>3.1.0</version>
     </dependency>
+    <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=.\wss4j-1.6.19.gdmatrix.jar -DgroupId=org.apache.ws.security -DartifactId=wss4j -Dversion=1.6.19.gdmatrix -DlocalRepositoryPath=.\repository -Dpackaging=jar -->
+    <dependency>
+      <groupId>org.apache.ws.security</groupId>
+      <artifactId>wss4j</artifactId>
+      <version>1.6.19.gdmatrix</version>
+    </dependency>    
     <!-- mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=C:\gdmatrix\lib\ingest-service.jar -DgroupId=org.santfeliu -DartifactId=iarxiu-ingest-service -Dversion=1.0 -Dpackaging=jar -DlocalRepositoryPath=C:\gdmatrix\m2 -->
     <dependency>
       <groupId>org.santfeliu</groupId>
@@ -64,21 +70,11 @@
       <groupId>org.santfeliu</groupId>
       <artifactId>iarxiu-xmltypes</artifactId>
       <version>1.0</version>
-    </dependency>     
-    <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-oxm</artifactId>
-        <version>4.2.9.RELEASE</version>
-    </dependency>    
-    <dependency>
-      <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws-core</artifactId>
-      <version>2.4.4.RELEASE</version>
     </dependency>
     <dependency>
-        <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws-security</artifactId>
-        <version>2.4.4.RELEASE</version>
+      <groupId>org.springframework.ws</groupId>
+      <artifactId>spring-ws-security</artifactId>
+      <version>2.4.4.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>com.sun.xml.ws</groupId>
@@ -105,16 +101,20 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <finalName>GDMatrixANTJavaInstall</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
         <executions>
           <execution>
-            <id>copy-libs</id>
+            <id>java-assembly</id>
             <goals>
               <goal>single</goal>
             </goals>
             <phase>package</phase>
             <configuration>
               <descriptors>
-                <descriptor>src/main/assembly/package.xml</descriptor>
+                <descriptor>src/main/assembly/java-assembly.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
@@ -122,9 +122,9 @@
       </plugin>        
     </plugins>
   </build>
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-    <description>Classes needed to execute ANT tasks. Generates a zip package to optionally execute those tasks separeted from GDMatrix installation.</description>
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  <description>Classes needed to execute ANT tasks. Generates a zip package to optionally execute those tasks separeted from GDMatrix installation.</description>
 </project>

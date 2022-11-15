@@ -19,6 +19,10 @@
       <h:outputText />
     </f:facet>
 
+    <h:outputText value="#{policyBundle.policySearch_policyId}:" />
+    <h:inputText value="#{policySearchBean.filter.policyId}"
+      styleClass="inputBox" style="width:20%"/>    
+    
     <h:outputText value="#{policyBundle.policySearch_title}:" />
     <h:inputText value="#{policySearchBean.filter.title}"
       styleClass="inputBox" style="width:80%"/>

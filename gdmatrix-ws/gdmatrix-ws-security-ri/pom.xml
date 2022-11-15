@@ -18,31 +18,6 @@
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
-  <build>
-    <plugins>      
-      <plugin>
-        <groupId>com.helger.maven</groupId>
-        <artifactId>jaxws-maven-plugin</artifactId>
-        <version>2.6.2</version>
-        <executions>
-          <execution>
-            <id>wsimport_PSIS</id>
-            <goals>
-              <goal>wsimport</goal>
-            </goals>
-            <configuration>
-              <verbose>true</verbose>
-              <keep>true</keep>
-              <wsdlDirectory>src/main/resources/org/santfeliu/security/provider/psis</wsdlDirectory>
-              <wsdlFiles>
-                <wsdlFile>PSIS.wsdl</wsdlFile>           
-              </wsdlFiles>
-            </configuration>            
-          </execution>        
-        </executions>
-      </plugin> 
-    </plugins>
-  </build>
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>

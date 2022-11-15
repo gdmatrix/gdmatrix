@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.elections.swing;
@@ -58,7 +58,7 @@ import org.santfeliu.elections.Results;
 
 /**
  *
- * @author unknown
+ * @author realor
  */
 public class BoardsPanel extends JPanel
 {
@@ -66,10 +66,10 @@ public class BoardsPanel extends JPanel
   private Vector sectionPanes = new Vector();
   private int boxSize = 24;
   private int boardSize = 16;
-  
+
   private Font normalFont = new Font("Arial", Font.PLAIN, 12);
   private Font smallFont = new Font("Arial", Font.PLAIN, 11);
-  
+
   private Color selScruFillColor = Color.green;
   private Color selScruTextColor = Color.black;
   private Color selUnscruFillColor = new Color(100, 100, 100);
@@ -81,7 +81,7 @@ public class BoardsPanel extends JPanel
   private Color unselUnscruFillColor = new Color(225, 225, 225);
   private Color unselUnscruTextColor = Color.lightGray;
   private Color unselBorderColor = Color.lightGray;
-  
+
   private String currentDistrict;
   private String currentSection;
   private String currentBoardName;
@@ -98,7 +98,7 @@ public class BoardsPanel extends JPanel
       e.printStackTrace();
     }
   }
-  
+
   public String getCurrentDistrict()
   {
     return currentDistrict;
@@ -108,29 +108,29 @@ public class BoardsPanel extends JPanel
   {
     return currentSection;
   }
-  
+
   public String getCurrentBoardName()
   {
     return currentBoardName;
   }
-  
+
   public void addActionListener(ActionListener l)
   {
     listeners.add(l);
   }
-  
+
   public void removeActionListener(ActionListener l)
   {
     listeners.remove(l);
   }
-  
+
   public void paintComponent(Graphics g)
   {
     g.setColor(Color.white);
     g.fillRect(0, 0, getWidth(), getHeight());
     g.setColor(Color.black);
     ((Graphics2D)g).setRenderingHint(
-      RenderingHints.KEY_TEXT_ANTIALIASING, 
+      RenderingHints.KEY_TEXT_ANTIALIASING,
       RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     placeSections();
     Iterator iter = sectionPanes.iterator();
@@ -147,14 +147,14 @@ public class BoardsPanel extends JPanel
     }
     if (districtPanes.size() > 0)
     {
-      DistrictPane dp = 
+      DistrictPane dp =
         (DistrictPane)districtPanes.get(districtPanes.size() - 1);
       int y = dp.getBottomY();
       g.setColor(Color.black);
       g.drawString("D:districte  S:secció", 4, y + getFont().getSize());
     }
   }
-  
+
   public void updateData(Results results)
   {
     currentDistrict = results.getCurrentDistrict();
@@ -163,7 +163,7 @@ public class BoardsPanel extends JPanel
     exploreBoards(results);
     repaint();
   }
-  
+
   private void exploreBoards(Results results)
   {
     Collection boards = results.getBoards();
@@ -176,7 +176,7 @@ public class BoardsPanel extends JPanel
     {
       Board board = (Board)iter.next();
       if (prevBoard == null ||
-        !prevBoard.getDistrict().equals(board.getDistrict()) || 
+        !prevBoard.getDistrict().equals(board.getDistrict()) ||
         !prevBoard.getSection().equals(board.getSection())) // new section
       {
         sectionPane = new SectionPane();
@@ -196,11 +196,11 @@ public class BoardsPanel extends JPanel
       prevBoard = board;
     }
   }
-  
+
   private void placeSections()
   {
     int columns = getWidth() / boxSize;
-  
+
     // placement
     Iterator iter = sectionPanes.iterator();
     String prevDistrict = null;
@@ -211,7 +211,7 @@ public class BoardsPanel extends JPanel
     while (iter.hasNext())
     {
       SectionPane sectionPane = (SectionPane)iter.next();
-      if (prevDistrict == null || 
+      if (prevDistrict == null ||
         !sectionPane.district.equals(prevDistrict))
       {
         districtPane = (DistrictPane)districtPanes.elementAt(districtIndex);
@@ -271,7 +271,7 @@ public class BoardsPanel extends JPanel
         currentDistrict = null;
         currentSection = null;
         currentBoardName = null;
-        
+
         if ((event.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
         {
           Point point = event.getPoint();
@@ -305,11 +305,11 @@ public class BoardsPanel extends JPanel
     String description;
     int row;
     int rowCount;
-    
+
     public void paint(Graphics g)
     {
-      g.setFont(smallFont);    
-      int y = row * boxSize;        
+      g.setFont(smallFont);
+      int y = row * boxSize;
       g.setColor(Color.black);
       String text = "D" + district + ": " + description;
       g.drawString(text, 3, y + g.getFont().getSize() + 2);
@@ -318,27 +318,27 @@ public class BoardsPanel extends JPanel
       g.setColor(Color.gray);
       g.drawLine(0, y, getWidth(), y);
     }
-    
+
     public int getBottomY()
     {
       return (row + rowCount) * boxSize;
     }
-    
+
     public String toString()
     {
       return district + " " + row;
     }
-    
+
     public boolean select(Point point)
     {
-      int y = row * boxSize;      
+      int y = row * boxSize;
       Rectangle rect = new Rectangle(0, y, getWidth(), rowCount * boxSize);
       boolean selected = rect.contains(point);
       if (selected) currentDistrict = district;
       return selected;
     }
   }
-  
+
   class SectionPane
   {
     String district;
@@ -351,14 +351,14 @@ public class BoardsPanel extends JPanel
     {
       sectionBoards.add(board);
     }
-    
+
     int getBoardsCount()
     {
       return sectionBoards.size();
     }
-    
+
     public void paint(Graphics g)
-    {    
+    {
       g.setFont(normalFont);
       int x = column * boxSize;
       int y = row * boxSize;
@@ -374,7 +374,7 @@ public class BoardsPanel extends JPanel
         Color fillColor = null;
         Color textColor = null;
         Color borderColor = null;
-        if (match(currentDistrict, sb.getDistrict()) && 
+        if (match(currentDistrict, sb.getDistrict()) &&
            match(currentSection, sb.getSection()) &&
            match(currentBoardName, sb.getBoardName()))
         {
@@ -394,7 +394,7 @@ public class BoardsPanel extends JPanel
         {
           borderColor = unselBorderColor;
           if (sb.isScrutinized())
-          {          
+          {
             fillColor = unselScruFillColor;
             textColor = unselScruTextColor;
           }
@@ -420,7 +420,7 @@ public class BoardsPanel extends JPanel
     {
       int x = column * boxSize;
       int y = row * boxSize;
-      Rectangle rect = 
+      Rectangle rect =
         new Rectangle(x, y, boxSize * (1 + getBoardsCount()), boxSize);
       boolean selected = rect.contains(point);
       if (selected)
@@ -443,6 +443,6 @@ public class BoardsPanel extends JPanel
         }
       }
       return selected;
-    }    
+    }
   }
 }

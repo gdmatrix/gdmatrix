@@ -36,7 +36,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.matrix.job.LogType;
-import org.santfeliu.job.service.LogFormatter;
+import org.santfeliu.util.log.LogFormatter;
 
 /**
  *

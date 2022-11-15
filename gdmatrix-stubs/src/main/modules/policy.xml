@@ -5,7 +5,7 @@
   wsdlLocation="../services/policy?wsdl"
   service="PolicyManagerService"
   port="PolicyManagerPort"
-  version="1.0"
+  version="1.1"
   status="FINAL"
   authors="Ricard Real, Abel Blanque">
 
@@ -163,6 +163,8 @@
     </struct>
 
     <struct name="PolicyFilter">
+      <property name="policyId" type="xs:string" minOccurs="0">
+      </property>
       <property name="title" type="xs:string" minOccurs="0">
       </property>
       <property name="description" type="xs:string" minOccurs="0">
@@ -208,6 +210,8 @@
       </property>
       <property name="policyId" type="xs:string" minOccurs="0" references="policy:Policy">
       </property>
+      <property name="policyTypeId" type="xs:string" minOccurs="0" references="dic:Type">
+      </property>
       <property name="activationDate" type="mx:date" minOccurs="0">
       </property>
       <property name="startCreationDate" type="mx:date" minOccurs="0">
@@ -249,6 +253,8 @@
       <property name="docId" type="xs:string" minOccurs="0" references="doc:Document">
       </property>
       <property name="policyId" type="xs:string" minOccurs="0" references="policy:Policy">
+      </property>
+      <property name="policyTypeId" type="xs:string" minOccurs="0" references="dic:Type">
       </property>
       <property name="activationDate" type="mx:date" minOccurs="0">
       </property>

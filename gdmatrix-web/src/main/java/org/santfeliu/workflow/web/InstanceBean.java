@@ -64,8 +64,11 @@ import org.santfeliu.workflow.VariableListConverter;
 import org.santfeliu.workflow.form.Form;
 import org.santfeliu.workflow.form.FormFactory;
 import static org.matrix.workflow.WorkflowConstants.*;
+import static org.santfeliu.workflow.web.InstanceListBean.FAIL_FORM_PROPERTY;
 import static org.santfeliu.workflow.web.InstanceListBean.FAIL_MESSAGE_PROPERTY;
+import static org.santfeliu.workflow.web.InstanceListBean.TERMINATION_FORM_PROPERTY;
 import static org.santfeliu.workflow.web.InstanceListBean.TERMINATION_MESSAGE_PROPERTY;
+import static org.santfeliu.workflow.web.InstanceListBean.HELP_BUTTON_URL_PROPERTY;
 
 /**
  *
@@ -337,11 +340,15 @@ public class InstanceBean extends FacesBean implements Serializable
     String url = null;
     if (variables != null)
     {
-      Object value = variables.get(WorkflowConstants.HELP_BUTTON_URL);
+      Object value = variables.get(HELP_BUTTON_URL);
       if (value instanceof String)
       {
         url = (String)value;
       }
+    }
+    if (url == null)
+    {
+      url = getNodeProperty(HELP_BUTTON_URL_PROPERTY);
     }
     return url;
   }
@@ -409,6 +416,64 @@ public class InstanceBean extends FacesBean implements Serializable
   {
     if (variables == null) return false;
     return variables.get(ERRORS) != null;
+  }
+
+  public String getFinalFormSelector()
+  {
+    String selector = null;
+
+    if (variables != null)
+    {
+      if (variables.get(ERRORS) == null) // OK
+      {
+        Object value = variables.get(TERMINATION_FORM);
+        if (value instanceof String)
+        {
+          selector = (String)value;
+        }
+        else if (!variables.containsKey(TERMINATION_MESSAGE))
+        {
+          selector = getNodeProperty(TERMINATION_FORM_PROPERTY);
+        }
+      }
+      else // end with errors
+      {
+        Object value = variables.get(FAIL_FORM);
+        if (value instanceof String)
+        {
+          selector = (String)value;
+        }
+        else if (!variables.containsKey(FAIL_MESSAGE))
+        {
+          selector = getNodeProperty(FAIL_FORM_PROPERTY);
+        }
+      }
+    }
+    return selector;
+  }
+
+  public org.santfeliu.form.Form getFinalForm()
+  {
+    String selector = getFinalFormSelector();
+    if (selector == null) return null;
+
+    try
+    {
+      // in post back always use cache
+      org.santfeliu.form.FormFactory formFactory =
+        org.santfeliu.form.FormFactory.getInstance();
+
+      if (getFacesContext().getRenderResponse())
+      {
+        formFactory.clearForm(selector);
+      }
+      return formFactory.getForm(selector, variables);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+      return null;
+    }
   }
 
   public String getFinalMessage()

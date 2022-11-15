@@ -33,6 +33,7 @@ package org.santfeliu.matrix.ide;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 /**
  *
@@ -48,9 +49,9 @@ public class PackageRunnerDialog extends javax.swing.JDialog
   /**
    * Creates new form JavaScriptDialog
    */
-  public PackageRunnerDialog(java.awt.Frame parent)
+  public PackageRunnerDialog(MatrixIDE ide)
   {
-    super(parent, true);
+    super(ide, true);
     initComponents();
     abortButton.setVisible(false);
   }
@@ -184,10 +185,14 @@ public class PackageRunnerDialog extends javax.swing.JDialog
       code += "\n" + functionCall;
 
       runner = new JavaScriptRunner(code, outputTextArea);
-      runner.getVariables().put("packageDir", script.getParentFile());
-      runner.getVariables().put("serverUrl", connectionParameters.getURL());
-      runner.getVariables().put("username", connectionParameters.getUsername());
-      runner.getVariables().put("password", connectionParameters.getPassword());
+      HashMap variables = runner.getVariables();
+      variables.put("ide", (MatrixIDE)getParent());
+      variables.put("packageDir", script.getParentFile());
+      variables.put("serverUrl", connectionParameters.getURL());
+      variables.put("username", connectionParameters.getUsername());
+      variables.put("password", connectionParameters.getPassword());
+      variables.put("password", connectionParameters.getPassword());
+
       runner.setResultConsumer(result ->
       {
         runner = null;

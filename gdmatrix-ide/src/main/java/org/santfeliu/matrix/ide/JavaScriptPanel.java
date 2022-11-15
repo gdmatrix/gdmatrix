@@ -34,7 +34,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -46,8 +45,10 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.text.EditorKit;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.swing.FlatSplitPane;
 import org.santfeliu.swing.layout.WrapLayout;
+import org.santfeliu.swing.text.JavaScriptDocument;
 import org.santfeliu.swing.text.JavaScriptEditorKit;
 import org.santfeliu.swing.text.SymbolHighlighter;
 
@@ -58,6 +59,10 @@ import org.santfeliu.swing.text.SymbolHighlighter;
 public class JavaScriptPanel extends TextPanel
 {
   private final JToolBar toolBar = new JToolBar();
+  private final JButton shiftRightButton = new JButton();
+  private final JButton shiftLeftButton = new JButton();
+  private final JButton commentButton = new JButton();
+  private final JButton uncommentButton = new JButton();
   private final JButton runButton = new JButton();
   private final JButton stopButton = new JButton();
   private final JToggleButton outputButton = new JToggleButton();
@@ -123,34 +128,66 @@ public class JavaScriptPanel extends TextPanel
     outputTextArea.setFont(textPane.getFont());
     scrollPane.getViewport().add(outputTextArea);
 
+    shiftLeftButton.setText("Shift left");
+    shiftLeftButton.setIcon(new ImageIcon(getClass().getResource(
+      "/org/santfeliu/matrix/ide/resources/images/shift_line_left.png")));
+    shiftLeftButton.addActionListener((ActionEvent e) ->
+    {
+      shiftLeftButton_actionPerformed(e);
+    });
+    toolBar.add(shiftLeftButton, null);
+
+    shiftRightButton.setText("Shift right");
+    shiftRightButton.setIcon(new ImageIcon(getClass().getResource(
+      "/org/santfeliu/matrix/ide/resources/images/shift_line_right.png")));
+    shiftRightButton.addActionListener((ActionEvent e) ->
+    {
+      shiftRightButton_actionPerformed(e);
+    });
+    toolBar.add(shiftRightButton, null);
+
+    commentButton.setText("Comment");
+    commentButton.setIcon(new ImageIcon(getClass().getResource(
+      "/org/santfeliu/matrix/ide/resources/images/comment.png")));
+    commentButton.addActionListener((ActionEvent e) ->
+    {
+      commentButton_actionPerformed(e);
+    });
+    toolBar.add(commentButton, null);
+
+    uncommentButton.setText("Uncomment");
+    uncommentButton.setIcon(new ImageIcon(getClass().getResource(
+      "/org/santfeliu/matrix/ide/resources/images/uncomment.png")));
+    uncommentButton.addActionListener((ActionEvent e) ->
+    {
+      uncommentButton_actionPerformed(e);
+    });
+    toolBar.add(uncommentButton, null);
+
+    toolBar.addSeparator(new Dimension(8, 20));
+
     runButton.setText("Run");
     runButton.setIcon(new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/run.gif")));
-    runButton.addActionListener(new ActionListener()
+    runButton.addActionListener((ActionEvent e) ->
     {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        runButton_actionPerformed(e);
-      }
+      runButton_actionPerformed(e);
     });
     toolBar.add(runButton, null);
 
     stopButton.setText("Stop");
     stopButton.setIcon(new ImageIcon(getClass().getResource(
       "/org/santfeliu/matrix/ide/resources/images/stop.gif")));
-    stopButton.addActionListener(new ActionListener()
+    stopButton.addActionListener((ActionEvent e) ->
     {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        stopButton_actionPerformed(e);
-      }
+      stopButton_actionPerformed(e);
     });
     toolBar.add(stopButton, null);
     stopButton.setEnabled(false);
 
     outputButton.setText("Show output");
+    outputButton.setIcon(new ImageIcon(getClass().getResource(
+      "/org/santfeliu/matrix/ide/resources/images/output.png")));
     outputButton.addActionListener((ActionEvent e) ->
     {
       outputButton_actionPerformed(e);
@@ -178,6 +215,28 @@ public class JavaScriptPanel extends TextPanel
     splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
   }
 
+  private void shiftLeftButton_actionPerformed(ActionEvent e)
+  {
+    int indentSpaces = Options.getIndentSpaces();
+    removeStringFromSelection(getIndent(indentSpaces));
+  }
+
+  private void shiftRightButton_actionPerformed(ActionEvent e)
+  {
+    int indentSpaces = Options.getIndentSpaces();
+    insertStringToSelection(getIndent(indentSpaces));
+  }
+
+  private void commentButton_actionPerformed(ActionEvent e)
+  {
+    insertStringToSelection("//");
+  }
+
+  private void uncommentButton_actionPerformed(ActionEvent e)
+  {
+    removeStringFromSelection("//");
+  }
+
   private void runButton_actionPerformed(ActionEvent e)
   {
     if (runner == null)
@@ -197,6 +256,7 @@ public class JavaScriptPanel extends TextPanel
         code = textPane.getText();
       }
       runner = new JavaScriptRunner(code, outputTextArea);
+      runner.getVariables().put("ide", getMainPanel().getIDE());
       runner.setResultConsumer(result ->
       {
         runner = null;
@@ -230,6 +290,80 @@ public class JavaScriptPanel extends TextPanel
   private void clearButton_actionPerformed(ActionEvent e)
   {
     outputTextArea.setText("");
+  }
+
+  private String getIndent(int size)
+  {
+    StringBuilder buffer = new StringBuilder();
+    for (int i = 0; i < size; i++)
+    {
+      buffer.append(" ");
+    }
+    return buffer.toString();
+  }
+
+  private void insertStringToSelection(String text)
+  {
+    try
+    {
+      JTextPane textPane = textEditor.getTextPane();
+      JavaScriptDocument document = (JavaScriptDocument)textPane.getDocument();
+      int start = textPane.getSelectionStart();
+      int end = textPane.getSelectionEnd();
+      if (start == end) return;
+
+      String code = document.getText(start, end - start);
+      String[] lines = code.split("\n");
+      for (int i = 0; i < lines.length; i++)
+      {
+        String line = lines[i];
+        if (!StringUtils.isBlank(line))
+        {
+          lines[i] = text + line;
+        }
+      }
+      code = String.join("\n", lines);
+      document.replace(start, end - start, code, null);
+
+      textPane.setSelectionStart(start);
+      textPane.setSelectionEnd(start + code.length());
+    }
+    catch (Exception ex)
+    {
+    }
+  }
+
+  private void removeStringFromSelection(String text)
+  {
+    try
+    {
+      JTextPane textPane = textEditor.getTextPane();
+      JavaScriptDocument document = (JavaScriptDocument)textPane.getDocument();
+      int start = textPane.getSelectionStart();
+      int end = textPane.getSelectionEnd();
+      if (start == end) return;
+
+      String code = document.getText(start, end - start);
+      String[] lines = code.split("\n");
+      for (int i = 0; i < lines.length; i++)
+      {
+        String line = lines[i];
+        int index = line.indexOf(text);
+        if (index >= 0 && line.substring(0, index).trim().length() == 0)
+        {
+          lines[i] = line.substring(0, index) +
+            line.substring(index + text.length());
+        }
+      }
+      code = String.join("\n", lines);
+      document.replace(start, end - start, code, null);
+
+      textPane.setSelectionStart(start);
+      textPane.setSelectionEnd(start + code.length());
+    }
+    catch (Exception ex)
+    {
+    }
   }
 
   private void showOutput()
