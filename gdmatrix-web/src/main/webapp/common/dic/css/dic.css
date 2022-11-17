@@ -1,4 +1,8 @@
-.hidden {color:blue}
+.resultList .hidden 
+{
+  color:blue;
+  display: inherit !important;
+}
 
 .treePaginator
 {
