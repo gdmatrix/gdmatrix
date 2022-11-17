@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
 import org.matrix.dic.PropertyType;
@@ -57,8 +58,8 @@ import org.santfeliu.web.bean.CMSProperty;
  *
  * @author blanquepa
  */
-
-public class ScriptFormHelper extends ScriptHelper implements Serializable
+public class ScriptFormHelper extends ScriptHelper<ScriptFormPage> 
+  implements Serializable
 {
   @CMSProperty
   public static final String SCRIPT_NAME = "scriptName";
@@ -87,9 +88,10 @@ public class ScriptFormHelper extends ScriptHelper implements Serializable
   @Override
   protected ScriptFormPage getBacking()
   {
-    return (ScriptFormPage) backing;
+    return backing;
   }
   
+  @Override
   protected void setBacking(ScriptFormPage backing)  
   {
     this.backing = backing;
@@ -168,7 +170,7 @@ public class ScriptFormHelper extends ScriptHelper implements Serializable
     return outcome; 
   }
   
-   
+  
   public void onFormTabChange(TabChangeEvent event)
   {
     try
@@ -204,6 +206,49 @@ public class ScriptFormHelper extends ScriptHelper implements Serializable
     }
   }
   
+  public void mergeProperties()
+  {
+    Map<String, Property> map = new HashMap<>();
+    
+    //Add backing properties
+    List<Property> properties = getBacking().getProperties();
+    for (Property prop : properties)
+    {
+      map.put(prop.getName(), prop);
+    }
+
+    //Add persistent data map
+    for (Object key : data.keySet())
+    {
+      String name = (String)key;      
+      Object value = data.get(key);
+      if (value != null)
+      {
+
+        Property prop = new Property();
+        prop.setName(name);
+        if (value instanceof Collection)
+        {
+          List<String> lvalue = (List<String>) value;
+          if (!lvalue.isEmpty())
+            prop.getValue().addAll(lvalue);
+        }
+        else
+        {
+          String svalue = (String) value;
+          if (!StringUtils.isBlank(svalue))
+            prop.getValue().add(svalue);
+        }
+        map.put(name, prop);
+      }
+      else
+        map.remove(name);
+    }
+
+    getBacking().getProperties().clear();
+    getBacking().getProperties().addAll(map.values());
+  }
+  
   @Override
   protected String getScriptPageName()
   {
@@ -233,36 +278,7 @@ public class ScriptFormHelper extends ScriptHelper implements Serializable
       outdata.clear();
     }
   }
-  
-  private void mergeProperties()
-  {
-    Map<String, Property> map = new HashMap<>();
     
-    //Add backing properties
-    List<Property> properties = getBacking().getProperties();
-    for (Property prop : properties)
-    {
-      map.put(prop.getName(), prop);
-    }
-
-    //Add persistent data map
-    for (Object key : data.keySet())
-    {
-      Object value = data.get(key);
-      String name = (String)key;
-      Property prop = new Property();
-      prop.setName(name);
-      if (value instanceof Collection)
-        prop.getValue().addAll((List<String>) value);
-      else
-        prop.getValue().add((String) value);
-      map.put(name, prop);
-    }
-
-    getBacking().getProperties().clear();
-    getBacking().getProperties().addAll(map.values());
-  }
-  
   private void loadFormTabs()
   {
     formTabs = new ArrayList<>();
@@ -311,7 +327,7 @@ public class ScriptFormHelper extends ScriptHelper implements Serializable
     Type type = TypeCache.getInstance().getType(typeId);
     Map<String, PropertyDefinition> pds = new HashMap<>();    
     
-    //For every property create its Field and add in on FormFields
+    //For every property create its Field and add in FormFields
     if (properties != null)
     {
       for (Property property : properties)
@@ -319,13 +335,13 @@ public class ScriptFormHelper extends ScriptHelper implements Serializable
         PropertyDefinition propDef = 
           type.getPropertyDefinition(property.getName());
         Field field; 
-        Object value;
+        Object value = null;
 
         if (propDef != null)
         {
           if (propDef.getMaxOccurs() != 1)
             value = property.getValue();
-          else
+          else if (!property.getValue().isEmpty())
             value = property.getValue().get(0);
           field = new Field(propDef, value);          
         }
@@ -360,8 +376,8 @@ public class ScriptFormHelper extends ScriptHelper implements Serializable
     //Add all PropertyDefinition not present as properties to List and Map.
     for (PropertyDefinition pd : type.getPropertyDefinition())
     {
-      if (!pd.isHidden() && !pd.isReadOnly())
-      {
+      if (!pd.isReadOnly() && !backing.getTypedHelper().isPropertyHidden(pd))
+      { 
         PropertyDefinition mapped = pds.get(pd.getName());
         if (mapped == null)
         {

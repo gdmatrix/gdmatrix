@@ -3,6 +3,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="/pf/common/obj/#{objectPage}.xhtml">
   
   <ui:define name="advanced_filter">
@@ -82,29 +83,38 @@
     </p:fieldset>
     
     <!-- searchExpression -->
-    <p:outputPanel styleClass="field" rendered="#{caseSearchBacking.typedHelper.render('searchExpression')}">
+    <p:outputPanel styleClass="field" rendered="#{caseSearchBacking.typedHelper.isPropertyHidden('searchExpression')}">
       <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}:" />
       <p:inputText id="searchExpression" value="#{caseSearchBacking.filter.searchExpression}"
                    styleClass="inputfield w-full"/>
     </p:outputPanel>    
     
-<!--
-    <ui:include src="/pf/common/obj/object_form.xhtml">
-      <ui:param name="backing" value="#{caseSearchBacking}" />
-    </ui:include>
--->
+    <p:tabView  id="script_forms" dynamic="true" cache="true" activeIndex="#{caseSearchBacking.scriptHelper.activeIndex}">
+      <p:ajax event="tabChange" listener="#{caseSearchBacking.scriptHelper.onFormTabChange}" update="script_forms"/>
+      <c:forEach items="#{caseSearchBacking.scriptHelper.formTabs}" var="form" >
+        <p:tab title="#{form.label}">
+          <ui:include src="#{form.url}">
+            <ui:param name="backing" value="#{caseSearchBacking}" />
+            <ui:param name="columns" value="col-12" />
+          </ui:include>
+        </p:tab>
+      </c:forEach>
+    </p:tabView>  
     
     <div class="buttons text-right">
       <p:commandButton value="#{objectBundle.clear}"
-                       ajax="#{ajax}"
+                       ajax="#{objectPage == 'object_search' ? true : false}"
                        action="#{caseSearchBacking.clear}"
                        styleClass="ui-button-raised m-1"
-                       update="search_accordion"/>      
+                       process="@parent" 
+                       update="smart_value script_forms"
+                       oncomplete="clickSlickDot(2);"/>      
       <p:commandButton id="advanced_search_button"
                        value="#{objectBundle.search}"
                        action="#{caseSearchBacking.search}"
                        ajax="#{objectPage == 'object_search' ? true : false}"
-                       process="@parent" update="#{objectPage == 'object_search' ? ':mainform:search_results_panel smart_value' :''}"
+                       process="@parent" 
+                       update="#{objectPage == 'object_search' ? ':mainform:search_results_panel smart_value script_forms' :''}"
                        styleClass="ui-button-raised m-1" 
                        oncomplete="clickSlickDot(2)"/>
     </div>              

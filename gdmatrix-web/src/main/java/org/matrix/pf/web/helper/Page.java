@@ -51,4 +51,9 @@ public interface Page
   {
     return WebUtils.getMultivaluedMenuItemProperty(name);
   }
+  
+  public default boolean isPropertyHidden(String name)
+  {
+    return WebUtils.isPropertyHidden(name);
+  }
 }

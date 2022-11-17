@@ -51,5 +51,11 @@ public interface TypedPage extends Typed, Page
   public default List<String> getMultivaluedProperty(String name)
   {
     return getTypedHelper().getMultivaluedProperty(name);
-  }    
+  } 
+  
+  @Override
+  public default boolean isPropertyHidden(String name)
+  {
+    return getTypedHelper().isPropertyHidden(name);
+  }
 }

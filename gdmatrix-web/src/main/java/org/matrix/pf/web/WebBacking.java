@@ -103,20 +103,6 @@ public class WebBacking extends FacesBean
       getMultivaluedMenuItemProperty(name));
   }  
 
-  protected boolean render(String property, boolean defaultValue)
-  {
-    String propValue = getMenuItemProperty(property);
-    if (propValue != null)
-      return Boolean.parseBoolean(propValue);
-    else
-      return defaultValue;
-  }
-  
-  protected boolean render(String propertyName)
-  {
-    return render(propertyName, true);
-  }
-
   protected NodeEditBean getNodeEditBean()
   {
     return (NodeEditBean)getBean("nodeEditBean");

@@ -33,8 +33,10 @@ package org.matrix.pf.script;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import org.mozilla.javascript.Context;
 import org.santfeliu.faces.FacesBean;
@@ -51,16 +53,46 @@ public class ScriptBean extends FacesBean
 {
   private final String scriptName;
   private WebScriptableBase scope;
+  private final Map<String, Object> injectionMap;
+  
+  public static final Logger LOGGER = 
+    Logger.getLogger(ScriptBean.class.getName());
 
-  public ScriptBean(String scriptName) throws Exception
+  public ScriptBean(String scriptName) 
   {     
     this.scriptName = scriptName;
-    initScope(scriptName);      
+    
+    this.injectionMap = new HashMap();
+    injectionMap.put("userSessionBean", UserSessionBean.getCurrentInstance());
+    FacesContext facesContext = getFacesContext();
+    if (facesContext != null)
+    {
+      injectionMap.put("facesContext", facesContext);
+      injectionMap.put("externalContext", getExternalContext());
+      injectionMap.put("request", getExternalContext().getRequest());
+      injectionMap.put("application", getApplication());
+      injectionMap.put("logger", LOGGER);
+    }        
   }
+  
+  /**
+   * Initialize scope and force script compilation.
+   * @throws Exception 
+   */
+  public void initScope() throws Exception
+  {
+    if (scriptName != null && scope == null)
+      execute(scriptName); 
+  }   
 
   public String getScriptName()
   {
     return scriptName;
+  }
+  
+  public void inject(String name, Object object)
+  {
+    injectionMap.put(name, object);
   }
 
   public Object call(String method, Object... args) throws Exception
@@ -173,11 +205,7 @@ public class ScriptBean extends FacesBean
   }  
   
   //Private methods
-  private void initScope(String scriptName) throws Exception
-  {
-    if (scope == null)
-      execute(scriptName); //Force script compilation
-  }  
+ 
   
   private String toString(Object[] args)
   {
@@ -208,36 +236,21 @@ public class ScriptBean extends FacesBean
   }
     
   private Object execute(String scriptName, String methodExpr) throws Exception
-  {
-    System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BEGIN " 
-      + (methodExpr != null ? scriptName + "." + methodExpr : scriptName));
-    
-    try
-    {
-      Context context = Context.enter();
-      if (scope == null)
-        scope = new WebScriptableBase(context);
-      
-      ScriptClient client = new ScriptClient(context, scope);
-      client.put("userSessionBean", UserSessionBean.getCurrentInstance());
-      FacesContext facesContext = getFacesContext();
-      if (facesContext != null)
-      {
-        client.put("facesContext", facesContext);
-        client.put("externalContext", getExternalContext());
-        client.put("request", getExternalContext().getRequest());
-        client.put("application", getApplication());
-      }
+  {    
+    Context context = Context.enter();
+    if (scope == null)
+      scope = new WebScriptableBase(context);
 
-      if (methodExpr != null)
-        return client.executeScript(scriptName, methodExpr);   
-      else
-        return client.executeScript(scriptName);
-    }
-    finally
+    ScriptClient client = new ScriptClient(context, scope);
+    for (String key : injectionMap.keySet())
     {
-      System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END " + (methodExpr != null ? scriptName + "." + methodExpr : scriptName));        
+      client.put(key, injectionMap.get(key));
     }
+    
+    if (methodExpr != null)
+      return client.executeScript(scriptName, methodExpr);   
+    else
+      return client.executeScript(scriptName);
   }
   
 }

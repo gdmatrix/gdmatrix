@@ -55,8 +55,10 @@ import org.santfeliu.web.HttpUtils;
 /**
  *
  * @author blanquepa
+ * @param <T> extends ScriptPage
  */
-public class ScriptHelper extends WebBacking implements Serializable
+public class ScriptHelper<T extends ScriptPage> extends WebBacking 
+  implements Serializable
 {
   private static final String FORM_SERVLET = "/form/";
   private static final String FORM_RENDERER_CLASS = 
@@ -64,7 +66,7 @@ public class ScriptHelper extends WebBacking implements Serializable
   
   public static final String SCRIPT_BACKING_NAME = "scriptBackingName";  
   
-  protected ScriptPage backing;
+  protected T backing;
   
   protected Map data = new HashMap<>(); //Data persisted as dynamic properties
   protected Map outdata = new HashMap<>(); //Not persistent data  
@@ -73,17 +75,17 @@ public class ScriptHelper extends WebBacking implements Serializable
   {
   }
   
-  protected ScriptHelper(ScriptPage backing)
+  protected ScriptHelper(T backing)
   {
     this.backing = backing;
   }
 
-  protected ScriptPage getBacking()
+  protected T getBacking()
   {
     return backing;
   }
 
-  public void setBacking(ScriptPage backing)
+  protected void setBacking(T backing)
   {
     this.backing = backing;
   }
@@ -141,6 +143,9 @@ public class ScriptHelper extends WebBacking implements Serializable
       try
       {
         ScriptBean scriptBean = new ScriptBean(scriptBackingName);
+        scriptBean.inject("data", data);
+        scriptBean.inject("outdata", outdata);
+        scriptBean.initScope();
         if (scriptBean.containsKey(methodName))
           result = scriptBean.call(methodName, args);     
       }

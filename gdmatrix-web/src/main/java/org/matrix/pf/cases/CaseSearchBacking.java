@@ -37,7 +37,10 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import org.matrix.dic.Property;
 import static org.matrix.pf.cases.CaseConfigBacking.LOAD_METADATA_PROPERTY;
+import org.matrix.pf.script.ScriptFormHelper;
+import org.matrix.pf.script.ScriptFormPage;
 import org.matrix.pf.web.SearchBacking;
 import org.matrix.pf.web.helper.TypedHelper;
 import org.matrix.pf.web.helper.TypedPage;
@@ -51,7 +54,7 @@ import org.santfeliu.util.TextUtils;
  */
 @Named("caseSearchBacking")
 public class CaseSearchBacking extends SearchBacking 
-  implements TypedPage
+  implements TypedPage, ScriptFormPage
 {
 
   public static final String OUTCOME = "pf_case_search";
@@ -60,6 +63,7 @@ public class CaseSearchBacking extends SearchBacking
   
   private CaseFilter filter;
   private TypedHelper typedHelper;
+  private ScriptFormHelper scriptHelper;
   
   public CaseSearchBacking()
   {   
@@ -74,7 +78,8 @@ public class CaseSearchBacking extends SearchBacking
     if (typeId != null)
       filter.setCaseTypeId(typeId);    
     smartValue = null;
-    typedHelper = new TypedHelper(this); 
+    typedHelper = new TypedHelper(this);
+    scriptHelper = new ScriptFormHelper(this);
   }
   
   public CaseFilter getFilter()
@@ -85,6 +90,16 @@ public class CaseSearchBacking extends SearchBacking
   public void setFilter(CaseFilter filter)
   {
     this.filter = filter;
+  }
+
+  public ScriptFormHelper getScriptHelper()
+  {
+    return scriptHelper;
+  }
+
+  public void setScriptHelper(ScriptFormHelper scriptHelper)
+  {
+    this.scriptHelper = scriptHelper;
   }
 
   public List<String> getCaseId()
@@ -136,7 +151,17 @@ public class CaseSearchBacking extends SearchBacking
   @Override
   public String show()
   {
-    String outcome = super.show();
+    String outcome = null;
+    try
+    {
+      outcome = super.show();
+      scriptHelper.show();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+    
     return outcome;
   }
      
@@ -150,6 +175,7 @@ public class CaseSearchBacking extends SearchBacking
       if (typeId != null)
         filter.setCaseTypeId(typeId);
     }
+    scriptHelper.mergeProperties();
     return super.search();
   }
   
@@ -205,7 +231,7 @@ public class CaseSearchBacking extends SearchBacking
     }
     return results;
   }  
-  
+ 
   private CaseFilter convert(String smartValue)
   {
     filter = new CaseFilter();
@@ -283,6 +309,24 @@ public class CaseSearchBacking extends SearchBacking
         results.set(i, cas);
       }
     }
+  }
+
+  @Override
+  public List<Property> getProperties()
+  {
+    return filter.getProperty();
+  }
+
+  @Override
+  public String save() throws Exception
+  { //TODO: Search specific ScriptHelper?
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void load() throws Exception
+  {
+    
   }
   
   

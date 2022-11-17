@@ -90,24 +90,25 @@ public class TypedHelper extends WebBacking
 
   public boolean isPropertyHidden(String propName)
   {
-    return isPropertyHidden(getTypeId(), propName);
+    PropertyDefinition pd = getPropertyDefinition(getTypeId(), propName);     
+    return isPropertyHidden(pd);
+  }
+    
+  public boolean isPropertyHidden(PropertyDefinition pd)
+  {
+    if (pd == null)
+      return true;
+    
+    String propName = pd.getName();
+    propName = "render" + StringUtils.capitalize(propName);
+    
+    String value = getNodeProperty(propName);
+    if (value != null)
+      return !Boolean.parseBoolean(value);
+
+    return pd.isHidden(); 
   }
   
-
-  /**
-   * @param propName: render property name.
-   * @return  true if property is defined in CMS node and hasn't 'false' value
-   * or if is defined in type as PropertyDefinitions with value not 'false'.
-   */
-  @Override
-  public boolean render(String propName)
-  {
-    propName = "render" + StringUtils.capitalize(propName);
-    String value = getFirstPropertyDefinitionValue(propName);
-    boolean defValue = (value == null || !value.equalsIgnoreCase("false"));
-    return render(propName, defValue);
-  }
-
   public String getPropertyLabel(String propName, String altName)
   {
     PropertyDefinition pd
@@ -123,11 +124,7 @@ public class TypedHelper extends WebBacking
    */
   public String getProperty(String name)
   {
-    String value;
-    if (backing instanceof TabPage)
-      value = ((TabPage)backing).getTabHelper().getProperty(name);
-    else
-      value = getMenuItemProperty(name);
+    String value = getNodeProperty(name);
     
     if (value == null)
       value = getFirstPropertyDefinitionValue(name);
@@ -142,11 +139,7 @@ public class TypedHelper extends WebBacking
    */
   public List<String> getMultivaluedProperty(String name)
   {
-    List<String> values;
-    if (backing instanceof TabPage)
-      values = ((TabPage)backing).getTabHelper().getMultivaluedProperty(name);
-    else
-      values = getMultivaluedMenuItemProperty(name);
+    List<String> values = getMultivaluedNodeProperty(name);
     
     if (values == null || values.isEmpty())
       values = getPropertyDefinitionValue(name);
@@ -154,7 +147,29 @@ public class TypedHelper extends WebBacking
     return values;
   }  
 
-  // Private methods  
+  // Private methods 
+  private String getNodeProperty(String propName)
+  {
+    String value;
+    if (backing instanceof TabPage)
+      value = ((TabPage)backing).getTabHelper().getProperty(propName);
+    else
+      value = getMenuItemProperty(propName); 
+    
+    return value;
+  }
+  
+  private List<String> getMultivaluedNodeProperty(String propName)
+  {
+    List<String> values;
+    if (backing instanceof TabPage)
+      values = ((TabPage)backing).getTabHelper()
+        .getMultivaluedProperty(propName);
+    else
+      values = getMultivaluedMenuItemProperty(propName);
+    return values;
+  }
+   
   private String getFirstPropertyDefinitionValue(String propName)
   {
     List<String> values = getPropertyDefinitionValue(propName);
@@ -207,19 +222,6 @@ public class TypedHelper extends WebBacking
       }
     }
     return null;
-  }
-
-  private boolean isPropertyHidden(String typeId, String propName)
-  {
-    PropertyDefinition pd = getPropertyDefinition(typeId, propName);
-    if (pd != null)
-    {
-      return pd.isHidden();
-    }
-    else
-    {
-      return false;
-    }
   }
 
   private List<SelectItem> getAllTypeItems(String... actions)

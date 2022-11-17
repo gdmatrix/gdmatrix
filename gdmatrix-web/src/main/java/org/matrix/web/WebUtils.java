@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
 
@@ -140,6 +141,15 @@ public class WebUtils
     MenuItemCursor menuItem =
       UserSessionBean.getCurrentInstance().getMenuModel().getSelectedMenuItem();
     return menuItem.getDirectMultiValuedProperty(name);
-  }  
+  } 
+  
+  public static boolean isPropertyHidden(String name)
+  {
+    if (name == null)
+      return true;
+    
+    String value = getMenuItemProperty("render" + StringUtils.capitalize(name));
+    return Boolean.parseBoolean(value);
+  }
 
 }

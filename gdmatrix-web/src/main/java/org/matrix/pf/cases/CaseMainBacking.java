@@ -154,8 +154,10 @@ public class CaseMainBacking extends PageBacking
     
   public void setStartDateTime(Date date)
   {
-    if (date != null && cas != null)
+    if (cas != null)
     {
+      if (date == null)
+        date = new Date();
       cas.setStartDate(TextUtils.formatDate(date, "yyyyMMdd"));
       cas.setStartTime(TextUtils.formatDate(date, "HHmmss"));
     }
@@ -231,22 +233,23 @@ public class CaseMainBacking extends PageBacking
   @Override
   public String save() throws Exception
   {
-    CaseConfigBean.getPort().storeCase(cas);
+    cas = CaseConfigBean.getPort().storeCase(cas);
     return null;
   }
   
   @Override
   public String store()
   {
+    String outcome = null;
     try
     {
-      scriptHelper.callStore();
+      outcome = scriptHelper.callStore();
     }
     catch (Exception ex)
     {
       error(ex);
     }
-    return null;    
+    return outcome;    
   }
   
   @Override
@@ -296,8 +299,7 @@ public class CaseMainBacking extends PageBacking
       
   private Date getDate(String date, String time)
   {
-    String dateTime = 
-      TextUtils.concatDateAndTime(date, time);
+    String dateTime = TextUtils.concatDateAndTime(date, time);
     return TextUtils.parseInternalDate(dateTime);    
   }        
 }

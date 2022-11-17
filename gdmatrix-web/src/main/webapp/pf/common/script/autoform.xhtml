@@ -7,7 +7,7 @@
   <div class="ui-fluid formgrid grid">             
     <ui:repeat value="#{backing.scriptHelper.fields}" var="field">
 
-      <p:outputPanel styleClass="field col-12 md:col-4" >
+      <p:outputPanel styleClass="field #{columns != null ? columns : 'col-12 md:col-4'}">
         <p:outputLabel for="@next" class="w-full" style="#{field.label == field.name ? 'color:red' : ''}"
                        value="#{field.label}"/>
         <!-- TEXT SINGLE -->
