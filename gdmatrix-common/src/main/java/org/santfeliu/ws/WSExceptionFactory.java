@@ -94,11 +94,9 @@ public class WSExceptionFactory
           for (int i = 0; i < childNodes.getLength(); i++)
           {
             Node node = childNodes.item(i);
-            if (node.getNodeName().equals("message"))
-            {
-              details.add(node.getTextContent());
-              break;
-            }
+            String text = node.getTextContent();
+            if (!details.contains(text))
+              details.add(text);
           }
         }
       }
