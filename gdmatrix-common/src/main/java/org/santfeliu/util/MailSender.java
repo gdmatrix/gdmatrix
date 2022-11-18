@@ -80,10 +80,10 @@ public class MailSender
     setRecipients(msg, recipients, MimeMessage.RecipientType.TO);
     //cc
     if (ccs != null)
-      setRecipients(msg, recipients, MimeMessage.RecipientType.CC);
+      setRecipients(msg, ccs, MimeMessage.RecipientType.CC);
     //bcc
     if (bccs != null)
-      setRecipients(msg, recipients, MimeMessage.RecipientType.BCC);
+      setRecipients(msg, bccs, MimeMessage.RecipientType.BCC);
     // send the message
     send(msg);
 
@@ -114,10 +114,10 @@ public class MailSender
     setRecipients(msg, recipients, MimeMessage.RecipientType.TO);
     //cc
     if (ccs != null)
-      setRecipients(msg, recipients, MimeMessage.RecipientType.CC);
+      setRecipients(msg, ccs, MimeMessage.RecipientType.CC);
     //bcc
     if (bccs != null)
-      setRecipients(msg, recipients, MimeMessage.RecipientType.BCC);
+      setRecipients(msg, bccs, MimeMessage.RecipientType.BCC);
     // send the message
     send(msg);
 
@@ -134,10 +134,10 @@ public class MailSender
     setRecipients(msg, recipients, MimeMessage.RecipientType.TO);
     //cc
     if (ccs != null)
-      setRecipients(msg, recipients, MimeMessage.RecipientType.CC);
+      setRecipients(msg, ccs, MimeMessage.RecipientType.CC);
     //bcc
     if (bccs != null)
-      setRecipients(msg, recipients, MimeMessage.RecipientType.BCC);
+      setRecipients(msg, bccs, MimeMessage.RecipientType.BCC);
     // send the message
     send(msg);
 
