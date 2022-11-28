@@ -34,11 +34,10 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
-import org.matrix.cases.CasePersonFilter;
-import org.matrix.cases.CasePersonView;
+import org.matrix.cases.CaseDocumentFilter;
+import org.matrix.cases.CaseDocumentView;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
-import org.santfeliu.faces.beansaver.Savable;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -48,9 +47,9 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named
-public class CasePersonsTabBean extends TabBean
+public class CaseDocumentsTabBean extends TabBean
 {
-  private List<CasePersonView> casePersonViews;
+  private List<CaseDocumentView> caseDocumentViews;
   private String caseId;
   private int firstRow;
 
@@ -60,18 +59,18 @@ public class CasePersonsTabBean extends TabBean
     System.out.println("Creating " + this);
   }
 
-  public List<CasePersonView> getCasePersonViews()
+  public List<CaseDocumentView> getCaseDocumentViews()
   {
-    if (casePersonViews == null || !getObjectId().equals(caseId))
+    if (caseDocumentViews == null || !getObjectId().equals(caseId))
     {
       load();
     }
-    return casePersonViews;
+    return caseDocumentViews;
   }
 
-  public void setCasePersonViews(List<CasePersonView> casePersonViews)
+  public void setCaseDocumentViews(List<CaseDocumentView> caseDocumentViews)
   {
-    this.casePersonViews = casePersonViews;
+    this.caseDocumentViews = caseDocumentViews;
   }
 
   public int getFirstRow()
@@ -94,20 +93,20 @@ public class CasePersonsTabBean extends TabBean
   {
     caseId = getObjectId();
 
-    System.out.println("load casePersons:" + caseId);
+    System.out.println("load caseDocuments:" + caseId);
     if (!NEW_OBJECT_ID.equals(caseId))
     {
       try
       {
-        CasePersonFilter filter = new CasePersonFilter();
+        CaseDocumentFilter filter = new CaseDocumentFilter();
         filter.setCaseId(caseId);
-        casePersonViews = CaseConfigBean.getPort().findCasePersonViews(filter);
+        caseDocumentViews = CaseConfigBean.getPort().findCaseDocumentViews(filter);
       }
       catch (Exception ex)
       {
         error(ex);
       }
     }
-    else casePersonViews = Collections.EMPTY_LIST;
+    else caseDocumentViews = Collections.EMPTY_LIST;
   }
 }

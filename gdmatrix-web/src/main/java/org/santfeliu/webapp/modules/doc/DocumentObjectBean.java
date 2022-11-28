@@ -28,14 +28,14 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.cases;
+package org.santfeliu.webapp.modules.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Named;
-import org.matrix.cases.Case;
-import org.matrix.cases.CaseFilter;
-import org.santfeliu.cases.web.CaseConfigBean;
+import org.matrix.doc.Document;
+import org.matrix.doc.DocumentFilter;
+import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
 
@@ -44,15 +44,15 @@ import org.santfeliu.webapp.Tab;
  * @author realor
  */
 @Named
-public class CaseObjectBean extends ObjectBean
+public class DocumentObjectBean extends ObjectBean
 {
   private List<Tab> tabs;
   private String smartFilter;
-  private CaseFilter filter = new CaseFilter();
-  private List<Case> rows;
+  private DocumentFilter filter = new DocumentFilter();
+  private List<Document> rows;
   private int firstRow;
 
-  public CaseObjectBean()
+  public DocumentObjectBean()
   {
   }
 
@@ -66,22 +66,22 @@ public class CaseObjectBean extends ObjectBean
     this.smartFilter = smartFilter;
   }
 
-  public CaseFilter getFilter()
+  public DocumentFilter getFilter()
   {
     return filter;
   }
 
-  public void setFilter(CaseFilter filter)
+  public void setFilter(DocumentFilter filter)
   {
     this.filter = filter;
   }
 
-  public List<Case> getRows()
+  public List<Document> getRows()
   {
     return rows;
   }
 
-  public void setRows(List<Case> rows)
+  public void setRows(List<Document> rows)
   {
     this.rows = rows;
   }
@@ -99,7 +99,7 @@ public class CaseObjectBean extends ObjectBean
   @Override
   public String show()
   {
-    return "/pages/cases/case.xhtml";
+    return "/pages/doc/document.xhtml";
   }
 
   public String show(String objectId)
@@ -115,9 +115,8 @@ public class CaseObjectBean extends ObjectBean
     if (tabs == null)
     {
       tabs = new ArrayList<>();
-      tabs.add(new Tab("Main", "/pages/cases/case_main.xhtml", "caseMainTabBean"));
-      tabs.add(new Tab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
-      tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
+      tabs.add(new Tab("Main", "/pages/doc/document_main.xhtml", "documentMainTabBean"));
+      tabs.add(new Tab("Content", "/pages/doc/document_content.xhtml", "documentContentTabBean"));
     }
     return tabs;
   }
@@ -127,10 +126,10 @@ public class CaseObjectBean extends ObjectBean
     try
     {
       firstRow = 0;
-      CaseFilter basicFilter = new CaseFilter();
+      DocumentFilter basicFilter = new DocumentFilter();
       basicFilter.setTitle(smartFilter);
       basicFilter.setMaxResults(40);
-      rows = CaseConfigBean.getPort().findCases(basicFilter);
+      rows = DocumentConfigBean.getPort().findDocuments(basicFilter);
     }
     catch (Exception ex)
     {
@@ -144,7 +143,8 @@ public class CaseObjectBean extends ObjectBean
     {
       firstRow = 0;
       filter.setMaxResults(40);
-      rows = CaseConfigBean.getPort().findCases(filter);
+      rows = DocumentConfigBean.getPort().findDocuments(filter);
+      System.out.println("Documents: " + rows.size());
     }
     catch (Exception ex)
     {

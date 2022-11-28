@@ -8,24 +8,24 @@
    tr.current { font-weight: bold; }    
   </style>
   
-  <p:dataTable id="full_results_table" value="#{caseObjectBean.rows}" var="row"
+  <p:dataTable id="full_results_table" value="#{documentObjectBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5" 
                paginatorPosition="bottom" size="small"
-               rows="10" first="#{caseObjectBean.firstRow}"
-               rowStyleClass="#{row.caseId == caseObjectBean.objectId ? 'current' : ''}"
+               rows="10" first="#{documentObjectBean.firstRow}"
+               rowStyleClass="#{row.caseId == documentObjectBean.objectId ? 'current' : ''}"
                rendered="true">
-    <p:column headerText="#{caseBundle.case_caseId}" styleClass="w-1">
-      <h:outputText value="#{row.caseId}" />
+    <p:column headerText="docId" styleClass="w-1">
+      <h:outputText value="#{row.docId}" />
     </p:column>   
-    <p:column headerText="#{caseBundle.case_caseTypeId}" styleClass="w-2">
-      <h:outputText value="#{row.caseTypeId}" />
+    <p:column headerText="Type" styleClass="w-2">
+      <h:outputText value="#{row.docTypeId}" />
     </p:column>         
-    <p:column headerText="#{caseBundle.case_title}" styleClass="w-8">
+    <p:column headerText="Title" styleClass="w-8">
       <h:outputText value="#{row.title}" />
     </p:column>
     <p:column styleClass="w-1">
       <p:commandButton icon="pi pi-external-link" styleClass="ui-button-raised" 
-                       action="#{caseObjectBean.show(row.getCaseId())}"
+                       action="#{documentObjectBean.show(row.getDocId())}"
                        onclick="PF('objectTabs').select(0);"
                        oncomplete="PF('searchTabs').select(1);"
                        update="full_results_table :mainform:search_tabs:tabs"

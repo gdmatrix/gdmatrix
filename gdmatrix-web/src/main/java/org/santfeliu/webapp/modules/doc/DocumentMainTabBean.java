@@ -28,19 +28,15 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.cases;
+package org.santfeliu.webapp.modules.doc;
 
-import java.util.Collections;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
-import org.matrix.cases.CasePersonFilter;
-import org.matrix.cases.CasePersonView;
+import org.matrix.doc.ContentInfo;
+import org.matrix.doc.Document;
 import org.matrix.web.WebUtils;
-import org.santfeliu.cases.web.CaseConfigBean;
-import org.santfeliu.faces.beansaver.Savable;
+import org.santfeliu.doc.web.DocumentConfigBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
-import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 
 /**
@@ -48,11 +44,10 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named
-public class CasePersonsTabBean extends TabBean
+public class DocumentMainTabBean extends TabBean
 {
-  private List<CasePersonView> casePersonViews;
-  private String caseId;
-  private int firstRow;
+  private Document document;
+  private String docId;
 
   @PostConstruct
   public void init()
@@ -60,54 +55,47 @@ public class CasePersonsTabBean extends TabBean
     System.out.println("Creating " + this);
   }
 
-  public List<CasePersonView> getCasePersonViews()
+  public Document getDocument()
   {
-    if (casePersonViews == null || !getObjectId().equals(caseId))
+    if (document == null || !getObjectId().equals(docId))
     {
       load();
     }
-    return casePersonViews;
+    return document;
   }
 
-  public void setCasePersonViews(List<CasePersonView> casePersonViews)
+  public void setDocument(Document document)
   {
-    this.casePersonViews = casePersonViews;
-  }
-
-  public int getFirstRow()
-  {
-    return firstRow;
-  }
-
-  public void setFirstRow(int firstRow)
-  {
-    this.firstRow = firstRow;
+    this.document = document;
   }
 
   @Override
-  public ObjectBean getObjectBean()
+  public DocumentObjectBean getObjectBean()
   {
-    return WebUtils.getBacking("caseObjectBean");
+    return WebUtils.getBacking("documentObjectBean");
+  }
+
+  public void save()
+  {
+    System.out.println(document.getTitle());
+    info("Saved.");
   }
 
   private void load()
   {
-    caseId = getObjectId();
-
-    System.out.println("load casePersons:" + caseId);
-    if (!NEW_OBJECT_ID.equals(caseId))
+    docId = getObjectId();
+    if (!NEW_OBJECT_ID.equals(docId))
     {
       try
       {
-        CasePersonFilter filter = new CasePersonFilter();
-        filter.setCaseId(caseId);
-        casePersonViews = CaseConfigBean.getPort().findCasePersonViews(filter);
+        document = DocumentConfigBean.getPort().loadDocument(
+          docId, 0, ContentInfo.METADATA);
       }
       catch (Exception ex)
       {
         error(ex);
       }
     }
-    else casePersonViews = Collections.EMPTY_LIST;
+    else document = new Document();
   }
 }

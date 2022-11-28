@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                  var="docBundle" />
+    
+    <div class="mb-2">
+      <h:outputText value="DocId: #{documentObjectBean.objectId}" />
+    </div>
+    
+    <div class="ui-fluid formgrid grid">   
+            
+      <p:outputPanel styleClass="field col-12 md:col-6" 
+                     rendered="true">
+        <p:outputLabel for="title" value="Title" />
+        <p:inputText id="title" value="#{documentMainTabBean.document.title}" 
+                     class="inputfield w-full"/>
+      </p:outputPanel> 
+
+      <p:outputPanel styleClass="field col-12 md:col-12"
+                     rendered="true">
+        <p:outputLabel for="docTypeId" value="DocTypeId"  />        
+        <p:inputText id="docTypeId" value="#{documentMainTabBean.document.docTypeId}" 
+                     styleClass="inputfield w-full" />
+      </p:outputPanel> 
+      
+    </div>
+    
+</ui:composition>

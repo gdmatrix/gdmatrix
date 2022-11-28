@@ -29,6 +29,11 @@
     <managed-bean-scope>request</managed-bean-scope>
   </managed-bean>
 
+  <managed-bean>
+    <managed-bean-name>caseDocumentsTabBean</managed-bean-name>
+    <managed-bean-class>org.santfeliu.webapp.modules.cases.CaseDocumentsTabBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+  </managed-bean>
   
     
   <managed-bean>
