@@ -36,6 +36,10 @@
     <param-value>#{userSessionBean.primefacesTheme}</param-value>
   </context-param>
   <context-param>
+    <param-name>primefaces.TOUCHABLE</param-name>
+    <param-value>false</param-value>
+  </context-param>
+  <context-param>
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
     <param-value>client</param-value>
   </context-param>

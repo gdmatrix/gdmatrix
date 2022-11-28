@@ -1,0 +1,208 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/templates/#{userSessionBean.template}/template.xhtml"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <ui:define name="body">
+
+    <style type="text/css">
+      @media only screen and (max-width: 700px) 
+      {
+        .side_panel
+        {
+          position:fixed;
+          top:0;
+          bottom: 0;
+          z-index: 20000000 !important;
+          background: white;
+          overflow:auto;
+          width: 400px !important;
+          max-width: 100%;
+          margin: 0 !important;
+        }        
+        
+        .side_panel.left
+        {
+          left:0;
+          box-shadow: 5px 0px 3px -3px rgb(50 50 50 / 30%);
+        }
+
+        .side_panel.right
+        {
+          right:0;
+          box-shadow: -5px 0px 3px -3px rgb(50 50 50 / 30%);
+        }
+        
+        .side_panel.first_time
+        {
+          display: none;
+        }        
+
+        .side_button.first_time
+        {
+          display: block;
+        }
+      }
+      
+      .side_button
+      {
+        display: none;
+        position:fixed; 
+        z-index:1000;
+        top:50%; 
+      }
+      
+      .side_button.left
+      {
+        left: 0; 
+        border-radius:0 8px 8px 0 !important; 
+      }
+      
+      .side_button.right
+      {
+        right: 0; 
+        border-radius:8px 0 0 8px !important; 
+      }
+    </style>
+
+    <p:button onclick="return showPanel('leftPanel');"  
+              icon="pi pi-search" 
+              widgetVar="leftPanelButton" 
+              class="side_button left first_time"  />
+
+    <p:button onclick="return showPanel('rightPanel')" 
+              icon="pi pi-sitemap" 
+              widgetVar="rightPanelButton" 
+              class="side_button right first_time" />          
+
+    <div class="template-layout flex">
+
+      <div class="col flex slick-columns" style="width: 100%" >
+        <!-- Left column -->
+        <p:panel id="left_colunn"
+                 widgetVar="leftPanel" 
+                 class="side_panel left m-1 pb-2 first_time"
+                 style="width:240px"> 
+          <f:facet name="header">
+            <i class="pi pi-search m-1"></i>
+            <p:outputLabel value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}" />
+            <p:commandLink onclick="return closePanel('leftPanel');" 
+                           class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
+              <span class="ui-icon ui-icon-closethick"></span>
+            </p:commandLink>
+          </f:facet>
+
+          <p:outputPanel id="search_panel">
+            <p:accordionPanel id="search_accordion" widgetVar="basic" 
+                              activeIndex="#{templateBacking.searchPanelIndex}">
+              <p:tab title="Cerca ràpida" id="smart_search">
+                <ui:insert name="smart_filter"></ui:insert>
+              </p:tab>
+              <p:tab title="Cerca avançada" id="advanced_search"> 
+                <ui:insert name="advanced_filter"></ui:insert>
+              </p:tab>   
+            </p:accordionPanel>
+          </p:outputPanel>
+
+        </p:panel>
+
+        <!-- Central column -->
+        <p:outputPanel id="central_column" style="width:62%"
+                       class="central_column flex-grow-1 m-1">
+          <ui:insert name="object"></ui:insert>
+        </p:outputPanel>
+
+        <!-- Right column -->
+        <p:panel id="right_column"
+                 widgetVar="rightPanel" 
+                 class="side_panel right m-1 pb-2 first_time" 
+                 header="Recents"
+                 style="width:240px"> 
+          <f:facet name="header">
+            <i class="pi pi-sitemap m-1"></i>
+            <span>Context</span>
+            <p:commandLink onclick="return closePanel('rightPanel');" 
+                           class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
+              <span class="ui-icon ui-icon-closethick"></span>
+            </p:commandLink>
+          </f:facet>
+
+          <p:outputPanel>
+            Espai per mostrar els favorits i els recents. 
+            Espai per mostrar els favorits i els recents. 
+            Espai per mostrar els favorits i els recents. 
+            Espai per mostrar els favorits i els recents. 
+            Espai per mostrar els favorits i els recents.
+            <!--
+            <p:panel id="favorites_panel" header="Favorits">
+              <p:dataTable id="favorites_table" value="#{templateBacking.favorites}"
+                           var="fav" size="small" styleClass="favorites_table"
+                            paginator="true" paginatorPosition="bottom">
+                <p:column>
+                  <p:commandLink action="#{controllerBacking.show(fav.getValue())}" 
+                                 ajax="false" oncomplete="clickSlickDot(2);"
+                                 update=":mainform:object_header">
+                    <h:outputText value="#{templateBacking.getDescription(fav)}" />
+                  </p:commandLink>
+                </p:column>
+              </p:dataTable>
+            </p:panel>
+            <p:panel id="recents_panel" header="Recents" styleClass="mt-2">
+              <p:treeNode type="group">
+                <h:outputText value="#{templateBacking.getTypeDescription(node.typeId)}" />
+              </p:treeNode>
+              <p:treeNode>
+                <p:outputPanel>
+                  <p:commandLink action="#{controllerBacking.show(node.typeId, node.objectId)}" ajax="false" oncomplete="clickSlickDot(2);">
+                    <h:outputText value="#{templateBacking.getPageHistoryDescription(node)}" />
+                  </p:commandLink>
+                </p:outputPanel>
+              </p:treeNode>
+            </p:panel>
+            -->
+          </p:outputPanel>
+        </p:panel>
+      </div>
+
+      <script>
+        function showPanel(panelVar)
+        {
+          var panel = PF(panelVar);
+          var panelButton = PF(panelVar + "Button");
+          panel.show();
+          panel.getJQ().removeClass("first_time");
+          panelButton.getJQ().removeClass("first_time");
+          panelButton.getJQ().css("display", "none");
+          return false;
+        }
+        
+        function closePanel(panelVar)
+        {
+          var panel = PF(panelVar);
+          var panelButton = PF(panelVar + "Button");
+          panel.close();
+          panelButton.getJQ().css("display", "block");
+          return false;
+        }
+        
+        function endPanel(panelVar)
+        {
+          if (700 > window.innerWidth)
+          {
+            closePanel(panelVar);
+          }
+        }
+      </script>
+      
+    </div>
+
+  </ui:define>
+
+</ui:composition>
+
+
+

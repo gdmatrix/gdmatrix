@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org">
+
+    <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                  var="caseBundle" />
+
+    <h:panelGroup>
+      
+     <div class="mb-2">
+       <h:outputText value="CaseId: #{caseObjectBean.objectId}" />
+     </div>  
+      
+      <!-- Results table -->
+      <p:dataTable id="page_results_table" value="#{casePersonsTabBean.casePersonViews}" 
+                   var="row" stripedRows="true" paginator="true" pageLinks="5"
+                   resizableColumns="false" showGridlines="true" 
+                   size="small" paginatorPosition="bottom" 
+                   rowIndexVar="firstRow" first="#{caseObjectBean.firstRow}"
+                   paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                   currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                   rowsPerPageTemplate="5,10,25,50">
+
+        <f:facet name="header">
+          <div class="flex align-items-center">
+            <div class="w-9">
+
+            </div>          
+          </div>
+        </f:facet>      
+
+        <p:column headerText="#{caseBundle.casePersons_id}" styleClass="w-1"
+                  exportHeaderValue="#{caseBundle.casePersons_id}">
+          <h:outputText value="#{row.personView.personId}" />
+        </p:column> 
+
+        <p:column headerText="#{caseBundle.casePersons_person}" styleClass="w-3"
+                  exportHeaderValue="#{caseBundle.casePersons_person}">
+          <h:outputText value="#{row.personView.fullName}"/>
+        </p:column>
+
+        <p:column headerText="#{caseBundle.casePersons_type}" styleClass="w-3"
+                  exportHeaderValue="#{caseBundle.casePersons_type}">
+          <h:outputText value="#{row.casePersonTypeId}"/>
+        </p:column>
+      </p:dataTable>
+            
+      <!-- Person data panel -->
+
+    </h:panelGroup>
+
+</ui:composition>

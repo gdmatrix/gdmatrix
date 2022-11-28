@@ -1,0 +1,126 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/pages/obj/object_3col.xhtml">
+
+  <ui:define name="smart_filter">
+    
+    <p:outputPanel styleClass="field">
+      <p:outputLabel for="@next" value="Valor" />
+      <p:inputText id="smartFilter" value="#{caseObjectBean.smartFilter}"
+                   class="inputfield w-full ui-fluid"/>
+    </p:outputPanel>
+
+    <div class="buttons text-right">
+      <p:commandButton value="Clear"
+                       ajax="true"
+                       action="#{caseObjectBean.clear}"
+                       styleClass="ui-button-raised m-1"
+                       process="@parent" 
+                       oncomplete=""/>      
+      <p:commandButton id="smart_search_button"
+                       value="Search"
+                       action="#{caseObjectBean.smartSearch}"
+                       ajax="true"
+                       process="@parent" 
+                       update=":mainform:search_tabs:full_results_table"
+                       styleClass="ui-button-raised m-1" 
+                       oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"/>
+    </div>              
+  </ui:define>
+
+  <ui:define name="advanced_filter">
+    <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+    <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle" 
+                  var="caseBundle" />
+    
+    <!-- Title -->
+    <p:outputPanel styleClass="field">
+      <p:outputLabel for="@next" value="Title" />        
+      <p:inputText id="title" value="#{caseObjectBean.filter.title}" 
+                   class="inputfield w-full" />
+    </p:outputPanel>  
+
+    <!-- Description -->
+    <p:outputPanel styleClass="field">
+      <p:outputLabel for="@next" value="Description" />        
+      <p:inputText id="description" value="#{caseObjectBean.filter.description}" 
+                   class="inputfield w-full" />
+    </p:outputPanel>  
+    
+    <!-- searchExpression -->
+    <p:outputPanel styleClass="field">
+      <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}:" />
+      <p:inputText id="searchExpression" value="#{caseObjectBean.filter.searchExpression}"
+                   styleClass="inputfield w-full"/>
+    </p:outputPanel> 
+    
+    <div class="text-right">
+      <p:commandButton value="Clear"
+                       ajax="true"
+                       action="#{caseObjectBean.clear}"                       
+                       process="@parent" 
+                       update=":mainform:search_tabs:full_results_table"
+                       />
+      <p:commandButton id="advanced_search_button"
+                       value="Search"
+                       action="#{caseObjectBean.search}"
+                       ajax="true"
+                       process="@parent" 
+                       update=":mainform:search_tabs:full_results_table"
+                       styleClass="ui-button-raised m-1" 
+                       oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"
+                       />
+    </div>              
+  </ui:define>
+  
+  <ui:define name="object">
+
+    <p:tabView id="search_tabs" 
+               widgetVar="searchTabs" 
+               touchable="false">
+      <p:tab title="Cerca" id="case_search">
+        <f:facet name="title">
+          <i class="pi pi-list m-1"></i>
+          <h:outputText value="Resultats"/>
+        </f:facet>
+        <ui:include src="case_list.xhtml" />
+      </p:tab>
+
+      <p:tab title="Expedient" id="case_form"> 
+
+        <!-- Central column -->
+        <p:tabView dynamic="true" id="tabs" cache="true"
+                   widgetVar="objectTabs"
+                   touchable="false"
+                   activeIndex="#{caseObjectBean.tabIndex}">
+          <c:forEach items="#{caseObjectBean.tabs}" var="tab" >
+            <p:tab title="#{tab.label}">
+              <ui:include src="#{tab.url}">
+              </ui:include>
+            </p:tab>
+          </c:forEach>
+        </p:tabView>
+
+        <div class="tab_footer text-right pt-3">
+          <p:commandButton action="#{caseObjectBean.store}" value="Save" 
+                           ajax="true" 
+                           icon="pi pi-save"
+                           styleClass="ui-button-raised m-1" />
+          <p:commandButton action="#{caseObjectBean.clear}" value="Cancel"                                                   
+                           icon="pi pi-undo" 
+                           styleClass="ui-button-raised m-1"
+                           update=":mainform:search_tabs:tabs"
+                           resetValues="true" global="false" />
+        </div>            
+
+      </p:tab>   
+    </p:tabView>
+
+  </ui:define>
+
+</ui:composition>
