@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp;
 
+import java.io.Serializable;
 import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.web.WebBean;
 import static org.santfeliu.web.obj.ControllerBean.NEW_OBJECT_ID;
@@ -38,7 +39,7 @@ import static org.santfeliu.web.obj.ControllerBean.NEW_OBJECT_ID;
  *
  * @author realor
  */
-public abstract class TabBean extends WebBean implements Savable
+public abstract class TabBean extends WebBean implements Serializable
 {
   public abstract ObjectBean getObjectBean();
 

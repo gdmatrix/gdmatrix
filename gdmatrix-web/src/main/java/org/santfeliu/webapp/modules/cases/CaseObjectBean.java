@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
@@ -43,7 +44,8 @@ import org.santfeliu.webapp.Tab;
  *
  * @author realor
  */
-@Named
+@Named("caseObjectBean")
+@SessionScoped
 public class CaseObjectBean extends ObjectBean
 {
   private List<Tab> tabs;

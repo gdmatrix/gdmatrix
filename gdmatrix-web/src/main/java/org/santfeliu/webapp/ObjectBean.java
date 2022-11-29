@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import org.santfeliu.faces.beansaver.Savable;
@@ -40,7 +41,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
  *
  * @author realor
  */
-public abstract class ObjectBean extends WebBean implements Savable
+public abstract class ObjectBean extends WebBean implements Serializable
 {
   private String objectId = NEW_OBJECT_ID;
   private int tabIndex;

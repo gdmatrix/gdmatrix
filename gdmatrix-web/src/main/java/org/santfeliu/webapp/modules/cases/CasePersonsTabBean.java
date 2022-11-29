@@ -33,12 +33,12 @@ package org.santfeliu.webapp.modules.cases;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
 import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
-import org.santfeliu.faces.beansaver.Savable;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -47,7 +47,8 @@ import org.santfeliu.webapp.TabBean;
  *
  * @author realor
  */
-@Named
+@Named("casePersonsTabBean")
+@SessionScoped
 public class CasePersonsTabBean extends TabBean
 {
   private List<CasePersonView> casePersonViews;

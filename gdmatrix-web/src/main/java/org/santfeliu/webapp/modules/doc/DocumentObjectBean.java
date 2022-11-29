@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.doc;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
@@ -43,7 +44,8 @@ import org.santfeliu.webapp.Tab;
  *
  * @author realor
  */
-@Named
+@Named("documentObjectBean")
+@SessionScoped
 public class DocumentObjectBean extends ObjectBean
 {
   private List<Tab> tabs;

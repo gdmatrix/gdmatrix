@@ -30,18 +30,22 @@
  */
 package org.santfeliu.webapp;
 
+import java.io.Serializable;
+import javax.enterprise.context.SessionScoped;
 import org.santfeliu.webapp.util.MenuTypesCache;
 import javax.inject.Named;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.navigator.*;
 
 /**
  *
  * @author realor
  */
-@Named
-public class NavigatorBean
+@Named("navigatorBean")
+@SessionScoped
+public class NavigatorBean extends WebBean implements Serializable
 {
   public static final String NEW_OBJECT_ID = "";
 

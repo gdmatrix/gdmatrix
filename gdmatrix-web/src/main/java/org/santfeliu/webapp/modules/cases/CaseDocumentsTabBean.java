@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.cases;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
@@ -46,7 +47,8 @@ import org.santfeliu.webapp.TabBean;
  *
  * @author realor
  */
-@Named
+@Named("caseDocumentsTabBean")
+@SessionScoped
 public class CaseDocumentsTabBean extends TabBean
 {
   private List<CaseDocumentView> caseDocumentViews;

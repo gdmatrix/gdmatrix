@@ -12,7 +12,7 @@
                stripedRows="true" paginator="true" pageLinks="5" 
                paginatorPosition="bottom" size="small"
                rows="10" first="#{documentObjectBean.firstRow}"
-               rowStyleClass="#{row.caseId == documentObjectBean.objectId ? 'current' : ''}"
+               rowStyleClass="#{row.docId == documentObjectBean.objectId ? 'current' : ''}"
                rendered="true">
     <p:column headerText="docId" styleClass="w-1">
       <h:outputText value="#{row.docId}" />

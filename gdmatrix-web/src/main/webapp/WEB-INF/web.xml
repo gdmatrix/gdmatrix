@@ -86,8 +86,7 @@
       /WEB-INF/pf-config.xml,
       /WEB-INF/pf-cases-config.xml,
       /WEB-INF/pf-kernel-config.xml,
-      /WEB-INF/pf-agenda-config.xml,
-      /WEB-INF/pf-doc-config.xml
+      /WEB-INF/pf-agenda-config.xml
     </param-value>
   </context-param>
   <context-param>
