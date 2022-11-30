@@ -1,0 +1,24 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="/templates/#{userSessionBean.template}/template.xhtml">
+
+
+  <ui:define name="body">
+    <style>
+      .error_panel { margin: 20px 20px 20px 20px }
+    </style>
+    
+    <p:panel class="error_panel">
+      <f:facet name="header">
+        Unhandled error
+      </f:facet>
+      <p>An error has occurred: #{userSessionBean.unhandledError}</p>
+    </p:panel>
+
+  </ui:define>
+</ui:composition>

@@ -75,15 +75,21 @@
           <h:outputText value="Resultats"/>
         </f:facet>
         <ui:include src="document_list.xhtml" />
-      </p:tab>
-
+      </p:tab>      
+      
       <p:tab title="Document" id="document_form"> 
 
+        <p:outputPanel id="object_header">
+          <h:outputText value="DocId: #{documentObjectBean.objectId}" />       
+          <h:outputText value="#{documentMainTabBean.document.title}" class="ml-2" />
+        </p:outputPanel>
+        
         <!-- Central column -->
         <p:tabView dynamic="true" id="tabs" cache="true"
                    widgetVar="objectTabs"
                    touchable="false"
                    activeIndex="#{documentObjectBean.tabIndex}">
+          <p:ajax event="tabChange" listener="#{caseObjectBean.onTabChange}" />
           <c:forEach items="#{documentObjectBean.tabs}" var="tab" >
             <p:tab title="#{tab.label}">
               <ui:include src="#{tab.url}">

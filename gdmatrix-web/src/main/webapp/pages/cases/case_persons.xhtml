@@ -9,11 +9,7 @@
                   var="caseBundle" />
 
     <h:panelGroup>
-      
-     <div class="mb-2">
-       <h:outputText value="CaseId: #{caseObjectBean.objectId}" />
-     </div>  
-      
+            
       <!-- Results table -->
       <p:dataTable id="case_persons_table" value="#{casePersonsTabBean.casePersonViews}" 
                    var="row" stripedRows="true" paginator="true" pageLinks="5"

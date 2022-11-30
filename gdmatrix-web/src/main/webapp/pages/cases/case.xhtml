@@ -90,14 +90,20 @@
         </f:facet>
         <ui:include src="case_list.xhtml" />
       </p:tab>
-
+      
       <p:tab title="Expedient" id="case_form"> 
+
+        <p:outputPanel id="object_header">
+          <h:outputText value="CaseId: #{caseObjectBean.objectId}" />       
+          <h:outputText value="#{caseMainTabBean.case.title}" class="ml-2"/>
+        </p:outputPanel>
 
         <!-- Central column -->
         <p:tabView dynamic="true" id="tabs" cache="true"
                    widgetVar="objectTabs"
                    touchable="false"
                    activeIndex="#{caseObjectBean.tabIndex}">
+          <p:ajax event="tabChange" listener="#{caseObjectBean.onTabChange}" />
           <c:forEach items="#{caseObjectBean.tabs}" var="tab" >
             <p:tab title="#{tab.label}">
               <ui:include src="#{tab.url}">

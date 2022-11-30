@@ -48,7 +48,7 @@ import org.santfeliu.webapp.TabBean;
 @SessionScoped
 public class DocumentMainTabBean extends TabBean
 {
-  private Document document;
+  private Document document = new Document();
   private String docId;
 
   @PostConstruct
@@ -59,10 +59,6 @@ public class DocumentMainTabBean extends TabBean
 
   public Document getDocument()
   {
-    if (document == null || !getObjectId().equals(docId))
-    {
-      load();
-    }
     return document;
   }
 
@@ -77,27 +73,34 @@ public class DocumentMainTabBean extends TabBean
     return WebUtils.getBacking("documentObjectBean");
   }
 
+  @Override
+  public void load()
+  {
+    String objectId = getObjectId();
+    if (!objectId.equals(docId))
+    {
+      docId = objectId;
+      if (!NEW_OBJECT_ID.equals(docId))
+      {
+        try
+        {
+          document = DocumentConfigBean.getPort().loadDocument(
+            docId, 0, ContentInfo.METADATA);
+        }
+        catch (Exception ex)
+        {
+          error(ex);
+        }
+      }
+      else
+      {
+        document = new Document();
+      }
+    }
+  }
+
   public void save()
   {
     System.out.println(document.getTitle());
-    info("Saved.");
-  }
-
-  private void load()
-  {
-    docId = getObjectId();
-    if (!NEW_OBJECT_ID.equals(docId))
-    {
-      try
-      {
-        document = DocumentConfigBean.getPort().loadDocument(
-          docId, 0, ContentInfo.METADATA);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
-    else document = new Document();
   }
 }

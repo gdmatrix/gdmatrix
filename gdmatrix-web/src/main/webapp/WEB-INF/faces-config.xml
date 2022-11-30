@@ -4,12 +4,18 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
 
+  <factory>
+    <exception-handler-factory>
+      org.santfeliu.faces.MatrixExceptionHandlerFactory
+    </exception-handler-factory>
+  </factory>
+  
   <lifecycle>
     <phase-listener>org.santfeliu.faces.beansaver.BeanSaverListener</phase-listener>    
     <phase-listener>org.santfeliu.cms.CMSListener</phase-listener>
     <phase-listener>org.santfeliu.faces.DebugPhaseListener</phase-listener>    
-  </lifecycle>     
-  
+  </lifecycle>
+      
  <application>
   <locale-config>
    <default-locale>ca</default-locale>
@@ -57,7 +63,6 @@
       <to-view-id>/main.xhtml</to-view-id>
     </navigation-case>
 
-
     <navigation-case>
      <from-outcome>blank</from-outcome>
      <to-view-id>/common/util/blank.xhtml</to-view-id>
@@ -65,6 +70,10 @@
     <navigation-case>
      <from-outcome>error</from-outcome>
      <to-view-id>/common/util/error.xhtml</to-view-id>
+    </navigation-case>
+    <navigation-case>
+     <from-outcome>faces_error</from-outcome>
+     <to-view-id>/common/util/faces_error.xhtml</to-view-id>
     </navigation-case>
     <navigation-case>
      <from-outcome>object_actions</from-outcome>

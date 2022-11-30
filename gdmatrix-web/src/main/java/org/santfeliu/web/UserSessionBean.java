@@ -109,7 +109,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String RENDER_VIEW = "RENDER";
   public static final String EDIT_VIEW = "EDIT";
   public static final String SYSTEM_INFO_VIEW = "SYSTEM_INFO";
-  public static final String REDIR_VIEW = "REDIR";  
+  public static final String REDIR_VIEW = "REDIR";
 
   public static final String VIEW_MODE_PARAM = "viewMode";
   public static final String VIEW_MODE_EDIT = "edit";
@@ -118,7 +118,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public static final String LOGIN_PASSWORD = "PASSWORD";
   public static final String LOGIN_CERTIFICATE = "CERTIFICATE";
-  
+
   public static final String DEFAULT_PRIMEFACES_THEME = "smoothness";
   public static final String EDIT_PRIMEFACES_THEME = "saga";
 
@@ -150,10 +150,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private Integer failedLoginAttempts;
   private String lastSuccessLoginDateTime;
   private String lastFailedLoginDateTime;
-  private String lastIntrusionDateTime;  
+  private String lastIntrusionDateTime;
 
   private transient String selectedMid;
   private transient MenuModel menuModel;
+  private Throwable unhandledError;
 
   public UserSessionBean()
   {
@@ -306,42 +307,42 @@ public final class UserSessionBean extends FacesBean implements Serializable
     this.email = email;
   }
 
-  public Integer getFailedLoginAttempts() 
+  public Integer getFailedLoginAttempts()
   {
     return failedLoginAttempts;
   }
 
-  public void setFailedLoginAttempts(Integer failedLoginAttempts) 
+  public void setFailedLoginAttempts(Integer failedLoginAttempts)
   {
     this.failedLoginAttempts = failedLoginAttempts;
   }
 
-  public String getLastSuccessLoginDateTime() 
+  public String getLastSuccessLoginDateTime()
   {
     return lastSuccessLoginDateTime;
   }
 
-  public void setLastSuccessLoginDateTime(String lastSuccessLoginDateTime) 
+  public void setLastSuccessLoginDateTime(String lastSuccessLoginDateTime)
   {
     this.lastSuccessLoginDateTime = lastSuccessLoginDateTime;
   }
 
-  public String getLastFailedLoginDateTime() 
+  public String getLastFailedLoginDateTime()
   {
     return lastFailedLoginDateTime;
   }
 
-  public void setLastFailedLoginDateTime(String lastFailedLoginDateTime) 
+  public void setLastFailedLoginDateTime(String lastFailedLoginDateTime)
   {
     this.lastFailedLoginDateTime = lastFailedLoginDateTime;
   }
 
-  public String getLastIntrusionDateTime() 
+  public String getLastIntrusionDateTime()
   {
     return lastIntrusionDateTime;
   }
 
-  public void setLastIntrusionDateTime(String lastIntrusionDateTime) 
+  public void setLastIntrusionDateTime(String lastIntrusionDateTime)
   {
     this.lastIntrusionDateTime = lastIntrusionDateTime;
   }
@@ -587,7 +588,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public List<SelectItem> getThemes()
   {
-    ArrayList<SelectItem> selectItems = new ArrayList<SelectItem>();
+    ArrayList<SelectItem> selectItems = new ArrayList<>();
 
     List<String> themes = getSelectedMenuItem().getMultiValuedProperty(THEME);
 
@@ -613,7 +614,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public List<String> getNodeCSS()
   {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     MenuItemCursor cursor = getMenuModel().getSelectedMenuItem();
     if (cursor.isNull())
     {
@@ -672,6 +673,16 @@ public final class UserSessionBean extends FacesBean implements Serializable
       return (action != null);
     }
     return false;
+  }
+
+  public Throwable getUnhandledError()
+  {
+    return unhandledError;
+  }
+
+  public void setUnhandledError(Throwable unhandledError)
+  {
+    this.unhandledError = unhandledError;
   }
 
   public boolean isAdministrator()
@@ -980,18 +991,18 @@ public final class UserSessionBean extends FacesBean implements Serializable
     view = EDIT_VIEW;
     return "node_edit";
   }
-  
+
   public String showSystemInfoView()
   {
     view = SYSTEM_INFO_VIEW;
     return "system_info";
   }
-  
+
   public String showRedirView()
   {
     view = REDIR_VIEW;
     return "redir_edit";
-  }  
+  }
 
   public boolean isMatrixInfoViewSelected()
   {
@@ -1007,16 +1018,16 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     return EDIT_VIEW.equals(view);
   }
-  
+
   public boolean isSystemInfoViewSelected()
   {
     return SYSTEM_INFO_VIEW.equals(view);
   }
-  
+
   public boolean isRedirViewSelected()
   {
     return REDIR_VIEW.equals(view);
-  }  
+  }
 
   /**** special methods ****/
 
@@ -1122,6 +1133,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
     System.out.println(">>>>> Executing mid:" + menuItem.getMid() +
       " action:" + action);
 
+    unhandledError = null;
+
     // select MenuItem
     menuItem.select();
 
@@ -1178,7 +1191,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     ExternalContext externalContext =
       FacesContext.getCurrentInstance().getExternalContext();
 
-    HttpServletRequest request = 
+    HttpServletRequest request =
       (HttpServletRequest)externalContext.getRequest();
 
     byte[] cert = HttpUtils.getUserCertificate(request);
@@ -1331,7 +1344,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   {
     changeBrowserTypeTo("mobile");
   }
-  
+
   public String getPrimefacesTheme()
   {
     String pfTheme;
@@ -1349,19 +1362,19 @@ public final class UserSessionBean extends FacesBean implements Serializable
       {
         String library = "primefaces-" + pfTheme;
         Resource resource = getFacesContext().getApplication()
-          .getResourceHandler().createResource("theme.css", library); 
+          .getResourceHandler().createResource("theme.css", library);
         if (resource != null)
           return pfTheme;
       }
       catch (Exception ex)
       {
         return DEFAULT_PRIMEFACES_THEME;
-      }    
+      }
     }
-    
+
     return DEFAULT_PRIMEFACES_THEME;
-  }  
-      
+  }
+
   //Action executed from showObject command in common_script.js
   public String jumpToObject()
   {
@@ -1419,12 +1432,12 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
     return result;
   }
-  
+
   public static String toUuid(String id)
   {
     String preStr = "";
     String postStr = "";
-    String auxId = id;    
+    String auxId = id;
     if (auxId.startsWith("/documents/")) //document servlet
     {
       preStr = "/documents/";
@@ -1445,11 +1458,11 @@ public final class UserSessionBean extends FacesBean implements Serializable
       Integer.parseInt(auxId); //check if Integer (docId)
       try
       {
-        auxId = DocumentCache.getDocument(auxId, 
-          DocumentConstants.UNIVERSAL_LANGUAGE, 
-          getCurrentInstance().getCredentials().getUserId(), 
-          getCurrentInstance().getCredentials().getPassword(),  
-          60 * 60 * 1000);        
+        auxId = DocumentCache.getDocument(auxId,
+          DocumentConstants.UNIVERSAL_LANGUAGE,
+          getCurrentInstance().getCredentials().getUserId(),
+          getCurrentInstance().getCredentials().getPassword(),
+          60 * 60 * 1000);
       }
       catch (Exception ex)
       {
@@ -1464,8 +1477,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
       }
     }
     return preStr + auxId + postStr;
-  }  
-  
+  }
+
   /**** private methods ****/
 
   private void changeBrowserTypeTo(String browserType)

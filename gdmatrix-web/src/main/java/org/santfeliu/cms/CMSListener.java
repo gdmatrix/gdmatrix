@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.matrix.security.SecurityConstants;
+import org.santfeliu.faces.MatrixExceptionHandlerFactory;
 import org.santfeliu.faces.menu.model.MenuException;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
@@ -103,7 +104,7 @@ public class CMSListener implements PhaseListener
   private Integer redirectionLimit;
   private int clientSecurePort;
   private final WebAuditor webAuditor = new WebAuditor();
-  private final HashSet<String> pathExceptions = new HashSet<String>();
+  private final HashSet<String> pathExceptions = new HashSet<>();
 
   public CMSListener()
   {
@@ -111,6 +112,7 @@ public class CMSListener implements PhaseListener
     pathExceptions.add("/apps/ide.faces");
     pathExceptions.add("/apps/client.faces");
     pathExceptions.add("/apps/elections.faces");
+    pathExceptions.add(MatrixExceptionHandlerFactory.UNHANDLED_ERROR_PAGE);
   }
 
   @Override

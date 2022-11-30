@@ -56,7 +56,10 @@ public class DocumentContentTabBean extends TabBean
     DocumentMainTabBean documentMainTabBean =
       WebUtils.getBacking("documentMainTabBean");
 
-    return documentMainTabBean.getDocument().getContent();
+    Content content = documentMainTabBean.getDocument().getContent();
+    if (content == null) content = new Content();
+
+    return content;
   }
 
   @Override

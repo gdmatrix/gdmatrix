@@ -104,13 +104,6 @@ public class DocumentObjectBean extends ObjectBean
     return "/pages/doc/document.xhtml";
   }
 
-  public String show(String objectId)
-  {
-    System.out.println("ObjectId: " + objectId);
-    setObjectId(objectId);
-    return show();
-  }
-
   @Override
   public List<Tab> getTabs()
   {

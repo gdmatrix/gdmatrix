@@ -31,7 +31,6 @@
 package org.santfeliu.webapp;
 
 import java.io.Serializable;
-import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.web.WebBean;
 import static org.santfeliu.web.obj.ControllerBean.NEW_OBJECT_ID;
 
@@ -56,7 +55,11 @@ public abstract class TabBean extends WebBean implements Serializable
     return false;
   }
 
-  public void store()
+  public void load()
+  {
+  }
+
+  public void store() throws Exception
   {
   }
 

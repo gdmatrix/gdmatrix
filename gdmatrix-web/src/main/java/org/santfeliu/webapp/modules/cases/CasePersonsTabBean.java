@@ -63,10 +63,6 @@ public class CasePersonsTabBean extends TabBean
 
   public List<CasePersonView> getCasePersonViews()
   {
-    if (casePersonViews == null || !getObjectId().equals(caseId))
-    {
-      load();
-    }
     return casePersonViews;
   }
 
@@ -91,24 +87,28 @@ public class CasePersonsTabBean extends TabBean
     return WebUtils.getBacking("caseObjectBean");
   }
 
-  private void load()
+  @Override
+  public void load()
   {
-    caseId = getObjectId();
-
-    System.out.println("load casePersons:" + caseId);
-    if (!NEW_OBJECT_ID.equals(caseId))
+    if (casePersonViews == null || !getObjectId().equals(caseId))
     {
-      try
+      caseId = getObjectId();
+
+      System.out.println("load casePersons:" + caseId);
+      if (!NEW_OBJECT_ID.equals(caseId))
       {
-        CasePersonFilter filter = new CasePersonFilter();
-        filter.setCaseId(caseId);
-        casePersonViews = CaseConfigBean.getPort().findCasePersonViews(filter);
+        try
+        {
+          CasePersonFilter filter = new CasePersonFilter();
+          filter.setCaseId(caseId);
+          casePersonViews = CaseConfigBean.getPort().findCasePersonViews(filter);
+        }
+        catch (Exception ex)
+        {
+          error(ex);
+        }
       }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+      else casePersonViews = Collections.EMPTY_LIST;
     }
-    else casePersonViews = Collections.EMPTY_LIST;
   }
 }

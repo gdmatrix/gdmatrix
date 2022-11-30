@@ -63,10 +63,6 @@ public class CaseDocumentsTabBean extends TabBean
 
   public List<CaseDocumentView> getCaseDocumentViews()
   {
-    if (caseDocumentViews == null || !getObjectId().equals(caseId))
-    {
-      load();
-    }
     return caseDocumentViews;
   }
 
@@ -91,24 +87,28 @@ public class CaseDocumentsTabBean extends TabBean
     return WebUtils.getBacking("caseObjectBean");
   }
 
-  private void load()
+  @Override
+  public void load()
   {
-    caseId = getObjectId();
-
-    System.out.println("load caseDocuments:" + caseId);
-    if (!NEW_OBJECT_ID.equals(caseId))
+    if (caseDocumentViews == null || !getObjectId().equals(caseId))
     {
-      try
+      caseId = getObjectId();
+
+      System.out.println("load caseDocuments:" + caseId);
+      if (!NEW_OBJECT_ID.equals(caseId))
       {
-        CaseDocumentFilter filter = new CaseDocumentFilter();
-        filter.setCaseId(caseId);
-        caseDocumentViews = CaseConfigBean.getPort().findCaseDocumentViews(filter);
+        try
+        {
+          CaseDocumentFilter filter = new CaseDocumentFilter();
+          filter.setCaseId(caseId);
+          caseDocumentViews = CaseConfigBean.getPort().findCaseDocumentViews(filter);
+        }
+        catch (Exception ex)
+        {
+          error(ex);
+        }
       }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+      else caseDocumentViews = Collections.EMPTY_LIST;
     }
-    else caseDocumentViews = Collections.EMPTY_LIST;
   }
 }

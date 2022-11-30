@@ -49,7 +49,7 @@ import org.santfeliu.webapp.TabBean;
 @SessionScoped
 public class CaseMainTabBean extends TabBean
 {
-  private Case cas;
+  private Case cas = new Case();
   private String caseId;
 
   @PostConstruct
@@ -60,10 +60,6 @@ public class CaseMainTabBean extends TabBean
 
   public Case getCase()
   {
-    if (cas == null || !getObjectId().equals(caseId))
-    {
-      load();
-    }
     return cas;
   }
 
@@ -120,26 +116,30 @@ public class CaseMainTabBean extends TabBean
     return WebUtils.getBacking("caseObjectBean");
   }
 
+  @Override
+  public void load()
+  {
+    String objectId = getObjectId();
+    if (!objectId.equals(caseId))
+    {
+      caseId = objectId;
+      if (!NEW_OBJECT_ID.equals(caseId))
+      {
+        try
+        {
+          cas = CaseConfigBean.getPort().loadCase(caseId);
+        }
+        catch (Exception ex)
+        {
+          error(ex);
+        }
+      }
+      else cas = new Case();
+    }
+  }
+
   public void save()
   {
     System.out.println(cas.getTitle());
-    info("Saved.");
-  }
-
-  private void load()
-  {
-    caseId = getObjectId();
-    if (!NEW_OBJECT_ID.equals(caseId))
-    {
-      try
-      {
-        cas = CaseConfigBean.getPort().loadCase(caseId);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
-    else cas = new Case();
   }
 }

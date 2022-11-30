@@ -33,6 +33,7 @@ package org.santfeliu.webapp;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import org.primefaces.event.TabChangeEvent;
 import org.santfeliu.faces.beansaver.Savable;
 import org.santfeliu.web.WebBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -45,6 +46,7 @@ public abstract class ObjectBean extends WebBean implements Serializable
 {
   private String objectId = NEW_OBJECT_ID;
   private int tabIndex;
+  private String typeId;
 
   public String getObjectId()
   {
@@ -54,6 +56,16 @@ public abstract class ObjectBean extends WebBean implements Serializable
   public void setObjectId(String objectId)
   {
     this.objectId = objectId;
+  }
+
+  public String getTypeId()
+  {
+    return typeId;
+  }
+
+  public void setTypeId(String typeId)
+  {
+    this.typeId = typeId;
   }
 
   public int getTabIndex()
@@ -66,6 +78,18 @@ public abstract class ObjectBean extends WebBean implements Serializable
     this.tabIndex = tabIndex;
   }
 
+  public void onTabChange(TabChangeEvent event)
+  {
+    System.out.println(">>> tabIndex: " + tabIndex);
+    Tab tab = getTabs().get(tabIndex);
+    String beanName = tab.getBackingName();
+    if (beanName != null)
+    {
+      TabBean tabBean = WebUtils.getBacking(beanName);
+      tabBean.load();
+    }
+  }
+
   public String getDescription()
   {
     return objectId;
@@ -73,26 +97,51 @@ public abstract class ObjectBean extends WebBean implements Serializable
 
   public List<Tab> getTabs()
   {
+    // TODO: take tabs from CMSnode
     return Collections.EMPTY_LIST;
+  }
+
+  public String show(String objectId)
+  {
+    System.out.println("ObjectId: " + objectId);
+    System.out.println("tabIndex: " + tabIndex);
+
+    setObjectId(objectId);
+    Tab tab = getTabs().get(tabIndex);
+    String beanName = tab.getBackingName();
+    if (beanName != null)
+    {
+      TabBean tabBean = WebUtils.getBacking(beanName);
+      tabBean.load();
+    }
+    return show();
   }
 
   public abstract String show();
 
   public void store()
   {
-    List<Tab> tabs = getTabs();
-    for (Tab tab : tabs)
+    try
     {
-      String backingName = tab.getBackingName();
-      Object backing = WebUtils.getBackingIfExists(backingName);
-      if (backing instanceof TabBean)
+      List<Tab> tabs = getTabs();
+      for (Tab tab : tabs)
       {
-        TabBean tabBean = (TabBean)backing;
-        if (tabBean.isModified())
+        String backingName = tab.getBackingName();
+        Object backing = WebUtils.getBackingIfExists(backingName);
+        if (backing instanceof TabBean)
         {
-         tabBean.store();
+          TabBean tabBean = (TabBean)backing;
+          if (tabBean.isModified())
+          {
+            tabBean.store();
+          }
         }
       }
+      info("Saved");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
     }
   }
 

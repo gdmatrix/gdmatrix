@@ -36,6 +36,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import static org.matrix.dic.DictionaryConstants.CASE_TYPE;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
@@ -56,6 +57,7 @@ public class CaseObjectBean extends ObjectBean
 
   public CaseObjectBean()
   {
+    setTypeId(CASE_TYPE);
   }
 
   public String getSmartFilter()
@@ -104,22 +106,19 @@ public class CaseObjectBean extends ObjectBean
     return "/pages/cases/case.xhtml";
   }
 
-  public String show(String objectId)
-  {
-    System.out.println("ObjectId: " + objectId);
-    setObjectId(objectId);
-    return show();
-  }
-
   @Override
   public List<Tab> getTabs()
   {
     if (tabs == null)
     {
-      tabs = new ArrayList<>();
-      tabs.add(new Tab("Main", "/pages/cases/case_main.xhtml", "caseMainTabBean"));
-      tabs.add(new Tab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
-      tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
+      tabs = super.getTabs();
+      if (tabs.isEmpty())
+      {
+        tabs = new ArrayList<>(); // empty list may be read only
+        tabs.add(new Tab("Main", "/pages/cases/case_main.xhtml", "caseMainTabBean"));
+        tabs.add(new Tab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
+        tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
+      }
     }
     return tabs;
   }
