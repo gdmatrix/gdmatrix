@@ -32,7 +32,7 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.util.Date;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.web.WebUtils;
@@ -46,7 +46,7 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named("caseMainTabBean")
-@SessionScoped
+@ViewScoped
 public class CaseMainTabBean extends TabBean
 {
   private Case cas = new Case();

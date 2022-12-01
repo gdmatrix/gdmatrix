@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp;
 
+import org.santfeliu.webapp.util.WebUtils;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -101,7 +102,7 @@ public abstract class ObjectBean extends WebBean implements Serializable
     return Collections.EMPTY_LIST;
   }
 
-  public String show(String objectId)
+  public void show(String objectId)
   {
     System.out.println("ObjectId: " + objectId);
     System.out.println("tabIndex: " + tabIndex);
@@ -114,7 +115,6 @@ public abstract class ObjectBean extends WebBean implements Serializable
       TabBean tabBean = WebUtils.getBacking(beanName);
       tabBean.load();
     }
-    return show();
   }
 
   public abstract String show();

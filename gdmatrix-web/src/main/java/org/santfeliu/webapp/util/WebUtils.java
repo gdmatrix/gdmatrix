@@ -28,7 +28,7 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp;
+package org.santfeliu.webapp.util;
 
 import java.util.List;
 import java.util.Map;

@@ -31,7 +31,7 @@
 package org.santfeliu.webapp.modules.doc;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
@@ -45,7 +45,7 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named("documentMainTabBean")
-@SessionScoped
+@ViewScoped
 public class DocumentMainTabBean extends TabBean
 {
   private Document document = new Document();

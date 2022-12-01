@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp;
 
+import org.santfeliu.webapp.util.WebUtils;
 import java.io.Serializable;
 import javax.enterprise.context.SessionScoped;
 import org.santfeliu.webapp.util.MenuTypesCache;

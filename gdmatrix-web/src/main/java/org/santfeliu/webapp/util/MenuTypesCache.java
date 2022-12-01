@@ -35,7 +35,6 @@ import java.util.Map;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
-import org.santfeliu.webapp.WebUtils;
 
 /**
  * TODO: Refresh system

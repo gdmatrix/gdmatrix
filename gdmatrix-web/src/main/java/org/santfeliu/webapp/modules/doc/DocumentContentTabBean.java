@@ -31,7 +31,7 @@
 package org.santfeliu.webapp.modules.doc;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.matrix.doc.Content;
 import org.matrix.web.WebUtils;
@@ -42,7 +42,7 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named("documentContentTabBean")
-@SessionScoped
+@ViewScoped
 public class DocumentContentTabBean extends TabBean
 {
   @PostConstruct
