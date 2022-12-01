@@ -8,8 +8,8 @@
 
   <ui:define name="template">
 
-    <p:sidebar widgetVar="menu" baseZIndex="50000000">
-      <div>Menu goes here...</div>
+    <p:sidebar widgetVar="menu" baseZIndex="50000000" style="overflow: scroll">
+      <p:menu id="vertical_menu" model="#{templateBean.PFMenuModel}" toggleable="true"/>     
     </p:sidebar>
     
     <!-- header -->
@@ -46,12 +46,11 @@
 
     <p:toolbar class="app_toolbar">
       <p:toolbarGroup>
-        <p:commandButton action="/pages/cases/case.xhtml" icon="pi pi-users" ajax="false" />
-        <p:commandButton action="/pages/cases/case.xhtml" icon="pi pi-user" ajax="false" />
-        <p:commandButton action="/pages/cases/case.xhtml" icon="pi pi-id-card" ajax="false" />
-        <p:commandButton action="/pages/cases/case.xhtml" icon="pi pi-building" ajax="false" />
-        <p:commandButton action="/pages/doc/document.xhtml" icon="pi pi-file-o" ajax="false" />
-      </p:toolbarGroup>
+        <p:repeat value="#{templateBean.highlightedItems}" var="item">
+          <p:commandButton action="#{item.getUrl()}" icon="#{item.getIcon()} mi-invert-color" styleClass="ui-button-raised my-1 #{item.getStyleClass()}" ajax="false"
+            onclick="#{item.getOnclick()}"/>
+        </p:repeat>        
+      </p:toolbarGroup>    
     </p:toolbar>
 
     <div class="app_body">
