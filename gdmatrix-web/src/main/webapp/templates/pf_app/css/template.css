@@ -365,9 +365,10 @@ body .frame > div > .ui-toolbar .ui-button.current
   background-color: #8080ff;
 }
 
-body .frame > div > .ui-toolbar .ui-button.current .ui-icon
+body .frame > div > .ui-toolbar .ui-button.current .ui-icon,
+body .frame > div > .ui-toolbar .ui-button:hover .mi.ui-icon
 {
-  filter: invert(1);  
+  filter: invert(1); 
 }
 
 .app_body
@@ -399,23 +400,11 @@ body .ui-menu .ui-menu-list .ui-submenu-child .ui-menuitem-link
   padding-left: 2rem;
 }
 
-/* Matrix icons */
+/* External image icons */
 .mi
 {
-  font-family: 'primeicons';
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  display: inline-block;
-  -webkit-font-smoothing: antialiased;
-}
-
-.-mi
-{
-  width: 100%;
-  height: 100%;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .ui-button.ui-button-icon-only .ui-icon.mi
@@ -424,21 +413,27 @@ body .ui-menu .ui-menu-list .ui-submenu-child .ui-menuitem-link
   margin-left: -0.6rem;
 }
 
-.-mi.mi-invert-color
+.ui-menuitem-link .ui-icon.mi
+{
+  position: absolute;
+}
+
+.ui-menuitem-link .ui-menuitem-icon.ui-icon.mi+.ui-menuitem-text
+{
+  margin-left: 1.5rem;
+}
+
+.mi.mi-invert-color
 {
   filter: invert(1);  
 }
 
-.-mi-icon-show
+.mi-icon-show
 { 
   background: url('/themes/default/images/show.png') no-repeat !important;
 }
 
-.-mi-icon-current 
+.mi-icon-current 
 { 
   background: url('/themes/default/images/current.png') no-repeat !important;
 }
-
-
-
-

@@ -47,7 +47,8 @@
     <p:toolbar class="app_toolbar">
       <p:toolbarGroup>
         <p:repeat value="#{templateBean.highlightedItems}" var="item">
-          <p:commandButton action="#{item.getUrl()}" icon="#{item.getIcon()} mi-invert-color" styleClass="ui-button-raised my-1 #{item.getStyleClass()}" ajax="false"
+          <p:commandButton action="#{item.getUrl()}" icon="#{item.getIcon()}" 
+            styleClass="#{item.getStyleClass()}" ajax="false"
             onclick="#{item.getOnclick()}"/>
         </p:repeat>        
       </p:toolbarGroup>    
