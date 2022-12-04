@@ -28,13 +28,17 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.navigator;
+package org.santfeliu.webapp;
+
+import java.io.Serializable;
+import org.santfeliu.web.WebBean;
 
 /**
  *
  * @author realor
  */
-public class DescriptionCache
+public abstract class BaseBean extends WebBean implements Serializable
 {
+  public abstract ObjectBean getObjectBean();
 
 }

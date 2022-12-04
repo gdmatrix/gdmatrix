@@ -9,7 +9,7 @@
                   var="caseBundle" />
 
     <h:panelGroup>
-            
+      
       <!-- Results table -->
       <p:dataTable id="case_documents_table" value="#{caseDocumentsTabBean.caseDocumentViews}" 
                    var="row" stripedRows="true" paginator="true" pageLinks="5"
@@ -41,6 +41,12 @@
         <p:column headerText="Type" styleClass="w-3"
                   exportHeaderValue="Type">
           <h:outputText value="#{row.document.docTypeId}"/>
+        </p:column>
+        
+        <p:column styleClass="w-1">
+          <p:commandButton icon="pi pi-external-link" 
+                           ajax="false"
+                           action="#{navigatorBean.show('Document', row.document.docId)}" />
         </p:column>
       </p:dataTable>
             

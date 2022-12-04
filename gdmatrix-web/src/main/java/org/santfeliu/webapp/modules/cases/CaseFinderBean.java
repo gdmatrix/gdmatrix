@@ -30,28 +30,27 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
-import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.cases.CaseDocumentFilter;
-import org.matrix.cases.CaseDocumentView;
+import org.matrix.cases.Case;
+import org.matrix.cases.CaseFilter;
 import org.santfeliu.cases.web.CaseConfigBean;
-import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.TabBean;
 
 /**
  *
  * @author realor
  */
-@Named("caseDocumentsTabBean")
+@Named("caseFinderBean")
 @SessionScoped
-public class CaseDocumentsTabBean extends TabBean
+public class CaseFinderBean extends FinderBean
 {
-  private List<CaseDocumentView> caseDocumentViews;
+  private String smartFilter;
+  private CaseFilter filter = new CaseFilter();
+  private List<Case> rows;
   private int firstRow;
 
   @Inject
@@ -63,20 +62,34 @@ public class CaseDocumentsTabBean extends TabBean
     return caseObjectBean;
   }
 
-  @PostConstruct
-  public void init()
+  public String getSmartFilter()
   {
-    System.out.println("Creating " + this);
+    return smartFilter;
   }
 
-  public List<CaseDocumentView> getCaseDocumentViews()
+  public void setSmartFilter(String smartFilter)
   {
-    return caseDocumentViews;
+    this.smartFilter = smartFilter;
   }
 
-  public void setCaseDocumentViews(List<CaseDocumentView> caseDocumentViews)
+  public CaseFilter getFilter()
   {
-    this.caseDocumentViews = caseDocumentViews;
+    return filter;
+  }
+
+  public void setFilter(CaseFilter filter)
+  {
+    this.filter = filter;
+  }
+
+  public List<Case> getRows()
+  {
+    return rows;
+  }
+
+  public void setRows(List<Case> rows)
+  {
+    this.rows = rows;
   }
 
   public int getFirstRow()
@@ -89,23 +102,40 @@ public class CaseDocumentsTabBean extends TabBean
     this.firstRow = firstRow;
   }
 
-  @Override
-  public void load()
+  public void smartFind()
   {
-    System.out.println("load caseDocuments:" + objectId);
-    if (!NEW_OBJECT_ID.equals(objectId))
+    try
     {
-      try
-      {
-        CaseDocumentFilter filter = new CaseDocumentFilter();
-        filter.setCaseId(objectId);
-        caseDocumentViews = CaseConfigBean.getPort().findCaseDocumentViews(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+      firstRow = 0;
+      CaseFilter basicFilter = new CaseFilter();
+      basicFilter.setTitle(smartFilter);
+      basicFilter.setMaxResults(40);
+      rows = CaseConfigBean.getPort().findCases(basicFilter);
     }
-    else caseDocumentViews = Collections.EMPTY_LIST;
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
+
+  public void find()
+  {
+    try
+    {
+      firstRow = 0;
+      filter.setMaxResults(40);
+      rows = CaseConfigBean.getPort().findCases(filter);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void clear()
+  {
+    filter = new CaseFilter();
+    rows = null;
+  }
+
 }

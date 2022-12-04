@@ -31,10 +31,10 @@
 package org.santfeliu.webapp.modules.doc;
 
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.Content;
-import org.matrix.web.WebUtils;
 import org.santfeliu.webapp.TabBean;
 
 /**
@@ -42,9 +42,18 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named("documentContentTabBean")
-@ViewScoped
+@SessionScoped
 public class DocumentContentTabBean extends TabBean
 {
+  @Inject
+  DocumentObjectBean documentObjectBean;
+
+  @Override
+  public DocumentObjectBean getObjectBean()
+  {
+    return documentObjectBean;
+  }  
+
   @PostConstruct
   public void init()
   {
@@ -53,18 +62,22 @@ public class DocumentContentTabBean extends TabBean
 
   public Content getContent()
   {
-    DocumentMainTabBean documentMainTabBean =
-      WebUtils.getBacking("documentMainTabBean");
-
-    Content content = documentMainTabBean.getDocument().getContent();
+    Content content = documentObjectBean.getDocument().getContent();
     if (content == null) content = new Content();
 
     return content;
   }
 
   @Override
-  public DocumentObjectBean getObjectBean()
+  public boolean isModified()
   {
-    return WebUtils.getBacking("documentObjectBean");
+    return true;
+  }
+
+  @Override
+  public void store()
+  {
+    Content content = getContent();
+    System.out.println("save content " + content.getContentType());
   }
 }

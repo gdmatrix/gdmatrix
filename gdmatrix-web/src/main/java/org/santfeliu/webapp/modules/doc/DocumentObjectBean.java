@@ -31,12 +31,13 @@
 package org.santfeliu.webapp.modules.doc;
 
 import java.util.ArrayList;
-import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
-import org.matrix.doc.DocumentFilter;
 import org.santfeliu.doc.web.DocumentConfigBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
 
@@ -48,54 +49,26 @@ import org.santfeliu.webapp.Tab;
 @SessionScoped
 public class DocumentObjectBean extends ObjectBean
 {
-  private List<Tab> tabs;
-  private String smartFilter;
-  private DocumentFilter filter = new DocumentFilter();
-  private List<Document> rows;
-  private int firstRow;
+  private Document document;
 
   public DocumentObjectBean()
   {
   }
 
-  public String getSmartFilter()
+  @Override
+  public String getRootTypeId()
   {
-    return smartFilter;
+    return DictionaryConstants.DOCUMENT_TYPE;
   }
 
-  public void setSmartFilter(String smartFilter)
+  public Document getDocument()
   {
-    this.smartFilter = smartFilter;
+    return document;
   }
 
-  public DocumentFilter getFilter()
+  public void setDocument(Document document)
   {
-    return filter;
-  }
-
-  public void setFilter(DocumentFilter filter)
-  {
-    this.filter = filter;
-  }
-
-  public List<Document> getRows()
-  {
-    return rows;
-  }
-
-  public void setRows(List<Document> rows)
-  {
-    this.rows = rows;
-  }
-
-  public int getFirstRow()
-  {
-    return firstRow;
-  }
-
-  public void setFirstRow(int firstRow)
-  {
-    this.firstRow = firstRow;
+    this.document = document;
   }
 
   @Override
@@ -105,45 +78,32 @@ public class DocumentObjectBean extends ObjectBean
   }
 
   @Override
-  public List<Tab> getTabs()
+  public void loadObject()
   {
-    if (tabs == null)
+    if (!NEW_OBJECT_ID.equals(objectId))
     {
-      tabs = new ArrayList<>();
-      tabs.add(new Tab("Main", "/pages/doc/document_main.xhtml", "documentMainTabBean"));
-      tabs.add(new Tab("Content", "/pages/doc/document_content.xhtml", "documentContentTabBean"));
+      try
+      {
+        document = DocumentConfigBean.getPort().loadDocument(
+          objectId, 0, ContentInfo.METADATA);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
     }
-    return tabs;
-  }
-
-  public void smartSearch()
-  {
-    try
+    else
     {
-      firstRow = 0;
-      DocumentFilter basicFilter = new DocumentFilter();
-      basicFilter.setTitle(smartFilter);
-      basicFilter.setMaxResults(40);
-      rows = DocumentConfigBean.getPort().findDocuments(basicFilter);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
+      document = new Document();
     }
   }
 
-  public void search()
+  @Override
+  public void loadTabs()
   {
-    try
-    {
-      firstRow = 0;
-      filter.setMaxResults(40);
-      rows = DocumentConfigBean.getPort().findDocuments(filter);
-      System.out.println("Documents: " + rows.size());
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    tabs = new ArrayList<>();
+    tabs.add(new Tab("Main", "/pages/doc/document_main.xhtml"));
+    tabs.add(new Tab("Content", "/pages/doc/document_content.xhtml", "documentContentTabBean"));
   }
+
 }

@@ -28,39 +28,43 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.cases;
+package org.santfeliu.webapp.modules.doc;
 
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.cases.CaseDocumentFilter;
-import org.matrix.cases.CaseDocumentView;
-import org.santfeliu.cases.web.CaseConfigBean;
-import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
-import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.TabBean;
+import org.matrix.cases.CaseFilter;
+import org.matrix.doc.Document;
+import org.matrix.doc.DocumentFilter;
+import org.santfeliu.doc.web.DocumentConfigBean;
+import org.santfeliu.webapp.FinderBean;
 
 /**
  *
  * @author realor
  */
-@Named("caseDocumentsTabBean")
+@Named("documentFinderBean")
 @SessionScoped
-public class CaseDocumentsTabBean extends TabBean
+public class DocumentFinderBean extends FinderBean
 {
-  private List<CaseDocumentView> caseDocumentViews;
+  private String smartFilter;
+  private DocumentFilter filter = new DocumentFilter();
+  private List<Document> rows;
   private int firstRow;
 
   @Inject
-  CaseObjectBean caseObjectBean;
+  DocumentObjectBean documentObjectBean;
 
   @Override
-  public ObjectBean getObjectBean()
+  public DocumentObjectBean getObjectBean()
   {
-    return caseObjectBean;
+    return documentObjectBean;
+  }
+
+  public DocumentFinderBean()
+  {
   }
 
   @PostConstruct
@@ -69,14 +73,35 @@ public class CaseDocumentsTabBean extends TabBean
     System.out.println("Creating " + this);
   }
 
-  public List<CaseDocumentView> getCaseDocumentViews()
+
+  public String getSmartFilter()
   {
-    return caseDocumentViews;
+    return smartFilter;
   }
 
-  public void setCaseDocumentViews(List<CaseDocumentView> caseDocumentViews)
+  public void setSmartFilter(String smartFilter)
   {
-    this.caseDocumentViews = caseDocumentViews;
+    this.smartFilter = smartFilter;
+  }
+
+  public DocumentFilter getFilter()
+  {
+    return filter;
+  }
+
+  public void setFilter(DocumentFilter filter)
+  {
+    this.filter = filter;
+  }
+
+  public List<Document> getRows()
+  {
+    return rows;
+  }
+
+  public void setRows(List<Document> rows)
+  {
+    this.rows = rows;
   }
 
   public int getFirstRow()
@@ -89,23 +114,41 @@ public class CaseDocumentsTabBean extends TabBean
     this.firstRow = firstRow;
   }
 
-  @Override
-  public void load()
+  public void smartFind()
   {
-    System.out.println("load caseDocuments:" + objectId);
-    if (!NEW_OBJECT_ID.equals(objectId))
+    try
     {
-      try
-      {
-        CaseDocumentFilter filter = new CaseDocumentFilter();
-        filter.setCaseId(objectId);
-        caseDocumentViews = CaseConfigBean.getPort().findCaseDocumentViews(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+      firstRow = 0;
+      DocumentFilter basicFilter = new DocumentFilter();
+      basicFilter.setTitle(smartFilter);
+      basicFilter.setMaxResults(40);
+      rows = DocumentConfigBean.getPort().findDocuments(basicFilter);
     }
-    else caseDocumentViews = Collections.EMPTY_LIST;
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
+
+  public void find()
+  {
+    try
+    {
+      firstRow = 0;
+      filter.setMaxResults(40);
+      rows = DocumentConfigBean.getPort().findDocuments(filter);
+      System.out.println("Documents: " + rows.size());
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void clear()
+  {
+    filter = new DocumentFilter();
+    rows = null;
+  }
+
 }

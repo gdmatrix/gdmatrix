@@ -30,24 +30,22 @@
  */
 package org.santfeliu.webapp;
 
-import java.io.Serializable;
-import org.santfeliu.web.WebBean;
-import static org.santfeliu.web.obj.ControllerBean.NEW_OBJECT_ID;
-
 /**
  *
  * @author realor
  */
-public abstract class TabBean extends WebBean implements Serializable
+public abstract class TabBean extends BaseBean
 {
-  public abstract ObjectBean getObjectBean();
+  protected String objectId = NavigatorBean.NEW_OBJECT_ID;
 
   public String getObjectId()
   {
-    ObjectBean objectBean = getObjectBean();
-    if (objectBean == null) return NEW_OBJECT_ID;
-    String objectId = objectBean.getObjectId();
-    return objectId == null ? NEW_OBJECT_ID : objectId;
+    return objectId;
+  }
+
+  public void setObjectId(String objectId)
+  {
+    this.objectId = objectId;
   }
 
   public boolean isModified()

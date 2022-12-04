@@ -55,10 +55,10 @@ public class WebUtils
   public static <T> T getInstance(Class<?> clazz)
   {
     String backingName = clazz.getAnnotation(Named.class).value();
-    return getBacking(backingName);
+    return getBean(backingName);
   }
 
-  public static <T> T getBacking(String name)
+  public static <T> T getBean(String name)
   {
     return (T) evaluateExpression("#{" + name + "}");
   }
@@ -67,7 +67,7 @@ public class WebUtils
   {
     String backingName = mic.getProperty(OBJECT_BACKING);
     if (backingName != null)
-      return getBacking(backingName);
+      return getBean(backingName);
     else
       return getBackingFromAction(mic.getAction());
   }
@@ -76,7 +76,7 @@ public class WebUtils
   {
     String backingName = getBackingName(actionExpression);
     if (backingName != null)
-      return getBacking(backingName);
+      return getBean(backingName);
     else
       return null;
   }

@@ -11,20 +11,20 @@
     
     <p:outputPanel styleClass="field">
       <p:outputLabel for="@next" value="Valor" />
-      <p:inputText id="smartFilter" value="#{documentObjectBean.smartFilter}"
+      <p:inputText id="smartFilter" value="#{documentFinderBean.smartFilter}"
                    class="inputfield w-full ui-fluid"/>
     </p:outputPanel>
 
     <div class="buttons text-right">
       <p:commandButton value="Clear"
                        ajax="true"
-                       action="#{documentObjectBean.clear}"
+                       action="#{documentFinderBean.clear}"
                        styleClass="ui-button-raised m-1"
                        process="@parent" 
                        oncomplete=""/>      
       <p:commandButton id="smart_search_button"
                        value="Search"
-                       action="#{documentObjectBean.smartSearch}"
+                       action="#{documentFinderBean.smartFind}"
                        ajax="true"
                        process="@parent" 
                        update=":mainform:search_tabs:full_results_table"
@@ -41,20 +41,20 @@
     <!-- Title -->
     <p:outputPanel styleClass="field">
       <p:outputLabel for="@next" value="Title" />        
-      <p:inputText id="title" value="#{documentObjectBean.filter.title}" 
+      <p:inputText id="title" value="#{documentFinderBean.filter.title}" 
                    class="inputfield w-full" />
     </p:outputPanel>  
         
     <div class="text-right">
       <p:commandButton value="Clear"
                        ajax="true"
-                       action="#{documentObjectBean.clear}"                       
+                       action="#{documentFinderBean.clear}"                       
                        process="@parent" 
                        update=":mainform:search_tabs:full_results_table"
                        />
       <p:commandButton id="advanced_search_button"
                        value="Search"
-                       action="#{documentObjectBean.search}"
+                       action="#{documentFinderBean.find}"
                        ajax="true"
                        process="@parent" 
                        update=":mainform:search_tabs:full_results_table"
@@ -68,6 +68,7 @@
 
     <p:tabView id="search_tabs" 
                widgetVar="searchTabs" 
+               activeIndex="#{documentObjectBean.searchTabIndex}"
                touchable="false">
       <p:tab title="Cerca" id="document_search">
         <f:facet name="title">
@@ -77,21 +78,25 @@
         <ui:include src="document_list.xhtml" />
       </p:tab>      
       
-      <p:tab title="Document" id="document_form"> 
+      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}" 
+             id="document_form"> 
 
         <p:outputPanel id="object_header">
           <h:outputText value="DocId: #{documentObjectBean.objectId}" />       
-          <h:outputText value="#{documentMainTabBean.document.title}" class="ml-2" />
+          <h:outputText value="#{documentObjectBean.document.title}" class="ml-2" />
         </p:outputPanel>
         
         <!-- Central column -->
-        <p:tabView dynamic="true" id="tabs" cache="true"
+        <p:tabView dynamic="true" id="tabs" 
                    widgetVar="objectTabs"
                    touchable="false"
                    activeIndex="#{documentObjectBean.tabIndex}">
-          <p:ajax event="tabChange" listener="#{caseObjectBean.onTabChange}" />
+ 
+          <p:ajax event="tabChange" listener="#{caseObjectBean.loadActiveTab}" />
+
           <c:forEach items="#{documentObjectBean.tabs}" var="tab" >
-            <p:tab title="#{tab.label}">
+            <p:tab title="#{tab.label}"
+                   disabled="#{documentObjectBean.isDisabledTab(tab)}">
               <ui:include src="#{tab.url}">
               </ui:include>
             </p:tab>
@@ -103,7 +108,7 @@
                            ajax="true" 
                            icon="pi pi-save"
                            styleClass="ui-button-raised m-1" />
-          <p:commandButton action="#{documentObjectBean.clear}" value="Cancel"                                                   
+          <p:commandButton action="#{documentObjectBean.cancel}" value="Cancel"                                                   
                            icon="pi pi-undo" 
                            styleClass="ui-button-raised m-1"
                            update=":mainform:search_tabs:tabs"

@@ -14,14 +14,14 @@
       <p:outputPanel styleClass="field col-12 md:col-6" 
                      rendered="true">
         <p:outputLabel for="title" value="Title" />
-        <p:inputText id="title" value="#{caseMainTabBean.case.title}" 
+        <p:inputText id="title" value="#{caseObjectBean.case.title}" 
                      class="inputfield w-full"/>
       </p:outputPanel> 
 
       <p:outputPanel styleClass="field col-6 md:col-3">
         <p:outputLabel for="start_date" value="Start date" />
         <!-- TODO: disable if not editable -->
-        <p:datePicker id="start_date" value="#{caseMainTabBean.startDateTime}" 
+        <p:datePicker id="start_date" value="#{caseObjectBean.startDateTime}" 
                       locale="es" 
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true" />
@@ -30,7 +30,7 @@
       <p:outputPanel styleClass="field col-6 md:col-3">
         <p:outputLabel for="end_date" value="End date" />
         <!-- TODO: disable if not editable -->
-        <p:datePicker id="end_date" value="#{caseMainTabBean.endDateTime}" 
+        <p:datePicker id="end_date" value="#{caseObjectBean.endDateTime}" 
                       locale="es" 
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true" />
@@ -39,14 +39,14 @@
       <p:outputPanel styleClass="field col-12 md:col-12"
                      rendered="true">
         <p:outputLabel for="description" value="Description"  />        
-        <p:inputTextarea id="description" value="#{caseMainTabBean.case.description}" 
+        <p:inputTextarea id="description" value="#{caseObjectBean.case.description}" 
                          styleClass="inputfield w-full" />
       </p:outputPanel> 
 
       <p:outputPanel styleClass="field col-12 md:col-12"
                      rendered="true">
         <p:outputLabel for="description" value="Comments"  />        
-        <p:inputTextarea id="description" value="#{caseMainTabBean.case.comments}" 
+        <p:inputTextarea id="description" value="#{caseObjectBean.case.comments}" 
                          styleClass="inputfield w-full" />
       </p:outputPanel> 
       

@@ -28,22 +28,15 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.navigator;
-
-import java.util.Stack;
+package org.santfeliu.webapp;
 
 /**
  *
  * @author realor
  */
-public class ReturnStack
+public abstract class FinderBean extends BaseBean
 {
-  private final Stack<Entry> stack = new Stack<>();
+  public abstract void find();
 
-  class Entry
-  {
-    String typeId;
-    String objectId;
-    String returnExpression;
-  }
+  public abstract void smartFind();
 }

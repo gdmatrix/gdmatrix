@@ -35,6 +35,7 @@ import java.util.Map;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.webapp.NavigatorBean;
 
 /**
  * TODO: Refresh system
@@ -102,7 +103,7 @@ public class MenuTypesCache
     boolean match = false;
 
     String nodeTypeId =
-      mic.getProperty(WebUtils.OBJECT_TYPEID_PROPERTY);
+      mic.getProperty(NavigatorBean.BASE_TYPEID_PROPERTY);
     Type type = TypeCache.getInstance().getType(typeId);
     if (type != null)
       match = type.isDerivedFrom(nodeTypeId);

@@ -65,7 +65,7 @@ public class Tab implements Serializable
     return url;
   }
 
-  public String getBackingName()
+  public String getBeanName()
   {
     return backingName;
   }

@@ -31,23 +31,42 @@
 package org.santfeliu.webapp;
 
 import org.santfeliu.webapp.util.WebUtils;
-import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import org.primefaces.event.TabChangeEvent;
-import org.santfeliu.faces.beansaver.Savable;
-import org.santfeliu.web.WebBean;
+import javax.enterprise.context.spi.AlterableContext;
+import javax.enterprise.context.spi.Context;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
  *
  * @author realor
  */
-public abstract class ObjectBean extends WebBean implements Serializable
+public abstract class ObjectBean extends BaseBean
 {
-  private String objectId = NEW_OBJECT_ID;
-  private int tabIndex;
-  private String typeId;
+  protected String objectId = NavigatorBean.NEW_OBJECT_ID;
+  protected List<Tab> tabs = Collections.EMPTY_LIST;
+  protected int tabIndex;
+  protected int searchTabIndex;
+
+  @Inject
+  NavigatorBean navigatorBean;
+
+  @Override
+  public ObjectBean getObjectBean()
+  {
+    return this;
+  }
+
+  public String getBaseTypeId()
+  {
+    return navigatorBean.getBaseTypeId();
+  }
 
   public String getObjectId()
   {
@@ -59,15 +78,7 @@ public abstract class ObjectBean extends WebBean implements Serializable
     this.objectId = objectId;
   }
 
-  public String getTypeId()
-  {
-    return typeId;
-  }
-
-  public void setTypeId(String typeId)
-  {
-    this.typeId = typeId;
-  }
+  public abstract String getRootTypeId();
 
   public int getTabIndex()
   {
@@ -79,61 +90,102 @@ public abstract class ObjectBean extends WebBean implements Serializable
     this.tabIndex = tabIndex;
   }
 
-  public void onTabChange(TabChangeEvent event)
+  public int getSearchTabIndex()
   {
-    System.out.println(">>> tabIndex: " + tabIndex);
-    Tab tab = getTabs().get(tabIndex);
-    String beanName = tab.getBackingName();
-    if (beanName != null)
-    {
-      TabBean tabBean = WebUtils.getBacking(beanName);
-      tabBean.load();
-    }
+    return searchTabIndex;
   }
 
-  public String getDescription()
+  public void setSearchTabIndex(int searchTabIndex)
   {
-    return objectId;
+    this.searchTabIndex = searchTabIndex;
   }
 
   public List<Tab> getTabs()
   {
-    // TODO: take tabs from CMSnode
-    return Collections.EMPTY_LIST;
-  }
-
-  public void show(String objectId)
-  {
-    System.out.println("ObjectId: " + objectId);
-    System.out.println("tabIndex: " + tabIndex);
-
-    setObjectId(objectId);
-    Tab tab = getTabs().get(tabIndex);
-    String beanName = tab.getBackingName();
-    if (beanName != null)
-    {
-      TabBean tabBean = WebUtils.getBacking(beanName);
-      tabBean.load();
-    }
+    return tabs;
   }
 
   public abstract String show();
 
+  public void load()
+  {
+    loadObject();
+    loadTabs();
+    loadActiveTab();
+  }
+
+  public void loadObject()
+  {
+  }
+
+  public void loadTabs()
+  {
+  }
+
+  public void loadActiveTab()
+  {
+    if (tabIndex >= tabs.size()) return;
+
+    Tab tab = tabs.get(tabIndex);
+    String beanName = tab.getBeanName();
+    if (beanName != null)
+    {
+      Object bean = WebUtils.getBean(beanName);
+      if (bean instanceof TabBean)
+      {
+        TabBean tabBean = (TabBean)bean;
+        if (!objectId.equals(tabBean.getObjectId()))
+        {
+          tabBean.setObjectId(objectId);
+          tabBean.load();
+        }
+      }
+    }
+  }
+
+  public boolean isDisabledTab(Tab tab)
+  {
+    return tab.getBeanName() != null && NEW_OBJECT_ID.equals(objectId);
+  }
+
   public void store()
+  {
+    storeObject();
+    storeTabs();
+  }
+
+  public void storeObject()
+  {
+  }
+
+  public void storeTabs()
   {
     try
     {
-      List<Tab> tabs = getTabs();
+      BeanManager beanManager = CDI.current().getBeanManager();
       for (Tab tab : tabs)
       {
-        String backingName = tab.getBackingName();
-        Object backing = WebUtils.getBackingIfExists(backingName);
-        if (backing instanceof TabBean)
+        String beanName = tab.getBeanName();
+        System.out.println("beanName: " + beanName);
+        if (beanName != null)
         {
-          TabBean tabBean = (TabBean)backing;
-          if (tabBean.isModified())
+          Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
+          if (iter.hasNext())
           {
-            tabBean.store();
+            Bean<?> bean = iter.next();
+            Class<? extends Annotation> scope = bean.getScope();
+            Context context = beanManager.getContext(scope);
+            Object beanInstance = context.get(bean);
+            System.out.println("bean instance: " + beanInstance);
+
+            if (beanInstance instanceof TabBean)
+            {
+              TabBean tabBean = (TabBean)beanInstance;
+              if (tabBean.isModified())
+              {
+                tabBean.store();
+              }
+            }
           }
         }
       }
@@ -150,14 +202,30 @@ public abstract class ObjectBean extends WebBean implements Serializable
     error("NOT_IMPLEMENTED");
   }
 
-  public void clear()
+  public void cancel()
   {
-    List<Tab> tabs = getTabs();
+    BeanManager beanManager = CDI.current().getBeanManager();
     for (Tab tab : tabs)
     {
-      String backingName = tab.getBackingName();
-      System.out.println("Clearing " + backingName + ":" +
-        WebUtils.clearBacking(backingName));
+      String beanName = tab.getBeanName();
+      System.out.println("beanName: " + beanName);
+      if (beanName != null)
+      {
+        Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
+        if (iter.hasNext())
+        {
+          Bean<?> bean = iter.next();
+          Class<? extends Annotation> scope = bean.getScope();
+          Context context = beanManager.getContext(scope);
+          if (context instanceof AlterableContext)
+          {
+            System.out.println("Destroy bean " + bean);
+            ((AlterableContext)context).destroy(bean);
+          }
+        }
+      }
     }
+    load();
+    info("Cancelled");
   }
 }

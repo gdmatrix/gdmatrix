@@ -31,13 +31,14 @@
 package org.santfeliu.webapp.modules.cases;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.matrix.cases.Case;
-import org.matrix.cases.CaseFilter;
-import static org.matrix.dic.DictionaryConstants.CASE_TYPE;
+import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.cases.web.CaseConfigBean;
+import org.santfeliu.util.TextUtils;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
 
@@ -49,55 +50,26 @@ import org.santfeliu.webapp.Tab;
 @SessionScoped
 public class CaseObjectBean extends ObjectBean
 {
-  private List<Tab> tabs;
-  private String smartFilter;
-  private CaseFilter filter = new CaseFilter();
-  private List<Case> rows;
-  private int firstRow;
+  private Case cas = new Case();
 
   public CaseObjectBean()
   {
-    setTypeId(CASE_TYPE);
   }
 
-  public String getSmartFilter()
+  @Override
+  public String getRootTypeId()
   {
-    return smartFilter;
+    return DictionaryConstants.CASE_TYPE;
   }
 
-  public void setSmartFilter(String smartFilter)
+  public Case getCase()
   {
-    this.smartFilter = smartFilter;
+    return cas;
   }
 
-  public CaseFilter getFilter()
+  public void setCase(Case cas)
   {
-    return filter;
-  }
-
-  public void setFilter(CaseFilter filter)
-  {
-    this.filter = filter;
-  }
-
-  public List<Case> getRows()
-  {
-    return rows;
-  }
-
-  public void setRows(List<Case> rows)
-  {
-    this.rows = rows;
-  }
-
-  public int getFirstRow()
-  {
-    return firstRow;
-  }
-
-  public void setFirstRow(int firstRow)
-  {
-    this.firstRow = firstRow;
+    this.cas = cas;
   }
 
   @Override
@@ -106,50 +78,82 @@ public class CaseObjectBean extends ObjectBean
     return "/pages/cases/case.xhtml";
   }
 
-  @Override
-  public List<Tab> getTabs()
+  public Date getStartDateTime()
   {
-    if (tabs == null)
+    if (cas != null && cas.getStartDate() != null)
+      return getDate(cas.getStartDate(), cas.getStartTime());
+    else
+      return null;
+  }
+
+  public Date getEndDateTime()
+  {
+    if (cas != null && cas.getEndDate() != null)
+      return getDate(cas.getEndDate(), cas.getEndTime());
+    else
+      return null;
+  }
+
+  public void setStartDateTime(Date date)
+  {
+    if (cas != null)
     {
-      tabs = super.getTabs();
-      if (tabs.isEmpty())
+      if (date == null)
+        date = new Date();
+      cas.setStartDate(TextUtils.formatDate(date, "yyyyMMdd"));
+      cas.setStartTime(TextUtils.formatDate(date, "HHmmss"));
+    }
+  }
+
+  public void setEndDateTime(Date date)
+  {
+    if (date != null && cas != null)
+    {
+      cas.setEndDate(TextUtils.formatDate(date, "yyyyMMdd"));
+      cas.setEndTime(TextUtils.formatDate(date, "HHmmss"));
+    }
+  }
+
+  private Date getDate(String date, String time)
+  {
+    String dateTime = TextUtils.concatDateAndTime(date, time);
+    return TextUtils.parseInternalDate(dateTime);
+  }
+
+  @Override
+  public void loadObject()
+  {
+    if (!NEW_OBJECT_ID.equals(objectId))
+    {
+      try
       {
-        tabs = new ArrayList<>(); // empty list may be read only
-        tabs.add(new Tab("Main", "/pages/cases/case_main.xhtml", "caseMainTabBean"));
-        tabs.add(new Tab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
-        tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
+        cas = CaseConfigBean.getPort().loadCase(objectId);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
       }
     }
-    return tabs;
+    else cas = new Case();
   }
 
-  public void smartSearch()
+  @Override
+  public void loadTabs()
   {
-    try
+    super.loadTabs();
+
+    if (tabs.isEmpty())
     {
-      firstRow = 0;
-      CaseFilter basicFilter = new CaseFilter();
-      basicFilter.setTitle(smartFilter);
-      basicFilter.setMaxResults(40);
-      rows = CaseConfigBean.getPort().findCases(basicFilter);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
+      tabs = new ArrayList<>(); // empty list may be read only
+      tabs.add(new Tab("Main", "/pages/cases/case_main.xhtml"));
+      tabs.add(new Tab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
+      tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
     }
   }
 
-  public void search()
+  @Override
+  public void storeObject()
   {
-    try
-    {
-      firstRow = 0;
-      filter.setMaxResults(40);
-      rows = CaseConfigBean.getPort().findCases(filter);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    System.out.println("SAVE: " + cas.getTitle());
   }
 }

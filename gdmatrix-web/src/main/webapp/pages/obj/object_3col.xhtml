@@ -69,6 +69,10 @@
       }
     </style>
 
+    <f:metadata>
+      <f:event type="postRenderView" listener="#{navigatorBean.postRenderView}" />
+    </f:metadata>
+    
     <p:button onclick="return showPanel('leftPanel');"  
               icon="pi pi-search" 
               widgetVar="leftPanelButton" 
@@ -89,7 +93,7 @@
                  style="width:240px"> 
           <f:facet name="header">
             <i class="pi pi-search m-1"></i>
-            <p:outputLabel value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}" />
+            <p:outputLabel value="Cerca" />
             <p:commandLink onclick="return closePanel('leftPanel');" 
                            class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
               <span class="ui-icon ui-icon-closethick"></span>
@@ -97,15 +101,15 @@
           </f:facet>
 
           <p:outputPanel id="search_panel">
-            <p:accordionPanel id="search_accordion" widgetVar="basic" 
+            <p:tabView id="search_selector" widgetVar="basic" 
                               activeIndex="#{templateBacking.searchPanelIndex}">
-              <p:tab title="Cerca ràpida" id="smart_search">
+              <p:tab title="Ràpida" id="smart_search">
                 <ui:insert name="smart_filter"></ui:insert>
               </p:tab>
-              <p:tab title="Cerca avançada" id="advanced_search"> 
+              <p:tab title="Avançada" id="advanced_search"> 
                 <ui:insert name="advanced_filter"></ui:insert>
               </p:tab>   
-            </p:accordionPanel>
+            </p:tabView>
           </p:outputPanel>
 
         </p:panel>
@@ -131,43 +135,18 @@
             </p:commandLink>
           </f:facet>
 
-          <p:outputPanel>
-            Espai per mostrar els favorits i els recents. 
-            Espai per mostrar els favorits i els recents. 
-            Espai per mostrar els favorits i els recents. 
-            Espai per mostrar els favorits i els recents. 
-            Espai per mostrar els favorits i els recents.
-            <!--
-            <p:panel id="favorites_panel" header="Favorits">
-              <p:dataTable id="favorites_table" value="#{templateBacking.favorites}"
-                           var="fav" size="small" styleClass="favorites_table"
-                            paginator="true" paginatorPosition="bottom">
-                <p:column>
-                  <p:commandLink action="#{controllerBacking.show(fav.getValue())}" 
-                                 ajax="false" oncomplete="clickSlickDot(2);"
-                                 update=":mainform:object_header">
-                    <h:outputText value="#{templateBacking.getDescription(fav)}" />
-                  </p:commandLink>
-                </p:column>
-              </p:dataTable>
-            </p:panel>
-            <p:panel id="recents_panel" header="Recents" styleClass="mt-2">
-              <p:treeNode type="group">
-                <h:outputText value="#{templateBacking.getTypeDescription(node.typeId)}" />
-              </p:treeNode>
-              <p:treeNode>
-                <p:outputPanel>
-                  <p:commandLink action="#{controllerBacking.show(node.typeId, node.objectId)}" ajax="false" oncomplete="clickSlickDot(2);">
-                    <h:outputText value="#{templateBacking.getPageHistoryDescription(node)}" />
-                  </p:commandLink>
-                </p:outputPanel>
-              </p:treeNode>
-            </p:panel>
-            -->
+          <p:outputPanel id="context_panel">
+            <p:tabView>
+              <p:tab title="Recents">
+                <h:outputText value="#{navigatorBean.toString()}" />              
+              </p:tab>
+              <p:tab title="Favorits">                
+              </p:tab>
+            </p:tabView>
           </p:outputPanel>
         </p:panel>
       </div>
-
+      
       <script>
         function showPanel(panelVar)
         {

@@ -33,11 +33,11 @@ package org.santfeliu.webapp.modules.cases;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
-import org.matrix.web.WebUtils;
 import org.santfeliu.cases.web.CaseConfigBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -48,12 +48,20 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named("casePersonsTabBean")
-@ViewScoped
+@SessionScoped
 public class CasePersonsTabBean extends TabBean
 {
   private List<CasePersonView> casePersonViews;
-  private String caseId;
   private int firstRow;
+
+  @Inject
+  CaseObjectBean caseObjectBean;
+
+  @Override
+  public ObjectBean getObjectBean()
+  {
+    return caseObjectBean;
+  }
 
   @PostConstruct
   public void init()
@@ -82,33 +90,35 @@ public class CasePersonsTabBean extends TabBean
   }
 
   @Override
-  public ObjectBean getObjectBean()
+  public void load()
   {
-    return WebUtils.getBacking("caseObjectBean");
+    System.out.println("load casePersons:" + objectId);
+    if (!NEW_OBJECT_ID.equals(objectId))
+    {
+      try
+      {
+        CasePersonFilter filter = new CasePersonFilter();
+        filter.setCaseId(objectId);
+        casePersonViews = CaseConfigBean.getPort().findCasePersonViews(filter);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+    else casePersonViews = Collections.EMPTY_LIST;
   }
 
   @Override
-  public void load()
+  public boolean isModified()
   {
-    if (casePersonViews == null || !getObjectId().equals(caseId))
-    {
-      caseId = getObjectId();
+    // Test
+    return true;
+  }
 
-      System.out.println("load casePersons:" + caseId);
-      if (!NEW_OBJECT_ID.equals(caseId))
-      {
-        try
-        {
-          CasePersonFilter filter = new CasePersonFilter();
-          filter.setCaseId(caseId);
-          casePersonViews = CaseConfigBean.getPort().findCasePersonViews(filter);
-        }
-        catch (Exception ex)
-        {
-          error(ex);
-        }
-      }
-      else casePersonViews = Collections.EMPTY_LIST;
-    }
+  @Override
+  public void store()
+  {
+    System.out.println("Store documentPersonsBean");
   }
 }
