@@ -68,10 +68,6 @@
         border-radius:8px 0 0 8px !important; 
       }
     </style>
-
-    <f:metadata>
-      <f:event type="postRenderView" listener="#{navigatorBean.postRenderView}" />
-    </f:metadata>
     
     <p:button onclick="return showPanel('leftPanel');"  
               icon="pi pi-search" 
@@ -100,17 +96,7 @@
             </p:commandLink>
           </f:facet>
 
-          <p:outputPanel id="search_panel">
-            <p:tabView id="search_selector" widgetVar="basic" 
-                              activeIndex="#{templateBacking.searchPanelIndex}">
-              <p:tab title="Ràpida" id="smart_search">
-                <ui:insert name="smart_filter"></ui:insert>
-              </p:tab>
-              <p:tab title="Avançada" id="advanced_search"> 
-                <ui:insert name="advanced_filter"></ui:insert>
-              </p:tab>   
-            </p:tabView>
-          </p:outputPanel>
+          <ui:insert name="filter"></ui:insert>
 
         </p:panel>
 

@@ -33,12 +33,12 @@ package org.santfeliu.webapp.modules.cases;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
 import org.santfeliu.cases.web.CaseConfigBean;
+import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -48,11 +48,12 @@ import org.santfeliu.webapp.TabBean;
  * @author realor
  */
 @Named("caseDocumentsTabBean")
-@SessionScoped
+@ManualScoped
 public class CaseDocumentsTabBean extends TabBean
 {
   private List<CaseDocumentView> caseDocumentViews;
   private int firstRow;
+  private String newDocId; // find/select test;
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -77,6 +78,16 @@ public class CaseDocumentsTabBean extends TabBean
   public void setCaseDocumentViews(List<CaseDocumentView> caseDocumentViews)
   {
     this.caseDocumentViews = caseDocumentViews;
+  }
+
+  public String getNewDocId()
+  {
+    return newDocId;
+  }
+
+  public void setNewDocId(String newDocId)
+  {
+    this.newDocId = newDocId;
   }
 
   public int getFirstRow()

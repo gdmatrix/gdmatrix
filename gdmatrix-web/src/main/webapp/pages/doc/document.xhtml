@@ -7,63 +7,71 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="/pages/obj/object_3col.xhtml">
 
-  <ui:define name="smart_filter">
-    
-    <p:outputPanel styleClass="field">
-      <p:outputLabel for="@next" value="Valor" />
-      <p:inputText id="smartFilter" value="#{documentFinderBean.smartFilter}"
-                   class="inputfield w-full ui-fluid"/>
+  <ui:define name="filter">
+
+    <p:outputPanel id="filter_panel">
+      <p:tabView id="find_selector" 
+                 activeIndex="#{documentFinderBean.tabIndex}">
+ 
+        <p:tab title="Ràpida" id="smart_search">
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="Valor" />
+            <p:inputText id="smartFilter" value="#{documentFinderBean.smartFilter}"
+                         class="inputfield w-full ui-fluid"/>
+          </p:outputPanel>
+
+          <div class="buttons text-right">
+            <p:commandButton value="Clear"
+                             ajax="true"
+                             action="#{documentFinderBean.smartClear}"
+                             styleClass="ui-button-raised m-1"
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"/>      
+            <p:commandButton id="smart_search_button"
+                             value="Search"
+                             action="#{documentFinderBean.smartFind}"
+                             ajax="true"
+                             update=":mainform:search_tabs:full_results_table"
+                             styleClass="ui-button-raised m-1" 
+                             oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"/>
+          </div>              
+        </p:tab>
+
+        <p:tab title="Avançada" id="advanced_search"> 
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+
+
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+          <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle" 
+                        var="docBundle" />
+
+          <!-- Title -->
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="Title" />        
+            <p:inputText id="title" value="#{documentFinderBean.filter.title}" 
+                         class="inputfield w-full" />
+          </p:outputPanel>  
+
+          <div class="text-right">
+            <p:commandButton value="Clear"
+                             ajax="true"
+                             action="#{documentFinderBean.clear}"                  
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             />
+            <p:commandButton id="advanced_search_button"
+                             value="Search"
+                             action="#{documentFinderBean.find}"
+                             ajax="true"
+                             update=":mainform:search_tabs:full_results_table"
+                             styleClass="ui-button-raised m-1" 
+                             oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"
+                             />
+          </div>    
+
+        </p:tab>
+      </p:tabView>
     </p:outputPanel>
-
-    <div class="buttons text-right">
-      <p:commandButton value="Clear"
-                       ajax="true"
-                       action="#{documentFinderBean.clear}"
-                       styleClass="ui-button-raised m-1"
-                       process="@parent" 
-                       oncomplete=""/>      
-      <p:commandButton id="smart_search_button"
-                       value="Search"
-                       action="#{documentFinderBean.smartFind}"
-                       ajax="true"
-                       process="@parent" 
-                       update=":mainform:search_tabs:full_results_table"
-                       styleClass="ui-button-raised m-1" 
-                       oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"/>
-    </div>              
   </ui:define>
 
-  <ui:define name="advanced_filter">
-    <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
-    <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle" 
-                  var="docBundle" />
-    
-    <!-- Title -->
-    <p:outputPanel styleClass="field">
-      <p:outputLabel for="@next" value="Title" />        
-      <p:inputText id="title" value="#{documentFinderBean.filter.title}" 
-                   class="inputfield w-full" />
-    </p:outputPanel>  
-        
-    <div class="text-right">
-      <p:commandButton value="Clear"
-                       ajax="true"
-                       action="#{documentFinderBean.clear}"                       
-                       process="@parent" 
-                       update=":mainform:search_tabs:full_results_table"
-                       />
-      <p:commandButton id="advanced_search_button"
-                       value="Search"
-                       action="#{documentFinderBean.find}"
-                       ajax="true"
-                       process="@parent" 
-                       update=":mainform:search_tabs:full_results_table"
-                       styleClass="ui-button-raised m-1" 
-                       oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"
-                       />
-    </div>              
-  </ui:define>
-  
   <ui:define name="object">
 
     <p:tabView id="search_tabs" 
@@ -77,7 +85,7 @@
         </f:facet>
         <ui:include src="document_list.xhtml" />
       </p:tab>      
-      
+
       <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}" 
              id="document_form"> 
 
@@ -85,13 +93,13 @@
           <h:outputText value="DocId: #{documentObjectBean.objectId}" />       
           <h:outputText value="#{documentObjectBean.document.title}" class="ml-2" />
         </p:outputPanel>
-        
+
         <!-- Central column -->
         <p:tabView dynamic="true" id="tabs" 
                    widgetVar="objectTabs"
                    touchable="false"
                    activeIndex="#{documentObjectBean.tabIndex}">
- 
+
           <p:ajax event="tabChange" listener="#{caseObjectBean.loadActiveTab}" />
 
           <c:forEach items="#{documentObjectBean.tabs}" var="tab" >
@@ -115,7 +123,7 @@
                            resetValues="true" global="false" />
         </div>            
 
-      </p:tab>   
+      </p:tab>
     </p:tabView>
 
   </ui:define>

@@ -41,4 +41,14 @@ public abstract class BaseBean extends WebBean implements Serializable
 {
   public abstract ObjectBean getObjectBean();
 
+  public Serializable saveState()
+  {
+    System.out.println(">> SAVE STATE " + this);
+    return null;
+  }
+
+  public void restoreState(Serializable state)
+  {
+    System.out.println(">> RESTORE STATE " + this);
+  }
 }

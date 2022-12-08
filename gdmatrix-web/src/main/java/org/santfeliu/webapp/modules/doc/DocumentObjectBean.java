@@ -30,13 +30,15 @@
  */
 package org.santfeliu.webapp.modules.doc;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.santfeliu.doc.web.DocumentConfigBean;
+import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
@@ -46,10 +48,13 @@ import org.santfeliu.webapp.Tab;
  * @author realor
  */
 @Named("documentObjectBean")
-@SessionScoped
+@ManualScoped
 public class DocumentObjectBean extends ObjectBean
 {
   private Document document;
+
+  @Inject
+  DocumentFinderBean documentFinderBean;
 
   public DocumentObjectBean()
   {
@@ -59,6 +64,12 @@ public class DocumentObjectBean extends ObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.DOCUMENT_TYPE;
+  }
+
+  @Override
+  public DocumentFinderBean getFinderBean()
+  {
+    return documentFinderBean;
   }
 
   public Document getDocument()
@@ -104,6 +115,18 @@ public class DocumentObjectBean extends ObjectBean
     tabs = new ArrayList<>();
     tabs.add(new Tab("Main", "/pages/doc/document_main.xhtml"));
     tabs.add(new Tab("Content", "/pages/doc/document_content.xhtml", "documentContentTabBean"));
+  }
+
+  @Override
+  public Serializable saveState()
+  {
+    return document;
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    this.document = (Document)document;
   }
 
 }

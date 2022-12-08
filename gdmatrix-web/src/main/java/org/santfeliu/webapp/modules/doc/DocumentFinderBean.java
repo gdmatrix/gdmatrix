@@ -30,15 +30,15 @@
  */
 package org.santfeliu.webapp.modules.doc;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.cases.CaseFilter;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.santfeliu.doc.web.DocumentConfigBean;
+import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 
 /**
@@ -46,13 +46,14 @@ import org.santfeliu.webapp.FinderBean;
  * @author realor
  */
 @Named("documentFinderBean")
-@SessionScoped
+@ManualScoped
 public class DocumentFinderBean extends FinderBean
 {
   private String smartFilter;
   private DocumentFilter filter = new DocumentFilter();
   private List<Document> rows;
   private int firstRow;
+  private boolean isSmartFind;
 
   @Inject
   DocumentObjectBean documentObjectBean;
@@ -114,6 +115,7 @@ public class DocumentFinderBean extends FinderBean
     this.firstRow = firstRow;
   }
 
+  @Override
   public void smartFind()
   {
     try
@@ -130,6 +132,13 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
+  public void smartClear()
+  {
+    smartFilter = null;
+    rows = null;
+  }
+
+  @Override
   public void find()
   {
     try
@@ -149,6 +158,33 @@ public class DocumentFinderBean extends FinderBean
   {
     filter = new DocumentFilter();
     rows = null;
+  }
+
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ isSmartFind, smartFilter, filter, firstRow };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    Object[] stateArray = (Object[])state;
+    isSmartFind = (Boolean)stateArray[0];
+    smartFilter = (String)stateArray[1];
+    filter = (DocumentFilter)stateArray[2];
+
+    if (isSmartFind)
+    {
+      smartFind();
+      setTabIndex(0);
+    }
+    else
+    {
+      find();
+      setTabIndex(1);
+    }
+    firstRow = (Integer)stateArray[3];
   }
 
 }

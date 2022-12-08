@@ -32,7 +32,6 @@ package org.santfeliu.webapp;
 
 import org.santfeliu.webapp.util.WebUtils;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,16 +39,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
-import javax.faces.event.PostRenderViewEvent;
 import org.santfeliu.webapp.util.MenuTypesCache;
 import javax.inject.Named;
-import org.santfeliu.dic.Type;
-import org.santfeliu.dic.TypeCache;
+import org.santfeliu.faces.ManualContext;
+import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
@@ -66,164 +63,269 @@ public class NavigatorBean extends WebBean implements Serializable
   public static final String BASE_TYPEID_PROPERTY = "objectTypeId";
   public static final String NEW_OBJECT_ID = "";
 
+  private String lastBaseTypeId;
   private final Map<String, BaseTypeInfo> baseTypeInfoMap = new HashMap<>();
+//  private final List<VisitedObject> history;
 
-  public String getBaseTypeId()
+  public BaseTypeInfo getBaseTypeInfo()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
     String baseTypeId = selectedMenuItem.getProperty(BASE_TYPEID_PROPERTY);
-    return baseTypeId;
-  }
-
-  public BaseTypeInfo getBaseTypeInfo()
-  {
-    String baseTypeId = getBaseTypeId();
     if (baseTypeId == null) return null;
 
-    return getBaseTypeInfo(baseTypeId);
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo(baseTypeId);
+    if (baseTypeInfo.objectBeanName == null)
+    {
+      baseTypeInfo.objectBeanName =
+        selectedMenuItem.getProperty(OBJECT_BEAN_PROPERTY);
+    }
+    return baseTypeInfo;
+  }
+
+  public BaseTypeInfo getBaseTypeInfo(String baseTypeId)
+  {
+    BaseTypeInfo baseTypeInfo = baseTypeInfoMap.get(baseTypeId);
+    if (baseTypeInfo == null)
+    {
+      baseTypeInfo = new BaseTypeInfo(baseTypeId);
+      baseTypeInfoMap.put(baseTypeId, baseTypeInfo);
+    }
+    return baseTypeInfo;
   }
 
   public String getObjectId()
   {
-    String baseTypeId = getBaseTypeId();
-    if (baseTypeId == null) return NEW_OBJECT_ID;
-
-    return getBaseTypeInfo(baseTypeId).getObjectId();
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    return baseTypeInfo == null? NEW_OBJECT_ID : baseTypeInfo.getObjectId();
   }
 
   public String show()
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
-
-    String beanName = selectedMenuItem.getProperty(OBJECT_BEAN_PROPERTY);
-    if (beanName == null) return "blank";
-
-    Object bean = WebUtils.getBean(beanName);
-    if (!(bean instanceof ObjectBean)) return "blank";
-
-    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
-
-    ObjectBean objectBean = (ObjectBean)bean;
-    objectBean.setObjectId(baseTypeInfo.getObjectId());
-    objectBean.setSearchTabIndex(1);
-    objectBean.setTabIndex(0);
-    objectBean.load();
-
-    return objectBean.show();
+    return show(null, null, 0, null);
   }
 
-  public String show(String typeId, String objectId)
+  public String show(String objectTypeId, String objectId)
   {
-    return show(typeId, objectId, 0);
+    return show(objectTypeId, objectId, 0, null);
   }
 
-  public String show(String baseTypeId, String objectId, int tabIndex)
+  public String show(String objectTypeId, String objectId, int tabIndex)
   {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
-
-    MenuTypesCache menuTypesCache = MenuTypesCache.getInstance();
-    MenuItemCursor typeMenuItem = menuTypesCache.get(selectedMenuItem, baseTypeId);
-    if (typeMenuItem.isNull()) return "blank";
-
-    userSessionBean.setSelectedMid(typeMenuItem.getMid());
-
-    String beanName = typeMenuItem.getProperty(OBJECT_BEAN_PROPERTY);
-    if (beanName == null) return "blank";
-
-    Object bean = WebUtils.getBean(beanName);
-    if (!(bean instanceof ObjectBean)) return "blank";
-
-    BaseTypeInfo baseTypeInfo = getBaseTypeInfo(baseTypeId);
-    baseTypeInfo.visit(objectId);
-    baseTypeInfo.setTabIndex(tabIndex);
-
-    ObjectBean objectBean = (ObjectBean)bean;
-    objectBean.setObjectId(objectId);
-    objectBean.setSearchTabIndex(1);
-    objectBean.setTabIndex(tabIndex);
-    objectBean.load();
-    return objectBean.show();
+    return show(objectTypeId, objectId, tabIndex, null);
   }
 
-  public void show(String objectId)
+  public String show(String objectTypeId, String objectId,
+    int tabIndex, String returnExpression)
   {
-    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
-    if (baseTypeInfo != null)
+    // STEP-1: go to baseTypeId node
+    if (objectTypeId != null)
     {
-      baseTypeInfo.visit(objectId);
+      MenuItemCursor typeMenuItem = selectMenuItem(objectTypeId);
+      if (typeMenuItem.isNull()) return null;
     }
 
-    ObjectBean objectBean = getObjectBean();
+    // STEP-2: load current baseTypeInfo
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    if (baseTypeInfo == null) return null;
+
+    // STEP-3: save last beans
+    if (lastBaseTypeId != null)
+    {
+      BaseTypeInfo lastBaseTypeInfo = getBaseTypeInfo(lastBaseTypeId);
+      if (lastBaseTypeInfo != null)
+      {
+        ObjectBean lastObjectBean = lastBaseTypeInfo.getObjectBean();
+        if (lastObjectBean != null)
+        {
+          FinderBean lastFinderBean = lastObjectBean.getFinderBean();
+          if (returnExpression == null)
+          {
+            lastBaseTypeInfo.saveBeanState(lastFinderBean);
+          }
+          else
+          {
+            lastBaseTypeInfo.saveBeanState(lastObjectBean);
+            lastBaseTypeInfo.saveBeanState(lastFinderBean);
+            lastBaseTypeInfo.saveTabBeansState(lastObjectBean.getTabs());
+
+            ReturnInfo returnInfo = new ReturnInfo();
+            returnInfo.baseTypeId = lastBaseTypeId;
+            returnInfo.objectId = lastObjectBean.getObjectId();
+            returnInfo.searchTabIndex = lastObjectBean.getSearchTabIndex();
+            returnInfo.tabIndex = lastObjectBean.getTabIndex();
+            returnInfo.expression = returnExpression;
+            baseTypeInfo.setReturnInfo(returnInfo);
+          }
+        }
+      }
+    }
+
+    String baseTypeId = baseTypeInfo.getBaseTypeId();
+    lastBaseTypeId = baseTypeId;
+
+    // STEP-4: destroy all BaseBean instances
+    destroyBeans();
+
+    // STEP-5: restore finder bean state
+    ObjectBean objectBean = baseTypeInfo.getObjectBean();
+    if (objectBean == null) return null;
+    baseTypeInfo.restoreBeanState(objectBean.getFinderBean());
+
+    // STEP-6: load object data
+    if (objectId == null) objectId = baseTypeInfo.getObjectId();
+    baseTypeInfo.visit(objectId);
     objectBean.setObjectId(objectId);
+    objectBean.setTabIndex(tabIndex);
     objectBean.load();
-  }
 
-  public String search(String baseTypeId)
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
-
-    MenuTypesCache menuTypesCache = MenuTypesCache.getInstance();
-    MenuItemCursor typeMenuItem = menuTypesCache.get(selectedMenuItem, baseTypeId);
-    if (typeMenuItem.isNull()) return "blank";
-
-    userSessionBean.setSelectedMid(typeMenuItem.getMid());
-
-    String beanName = typeMenuItem.getProperty(OBJECT_BEAN_PROPERTY);
-    if (beanName == null) return "blank";
-
-    Object bean = WebUtils.getBean(beanName);
-    if (!(bean instanceof ObjectBean)) return "blank";
-
-    ObjectBean objectBean = (ObjectBean)bean;
-    objectBean.setSearchTabIndex(0);
+    if (returnExpression == null)
+    {
+      objectBean.setSearchTabIndex(1);
+    }
+    else
+    {
+      objectBean.setSearchTabIndex(0);
+    }
     return objectBean.show();
   }
 
-  public String search(String typeId, String returnExpression)
+  public String find(String baseTypeId, String returnExpression)
   {
-    return null;
+    return show(baseTypeId, null, 0, returnExpression);
   }
 
-  public ObjectBean getObjectBean()
+  public boolean isSelectable()
+  {
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    return baseTypeInfo != null
+      && baseTypeInfo.getReturnInfo() != null
+      && !NEW_OBJECT_ID.equals(baseTypeInfo.getObjectId());
+  }
+
+  public String select()
+  {
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    if (baseTypeInfo == null) return null;
+
+    ReturnInfo returnInfo = baseTypeInfo.getReturnInfo();
+    baseTypeInfo.setReturnInfo(null);
+
+    if (returnInfo == null) return null;
+
+    String selectedObjectId = baseTypeInfo.getObjectId();
+
+    MenuItemCursor typeMenuItem = selectMenuItem(returnInfo.baseTypeId);
+    if (typeMenuItem.isNull()) return null;
+
+    lastBaseTypeId = returnInfo.baseTypeId;
+    baseTypeInfo = getBaseTypeInfo();
+    baseTypeInfo.visit(returnInfo.objectId);
+
+    ObjectBean objectBean = baseTypeInfo.getObjectBean();
+    objectBean.setObjectId(returnInfo.objectId);
+    objectBean.setSearchTabIndex(returnInfo.searchTabIndex);
+    objectBean.setTabIndex(returnInfo.tabIndex);
+
+    baseTypeInfo.restoreBeanState(objectBean);
+    baseTypeInfo.restoreBeanState(objectBean.getFinderBean());
+
+    objectBean.loadTabs();
+
+    baseTypeInfo.restoreTabBeansState(objectBean.getTabs());
+    baseTypeInfo.clearBeansState();
+
+    String expression = returnInfo.expression;
+    if (!expression.startsWith("#{")) expression = "#{" + expression + "}";
+    WebUtils.setValueExpression(expression, String.class, selectedObjectId);
+
+    System.out.println(">>> select : " +
+      returnInfo.expression + " = " + selectedObjectId);
+
+    return objectBean.show();
+  }
+
+  public void view(String objectId)
+  {
+    view(objectId, 0);
+  }
+
+  public void view(String objectId, int tabIndex)
+  {
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    if (baseTypeInfo == null) return;
+
+    baseTypeInfo.visit(objectId);
+
+    ObjectBean objectBean = baseTypeInfo.getObjectBean();
+    objectBean.setObjectId(objectId);
+    objectBean.setTabIndex(tabIndex);
+    objectBean.load();
+  }
+
+  @Override
+  public String toString()
+  {
+    return baseTypeInfoMap.toString();
+  }
+
+  private MenuItemCursor selectMenuItem(String objectTypeId)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
+    MenuTypesCache menuTypesCache = MenuTypesCache.getInstance();
+    MenuItemCursor typeMenuItem = menuTypesCache.get(
+      userSessionBean.getSelectedMenuItem(), objectTypeId);
 
-    String beanName = selectedMenuItem.getProperty(OBJECT_BEAN_PROPERTY);
-    if (beanName == null) return null;
+    if (!typeMenuItem.isNull())
+    {
+      userSessionBean.setSelectedMid(typeMenuItem.getMid());
+    }
+    return typeMenuItem;
+  }
 
-    Object bean = WebUtils.getBean(beanName);
-    if (bean instanceof ObjectBean) return (ObjectBean) bean;
+  private void destroyBeans()
+  {
+    BeanManager beanManager = CDI.current().getBeanManager();
+    ManualContext context =
+      (ManualContext)beanManager.getContext(ManualScoped.class);
 
-    return null;
+    context.destroy(bean ->
+    {
+      if (bean instanceof BaseBean)
+      {
+        System.out.println(">>> Destroying bean " + bean.getClass().getName());
+        return true;
+      }
+      return false;
+    });
   }
 
   public class BaseTypeInfo implements Serializable
   {
-    String rootTypeId;
     String baseTypeId;
+    String objectBeanName;
     List<String> recentObjectIds = new ArrayList<>();
-    int tabIndex;
+    Map<String, Serializable> beanStateMap = new HashMap<>();
+    ReturnInfo returnInfo;
 
     public BaseTypeInfo(String baseTypeId)
     {
       this.baseTypeId = baseTypeId;
-      Type type = TypeCache.getInstance().getType(baseTypeId);
-      this.rootTypeId = type.getRootType().getTypeId();
-    }
-
-    public String getRootTypeId()
-    {
-      return rootTypeId;
     }
 
     public String getBaseTypeId()
     {
       return baseTypeId;
+    }
+
+    public String getObjectBeanName()
+    {
+      return objectBeanName;
+    }
+
+    public ObjectBean getObjectBean()
+    {
+      return objectBeanName == null ? null : WebUtils.getBean(objectBeanName);
     }
 
     public String getObjectId()
@@ -232,14 +334,14 @@ public class NavigatorBean extends WebBean implements Serializable
       return recentObjectIds.get(0);
     }
 
-    public int getTabIndex()
+    public ReturnInfo getReturnInfo()
     {
-      return tabIndex;
+      return returnInfo;
     }
 
-    public void setTabIndex(int tabIndex)
+    public void setReturnInfo(ReturnInfo returnInfo)
     {
-      this.tabIndex = tabIndex;
+      this.returnInfo = returnInfo;
     }
 
     public void visit(String objectId)
@@ -257,68 +359,101 @@ public class NavigatorBean extends WebBean implements Serializable
       return recentObjectIds;
     }
 
-    @Override
-    public String toString()
+    void saveBeanState(BaseBean baseBean)
     {
-      return recentObjectIds.toString();
-    }
-  }
-
-  @Override
-  public String toString()
-  {
-    return baseTypeInfoMap.toString();
-  }
-
-  public BaseTypeInfo getBaseTypeInfo(String baseTypeId)
-  {
-    BaseTypeInfo baseTypeInfo = baseTypeInfoMap.get(baseTypeId);
-    if (baseTypeInfo == null)
-    {
-      baseTypeInfo = new BaseTypeInfo(baseTypeId);
-      baseTypeInfoMap.put(baseTypeId, baseTypeInfo);
-    }
-    return baseTypeInfo;
-  }
-
-  public void postRenderView(PostRenderViewEvent event)
-  {
-    System.out.println(">>> START POST RENDER VIEW");
-
-    BeanManager beanManager = CDI.current().getBeanManager();
-    AlterableContext context =
-      (AlterableContext)beanManager.getContext(SessionScoped.class);
-
-    Set<Bean<?>> beans = beanManager.getBeans(Object.class);
-
-    BaseTypeInfo baseTypeInfo = this.getBaseTypeInfo();
-    String rootTypeId = baseTypeInfo.getRootTypeId();
-    System.out.println("CURRENT rootTypeId: " + rootTypeId);
-
-    for (Bean bean : beans)
-    {
-      Object beanInstance = context.get(bean);
-      if (beanInstance != null)
+      Serializable state = baseBean.saveState();
+      if (state != null)
       {
-        System.out.println(">> BEAN " + beanInstance.getClass());
-        if (beanInstance instanceof BaseBean)
+        String beanName = WebUtils.getBeanName(baseBean);
+        System.out.println(">>> saveBean: " + beanName + "@" + baseTypeId);
+        beanStateMap.put(beanName, state);
+      }
+    }
+
+    void restoreBeanState(BaseBean baseBean)
+    {
+      String beanName = WebUtils.getBeanName(baseBean);
+      System.out.println(">>> restoreBean: " + beanName + "@" + baseTypeId);
+      Serializable state = beanStateMap.get(beanName);
+      if (state != null)
+      {
+        baseBean.restoreState(state);
+      }
+    }
+
+    void saveTabBeansState(List<Tab> tabs)
+    {
+      BeanManager beanManager = CDI.current().getBeanManager();
+      Context context = beanManager.getContext(ManualScoped.class);
+
+      for (Tab tab : tabs)
+      {
+        String beanName = tab.getBeanName();
+        if (beanName == null) continue;
+
+        Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
+        if (iter.hasNext())
         {
-          BaseBean baseBean = (BaseBean) beanInstance;
-          ObjectBean objectBean = baseBean.getObjectBean();
-          if (!objectBean.getRootTypeId().equals(rootTypeId))
+          Bean<?> bean = iter.next();
+          Object beanInstance = context.get(bean);
+          if (beanInstance instanceof TabBean)
           {
-            System.out.println("  -> Destroying bean of type " +
-              objectBean.getRootTypeId());
-            context.destroy(bean);
+            TabBean tabBean = (TabBean)beanInstance;
+            Serializable state = tabBean.saveState();
+            if (state != null)
+            {
+              System.out.println(">>> saveBean: " + beanName + "@" + baseTypeId);
+              beanStateMap.put(beanName, state);
+            }
           }
         }
       }
     }
-    System.out.println(">>> END POST RENDER VIEW");
+
+    void restoreTabBeansState(List<Tab> tabs)
+    {
+      String objectId = getObjectId();
+
+      for (Tab tab : tabs)
+      {
+        String beanName = tab.getBeanName();
+        if (beanName == null) continue;
+
+        Serializable state = beanStateMap.get(beanName);
+        if (state != null)
+        {
+          Object beanInstance = WebUtils.getBean(beanName);
+          if (beanInstance instanceof TabBean)
+          {
+            TabBean tabBean = (TabBean)beanInstance;
+            tabBean.setObjectId(objectId);
+            System.out.println(">>> Restoring bean " + tabBean + "@" + baseTypeId);
+            tabBean.restoreState(state);
+          }
+        }
+      }
+    }
+
+    void clearBeansState()
+    {
+      beanStateMap.clear();
+    }
+
+    @Override
+    public String toString()
+    {
+      return "RecentList: " + recentObjectIds.toString() +
+        " state: " + beanStateMap;
+    }
   }
 
-  public String getSystemTime()
+  public class ReturnInfo
   {
-    return String.valueOf(System.currentTimeMillis());
+    String baseTypeId;
+    String objectId;
+    int searchTabIndex;
+    int tabIndex;
+    String expression;
   }
+
 }

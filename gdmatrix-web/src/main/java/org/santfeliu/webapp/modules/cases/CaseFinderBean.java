@@ -30,13 +30,14 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
+import java.io.Serializable;
 import java.util.List;
-import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.santfeliu.cases.web.CaseConfigBean;
+import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.ObjectBean;
 
@@ -45,13 +46,14 @@ import org.santfeliu.webapp.ObjectBean;
  * @author realor
  */
 @Named("caseFinderBean")
-@SessionScoped
+@ManualScoped
 public class CaseFinderBean extends FinderBean
 {
   private String smartFilter;
   private CaseFilter filter = new CaseFilter();
   private List<Case> rows;
   private int firstRow;
+  private boolean isSmartFind;
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -102,11 +104,13 @@ public class CaseFinderBean extends FinderBean
     this.firstRow = firstRow;
   }
 
+  @Override
   public void smartFind()
   {
     try
     {
       firstRow = 0;
+      isSmartFind = true;
       CaseFilter basicFilter = new CaseFilter();
       basicFilter.setTitle(smartFilter);
       basicFilter.setMaxResults(40);
@@ -118,12 +122,21 @@ public class CaseFinderBean extends FinderBean
     }
   }
 
+  public void smartClear()
+  {
+    smartFilter = null;
+    rows = null;
+  }
+
+  @Override
   public void find()
   {
     try
     {
       firstRow = 0;
+      isSmartFind = false;
       filter.setMaxResults(40);
+      System.out.println(">> title: " + filter.getTitle());
       rows = CaseConfigBean.getPort().findCases(filter);
     }
     catch (Exception ex)
@@ -136,6 +149,33 @@ public class CaseFinderBean extends FinderBean
   {
     filter = new CaseFilter();
     rows = null;
+  }
+
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ isSmartFind, smartFilter, filter, firstRow };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    Object[] stateArray = (Object[])state;
+    isSmartFind = (Boolean)stateArray[0];
+    smartFilter = (String)stateArray[1];
+    filter = (CaseFilter)stateArray[2];
+
+    if (isSmartFind)
+    {
+      smartFind();
+      setTabIndex(0);
+    }
+    else
+    {
+      find();
+      setTabIndex(1);
+    }
+    firstRow = (Integer)stateArray[3];
   }
 
 }

@@ -28,56 +28,21 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.doc;
+package org.santfeliu.faces;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import org.matrix.doc.Content;
-import org.santfeliu.faces.ManualScoped;
-import org.santfeliu.webapp.TabBean;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import javax.enterprise.context.NormalScope;
 
 /**
  *
  * @author realor
  */
-@Named("documentContentTabBean")
-@ManualScoped
-public class DocumentContentTabBean extends TabBean
+@NormalScope
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE,ElementType.METHOD,ElementType.FIELD})
+public @interface ManualScoped
 {
-  @Inject
-  DocumentObjectBean documentObjectBean;
-
-  @Override
-  public DocumentObjectBean getObjectBean()
-  {
-    return documentObjectBean;
-  }
-
-  @PostConstruct
-  public void init()
-  {
-    System.out.println("Creating " + this);
-  }
-
-  public Content getContent()
-  {
-    Content content = documentObjectBean.getDocument().getContent();
-    if (content == null) content = new Content();
-
-    return content;
-  }
-
-  @Override
-  public boolean isModified()
-  {
-    return true;
-  }
-
-  @Override
-  public void store()
-  {
-    Content content = getContent();
-    System.out.println("save content " + content.getContentType());
-  }
 }

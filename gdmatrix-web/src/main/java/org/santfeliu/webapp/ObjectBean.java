@@ -40,7 +40,6 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
-import javax.inject.Inject;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
@@ -54,19 +53,13 @@ public abstract class ObjectBean extends BaseBean
   protected int tabIndex;
   protected int searchTabIndex;
 
-  @Inject
-  NavigatorBean navigatorBean;
-
   @Override
   public ObjectBean getObjectBean()
   {
     return this;
   }
 
-  public String getBaseTypeId()
-  {
-    return navigatorBean.getBaseTypeId();
-  }
+  public abstract FinderBean getFinderBean();
 
   public String getObjectId()
   {

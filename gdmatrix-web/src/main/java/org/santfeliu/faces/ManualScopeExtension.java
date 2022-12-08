@@ -28,56 +28,27 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.doc;
+package org.santfeliu.faces;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import org.matrix.doc.Content;
-import org.santfeliu.faces.ManualScoped;
-import org.santfeliu.webapp.TabBean;
+import java.io.Serializable;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
 
 /**
  *
  * @author realor
  */
-@Named("documentContentTabBean")
-@ManualScoped
-public class DocumentContentTabBean extends TabBean
+public class ManualScopeExtension implements Extension, Serializable
 {
-  @Inject
-  DocumentObjectBean documentObjectBean;
-
-  @Override
-  public DocumentObjectBean getObjectBean()
+  public void addScope(@Observes final BeforeBeanDiscovery event)
   {
-    return documentObjectBean;
+    event.addScope(ManualScoped.class, true, false);
   }
 
-  @PostConstruct
-  public void init()
+  public void registerContext(@Observes final AfterBeanDiscovery event)
   {
-    System.out.println("Creating " + this);
-  }
-
-  public Content getContent()
-  {
-    Content content = documentObjectBean.getDocument().getContent();
-    if (content == null) content = new Content();
-
-    return content;
-  }
-
-  @Override
-  public boolean isModified()
-  {
-    return true;
-  }
-
-  @Override
-  public void store()
-  {
-    Content content = getContent();
-    System.out.println("save content " + content.getContentType());
+    event.addContext(new ManualContext());
   }
 }

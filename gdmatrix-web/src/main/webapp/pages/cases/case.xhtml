@@ -7,80 +7,87 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 template="/pages/obj/object_3col.xhtml">
 
-  <ui:define name="smart_filter">
-    
-    <p:outputPanel styleClass="field">
-      <p:outputLabel for="@next" value="Valor" />
-      <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"
-                   class="inputfield w-full ui-fluid"/>
+  <ui:define name="filter">
+
+    <p:outputPanel id="filter_panel">
+
+      <p:tabView id="find_selector"
+                 activeIndex="#{caseFinderBean.tabIndex}">
+
+        <p:tab title="Ràpida" id="smart_search">
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="Valor" />
+            <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"
+                         class="inputfield w-full ui-fluid"/>
+          </p:outputPanel>
+
+          <div class="buttons text-right">
+            <p:commandButton value="Clear"
+                             ajax="true"
+                             action="#{caseFinderBean.smartClear}"
+                             styleClass="ui-button-raised m-1"
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"/>
+            <p:commandButton id="smart_search_button"
+                             value="Search"
+                             action="#{caseFinderBean.smartFind}"
+                             ajax="true"
+                             update=":mainform:search_tabs:full_results_table"
+                             styleClass="ui-button-raised m-1"
+                             oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"/>
+          </div>
+
+        </p:tab>
+
+        <p:tab title="Avançada" id="advanced_search">
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+          <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                        var="caseBundle" />
+
+          <!-- Title -->
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="Title" />
+            <p:inputText id="title" value="#{caseFinderBean.filter.title}"
+                         class="inputfield w-full" />
+          </p:outputPanel>
+
+          <!-- Description -->
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="Description" />
+            <p:inputText id="description" value="#{caseFinderBean.filter.description}"
+                         class="inputfield w-full" />
+          </p:outputPanel>
+
+          <!-- searchExpression -->
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}:" />
+            <p:inputText id="searchExpression" value="#{caseFinderBean.filter.searchExpression}"
+                         styleClass="inputfield w-full"/>
+          </p:outputPanel>
+
+          <div class="text-right">
+            <p:commandButton value="Clear"
+                             ajax="true"
+                             action="#{caseFinderBean.clear}"
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             />
+            <p:commandButton id="advanced_search_button"
+                             value="Search"
+                             action="#{caseFinderBean.find}"
+                             ajax="true"
+                             update=":mainform:search_tabs:full_results_table"
+                             styleClass="ui-button-raised m-1"
+                             oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"
+                             />
+          </div>
+        </p:tab>
+
+      </p:tabView>
     </p:outputPanel>
-
-    <div class="buttons text-right">
-      <p:commandButton value="Clear"
-                       ajax="true"
-                       action="#{caseFinderBean.clear}"
-                       styleClass="ui-button-raised m-1"
-                       process="@parent" 
-                       oncomplete=""/>      
-      <p:commandButton id="smart_search_button"
-                       value="Search"
-                       action="#{caseFinderBean.smartFind}"
-                       ajax="true"
-                       process="@parent" 
-                       update=":mainform:search_tabs:full_results_table"
-                       styleClass="ui-button-raised m-1" 
-                       oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"/>
-    </div>              
   </ui:define>
 
-  <ui:define name="advanced_filter">
-    <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
-    <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle" 
-                  var="caseBundle" />
-    
-    <!-- Title -->
-    <p:outputPanel styleClass="field">
-      <p:outputLabel for="@next" value="Title" />        
-      <p:inputText id="title" value="#{caseFinderBean.filter.title}" 
-                   class="inputfield w-full" />
-    </p:outputPanel>  
-
-    <!-- Description -->
-    <p:outputPanel styleClass="field">
-      <p:outputLabel for="@next" value="Description" />        
-      <p:inputText id="description" value="#{caseFinderBean.filter.description}" 
-                   class="inputfield w-full" />
-    </p:outputPanel>  
-    
-    <!-- searchExpression -->
-    <p:outputPanel styleClass="field">
-      <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}:" />
-      <p:inputText id="searchExpression" value="#{caseFinderBean.filter.searchExpression}"
-                   styleClass="inputfield w-full"/>
-    </p:outputPanel> 
-    
-    <div class="text-right">
-      <p:commandButton value="Clear"
-                       ajax="true"
-                       action="#{caseFinderBean.clear}"                       
-                       process="@parent" 
-                       update=":mainform:search_tabs:full_results_table"
-                       />
-      <p:commandButton id="advanced_search_button"
-                       value="Search"
-                       action="#{caseFinderBean.find}"
-                       ajax="true"
-                       process="@parent" 
-                       update=":mainform:search_tabs:full_results_table"
-                       styleClass="ui-button-raised m-1" 
-                       oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"
-                       />
-    </div>              
-  </ui:define>
-  
   <ui:define name="object">
 
-    <p:tabView id="search_tabs" 
+    <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                activeIndex="#{caseObjectBean.searchTabIndex}"
                touchable="false">
@@ -91,12 +98,12 @@
         </f:facet>
         <ui:include src="case_list.xhtml" />
       </p:tab>
-      
-      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}" 
+
+      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
              id="case_form">
 
         <p:outputPanel id="object_header">
-          <h:outputText value="CaseId: #{caseObjectBean.objectId}" />       
+          <h:outputText value="CaseId: #{caseObjectBean.objectId}" />
           <h:outputText value="#{caseObjectBean.case.title}" class="ml-2"/>
         </p:outputPanel>
 
@@ -109,7 +116,7 @@
           <p:ajax event="tabChange" listener="#{caseObjectBean.loadActiveTab}" />
 
           <c:forEach items="#{caseObjectBean.tabs}" var="tab" >
-            <p:tab title="#{tab.label}" 
+            <p:tab title="#{tab.label}"
                    disabled="#{caseObjectBean.isDisabledTab(tab)}">
               <ui:include src="#{tab.url}">
               </ui:include>
@@ -118,20 +125,20 @@
         </p:tabView>
 
         <div class="tab_footer text-right pt-3">
-          <p:commandButton action="#{caseObjectBean.store}" value="Save" 
-                           ajax="true" 
+          <p:commandButton action="#{caseObjectBean.store}" value="Save"
+                           ajax="true"
                            icon="pi pi-save"
                            styleClass="ui-button-raised m-1" />
-          <p:commandButton action="#{caseObjectBean.cancel}" value="Cancel"                                                   
-                           icon="pi pi-undo" 
+          <p:commandButton action="#{caseObjectBean.cancel}" value="Cancel"
+                           icon="pi pi-undo"
                            styleClass="ui-button-raised m-1"
                            update=":mainform:search_tabs:tabs"
                            resetValues="true" global="false" />
-        </div>            
-        
-      </p:tab>   
+        </div>
+
+      </p:tab>
     </p:tabView>
 
   </ui:define>
-  
+
 </ui:composition>

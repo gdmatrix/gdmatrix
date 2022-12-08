@@ -26,5 +26,12 @@
       </p:outputPanel> 
       
     </div>
+
+    <p:commandButton icon="pi pi-arrow-left" 
+                     value="Select"
+                     ajax="false"
+                     rendered="#{navigatorBean.selectable}"
+                     action="#{navigatorBean.select}" />
+
     
 </ui:composition>

@@ -30,13 +30,15 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.cases.web.CaseConfigBean;
+import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -47,10 +49,13 @@ import org.santfeliu.webapp.Tab;
  * @author realor
  */
 @Named("caseObjectBean")
-@SessionScoped
+@ManualScoped
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
+
+  @Inject
+  CaseFinderBean caseFinderBean;
 
   public CaseObjectBean()
   {
@@ -60,6 +65,12 @@ public class CaseObjectBean extends ObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.CASE_TYPE;
+  }
+
+  @Override
+  public CaseFinderBean getFinderBean()
+  {
+    return caseFinderBean;
   }
 
   public Case getCase()
@@ -156,4 +167,17 @@ public class CaseObjectBean extends ObjectBean
   {
     System.out.println("SAVE: " + cas.getTitle());
   }
+
+  @Override
+  public Serializable saveState()
+  {
+    return cas;
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    this.cas = (Case)state;
+  }
+
 }

@@ -47,7 +47,7 @@ import org.santfeliu.web.UserSessionBean;
 public class MatrixExceptionHandlerFactory extends ExceptionHandlerFactory
 {
   public static final String UNHANDLED_ERROR_PAGE =
-    "/common/util/unhandled_error.xhtml";
+    "/common/util/error.xhtml";
   private final ExceptionHandlerFactory parent;
 
   public MatrixExceptionHandlerFactory(ExceptionHandlerFactory parent)

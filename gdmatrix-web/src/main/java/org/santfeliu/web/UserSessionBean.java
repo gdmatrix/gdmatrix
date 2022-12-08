@@ -31,6 +31,7 @@
 package org.santfeliu.web;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -46,13 +47,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import javax.el.ELContext;
+import javax.el.MethodExpression;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
 import javax.faces.application.Resource;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.el.MethodBinding;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -685,6 +687,16 @@ public final class UserSessionBean extends FacesBean implements Serializable
     this.unhandledError = unhandledError;
   }
 
+  public String getUnhandledErrorTrace()
+  {
+    if (unhandledError == null) return null;
+
+    StringWriter sw = new StringWriter();
+    PrintWriter writer = new PrintWriter(sw);
+    unhandledError.printStackTrace(writer);
+    return sw.toString();
+  }
+
   public boolean isAdministrator()
   {
     return roles.contains(CMSConstants.MENU_ADMIN_ROLE);
@@ -1044,15 +1056,16 @@ public final class UserSessionBean extends FacesBean implements Serializable
     }
     else if (action.startsWith("#{") && action.endsWith("}"))
     {
-      MethodBinding methodBinding = application.
-        createMethodBinding(action, new Class[0]);
-      fromAction = methodBinding.getExpressionString();
       try
       {
-        outcome = (String)methodBinding.invoke(context, null);
+        ELContext elContext = context.getELContext();
+        MethodExpression methodExpression = application.getExpressionFactory()
+          .createMethodExpression(elContext, action, String.class, new Class[0]);
+        outcome = (String)methodExpression.invoke(elContext, new Object[0]);
       }
       catch (Exception ex)
       {
+        unhandledError = ex;
         outcome = ERROR_OUTCOME;
       }
     }
@@ -1061,8 +1074,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
       try
       {
         Object result = executeScriptAction(action);
-        if (result != null)
-          outcome = (String)result;
+          if (result != null)
+            outcome = (String)result;
       }
       catch (Exception ex)
       {
@@ -1226,16 +1239,18 @@ public final class UserSessionBean extends FacesBean implements Serializable
 
   public void logout()
   {
-    FacesContext facesContext = FacesContext.getCurrentInstance();
-    ExternalContext extContext = facesContext.getExternalContext();
+    FacesContext context = FacesContext.getCurrentInstance();
+    Application application = context.getApplication();
+    ExternalContext extContext = context.getExternalContext();
     HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
 
     // method to execute clean up tasks
     if (logoutAction != null)
     {
-      MethodBinding methodBinding = getApplication().
-        createMethodBinding(logoutAction, new Class[0]);
-      methodBinding.invoke(facesContext, new Object[0]);
+      ELContext elContext = context.getELContext();
+      MethodExpression methodExpression = application.getExpressionFactory()
+        .createMethodExpression(elContext, logoutAction, Void.class, new Class[0]);
+      methodExpression.invoke(elContext, new Object[0]);
     }
 
     // redirect to page
@@ -1260,7 +1275,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
     {
       request.getSession().invalidate();
       extContext.redirect(logoutURL);
-      facesContext.responseComplete();
+      context.responseComplete();
     }
     catch (Exception ex)
     {

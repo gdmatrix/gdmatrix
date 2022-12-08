@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -61,6 +64,46 @@ public class WebUtils
   public static <T> T getBean(String name)
   {
     return (T) evaluateExpression("#{" + name + "}");
+  }
+
+  public static String getBeanName(Object bean)
+  {
+    Class<? extends Object> clazz = bean.getClass();
+    Named named = clazz.getAnnotation(Named.class);
+    while (named == null)
+    {
+      clazz = clazz.getSuperclass();
+      if (clazz == null) break;
+      named = clazz.getAnnotation(Named.class);
+    }
+    if (named == null) return null; // bean is not a @Named bean
+
+    String beanName = named.value();
+    if (beanName == null && clazz != null) // get default name
+    {
+      beanName = clazz.getSimpleName();
+      beanName = beanName.substring(0, 1).toLowerCase() + beanName.substring(1);
+    }
+    return beanName;
+  }
+
+  public static <T> T getValueExpression(String expr)
+  {
+    FacesContext context = FacesContext.getCurrentInstance();
+    Application application = context.getApplication();
+    return (T) application
+      .evaluateExpressionGet(context, expr, Object.class);
+  }
+
+  public static <T> void setValueExpression(String expr, Class<T> clazz, T value)
+  {
+    FacesContext context = FacesContext.getCurrentInstance();
+    ELContext elContext = context.getELContext();
+    Application application = context.getApplication();
+    ExpressionFactory expressionFactory = application.getExpressionFactory();
+    ValueExpression valueExpression =
+      expressionFactory.createValueExpression(elContext, expr, clazz);
+    valueExpression.setValue(elContext, value);
   }
 
   public static <T> T getBacking(MenuItemCursor mic)

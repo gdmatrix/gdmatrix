@@ -30,6 +30,8 @@
  */
 package org.santfeliu.webapp;
 
+import java.io.Serializable;
+
 /**
  *
  * @author realor
@@ -61,4 +63,15 @@ public abstract class TabBean extends BaseBean
   {
   }
 
+  @Override
+  public Serializable saveState()
+  {
+    return ""; // force NagigatorBean to call restoreBean
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    load();
+  }
 }

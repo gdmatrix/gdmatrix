@@ -36,6 +36,18 @@ package org.santfeliu.webapp;
  */
 public abstract class FinderBean extends BaseBean
 {
+  private int tabIndex;
+
+  public int getTabIndex()
+  {
+    return tabIndex;
+  }
+
+  public void setTabIndex(int tabIndex)
+  {
+    this.tabIndex = tabIndex;
+  }
+
   public abstract void find();
 
   public abstract void smartFind();
