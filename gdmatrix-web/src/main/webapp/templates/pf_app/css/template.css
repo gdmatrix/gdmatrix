@@ -437,3 +437,7 @@ body .ui-menu .ui-menu-list .ui-submenu-child .ui-menuitem-link
 { 
   background: url('/themes/default/images/current.png') no-repeat !important;
 }
+.loading-icon-container
+{
+  z-index: 200000 !important;
+}

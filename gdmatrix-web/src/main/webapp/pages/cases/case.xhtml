@@ -31,9 +31,9 @@
                              value="Search"
                              action="#{caseFinderBean.smartFind}"
                              ajax="true"
-                             update=":mainform:search_tabs:full_results_table"
+                             update=":mainform:search_tabs"
                              styleClass="ui-button-raised m-1"
-                             oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"/>
+                             oncomplete="endPanel('leftPanel');"/>
           </div>
 
         </p:tab>
@@ -74,9 +74,9 @@
                              value="Search"
                              action="#{caseFinderBean.find}"
                              ajax="true"
-                             update=":mainform:search_tabs:full_results_table"
+                             update=":mainform:search_tabs"
                              styleClass="ui-button-raised m-1"
-                             oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"
+                             oncomplete="endPanel('leftPanel');"
                              />
           </div>
         </p:tab>

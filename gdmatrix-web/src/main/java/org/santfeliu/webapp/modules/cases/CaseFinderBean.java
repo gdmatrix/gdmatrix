@@ -39,6 +39,7 @@ import org.matrix.cases.CaseFilter;
 import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
+import org.santfeliu.webapp.NavigatorBean;
 import org.santfeliu.webapp.ObjectBean;
 
 /**
@@ -54,6 +55,9 @@ public class CaseFinderBean extends FinderBean
   private List<Case> rows;
   private int firstRow;
   private boolean isSmartFind;
+
+  @Inject
+  NavigatorBean navigatorBean;
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -107,19 +111,8 @@ public class CaseFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    try
-    {
-      firstRow = 0;
-      isSmartFind = true;
-      CaseFilter basicFilter = new CaseFilter();
-      basicFilter.setTitle(smartFilter);
-      basicFilter.setMaxResults(40);
-      rows = CaseConfigBean.getPort().findCases(basicFilter);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    isSmartFind = true;
+    doFind(true);
   }
 
   public void smartClear()
@@ -131,18 +124,8 @@ public class CaseFinderBean extends FinderBean
   @Override
   public void find()
   {
-    try
-    {
-      firstRow = 0;
-      isSmartFind = false;
-      filter.setMaxResults(40);
-      System.out.println(">> title: " + filter.getTitle());
-      rows = CaseConfigBean.getPort().findCases(filter);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    isSmartFind = false;
+    doFind(true);
   }
 
   public void clear()
@@ -160,22 +143,60 @@ public class CaseFinderBean extends FinderBean
   @Override
   public void restoreState(Serializable state)
   {
-    Object[] stateArray = (Object[])state;
-    isSmartFind = (Boolean)stateArray[0];
-    smartFilter = (String)stateArray[1];
-    filter = (CaseFilter)stateArray[2];
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      isSmartFind = (Boolean)stateArray[0];
+      smartFilter = (String)stateArray[1];
+      filter = (CaseFilter)stateArray[2];
 
-    if (isSmartFind)
-    {
-      smartFind();
-      setTabIndex(0);
+      doFind(false);
+
+      firstRow = (Integer)stateArray[3];
     }
-    else
+    catch (Exception ex)
     {
-      find();
-      setTabIndex(1);
+      error(ex);
     }
-    firstRow = (Integer)stateArray[3];
+  }
+
+  private void doFind(boolean autoLoad)
+  {
+    try
+    {
+      firstRow = 0;
+      if (isSmartFind)
+      {
+        setTabIndex(0);
+        CaseFilter basicFilter = new CaseFilter();
+        basicFilter.setTitle(smartFilter);
+        basicFilter.setMaxResults(40);
+        rows = CaseConfigBean.getPort().findCases(basicFilter);
+      }
+      else
+      {
+        setTabIndex(1);
+        filter.setMaxResults(40);
+        rows = CaseConfigBean.getPort().findCases(filter);
+      }
+
+      if (autoLoad)
+      {
+        if (rows.size() == 1)
+        {
+          navigatorBean.view(rows.get(0).getCaseId());
+          caseObjectBean.setSearchTabIndex(1);
+        }
+        else
+        {
+          caseObjectBean.setSearchTabIndex(0);
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
 }

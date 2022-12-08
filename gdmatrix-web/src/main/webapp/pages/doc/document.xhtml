@@ -30,9 +30,9 @@
                              value="Search"
                              action="#{documentFinderBean.smartFind}"
                              ajax="true"
-                             update=":mainform:search_tabs:full_results_table"
+                             update=":mainform:search_tabs"
                              styleClass="ui-button-raised m-1" 
-                             oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"/>
+                             oncomplete="endPanel('leftPanel');"/>
           </div>              
         </p:tab>
 
@@ -61,9 +61,9 @@
                              value="Search"
                              action="#{documentFinderBean.find}"
                              ajax="true"
-                             update=":mainform:search_tabs:full_results_table"
+                             update=":mainform:search_tabs"
                              styleClass="ui-button-raised m-1" 
-                             oncomplete="PF('searchTabs').select(0);endPanel('leftPanel');"
+                             oncomplete="endPanel('leftPanel');"
                              />
           </div>    
 

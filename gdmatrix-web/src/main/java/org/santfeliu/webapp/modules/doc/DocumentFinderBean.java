@@ -35,11 +35,14 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.matrix.cases.CaseFilter;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
+import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
+import org.santfeliu.webapp.NavigatorBean;
 
 /**
  *
@@ -54,6 +57,9 @@ public class DocumentFinderBean extends FinderBean
   private List<Document> rows;
   private int firstRow;
   private boolean isSmartFind;
+
+  @Inject
+  NavigatorBean navigatorBean;
 
   @Inject
   DocumentObjectBean documentObjectBean;
@@ -118,18 +124,8 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    try
-    {
-      firstRow = 0;
-      DocumentFilter basicFilter = new DocumentFilter();
-      basicFilter.setTitle(smartFilter);
-      basicFilter.setMaxResults(40);
-      rows = DocumentConfigBean.getPort().findDocuments(basicFilter);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    isSmartFind = true;
+    doFind(true);
   }
 
   public void smartClear()
@@ -141,17 +137,8 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public void find()
   {
-    try
-    {
-      firstRow = 0;
-      filter.setMaxResults(40);
-      rows = DocumentConfigBean.getPort().findDocuments(filter);
-      System.out.println("Documents: " + rows.size());
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    isSmartFind = false;
+    doFind(true);
   }
 
   public void clear()
@@ -174,17 +161,48 @@ public class DocumentFinderBean extends FinderBean
     smartFilter = (String)stateArray[1];
     filter = (DocumentFilter)stateArray[2];
 
-    if (isSmartFind)
-    {
-      smartFind();
-      setTabIndex(0);
-    }
-    else
-    {
-      find();
-      setTabIndex(1);
-    }
+    doFind(false);
+    
     firstRow = (Integer)stateArray[3];
+  }
+
+  private void doFind(boolean autoLoad)
+  {
+    try
+    {
+      firstRow = 0;
+      if (isSmartFind)
+      {
+        setTabIndex(0);
+        DocumentFilter basicFilter = new DocumentFilter();
+        basicFilter.setTitle(smartFilter);
+        basicFilter.setMaxResults(40);
+        rows = DocumentConfigBean.getPort().findDocuments(basicFilter);
+      }
+      else
+      {
+        setTabIndex(1);
+        filter.setMaxResults(40);
+        rows = DocumentConfigBean.getPort().findDocuments(filter);
+      }
+
+      if (autoLoad)
+      {
+        if (rows.size() == 1)
+        {
+          navigatorBean.view(rows.get(0).getDocId());
+          documentObjectBean.setSearchTabIndex(1);
+        }
+        else
+        {
+          documentObjectBean.setSearchTabIndex(0);
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
 }
