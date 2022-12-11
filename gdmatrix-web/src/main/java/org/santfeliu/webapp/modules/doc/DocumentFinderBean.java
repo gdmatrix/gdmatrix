@@ -35,10 +35,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.cases.CaseFilter;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
-import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
@@ -162,7 +160,7 @@ public class DocumentFinderBean extends FinderBean
     filter = (DocumentFilter)stateArray[2];
 
     doFind(false);
-    
+
     firstRow = (Integer)stateArray[3];
   }
 
@@ -175,7 +173,15 @@ public class DocumentFinderBean extends FinderBean
       {
         setTabIndex(0);
         DocumentFilter basicFilter = new DocumentFilter();
-        basicFilter.setTitle(smartFilter);
+        try
+        {
+          Integer.parseInt(smartFilter);
+          basicFilter.getDocId().add(smartFilter);
+        }
+        catch (NumberFormatException ex)
+        {
+          basicFilter.setTitle(smartFilter);
+        }
         basicFilter.setMaxResults(40);
         rows = DocumentConfigBean.getPort().findDocuments(basicFilter);
       }

@@ -15,6 +15,7 @@
                  activeIndex="#{caseFinderBean.tabIndex}">
 
         <p:tab title="Ràpida" id="smart_search">
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="Valor" />
             <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"
@@ -23,15 +24,15 @@
 
           <div class="buttons text-right">
             <p:commandButton value="Clear"
-                             ajax="true"
                              action="#{caseFinderBean.smartClear}"
                              styleClass="ui-button-raised m-1"
+                             process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:full_results_table"/>
             <p:commandButton id="smart_search_button"
                              value="Search"
                              action="#{caseFinderBean.smartFind}"
-                             ajax="true"
-                             update=":mainform:search_tabs"
+                             process=":mainform:find_selector"
+                             update=":mainform:search_tabs :mainform:context_panel"
                              styleClass="ui-button-raised m-1"
                              oncomplete="endPanel('leftPanel');"/>
           </div>
@@ -66,15 +67,15 @@
 
           <div class="text-right">
             <p:commandButton value="Clear"
-                             ajax="true"
                              action="#{caseFinderBean.clear}"
+                             process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
                              />
             <p:commandButton id="advanced_search_button"
                              value="Search"
                              action="#{caseFinderBean.find}"
-                             ajax="true"
-                             update=":mainform:search_tabs"
+                             process=":mainform:find_selector"
+                             update=":mainform:search_tabs :mainform:context_panel"
                              styleClass="ui-button-raised m-1"
                              oncomplete="endPanel('leftPanel');"
                              />
@@ -91,7 +92,7 @@
                widgetVar="searchTabs"
                activeIndex="#{caseObjectBean.searchTabIndex}"
                touchable="false">
-      <p:tab title="Cerca" id="case_search">
+      <p:tab title="Cerca" id="object_search">
         <f:facet name="title">
           <i class="pi pi-list m-1"></i>
           <h:outputText value="Resultats"/>
@@ -100,41 +101,10 @@
       </p:tab>
 
       <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
-             id="case_form">
+             id="object_form">
 
-        <p:outputPanel id="object_header">
-          <h:outputText value="CaseId: #{caseObjectBean.objectId}" />
-          <h:outputText value="#{caseObjectBean.case.title}" class="ml-2"/>
-        </p:outputPanel>
-
-        <!-- Central column -->
-        <p:tabView dynamic="true" id="tabs"
-                   widgetVar="objectTabs"
-                   touchable="false"
-                   activeIndex="#{caseObjectBean.tabIndex}">
-
-          <p:ajax event="tabChange" listener="#{caseObjectBean.loadActiveTab}" />
-
-          <c:forEach items="#{caseObjectBean.tabs}" var="tab" >
-            <p:tab title="#{tab.label}"
-                   disabled="#{caseObjectBean.isDisabledTab(tab)}">
-              <ui:include src="#{tab.url}">
-              </ui:include>
-            </p:tab>
-          </c:forEach>
-        </p:tabView>
-
-        <div class="tab_footer text-right pt-3">
-          <p:commandButton action="#{caseObjectBean.store}" value="Save"
-                           ajax="true"
-                           icon="pi pi-save"
-                           styleClass="ui-button-raised m-1" />
-          <p:commandButton action="#{caseObjectBean.cancel}" value="Cancel"
-                           icon="pi pi-undo"
-                           styleClass="ui-button-raised m-1"
-                           update=":mainform:search_tabs:tabs"
-                           resetValues="true" global="false" />
-        </div>
+        <ui:param name="objectBean" value="#{caseObjectBean}" />
+        <ui:include src="/pages/obj/object_standard.xhtml" />
 
       </p:tab>
     </p:tabView>

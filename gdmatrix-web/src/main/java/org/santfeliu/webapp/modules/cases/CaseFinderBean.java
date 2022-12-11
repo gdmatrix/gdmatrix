@@ -169,7 +169,15 @@ public class CaseFinderBean extends FinderBean
       {
         setTabIndex(0);
         CaseFilter basicFilter = new CaseFilter();
-        basicFilter.setTitle(smartFilter);
+        try
+        {
+          Integer.parseInt(smartFilter);
+          basicFilter.getCaseId().add(smartFilter);
+        }
+        catch (NumberFormatException ex)
+        {
+          basicFilter.setTitle(smartFilter);
+        }
         basicFilter.setMaxResults(40);
         rows = CaseConfigBean.getPort().findCases(basicFilter);
       }

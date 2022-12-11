@@ -51,7 +51,7 @@ import org.santfeliu.webapp.Tab;
 @ManualScoped
 public class DocumentObjectBean extends ObjectBean
 {
-  private Document document;
+  private Document document = new Document();
 
   @Inject
   DocumentFinderBean documentFinderBean;
@@ -64,6 +64,12 @@ public class DocumentObjectBean extends ObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.DOCUMENT_TYPE;
+  }
+
+  @Override
+  public String getDescription()
+  {
+    return isNew() ? "" : document.getTitle();
   }
 
   @Override

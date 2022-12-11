@@ -1,0 +1,70 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"    
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"  
+  xmlns:p="http://primefaces.org/ui">
+
+  <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
+    <div class="flex flex-grow-1 justify-content-start align-self-center">
+      <h:outputText value="#{objectBean.objectId}" />
+      <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
+    </div>
+    <div class="flex flex-grow-1 justify-content-end">
+        <p:commandButton icon="ui-icon pi pi-plus-circle" 
+                         styleClass="rounded-button ui-button-flat" 
+                         action="#{navigatorBean.view('')}"
+                         process="@this"
+                         update=":mainform:search_tabs"
+                         title="#{objectBundle.create}" alt="#{objectBundle.create}" 
+                         />
+        <p:commandButton  icon="ui-icon pi pi-trash" 
+                          styleClass="rounded-button ui-button-flat" 
+                          action="#{objectBean.remove}" 
+                          process="@this"
+                          update=":mainform:search_tabs:tabs" 
+                          title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
+                          onclick="return confirm('#{objectBundle.confirm_full_remove}');"/>
+        <p:commandButton  icon="ui-icon pi pi-cog" 
+                          action="#{navigatorBean.view('')}"
+                          styleClass="rounded-button ui-button-flat" 
+                          update=":mainform:search_tabs:tabs" 
+                          title="Actions" alt="Actions"
+                          onclick="return confirm('#{objectBundle.confirm_full_remove}');"/>
+    </div>
+  </p:outputPanel>
+    
+  <f:metadata>
+    <f:viewAction action="#{objectBean.loadActiveTab}" 
+                  onPostback="true" />
+  </f:metadata>
+
+  <p:tabView dynamic="true" id="tabs"
+             widgetVar="objectTabs"
+             touchable="false"
+             activeIndex="#{objectBean.tabIndex}">
+    <c:forEach items="#{objectBean.tabs}" var="tab" >
+      <p:tab title="#{tab.label}"
+             disabled="#{objectBean.isDisabledTab(tab)}">
+        <ui:include src="#{tab.url}">
+        </ui:include>
+      </p:tab>
+    </c:forEach>
+  </p:tabView>
+
+  <div class="tab_footer text-right pt-3">
+    <p:commandButton action="#{objectBean.store}" value="Save"
+                     icon="pi pi-save"
+                     update=":mainform:search_tabs:tabs"
+                     styleClass="ui-button-raised m-1" />
+    <p:commandButton action="#{objectBean.cancel}" value="Cancel"
+                     icon="pi pi-undo"
+                     process="@this"
+                     styleClass="ui-button-raised m-1"
+                     update=":mainform:search_tabs:tabs"
+                     resetValues="true" global="false" />
+  </div>
+
+</ui:composition> 
+

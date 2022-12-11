@@ -48,7 +48,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
  */
 public abstract class ObjectBean extends BaseBean
 {
-  protected String objectId = NavigatorBean.NEW_OBJECT_ID;
+  protected String objectId = NEW_OBJECT_ID;
   protected List<Tab> tabs = Collections.EMPTY_LIST;
   protected int tabIndex;
   protected int searchTabIndex;
@@ -71,6 +71,16 @@ public abstract class ObjectBean extends BaseBean
     this.objectId = objectId;
   }
 
+  public String getDescription()
+  {
+    return isNew() ? "" : objectId;
+  }
+
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(objectId);
+  }
+
   public abstract String getRootTypeId();
 
   public int getTabIndex()
@@ -80,6 +90,7 @@ public abstract class ObjectBean extends BaseBean
 
   public void setTabIndex(int tabIndex)
   {
+    System.out.println("tabIndex:" + tabIndex);
     this.tabIndex = tabIndex;
   }
 
@@ -159,7 +170,6 @@ public abstract class ObjectBean extends BaseBean
       for (Tab tab : tabs)
       {
         String beanName = tab.getBeanName();
-        System.out.println("beanName: " + beanName);
         if (beanName != null)
         {
           Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
@@ -169,13 +179,14 @@ public abstract class ObjectBean extends BaseBean
             Class<? extends Annotation> scope = bean.getScope();
             Context context = beanManager.getContext(scope);
             Object beanInstance = context.get(bean);
-            System.out.println("bean instance: " + beanInstance);
 
             if (beanInstance instanceof TabBean)
             {
               TabBean tabBean = (TabBean)beanInstance;
               if (tabBean.isModified())
               {
+                System.out.println(">>> storeTabs: store tabBean: " +
+                  tabBean.getClass().getName());
                 tabBean.store();
               }
             }
@@ -197,11 +208,17 @@ public abstract class ObjectBean extends BaseBean
 
   public void cancel()
   {
+    clear();
+    load();
+    info("Cancelled");
+  }
+
+  private void clear()
+  {
     BeanManager beanManager = CDI.current().getBeanManager();
     for (Tab tab : tabs)
     {
       String beanName = tab.getBeanName();
-      System.out.println("beanName: " + beanName);
       if (beanName != null)
       {
         Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
@@ -212,13 +229,12 @@ public abstract class ObjectBean extends BaseBean
           Context context = beanManager.getContext(scope);
           if (context instanceof AlterableContext)
           {
-            System.out.println("Destroy bean " + bean);
+            System.out.println(">>> cancel: destroy tabBean " +
+              bean.getBeanClass());
             ((AlterableContext)context).destroy(bean);
           }
         }
       }
     }
-    load();
-    info("Cancelled");
   }
 }

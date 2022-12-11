@@ -516,6 +516,10 @@
 
   <profiles>
     <profile>
+      <id>development</id>
+    </profile>
+    
+    <profile>
       <id>gen-binaries</id>
       <dependencies>
         <dependency>

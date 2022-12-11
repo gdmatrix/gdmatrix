@@ -68,6 +68,12 @@ public class CaseObjectBean extends ObjectBean
   }
 
   @Override
+  public String getDescription()
+  {
+    return isNew() ? "" : cas.getTitle();
+  }
+
+  @Override
   public CaseFinderBean getFinderBean()
   {
     return caseFinderBean;

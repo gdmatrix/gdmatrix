@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
@@ -48,6 +47,7 @@ import javax.inject.Named;
 import org.santfeliu.faces.ManualContext;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 
@@ -61,11 +61,16 @@ public class NavigatorBean extends WebBean implements Serializable
 {
   public static final String OBJECT_BEAN_PROPERTY = "objectBean";
   public static final String BASE_TYPEID_PROPERTY = "objectTypeId";
+  public static final String RECENT_LIST_SIZE_PROPERTY = "recentListSize";
+  public static final String ICON_PROPERTY = "icon";
+
   public static final String NEW_OBJECT_ID = "";
+  public static final int DEFAULT_RECENT_LIST_SIZE = 5;
 
   private String lastBaseTypeId;
   private final Map<String, BaseTypeInfo> baseTypeInfoMap = new HashMap<>();
 //  private final List<VisitedObject> history;
+  private int updateSeed = 0;
 
   public BaseTypeInfo getBaseTypeInfo()
   {
@@ -74,24 +79,28 @@ public class NavigatorBean extends WebBean implements Serializable
     String baseTypeId = selectedMenuItem.getProperty(BASE_TYPEID_PROPERTY);
     if (baseTypeId == null) return null;
 
-    BaseTypeInfo baseTypeInfo = getBaseTypeInfo(baseTypeId);
-    if (baseTypeInfo.objectBeanName == null)
+    BaseTypeInfo baseTypeInfo = baseTypeInfoMap.get(baseTypeId);
+    if (baseTypeInfo == null)
     {
-      baseTypeInfo.objectBeanName =
-        selectedMenuItem.getProperty(OBJECT_BEAN_PROPERTY);
+      baseTypeInfo = new BaseTypeInfo(selectedMenuItem.getMid());
+      baseTypeInfoMap.put(baseTypeId, baseTypeInfo);
     }
     return baseTypeInfo;
   }
 
   public BaseTypeInfo getBaseTypeInfo(String baseTypeId)
   {
-    BaseTypeInfo baseTypeInfo = baseTypeInfoMap.get(baseTypeId);
-    if (baseTypeInfo == null)
-    {
-      baseTypeInfo = new BaseTypeInfo(baseTypeId);
-      baseTypeInfoMap.put(baseTypeId, baseTypeInfo);
-    }
-    return baseTypeInfo;
+    return baseTypeInfoMap.get(baseTypeId);
+  }
+
+  public List<String> getBaseTypeIdList()
+  {
+    return new ArrayList<>(baseTypeInfoMap.keySet());
+  }
+
+  public int getUpdateSeed()
+  {
+    return updateSeed;
   }
 
   public String getObjectId()
@@ -118,6 +127,8 @@ public class NavigatorBean extends WebBean implements Serializable
   public String show(String objectTypeId, String objectId,
     int tabIndex, String returnExpression)
   {
+    System.out.println(">>> SHOW " + objectTypeId + "@" + objectId);
+
     // STEP-1: go to baseTypeId node
     if (objectTypeId != null)
     {
@@ -260,6 +271,7 @@ public class NavigatorBean extends WebBean implements Serializable
     ObjectBean objectBean = baseTypeInfo.getObjectBean();
     objectBean.setObjectId(objectId);
     objectBean.setTabIndex(tabIndex);
+    objectBean.setSearchTabIndex(1);
     objectBean.load();
   }
 
@@ -302,36 +314,60 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public class BaseTypeInfo implements Serializable
   {
-    String baseTypeId;
-    String objectBeanName;
-    List<String> recentObjectIds = new ArrayList<>();
+    String mid;
+    List<String> recentObjectIdList = new ArrayList<>();
     Map<String, Serializable> beanStateMap = new HashMap<>();
     ReturnInfo returnInfo;
+    boolean featured = true;
 
-    public BaseTypeInfo(String baseTypeId)
+    public BaseTypeInfo(String mid)
     {
-      this.baseTypeId = baseTypeId;
+      this.mid = mid;
+    }
+
+    public String getLabel()
+    {
+      return getProperty(MenuModel.LABEL);
     }
 
     public String getBaseTypeId()
     {
-      return baseTypeId;
+      return getProperty(BASE_TYPEID_PROPERTY);
     }
 
     public String getObjectBeanName()
     {
-      return objectBeanName;
+      return getProperty(OBJECT_BEAN_PROPERTY);
     }
 
     public ObjectBean getObjectBean()
     {
+      String objectBeanName = getObjectBeanName();
       return objectBeanName == null ? null : WebUtils.getBean(objectBeanName);
+    }
+
+    public int getRecentListSize()
+    {
+      String value = getProperty(RECENT_LIST_SIZE_PROPERTY);
+      try
+      {
+        if (value != null) return Integer.parseInt(value);
+      }
+      catch (NumberFormatException ex)
+      {
+      }
+      return DEFAULT_RECENT_LIST_SIZE;
+    }
+
+    public String getIcon()
+    {
+      return getProperty(ICON_PROPERTY);
     }
 
     public String getObjectId()
     {
-      if (recentObjectIds.isEmpty()) return NEW_OBJECT_ID;
-      return recentObjectIds.get(0);
+      if (recentObjectIdList.isEmpty()) return NEW_OBJECT_ID;
+      return recentObjectIdList.get(0);
     }
 
     public ReturnInfo getReturnInfo()
@@ -346,17 +382,38 @@ public class NavigatorBean extends WebBean implements Serializable
 
     public void visit(String objectId)
     {
-      int index = recentObjectIds.indexOf(objectId);
+      int index = recentObjectIdList.indexOf(objectId);
       if (index != -1)
       {
-        recentObjectIds.remove(index);
+        recentObjectIdList.remove(index);
       }
-      recentObjectIds.add(0, objectId);
+      recentObjectIdList.add(0, objectId);
+      if (recentObjectIdList.size() > getRecentListSize())
+      {
+        recentObjectIdList.remove(recentObjectIdList.size() - 1);
+      }
+      updateSeed++;
     }
 
-    public List<String> getRecentObjectIds()
+    public boolean isFeatured()
     {
-      return recentObjectIds;
+      return featured;
+    }
+
+    public void setFeatured(boolean featured)
+    {
+      this.featured = featured;
+    }
+
+    public List<String> getRecentObjectIdList()
+    {
+      return recentObjectIdList;
+    }
+    public String getProperty(String propertyName)
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      MenuItemCursor menuItem = userSessionBean.getMenuModel().getMenuItem(mid);
+      return menuItem.getProperty(propertyName);
     }
 
     void saveBeanState(BaseBean baseBean)
@@ -364,6 +421,7 @@ public class NavigatorBean extends WebBean implements Serializable
       Serializable state = baseBean.saveState();
       if (state != null)
       {
+        String baseTypeId = getBaseTypeId();
         String beanName = WebUtils.getBeanName(baseBean);
         System.out.println(">>> saveBean: " + beanName + "@" + baseTypeId);
         beanStateMap.put(beanName, state);
@@ -372,6 +430,7 @@ public class NavigatorBean extends WebBean implements Serializable
 
     void restoreBeanState(BaseBean baseBean)
     {
+      String baseTypeId = getBaseTypeId();
       String beanName = WebUtils.getBeanName(baseBean);
       System.out.println(">>> restoreBean: " + beanName + "@" + baseTypeId);
       Serializable state = beanStateMap.get(beanName);
@@ -383,6 +442,7 @@ public class NavigatorBean extends WebBean implements Serializable
 
     void saveTabBeansState(List<Tab> tabs)
     {
+      String baseTypeId = getBaseTypeId();
       BeanManager beanManager = CDI.current().getBeanManager();
       Context context = beanManager.getContext(ManualScoped.class);
 
@@ -412,6 +472,7 @@ public class NavigatorBean extends WebBean implements Serializable
 
     void restoreTabBeansState(List<Tab> tabs)
     {
+      String baseTypeId = getBaseTypeId();
       String objectId = getObjectId();
 
       for (Tab tab : tabs)
@@ -427,7 +488,7 @@ public class NavigatorBean extends WebBean implements Serializable
           {
             TabBean tabBean = (TabBean)beanInstance;
             tabBean.setObjectId(objectId);
-            System.out.println(">>> Restoring bean " + tabBean + "@" + baseTypeId);
+            System.out.println(">>> Restoring bean " + beanName + "@" + baseTypeId);
             tabBean.restoreState(state);
           }
         }
@@ -438,16 +499,9 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       beanStateMap.clear();
     }
-
-    @Override
-    public String toString()
-    {
-      return "RecentList: " + recentObjectIds.toString() +
-        " state: " + beanStateMap;
-    }
   }
 
-  public class ReturnInfo
+  public static class ReturnInfo
   {
     String baseTypeId;
     String objectId;

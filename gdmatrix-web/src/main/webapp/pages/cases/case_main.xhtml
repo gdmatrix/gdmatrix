@@ -10,11 +10,12 @@
                   var="caseBundle" />
     
     <div class="ui-fluid formgrid grid">   
-            
+                  
       <p:outputPanel styleClass="field col-12 md:col-6" 
                      rendered="true">
         <p:outputLabel for="title" value="Title" />
         <p:inputText id="title" value="#{caseObjectBean.case.title}" 
+                     required="true" 
                      class="inputfield w-full"/>
       </p:outputPanel> 
 

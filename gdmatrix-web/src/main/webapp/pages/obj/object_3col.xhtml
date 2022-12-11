@@ -67,6 +67,18 @@
         right: 0; 
         border-radius:8px 0 0 8px !important; 
       }
+      
+      body .ui-tabs.context_tabs .ui-tabs-panels .ui-tabs-panel
+      {
+        padding: 0;
+      }
+      
+      body .ui-tabs.context_tabs .ui-tree
+      {
+        padding: 0;
+        padding-top: 8px;
+      }
+      
     </style>
     
     <p:button onclick="return showPanel('leftPanel');"  
@@ -122,9 +134,32 @@
           </f:facet>
 
           <p:outputPanel id="context_panel">
-            <p:tabView>
+            <p:tabView styleClass="context_tabs">
               <p:tab title="Recents">
-                <h:outputText value="#{navigatorBean.toString()}" />              
+                <p:tree value="#{recentObjectsBean.treeNode}" 
+                        var="data" nodeVar="node"
+                        styleClass="recents_tree" >
+                  <p:ajax event="expand" listener="#{recentObjectsBean.onNodeExpand}" />
+                  <p:ajax event="collapse" listener="#{recentObjectsBean.onNodeCollapse}" />
+                  <p:treeNode type="group" icon="#{data.icon}">
+                    <h:outputText value="#{data.description}" />
+                  </p:treeNode>
+                  <p:treeNode>
+                    <p:commandLink action="#{navigatorBean.show(node.parent.data.baseTypeId, data.objectId)}" 
+                                   rendered="#{not recentObjectsBean.isCurrentBaseType(node)}"
+                                   immediate="true"
+                                   ajax="false">
+                      <h:outputText value="#{data.objectId}" />
+                    </p:commandLink>
+                    <p:commandLink action="#{navigatorBean.view(data.objectId)}" 
+                                   rendered="#{recentObjectsBean.isCurrentBaseType(node)}"
+                                   process="@this"
+                                   oncomplete="endPanel('rightPanel');"
+                                   update=":mainform:central_column :mainform:context_panel">
+                      <h:outputText value="#{data.objectId}" />
+                    </p:commandLink>
+                  </p:treeNode>
+                </p:tree>
               </p:tab>
               <p:tab title="Favorits">                
               </p:tab>
