@@ -154,6 +154,7 @@
                     <p:commandLink action="#{navigatorBean.view(data.objectId)}" 
                                    rendered="#{recentObjectsBean.isCurrentBaseType(node)}"
                                    process="@this"
+                                   resetValues="true"
                                    oncomplete="endPanel('rightPanel');"
                                    update=":mainform:central_column :mainform:context_panel">
                       <h:outputText value="#{data.objectId}" />

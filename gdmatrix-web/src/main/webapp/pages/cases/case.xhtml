@@ -27,12 +27,15 @@
                              action="#{caseFinderBean.smartClear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"/>
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             resetValues="true"                             
+                             />
             <p:commandButton id="smart_search_button"
                              value="Search"
                              action="#{caseFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:search_tabs :mainform:context_panel"
+                             resetValues="true"
                              styleClass="ui-button-raised m-1"
                              oncomplete="endPanel('leftPanel');"/>
           </div>
@@ -70,6 +73,7 @@
                              action="#{caseFinderBean.clear}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
                              value="Search"
@@ -77,6 +81,7 @@
                              process=":mainform:find_selector"
                              update=":mainform:search_tabs :mainform:context_panel"
                              styleClass="ui-button-raised m-1"
+                             resetValues="true"
                              oncomplete="endPanel('leftPanel');"
                              />
           </div>
@@ -87,16 +92,18 @@
   </ui:define>
 
   <ui:define name="object">
-
+    
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
-               activeIndex="#{caseObjectBean.searchTabIndex}"
+               binding="#{caseObjectBean.searchTabView}"
                touchable="false">
+      
       <p:tab title="Cerca" id="object_search">
         <f:facet name="title">
           <i class="pi pi-list m-1"></i>
           <h:outputText value="Resultats"/>
         </f:facet>
+        
         <ui:include src="case_list.xhtml" />
       </p:tab>
 

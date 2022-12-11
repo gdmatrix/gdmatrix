@@ -27,12 +27,15 @@
                              action="#{documentFinderBean.smartClear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"/>      
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             resetValues="true"                                                          
+                             />      
             <p:commandButton id="smart_search_button"
                              value="Search"
                              action="#{documentFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:search_tabs :mainform:context_panel"
+                             resetValues="true"                             
                              styleClass="ui-button-raised m-1" 
                              oncomplete="endPanel('leftPanel');"/>
           </div>              
@@ -55,12 +58,14 @@
                              action="#{documentFinderBean.clear}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             resetValues="true"                             
                              />
             <p:commandButton id="advanced_search_button"
                              value="Search"
                              action="#{documentFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:search_tabs :mainform:context_panel"
+                             resetValues="true"                             
                              styleClass="ui-button-raised m-1" 
                              oncomplete="endPanel('leftPanel');"
                              />
@@ -75,7 +80,7 @@
 
     <p:tabView id="search_tabs" 
                widgetVar="searchTabs" 
-               activeIndex="#{documentObjectBean.searchTabIndex}"
+               binding="#{documentObjectBean.searchTabView}"
                touchable="false">
       <p:tab title="Cerca" id="document_search">
         <f:facet name="title">

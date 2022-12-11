@@ -27,6 +27,7 @@
       <p:commandButton icon="pi pi-external-link" styleClass="ui-button-raised" 
                        action="#{navigatorBean.view(row.getCaseId())}"
                        onclick="PF('objectTabs').select(0);"
+                       resetValues="true"
                        process="@this"
                        update=":mainform:search_tabs :mainform:context_panel"
                        />     

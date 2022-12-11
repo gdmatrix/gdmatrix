@@ -40,6 +40,7 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
+import org.primefaces.component.tabview.TabView;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
@@ -50,8 +51,8 @@ public abstract class ObjectBean extends BaseBean
 {
   protected String objectId = NEW_OBJECT_ID;
   protected List<Tab> tabs = Collections.EMPTY_LIST;
-  protected int tabIndex;
-  protected int searchTabIndex;
+  private int tabIndex;
+  private transient TabView searchTabView;
 
   @Override
   public ObjectBean getObjectBean()
@@ -90,18 +91,35 @@ public abstract class ObjectBean extends BaseBean
 
   public void setTabIndex(int tabIndex)
   {
-    System.out.println("tabIndex:" + tabIndex);
     this.tabIndex = tabIndex;
+  }
+
+  public TabView getSearchTabView()
+  {
+    return searchTabView;
+  }
+
+  public void setSearchTabView(TabView searchTabView)
+  {
+    this.searchTabView = searchTabView;
   }
 
   public int getSearchTabIndex()
   {
-    return searchTabIndex;
+    if (searchTabView == null)
+    {
+      searchTabView = new TabView();
+    }
+    return searchTabView.getActiveIndex();
   }
 
   public void setSearchTabIndex(int searchTabIndex)
   {
-    this.searchTabIndex = searchTabIndex;
+    if (searchTabView == null)
+    {
+      searchTabView = new TabView();
+    }
+    searchTabView.setActiveIndex(searchTabIndex);
   }
 
   public List<Tab> getTabs()
@@ -113,12 +131,19 @@ public abstract class ObjectBean extends BaseBean
 
   public void load()
   {
-    loadObject();
-    loadTabs();
-    loadActiveTab();
+    try
+    {
+      loadObject();
+      loadTabs();
+      loadActiveTab();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
-  public void loadObject()
+  public void loadObject() throws Exception
   {
   }
 
@@ -154,50 +179,50 @@ public abstract class ObjectBean extends BaseBean
 
   public void store()
   {
-    storeObject();
-    storeTabs();
-  }
-
-  public void storeObject()
-  {
-  }
-
-  public void storeTabs()
-  {
     try
     {
-      BeanManager beanManager = CDI.current().getBeanManager();
-      for (Tab tab : tabs)
-      {
-        String beanName = tab.getBeanName();
-        if (beanName != null)
-        {
-          Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
-          if (iter.hasNext())
-          {
-            Bean<?> bean = iter.next();
-            Class<? extends Annotation> scope = bean.getScope();
-            Context context = beanManager.getContext(scope);
-            Object beanInstance = context.get(bean);
-
-            if (beanInstance instanceof TabBean)
-            {
-              TabBean tabBean = (TabBean)beanInstance;
-              if (tabBean.isModified())
-              {
-                System.out.println(">>> storeTabs: store tabBean: " +
-                  tabBean.getClass().getName());
-                tabBean.store();
-              }
-            }
-          }
-        }
-      }
-      info("Saved");
+      storeObject();
+      storeTabs();
+      info("Saved.");
     }
     catch (Exception ex)
     {
       error(ex);
+    }
+  }
+
+  public void storeObject() throws Exception
+  {
+  }
+
+  public void storeTabs() throws Exception
+  {
+    BeanManager beanManager = CDI.current().getBeanManager();
+    for (Tab tab : tabs)
+    {
+      String beanName = tab.getBeanName();
+      if (beanName != null)
+      {
+        Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
+        if (iter.hasNext())
+        {
+          Bean<?> bean = iter.next();
+          Class<? extends Annotation> scope = bean.getScope();
+          Context context = beanManager.getContext(scope);
+          Object beanInstance = context.get(bean);
+
+          if (beanInstance instanceof TabBean)
+          {
+            TabBean tabBean = (TabBean)beanInstance;
+            if (tabBean.isModified())
+            {
+              System.out.println(">>> storeTabs: store tabBean: " +
+                tabBean.getClass().getName());
+              tabBean.store();
+            }
+          }
+        }
+      }
     }
   }
 
@@ -210,7 +235,6 @@ public abstract class ObjectBean extends BaseBean
   {
     clear();
     load();
-    info("Cancelled");
   }
 
   private void clear()

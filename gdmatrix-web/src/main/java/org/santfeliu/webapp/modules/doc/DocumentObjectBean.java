@@ -95,19 +95,12 @@ public class DocumentObjectBean extends ObjectBean
   }
 
   @Override
-  public void loadObject()
+  public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      try
-      {
-        document = DocumentConfigBean.getPort().loadDocument(
-          objectId, 0, ContentInfo.METADATA);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+      document = DocumentConfigBean.getPort().loadDocument(
+        objectId, 0, ContentInfo.METADATA);
     }
     else
     {

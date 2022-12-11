@@ -138,18 +138,11 @@ public class CaseObjectBean extends ObjectBean
   }
 
   @Override
-  public void loadObject()
+  public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      try
-      {
-        cas = CaseConfigBean.getPort().loadCase(objectId);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+      cas = CaseConfigBean.getPort().loadCase(objectId);
     }
     else cas = new Case();
   }
