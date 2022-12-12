@@ -3,11 +3,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
-  
-  <style>
-   tr.current { font-weight: bold; }    
-  </style>
-  
+    
   <p:dataTable id="full_results_table" value="#{documentFinderBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5" 
                paginatorPosition="bottom" size="small"

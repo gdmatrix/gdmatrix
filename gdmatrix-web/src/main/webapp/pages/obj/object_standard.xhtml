@@ -12,7 +12,7 @@
       <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
     </div>
     <div class="flex flex-grow-1 justify-content-end">
-        <p:commandButton icon="ui-icon pi pi-arrow-left" 
+        <p:commandButton icon="ui-icon pi pi-arrow-circle-left" 
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.select}"
                          rendered="#{navigatorBean.selectable}"
@@ -34,7 +34,7 @@
                          update=":mainform:search_tabs:tabs" 
                          resetValues="true"
                          title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
-                         onclick="return confirm('#{objectBundle.confirm_full_remove}');"/>
+                         onclick="return confirm('Delete?');"/>
         <p:commandButton icon="ui-icon pi pi-cog" 
                          action="#{navigatorBean.view('')}"
                          styleClass="rounded-button ui-button-flat" 
@@ -45,14 +45,19 @@
   </p:outputPanel>
     
   <f:metadata>
+    <f:viewAction action="#{objectBean.selectTabWithErrors}" 
+                  onPostback="true" phase="PROCESS_VALIDATIONS" />
+
     <f:viewAction action="#{objectBean.loadActiveTab}" 
                   onPostback="true" />
   </f:metadata>
 
-  <p:tabView dynamic="true" id="tabs"
+  <p:tabView dynamic="true"
+             cache="true"
+             id="tabs"
              widgetVar="objectTabs"
              touchable="false"
-             activeIndex="#{objectBean.tabIndex}">
+             binding="#{objectBean.tabView}">    
     <c:forEach items="#{objectBean.tabs}" var="tab" >
       <p:tab title="#{tab.label}"
              disabled="#{objectBean.isDisabledTab(tab)}">
@@ -67,7 +72,8 @@
                      value="Save"
                      icon="pi pi-save"
                      update=":mainform:search_tabs:tabs"
-                     styleClass="ui-button-raised m-1" 
+                     styleClass="ui-button-raised m-1"                      
+                     oncomplete="switchToTabWithErrors()"
                      />
     <p:commandButton action="#{objectBean.cancel}" 
                      value="Cancel"
@@ -78,6 +84,38 @@
                      resetValues="true" 
                      global="false" />
   </div>
+  
+  <script>
+    function switchToTabWithErrors()
+    {
+      var elems = document.getElementsByClassName("ui-state-error");
+      for (var elem of elems)
+      {
+        var index = findTabIndex(elem);
+        if (index !== -1)
+        {
+          console.info("switch to tab " + index);
+          PF('objectTabs').select(index);
+          break;
+        }
+      }
+    }
+    
+    function findTabIndex(elem)
+    {
+      var parent = elem.parentElement;
+      while (parent &amp;&amp; !parent.classList.contains("ui-tabs-panel"))
+      {
+        parent = parent.parentElement;
+      }
+      if (parent)
+      {
+        var tabs =  Array.prototype.slice.call(parent.parentElement.children);
+        return tabs.indexOf(parent);
+      }      
+      return -1;
+    }    
+  </script>
 
 </ui:composition> 
 

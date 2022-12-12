@@ -40,6 +40,9 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 import org.primefaces.component.tabview.TabView;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
@@ -51,7 +54,7 @@ public abstract class ObjectBean extends BaseBean
 {
   protected String objectId = NEW_OBJECT_ID;
   protected List<Tab> tabs = Collections.EMPTY_LIST;
-  private int tabIndex;
+  private transient TabView tabView;
   private transient TabView searchTabView;
 
   @Override
@@ -84,14 +87,32 @@ public abstract class ObjectBean extends BaseBean
 
   public abstract String getRootTypeId();
 
+  public TabView getTabView()
+  {
+    return tabView;
+  }
+
+  public void setTabView(TabView tabView)
+  {
+    this.tabView = tabView;
+  }
+
   public int getTabIndex()
   {
-    return tabIndex;
+    if (tabView == null)
+    {
+      tabView = new TabView();
+    }
+    return tabView.getActiveIndex();
   }
 
   public void setTabIndex(int tabIndex)
   {
-    this.tabIndex = tabIndex;
+    if (tabView == null)
+    {
+      tabView = new TabView();
+    }
+    tabView.setActiveIndex(tabIndex);
   }
 
   public TabView getSearchTabView()
@@ -151,11 +172,11 @@ public abstract class ObjectBean extends BaseBean
   {
   }
 
-  public void loadActiveTab()
+  public void loadActiveTab() throws Exception
   {
-    if (tabIndex >= tabs.size()) return;
+    if (getTabIndex() >= tabs.size()) return;
 
-    Tab tab = tabs.get(tabIndex);
+    Tab tab = tabs.get(getTabIndex());
     String beanName = tab.getBeanName();
     if (beanName != null)
     {
@@ -235,6 +256,36 @@ public abstract class ObjectBean extends BaseBean
   {
     clear();
     load();
+  }
+
+  public void selectTabWithErrors()
+  {
+    FacesContext context = FacesContext.getCurrentInstance();
+    UIViewRoot viewRoot = context.getViewRoot();
+    if (context.isValidationFailed())
+    {
+      Iterator<String> iter = context.getClientIdsWithMessages();
+      while (iter.hasNext())
+      {
+        String id = iter.next();
+        UIComponent component = viewRoot.findComponent(id);
+
+        while (component != null && component != viewRoot)
+        {
+          if (component instanceof org.primefaces.component.tabview.Tab)
+          {
+            TabView currentTabView = (TabView)component.getParent();
+            int index = currentTabView.getChildren().indexOf(component);
+            if (index >= 0)
+            {
+              tabView.setActiveIndex(index);
+              return;
+            }
+          }
+          component = component.getParent();
+        }
+      }
+    }
   }
 
   private void clear()

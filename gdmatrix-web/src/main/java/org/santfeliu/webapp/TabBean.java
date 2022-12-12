@@ -55,7 +55,7 @@ public abstract class TabBean extends BaseBean
     return false;
   }
 
-  public void load()
+  public void load() throws Exception
   {
   }
 
@@ -72,6 +72,13 @@ public abstract class TabBean extends BaseBean
   @Override
   public void restoreState(Serializable state)
   {
-    load();
+    try
+    {
+      load();
+    }
+    catch (Exception ex)
+    {
+      // ignore
+    }
   }
 }
