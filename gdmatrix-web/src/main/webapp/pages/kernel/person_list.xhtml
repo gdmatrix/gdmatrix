@@ -1,0 +1,34 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"  
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui">
+
+  <p:dataTable id="full_results_table" value="#{personFinderBean.resultListHelper.rows}" var="row"
+               stripedRows="true" paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               first="#{personFinderBean.firstRow}"
+               rows="#{personFinderBean.resultListHelper.pageSize}">
+
+    <p:column headerText="Id." styleClass="w-1">
+      <h:outputText value="#{row.personId}" />
+    </p:column>                
+    <p:column headerText="#{kernelBundle.person_name}" styleClass="w-8">
+      <h:outputText value="#{row.fullName}" />
+    </p:column> 
+    <p:column headerText="#{kernelBundle.person_nif}" styleClass="w-2">
+      <h:outputText value="#{row.nif}" />
+    </p:column>     
+    <p:column styleClass="w-1">
+      <p:commandButton icon="pi pi-external-link" styleClass="ui-button-raised" 
+                       action="#{navigatorBean.view(row.getPersonId())}"
+                       onclick="PF('objectTabs').select(0);"
+                       oncomplete="PF('searchTabs').select(1);"
+                       update="full_results_table :mainform:search_tabs:object_header :mainform:search_tabs:tabs :mainform:context_panel"
+                       />     
+    </p:column>      
+
+
+  </p:dataTable> 
+
+</ui:composition> 

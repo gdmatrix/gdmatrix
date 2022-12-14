@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org">
+
+    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+                  var="kernelBundle" />
+
+    <div class="ui-fluid formgrid grid">  
+
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="nif" value="#{kernelBundle.person_nif}" />
+        <p:inputText id="nif" value="#{personObjectBean.person.nif}" />
+      </div> 
+
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="passport" value="#{kernelBundle.person_passport}" />
+        <p:inputText id="passport" value="#{personObjectBean.person.passport}" />
+      </div>           
+<!--
+      <div class="field col-12 md:col-6">
+        <p:outputLabel for="personTypeId" value="#{kernelBundle.person_type}" />
+        <p:selectOneMenu id="personTypeId" value="#{personObjectBean.person.personTypeId}"  
+                         filter="true" var="t">
+          <f:selectItems value="#{personObjectBean.typedHelper.allTypes}" var="type" 
+                         itemLabel="#{type.description}" itemValue="#{type.typeId}" />
+          <p:column>
+            <h:outputText value="#{typeBean.getDescription(t)}" />
+          </p:column>            
+        </p:selectOneMenu>
+      </div>  
+-->
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="name" value="#{kernelBundle.person_name}" />        
+        <p:inputText id="name" value="#{personObjectBean.person.name}"   />
+      </div>   
+      
+      <div class="field col-12 md:col-2 xl:col-2">
+        <p:outputLabel for="first_particle" value="#{kernelBundle.person_particle}" />
+        <p:selectOneMenu id="first_particle" value="#{personObjectBean.person.firstParticle}">
+          <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
+        </p:selectOneMenu>
+      </div>  
+
+      <div class="field col-12 md:col-10 xl:col-4">
+        <p:outputLabel for="surname1" value="#{kernelBundle.person_surname1}" />        
+        <p:inputText id="surname1" value="#{personObjectBean.person.firstSurname}" />
+      </div>
+
+      <div class="field col-12 md:col-2 xl:col-2">
+        <p:outputLabel for="second_particle" value="#{kernelBundle.person_particle}" />
+        <p:selectOneMenu id="second_particle" value="#{personObjectBean.person.secondParticle}">
+          <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
+        </p:selectOneMenu>
+      </div>         
+
+      <div class="field col-12 md:col-10 xl:col-4">
+        <p:outputLabel for="surname2" value="#{kernelBundle.person_surname2}" />
+        <p:inputText id="surname2" value="#{personObjectBean.person.secondSurname}" />
+      </div>    
+
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="sex" value="#{kernelBundle.person_sex}" />
+        <p:selectOneMenu id="sex" value="#{personObjectBean.person.sex}">
+          <f:selectItems value="#{personObjectBean.sexSelectItems}" />
+        </p:selectOneMenu>
+      </div> 
+
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="birth_date" value="#{kernelBundle.person_birthDate}" />
+        <p:datePicker id="birth_date" value="#{personObjectBean.person.birthDate}" locale="ca"
+                      showIcon="true" converter="datePickerConverter" pattern="dd/MM/yyyy"
+                      monthNavigator="true" yearNavigator="true">
+        </p:datePicker>
+      </div> 
+
+<!--
+      <div class="field col-12 md:col-6">
+        <h:outputLabel for="person_birthCity" value="#{kernelBundle.person_birthCity}" />
+        <div class="ui-inputgroup">
+          <p:autoComplete id="person_birthCity"  
+                          value="#{personObjectBean.citySelectItem}" 
+                          maxResults="10" dropdown="false" dropdownMode="blank" cache="true"
+                          completeMethod="#{cityBacking.completeCity}"
+                          converter="selectItemConverter"
+                          var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                          minQueryLength="2" queryDelay="1000"
+                          onclick="this.setSelectionRange(0, this.value.length)">
+            <p:column>
+              <h:outputText value="#{cityBacking.getDescription(item.value)}" />
+            </p:column>           
+          </p:autoComplete>  
+          <p:commandButton icon="pi pi-search" oncomplete="PF('countryToStreetDialog').show()"
+                           styleClass="ui-button-raised select-button" 
+                           action="#{countryToStreetBacking.showCity(personObjectBean.citySelectItem.value)}"
+                           alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                           ajax="true" />     
+        </div>
+      </div>
+-->
+
+      <div class="field col-12 md:col-6">
+        <h:outputLabel for="person_nationality" value="#{kernelBundle.person_nationality}" />
+        <p:selectOneMenu id="person_nationality" value="#{personObjectBean.person.nationalityId}"  
+                         filter="true" var="ct" autoWidth="false">
+          <f:selectItems value="#{personObjectBean.countrySelectItems}" var="country" 
+                         itemLabel="#{country.label}" itemValue="#{country.value}" />
+          <p:column>
+            <h:outputText value="#{personObjectBean.getCountryLabel(ct)}" />
+          </p:column>            
+        </p:selectOneMenu>   
+      </div> 
+
+      <div class="field col-12 md:col-3">
+        <h:outputLabel for="person_father" value="#{kernelBundle.person_father}:" />
+        <p:inputText value="#{personObjectBean.person.fatherName}" 
+                     />
+      </div>
+
+      <div class="field col-12 md:col-3">
+        <h:outputLabel for="person_mother" value="#{kernelBundle.person_mother}:" />
+        <p:inputText  value="#{personObjectBean.person.motherName}"  />
+      </div>
+
+    </div>      
+
+    <p:dialog id="countryToStreetDialog" dynamic="true"  modal="true" 
+              widgetVar="countryToStreetDialog" styleClass="w-6"
+              appendTo="@(form)">
+<!--
+      <ui:include src="country_to_street.xhtml" />
+
+      <div class="text-right pt-3">
+        <p:commandButton value="#{objectBundle.select}" 
+                         icon="pi pi-check"
+                         oncomplete="PF('countryToStreetDialog').hide()" 
+                         action="#{personObjectBean.selectCity(countryToStreetBacking.cityId)}"
+                         update="person_birthCity" styleClass="ui-button-raised m-1"/> 
+        <p:commandButton value="#{objectBundle.close}" 
+                         icon="pi pi-times"
+                         onclick="PF('countryToStreetDialog').hide()" styleClass="ui-button-raised m-1"
+                         global="false"/>
+      </div>
+-->
+    </p:dialog>     
+
+
+
+
+
+</ui:composition>

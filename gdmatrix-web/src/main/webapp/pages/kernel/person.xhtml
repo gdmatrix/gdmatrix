@@ -1,0 +1,134 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"  
+                xmlns:ui="http://java.sun.com/jsf/facelets" 
+                xmlns:f="http://java.sun.com/jsf/core"  
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="/pages/obj/object_3col.xhtml">
+    
+  <ui:define name="filter"> 
+    
+    <p:outputPanel id="filter_panel">
+      
+      <p:tabView id="find_selector"
+                 activeIndex="#{personFinderBean.tabIndex}">
+
+        <p:tab title="Ràpida" id="smart_search">
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="Valor" />
+            <p:inputText id="smartFilter" value="#{personFinderBean.smartFilter}"
+                         class="inputfield w-full ui-fluid"/>
+          </p:outputPanel>
+
+          <div class="buttons text-right">
+            <p:commandButton value="Clear"
+                             ajax="true"
+                             action="#{personFinderBean.smartClear}"
+                             styleClass="ui-button-raised m-1"
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"/>
+            <p:commandButton id="smart_search_button"
+                             value="Search"
+                             action="#{personFinderBean.smartFind}"
+                             ajax="true"
+                             update=":mainform:search_tabs"
+                             styleClass="ui-button-raised m-1"
+                             oncomplete="endPanel('leftPanel');"/>
+          </div>          
+        </p:tab>  
+        
+        <p:tab title="Avançada" id="advanced_search">
+          
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+          <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
+                        var="kernelBundle" /> 
+
+          <div class="field">
+            <p:outputLabel for="@next" value="#{kernelBundle.person_id}" />
+            <p:chips id="personId" value="#{personFinderBean.filterPersonId}"
+                     addOnPaste="true" separator=","
+                     class="inputfield w-full ui-fluid"/>
+          </div>
+
+          <div class="field">    
+            <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
+            <p:inputText id="nif" value="#{personFinderBean.filter.nif}"
+              styleClass="inputfield w-full" /> 
+          </div>
+
+          <div class="field">    
+            <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
+            <p:inputText id="passport" value="#{personFinderBean.filter.passport}"
+              styleClass="inputfield w-full" /> 
+          </div>      
+
+          <div class="field">
+            <p:outputLabel for="@next" value="#{kernelBundle.person_full_name}" />        
+            <p:inputText id="fullname" value="#{personFinderBean.filter.fullName}" 
+                         class="inputfield w-full" />
+          </div>      
+
+          <div class="field">
+            <p:outputLabel for="@next" value="#{kernelBundle.person_name}" />        
+            <p:inputText id="name" value="#{personFinderBean.filter.name}" 
+                         class="inputfield w-full" />
+          </div>
+
+          <div class="field">
+            <p:outputLabel for="@next" value="#{kernelBundle.person_surname1}" />        
+            <p:inputText id="surname1" value="#{personFinderBean.filter.firstSurname}" 
+                         class="inputfield w-full" />
+          </div>
+
+          <div class="field">
+            <p:outputLabel for="@next" value="#{kernelBundle.person_surname2}" />
+            <p:inputText id="surname2" value="#{personFinderBean.filter.secondSurname}" 
+                         class="inputfield w-full"/>
+          </div>            
+          
+          
+          <div class="text-right">
+            <p:commandButton value="Clear"
+                             ajax="true"
+                             action="#{personFinderBean.clear}"
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             />
+            <p:commandButton id="advanced_search_button"
+                             value="Search"
+                             action="#{personFinderBean.find}"
+                             ajax="true"
+                             update=":mainform:search_tabs"
+                             styleClass="ui-button-raised m-1"
+                             oncomplete="endPanel('leftPanel');"
+                             />
+          </div>           
+        </p:tab> 
+        
+      </p:tabView>
+    </p:outputPanel>    
+  </ui:define>
+  
+  <ui:define name="object">
+    
+    <p:tabView id="search_tabs"
+               widgetVar="searchTabs"
+               activeIndex="#{personObjectBean.searchTabIndex}"
+               touchable="false">
+      
+      <p:tab title="Cerca" id="person_search">
+        <f:facet name="title">
+          <i class="pi pi-list m-1"></i>
+          <h:outputText value="Resultats"/>
+        </f:facet>
+        <ui:include src="person_list.xhtml" />
+      </p:tab>
+
+      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
+             id="person_form">
+        <ui:param name="objectBean" value="#{personObjectBean}" />
+        <ui:include src="/pages/obj/object_standard.xhtml" />
+      </p:tab>
+    </p:tabView>    
+    
+  </ui:define>
+  
+</ui:composition>
