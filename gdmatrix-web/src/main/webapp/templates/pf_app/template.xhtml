@@ -15,7 +15,8 @@
     <!-- header -->
     <div class="app_menubar flex justify-content-between">
       <div class="flex justify-content-end align-items-center">
-        <p:button onclick="PF('menu').show(); return false;" icon="pi pi-ellipsis-v" class="ml-1" />
+        <p:button onclick="PF('menu').show(); return false;" icon="pi pi-bars" 
+                  class="ml-1 rounded-button ui-button-flat" />
         <p:outputLabel class="flex align-items-center text-xl ml-1" 
           value="#{userSessionBean.menuModel.selectedMenuItem.properties.description}" />
       </div>
@@ -23,7 +24,7 @@
       <div class="flex justify-content-end align-items-center">
         <sf:languageSelector locales="#{userSessionBean.supportedLocales}"
                              styleClass="m-2"/>                
-        <p:outputLabel id="username_label" value="#{userSessionBean.displayName}" class="ml-4 mr-1"/>
+        <p:outputLabel id="username_label" value="#{userSessionBean.displayName}" class="ml-4 mr-1 display_name"/>
         <p:tooltip for="username_label">
           <p:outputPanel rendered="#{userSessionBean.selectedMenuItem.getBrowserSensitiveProperty('last_success_login_dt') != null and 
                                          userSessionBean.lastSuccessLoginDateTime != null and userSessionBean.loginMethod == 'PASSWORD'}"
@@ -39,7 +40,7 @@
         </p:tooltip>                
         <p:commandButton action="#{loginBean.logout}" icon="pi pi-fw pi-sign-out" 
                          title="#{webBundle.buttonSignout}" alt="#{webBundle.buttonSignout}"
-                         styleClass="mx-1" immediate="true">
+                         styleClass="mx-1 rounded-button ui-button-flat" immediate="true">
         </p:commandButton>                                    
       </div>                     
     </div>

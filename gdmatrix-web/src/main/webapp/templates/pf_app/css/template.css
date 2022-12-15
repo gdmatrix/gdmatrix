@@ -330,6 +330,20 @@ body .edit_data_dialog
   right: 0;
   height: 32px;
   padding: 0;
+  background-color: #e0e0ff;
+}
+
+.app_menubar .pi
+{
+  color:black;
+}
+
+.app_menubar select
+{
+  border:none;
+  background: #e0e0ff;
+  border: 1px solid #c0c0ff;
+  font-family: Montserrat;
 }
 
 body .frame > div > .app_toolbar
@@ -356,7 +370,9 @@ body .frame > div > .ui-toolbar .ui-button
 {
   background-color: white;
   border:none;
-  border-radius: 0;  
+  border-radius: 0;
+  width: 32px;
+  height: 32px;
 }
 
 body .frame > div > .ui-toolbar .ui-button:hover,
@@ -440,4 +456,12 @@ body .ui-menu .ui-menu-list .ui-submenu-child .ui-menuitem-link
 .loading-icon-container
 {
   z-index: 200000 !important;
+}
+
+@media only screen and (max-width: 700px) 
+{
+  .display_name
+  {
+    display:none;
+  }
 }
