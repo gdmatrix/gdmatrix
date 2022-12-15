@@ -37,7 +37,6 @@ import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
-import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -64,6 +63,12 @@ public class DocumentObjectBean extends ObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.DOCUMENT_TYPE;
+  }
+
+  @Override
+  public Document getObject()
+  {
+    return isNew() ? null : document;
   }
 
   @Override
@@ -99,7 +104,7 @@ public class DocumentObjectBean extends ObjectBean
   {
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      document = DocumentConfigBean.getPort().loadDocument(
+      document = DocModuleBean.getPort(false).loadDocument(
         objectId, 0, ContentInfo.METADATA);
     }
     else

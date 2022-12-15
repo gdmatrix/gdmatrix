@@ -41,6 +41,12 @@
                          update=":mainform:search_tabs:tabs" 
                          title="Actions" alt="Actions"
                          onclick="return confirm('#{objectBundle.confirm_full_remove}');"/>
+        <p:commandButton icon="ui-icon pi pi-times" 
+                         action="#{navigatorBean.close}"
+                         ajax="false"
+                         immediate="true"
+                         styleClass="rounded-button ui-button-flat" 
+                         title="Close" alt="Close" />
     </div>
   </p:outputPanel>
     
@@ -71,6 +77,7 @@
     <p:commandButton action="#{objectBean.store}" 
                      value="Save"
                      icon="pi pi-save"
+                     process=":mainform:search_tabs"
                      update=":mainform:search_tabs:tabs"
                      styleClass="ui-button-raised m-1"                      
                      oncomplete="switchToTabWithErrors()"

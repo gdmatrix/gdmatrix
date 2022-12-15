@@ -37,7 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.dic.DictionaryConstants;
-import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -77,6 +76,12 @@ public class CaseObjectBean extends ObjectBean
   public CaseFinderBean getFinderBean()
   {
     return caseFinderBean;
+  }
+
+  @Override
+  public Case getObject()
+  {
+    return isNew() ? null : cas;
   }
 
   public Case getCase()
@@ -142,7 +147,7 @@ public class CaseObjectBean extends ObjectBean
   {
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      cas = CaseConfigBean.getPort().loadCase(objectId);
+      cas = CasesModuleBean.getPort(false).loadCase(objectId);
     }
     else cas = new Case();
   }

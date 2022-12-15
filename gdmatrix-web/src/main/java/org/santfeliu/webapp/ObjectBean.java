@@ -45,6 +45,7 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import org.primefaces.component.tabview.TabView;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
@@ -75,6 +76,8 @@ public abstract class ObjectBean extends BaseBean
     this.objectId = objectId;
   }
 
+  public abstract String getRootTypeId();
+
   public String getDescription()
   {
     return isNew() ? "" : objectId;
@@ -84,8 +87,6 @@ public abstract class ObjectBean extends BaseBean
   {
     return NEW_OBJECT_ID.equals(objectId);
   }
-
-  public abstract String getRootTypeId();
 
   public TabView getTabView()
   {
@@ -148,7 +149,19 @@ public abstract class ObjectBean extends BaseBean
     return tabs;
   }
 
+  public Tab getCurrentTab()
+  {
+    if (tabs.isEmpty()) return null;
+
+    return tabs.get(getTabIndex());
+  }
+
   public abstract String show();
+
+  public Object getObject()
+  {
+    return null;
+  }
 
   public void load()
   {
@@ -157,6 +170,10 @@ public abstract class ObjectBean extends BaseBean
       loadObject();
       loadTabs();
       loadActiveTab();
+
+      Object object = getObject();
+      ObjectDescriptor.getInstance(getRootTypeId())
+        .updateDescription(objectId, object);
     }
     catch (Exception ex)
     {
@@ -204,6 +221,11 @@ public abstract class ObjectBean extends BaseBean
     {
       storeObject();
       storeTabs();
+
+      Object object = getObject();
+      ObjectDescriptor.getInstance(getRootTypeId())
+        .updateDescription(objectId, object);
+
       info("Saved.");
     }
     catch (Exception ex)
@@ -261,11 +283,11 @@ public abstract class ObjectBean extends BaseBean
   public void selectTabWithErrors()
   {
     FacesContext context = FacesContext.getCurrentInstance();
-    UIViewRoot viewRoot = context.getViewRoot();
     if (context.isValidationFailed())
     {
+      UIViewRoot viewRoot = context.getViewRoot();
       Iterator<String> iter = context.getClientIdsWithMessages();
-      while (iter.hasNext())
+      if (iter.hasNext())
       {
         String id = iter.next();
         UIComponent component = viewRoot.findComponent(id);
@@ -278,8 +300,7 @@ public abstract class ObjectBean extends BaseBean
             int index = currentTabView.getChildren().indexOf(component);
             if (index >= 0)
             {
-              tabView.setActiveIndex(index);
-              return;
+              currentTabView.setActiveIndex(index);
             }
           }
           component = component.getParent();

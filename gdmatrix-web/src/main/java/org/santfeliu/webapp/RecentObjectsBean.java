@@ -39,6 +39,7 @@ import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
+import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
@@ -71,6 +72,7 @@ public class RecentObjectsBean
       for (String baseTypeId : baseTypeIdList)
       {
         BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
+        ObjectDescriptor descriptor = ObjectDescriptor.getInstance(baseTypeId);
 
         RecentType recentType = new RecentType();
         recentType.baseTypeId = baseTypeId;
@@ -86,6 +88,7 @@ public class RecentObjectsBean
           {
             RecentObject recentObject = new RecentObject();
             recentObject.objectId = objectId;
+            recentObject.description = descriptor.getDescription(objectId);
             typeNode.getChildren().add(new DefaultTreeNode(recentObject));
           }
         }
@@ -124,6 +127,14 @@ public class RecentObjectsBean
     BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
     if (baseTypeInfo == null) return false;
     return baseTypeId.equals(baseTypeInfo.getBaseTypeId());
+  }
+
+  public boolean isSelectedNode(TreeNode node)
+  {
+    BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo();
+    if (baseTypeInfo == null) return false;
+    RecentObject recentObject = (RecentObject)node.getData();
+    return recentObject.getObjectId().equals(baseTypeInfo.getObjectId());
   }
 
   public class RecentType

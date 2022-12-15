@@ -37,7 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
-import org.santfeliu.doc.web.DocumentConfigBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -183,13 +182,13 @@ public class DocumentFinderBean extends FinderBean
           basicFilter.setTitle(smartFilter);
         }
         basicFilter.setMaxResults(40);
-        rows = DocumentConfigBean.getPort().findDocuments(basicFilter);
+        rows = DocModuleBean.getPort(false).findDocuments(basicFilter);
       }
       else
       {
         setTabIndex(1);
         filter.setMaxResults(40);
-        rows = DocumentConfigBean.getPort().findDocuments(filter);
+        rows = DocModuleBean.getPort(false).findDocuments(filter);
       }
 
       if (autoLoad)

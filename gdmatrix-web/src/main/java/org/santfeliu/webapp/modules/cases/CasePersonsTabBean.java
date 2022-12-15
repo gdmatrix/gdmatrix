@@ -37,7 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
-import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -99,7 +98,8 @@ public class CasePersonsTabBean extends TabBean
       {
         CasePersonFilter filter = new CasePersonFilter();
         filter.setCaseId(objectId);
-        casePersonViews = CaseConfigBean.getPort().findCasePersonViews(filter);
+        casePersonViews =
+          CasesModuleBean.getPort(false).findCasePersonViews(filter);
       }
       catch (Exception ex)
       {

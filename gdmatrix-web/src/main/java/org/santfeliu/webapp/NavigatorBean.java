@@ -33,8 +33,10 @@ package org.santfeliu.webapp;
 import org.santfeliu.webapp.util.WebUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.SessionScoped;
@@ -50,6 +52,7 @@ import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
@@ -66,11 +69,13 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public static final String NEW_OBJECT_ID = "";
   public static final int DEFAULT_RECENT_LIST_SIZE = 5;
+  public static final int DEFAULT_HISTORY_SIZE = 10;
 
   private String lastBaseTypeId;
   private final Map<String, BaseTypeInfo> baseTypeInfoMap = new HashMap<>();
-//  private final List<VisitedObject> history;
-  private int updateSeed = 0;
+  private final History history = new History();
+  private int updateSeed;
+  private int tabIndex;
 
   public BaseTypeInfo getBaseTypeInfo()
   {
@@ -101,6 +106,16 @@ public class NavigatorBean extends WebBean implements Serializable
   public int getUpdateSeed()
   {
     return updateSeed;
+  }
+
+  public int getTabIndex()
+  {
+    return tabIndex;
+  }
+
+  public void setTabIndex(int tabIndex)
+  {
+    this.tabIndex = tabIndex;
   }
 
   public String getObjectId()
@@ -149,6 +164,11 @@ public class NavigatorBean extends WebBean implements Serializable
         ObjectBean lastObjectBean = lastBaseTypeInfo.getObjectBean();
         if (lastObjectBean != null)
         {
+          if (!lastObjectBean.isNew())
+          {
+            history.push(new ReturnInfo(lastBaseTypeInfo));
+          }
+
           FinderBean lastFinderBean = lastObjectBean.getFinderBean();
           if (returnExpression == null)
           {
@@ -160,13 +180,8 @@ public class NavigatorBean extends WebBean implements Serializable
             lastBaseTypeInfo.saveBeanState(lastFinderBean);
             lastBaseTypeInfo.saveTabBeansState(lastObjectBean.getTabs());
 
-            ReturnInfo returnInfo = new ReturnInfo();
-            returnInfo.baseTypeId = lastBaseTypeId;
-            returnInfo.objectId = lastObjectBean.getObjectId();
-            returnInfo.searchTabIndex = lastObjectBean.getSearchTabIndex();
-            returnInfo.tabIndex = lastObjectBean.getTabIndex();
-            returnInfo.expression = returnExpression;
-            baseTypeInfo.setReturnInfo(returnInfo);
+            baseTypeInfo.setSelectionInfo(
+              new SelectionInfo(lastBaseTypeInfo, returnExpression));
           }
         }
       }
@@ -198,6 +213,8 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       objectBean.setSearchTabIndex(0);
     }
+    history.remove(baseTypeId, objectId);
+
     return objectBean.show();
   }
 
@@ -206,37 +223,29 @@ public class NavigatorBean extends WebBean implements Serializable
     return show(baseTypeId, null, 0, returnExpression);
   }
 
-  public boolean isSelectable()
-  {
-    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
-    return baseTypeInfo != null
-      && baseTypeInfo.getReturnInfo() != null
-      && !NEW_OBJECT_ID.equals(baseTypeInfo.getObjectId());
-  }
-
   public String select()
   {
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
     if (baseTypeInfo == null) return null;
 
-    ReturnInfo returnInfo = baseTypeInfo.getReturnInfo();
-    baseTypeInfo.setReturnInfo(null);
+    SelectionInfo selectionInfo = baseTypeInfo.getSelectionInfo();
+    if (selectionInfo == null) return null;
 
-    if (returnInfo == null) return null;
+    baseTypeInfo.setSelectionInfo(null);
 
     String selectedObjectId = baseTypeInfo.getObjectId();
 
-    MenuItemCursor typeMenuItem = selectMenuItem(returnInfo.baseTypeId);
+    MenuItemCursor typeMenuItem = selectMenuItem(selectionInfo.baseTypeId);
     if (typeMenuItem.isNull()) return null;
 
-    lastBaseTypeId = returnInfo.baseTypeId;
+    lastBaseTypeId = selectionInfo.baseTypeId;
     baseTypeInfo = getBaseTypeInfo();
-    baseTypeInfo.visit(returnInfo.objectId);
+    baseTypeInfo.visit(selectionInfo.objectId);
 
     ObjectBean objectBean = baseTypeInfo.getObjectBean();
-    objectBean.setObjectId(returnInfo.objectId);
-    objectBean.setSearchTabIndex(returnInfo.searchTabIndex);
-    objectBean.setTabIndex(returnInfo.tabIndex);
+    objectBean.setObjectId(selectionInfo.objectId);
+    objectBean.setSearchTabIndex(selectionInfo.searchTabIndex);
+    objectBean.setTabIndex(selectionInfo.tabIndex);
 
     baseTypeInfo.restoreBeanState(objectBean);
     baseTypeInfo.restoreBeanState(objectBean.getFinderBean());
@@ -246,14 +255,22 @@ public class NavigatorBean extends WebBean implements Serializable
     baseTypeInfo.restoreTabBeansState(objectBean.getTabs());
     baseTypeInfo.clearBeansState();
 
-    String expression = returnInfo.expression;
+    String expression = selectionInfo.expression;
     if (!expression.startsWith("#{")) expression = "#{" + expression + "}";
     WebUtils.setValueExpression(expression, String.class, selectedObjectId);
 
     System.out.println(">>> select : " +
-      returnInfo.expression + " = " + selectedObjectId);
+      selectionInfo.expression + " = " + selectedObjectId);
 
     return objectBean.show();
+  }
+
+  public boolean isSelectable()
+  {
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    return baseTypeInfo != null
+      && baseTypeInfo.getSelectionInfo() != null
+      && !NEW_OBJECT_ID.equals(baseTypeInfo.getObjectId());
   }
 
   public void view(String objectId)
@@ -266,19 +283,37 @@ public class NavigatorBean extends WebBean implements Serializable
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
     if (baseTypeInfo == null) return;
 
+    ObjectBean objectBean = baseTypeInfo.getObjectBean();
+    if (!objectBean.isNew())
+    {
+      history.push(new ReturnInfo(baseTypeInfo));
+    }
     baseTypeInfo.visit(objectId);
 
-    ObjectBean objectBean = baseTypeInfo.getObjectBean();
     objectBean.setObjectId(objectId);
-    objectBean.setTabIndex(tabIndex);
     objectBean.setSearchTabIndex(1);
+    objectBean.setTabIndex(tabIndex);
     objectBean.load();
+
+    history.remove(baseTypeInfo.getBaseTypeId(), objectId);
   }
 
-  @Override
-  public String toString()
+  public String close()
   {
-    return baseTypeInfoMap.toString();
+    lastBaseTypeId = null;
+
+    ReturnInfo returnInfo = history.pop();
+    if (returnInfo != null)
+    {
+      return show(returnInfo.baseTypeId, returnInfo.objectId,
+        returnInfo.tabIndex);
+    }
+    return null;
+  }
+
+  public History getHistory()
+  {
+    return history;
   }
 
   private MenuItemCursor selectMenuItem(String objectTypeId)
@@ -312,12 +347,15 @@ public class NavigatorBean extends WebBean implements Serializable
     });
   }
 
+  /**
+   * BaseTypeInfo contains information about a base type.
+   */
   public class BaseTypeInfo implements Serializable
   {
     String mid;
     List<String> recentObjectIdList = new ArrayList<>();
     Map<String, Serializable> beanStateMap = new HashMap<>();
-    ReturnInfo returnInfo;
+    SelectionInfo selectionInfo;
     boolean featured = true;
 
     public BaseTypeInfo(String mid)
@@ -370,14 +408,14 @@ public class NavigatorBean extends WebBean implements Serializable
       return recentObjectIdList.get(0);
     }
 
-    public ReturnInfo getReturnInfo()
+    public SelectionInfo getSelectionInfo()
     {
-      return returnInfo;
+      return selectionInfo;
     }
 
-    public void setReturnInfo(ReturnInfo returnInfo)
+    public void setSelectionInfo(SelectionInfo selectionInfo)
     {
-      this.returnInfo = returnInfo;
+      this.selectionInfo = selectionInfo;
     }
 
     public void visit(String objectId)
@@ -501,13 +539,110 @@ public class NavigatorBean extends WebBean implements Serializable
     }
   }
 
-  public static class ReturnInfo
+  public class History implements Serializable
+  {
+    LinkedList<ReturnInfo> stack = new LinkedList<>();
+
+    public Collection<ReturnInfo> getEntries()
+    {
+      return stack;
+    }
+
+    void push(ReturnInfo returnInfo)
+    {
+      stack.push(returnInfo);
+      if (stack.size() > DEFAULT_HISTORY_SIZE) stack.removeLast();
+    }
+
+    ReturnInfo pop()
+    {
+      return stack.isEmpty() ? null : stack.pop();
+    }
+
+    ReturnInfo remove(String baseTypeId, String objectId)
+    {
+      Iterator<ReturnInfo> iter = stack.iterator();
+      while (iter.hasNext())
+      {
+        ReturnInfo next = iter.next();
+        if (next.getBaseTypeId().equals(baseTypeId) &&
+          next.objectId.equals(objectId))
+        {
+          iter.remove();
+          return next;
+        }
+      }
+      return null;
+    }
+  }
+
+  /**
+   * ReturnInfo holds information to return to a previously visited object.
+   */
+  public static class ReturnInfo implements Serializable
   {
     String baseTypeId;
     String objectId;
     int searchTabIndex;
     int tabIndex;
+
+    ReturnInfo(BaseTypeInfo baseTypeInfo)
+    {
+      baseTypeId = baseTypeInfo.getBaseTypeId();
+      objectId = baseTypeInfo.getObjectId();
+      ObjectBean objectBean = baseTypeInfo.getObjectBean();
+      if (objectBean != null)
+      {
+        searchTabIndex = objectBean.getSearchTabIndex();
+        tabIndex = objectBean.getTabIndex();
+      }
+    }
+
+    public String getBaseTypeId()
+    {
+      return baseTypeId;
+    }
+
+    public String getObjectId()
+    {
+      return objectId;
+    }
+
+    public int getSearchTabIndex()
+    {
+      return searchTabIndex;
+    }
+
+    public int getTabIndex()
+    {
+      return tabIndex;
+    }
+
+    public boolean equivalent(ReturnInfo other)
+    {
+      if (other == null) return false;
+      return this.baseTypeId.equals(other.baseTypeId) &&
+        this.objectId.equals(other.objectId);
+    }
+  }
+
+  /**
+   * SelectionInfo holds information to return from previous find operation.
+   */
+  public static class SelectionInfo extends ReturnInfo
+  {
     String expression;
+
+    SelectionInfo(BaseTypeInfo baseTypeInfo, String expression)
+    {
+      super(baseTypeInfo);
+      this.expression = expression;
+    }
+
+    public String getExpression()
+    {
+      return expression;
+    }
   }
 
 }

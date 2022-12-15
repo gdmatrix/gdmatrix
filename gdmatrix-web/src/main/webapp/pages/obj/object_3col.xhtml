@@ -11,7 +11,7 @@
 
     <style type="text/css">
       tr.current { font-weight: bold; }    
-  
+
       @media only screen and (max-width: 700px) 
       {
         .side_panel
@@ -26,7 +26,7 @@
           max-width: 100%;
           margin: 0 !important;
         }        
-        
+
         .side_panel.left
         {
           left:0;
@@ -38,7 +38,7 @@
           right:0;
           box-shadow: -5px 0px 3px -3px rgb(50 50 50 / 30%);
         }
-        
+
         .side_panel.first_time
         {
           display: none;
@@ -49,7 +49,18 @@
           display: block;
         }
       }
-      
+
+      .side_panel
+      {
+        width: 22%;
+        min-width: 200px;
+      }
+
+      .central_column
+      {
+        width: 56%;
+      }
+
       .side_button
       {
         display: none;
@@ -57,32 +68,63 @@
         z-index:1000;
         top:50%; 
       }
-      
+
       .side_button.left
       {
         left: 0; 
         border-radius:0 8px 8px 0 !important; 
       }
-      
+
       .side_button.right
       {
         right: 0; 
         border-radius:8px 0 0 8px !important; 
       }
-      
+
       body .ui-tabs.context_tabs .ui-tabs-panels .ui-tabs-panel
       {
         padding: 0;
       }
-      
+
       body .ui-tabs.context_tabs .ui-tree
       {
         padding: 0;
         padding-top: 8px;
       }
+
+      .recents_tree.ui-tree .ui-tree-container
+      {
+        white-space: normal;
+      }
+            
+      .recents_tree .ui-treenode-leaf-icon
+      {
+        display: none;
+      }
+
+      .recents_tree .ui-treenode-leaf.current
+      {
+        font-weight: bold;
+      }
       
+      .history
+      {
+        margin-top: 10px;
+      }
+
+      .history .return_info
+      {
+        padding: 5px;
+      }
+      
+      .history .return_info .pi
+      {
+        margin-right: 6px;
+        color: black;
+      }
+            
     </style>
-    
+
     <p:button onclick="return showPanel('leftPanel');"  
               icon="pi pi-search" 
               widgetVar="leftPanelButton" 
@@ -95,12 +137,11 @@
 
     <div class="template-layout flex">
 
-      <div class="col flex slick-columns" style="width: 100%" >
+      <div class="col flex slick-columns">
         <!-- Left column -->
         <p:panel id="left_colunn"
                  widgetVar="leftPanel" 
-                 class="side_panel left m-1 pb-2 first_time"
-                 style="width:240px"> 
+                 class="side_panel left m-1 pb-2 first_time"> 
           <f:facet name="header">
             <i class="pi pi-search m-1"></i>
             <p:outputLabel value="Cerca" />
@@ -115,7 +156,7 @@
         </p:panel>
 
         <!-- Central column -->
-        <p:outputPanel id="central_column" style="width:62%"
+        <p:outputPanel id="central_column"
                        class="central_column flex-grow-1 m-1">
           <ui:insert name="object"></ui:insert>
         </p:outputPanel>
@@ -123,9 +164,7 @@
         <!-- Right column -->
         <p:panel id="right_column"
                  widgetVar="rightPanel" 
-                 class="side_panel right m-1 pb-2 first_time" 
-                 header="Recents"
-                 style="width:240px"> 
+                 class="side_panel right m-1 pb-2 first_time"> 
           <f:facet name="header">
             <i class="pi pi-sitemap m-1"></i>
             <span>Context</span>
@@ -136,7 +175,11 @@
           </f:facet>
 
           <p:outputPanel id="context_panel">
-            <p:tabView styleClass="context_tabs">
+            <p:tabView styleClass="context_tabs"
+                       activeIndex="#{navigatorBean.tabIndex}">
+
+              <p:ajax event="tabChange" process="@this" />
+
               <p:tab title="Recents">
                 <p:tree value="#{recentObjectsBean.treeNode}" 
                         var="data" nodeVar="node"
@@ -146,31 +189,55 @@
                   <p:treeNode type="group" icon="#{data.icon}">
                     <h:outputText value="#{data.description}" />
                   </p:treeNode>
-                  <p:treeNode>
+                  <p:treeNode styleClass="#{recentObjectsBean.isSelectedNode(node) ? 'current' : ''}">
                     <p:commandLink action="#{navigatorBean.show(node.parent.data.baseTypeId, data.objectId)}" 
                                    rendered="#{not recentObjectsBean.isCurrentBaseType(node)}"
                                    immediate="true"
                                    ajax="false">
-                      <h:outputText value="#{data.objectId}" />
+                      <h:outputText value="#{data.description}" />
                     </p:commandLink>
                     <p:commandLink action="#{navigatorBean.view(data.objectId)}" 
                                    rendered="#{recentObjectsBean.isCurrentBaseType(node)}"
-                                   process="@this"
+                                   process=":mainform:context_panel"
                                    resetValues="true"
                                    oncomplete="endPanel('rightPanel');"
                                    update=":mainform:central_column :mainform:context_panel">
-                      <h:outputText value="#{data.objectId}" />
+                      <h:outputText value="#{data.description}" />
                     </p:commandLink>
                   </p:treeNode>
                 </p:tree>
               </p:tab>
-              <p:tab title="Favorits">                
+              <p:tab title="Historial">
+                <div class="history">
+                  <p:repeat value="#{navigatorBean.history.entries}" 
+                            var="returnInfo">
+                    <div class="return_info">
+                      <p:commandLink action="#{historyBean.show(returnInfo)}" 
+                                     process="@this" 
+                                     rendered="#{not historyBean.isCurrentBaseType(returnInfo)}"
+                                     immediate="true"
+                                     ajax="false">
+                        <span class="#{historyBean.getIcon(returnInfo)}" />
+                        <h:outputText value="#{historyBean.getDescription(returnInfo)}" /> 
+                      </p:commandLink>
+                      <p:commandLink action="#{historyBean.view(returnInfo)}"
+                                     process="@this" 
+                                     rendered="#{historyBean.isCurrentBaseType(returnInfo)}"
+                                     resetValues="true"
+                                     oncomplete="endPanel('rightPanel');"
+                                     update=":mainform:central_column :mainform:context_panel">
+                        <span class="#{historyBean.getIcon(returnInfo)}" />
+                        <h:outputText value="#{historyBean.getDescription(returnInfo)}" /> 
+                      </p:commandLink>
+                    </div>
+                  </p:repeat>
+                </div>
               </p:tab>
             </p:tabView>
           </p:outputPanel>
         </p:panel>
       </div>
-      
+
       <script>
         function showPanel(panelVar)
         {
@@ -182,7 +249,7 @@
           panelButton.getJQ().css("display", "none");
           return false;
         }
-        
+
         function closePanel(panelVar)
         {
           var panel = PF(panelVar);
@@ -191,7 +258,7 @@
           panelButton.getJQ().css("display", "block");
           return false;
         }
-        
+
         function endPanel(panelVar)
         {
           if (700 > window.innerWidth)
@@ -200,7 +267,7 @@
           }
         }
       </script>
-      
+
     </div>
 
   </ui:define>

@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
-import org.santfeliu.cases.web.CaseConfigBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -179,13 +178,13 @@ public class CaseFinderBean extends FinderBean
           basicFilter.setTitle(smartFilter);
         }
         basicFilter.setMaxResults(40);
-        rows = CaseConfigBean.getPort().findCases(basicFilter);
+        rows = CasesModuleBean.getPort(false).findCases(basicFilter);
       }
       else
       {
         setTabIndex(1);
         filter.setMaxResults(40);
-        rows = CaseConfigBean.getPort().findCases(filter);
+        rows = CasesModuleBean.getPort(false).findCases(filter);
       }
 
       if (autoLoad)
