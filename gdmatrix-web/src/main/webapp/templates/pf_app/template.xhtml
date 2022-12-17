@@ -54,6 +54,7 @@
         <p:repeat value="#{templateBean.highlightedItems}" var="item">
           <p:commandButton action="#{item.getUrl()}" icon="#{item.getIcon()}" 
             styleClass="#{item.isSelected() ? 'current' : ''}" ajax="false"
+            title="#{item.getProperty('label')}" 
             onclick="#{item.getOnclick()}"/>
         </p:repeat>        
       </p:toolbarGroup>    

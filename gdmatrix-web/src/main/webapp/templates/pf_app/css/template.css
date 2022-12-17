@@ -210,7 +210,7 @@ div, ul
 
 ::-webkit-scrollbar-track
 {
-  background-color: transparent;
+  background-color: var(--secondary-color);
 }
 
 ::-webkit-scrollbar-thumb
@@ -272,18 +272,6 @@ body .pi.loading-icon
   visibility: hidden;
 }
 
-.favorites_table.ui-datatable .ui-datatable-data > tr > td,
-.recents_table.ui-datatable .ui-datatable-data > tr > td,
-.basic_results_table.ui-datatable .ui-datatable-data > tr > td
-{
-  border: 0;
-}
-
-.recents_tree.ui-tree
-{
-  border: 0;
-}
-
 .ui-chips-container
 {
   width: 100% !important;
@@ -330,7 +318,7 @@ body .edit_data_dialog
   right: 0;
   height: 32px;
   padding: 0;
-  background-color: #e0e0ff;
+  background-color: var(--primary-color);
 }
 
 .app_menubar .pi

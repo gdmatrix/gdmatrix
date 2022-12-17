@@ -34,6 +34,7 @@ import org.santfeliu.webapp.util.WebUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -50,9 +51,9 @@ import org.santfeliu.faces.ManualContext;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
+import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
@@ -447,6 +448,71 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       return recentObjectIdList;
     }
+
+    public List<String> getFavoriteObjectIdList()
+    {
+      try
+      {
+        String baseTypeId = getBaseTypeId();
+        UserPreferences userPreferences =
+          UserSessionBean.getCurrentInstance().getUserPreferences();
+
+        if (userPreferences.existsPreference(baseTypeId))
+        {
+          return userPreferences.getPreferences(baseTypeId);
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+      return Collections.EMPTY_LIST;
+    }
+
+    public boolean isMarkedAsFavorite()
+    {
+      String objectId = getObjectId();
+      if (NEW_OBJECT_ID.equals(objectId)) return false;
+
+      return getFavoriteObjectIdList().contains(objectId);
+    }
+
+    public void markAsFavorite()
+    {
+      String objectId = getObjectId();
+      if (NEW_OBJECT_ID.equals(objectId)) return;
+
+      String baseTypeId = getBaseTypeId();
+      UserPreferences userPreferences =
+        UserSessionBean.getCurrentInstance().getUserPreferences();
+      try
+      {
+        userPreferences.storePreference(baseTypeId, objectId);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+
+    public void unmarkAsFavorite()
+    {
+      String objectId = getObjectId();
+      if (NEW_OBJECT_ID.equals(objectId)) return;
+
+      String baseTypeId = getBaseTypeId();
+      UserPreferences userPreferences =
+        UserSessionBean.getCurrentInstance().getUserPreferences();
+      try
+      {
+        userPreferences.removePreference(baseTypeId, objectId);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+
     public String getProperty(String propertyName)
     {
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();

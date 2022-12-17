@@ -12,6 +12,26 @@
     <style type="text/css">
       tr.current { font-weight: bold; }    
 
+      @media only screen and (min-width: 700px) 
+      {
+        .central_column
+        {
+          padding: 4px;
+          overflow: auto;
+          margin: 0 !important;
+        }
+        
+        .side_panel.left
+        {
+          padding-left: 4px;
+        }
+
+        .side_panel.right
+        {
+          padding-right: 4px;
+        }
+      }
+      
       @media only screen and (max-width: 700px) 
       {
         .side_panel
@@ -41,7 +61,7 @@
 
         .side_panel.first_time
         {
-          display: none;
+          visibility: hidden;
         }        
 
         .side_button.first_time
@@ -52,10 +72,23 @@
 
       .side_panel
       {
+        display: flex;
+        flex-direction: column;
         width: 22%;
         min-width: 200px;
       }
 
+      .side_panel .ui-panel-titlebar
+      {
+        flex-grow: 0;
+      }
+        
+      .side_panel .ui-panel-content
+      {
+        flex-grow: 1;
+        overflow: auto;
+      }
+      
       .central_column
       {
         width: 56%;
@@ -92,6 +125,11 @@
         padding-top: 8px;
       }
 
+      .recents_tree.ui-tree
+      {
+        border: 0;
+      }
+            
       .recents_tree.ui-tree .ui-tree-container
       {
         white-space: normal;
@@ -105,6 +143,7 @@
       .recents_tree .ui-treenode-leaf.current
       {
         font-weight: bold;
+        color: black;
       }
       
       .history
@@ -135,13 +174,13 @@
               widgetVar="rightPanelButton" 
               class="side_button right first_time" />          
 
-    <div class="template-layout flex">
+    <div class="template-layout flex h-full">
 
-      <div class="col flex slick-columns" style="width:100%;">
+      <div class="col flex slick-columns w-full pl-0 pr-0">
         <!-- Left column -->
         <p:panel id="left_colunn"
                  widgetVar="leftPanel" 
-                 class="side_panel left m-1 pb-2 first_time"> 
+                 class="side_panel left m-1 first_time"> 
           <f:facet name="header">
             <i class="pi pi-search m-1"></i>
             <p:outputLabel value="Cerca" />
@@ -164,7 +203,7 @@
         <!-- Right column -->
         <p:panel id="right_column"
                  widgetVar="rightPanel" 
-                 class="side_panel right m-1 pb-2 first_time"> 
+                 class="side_panel right m-1 first_time"> 
           <f:facet name="header">
             <i class="pi pi-sitemap m-1"></i>
             <span>Context</span>
@@ -186,10 +225,11 @@
                         styleClass="recents_tree" >
                   <p:ajax event="expand" listener="#{recentObjectsBean.onNodeExpand}" />
                   <p:ajax event="collapse" listener="#{recentObjectsBean.onNodeCollapse}" />
-                  <p:treeNode type="group" icon="#{data.icon}">
+                  <p:treeNode type="group">
                     <h:outputText value="#{data.description}" />
                   </p:treeNode>
-                  <p:treeNode styleClass="#{recentObjectsBean.isSelectedNode(node) ? 'current' : ''}">
+                  <p:treeNode icon="#{node.parent.data.icon}" 
+                              styleClass="#{recentObjectsBean.isSelectedNode(node) ? 'current' : ''}">
                     <p:commandLink action="#{navigatorBean.show(node.parent.data.baseTypeId, data.objectId)}" 
                                    rendered="#{not recentObjectsBean.isCurrentBaseType(node)}"
                                    immediate="true"
