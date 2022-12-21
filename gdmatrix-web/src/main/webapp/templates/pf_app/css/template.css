@@ -375,6 +375,11 @@ body .frame > div > .ui-toolbar .ui-button:hover .mi.ui-icon
   filter: invert(1); 
 }
 
+body .ui-datepicker .ui-datepicker-calendar td
+{
+  padding: 0;
+}
+
 .app_body
 {
   position:absolute;

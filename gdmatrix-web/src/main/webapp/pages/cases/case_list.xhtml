@@ -20,7 +20,8 @@
       <h:outputText value="#{row.title}" />
     </p:column>
     <p:column styleClass="w-1">
-      <p:commandButton icon="pi pi-external-link" styleClass="ui-button-raised" 
+      <p:commandButton icon="pi pi-external-link" 
+                       styleClass="rounded-button ui-button-flat" 
                        action="#{navigatorBean.view(row.getCaseId())}"
                        onclick="PF('objectTabs').select(0);"
                        resetValues="true"

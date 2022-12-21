@@ -30,10 +30,16 @@
  */
 package org.santfeliu.webapp.modules.doc;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.Content;
+import org.matrix.doc.Document;
+import org.matrix.doc.DocumentFilter;
+import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.TabBean;
 
@@ -41,12 +47,14 @@ import org.santfeliu.webapp.TabBean;
  *
  * @author realor
  */
-@Named("documentContentTabBean")
+@Named
 @ManualScoped
 public class DocumentContentTabBean extends TabBean
 {
   @Inject
   DocumentObjectBean documentObjectBean;
+
+  List<SelectItem> versionSelectItems;
 
   @Override
   public DocumentObjectBean getObjectBean()
@@ -58,6 +66,49 @@ public class DocumentContentTabBean extends TabBean
   public void init()
   {
     System.out.println("Creating " + this);
+  }
+
+  public int getVersion()
+  {
+    return documentObjectBean.getDocument().getVersion();
+  }
+
+  public void setVersion(int version)
+  {
+    documentObjectBean.getDocument().setVersion(version);
+  }
+
+  public List<SelectItem> getVersionSelectItems()
+  {
+    if (documentObjectBean.isNew()) return null;
+
+    if (versionSelectItems == null)
+    {
+      try
+      {
+        versionSelectItems = new ArrayList<>();
+        Document document = documentObjectBean.getDocument();
+
+        DocumentFilter filter = new DocumentFilter();
+        filter.getDocId().add(document.getDocId());
+        List<Document> docVersions =
+          DocModuleBean.getPort(false).findDocuments(filter);
+        for (Document docVersion : docVersions)
+        {
+          SelectItem selectItem = new SelectItem();
+          String strVersion = String.valueOf(docVersion.getVersion());
+          selectItem.setLabel(strVersion + " - " +
+            docVersion.getCaptureDateTime());
+          selectItem.setValue(String.valueOf(docVersion.getVersion()));
+          versionSelectItems.add(selectItem);
+        }
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+    return versionSelectItems;
   }
 
   public Content getContent()
@@ -80,4 +131,25 @@ public class DocumentContentTabBean extends TabBean
     Content content = getContent();
     System.out.println("save content " + content.getContentType());
   }
+
+  public String getContentSize()
+  {
+    Content content = getContent();
+    long size = content.getSize();
+
+    return DocumentUtils.getSizeString(size);
+  }
+
+  public String getContentStorageType()
+  {
+    Content content = getContent();
+
+    if (content.getContentId() == null)
+      return "NO CONTENT";
+    if (content.getUrl() != null)
+      return "EXTERNAL";
+    else
+      return "INTERNAL";
+  }
+
 }

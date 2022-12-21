@@ -34,7 +34,7 @@
                              value="Search"
                              action="#{documentFinderBean.smartFind}"
                              process=":mainform:find_selector"
-                             update=":mainform:search_tabs :mainform:context_panel"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              resetValues="true"                             
                              styleClass="ui-button-raised m-1" 
                              oncomplete="endPanel('leftPanel');"/>
@@ -46,6 +46,13 @@
           <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle" 
                         var="docBundle" />
 
+          <!-- docId -->
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="DocId" />
+            <p:chips id="doc_id" value="#{documentFinderBean.docIdList}"
+                     class="inputfield w-full" />
+          </p:outputPanel>          
+          
           <!-- Title -->
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="Title" />        
@@ -64,7 +71,7 @@
                              value="Search"
                              action="#{documentFinderBean.find}"
                              process=":mainform:find_selector"
-                             update=":mainform:search_tabs :mainform:context_panel"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              resetValues="true"                             
                              styleClass="ui-button-raised m-1" 
                              oncomplete="endPanel('leftPanel');"

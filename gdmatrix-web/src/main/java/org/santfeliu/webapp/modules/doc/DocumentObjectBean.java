@@ -32,11 +32,16 @@ package org.santfeliu.webapp.modules.doc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
+import org.matrix.doc.DocumentManagerPort;
+import org.matrix.doc.State;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -46,11 +51,14 @@ import org.santfeliu.webapp.Tab;
  *
  * @author realor
  */
-@Named("documentObjectBean")
+@Named
 @ManualScoped
 public class DocumentObjectBean extends ObjectBean
 {
   private Document document = new Document();
+
+  @Inject
+  DocumentTypeBean documentTypeBean;
 
   @Inject
   DocumentFinderBean documentFinderBean;
@@ -69,6 +77,12 @@ public class DocumentObjectBean extends ObjectBean
   public Document getObject()
   {
     return isNew() ? null : document;
+  }
+
+  @Override
+  public DocumentTypeBean getTypeBean()
+  {
+    return documentTypeBean;
   }
 
   @Override
@@ -114,11 +128,54 @@ public class DocumentObjectBean extends ObjectBean
   }
 
   @Override
+  public void storeObject() throws Exception
+  {
+    DocModuleBean.getPort(false).storeDocument(document);
+  }
+
+  @Override
   public void loadTabs()
   {
     tabs = new ArrayList<>();
     tabs.add(new Tab("Main", "/pages/doc/document_main.xhtml"));
     tabs.add(new Tab("Content", "/pages/doc/document_content.xhtml", "documentContentTabBean"));
+  }
+
+  public void lock()
+  {
+    try
+    {
+      DocumentManagerPort port = DocModuleBean.getPort(false);
+      port.lockDocument(document.getDocId(), 0);
+      document = port.loadDocument(document.getDocId(), 0, ContentInfo.METADATA);
+      info("Document locked by " + document.getLockUserId());
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void unlock()
+  {
+    try
+    {
+      DocumentManagerPort port = DocModuleBean.getPort(false);
+      port.unlockDocument(document.getDocId(), 0);
+      document = port.loadDocument(document.getDocId(), 0, ContentInfo.METADATA);
+      info("Document unlocked.");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public SelectItem[] getDocumentStateSelectItems()
+  {
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.doc.web.resources.DocumentBundle", getLocale());
+    return FacesUtils.getEnumSelectItems(State.class, bundle);
   }
 
   @Override

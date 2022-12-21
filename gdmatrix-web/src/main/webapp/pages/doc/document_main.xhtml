@@ -7,23 +7,90 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
-                  var="docBundle" />
+                  var="documentBundle" />
         
     <div class="ui-fluid formgrid grid">   
-            
-      <p:outputPanel styleClass="field col-12 md:col-6" 
+
+      <p:outputPanel styleClass="field col-12 md:col-12" 
                      rendered="true">
         <p:outputLabel for="title" value="Title" />
-        <p:inputText id="title" value="#{documentObjectBean.document.title}" 
+        <p:inputTextarea id="title" value="#{documentObjectBean.document.title}" 
+                         required="true"
+                         styleClass="inputfield w-full"/>
+      </p:outputPanel>       
+      
+      <p:outputPanel styleClass="field col-12 md:col-8"
+                     rendered="true">
+        <p:outputLabel for="docTypeId" value="Tipus"  />        
+        <p:inputText id="docTypeId" value="#{documentObjectBean.document.docTypeId}"
                      required="true"
-                     class="inputfield w-full"/>
+                     styleClass="inputfield w-full" />
       </p:outputPanel> 
 
-      <p:outputPanel styleClass="field col-12 md:col-12"
+      <p:outputPanel styleClass="field col-12 md:col-4" 
                      rendered="true">
-        <p:outputLabel for="docTypeId" value="DocTypeId"  />        
-        <p:inputText id="docTypeId" value="#{documentObjectBean.document.docTypeId}" 
-                     styleClass="inputfield w-full" />
+        <p:outputLabel for="language" value="Idioma" />
+        <p:selectOneMenu id="language"
+          value="#{documentObjectBean.document.language}"
+          required="true">
+          <f:selectItem itemValue="%%" itemLabel="universal"/>
+          <f:selectItem itemValue="ca" itemLabel="#{documentBundle.selectItemCA}"/>
+          <f:selectItem itemValue="es" itemLabel="#{documentBundle.selectItemES}"/>
+          <f:selectItem itemValue="en" itemLabel="#{documentBundle.selectItemEN}"/>
+          <f:selectItem itemValue="fr" itemLabel="#{documentBundle.selectItemFR}"/>
+          <f:selectItem itemValue="it" itemLabel="#{documentBundle.selectItemIT}"/>
+          <f:selectItem itemValue="de" itemLabel="#{documentBundle.selectItemDE}"/>
+        </p:selectOneMenu>
+      </p:outputPanel> 
+
+      <p:outputPanel styleClass="field col-12 md:col-4">
+        <p:outputLabel for="creation_date" value="Creation date" />
+        <!-- TODO: disable if not editable -->
+        <p:datePicker id="creation_date" 
+                      value="#{documentObjectBean.document.creationDate}" 
+                      autocomplete="off"
+                      placeholder="dd/MM/yyyy"
+                      locale="es" 
+                      showOnFocus="false"
+                      touchUI="true"
+                      converter="datePickerConverter" pattern="dd/MM/yyyy"
+                      showIcon="true" showTime="false"
+                      monthNavigator="true" yearNavigator="true" />
+      </p:outputPanel>         
+
+      <p:outputPanel styleClass="field col-12 md:col-4" 
+                     rendered="true">
+        <p:outputLabel for="state" value="Estat" />
+        <p:selectOneMenu id="state" 
+                         value="#{documentObjectBean.document.state}"
+                         required="true">
+          <f:selectItems value="#{documentObjectBean.documentStateSelectItems}" />
+          <f:converter converterId="EnumConverter" />
+          <f:attribute name="enum" value="org.matrix.doc.State" />
+        </p:selectOneMenu>
+      </p:outputPanel> 
+      
+      <p:outputPanel styleClass="field col-12 md:col-4"
+                     rendered="true">
+        <p:outputLabel for="lockUserId" value="Bloquejat per"  />        
+        <div class="ui-inputgroup">
+          <p:inputText id="lockUserId" 
+                       value="#{documentObjectBean.document.lockUserId}"
+                       disabled="true"
+                       styleClass="inputfield w-full" />
+          <p:commandButton icon="pi pi-lock-open" 
+                           action="#{documentObjectBean.lock}"
+                           process="@this"
+                           update="@parent"
+                           disabled="#{documentObjectBean.isNew()}"
+                           rendered="#{documentObjectBean.document.lockUserId == null}" /> 
+          <p:commandButton icon="pi pi-unlock" 
+                           action="#{documentObjectBean.unlock}"
+                           process="@this"
+                           update="@parent"
+                           disabled="#{documentObjectBean.isNew()}"
+                           rendered="#{documentObjectBean.document.lockUserId != null}" /> 
+        </div>
       </p:outputPanel> 
       
     </div>

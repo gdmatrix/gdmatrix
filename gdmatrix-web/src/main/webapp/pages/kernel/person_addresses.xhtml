@@ -61,7 +61,7 @@
       </p:column>
       <p:column styleClass="w-2 text-right" exportable="false">
         <h:panelGroup>
-          <p:commandButton icon="pi pi-external-link"  
+          <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat"  
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 
                            immediate="true" ajax="false" 
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"/>  
@@ -70,7 +70,7 @@
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.personAddressId != null}"
-                           styleClass="m-1"
+                           styleClass="m-1 rounded-button ui-button-flat"
                            onclick="return confirm('#{objectBundle.confirm_remove}');"/>            
         </h:panelGroup>          
       </p:column> 

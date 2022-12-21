@@ -46,7 +46,7 @@ import org.santfeliu.webapp.TabBean;
  *
  * @author realor
  */
-@Named("casePersonsTabBean")
+@Named
 @ManualScoped
 public class CasePersonsTabBean extends TabBean
 {

@@ -45,7 +45,6 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import org.primefaces.component.tabview.TabView;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
-import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
@@ -62,6 +61,11 @@ public abstract class ObjectBean extends BaseBean
   public ObjectBean getObjectBean()
   {
     return this;
+  }
+
+  public TypeBean getTypeBean()
+  {
+    return null;
   }
 
   public abstract FinderBean getFinderBean();
@@ -172,8 +176,11 @@ public abstract class ObjectBean extends BaseBean
       loadActiveTab();
 
       Object object = getObject();
-      ObjectDescriptor.getInstance(getRootTypeId())
-        .updateDescription(objectId, object);
+      TypeBean typeBean = getTypeBean();
+      if (typeBean != null)
+      {
+        typeBean.updateDescription(objectId, object);
+      }
     }
     catch (Exception ex)
     {
@@ -223,10 +230,13 @@ public abstract class ObjectBean extends BaseBean
       storeTabs();
 
       Object object = getObject();
-      ObjectDescriptor.getInstance(getRootTypeId())
-        .updateDescription(objectId, object);
+      TypeBean typeBean = getTypeBean();
+      if (typeBean != null)
+      {
+        typeBean.updateDescription(objectId, object);
+      }
 
-      info("Saved.");
+      info("STORE_OBJECT");
     }
     catch (Exception ex)
     {

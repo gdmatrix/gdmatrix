@@ -222,6 +222,7 @@
               <p:tab title="Recents">
                 <p:tree value="#{recentObjectsBean.treeNode}" 
                         var="data" nodeVar="node"
+                        animate="true"
                         styleClass="recents_tree" >
                   <p:ajax event="expand" listener="#{recentObjectsBean.onNodeExpand}" />
                   <p:ajax event="collapse" listener="#{recentObjectsBean.onNodeCollapse}" />

@@ -31,33 +31,22 @@
 package org.santfeliu.webapp.modules.doc;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
 import javax.inject.Named;
-import org.matrix.dic.DictionaryConstants;
-import org.matrix.doc.ContentInfo;
-import org.matrix.doc.Document;
 import org.matrix.doc.DocumentManagerPort;
 import org.matrix.doc.DocumentManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
  * @author realor
  */
-@Named("docModuleBean")
+@Named
 @ApplicationScoped
 public class DocModuleBean
 {
-  public void init(@Observes @Initialized(ApplicationScoped.class) Object init)
-  {
-    ObjectDescriptor.register(new DocumentDescriptor());
-  }
-
   public static DocumentManagerPort getPort(String userId, String password)
   {
     WSDirectory wsDirectory = WSDirectory.getInstance();
@@ -80,33 +69,5 @@ public class DocModuleBean
       password = UserSessionBean.getCurrentInstance().getPassword();
     }
     return getPort(userId, password);
-  }
-
-  public static class DocumentDescriptor extends ObjectDescriptor<Document>
-  {
-    @Override
-    public String getRootTypeId()
-    {
-      return DictionaryConstants.DOCUMENT_TYPE;
-    }
-
-    @Override
-    public String describe(Document document)
-    {
-      return document.getTitle() + " (" + document.getDocId() + ")";
-    }
-
-    @Override
-    public Document loadObject(String objectId)
-    {
-      try
-      {
-        return getPort(true).loadDocument(objectId, 0, ContentInfo.METADATA);
-      }
-      catch (Exception ex)
-      {
-        return null;
-      }
-    }
   }
 }

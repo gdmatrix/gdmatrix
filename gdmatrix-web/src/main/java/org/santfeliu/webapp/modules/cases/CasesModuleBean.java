@@ -31,33 +31,22 @@
 package org.santfeliu.webapp.modules.cases;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
 import javax.inject.Named;
-import org.matrix.cases.Case;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CaseManagerService;
-import org.matrix.dic.DictionaryConstants;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
  * @author realor
  */
-@Named("casesModuleBean")
+@Named
 @ApplicationScoped
 public class CasesModuleBean
 {
-  public void init(@Observes @Initialized(ApplicationScoped.class) Object init)
-  {
-    System.out.println("INIT " + init.getClass());
-    ObjectDescriptor.register(new CaseDescriptor());
-  }
-
   public static CaseManagerPort getPort(String userId, String password)
   {
     WSDirectory wsDirectory = WSDirectory.getInstance();
@@ -80,33 +69,5 @@ public class CasesModuleBean
       password = UserSessionBean.getCurrentInstance().getPassword();
     }
     return getPort(userId, password);
-  }
-
-  public static class CaseDescriptor extends ObjectDescriptor<Case>
-  {
-    @Override
-    public String getRootTypeId()
-    {
-      return DictionaryConstants.CASE_TYPE;
-    }
-
-    @Override
-    public String describe(Case cas)
-    {
-      return cas.getTitle();
-    }
-
-    @Override
-    public Case loadObject(String objectId)
-    {
-      try
-      {
-        return getPort(true).loadCase(objectId);
-      }
-      catch (Exception ex)
-      {
-        return null;
-      }
-    }
   }
 }

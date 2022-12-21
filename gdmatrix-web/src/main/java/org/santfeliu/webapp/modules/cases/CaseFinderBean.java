@@ -45,7 +45,7 @@ import org.santfeliu.webapp.ObjectBean;
  *
  * @author realor
  */
-@Named("caseFinderBean")
+@Named
 @ManualScoped
 public class CaseFinderBean extends FinderBean
 {
@@ -57,6 +57,9 @@ public class CaseFinderBean extends FinderBean
 
   @Inject
   NavigatorBean navigatorBean;
+
+  @Inject
+  CaseTypeBean caseTypeBean;
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -85,6 +88,20 @@ public class CaseFinderBean extends FinderBean
   public void setFilter(CaseFilter filter)
   {
     this.filter = filter;
+  }
+
+  public List<String> getCaseIdList()
+  {
+    return filter.getCaseId();
+  }
+
+  public void setCaseIdList(List<String> caseIdList)
+  {
+    filter.getCaseId().clear();
+    if (caseIdList != null)
+    {
+      filter.getCaseId().addAll(caseIdList);
+    }
   }
 
   public List<Case> getRows()
@@ -136,7 +153,7 @@ public class CaseFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, firstRow };
+    return new Object[]{ isSmartFind, filter, firstRow };
   }
 
   @Override
@@ -146,12 +163,11 @@ public class CaseFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       isSmartFind = (Boolean)stateArray[0];
-      smartFilter = (String)stateArray[1];
-      filter = (CaseFilter)stateArray[2];
+      filter = (CaseFilter)stateArray[1];
 
       doFind(false);
 
-      firstRow = (Integer)stateArray[3];
+      firstRow = (Integer)stateArray[2];
     }
     catch (Exception ex)
     {
@@ -164,28 +180,22 @@ public class CaseFinderBean extends FinderBean
     try
     {
       firstRow = 0;
+      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+
       if (isSmartFind)
       {
+        filter = caseTypeBean.queryToFilter(smartFilter, baseTypeId);
         setTabIndex(0);
-        CaseFilter basicFilter = new CaseFilter();
-        try
-        {
-          Integer.parseInt(smartFilter);
-          basicFilter.getCaseId().add(smartFilter);
-        }
-        catch (NumberFormatException ex)
-        {
-          basicFilter.setTitle(smartFilter);
-        }
-        basicFilter.setMaxResults(40);
-        rows = CasesModuleBean.getPort(false).findCases(basicFilter);
       }
       else
       {
+        smartFilter = caseTypeBean.filterToQuery(filter);
+        filter.setCaseTypeId(baseTypeId);
         setTabIndex(1);
-        filter.setMaxResults(40);
-        rows = CasesModuleBean.getPort(false).findCases(filter);
       }
+
+      filter.setMaxResults(40);
+      rows = CasesModuleBean.getPort(false).findCases(filter);
 
       if (autoLoad)
       {

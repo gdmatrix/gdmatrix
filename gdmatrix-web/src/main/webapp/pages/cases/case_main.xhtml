@@ -11,32 +11,49 @@
     
     <div class="ui-fluid formgrid grid">   
                   
-      <p:outputPanel styleClass="field col-12 md:col-6" 
+      <p:outputPanel styleClass="field col-12 md:col-12" 
                      rendered="true">
         <p:outputLabel for="title" value="Title" />
-        <p:inputText id="title" value="#{caseObjectBean.case.title}" 
-                     required="true" 
-                     class="inputfield w-full"/>
+        <p:inputTextarea id="title" value="#{caseObjectBean.case.title}" 
+                         required="true" 
+                         class="inputfield w-full"/>
       </p:outputPanel> 
 
-      <p:outputPanel styleClass="field col-6 md:col-3">
+      <p:outputPanel styleClass="field col-12 md:col-4">
         <p:outputLabel for="start_date" value="Start date" />
         <!-- TODO: disable if not editable -->
-        <p:datePicker id="start_date" value="#{caseObjectBean.startDateTime}" 
+        <p:datePicker id="start_date" 
+                      value="#{caseObjectBean.startDateTime}"
+                      autocomplete="off"
+                      placeholder="dd/MM/yyyy HH:mm"
                       locale="es" 
+                      showOnFocus="false"
+                      touchUI="true"
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true" />
       </p:outputPanel>     
 
-      <p:outputPanel styleClass="field col-6 md:col-3">
+      <p:outputPanel styleClass="field col-12 md:col-4">
         <p:outputLabel for="end_date" value="End date" />
         <!-- TODO: disable if not editable -->
-        <p:datePicker id="end_date" value="#{caseObjectBean.endDateTime}" 
+        <p:datePicker id="end_date" 
+                      value="#{caseObjectBean.endDateTime}" 
+                      autocomplete="off"
+                      placeholder="dd/MM/yyyy HH:mm"
                       locale="es" 
+                      showOnFocus="false"
+                      touchUI="true"
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true" />
       </p:outputPanel>         
 
+      <p:outputPanel styleClass="field col-12 md:col-4" 
+                     rendered="true">
+        <p:outputLabel for="state" value="State" />
+        <p:inputText id="state" value="#{caseObjectBean.case.state}" 
+                     class="inputfield w-full"/>
+      </p:outputPanel>       
+      
       <p:outputPanel styleClass="field col-12 md:col-12"
                      rendered="true">
         <p:outputLabel for="description" value="Description"  />        

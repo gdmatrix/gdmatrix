@@ -47,11 +47,14 @@ import org.santfeliu.webapp.Tab;
  *
  * @author realor
  */
-@Named("caseObjectBean")
+@Named
 @ManualScoped
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
+
+  @Inject
+  CaseTypeBean caseTypeBean;
 
   @Inject
   CaseFinderBean caseFinderBean;
@@ -64,6 +67,12 @@ public class CaseObjectBean extends ObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.CASE_TYPE;
+  }
+
+  @Override
+  public CaseTypeBean getTypeBean()
+  {
+    return caseTypeBean;
   }
 
   @Override

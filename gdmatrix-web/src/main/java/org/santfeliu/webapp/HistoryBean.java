@@ -34,7 +34,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.santfeliu.webapp.NavigatorBean.ReturnInfo;
-import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
@@ -50,8 +49,9 @@ public class HistoryBean
   public String getDescription(ReturnInfo returnInfo)
   {
     String baseTypeId = returnInfo.getBaseTypeId();
-    ObjectDescriptor descriptor = ObjectDescriptor.getInstance(baseTypeId);
-    return descriptor.getDescription(returnInfo.getObjectId());
+    TypeBean typeBean = TypeBean.getInstance(baseTypeId);
+    if (typeBean == null) return baseTypeId + " " + returnInfo.getObjectId();
+    return typeBean.getDescription(returnInfo.getObjectId());
   }
 
   public boolean isCurrentBaseType(ReturnInfo returnInfo)

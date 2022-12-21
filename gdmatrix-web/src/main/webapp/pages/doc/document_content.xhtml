@@ -10,21 +10,57 @@
                   var="caseBundle" />
         
     <div class="ui-fluid formgrid grid">   
-            
+
+      <p:outputPanel styleClass="field col-12 md:col-12" 
+                     rendered="true">
+        <p:outputLabel for="version" value="Version" />
+        <p:selectOneMenu id="version" 
+                         dynamic="true"
+                         value="#{documentContentTabBean.version}" 
+                         class="inputfield w-full">
+           <f:selectItem itemLabel="#{documentContentTabBean.version}" itemValue="0"/>
+        </p:selectOneMenu>
+      </p:outputPanel> 
+      
       <p:outputPanel styleClass="field col-12 md:col-6" 
                      rendered="true">
         <p:outputLabel for="contentId" value="ContentId" />
-        <p:inputText id="contentId" value="#{documentContentTabBean.content.contentId}" 
+        <p:inputText id="contentId" 
+                     value="#{documentContentTabBean.content.contentId}" 
+                     readonly="true"
                      class="inputfield w-full"/>
       </p:outputPanel> 
 
       <p:outputPanel styleClass="field col-12 md:col-6" 
                      rendered="true">
         <p:outputLabel for="contentType" value="ContentType" />
-        <p:inputText id="contentType" value="#{documentContentTabBean.content.contentType}" 
+        <p:inputText id="contentType" 
+                     value="#{documentContentTabBean.content.contentType}" 
+                     readonly="true"                     
                      class="inputfield w-full"/>
       </p:outputPanel>
 
+      <p:outputPanel styleClass="field col-12 md:col-6" 
+                     rendered="true">
+        <p:outputLabel for="contentSize" value="Content size" />
+        <p:inputText id="contentSize" 
+                     value="#{documentContentTabBean.contentSize}" 
+                     readonly="true"
+                     class="inputfield w-full"/>
+      </p:outputPanel>
+      
+      <p:outputPanel styleClass="field col-12 md:col-6" 
+                     rendered="true">
+        <p:outputLabel for="contentStorageType" value="Storage type" />
+        <p:inputText id="contentStorageType" 
+                     value="#{documentContentTabBean.contentStorageType}" 
+                     readonly="true"
+                     class="inputfield w-full"/>
+      </p:outputPanel>
+
+
+      
+      
     </div>
 
 </ui:composition>

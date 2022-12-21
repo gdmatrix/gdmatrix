@@ -45,7 +45,7 @@ import org.santfeliu.webapp.NavigatorBean;
  *
  * @author realor
  */
-@Named("documentFinderBean")
+@Named
 @ManualScoped
 public class DocumentFinderBean extends FinderBean
 {
@@ -57,6 +57,9 @@ public class DocumentFinderBean extends FinderBean
 
   @Inject
   NavigatorBean navigatorBean;
+
+  @Inject
+  DocumentTypeBean documentTypeBean;
 
   @Inject
   DocumentObjectBean documentObjectBean;
@@ -96,6 +99,20 @@ public class DocumentFinderBean extends FinderBean
   public void setFilter(DocumentFilter filter)
   {
     this.filter = filter;
+  }
+
+  public List<String> getDocIdList()
+  {
+    return filter.getDocId();
+  }
+
+  public void setDocIdList(List<String> docIdList)
+  {
+    filter.getDocId().clear();
+    if (docIdList != null)
+    {
+      filter.getDocId().addAll(docIdList);
+    }
   }
 
   public List<Document> getRows()
@@ -147,7 +164,7 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, firstRow };
+    return new Object[]{ isSmartFind, filter, firstRow };
   }
 
   @Override
@@ -155,12 +172,11 @@ public class DocumentFinderBean extends FinderBean
   {
     Object[] stateArray = (Object[])state;
     isSmartFind = (Boolean)stateArray[0];
-    smartFilter = (String)stateArray[1];
-    filter = (DocumentFilter)stateArray[2];
+    filter = (DocumentFilter)stateArray[1];
 
     doFind(false);
 
-    firstRow = (Integer)stateArray[3];
+    firstRow = (Integer)stateArray[2];
   }
 
   private void doFind(boolean autoLoad)
@@ -168,28 +184,22 @@ public class DocumentFinderBean extends FinderBean
     try
     {
       firstRow = 0;
+      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+
       if (isSmartFind)
       {
         setTabIndex(0);
-        DocumentFilter basicFilter = new DocumentFilter();
-        try
-        {
-          Integer.parseInt(smartFilter);
-          basicFilter.getDocId().add(smartFilter);
-        }
-        catch (NumberFormatException ex)
-        {
-          basicFilter.setTitle(smartFilter);
-        }
-        basicFilter.setMaxResults(40);
-        rows = DocModuleBean.getPort(false).findDocuments(basicFilter);
+        filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);
       }
       else
       {
+        smartFilter = documentTypeBean.filterToQuery(filter);
+        filter.setDocTypeId(baseTypeId);
         setTabIndex(1);
-        filter.setMaxResults(40);
-        rows = DocModuleBean.getPort(false).findDocuments(filter);
       }
+
+      filter.setMaxResults(40);
+      rows = DocModuleBean.getPort(false).findDocuments(filter);
 
       if (autoLoad)
       {

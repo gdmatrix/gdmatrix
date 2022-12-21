@@ -39,7 +39,6 @@ import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
-import org.santfeliu.webapp.util.ObjectDescriptor;
 
 /**
  *
@@ -72,7 +71,7 @@ public class RecentObjectsBean
       for (String baseTypeId : baseTypeIdList)
       {
         BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
-        ObjectDescriptor descriptor = ObjectDescriptor.getInstance(baseTypeId);
+        TypeBean typeBean = TypeBean.getInstance(baseTypeId);
 
         RecentType recentType = new RecentType();
         recentType.baseTypeId = baseTypeId;
@@ -88,7 +87,15 @@ public class RecentObjectsBean
           {
             RecentObject recentObject = new RecentObject();
             recentObject.objectId = objectId;
-            recentObject.description = descriptor.getDescription(objectId);
+            if (typeBean == null)
+            {
+              recentObject.description =
+                baseTypeId + " " + recentObject.getObjectId();
+            }
+            else
+            {
+              recentObject.description = typeBean.getDescription(objectId);
+            }
             typeNode.getChildren().add(new DefaultTreeNode(recentObject));
           }
         }

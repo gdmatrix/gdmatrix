@@ -34,7 +34,7 @@
                              value="Search"
                              action="#{caseFinderBean.smartFind}"
                              process=":mainform:find_selector"
-                             update=":mainform:search_tabs :mainform:context_panel"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              resetValues="true"
                              styleClass="ui-button-raised m-1"
                              oncomplete="endPanel('leftPanel');"/>
@@ -47,6 +47,13 @@
           <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                         var="caseBundle" />
 
+          <!-- CaseId -->
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="CaseId" />
+            <p:chips id="case_id" value="#{caseFinderBean.caseIdList}"
+                     class="inputfield w-full" />
+          </p:outputPanel>          
+          
           <!-- Title -->
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="Title" />
@@ -79,7 +86,7 @@
                              value="Search"
                              action="#{caseFinderBean.find}"
                              process=":mainform:find_selector"
-                             update=":mainform:search_tabs :mainform:context_panel"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              styleClass="ui-button-raised m-1"
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"

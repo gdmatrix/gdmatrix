@@ -28,48 +28,54 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.util;
+package org.santfeliu.webapp;
 
 import java.util.HashMap;
+import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.event.Observes;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.web.WebBean;
 
 /**
  *
  * @author realor
- * @param <T> the object type to describe
+ * @param <T> the type managed by this bean
+ * @param <F> the filter to find T objects
  */
-public abstract class ObjectDescriptor<T>
+public abstract class TypeBean<T, F> extends WebBean
 {
-  static HashMap<String, ObjectDescriptor> instances = new HashMap<>();
+  static final HashMap<String, TypeBean> instances = new HashMap<>();
 
   private final HashMap<String, String> descriptions = new HashMap<>();
 
-  public static synchronized ObjectDescriptor getInstance(String typeId)
+  public static TypeBean getInstance(String typeId)
   {
-    ObjectDescriptor descriptor = instances.get(typeId);
-    if (descriptor == null)
+    TypeBean typeBean = instances.get(typeId);
+    if (typeBean == null)
     {
       Type type = TypeCache.getInstance().getType(typeId);
       String rootTypeId = type.getRootTypeId();
-      descriptor = instances.get(rootTypeId);
-      if (descriptor == null)
-      {
-        descriptor = new DefaultObjectDescriptor(rootTypeId);
-        instances.put(rootTypeId, descriptor);
-      }
+      typeBean = instances.get(rootTypeId);
     }
-    return descriptor;
+    return typeBean;
   }
 
-  public static synchronized void register(ObjectDescriptor descriptor)
+  public static void register(TypeBean typeBean)
   {
-    instances.put(descriptor.getRootTypeId(), descriptor);
+    instances.put(typeBean.getRootTypeId(), typeBean);
   }
 
-  public static synchronized void unregister(ObjectDescriptor descriptor)
+  public static void unregister(TypeBean typeBean)
   {
-    instances.remove(descriptor.getRootTypeId());
+    instances.remove(typeBean.getRootTypeId());
+  }
+
+  public void init(@Observes @Initialized(ApplicationScoped.class) Object init)
+  {
+    TypeBean.register(this);
   }
 
   public abstract String getRootTypeId();
@@ -111,8 +117,25 @@ public abstract class ObjectDescriptor<T>
     }
   }
 
-  public synchronized void clear()
+  public synchronized void clearDescriptions()
   {
     descriptions.clear();
   }
+
+  public abstract F queryToFilter(String query, String typeId);
+
+  public abstract String filterToQuery(F filter);
+
+  public abstract List<T> find(F filter);
+
+  public List<T> find(String query)
+  {
+    return find(queryToFilter(query, getRootTypeId()));
+  }
+
+  public List<T> find(String query, String typeId)
+  {
+    return find(queryToFilter(query, typeId));
+  }
+
 }
