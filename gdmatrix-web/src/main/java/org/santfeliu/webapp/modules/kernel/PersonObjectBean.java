@@ -65,6 +65,9 @@ public class PersonObjectBean extends ObjectBean
   private SelectItem[] sexSelectItems;
   
   @Inject
+  PersonTypeBean personTypeBean;
+  
+  @Inject
   PersonFinderBean personFinderBean;
 
   public PersonObjectBean()
@@ -88,20 +91,26 @@ public class PersonObjectBean extends ObjectBean
   }
   
   @Override
-  public String getDescription()
+  public PersonTypeBean getTypeBean()
   {
-    return isNew() ? "" : person.getName() + " " 
-      + person.getFirstParticle() != null ? person.getFirstParticle() : ""
-      + person.getFirstSurname()  
-      + person.getSecondParticle() != null ? person.getSecondParticle() : ""
-      + person.getSecondSurname();
+    return personTypeBean;
   }  
   
-  //TODO: PersonDescriptor
+  @Override
+  public Person getObject()
+  {
+    return isNew() ? null : person;
+  }    
+  
+  @Override
+  public String getDescription()
+  {
+    return isNew() ? "" : getDescription(person.getPersonId());
+  }  
+  
   public String getDescription(String personId)
   {
-    //TODO:
-    return personId;
+    return getTypeBean().getDescription(personId);
   }
 
   @Override
@@ -198,7 +207,8 @@ public class PersonObjectBean extends ObjectBean
     {
       tabs = new ArrayList<>(); // empty list may be read only
       tabs.add(new Tab("Main", "/pages/kernel/person_main.xhtml"));
-      tabs.add(new Tab("Addresses", "/pages/kernel/person_addresses.xhtml", "personAddressesTabBean"));
+      tabs.add(new Tab("Addresses", "/pages/kernel/person_addresses.xhtml", 
+        "personAddressesTabBean"));
     }
   }
 

@@ -35,7 +35,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.PersonFilter;
 import org.matrix.kernel.PersonView;
 import org.santfeliu.faces.ManualScoped;
@@ -60,6 +59,9 @@ public class PersonFinderBean extends FinderBean
   
   @Inject
   NavigatorBean navigatorBean;
+  
+  @Inject
+  PersonTypeBean personTypeBean;  
   
   @Inject
   PersonObjectBean personObjectBean;
@@ -126,8 +128,9 @@ public class PersonFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    isSmartFind = true;    
-    filter = convert(smartFilter);
+    isSmartFind = true;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter = personTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
   }
   
@@ -141,7 +144,7 @@ public class PersonFinderBean extends FinderBean
   public void find()
   {
     isSmartFind = false;    
-    smartFilter = convert(filter);
+    smartFilter = personTypeBean.filterToQuery(filter);    
     doFind(true);
   }
 
@@ -156,7 +159,7 @@ public class PersonFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, firstRow };
+    return new Object[]{ isSmartFind, filter, firstRow };
   }
 
   @Override
@@ -166,12 +169,11 @@ public class PersonFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       isSmartFind = (Boolean)stateArray[0];
-      smartFilter = (String)stateArray[1];
-      filter = (PersonFilter)stateArray[2];
+      filter = (PersonFilter)stateArray[1];
 
       doFind(false);
 
-      firstRow = (Integer)stateArray[3];
+      firstRow = (Integer)stateArray[2];
     }
     catch (Exception ex)
     {
@@ -198,35 +200,7 @@ public class PersonFinderBean extends FinderBean
       }
     }    
   }
-  
-  private PersonFilter convert(String smartValue)
-  {
-    filter = new PersonFilter();
-    if (smartValue != null)
-    {
-      if (smartValue.matches("\\d+"))
-        filter.getPersonId().add(smartValue);
-      else if (smartValue.matches("(\\d+\\D+|\\D+\\d+)"))
-        filter.setNif(smartValue);
-      else
-        filter.setFullName(smartValue);
-    }  
-    return filter;
-  }
-    
-  private String convert(PersonFilter filter)
-  {
-    String value = null;
-    if (!filter.getPersonId().isEmpty())
-      value = filter.getPersonId().get(0);
-    else if (!StringUtils.isBlank(filter.getNif()))
-      value = filter.getNif();
-    else if (!StringUtils.isBlank(filter.getFullName()))
-      value = filter.getFullName();
 
-    return value;
-  }
-  
   private class PersonBigListHelper extends BigListHelper<PersonView>
   {
     @Override
