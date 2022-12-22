@@ -34,7 +34,6 @@ import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.santfeliu.dic.util.DictionaryUtils;
 

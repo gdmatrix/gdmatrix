@@ -59,7 +59,7 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
 public class DocumentObjectBean extends ObjectBean
 {
   private Document document = new Document();
-  private final PropertyHelper propertyHelper = new PropertyHelper()
+  private transient final PropertyHelper propertyHelper = new PropertyHelper()
   {
     @Override
     public List<Property> getProperties()
@@ -106,7 +106,7 @@ public class DocumentObjectBean extends ObjectBean
   {
     return propertyHelper;
   }
-  
+
   @Override
   public String getDescription()
   {

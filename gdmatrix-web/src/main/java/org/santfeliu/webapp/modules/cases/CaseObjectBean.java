@@ -55,7 +55,7 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
-  private final PropertyHelper propertyHelper = new PropertyHelper()
+  private transient final PropertyHelper propertyHelper = new PropertyHelper()
   {
     @Override
     public List<Property> getProperties()
