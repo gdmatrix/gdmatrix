@@ -128,9 +128,4 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     }
   }
 
-
-  public static void main(String[] args)
-  {
-    System.out.println("g798986".matches("[0-9]+|.+:[0-9]+"));
-  }
 }

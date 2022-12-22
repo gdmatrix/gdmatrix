@@ -32,11 +32,13 @@ package org.santfeliu.webapp.modules.doc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Property;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentManagerPort;
@@ -46,6 +48,7 @@ import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
+import org.santfeliu.webapp.helpers.PropertyHelper;
 
 /**
  *
@@ -56,6 +59,14 @@ import org.santfeliu.webapp.Tab;
 public class DocumentObjectBean extends ObjectBean
 {
   private Document document = new Document();
+  private final PropertyHelper propertyHelper = new PropertyHelper()
+  {
+    @Override
+    public List<Property> getProperties()
+    {
+      return document.getProperty();
+    }
+  };
 
   @Inject
   DocumentTypeBean documentTypeBean;
@@ -86,15 +97,20 @@ public class DocumentObjectBean extends ObjectBean
   }
 
   @Override
-  public String getDescription()
-  {
-    return isNew() ? "" : document.getTitle();
-  }
-
-  @Override
   public DocumentFinderBean getFinderBean()
   {
     return documentFinderBean;
+  }
+
+  public PropertyHelper getPropertyHelper()
+  {
+    return propertyHelper;
+  }
+  
+  @Override
+  public String getDescription()
+  {
+    return isNew() ? "" : document.getTitle();
   }
 
   public Document getDocument()

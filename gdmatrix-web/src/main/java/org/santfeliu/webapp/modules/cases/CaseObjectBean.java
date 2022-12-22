@@ -33,15 +33,18 @@ package org.santfeliu.webapp.modules.cases;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Property;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
+import org.santfeliu.webapp.helpers.PropertyHelper;
 
 /**
  *
@@ -52,6 +55,14 @@ import org.santfeliu.webapp.Tab;
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
+  private final PropertyHelper propertyHelper = new PropertyHelper()
+  {
+    @Override
+    public List<Property> getProperties()
+    {
+      return cas.getProperty();
+    }
+  };
 
   @Inject
   CaseTypeBean caseTypeBean;
@@ -76,15 +87,20 @@ public class CaseObjectBean extends ObjectBean
   }
 
   @Override
-  public String getDescription()
-  {
-    return isNew() ? "" : cas.getTitle();
-  }
-
-  @Override
   public CaseFinderBean getFinderBean()
   {
     return caseFinderBean;
+  }
+
+  public PropertyHelper getPropertyHelper()
+  {
+    return propertyHelper;
+  }
+
+  @Override
+  public String getDescription()
+  {
+    return isNew() ? "" : cas.getTitle();
   }
 
   @Override
@@ -176,9 +192,9 @@ public class CaseObjectBean extends ObjectBean
   }
 
   @Override
-  public void storeObject()
+  public void storeObject() throws Exception
   {
-    System.out.println("SAVE: " + cas.getTitle());
+    CasesModuleBean.getPort(false).storeCase(cas);
   }
 
   @Override
