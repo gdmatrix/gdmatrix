@@ -79,7 +79,7 @@ public class WebUtils
     if (named == null) return null; // bean is not a @Named bean
 
     String beanName = named.value();
-    if (beanName == null && clazz != null) // get default name
+    if (StringUtils.isBlank(beanName) && clazz != null) // get default name
     {
       beanName = clazz.getSimpleName();
       beanName = beanName.substring(0, 1).toLowerCase() + beanName.substring(1);
