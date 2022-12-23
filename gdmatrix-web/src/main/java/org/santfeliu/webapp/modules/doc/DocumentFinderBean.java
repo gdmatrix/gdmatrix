@@ -40,6 +40,7 @@ import org.matrix.doc.DocumentFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
  *
@@ -99,6 +100,18 @@ public class DocumentFinderBean extends FinderBean
   public void setFilter(DocumentFilter filter)
   {
     this.filter = filter;
+  }
+
+  @Override
+  public String getObjectId(int position)
+  {
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getDocId();
+  }
+
+  @Override
+  public int getObjectCount()
+  {
+    return rows == null ? 0 : rows.size();
   }
 
   public List<String> getDocIdList()
@@ -164,7 +177,7 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, filter, firstRow };
+    return new Object[]{ isSmartFind, filter, firstRow, getObjectPosition() };
   }
 
   @Override
@@ -177,6 +190,7 @@ public class DocumentFinderBean extends FinderBean
     doFind(false);
 
     firstRow = (Integer)stateArray[2];
+    setObjectPosition((Integer)stateArray[3]);
   }
 
   private void doFind(boolean autoLoad)

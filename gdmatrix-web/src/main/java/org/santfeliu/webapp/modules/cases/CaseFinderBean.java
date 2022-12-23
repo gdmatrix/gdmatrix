@@ -39,6 +39,7 @@ import org.matrix.cases.CaseFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 
 /**
@@ -88,6 +89,18 @@ public class CaseFinderBean extends FinderBean
   public void setFilter(CaseFilter filter)
   {
     this.filter = filter;
+  }
+
+  @Override
+  public String getObjectId(int position)
+  {
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getCaseId();
+  }
+
+  @Override
+  public int getObjectCount()
+  {
+    return rows == null ? 0 : rows.size();
   }
 
   public List<String> getCaseIdList()
@@ -153,7 +166,7 @@ public class CaseFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, filter, firstRow };
+    return new Object[]{ isSmartFind, filter, firstRow, getObjectPosition() };
   }
 
   @Override
@@ -168,6 +181,7 @@ public class CaseFinderBean extends FinderBean
       doFind(false);
 
       firstRow = (Integer)stateArray[2];
+      setObjectPosition((Integer)stateArray[3]);
     }
     catch (Exception ex)
     {

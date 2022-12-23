@@ -7,6 +7,29 @@
   xmlns:p="http://primefaces.org/ui">
 
   <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
+    <p:outputPanel class="flex flex-grow-0 justify-content-start align-self-center"
+                   rendered="#{objectBean.finderBean.isScrollEnabled()}">
+        <p:commandButton icon="ui-icon pi pi-step-backward" 
+                         styleClass="rounded-button ui-button-flat mr-2" 
+                         action="#{objectBean.finderBean.viewPrevious}"
+                         process="@this"
+                         update=":mainform:context_panel :mainform:search_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasPrevious()}"
+                         title="Previous" alt="Previous" 
+                         />
+        <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}" 
+                      styleClass="align-self-center" />
+        <p:commandButton icon="ui-icon pi pi-step-forward" 
+                         styleClass="rounded-button ui-button-flat ml-2 mr-2" 
+                         action="#{objectBean.finderBean.viewNext}"
+                         process="@this"
+                         update=":mainform:context_panel :mainform:search_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasNext()}"
+                         title="Next" alt="Next" 
+                         />
+    </p:outputPanel>
     <div class="flex flex-grow-1 justify-content-start align-self-center">
       <h:outputText value="#{objectBean.objectId}" />
       <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
@@ -23,7 +46,7 @@
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.view('')}"
                          process="@this"
-                         update=":mainform:search_tabs"
+                         update=":mainform:context_panel :mainform:search_tabs"
                          resetValues="true"
                          title="#{objectBundle.create}" alt="#{objectBundle.create}" 
                          />

@@ -4,7 +4,8 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
     
-  <p:dataTable id="full_results_table" value="#{documentFinderBean.rows}" var="row"
+  <p:dataTable id="full_results_table" value="#{documentFinderBean.rows}" 
+               var="row" rowIndexVar="rowIndex"
                stripedRows="true" paginator="true" pageLinks="5" 
                paginatorPosition="bottom" size="small"
                rows="10" first="#{documentFinderBean.firstRow}"
@@ -22,7 +23,7 @@
     <p:column styleClass="w-1">
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat"  
-                       action="#{navigatorBean.view(row.getDocId())}"
+                       action="#{documentFinderBean.view(rowIndex)}"
                        process="@this"
                        onclick="PF('objectTabs').select(0);"
                        update=":mainform:search_tabs :mainform:context_panel"
