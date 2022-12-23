@@ -34,7 +34,7 @@
 -->
       <div class="field col-12 md:col-12">
         <p:outputLabel for="name" value="#{kernelBundle.person_name}" />        
-        <p:inputText id="name" value="#{personObjectBean.person.name}"   />
+        <p:inputText id="name" value="#{personObjectBean.person.name}" required="true" />
       </div>   
       
       <div class="field col-12 md:col-2 xl:col-2">
@@ -72,7 +72,7 @@
         <p:outputLabel for="birth_date" value="#{kernelBundle.person_birthDate}" />
         <p:datePicker id="birth_date" value="#{personObjectBean.person.birthDate}" locale="ca"
                       showIcon="true" converter="datePickerConverter" pattern="dd/MM/yyyy"
-                      monthNavigator="true" yearNavigator="true">
+                      monthNavigator="true" yearNavigator="true" focusOnSelect="false">
         </p:datePicker>
       </div> 
 
@@ -96,7 +96,7 @@
                            styleClass="ui-button-raised select-button" 
                            action="#{countryToStreetBacking.showCity(personObjectBean.citySelectItem.value)}"
                            alt="#{objectBundle.search}" title="#{objectBundle.search}"
-                           ajax="true" />     
+                            />     
         </div>
       </div>
 -->

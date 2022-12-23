@@ -68,7 +68,7 @@ public class PersonAddressesTabBean extends TabBean
   //Helpers
   private ResultListHelper<PersonAddressView> resultListHelper;
   
-  private int firstRow;  
+  private int firstRow;
   private PersonAddress editing;
   
   private SelectItem addressSelectItem;
@@ -82,7 +82,7 @@ public class PersonAddressesTabBean extends TabBean
   {
     resultListHelper = new PersonAddressResultListHelper();
   }
-  
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -405,13 +405,13 @@ public class PersonAddressesTabBean extends TabBean
     ResultListHelper<PersonAddressView>
   {
     @Override
-    public List<PersonAddressView> getResults(int maxResults)
+    public List<PersonAddressView> getResults(int firstResult, int maxResults)
     {
       try
       {
         PersonAddressFilter filter = new PersonAddressFilter();
         filter.setPersonId(personObjectBean.getObjectId());
-        filter.setFirstResult(firstRow);
+        filter.setFirstResult(firstResult);
         filter.setMaxResults(maxResults);
         return KernelConfigBean.getPort().findPersonAddressViews(filter);
       }
@@ -421,6 +421,8 @@ public class PersonAddressesTabBean extends TabBean
       }
       return null;
     }
+
+
   }
 
 }

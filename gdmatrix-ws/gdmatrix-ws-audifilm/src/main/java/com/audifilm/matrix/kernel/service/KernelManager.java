@@ -1695,7 +1695,7 @@ public class KernelManager implements KernelManagerPort
       provinceName = provinceName.toLowerCase();
     }
     query.setParameter("name", provinceName);
-    query.setFirstResult(1);
+    query.setFirstResult(0);
     query.setMaxResults(1);
 
     Number total = (Number)query.getSingleResult();
@@ -1835,7 +1835,7 @@ public class KernelManager implements KernelManagerPort
     query.setParameter("provinceId", provinceId);
     query.setParameter("name", cityName);
 
-    query.setFirstResult(1);
+    query.setFirstResult(0);
     query.setMaxResults(1);
 
     Number result = (Number)query.getSingleResult();
@@ -2000,7 +2000,7 @@ public class KernelManager implements KernelManagerPort
     StreetFilter filter =
       getEndpoint().toLocal(StreetFilter.class, globalFilter);
 
-    Query query = entityManager.createNamedQuery("findStreets");
+    Query query = entityManager.createNamedQuery("countStreets");
     String countryId = filter.getCountryId();
     String provinceId = filter.getProvinceId();
     if (provinceId != null)
@@ -2028,7 +2028,7 @@ public class KernelManager implements KernelManagerPort
     }
     query.setParameter("name", streetName);
 
-    query.setFirstResult(1);
+    query.setFirstResult(0);
     query.setMaxResults(1);
 
     Number result = (Number)query.getSingleResult();

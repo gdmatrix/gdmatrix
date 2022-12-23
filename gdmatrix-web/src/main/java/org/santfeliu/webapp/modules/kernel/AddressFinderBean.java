@@ -46,7 +46,6 @@ import org.matrix.kernel.KernelList;
 import org.matrix.pf.kernel.AddressBacking;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
-import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import org.santfeliu.webapp.ObjectBean;
@@ -61,7 +60,6 @@ public class AddressFinderBean extends FinderBean
 {
   private String smartFilter;  
   private AddressFilter filter = new AddressFilter();
-  private int firstRow;
   private BigListHelper<AddressView> resultListHelper;
   private boolean isSmartFind;  
   
@@ -77,7 +75,14 @@ public class AddressFinderBean extends FinderBean
   public void init()
   {
     resultListHelper = new AddressBigListHelper();
-    loadStreetTypeSelectItems();    
+    try
+    {
+      loadStreetTypeSelectItems();    
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
   
   public String getSmartFilter()
@@ -111,16 +116,6 @@ public class AddressFinderBean extends FinderBean
     if (addressIds != null && !addressIds.isEmpty())
       this.filter.getAddressIdList().addAll(addressIds);
   }  
-
-  public int getFirstRow()
-  {
-    return firstRow;
-  }
-
-  public void setFirstRow(int firstRow)
-  {
-    this.firstRow = firstRow;
-  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -166,7 +161,7 @@ public class AddressFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, firstRow };
+    return new Object[]{ isSmartFind, smartFilter, filter, resultListHelper.getFirstRowIndex() };
   }
 
   @Override
@@ -178,10 +173,9 @@ public class AddressFinderBean extends FinderBean
       isSmartFind = (Boolean)stateArray[0];
       smartFilter = (String)stateArray[1];
       filter = (AddressFilter)stateArray[2];
+      resultListHelper.setFirstRowIndex((Integer)stateArray[3]);      
 
       doFind(false);
-
-      firstRow = (Integer)stateArray[3];
     }
     catch (Exception ex)
     {
@@ -209,12 +203,11 @@ public class AddressFinderBean extends FinderBean
     }    
   }
   
-  private void loadStreetTypeSelectItems()
+  private void loadStreetTypeSelectItems() throws Exception
   {
     streetTypeSelectItems = FacesUtils.getListSelectItems(
-      KernelConfigBean.getPort().listKernelListItems(
-      KernelList.STREET_TYPE),
-      "itemId", "description", true);
+      KernelModuleBean.getPort(false).listKernelListItems(
+        KernelList.STREET_TYPE), "itemId", "description", true);
   }  
   
   private AddressFilter convert(String smartValue)
@@ -290,7 +283,7 @@ public class AddressFinderBean extends FinderBean
     {
       try
       {
-        return KernelConfigBean.getPort().countAddresses(filter);
+        return KernelModuleBean.getPort(false).countAddresses(filter);
       }
       catch (Exception ex)
       {
@@ -300,13 +293,13 @@ public class AddressFinderBean extends FinderBean
     }
 
     @Override
-    public List<AddressView> getResults(int maxResults)
+    public List<AddressView> getResults(int firstResult, int maxResults)
     {
       try
       {
-        filter.setFirstResult(firstRow);
+        filter.setFirstResult(firstResult);
         filter.setMaxResults(maxResults);
-        return KernelConfigBean.getPort().findAddressViews(filter);
+        return KernelModuleBean.getPort(false).findAddressViews(filter);
       }
       catch (Exception ex)
       {
@@ -314,6 +307,7 @@ public class AddressFinderBean extends FinderBean
       }
       return null;
     }
+       
   }
 
 }

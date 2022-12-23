@@ -38,16 +38,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Address;
-import org.matrix.kernel.AddressFilter;
 import org.matrix.kernel.AddressView;
 import org.santfeliu.faces.ManualScoped;
-import org.santfeliu.kernel.web.KernelConfigBean;
 
 import org.santfeliu.webapp.FinderBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
-import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -63,6 +60,12 @@ public class AddressObjectBean extends ObjectBean
   @Inject
   AddressFinderBean addressFinderBean;
   
+  @Inject
+  AddressTypeBean addressTypeBean;  
+  
+  @Inject
+  StreetTypeBean streetTypeBean;
+  
   public AddressObjectBean()
   {
   }
@@ -77,28 +80,29 @@ public class AddressObjectBean extends ObjectBean
     this.address = address;
   }
   
-  //TODO: AddressDescriptor
-  public String getDescription(String objectId)
+  @Override
+  public AddressTypeBean getTypeBean()
   {
-    try
-    {      
-      AddressFilter filter = new AddressFilter();
-      filter.getAddressIdList().add(objectId);      
-      List<AddressView> addressViews = 
-        KernelConfigBean.getPortAsAdmin().findAddressViews(filter);
-      if (!addressViews.isEmpty())
-      {
-        AddressView addressView = addressViews.get(0);
-        return getDescription(addressView);
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return objectId;
+    return addressTypeBean;
+  }  
+  
+  @Override
+  public Address getObject()
+  {
+    return isNew() ? null : address;
   }    
   
+  @Override
+  public String getDescription()
+  {
+    return isNew() ? "" : getDescription(address.getAddressId());
+  }  
+  
+  public String getDescription(String personId)
+  {
+    return getTypeBean().getDescription(personId);
+  }  
+    
   public String getDescription(AddressView address)
   {
     if (address == null) return "";
@@ -130,7 +134,7 @@ public class AddressObjectBean extends ObjectBean
     {
       try
       {
-        address = KernelConfigBean.getPort().loadAddress(objectId);
+        address = KernelModuleBean.getPort(false).loadAddress(objectId);
         String streetId = address.getStreetId();
         streetSelectItem = createStreetSelectItem(streetId);
       }
@@ -181,21 +185,13 @@ public class AddressObjectBean extends ObjectBean
 
   private SelectItem createStreetSelectItem(String streetId)
   {
-    String description = streetId;
-      
-    TerritoryObjectBean territoryObjectBean = 
-      WebUtils.getBean("territoryObjectBean");
-    if (address != null)
-      description = territoryObjectBean.getDescription(streetId); 
-
+    String description = streetTypeBean.getDescription(streetId);
     return new SelectItem(streetId, description);    
   }
   
   public List<SelectItem> completeStreet(String query)
   {
-    TerritoryObjectBean territoryObjectBean = 
-      WebUtils.getBean("territoryObjectBean");
-    return territoryObjectBean.completeStreet(query, address.getStreetId());
+    return streetTypeBean.completeStreet(query, address.getStreetId());
   }
 
   public void onStreetClear() 

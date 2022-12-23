@@ -7,7 +7,7 @@
   <p:dataTable id="full_results_table" value="#{personFinderBean.resultListHelper.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
-               first="#{personFinderBean.firstRow}"
+               first="#{personFinderBean.resultListHelper.firstRowIndex}"
                rows="#{personFinderBean.resultListHelper.pageSize}">
 
     <p:column headerText="Id." styleClass="w-1">
@@ -24,6 +24,8 @@
                        action="#{navigatorBean.view(row.getPersonId())}"
                        onclick="PF('objectTabs').select(0);"
                        oncomplete="PF('searchTabs').select(1);"
+                       resetValues="true"
+                       process="@this"
                        update="full_results_table :mainform:search_tabs:object_header :mainform:search_tabs:tabs :mainform:context_panel"
                        />     
     </p:column>      

@@ -1,0 +1,38 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui">
+    
+  <p:dataTable id="full_results_table" value="#{countryFinderBean.resultListHelper.rows}" var="row"
+               stripedRows="true" paginator="true" pageLinks="5" 
+               paginatorPosition="bottom" size="small"
+               rows="10" 
+               first="#{countryFinderBean.resultListHelper.firstRowIndex}"
+               rowStyleClass="#{row.countryId == documentObjectBean.objectId ? 'current' : ''}"
+               rendered="true">
+    <p:column headerText="Id" styleClass="w-1">
+      <h:outputText value="#{row.countryId}" />
+    </p:column>   
+    <p:column headerText="Nom" styleClass="w-7">
+      <h:outputText value="#{row.name}" />
+    </p:column> 
+    <p:column headerText="ISO code" styleClass="w-2">
+      <h:outputText value="#{row.getISOCode()}" />
+    </p:column> 
+    <p:column headerText="Idioma" styleClass="w-2">
+      <h:outputText value="#{row.language}" />
+    </p:column>     
+        
+    <p:column styleClass="w-1">
+      <p:commandButton icon="pi pi-external-link" styleClass="ui-button-raised" 
+                       action="#{navigatorBean.view(row.getCountryId())}"
+                       process="@this"
+                       onclick="PF('objectTabs').select(0);"
+                       update=":mainform:search_tabs :mainform:context_panel"
+                       />     
+    </p:column>
+  </p:dataTable>  
+
+</ui:composition> 
+

@@ -17,7 +17,7 @@
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom" 
                  rowIndexVar="firstRow"
-                 first="#{personAddressesTabBean.firstRow}"
+                 first="#{personAddressesTabBean.resultListHelper.firstRowIndex}"
                  rows="#{personAddressesTabBean.resultListHelper.pageSize}"
                  multiViewState="true"                   
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -31,19 +31,19 @@
           </div>          
           <div class="flex flex-row-reverse w-3">    
             <div class="m-1">
-              <p:menuButton icon="pi pi-file-excel text-xl" styleClass="ui-menu-button ui-button-flat"
+              <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
                             rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}" >
-                <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf text-xl" styleClass="m-1 ui-button-flat" ajax="false"
+                <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
                             rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
                   <p:dataExporter type="pdf" target="page_results_table" fileName="results" pageOnly="true"/>
                 </p:menuitem>
-                <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel text-xl" styleClass="m-1 ui-button-flat" ajax="false"
+                <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
                             rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
                   <p:dataExporter type="csv" target="page_results_table" fileName="results" pageOnly="true" />
                 </p:menuitem> 
               </p:menuButton>  
-              <p:commandButton icon="pi pi-plus-circle text-xl" styleClass="ui-button-flat" 
-                               action="#{personAddressesTabBean.create}" ajax="true"                                 
+              <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
+                               action="#{personAddressesTabBean.create}"                                  
                                update="@root:@id(edit_panels)"
                                oncomplete="PF('editDataDialog').show()"                                  
                                alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
@@ -61,16 +61,16 @@
       </p:column>
       <p:column styleClass="w-2 text-right" exportable="false">
         <h:panelGroup>
-          <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat"  
+          <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 
                            immediate="true" ajax="false" 
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"/>  
           <p:commandButton action="#{personAddressesTabBean.remove(row)}"
-                           ajax="true" update="page_results_table :mainform:growl"
+                           update="page_results_table :mainform:growl"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.personAddressId != null}"
-                           styleClass="m-1 rounded-button ui-button-flat"
+                           styleClass="m-1"
                            onclick="return confirm('#{objectBundle.confirm_remove}');"/>            
         </h:panelGroup>          
       </p:column> 

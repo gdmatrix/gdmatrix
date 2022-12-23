@@ -35,6 +35,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.PersonFilter;
 import org.matrix.kernel.PersonView;
 import org.santfeliu.faces.ManualScoped;
@@ -53,15 +54,11 @@ public class PersonFinderBean extends FinderBean
 {
   private String smartFilter;  
   private PersonFilter filter = new PersonFilter();
-  private int firstRow;
   private BigListHelper<PersonView> resultListHelper;
   private boolean isSmartFind;  
   
   @Inject
   NavigatorBean navigatorBean;
-  
-  @Inject
-  PersonTypeBean personTypeBean;  
   
   @Inject
   PersonObjectBean personObjectBean;
@@ -104,16 +101,6 @@ public class PersonFinderBean extends FinderBean
       this.filter.getPersonId().addAll(personIds);
   }  
 
-  public int getFirstRow()
-  {
-    return firstRow;
-  }
-
-  public void setFirstRow(int firstRow)
-  {
-    this.firstRow = firstRow;
-  }
-
   @Override
   public ObjectBean getObjectBean()
   {
@@ -128,9 +115,8 @@ public class PersonFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    isSmartFind = true;
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter = personTypeBean.queryToFilter(smartFilter, baseTypeId);
+    isSmartFind = true;    
+    filter = convert(smartFilter);
     doFind(true);
   }
   
@@ -144,7 +130,7 @@ public class PersonFinderBean extends FinderBean
   public void find()
   {
     isSmartFind = false;    
-    smartFilter = personTypeBean.filterToQuery(filter);    
+    smartFilter = convert(filter);
     doFind(true);
   }
 
@@ -159,7 +145,7 @@ public class PersonFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, filter, firstRow };
+    return new Object[]{ isSmartFind, smartFilter, filter, resultListHelper.getFirstRowIndex() };
   }
 
   @Override
@@ -169,11 +155,12 @@ public class PersonFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       isSmartFind = (Boolean)stateArray[0];
-      filter = (PersonFilter)stateArray[1];
-
+      smartFilter = (String)stateArray[1];
+      filter = (PersonFilter)stateArray[2];
+      
       doFind(false);
 
-      firstRow = (Integer)stateArray[2];
+      resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
     }
     catch (Exception ex)
     {
@@ -200,7 +187,35 @@ public class PersonFinderBean extends FinderBean
       }
     }    
   }
+  
+  private PersonFilter convert(String smartValue)
+  {
+    filter = new PersonFilter();
+    if (smartValue != null)
+    {
+      if (smartValue.matches("\\d+"))
+        filter.getPersonId().add(smartValue);
+      else if (smartValue.matches("(\\d+\\D+|\\D+\\d+)"))
+        filter.setNif(smartValue);
+      else
+        filter.setFullName(smartValue);
+    }  
+    return filter;
+  }
+    
+  private String convert(PersonFilter filter)
+  {
+    String value = null;
+    if (!filter.getPersonId().isEmpty())
+      value = filter.getPersonId().get(0);
+    else if (!StringUtils.isBlank(filter.getNif()))
+      value = filter.getNif();
+    else if (!StringUtils.isBlank(filter.getFullName()))
+      value = filter.getFullName();
 
+    return value;
+  }
+  
   private class PersonBigListHelper extends BigListHelper<PersonView>
   {
     @Override
@@ -218,11 +233,11 @@ public class PersonFinderBean extends FinderBean
     }
 
     @Override
-    public List<PersonView> getResults(int maxResults)
+    public List<PersonView> getResults(int firstResult, int maxResults)
     {
       try
       {
-        filter.setFirstResult(firstRow);
+        filter.setFirstResult(firstResult);
         filter.setMaxResults(maxResults);
         return KernelConfigBean.getPort().findPersonViews(filter);
       }

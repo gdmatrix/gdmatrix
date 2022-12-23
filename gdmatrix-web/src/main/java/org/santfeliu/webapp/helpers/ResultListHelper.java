@@ -71,6 +71,7 @@ public abstract class ResultListHelper<T extends Serializable>
   
   //Rows
   protected List<T> rows;
+  protected int firstRowIndex;  
   
   //Columns
   protected List<ColumnModel> columns;
@@ -79,7 +80,7 @@ public abstract class ResultListHelper<T extends Serializable>
   {
   }
   
-  public abstract List<T> getResults(int maxResults);
+  public abstract List<T> getResults(int firstResult, int maxResults);
   
   /**
    * @return List of POJO objects
@@ -87,7 +88,15 @@ public abstract class ResultListHelper<T extends Serializable>
   public List<T> getRows()
   {
     return rows;
-  } 
+  }
+  
+  public T getRow(int i)
+  {
+    if (rows != null && !rows.isEmpty())
+      return rows.get(0);
+    else
+      return null;
+  }
 
   public String getBaseTypeId()
   {
@@ -123,20 +132,42 @@ public abstract class ResultListHelper<T extends Serializable>
      
   public void find()
   {
+    firstRowIndex = 0; // reset index    
     createDynamicColumns();     
     populate(); // force rows population 
   }    
   
   public void clear()
   {
+    firstRowIndex = 0;
     rows = null;
     columns = null;
   }  
           
   protected void populate()
   {
-    rows = getResults(getMaxSize());
+    rows = getResults(firstRowIndex, getMaxSize());
   }
+  
+  public int getFirstRowIndex()
+  {
+    int size = getRowCount();
+    if (size == 0)
+    {
+      firstRowIndex = 0;
+    }
+    else if (firstRowIndex >= size)
+    {
+      int pageSize = getPageSize();
+      firstRowIndex = pageSize * ((size - 1) / pageSize);
+    }
+    return firstRowIndex;
+  }  
+  
+  public void setFirstRowIndex(int firstRowIndex)
+  {
+    this.firstRowIndex = firstRowIndex;
+  }   
     
   public int getRowCount()
   {

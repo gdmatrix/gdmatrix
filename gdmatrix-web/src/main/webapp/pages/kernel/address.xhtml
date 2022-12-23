@@ -22,16 +22,18 @@
 
           <div class="buttons text-right">
             <p:commandButton value="Clear"
-                             ajax="true"
                              action="#{addressFinderBean.smartClear}"
                              styleClass="ui-button-raised m-1"
+                             resetValues="true"
+                             process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:full_results_table"/>
             <p:commandButton id="smart_search_button"
                              value="Search"
                              action="#{addressFinderBean.smartFind}"
-                             ajax="true"
                              update=":mainform:search_tabs"
+                             process=":mainform:find_selector"
                              styleClass="ui-button-raised m-1"
+                             resetValues="true"
                              oncomplete="endPanel('leftPanel');"/>
           </div>          
         </p:tab>  
@@ -106,14 +108,14 @@
 
           <div class="text-right">
             <p:commandButton value="Clear"
-                             ajax="true"
                              action="#{addressFinderBean.clear}"
+                             process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
                              />
             <p:commandButton id="advanced_search_button"
                              value="Search"
                              action="#{addressFinderBean.find}"
-                             ajax="true"
+                             process=":mainform:find_selector"
                              update=":mainform:search_tabs"
                              styleClass="ui-button-raised m-1"
                              oncomplete="endPanel('leftPanel');"

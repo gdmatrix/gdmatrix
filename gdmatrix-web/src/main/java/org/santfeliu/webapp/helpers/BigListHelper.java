@@ -37,14 +37,15 @@ import org.santfeliu.util.BigList;
 /**
  *
  * @author blanquepa
+ * @param <T>
  */
 public abstract class BigListHelper<T extends Serializable> 
   extends ResultListHelper implements Serializable
 {
   public static final int CACHE_SIZE = 15;  
-    
+  
   public abstract int countResults(); 
-    
+  
   public int getCacheSize()
   {
     if (getPageSize() != PAGE_SIZE)
@@ -52,12 +53,6 @@ public abstract class BigListHelper<T extends Serializable>
     else
       return CACHE_SIZE;
   } 
-
-  @Override
-  public int getRowCount()
-  {
-    return rows == null ? 0 : rows.size();
-  }  
 
   @Override
   protected void populate()
@@ -81,7 +76,7 @@ public abstract class BigListHelper<T extends Serializable>
         @Override
         public List getElements(int firstResult, int maxResults)
         {
-          return getResults(maxResults);
+          return getResults(firstResult, maxResults);
         }
       };
     }
