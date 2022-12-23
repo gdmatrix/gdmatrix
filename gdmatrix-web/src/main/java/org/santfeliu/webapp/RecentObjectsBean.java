@@ -49,14 +49,14 @@ import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 public class RecentObjectsBean
 {
   private TreeNode treeNode;
-  private int updateSeed = -1;
+  private int updateCount = -1;
 
   @Inject
   NavigatorBean navigatorBean;
 
   public TreeNode getTreeNode()
   {
-    if (navigatorBean.getUpdateSeed() != updateSeed)
+    if (navigatorBean.getUpdateCount() != updateCount)
     {
       treeNode = null;
     }
@@ -106,7 +106,7 @@ public class RecentObjectsBean
           typeNode.setExpanded(baseTypeInfo.isFeatured());
         }
       }
-      updateSeed = navigatorBean.getUpdateSeed();
+      updateCount = navigatorBean.getUpdateCount();
     }
     return treeNode;
   }

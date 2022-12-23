@@ -148,6 +148,11 @@ public abstract class ObjectBean extends BaseBean
     searchTabView.setActiveIndex(searchTabIndex);
   }
 
+  public int getEditionTabIndex()
+  {
+    return 1;
+  }
+
   public List<Tab> getTabs()
   {
     return tabs;

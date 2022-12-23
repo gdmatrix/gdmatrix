@@ -13,7 +13,11 @@
       <p:tabView id="find_selector" 
                  activeIndex="#{documentFinderBean.tabIndex}">
  
-        <p:tab title="Ràpida" id="smart_search">
+        <p:tab id="smart_search">
+          <f:facet name="title">
+            <span class="pi pi-bolt mr-2"/> 
+            <h:outputText value="Ràpida" /> 
+          </f:facet>          
           <p:defaultCommand target="smart_search_button" scope="smart_search" />    
 
           <p:outputPanel styleClass="field">
@@ -41,7 +45,11 @@
           </div>              
         </p:tab>
 
-        <p:tab title="Avançada" id="advanced_search"> 
+        <p:tab id="advanced_search"> 
+          <f:facet name="title">
+            <span class="pi pi-cog mr-2"/> 
+            <h:outputText value="Avançada" /> 
+          </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
           <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle" 
                         var="docBundle" />

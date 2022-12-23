@@ -75,7 +75,7 @@ public class NavigatorBean extends WebBean implements Serializable
   private String lastBaseTypeId;
   private final Map<String, BaseTypeInfo> baseTypeInfoMap = new HashMap<>();
   private final History history = new History();
-  private int updateSeed;
+  private int updateCount;
   private int tabIndex;
 
   public BaseTypeInfo getBaseTypeInfo()
@@ -104,9 +104,9 @@ public class NavigatorBean extends WebBean implements Serializable
     return new ArrayList<>(baseTypeInfoMap.keySet());
   }
 
-  public int getUpdateSeed()
+  public int getUpdateCount()
   {
-    return updateSeed;
+    return updateCount;
   }
 
   public int getTabIndex()
@@ -208,7 +208,7 @@ public class NavigatorBean extends WebBean implements Serializable
 
     if (returnExpression == null)
     {
-      objectBean.setSearchTabIndex(1);
+      objectBean.setSearchTabIndex(objectBean.getEditionTabIndex());
     }
     else
     {
@@ -292,7 +292,7 @@ public class NavigatorBean extends WebBean implements Serializable
     baseTypeInfo.visit(objectId);
 
     objectBean.setObjectId(objectId);
-    objectBean.setSearchTabIndex(1);
+    objectBean.setSearchTabIndex(objectBean.getEditionTabIndex());
     objectBean.setTabIndex(tabIndex);
     objectBean.load();
 
@@ -431,7 +431,7 @@ public class NavigatorBean extends WebBean implements Serializable
       {
         recentObjectIdList.remove(recentObjectIdList.size() - 1);
       }
-      updateSeed++;
+      updateCount++;
     }
 
     public boolean isFeatured()
@@ -488,6 +488,7 @@ public class NavigatorBean extends WebBean implements Serializable
       try
       {
         userPreferences.storePreference(baseTypeId, objectId);
+        updateCount++;
       }
       catch (Exception ex)
       {
@@ -506,6 +507,7 @@ public class NavigatorBean extends WebBean implements Serializable
       try
       {
         userPreferences.removePreference(baseTypeId, objectId);
+        updateCount++;
       }
       catch (Exception ex)
       {

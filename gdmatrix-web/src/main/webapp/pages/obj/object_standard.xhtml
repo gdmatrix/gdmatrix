@@ -31,14 +31,14 @@
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
                          rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
-                         update="object_header" 
+                         update="object_header :mainform:context_panel" 
                          title="Mark" alt="Mark" 
                          />
         <p:commandButton icon="ui-icon pi pi-star-fill" 
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
                          rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
-                         update="object_header" 
+                         update="object_header :mainform:context_panel" 
                          title="Unmark" alt="Unmark" 
                          />
         <p:commandButton icon="ui-icon pi pi-trash" 

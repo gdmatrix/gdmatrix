@@ -161,6 +161,27 @@
         margin-right: 6px;
         color: black;
       }
+      
+      .favorites
+      {
+        margin-top: 10px;
+      }
+
+      .favorites .favorite
+      {
+        padding: 5px;
+      }
+
+      .favorites .favorite .current
+      {
+        font-weight: bold;
+      }
+      
+      .favorites .favorite .pi
+      {
+        margin-right: 6px;
+        color: black;
+      }      
             
     </style>
 
@@ -274,6 +295,29 @@
                   </p:repeat>
                 </div>
               </p:tab>
+              <p:tab id="favorites">
+                <f:facet name="title">
+                  <span class="pi pi-star-fill mr-2"/> 
+                  <h:outputText value="Favorits" /> 
+                </f:facet>
+                <div class="favorites">
+                  <p:repeat value="#{favoriteObjectsBean.favoriteObjects}" 
+                            var="favorite">
+                    <div class="favorite">
+                      <p:commandLink action="#{navigatorBean.view(favorite.objectId)}"
+                                     process="@this" 
+                                     resetValues="true"
+                                     oncomplete="endPanel('rightPanel');"
+                                     update=":mainform:central_column :mainform:context_panel">
+                        <span class="#{favoriteObjectsBean.icon}" />
+                        <h:outputText value="#{favorite.description}" 
+                                      styleClass="#{favoriteObjectsBean.isSelectedObject(favorite) ? 'current' : ''}"/> 
+                      </p:commandLink>
+                    </div>
+                  </p:repeat>
+                </div>
+              </p:tab>
+
             </p:tabView>
           </p:outputPanel>
         </p:panel>
