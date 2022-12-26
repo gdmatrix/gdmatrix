@@ -194,7 +194,8 @@ public class CaseObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    CasesModuleBean.getPort(false).storeCase(cas);
+    cas = CasesModuleBean.getPort(false).storeCase(cas);
+    setObjectId(cas.getCaseId());
   }
 
   @Override

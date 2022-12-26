@@ -9,58 +9,104 @@
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                   var="caseBundle" />
         
-    <div class="ui-fluid formgrid grid">   
-
-      <p:outputPanel styleClass="field col-12 md:col-12" 
-                     rendered="true">
-        <p:outputLabel for="version" value="Version" />
-        <p:selectOneMenu id="version" 
-                         dynamic="true"
-                         value="#{documentContentTabBean.version}" 
-                         class="inputfield w-full">
-           <f:selectItem itemLabel="#{documentContentTabBean.version}" itemValue="0"/>
-        </p:selectOneMenu>
-      </p:outputPanel> 
+    <style>
+        body ui-fileupload.ui-fileupload-withdropzone.ui-state-drag 
+        {
+          background: #ffffd6 !important;
+        }
+    </style>
+    
+    <h:panelGroup id="content_properties" styleClass="ui-fluid formgrid grid">   
       
-      <p:outputPanel styleClass="field col-12 md:col-6" 
-                     rendered="true">
-        <p:outputLabel for="contentId" value="ContentId" />
-        <p:inputText id="contentId" 
-                     value="#{documentContentTabBean.content.contentId}" 
-                     readonly="true"
-                     class="inputfield w-full"/>
-      </p:outputPanel> 
-
-      <p:outputPanel styleClass="field col-12 md:col-6" 
-                     rendered="true">
-        <p:outputLabel for="contentType" value="ContentType" />
-        <p:inputText id="contentType" 
-                     value="#{documentContentTabBean.content.contentType}" 
-                     readonly="true"                     
-                     class="inputfield w-full"/>
-      </p:outputPanel>
-
-      <p:outputPanel styleClass="field col-12 md:col-6" 
-                     rendered="true">
-        <p:outputLabel for="contentSize" value="Content size" />
-        <p:inputText id="contentSize" 
-                     value="#{documentContentTabBean.contentSize}" 
-                     readonly="true"
-                     class="inputfield w-full"/>
+      <p:outputPanel styleClass="w-full m-0 flex justify-content-end">
+        <p:commandLink value="#{documentObjectBean.versionLabel}" 
+                       process="@this"
+                       action="#{documentObjectBean.loadVersions}"
+                       update=":mainform:versions_panel"
+                       oncomplete="PF('versionsPanel').show()"/>
       </p:outputPanel>
       
-      <p:outputPanel styleClass="field col-12 md:col-6" 
-                     rendered="true">
-        <p:outputLabel for="contentStorageType" value="Storage type" />
-        <p:inputText id="contentStorageType" 
-                     value="#{documentContentTabBean.contentStorageType}" 
-                     readonly="true"
-                     class="inputfield w-full"/>
-      </p:outputPanel>
+      <h:panelGroup rendered="#{not documentObjectBean.isNew() and documentObjectBean.fileToStore == null}">
 
+        <p:outputPanel styleClass="field col-12 md:col-6" 
+                       rendered="true">
+          <p:outputLabel for="@next" value="ContentId" />
+          <p:inputText value="#{documentObjectBean.content.contentId}" 
+                       readonly="true"
+                       class="inputfield w-full"/>
+        </p:outputPanel> 
 
+        <p:outputPanel styleClass="field col-12 md:col-6" 
+                       rendered="true">
+          <p:outputLabel for="@next" value="ContentType" />
+          <p:inputText value="#{documentObjectBean.content.contentType}" 
+                       readonly="true"                     
+                       class="inputfield w-full"/>
+        </p:outputPanel>
+
+        <p:outputPanel styleClass="field col-12 md:col-6" 
+                       rendered="true">
+          <p:outputLabel for="@next" value="Storage type" />
+          <p:inputText value="#{documentObjectBean.contentStorageType}" 
+                       readonly="true"
+                       class="inputfield w-full"/>
+        </p:outputPanel>
+
+        <p:outputPanel styleClass="field col-12 md:col-6" 
+                       rendered="#{documentObjectBean.contentStorageType != 'EXTERNAL'}">
+          <p:outputLabel for="@next" value="Content size" />
+          <p:inputText value="#{documentObjectBean.contentSize}" 
+                       readonly="true"
+                       class="inputfield w-full"/>
+        </p:outputPanel>
+
+        <p:outputPanel styleClass="field col-12 md:col-6" 
+                       rendered="#{documentObjectBean.contentStorageType == 'EXTERNAL'}">
+          <p:outputLabel for="@next" value="External URL" />
+          <p:inputText value="#{documentObjectBean.content.url}" 
+                       readonly="true"
+                       class="inputfield w-full"/>
+        </p:outputPanel>
+
+      </h:panelGroup>
+
+      <h:panelGroup rendered="#{documentObjectBean.fileToStore != null}">
+        <h:outputText value="File to save: #{documentObjectBean.fileNameToStore} size: #{documentObjectBean.fileToStore.length()}" />
+      </h:panelGroup>
       
-      
-    </div>
+      <p:tabView id="new_content" 
+                 styleClass="w-full">
+        <p:tab title="File">
+          <p:fileUpload id="file_upload"
+                        listener="#{documentObjectBean.handleFileUpload}"
+                        mode="simple"
+                        label="Choose file"
+                        chooseButtonTitle="Choose file"
+                        widgetVar="uploadDnd"
+                        update="@root:@id(content_properties)"
+                        sizeLimit="100000000" 
+                        dropZone="file_upload">
+          </p:fileUpload>
+        </p:tab>
+
+        <p:tab title="URL">
+          <p:outputPanel styleClass="field col-12 md:col-12">
+            <p:outputLabel for="@next" value="External URL" />
+            <p:inputText value="#{documentObjectBean.urlToStore}" 
+                         class="inputfield w-full"/>
+          </p:outputPanel>
+        </p:tab>
+        
+        <p:tab title="ContentId">          
+          <p:outputPanel styleClass="field col-12 md:col-12">
+            <p:outputLabel for="@next" value="ContentId" />
+            <p:inputText value="#{documentObjectBean.contentIdToStore}" 
+                         class="inputfield w-full"/>
+          </p:outputPanel>
+        </p:tab>
+        
+      </p:tabView>
+            
+    </h:panelGroup>
 
 </ui:composition>

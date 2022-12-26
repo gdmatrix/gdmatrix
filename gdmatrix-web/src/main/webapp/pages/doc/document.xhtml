@@ -107,13 +107,40 @@
 
       <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
              id="object_form">
-
+        
         <ui:param name="objectBean" value="#{documentObjectBean}" />
         <ui:include src="/pages/obj/object_standard.xhtml" />
         
       </p:tab>
     </p:tabView>
-
+    
+    <p:dialog id="versions_panel"
+              widgetVar="versionsPanel" 
+              modal="true"
+              header="Document #{documentObjectBean.objectId} versions"
+              closeOnEscape="true"  
+              style="max-width: 90%;max-height: 90%;" minWidth="300">
+      <p:repeat value="#{documentObjectBean.versions}" var="docVersion">
+        <div>
+          <p:commandLink value="#{docVersion.version}: #{docVersion.title} - #{docVersion.creationDate}" 
+                         action="#{documentObjectBean.loadVersion(docVersion.version)}" 
+                         process="@this"
+                         update=":mainform:search_tabs"
+                         oncomplete="PF('versionsPanel').hide()"
+                         />
+        </div>
+      </p:repeat>
+      <f:facet name="footer">
+        <p:commandButton value="New version" 
+                         action="#{documentObjectBean.newVersion}" 
+                         process="@this"
+                         update=":mainform:search_tabs"
+                         rendered="#{not documentObjectBean.isNew()}"
+                         oncomplete="PF('versionsPanel').hide()"                       
+                         /> 
+      </f:facet>
+    </p:dialog>
+    
   </ui:define>
 
 </ui:composition>

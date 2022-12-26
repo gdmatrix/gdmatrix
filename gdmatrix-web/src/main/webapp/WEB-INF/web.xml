@@ -32,14 +32,6 @@
     <param-value>true</param-value>
   </context-param>
   <context-param>
-    <param-name>primefaces.THEME</param-name>
-    <param-value>#{userSessionBean.primefacesTheme}</param-value>
-  </context-param>
-  <context-param>
-    <param-name>primefaces.TOUCHABLE</param-name>
-    <param-value>false</param-value>
-  </context-param>
-  <context-param>
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
     <param-value>client</param-value>
   </context-param>
@@ -55,6 +47,19 @@
     <param-name>com.sun.faces.expressionFactory</param-name>
     <param-value>com.sun.el.ExpressionFactoryImpl</param-value>
   </context-param>
+  <context-param>
+    <param-name>primefaces.THEME</param-name>
+    <param-value>#{userSessionBean.primefacesTheme}</param-value>
+  </context-param>
+  <context-param>
+    <param-name>primefaces.TOUCHABLE</param-name>
+    <param-value>false</param-value>
+  </context-param>
+  <context-param>
+    <param-name>primefaces.UPLOADER</param-name>
+    <param-value>native</param-value>
+  </context-param>
+
   <!-- ********** Web parameters  ********** -->
   <context-param>
     <param-name>javax.faces.CONFIG_FILES</param-name>
@@ -1010,19 +1015,9 @@
       <param-value>100k</param-value>
     </init-param>
   </filter>
-  <!--    
-      <filter-mapping>
-          <filter-name>ExtensionsFilter</filter-name>
-          <servlet-name>FacesServlet</servlet-name>
-      </filter-mapping>
-  -->
   <filter-mapping>
     <filter-name>ExtensionsFilter</filter-name>
-    <url-pattern>*.faces</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>ExtensionsFilter</filter-name>
-    <url-pattern>/faces/*</url-pattern>
+    <url-pattern>/common/*</url-pattern>
   </filter-mapping>
 
   <session-config>

@@ -7,10 +7,18 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
-                  var="documentBundle" />
-        
+                  var="documentBundle" />    
+    
     <div class="ui-fluid formgrid grid">   
 
+      <p:outputPanel styleClass="w-full m-0 flex justify-content-end">
+        <p:commandLink value="#{documentObjectBean.versionLabel}" 
+                       process="@this"
+                       action="#{documentObjectBean.loadVersions}"
+                       update=":mainform:versions_panel"
+                       oncomplete="PF('versionsPanel').show()"/>
+      </p:outputPanel>
+      
       <p:outputPanel styleClass="field col-12 md:col-12" 
                      rendered="true">
         <p:outputLabel for="title" value="Title" />

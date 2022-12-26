@@ -235,6 +235,10 @@ public abstract class ObjectBean extends BaseBean
       storeTabs();
 
       Object object = getObject();
+
+      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+      navigatorBean.getBaseTypeInfo().visit(objectId);
+
       TypeBean typeBean = getTypeBean();
       if (typeBean != null)
       {
