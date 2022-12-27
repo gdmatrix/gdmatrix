@@ -2028,9 +2028,6 @@ public class KernelManager implements KernelManagerPort
     }
     query.setParameter("name", streetName);
 
-    query.setFirstResult(0);
-    query.setMaxResults(1);
-
     Number result = (Number)query.getSingleResult();
     return result.intValue();
   }

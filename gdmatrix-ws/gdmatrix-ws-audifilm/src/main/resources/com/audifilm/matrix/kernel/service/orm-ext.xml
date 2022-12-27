@@ -182,7 +182,6 @@
         SELECT count(c)
         FROM DBCountry c
         WHERE (:name IS NULL OR lower(c.name) LIKE :name)
-        ORDER BY c.name
     </query>
   </named-query>
 
@@ -202,7 +201,6 @@
         FROM DBProvince p
         WHERE (:countryId IS NULL OR p.countryId = :countryId) AND
           (:name IS NULL OR lower(p.name) LIKE :name)
-        ORDER BY p.name
     </query>
   </named-query>
 
@@ -223,30 +221,30 @@
         WHERE (:countryId IS NULL OR c.countryId = :countryId) AND
           (:provinceId IS NULL OR c.provinceId = :provinceId) AND
           (:name IS NULL OR lower(c.name) LIKE :name)
-        ORDER BY c.name
     </query>
   </named-query>
 
   <named-query name="findStreets">
     <query>
-        SELECT s from DBStreet s JOIN FETCH s.streetType
+        SELECT s 
+        FROM DBStreet s JOIN FETCH s.streetType
         WHERE (:countryId IS NULL OR s.countryId = :countryId) AND
           (:provinceId IS NULL OR s.provinceId = :provinceId) AND
           (:cityId IS NULL OR s.cityId = :cityId) AND
           (:name IS NULL OR lower(s.name) LIKE :name)
-        ORDER BY s.name
+        ORDER BY s.name, s.countryId, s.provinceId, s.cityId, s.streetId
     </query>
   </named-query>
 
   <named-query name="countStreets">
     <query>
-        SELECT count(s)
-        FROM DBStreet s
-        WHERE (:countryId IS NULL OR s.countryId = :countryId) AND
+        SELECT count(s) 
+        FROM DBStreet s, DBStreetType t
+        WHERE (s.streetTypeId = t.streetTypeId) AND 
+          (:countryId IS NULL OR s.countryId = :countryId) AND
           (:provinceId IS NULL OR s.provinceId = :provinceId) AND
           (:cityId IS NULL OR s.cityId = :cityId) AND
           (:name IS NULL OR lower(s.name) LIKE :name)
-        ORDER BY s.name
     </query>
   </named-query>
   
