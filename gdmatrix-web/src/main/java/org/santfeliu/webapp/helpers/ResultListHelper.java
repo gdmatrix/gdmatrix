@@ -92,10 +92,7 @@ public abstract class ResultListHelper<T extends Serializable>
   
   public T getRow(int i)
   {
-    if (rows != null && !rows.isEmpty())
-      return rows.get(0);
-    else
-      return null;
+    return rows.get(i);
   }
 
   public String getBaseTypeId()
