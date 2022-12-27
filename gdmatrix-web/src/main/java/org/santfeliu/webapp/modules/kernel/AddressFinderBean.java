@@ -48,6 +48,7 @@ import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.BigListHelper;
 /**
@@ -104,7 +105,7 @@ public class AddressFinderBean extends FinderBean
   {
     this.filter = filter;
   }
-  
+    
   public List<String> getFilterAddressId()
   {
     return this.filter.getAddressIdList();
@@ -115,6 +116,20 @@ public class AddressFinderBean extends FinderBean
     this.filter.getAddressIdList().clear();
     if (addressIds != null && !addressIds.isEmpty())
       this.filter.getAddressIdList().addAll(addressIds);
+  }  
+  
+  @Override
+  public String getObjectId(int position)
+  {
+    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
+      resultListHelper.getRow(position).getAddressId();
+  }
+
+  @Override
+  public int getObjectCount()
+  {
+    return resultListHelper.getRows() == null ? 0 : 
+      resultListHelper.getRowCount();
   }  
 
   @Override
@@ -161,7 +176,8 @@ public class AddressFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, resultListHelper.getFirstRowIndex() };
+    return new Object[]{ isSmartFind, smartFilter, filter, 
+      resultListHelper.getFirstRowIndex(), getObjectPosition() };
   }
 
   @Override
@@ -173,7 +189,8 @@ public class AddressFinderBean extends FinderBean
       isSmartFind = (Boolean)stateArray[0];
       smartFilter = (String)stateArray[1];
       filter = (AddressFilter)stateArray[2];
-      resultListHelper.setFirstRowIndex((Integer)stateArray[3]);      
+      resultListHelper.setFirstRowIndex((Integer)stateArray[3]); 
+      setObjectPosition((Integer)stateArray[4]);
 
       doFind(false);
     }

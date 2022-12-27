@@ -10,6 +10,7 @@
                rows="10" 
                first="#{countryFinderBean.resultListHelper.firstRowIndex}"
                rowStyleClass="#{row.countryId == documentObjectBean.objectId ? 'current' : ''}"
+               rowIndexVar="rowIndex"
                rendered="true">
     <p:column headerText="Id" styleClass="w-1">
       <h:outputText value="#{row.countryId}" />
@@ -25,8 +26,8 @@
     </p:column>     
         
     <p:column styleClass="w-1">
-      <p:commandButton icon="pi pi-external-link" styleClass="ui-button-raised" 
-                       action="#{navigatorBean.view(row.getCountryId())}"
+      <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
+                       action="#{countryFinderBean.view(rowIndex)}"
                        process="@this"
                        onclick="PF('objectTabs').select(0);"
                        update=":mainform:search_tabs :mainform:context_panel"

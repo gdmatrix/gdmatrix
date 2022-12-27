@@ -8,7 +8,8 @@
                stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{streetFinderBean.resultListHelper.firstRowIndex}"
-               rows="10">          
+               rows="#{streetFinderBean.resultListHelper.pageSize}"
+               rowIndexVar="rowIndex">          
     <p:column headerText="Id" styleClass="w-1">
       <h:outputText value="#{row.streetId}" />
     </p:column>          
@@ -19,8 +20,8 @@
       <h:outputText value="#{row.city}" />
     </p:column>  
     <p:column styleClass="w-1">
-      <p:commandButton icon="pi pi-external-link" styleClass="ui-button-raised" 
-                       action="#{navigatorBean.view(row.getStreetId())}"
+      <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
+                       action="#{streetFinderBean.view(rowIndex)}"
                        resetValues="true"
                        process="@this"
                        onclick="PF('objectTabs').select(0);"

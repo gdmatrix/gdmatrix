@@ -43,7 +43,7 @@ import org.matrix.kernel.Street;
 import org.matrix.kernel.StreetFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
-import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.NavigatorBean;
 
 /**
  *
@@ -137,12 +137,14 @@ public class StreetObjectBean extends TerritoryObjectBean
   public void createObject()
   {
     street = new Street();
+    setObjectId(NavigatorBean.NEW_OBJECT_ID);
+    street.setCityId(cityObjectBean.getCity().getCityId());
   } 
   
   @Override
   public void loadObject() throws Exception
   {
-    if (!NEW_OBJECT_ID.equals(objectId))
+    if (objectId != null && !isNew())
     {
       KernelManagerPort port = KernelModuleBean.getPort(false);
       street = port.loadStreet(objectId);
@@ -163,7 +165,10 @@ public class StreetObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    KernelModuleBean.getPort(false).storeStreet(street);
+    if (!street.getCityId().equals(cityObjectBean.getObjectId()))
+      street.setCityId(cityObjectBean.getObjectId());     
+    street = KernelModuleBean.getPort(false).storeStreet(street);
+    setObjectId(street.getStreetId());
     editing = false; 
     streetSelectItems = null;
   }     

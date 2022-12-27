@@ -40,7 +40,7 @@ import org.santfeliu.util.BigList;
  * @param <T>
  */
 public abstract class BigListHelper<T extends Serializable> 
-  extends ResultListHelper implements Serializable
+  extends ResultListHelper<T> implements Serializable
 {
   public static final int CACHE_SIZE = 15;  
   

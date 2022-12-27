@@ -11,6 +11,29 @@
                 var="objectBundle" />    
   
   <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
+    <p:outputPanel class="flex flex-grow-0 justify-content-start align-self-center"
+                   rendered="#{objectBean.finderBean.isScrollEnabled()}">
+        <p:commandButton icon="ui-icon pi pi-step-backward" 
+                         styleClass="rounded-button ui-button-flat mr-2" 
+                         action="#{objectBean.finderBean.viewPrevious}"
+                         process="@this"
+                         update=":mainform:context_panel :mainform:search_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasPrevious()}"
+                         title="Previous" alt="Previous" 
+                         />
+        <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}" 
+                      styleClass="align-self-center" />
+        <p:commandButton icon="ui-icon pi pi-step-forward" 
+                         styleClass="rounded-button ui-button-flat ml-2 mr-2" 
+                         action="#{objectBean.finderBean.viewNext}"
+                         process="@this"
+                         update=":mainform:context_panel :mainform:search_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasNext()}"
+                         title="Next" alt="Next" 
+                         />
+    </p:outputPanel>    
     <div class="flex flex-grow-1 justify-content-start align-self-center">
       <h:outputText value="#{objectBean.objectId}" />
       <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
@@ -23,14 +46,17 @@
                          ajax="false"
                          title="Select" alt="Select" 
                          />
+<!--        
         <p:commandButton icon="ui-icon pi pi-plus-circle" 
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.view('')}"
+                         rendered="#{not objectBean.isNew()}"
                          process="@this"
                          update=":mainform:search_tabs"
                          resetValues="true"
                          title="#{objectBundle.create}" alt="#{objectBundle.create}" 
                          />
+-->
         <p:commandButton icon="ui-icon pi pi-star" 
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
@@ -48,27 +74,16 @@
         <p:commandButton icon="ui-icon pi pi-trash" 
                          styleClass="rounded-button ui-button-flat" 
                          action="#{objectBean.remove}" 
+                         rendered="#{not objectBean.isNew()}"
                          process="@this"
                          update="" 
                          resetValues="true"
                          title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
                          onclick="return confirm('Delete?');"/>
-        <p:commandButton icon="ui-icon pi pi-cog" 
-                         action="#{navigatorBean.view('')}"
-                         styleClass="rounded-button ui-button-flat" 
-                         update="" 
-                         title="Actions" alt="Actions"
-                         onclick="return confirm('#{objectBundle.confirm_full_remove}');"/>
-        <p:commandButton icon="ui-icon pi pi-times" 
-                         action="#{navigatorBean.close}"
-                         ajax="false"
-                         immediate="true"
-                         styleClass="rounded-button ui-button-flat" 
-                         title="Close" alt="Close" />
     </div>
   </p:outputPanel>  
 
-  <p:panel id="territory_picker_panel" header="Territori" styleClass="mb-2">
+  <p:outputPanel id="territory_picker_panel" styleClass="mb-2" >
 
     <div class="ui-fluid formgrid grid">  
 
@@ -83,15 +98,13 @@
             <f:selectItems value="#{countryObjectBean.countrySelectItems}" />
           </p:selectOneMenu>
 
-
           <p:commandButton icon="pi pi-plus-circle"
-                           rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Country'}"
                            alt="#{objectBundle.create}" title="#{objectBundle.create}"
                            action="#{countryObjectBean.create}" 
                            update="editing_panels" 
                            oncomplete="PF('editDataDialog').show()"/>
 
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Country' and !countryObjectBean.new}"
+          <p:commandButton rendered="#{not empty countryObjectBean.country.countryId}"
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{countryObjectBean.edit}" 
@@ -99,19 +112,13 @@
                            global="false"
                            oncomplete="PF('editDataDialog').show()"/>
 
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Country' and !countryObjectBean.new}"       
-                           icon="pi pi-trash"
-                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           action="#{countryObjectBean.delete}"
-                           onclick="return confirm('#{objectBundle.confirm_remove}')"
-                           /> 
         </div>
       </div>
 
       <p:outputPanel class="field col-12" 
-                     rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Province' 
-                                 or navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'City'
-                                 or navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Street'}">
+                     rendered="#{objectBean.rootTypeId == 'Province' 
+                                 or objectBean.rootTypeId == 'City'
+                                 or objectBean.rootTypeId == 'Street'}">
         <p:outputLabel for="@next" value="#{kernelBundle.province}"  />
         <div class="ui-inputgroup">        
           <p:selectOneMenu id="province_selector" value="#{provinceObjectBean.objectId}" 
@@ -122,14 +129,13 @@
           </p:selectOneMenu>
 
 
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Province'}"
-                           icon="pi pi-plus-circle"
+          <p:commandButton icon="pi pi-plus-circle"
                            alt="#{objectBundle.create}" title="#{objectBundle.create}"
                            action="#{provinceObjectBean.create}" 
                            update="editing_panels"
                            oncomplete="PF('editDataDialog').show()"
                            />
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Province' and !provinceObjectBean.new}"
+          <p:commandButton rendered="#{not empty provinceObjectBean.province.provinceId}"
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{provinceObjectBean.edit}" 
@@ -137,19 +143,13 @@
                            global="false"
                            oncomplete="PF('editDataDialog').show()"
                            />
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Province' and !provinceObjectBean.new}"       
-                           icon="pi pi-trash"
-                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           action="#{provinceObjectBean.delete}"
-                           onclick="return confirm('#{objectBundle.confirm_remove}')"
-                           />    
         </div>
       </p:outputPanel> 
 
 
       <p:outputPanel class="field col-12" 
-                     rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'City' 
-                                 or navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Street'}">
+                     rendered="#{objectBean.rootTypeId == 'City' 
+                                 or objectBean.rootTypeId == 'Street'}">
         <p:outputLabel for="@next" value="#{kernelBundle.city}"  />
         <div class="ui-inputgroup"> 
           <p:selectOneMenu id="city_selector" value="#{cityObjectBean.objectId}" 
@@ -159,14 +159,13 @@
             <f:selectItems value="#{cityObjectBean.citySelectItems}"/>
           </p:selectOneMenu>
 
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'City'}"
-                           icon="pi pi-plus-circle"
+          <p:commandButton icon="pi pi-plus-circle"
                            alt="#{objectBundle.create}" title="#{objectBundle.create}"
                            action="#{cityObjectBean.create}" process="@this"
                            update="editing_panels"     
                            oncomplete="PF('editDataDialog').show()"
                            />
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'City' and !cityObjectBean.new}"
+          <p:commandButton rendered="#{not empty cityObjectBean.city.cityId}"
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{cityObjectBean.edit}" process="@this"
@@ -174,18 +173,11 @@
                            global="false"
                            oncomplete="PF('editDataDialog').show()"
                            />
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'City' and !cityObjectBean.new}"       
-                           icon="pi pi-trash"
-                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           action="#{cityObjectBean.delete}"
-                           onclick="return confirm('#{objectBundle.confirm_remove}')"
-                           />   
-
         </div>
       </p:outputPanel>   
 
 
-      <p:outputPanel class="field col-12" rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Street'}">
+      <p:outputPanel class="field col-12" rendered="#{objectBean.rootTypeId == 'Street'}">
         <p:outputLabel for="@next" value="#{kernelBundle.street}" />
         <div class="ui-inputgroup"> 
           <p:selectOneMenu id="street_selector" value="#{streetObjectBean.objectId}" 
@@ -193,17 +185,14 @@
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{streetObjectBean.streetSelectItems}"/>
           </p:selectOneMenu>
-
-
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Street'}"
-                           icon="pi pi-plus-circle"
+          <p:commandButton icon="pi pi-plus-circle"
                            alt="#{objectBundle.create}" title="#{objectBundle.create}"
                            action="#{streetObjectBean.create}" process="@this"
                            update="editing_panels"
                            styleClass="vertical-align-middle"
                            oncomplete="PF('editDataDialog').show()"
                            />
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Street' and !streetObjectBean.new}"
+          <p:commandButton rendered="#{not empty streetObjectBean.street.streetId}"
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{streetObjectBean.edit}" process="@this"
@@ -212,19 +201,12 @@
                            global="false"
                            oncomplete="PF('editDataDialog').show()"
                            />
-          <p:commandButton rendered="#{navigatorBean.baseTypeInfo.objectBean.rootTypeId == 'Street' and !streetObjectBean.new}"       
-                           icon="pi pi-trash"
-                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           action="#{streetObjectBean.delete}"
-                           onclick="return confirm('#{objectBundle.confirm_remove}')"
-                           styleClass="vertical-align-middle"
-                           /> 
         </div>
       </p:outputPanel>    
 
     </div>
 
-  </p:panel> 
+  </p:outputPanel> 
 
   <p:dialog id="edit_data_dialog" widgetVar="editDataDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
@@ -260,7 +242,7 @@
           <p:commandButton value="#{objectBundle.store}" 
                            icon="pi pi-save"
                            action="#{countryObjectBean.store}"
-                           update="editing_panels territory_picker_panel" process="@form @this"
+                           update="object_header editing_panels territory_picker_panel" process="@form @this"
                            styleClass="ui-button-raised m-1"
                            oncomplete="PF('editDataDialog').hide()"/> 
           <p:commandButton value="#{objectBundle.close}" 
@@ -289,7 +271,7 @@
           <p:commandButton value="#{objectBundle.store}" 
                            icon="pi pi-save"
                            action="#{provinceObjectBean.store}"
-                           update="editing_panels territory_picker_panel" process="@form @this"
+                           update="object_header editing_panels territory_picker_panel" process="@form @this"
                            styleClass="ui-button-raised m-1"
                            oncomplete="PF('editDataDialog').hide()"/> 
           <p:commandButton value="#{objectBundle.close}" 
@@ -317,7 +299,7 @@
           <p:commandButton value="#{objectBundle.store}" 
                            icon="pi pi-save"
                            action="#{cityObjectBean.store}"
-                           update="editing_panels territory_picker_panel" process="@form @this"
+                           update="object_header editing_panels territory_picker_panel" process="@form @this"
                            styleClass="ui-button-raised m-1"
                            oncomplete="PF('editDataDialog').hide()"/> 
           <p:commandButton value="#{objectBundle.close}" 
@@ -358,7 +340,7 @@
           <p:commandButton value="#{objectBundle.store}" 
                            icon="pi pi-save"
                            action="#{streetObjectBean.store}"
-                           update="editing_panels territory_picker_panel" process="@form @this"
+                           update="object_header editing_panels territory_picker_panel" process="@form @this"
                            styleClass="ui-button-raised m-1"
                            oncomplete="PF('editDataDialog').hide()"/> 
           <p:commandButton value="#{objectBundle.close}" 

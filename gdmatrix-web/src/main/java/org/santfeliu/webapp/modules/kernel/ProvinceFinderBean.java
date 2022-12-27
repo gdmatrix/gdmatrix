@@ -40,6 +40,7 @@ import org.matrix.kernel.Province;
 import org.matrix.kernel.ProvinceFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.NavigatorBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.BigListHelper;
 import org.santfeliu.webapp.modules.kernel.ProvinceFinderBean.ProvinceView;
@@ -72,13 +73,55 @@ public class ProvinceFinderBean
   public ObjectBean getObjectBean()
   {
     return provinceObjectBean;
-  }  
+  } 
+  
+  @Override
+  public String getObjectId(int position)
+  {
+    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
+      resultListHelper.getRow(position).getProvinceId();
+  }
+
+  @Override
+  public int getObjectCount()
+  {
+    return resultListHelper.getRows() == null ? 0 : 
+      resultListHelper.getRowCount();
+  }    
 
   public void clear()
   {
     filter = new ProvinceFilter();
     resultListHelper.clear();
-  }  
+  } 
+  
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ isSmartFind, smartFilter, filter, 
+      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      isSmartFind = (Boolean)stateArray[0];
+      smartFilter = (String)stateArray[1];
+      filter = (ProvinceFilter)stateArray[2];
+      
+      doFind(false);
+
+      resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
+      setObjectPosition((Integer)stateArray[4]);      
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }     
       
   @Override
   protected void doFind(boolean autoLoad)
@@ -197,6 +240,8 @@ public class ProvinceFinderBean
       try
       {
         List<ProvinceView> results = new ArrayList<>();
+        filter.setFirstResult(firstResult);
+        filter.setMaxResults(maxResults);
         List<Province> provinces =
           KernelModuleBean.getPort(false).findProvinces(filter);
         for (Province province : provinces)

@@ -64,7 +64,11 @@ public abstract class TerritoryObjectBean extends ObjectBean
     editing = true;
   }  
   
-  public void delete()
+  @Override
+  public void cancel()
   {
+    super.cancel();
+    editing = false;
   }
+
 }

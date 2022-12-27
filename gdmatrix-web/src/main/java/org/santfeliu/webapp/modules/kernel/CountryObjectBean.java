@@ -41,7 +41,7 @@ import org.matrix.kernel.Country;
 import org.matrix.kernel.CountryFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
-import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.NavigatorBean;
 
 /**
  *
@@ -119,12 +119,13 @@ public class CountryObjectBean extends TerritoryObjectBean
   public void createObject()
   {
     country = new Country();
+    setObjectId(NavigatorBean.NEW_OBJECT_ID);
   }
   
   @Override
   public void loadObject() throws Exception
   {
-    if (!NEW_OBJECT_ID.equals(objectId))
+    if (objectId != null && !isNew())
     {
       country = KernelModuleBean.getPort(false).loadCountry(objectId);
       editing = false;
@@ -138,7 +139,8 @@ public class CountryObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    KernelModuleBean.getPort(false).storeCountry(country);
+    country = KernelModuleBean.getPort(false).storeCountry(country);
+    setObjectId(country.getCountryId());
     editing = false; 
     countrySelectItems = null;
   }
@@ -175,6 +177,7 @@ public class CountryObjectBean extends TerritoryObjectBean
     try
     {
       loadObject();
+      provinceObjectBean.createObject();
       provinceObjectBean.loadProvinceSelectItems();
     }
     catch (Exception ex)

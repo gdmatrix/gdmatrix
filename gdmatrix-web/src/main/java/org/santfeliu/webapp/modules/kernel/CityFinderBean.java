@@ -40,8 +40,9 @@ import org.matrix.kernel.City;
 import org.matrix.kernel.CityFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.NavigatorBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.BigListHelper;
+import org.santfeliu.webapp.helpers.ResultListHelper;
 import org.santfeliu.webapp.modules.kernel.CityFinderBean.CityView;
 
 /**
@@ -72,12 +73,54 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   {
     return cityObjectBean;
   }  
+  
+  @Override
+  public String getObjectId(int position)
+  {
+    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
+      resultListHelper.getRow(position).getCityId();
+  }
+
+  @Override
+  public int getObjectCount()
+  {
+    return resultListHelper.getRows() == null ? 0 : 
+      resultListHelper.getRowCount();
+  }    
 
   public void clear()
   {
     filter = new CityFilter();
     resultListHelper.clear();
   }  
+  
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ isSmartFind, smartFilter, filter, 
+      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      isSmartFind = (Boolean)stateArray[0];
+      smartFilter = (String)stateArray[1];
+      filter = (CityFilter)stateArray[2];
+      
+      doFind(false);
+
+      resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
+      setObjectPosition((Integer)stateArray[4]);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }     
       
   @Override
   protected void doFind(boolean autoLoad)
@@ -175,7 +218,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
 
   }
 
-  private class CityResultListHelper extends BigListHelper<CityView>
+  private class CityResultListHelper extends ResultListHelper<CityView>
   {
     @Override
     public List<CityView> getResults(int firstResult, int maxResults)
@@ -198,18 +241,18 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       return results;
     }
 
-    @Override
-    public int countResults()
-    {
-      try
-      {
-        return KernelModuleBean.getPort(false).countCities(filter);
-      }
-      catch (Exception ex)
-      {
-        throw new RuntimeException(ex);
-      }
-    }
+//    @Override
+//    public int countResults()
+//    {
+//      try
+//      {
+//        return KernelModuleBean.getPort(false).countCities(filter);
+//      }
+//      catch (Exception ex)
+//      {
+//        throw new RuntimeException(ex);
+//      }
+//    }
   }
   
 }

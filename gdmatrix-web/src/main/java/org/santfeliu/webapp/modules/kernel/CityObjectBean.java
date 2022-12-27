@@ -43,7 +43,7 @@ import org.matrix.kernel.CityFilter;
 import org.matrix.kernel.KernelManagerPort;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
-import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.NavigatorBean;
 
 /**
  *
@@ -124,12 +124,14 @@ public class CityObjectBean extends TerritoryObjectBean
   public void createObject()
   {
     city = new City();
+    city.setProvinceId(provinceObjectBean.getProvince().getProvinceId());
+    setObjectId(NavigatorBean.NEW_OBJECT_ID);
   }
 
   @Override
   public void loadObject() throws Exception
   {
-    if (!NEW_OBJECT_ID.equals(objectId))
+    if (objectId != null && !isNew())
     {
       KernelManagerPort port = KernelModuleBean.getPort(false);
       city = port.loadCity(objectId);
@@ -150,7 +152,11 @@ public class CityObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    KernelModuleBean.getPort(false).storeCity(city);
+    if (!city.getProvinceId().equals(provinceObjectBean.getObjectId()))
+      city.setProvinceId(provinceObjectBean.getObjectId());
+
+    city = KernelModuleBean.getPort(false).storeCity(city);
+    setObjectId(city.getCityId());
     editing = false; 
     citySelectItems = null;
   }   
@@ -199,6 +205,7 @@ public class CityObjectBean extends TerritoryObjectBean
     try
     {
       loadObject();
+      streetObjectBean.createObject();
       streetObjectBean.loadStreetSelectItems();
     }
     catch (Exception ex)

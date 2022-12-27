@@ -42,6 +42,7 @@ import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.BigListHelper;
 /**
@@ -99,7 +100,21 @@ public class PersonFinderBean extends FinderBean
     this.filter.getPersonId().clear();
     if (personIds != null && !personIds.isEmpty())
       this.filter.getPersonId().addAll(personIds);
-  }  
+  } 
+  
+  @Override
+  public String getObjectId(int position)
+  {
+    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
+      resultListHelper.getRow(position).getPersonId();
+  }
+
+  @Override
+  public int getObjectCount()
+  {
+    return resultListHelper.getRows() == null ? 0 : 
+      resultListHelper.getRowCount();
+  }    
 
   @Override
   public ObjectBean getObjectBean()
@@ -145,7 +160,8 @@ public class PersonFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, resultListHelper.getFirstRowIndex() };
+    return new Object[]{ isSmartFind, smartFilter, filter, 
+      resultListHelper.getFirstRowIndex(), getObjectPosition() };
   }
 
   @Override
@@ -161,6 +177,7 @@ public class PersonFinderBean extends FinderBean
       doFind(false);
 
       resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
+      setObjectPosition((Integer)stateArray[4]);
     }
     catch (Exception ex)
     {

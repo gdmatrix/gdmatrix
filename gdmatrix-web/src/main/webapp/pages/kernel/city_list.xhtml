@@ -9,6 +9,7 @@
                paginatorPosition="bottom" size="small"
                rows="10" first="#{cityFinderBean.resultListHelper.firstRowIndex}"
                rowStyleClass="#{row.cityId == cityObjectBean.objectId ? 'current' : ''}"
+               rowIndexVar="rowIndex"
                rendered="true">
     <p:column headerText="cityId" styleClass="w-1">
       <h:outputText value="#{row.cityId}" />
@@ -20,8 +21,8 @@
       <h:outputText value="#{row.province}" />
     </p:column>      
     <p:column styleClass="w-1">
-      <p:commandButton icon="pi pi-external-link" styleClass="ui-button-raised" 
-                       action="#{navigatorBean.view(row.getCityId())}"
+      <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
+                       action="#{cityFinderBean.view(rowIndex)}"
                        process="@this"
                        onclick="PF('objectTabs').select(0);"
                        update=":mainform:search_tabs :mainform:context_panel"

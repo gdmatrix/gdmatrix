@@ -40,6 +40,7 @@ import org.matrix.kernel.Street;
 import org.matrix.kernel.StreetFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.NavigatorBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.BigListHelper;
 import org.santfeliu.webapp.modules.kernel.StreetFinderBean.StreetView;
@@ -74,12 +75,54 @@ public class StreetFinderBean
   {
     return streetObjectBean;
   }  
+  
+  @Override
+  public String getObjectId(int position)
+  {
+    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
+      resultListHelper.getRow(position).getStreetId();
+  }
+
+  @Override
+  public int getObjectCount()
+  {
+    return resultListHelper.getRows() == null ? 0 : 
+      resultListHelper.getRowCount();
+  }    
 
   public void clear()
   {
     filter = new StreetFilter();
     resultListHelper.clear();
   }  
+  
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ isSmartFind, smartFilter, filter, 
+      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      isSmartFind = (Boolean)stateArray[0];
+      smartFilter = (String)stateArray[1];
+      filter = (StreetFilter)stateArray[2];
+      
+      doFind(false);
+
+      resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
+      setObjectPosition((Integer)stateArray[4]);      
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }     
       
   @Override
   protected void doFind(boolean autoLoad)

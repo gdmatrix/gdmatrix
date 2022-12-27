@@ -41,7 +41,8 @@
                             converter="selectItemConverter"
                             var="item" itemValue="#{item}" itemLabel="#{item.label}"
                             minQueryLength="3" queryDelay="1000"
-                            onclick="this.setSelectionRange(0, this.value.length)">
+                            onclick="this.setSelectionRange(0, this.value.length)"
+                            required="true">
               <p:ajax event="clear" listener="#{addressObjectBean.onStreetClear}" update="@this" />              
               <p:column>                 
                 <h:outputText value="#{item.label} (#{item.value})" />
