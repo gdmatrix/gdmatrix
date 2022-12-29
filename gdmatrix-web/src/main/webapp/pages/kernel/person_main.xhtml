@@ -77,30 +77,29 @@
         </p:datePicker>
       </div> 
 
-<!--
+
       <div class="field col-12 md:col-6">
         <h:outputLabel for="person_birthCity" value="#{kernelBundle.person_birthCity}" />
         <div class="ui-inputgroup">
           <p:autoComplete id="person_birthCity"  
                           value="#{personObjectBean.citySelectItem}" 
-                          maxResults="10" dropdown="false" dropdownMode="blank" cache="true"
-                          completeMethod="#{cityBacking.completeCity}"
+                          maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
+                          completeMethod="#{personObjectBean.cityReferenceHelper.complete}"
                           converter="selectItemConverter"
                           var="item" itemValue="#{item}" itemLabel="#{item.label}"
                           minQueryLength="2" queryDelay="1000"
                           onclick="this.setSelectionRange(0, this.value.length)">
             <p:column>
-              <h:outputText value="#{cityBacking.getDescription(item.value)}" />
+              <h:outputText value="#{personObjectBean.cityReferenceHelper.getDescription(item.value)}" />
             </p:column>           
           </p:autoComplete>  
-          <p:commandButton icon="pi pi-search" oncomplete="PF('countryToStreetDialog').show()"
+          <p:commandButton icon="pi pi-search"
                            styleClass="ui-button-raised select-button" 
-                           action="#{countryToStreetBacking.showCity(personObjectBean.citySelectItem.value)}"
-                           alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                           action="#{navigatorBean.find('City', 'personObjectBean.person.birthCityId')}"
+                           alt="#{objectBundle.search}" title="#{objectBundle.search}" ajax="false"
                             />     
         </div>
       </div>
--->
 
       <div class="field col-12 md:col-6">
         <h:outputLabel for="person_nationality" value="#{kernelBundle.person_nationality}" />

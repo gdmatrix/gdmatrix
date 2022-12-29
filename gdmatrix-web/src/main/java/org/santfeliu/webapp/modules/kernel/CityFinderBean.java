@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.City;
 import org.matrix.kernel.CityFilter;
 import org.santfeliu.faces.ManualScoped;
@@ -58,6 +57,9 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   
   @Inject
   CityObjectBean cityObjectBean;
+  
+  @Inject
+  CityTypeBean cityTypeBean;
   
   @Inject
   ProvinceTypeBean provinceTypeBean;  
@@ -130,9 +132,8 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       if (isSmartFind)
       {
         setTabIndex(0);
-        //TODO: Set Country
-        if (!StringUtils.isBlank(smartFilter))
-          filter.setCityName("%" + smartFilter + "%");
+        String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();        
+        filter = cityTypeBean.queryToFilter(smartFilter, baseTypeId);
       }
       else
       {

@@ -132,16 +132,9 @@ public class AddressObjectBean extends ObjectBean
   {
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      try
-      {
-        address = KernelModuleBean.getPort(false).loadAddress(objectId);
-        String streetId = address.getStreetId();
-        streetSelectItem = createStreetSelectItem(streetId);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+      address = KernelModuleBean.getPort(false).loadAddress(objectId);
+      String streetId = address.getStreetId();
+      streetSelectItem = createStreetSelectItem(streetId);
     }
     else 
     {

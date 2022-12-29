@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
+import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -86,19 +87,37 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
 
   @Override
   public CityFilter queryToFilter(String query, String typeId)
-  {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+  {    
+    CityFilter filter = new CityFilter();
+    if (!StringUtils.isBlank(query))
+      filter.setCityName("%" + query + "%"); 
+    
+    return filter;
   }
 
   @Override
   public String filterToQuery(CityFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    String query = "";
+    if (filter != null)
+      query = filter.getCityName();
+    
+    return query;
   }
 
   @Override
   public List<City> find(CityFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    try
+    {
+      //CityFilter hasn't maxResults, protect empty filters.
+      if (filter != null && !StringUtils.isBlank(filter.getCityName()))
+        return KernelModuleBean.getPort(false).findCities(filter);
+    }
+    catch (Exception ex)
+    {
+    }
+    
+    return Collections.emptyList();
   }
 }

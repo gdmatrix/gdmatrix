@@ -38,6 +38,7 @@ import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.kernel.City;
 import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
@@ -49,6 +50,7 @@ import org.santfeliu.kernel.web.KernelConfigBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
+import org.santfeliu.webapp.helpers.ReferenceHelper;
 
 /**
  *
@@ -69,9 +71,13 @@ public class PersonObjectBean extends ObjectBean
   
   @Inject
   PersonFinderBean personFinderBean;
+  
+  ReferenceHelper<City> cityReferenceHelper;
 
   public PersonObjectBean()
   {
+    cityReferenceHelper = 
+      new CityReferenceHelper(DictionaryConstants.CITY_TYPE);
   }
 
   public Person getPerson()
@@ -82,6 +88,11 @@ public class PersonObjectBean extends ObjectBean
   public void setPerson(Person person)
   {
     this.person = person;
+  }
+
+  public ReferenceHelper<City> getCityReferenceHelper()
+  {
+    return cityReferenceHelper;
   }
   
   @Override
@@ -143,6 +154,19 @@ public class PersonObjectBean extends ObjectBean
     }
     return personParticleSelectItems;
   }  
+
+  public SelectItem getCitySelectItem()
+  {
+    return cityReferenceHelper.getSelectItem(person.getBirthCityId());
+  }
+  
+  public void setCitySelectItem(SelectItem selectItem)
+  {
+    if (selectItem != null)
+      person.setBirthCityId((String) selectItem.getValue());
+    else
+      person.setBirthCityId(null);
+  } 
   
   public SelectItem[] getSexSelectItems()
   {
@@ -182,20 +206,12 @@ public class PersonObjectBean extends ObjectBean
   }  
     
   @Override
-  public void loadObject()
+  public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
-    {
-      try
-      {
-        person = KernelConfigBean.getPort().loadPerson(objectId);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
-    else person = new Person();
+      person = KernelConfigBean.getPort().loadPerson(objectId);
+    else 
+      person = new Person();
   }
 
   @Override
@@ -213,18 +229,10 @@ public class PersonObjectBean extends ObjectBean
   }
 
   @Override
-  public void storeObject()
+  public void storeObject() throws Exception
   {
-    try
-    {
-      person = KernelConfigBean.getPort().storePerson(person);
-      setObjectId(person.getPersonId());
-      info("STORE_OBJECT");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    person = KernelModuleBean.getPort(false).storePerson(person);
+    setObjectId(person.getPersonId());
   }  
   
   @Override
@@ -238,5 +246,19 @@ public class PersonObjectBean extends ObjectBean
   {
     this.person = (Person)state;
   }  
+
+  private class CityReferenceHelper extends ReferenceHelper<City>
+  {
+    public CityReferenceHelper(String typeId)
+    {
+      super(typeId);
+    }
+
+    @Override
+    public String getId(City city)
+    {
+      return city.getCityId();
+    }
+  }
     
 }
