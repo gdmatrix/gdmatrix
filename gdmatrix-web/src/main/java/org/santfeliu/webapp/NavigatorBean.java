@@ -96,7 +96,16 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public BaseTypeInfo getBaseTypeInfo(String baseTypeId)
   {
-    return baseTypeInfoMap.get(baseTypeId);
+    BaseTypeInfo baseTypeInfo = baseTypeInfoMap.get(baseTypeId);
+    if (baseTypeInfo == null)
+    {
+      MenuItemCursor typeMenuItem = findMenuItem(baseTypeId);
+      if (typeMenuItem.isNull()) return null;
+
+      baseTypeInfo = new BaseTypeInfo(typeMenuItem.getMid());
+      baseTypeInfoMap.put(baseTypeId, baseTypeInfo);
+    }
+    return baseTypeInfo;
   }
 
   public List<String> getBaseTypeIdList()
@@ -148,8 +157,9 @@ public class NavigatorBean extends WebBean implements Serializable
     // STEP-1: go to baseTypeId node
     if (objectTypeId != null)
     {
-      MenuItemCursor typeMenuItem = selectMenuItem(objectTypeId);
+      MenuItemCursor typeMenuItem = findMenuItem(objectTypeId);
       if (typeMenuItem.isNull()) return null;
+      typeMenuItem.select();
     }
 
     // STEP-2: load current baseTypeInfo
@@ -236,8 +246,9 @@ public class NavigatorBean extends WebBean implements Serializable
 
     String selectedObjectId = baseTypeInfo.getObjectId();
 
-    MenuItemCursor typeMenuItem = selectMenuItem(selectionInfo.baseTypeId);
+    MenuItemCursor typeMenuItem = findMenuItem(selectionInfo.baseTypeId);
     if (typeMenuItem.isNull()) return null;
+    typeMenuItem.select();
 
     lastBaseTypeId = selectionInfo.baseTypeId;
     baseTypeInfo = getBaseTypeInfo();
@@ -317,17 +328,13 @@ public class NavigatorBean extends WebBean implements Serializable
     return history;
   }
 
-  private MenuItemCursor selectMenuItem(String objectTypeId)
+  private MenuItemCursor findMenuItem(String objectTypeId)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     MenuTypesCache menuTypesCache = MenuTypesCache.getInstance();
     MenuItemCursor typeMenuItem = menuTypesCache.get(
       userSessionBean.getSelectedMenuItem(), objectTypeId);
 
-    if (!typeMenuItem.isNull())
-    {
-      userSessionBean.setSelectedMid(typeMenuItem.getMid());
-    }
     return typeMenuItem;
   }
 
