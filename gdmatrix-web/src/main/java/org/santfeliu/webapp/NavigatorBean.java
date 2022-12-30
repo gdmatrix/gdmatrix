@@ -99,10 +99,10 @@ public class NavigatorBean extends WebBean implements Serializable
     BaseTypeInfo baseTypeInfo = baseTypeInfoMap.get(baseTypeId);
     if (baseTypeInfo == null)
     {
-      MenuItemCursor typeMenuItem = findMenuItem(baseTypeId);
-      if (typeMenuItem.isNull()) return null;
+      String baseTypeMid = findBaseTypeMid(baseTypeId);
+      if (baseTypeMid == null) return null;
 
-      baseTypeInfo = new BaseTypeInfo(typeMenuItem.getMid());
+      baseTypeInfo = new BaseTypeInfo(baseTypeMid);
       baseTypeInfoMap.put(baseTypeId, baseTypeInfo);
     }
     return baseTypeInfo;
@@ -157,9 +157,10 @@ public class NavigatorBean extends WebBean implements Serializable
     // STEP-1: go to baseTypeId node
     if (objectTypeId != null)
     {
-      MenuItemCursor typeMenuItem = findMenuItem(objectTypeId);
-      if (typeMenuItem.isNull()) return null;
-      typeMenuItem.select();
+      String baseTypeMid = findBaseTypeMid(objectTypeId);
+      if (baseTypeMid == null) return null;
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      userSessionBean.getMenuModel().setSelectedMid(baseTypeMid);
     }
 
     // STEP-2: load current baseTypeInfo
@@ -246,9 +247,10 @@ public class NavigatorBean extends WebBean implements Serializable
 
     String selectedObjectId = baseTypeInfo.getObjectId();
 
-    MenuItemCursor typeMenuItem = findMenuItem(selectionInfo.baseTypeId);
-    if (typeMenuItem.isNull()) return null;
-    typeMenuItem.select();
+    String baseTypeMid = findBaseTypeMid(selectionInfo.baseTypeId);
+    if (baseTypeMid == null) return null;
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    userSessionBean.getMenuModel().setSelectedMid(baseTypeMid);
 
     lastBaseTypeId = selectionInfo.baseTypeId;
     baseTypeInfo = getBaseTypeInfo();
@@ -328,14 +330,14 @@ public class NavigatorBean extends WebBean implements Serializable
     return history;
   }
 
-  private MenuItemCursor findMenuItem(String objectTypeId)
+  private String findBaseTypeMid(String objectTypeId)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     MenuTypesCache menuTypesCache = MenuTypesCache.getInstance();
     MenuItemCursor typeMenuItem = menuTypesCache.get(
       userSessionBean.getSelectedMenuItem(), objectTypeId);
 
-    return typeMenuItem;
+    return typeMenuItem.isNull() ? null : typeMenuItem.getMid();
   }
 
   private void destroyBeans()
