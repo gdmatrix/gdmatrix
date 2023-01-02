@@ -35,10 +35,10 @@ import java.util.Map;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.NavigatorBean;
 
 /**
- * TODO: Refresh system
  *
  * @author blanquepa
  */
@@ -47,11 +47,11 @@ public class MenuTypesCache
   private static final String SEPARATOR = "::";
   private static final MenuTypesCache instance = new MenuTypesCache();
 
-  private final Map<String, MenuItemCursor> menuItems;
+  private final Map<String, String> mids;
 
   public MenuTypesCache()
   {
-    menuItems = new HashMap();
+    mids = new HashMap();
   }
 
   public static MenuTypesCache getInstance()
@@ -61,21 +61,36 @@ public class MenuTypesCache
 
   public MenuItemCursor get(MenuItemCursor currentMenuItem, String typeId)
   {
-    MenuItemCursor topWebMenuItem = WebUtils.getTopWebMenuItem(currentMenuItem);
-    String key = topWebMenuItem.getMid() + SEPARATOR + typeId;
-    MenuItemCursor menuItem = menuItems.get(key);
-    if (menuItem == null)
+    MenuItemCursor menuItem;    
+
+    String key = currentMenuItem.getMid() + SEPARATOR + typeId;
+    String typeMid = mids.get(key);
+    if (typeMid == null)
+      menuItem = findMenuItem(currentMenuItem, key, typeId);
+    else
     {
-      menuItem = getMenuItem(topWebMenuItem.getFirstChild(), typeId);
-      if (!menuItem.isNull())
-        put(key, menuItem);
+      menuItem = UserSessionBean.getCurrentInstance().getMenuModel()
+        .getMenuItem(typeMid);
+      if (menuItem.isNull()) //Auto-purge
+      {
+        mids.remove(key);
+        menuItem = findMenuItem(currentMenuItem, key, typeId);       
+      }
     }
+    
     return menuItem;
   }
-
-  private void put(String typeId, MenuItemCursor menuItem)
+  
+  private MenuItemCursor findMenuItem(MenuItemCursor currentMenuItem, 
+    String key, String typeId)
   {
-    menuItems.put(typeId, menuItem);
+    MenuItemCursor menuItem;
+    MenuItemCursor topWebMenuItem = 
+      WebUtils.getTopWebMenuItem(currentMenuItem);
+    menuItem = getMenuItem(topWebMenuItem.getFirstChild(), typeId);
+    if (!menuItem.isNull())
+      mids.put(key, menuItem.getMid());
+    return menuItem;
   }
 
   private MenuItemCursor getMenuItem(MenuItemCursor menuItem, String typeId)
