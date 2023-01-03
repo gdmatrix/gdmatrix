@@ -137,12 +137,12 @@
                            value="#{kernelBundle.eventPersons_person}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">                 
-              <p:commandButton action="#{navigatorBean.find('Person', '#{eventPersonsTabBean.selectedPerson}')}"
+              <p:commandButton action="#{eventPersonsTabBean.personReferenceHelper.find('eventPersonsTabBean.personReferenceHelper.selectedId')}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
               <p:autoComplete id="person" styleClass="inputfield w-11" inputStyleClass="w-11"
-                              value="#{eventPersonsTabBean.personSelectItem}" 
+                              value="#{eventPersonsTabBean.personReferenceHelper.selectedItem}" 
                               maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
                               completeMethod="#{eventPersonsTabBean.personReferenceHelper.complete}"
                               converter="selectItemConverter"

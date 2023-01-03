@@ -181,19 +181,6 @@ public class RoomObjectBean extends ObjectBean
     }
   }  
   
-  public SelectItem getAddressSelectItem() 
-  {
-    return addressReferenceHelper.getSelectItem(room.getAddressId());
-  }
-
-  public void setAddressSelectItem(SelectItem selectItem) 
-  {
-    if (selectItem != null)
-      room.setAddressId((String)selectItem.getValue());
-    else
-      room.setAddressId(null);
-  }
-
   public void onAddressSelect(SelectEvent<SelectItem> event) 
   {
     SelectItem item = event.getObject();
@@ -269,6 +256,19 @@ public class RoomObjectBean extends ObjectBean
     public String getId(Address address)
     {
       return address.getAddressId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return room != null ? room.getAddressId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      if (room != null)
+        room.setAddressId(value);
     }
   }
   

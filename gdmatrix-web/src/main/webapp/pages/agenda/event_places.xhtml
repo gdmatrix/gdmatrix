@@ -126,12 +126,12 @@
                            value="#{agendaBundle.eventPlaces_address}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">
-              <p:commandButton action="#{navigatorBean.find('Address', '#{eventPlacesTabBean.selectedAddress}')}"
+              <p:commandButton action="#{eventPlacesTabBean.addressReferenceHelper.find('eventPlacesTabBean.addressReferenceHelper.selectedId')}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" />               
               <p:autoComplete id="address"
-                              value="#{eventPlacesTabBean.addressSelectItem}" 
+                              value="#{eventPlacesTabBean.addressReferenceHelper.selectedItem}" 
                               maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
                               completeMethod="#{eventPlacesTabBean.addressReferenceHelper.complete}"
                               converter="selectItemConverter"
@@ -153,12 +153,12 @@
                            value="#{agendaBundle.eventPlaces_room}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">
-              <p:commandButton action="#{navigatorBean.find('Room', '#{eventPlacesTabBean.selectedRoom}')}"
+              <p:commandButton action="#{eventPlacesTabBean.roomReferenceHelper.find('eventPlacesTabBean.roomReferenceHelper.selectedId')}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" />               
               <p:autoComplete id="room"
-                              value="#{eventPlacesTabBean.roomSelectItem}" 
+                              value="#{eventPlacesTabBean.roomReferenceHelper.selectedItem}" 
                               maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
                               completeMethod="#{eventPlacesTabBean.roomReferenceHelper.complete}"
                               converter="selectItemConverter"

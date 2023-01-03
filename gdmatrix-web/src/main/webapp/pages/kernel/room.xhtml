@@ -83,12 +83,12 @@
           <p:outputPanel styleClass="field" rendered="true">
             <p:outputLabel for="address" value="#{kernelBundle.room_address}:" />
             <div class="ui-inputgroup">
-              <p:commandButton action="#{navigatorBean.find('Address', '#{roomFinderBean.filter.addressId}')}"
+              <p:commandButton action="#{roomFinderBean.addressReferenceHelper.find('roomFinderBean.addressReferenceHelper.selectedId')}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
               <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-10"
-                              value="#{roomFinderBean.addressSelectItem}" 
+                              value="#{roomFinderBean.addressReferenceHelper.selectedItem}" 
                               maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
                               completeMethod="#{roomFinderBean.addressReferenceHelper.complete}"
                               converter="selectItemConverter"

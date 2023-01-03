@@ -38,12 +38,13 @@ import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Type;
+import org.matrix.dic.TypeFilter;
 import org.matrix.kernel.City;
+import org.matrix.kernel.Country;
 import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
-import org.matrix.pf.kernel.CountryBacking;
-import org.matrix.web.WebUtils;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.kernel.web.KernelConfigBean;
@@ -68,16 +69,24 @@ public class PersonObjectBean extends ObjectBean
   
   @Inject
   PersonTypeBean personTypeBean;
+  @Inject
+  CountryTypeBean countryTypeBean;
   
   @Inject
   PersonFinderBean personFinderBean;
   
   ReferenceHelper<City> cityReferenceHelper;
+  ReferenceHelper<Country> countryReferenceHelper;
+  ReferenceHelper<Type> typeReferenceHelper;
 
   public PersonObjectBean()
   {
     cityReferenceHelper = 
       new CityReferenceHelper(DictionaryConstants.CITY_TYPE);
+    countryReferenceHelper = 
+      new CountryReferenceHelper(DictionaryConstants.COUNTRY_TYPE);
+    typeReferenceHelper = 
+      new TypeReferenceHelper(DictionaryConstants.TYPE_TYPE);    
   }
 
   public Person getPerson()
@@ -93,6 +102,16 @@ public class PersonObjectBean extends ObjectBean
   public ReferenceHelper<City> getCityReferenceHelper()
   {
     return cityReferenceHelper;
+  }
+
+  public ReferenceHelper<Country> getCountryReferenceHelper()
+  {
+    return countryReferenceHelper;
+  }
+
+  public ReferenceHelper<Type> getTypeReferenceHelper()
+  {
+    return typeReferenceHelper;
   }
   
   @Override
@@ -155,18 +174,7 @@ public class PersonObjectBean extends ObjectBean
     return personParticleSelectItems;
   }  
 
-  public SelectItem getCitySelectItem()
-  {
-    return cityReferenceHelper.getSelectItem(person.getBirthCityId());
-  }
-  
-  public void setCitySelectItem(SelectItem selectItem)
-  {
-    if (selectItem != null)
-      person.setBirthCityId((String) selectItem.getValue());
-    else
-      person.setBirthCityId(null);
-  } 
+
   
   public SelectItem[] getSexSelectItems()
   {
@@ -178,32 +186,6 @@ public class PersonObjectBean extends ObjectBean
     }
     return sexSelectItems;
   } 
-  
-  public List<SelectItem> getCountrySelectItems()
-  {
-    if (countrySelectItems == null)
-    {
-      CountryBacking countryBacking = WebUtils.getBacking("countryBacking");
-      countrySelectItems = countryBacking.getCountrySelectItems();
-    }
-    return countrySelectItems;
-  }
-  
-  public String getCountryLabel(String value)
-  {
-    List<SelectItem> items = getCountrySelectItems();
-    if (items != null)
-    {
-      for (SelectItem item : items)
-      {
-        if (value.equals(item.getValue()))
-        {
-          return item.getLabel();
-        }
-      }
-    }
-    return "";
-  }  
     
   @Override
   public void loadObject() throws Exception
@@ -259,6 +241,82 @@ public class PersonObjectBean extends ObjectBean
     {
       return city.getCityId();
     }
+
+    @Override
+    public String getSelectedId()
+    {
+      return person != null ? person.getBirthCityId() : null;
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      if (person != null)
+        person.setBirthCityId(value);
+    }
+    
   }
+  
+  private class CountryReferenceHelper extends ReferenceHelper<Country>
+  {
+    public CountryReferenceHelper(String typeId)
+    {
+      super(typeId);
+    }
+
+    @Override
+    public String getId(Country country)
+    {
+      return country.getCountryId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return person != null ? person.getNationalityId() : null;
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      if (person != null)
+        person.setNationalityId(value);
+    }   
+  }  
+  
+  private class TypeReferenceHelper extends ReferenceHelper<Type>
+  {
+    public TypeReferenceHelper(String typeId)
+    {
+      super(typeId);
+    }
+
+    @Override
+    public String getId(Type type)
+    {
+      return type.getTypeId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return person != null ? person.getPersonTypeId() : null;
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      if (person != null)
+        person.setPersonTypeId(value) ;
+    }
+
+    @Override
+    public TypeFilter getFilter()
+    {
+      TypeFilter filter = new TypeFilter();
+      filter.setSuperTypeId(getRootTypeId()); //Return person types
+      return filter; 
+    }
+  }    
     
 }

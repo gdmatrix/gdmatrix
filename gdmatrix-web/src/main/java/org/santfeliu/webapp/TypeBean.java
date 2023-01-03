@@ -137,5 +137,5 @@ public abstract class TypeBean<T, F> extends WebBean
   {
     return find(queryToFilter(query, typeId));
   }
-
+  
 }

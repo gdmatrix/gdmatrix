@@ -157,33 +157,7 @@ public class EventFinderBean extends FinderBean
   {
     this.searchEventTypeId = searchEventTypeId;
   }
-    
-  public SelectItem getPersonSelectItem() 
-  {    
-    return personReferenceHelper.getSelectItem(filter.getPersonId());    
-  }
-
-  public void setPersonSelectItem(SelectItem selectItem) 
-  {
-    if (selectItem != null)
-      filter.setPersonId((String)selectItem.getValue());
-    else
-      filter.setPersonId(null);    
-  }
-
-  public SelectItem getRoomSelectItem() 
-  {
-    return roomReferenceHelper.getSelectItem(filter.getRoomId());
-  }
-
-  public void setRoomSelectItem(SelectItem selectItem) 
-  {
-    if (selectItem != null)
-      filter.setRoomId((String)selectItem.getValue());
-    else
-      filter.setRoomId(null);
-  }
-  
+      
   @Override
   public String getObjectId(int position)
   {
@@ -430,6 +404,19 @@ public class EventFinderBean extends FinderBean
     {
       return person.getPersonId();
     }
+
+    @Override
+    public String getSelectedId()
+    {
+      return filter != null ? filter.getPersonId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      if (filter != null)
+        filter.setPersonId(value);
+    }
   }
   
   private class RoomReferenceHelper extends ReferenceHelper<Room>
@@ -443,6 +430,19 @@ public class EventFinderBean extends FinderBean
     public String getId(Room room)
     {
       return room.getRoomId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return filter != null ? filter.getRoomId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      if (filter != null)
+      filter.setRoomId(value);
     }
   }  
   

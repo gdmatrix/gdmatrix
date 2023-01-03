@@ -146,32 +146,6 @@ public class EventPlacesTabBean extends TabBean
     return null;
   }  
   
-  public SelectItem getAddressSelectItem() 
-  {
-    return addressReferenceHelper.getSelectItem(editing.getAddressId());    
-  }
-
-  public void setAddressSelectItem(SelectItem selectItem)
-  {
-    if (selectItem != null)
-      editing.setAddressId((String)selectItem.getValue());
-    else
-      editing.setAddressId(null);    
-  }
-
-  public SelectItem getRoomSelectItem() 
-  {
-    return roomReferenceHelper.getSelectItem(editing.getRoomId());    
-  }
-
-  public void setRoomSelectItem(SelectItem selectItem)
-  {
-    if (selectItem != null)
-      editing.setRoomId((String)selectItem.getValue());
-    else
-      editing.setRoomId(null);
-  }
-  
   public void onAddressSelect(SelectEvent<SelectItem> event) 
   {
     SelectItem item = event.getObject();
@@ -434,6 +408,18 @@ public class EventPlacesTabBean extends TabBean
     {
       return address.getAddressId();
     }
+
+    @Override
+    public String getSelectedId()
+    {
+      return editing != null ? editing.getAddressId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      setSelectedAddress(value);
+    }
   }  
 
   private class RoomReferenceHelper extends ReferenceHelper<Room>
@@ -447,6 +433,18 @@ public class EventPlacesTabBean extends TabBean
     public String getId(Room room)
     {
       return room.getRoomId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return editing != null ? editing.getRoomId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      setSelectedRoom(value);
     }
   }  
   

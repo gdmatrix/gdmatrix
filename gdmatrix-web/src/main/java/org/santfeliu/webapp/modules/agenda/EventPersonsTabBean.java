@@ -139,19 +139,6 @@ public class EventPersonsTabBean extends TabBean
     return null;
   }  
   
-  public SelectItem getPersonSelectItem()
-  {
-    return personReferenceHelper.getSelectItem(editing.getPersonId());    
-  }
-  
-  public void setPersonSelectItem(SelectItem selectItem)
-  {
-    if (selectItem != null)
-      editing.setPersonId((String)selectItem.getValue());
-    else
-      editing.setPersonId(null);    
-  }
-
   //TODO Use ObjectDescriptor
   public String getAttendantTypeDescription()
   {
@@ -454,6 +441,18 @@ public class EventPersonsTabBean extends TabBean
     public String getId(Person person)
     {
       return person.getPersonId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return editing != null ? editing.getPersonId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      setSelectedPerson(value);
     }
   }
   

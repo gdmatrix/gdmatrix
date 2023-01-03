@@ -47,17 +47,17 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 public abstract class ReferenceHelper<T>
 {
-  private String typeId;
-  private TypeBean<T, ?> typeBean;
-  
+  private final String typeId;
+  private final TypeBean<T, ?> typeBean;
+      
   public ReferenceHelper(String typeId)
   {
     this.typeId = typeId;
     this.typeBean = TypeBean.getInstance(typeId);
   }
   
-  public abstract String getId(T object);  
-  
+  public abstract String getId(T object);
+    
   public List<SelectItem> complete(String query)
   {
     List<SelectItem> items = new ArrayList<>();
@@ -69,25 +69,24 @@ public abstract class ReferenceHelper<T>
     {
       if (baseTypeInfo != null)
       {
-        List<String> ids = baseTypeInfo.getRecentObjectIdList();        
+        List<String> ids = new ArrayList();
+        ids.addAll(baseTypeInfo.getRecentObjectIdList());        
         List<String> favIds = baseTypeInfo.getFavoriteObjectIdList();
         if (!favIds.isEmpty())
         {
-          favIds.stream()
-            .filter(i -> !ids.contains(i))
+          favIds.stream().filter(i -> !ids.contains(i))
             .forEach((i) -> ids.add(i));
         }
         if (!ids.isEmpty())
         {
-          ids.stream()
-            .filter(i -> !StringUtils.isBlank(i))
+          ids.stream().filter(i -> !StringUtils.isBlank(i))
             .forEach((i) -> items.add(getSelectItem(i)));
         }
       }    
     }
     else
     {
-      List<T> objects = typeBean.find(query);
+      List<T> objects = typeBean.find(query, typeId);
       objects.forEach((o) -> items.add(getSelectItem(o)));    
     }
     
@@ -103,13 +102,47 @@ public abstract class ReferenceHelper<T>
     
     return items;
   }
-    
+  
+  public List<SelectItem> getSelectItems()
+  {
+    List<SelectItem> items = new ArrayList<>();
+    List<T> objects = typeBean.find(getFilter());
+    objects.forEach((o) -> items.add(getSelectItem(o))); 
+    return items;
+  } 
+  
+  public <F> F getFilter()
+  {
+    return null;
+  }
+  
+  public String find(String returnExpression)  
+  {
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    return navigatorBean.find(typeId, returnExpression);
+  }
+      
   public String getDescription(String id)
   {
     return typeBean.getDescription(id);
   }
+    
+  public SelectItem getSelectedItem()
+  {
+    return getSelectItem(getSelectedId());
+  }
   
-  public SelectItem getSelectItem(String id)
+  public void setSelectedItem(SelectItem selectItem)
+  {
+    String value = selectItem != null ? (String) selectItem.getValue() : null;    
+    setSelectedId(value);
+  }
+  
+  public abstract String getSelectedId();
+
+  public abstract void setSelectedId(String value);  
+  
+  private SelectItem getSelectItem(String id)
   {
     if (StringUtils.isBlank(id))
       return new SelectItem("", "");
@@ -117,8 +150,9 @@ public abstract class ReferenceHelper<T>
       return new SelectItem(id, getDescription(id));
   }
   
-  public SelectItem getSelectItem(T object)
+  private SelectItem getSelectItem(T object)
   {
     return getSelectItem(getId(object));
-  }
+  }  
+
 }

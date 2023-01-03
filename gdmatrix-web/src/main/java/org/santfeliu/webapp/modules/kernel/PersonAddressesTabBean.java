@@ -130,19 +130,6 @@ public class PersonAddressesTabBean extends TabBean
     return null;
   }
   
-  public SelectItem getAddressSelectItem() 
-  {
-    return addressReferenceHelper.getSelectItem(editing.getAddressId());
-  }
-
-  public void setAddressSelectItem(SelectItem selectItem) 
-  {
-    if (selectItem != null)
-      editing.setAddressId((String)selectItem.getValue());
-    else
-      editing.setAddressId(null);
-  }
-
   public void onAddressSelect(SelectEvent<SelectItem> event) 
   {
     SelectItem item = event.getObject();
@@ -364,6 +351,18 @@ public class PersonAddressesTabBean extends TabBean
     public String getId(Address address)
     {
       return address.getAddressId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return editing != null ? editing.getAddressId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      setSelectedAddress(value);
     }
   }   
 

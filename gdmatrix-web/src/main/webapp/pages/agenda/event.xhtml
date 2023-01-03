@@ -123,12 +123,12 @@
           <p:outputPanel styleClass="field" rendered="true">
             <p:outputLabel for="person" value="#{agendaBundle.event_personId}:" />
             <div class="ui-inputgroup">
-              <p:commandButton action="#{navigatorBean.find('Person', '#{eventFinderBean.filter.personId}')}"
+              <p:commandButton action="#{eventFinderBean.personReferenceHelper.find('eventFinderBean.personReferenceHelper.selectedId')}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
               <p:autoComplete id="person" styleClass="inputfield w-11" inputStyleClass="w-10"
-                              value="#{eventFinderBean.personSelectItem}" 
+                              value="#{eventFinderBean.personReferenceHelper.selectedItem}" 
                               maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
                               completeMethod="#{eventFinderBean.personReferenceHelper.complete}"
                               converter="selectItemConverter"
@@ -148,12 +148,12 @@
           <p:outputPanel styleClass="field" rendered="true">
             <p:outputLabel for="room" value="#{agendaBundle.event_place}:" />
             <div class="ui-inputgroup">
-              <p:commandButton action="#{navigatorBean.find('Room', '#{eventFinderBean.filter.roomId}')}"
+              <p:commandButton action="#{eventFinderBean.roomReferenceHelper.find('eventFinderBean.roomReferenceHelper.selectedId')}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
               <p:autoComplete id="room" styleClass="inputfield w-11" inputStyleClass="w-10"
-                              value="#{eventFinderBean.roomSelectItem}" 
+                              value="#{eventFinderBean.roomReferenceHelper.selectedItem}" 
                               maxResults="10" dropdown="true" dropdownMode="blank" cache="true"                              
                               completeMethod="#{eventFinderBean.roomReferenceHelper.complete}"
                               converter="selectItemConverter"

@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -92,8 +93,14 @@ public class CountryTypeBean extends TypeBean<Country, CountryFilter>
   @Override
   public List<Country> find(CountryFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    try
+    {
+      return KernelModuleBean.getPort(true).findCountries(filter);
+    }
+    catch (Exception ex)
+    {
+      return Collections.emptyList();
+    }    
   }
-
-
+  
 }

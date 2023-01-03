@@ -38,12 +38,12 @@
                      value="#{kernelBundle.room_address}"
                      styleClass="w-full"/>
       <div class="ui-inputgroup">
-        <p:commandButton action="#{navigatorBean.find('Address', '#{roomObjectBean.room.addressId}')}"
+        <p:commandButton action="#{roomObjectBean.addressReferenceHelper.find('roomObjectBean.addressReferenceHelper.selectedId')}"
                          icon="pi pi-search" ajax="false"
                          styleClass="ui-button-raised"                               
                          alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
         <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-11"
-                        value="#{roomObjectBean.addressSelectItem}" 
+                        value="#{roomObjectBean.addressReferenceHelper.selectedItem}" 
                         maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
                         completeMethod="#{roomObjectBean.addressReferenceHelper.complete}"
                         converter="selectItemConverter"

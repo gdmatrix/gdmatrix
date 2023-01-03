@@ -149,19 +149,6 @@ public class RoomFinderBean extends FinderBean
       filter.getRoomIdList().addAll(roomIds);
   }  
   
-  public SelectItem getAddressSelectItem() 
-  {
-    return addressReferenceHelper.getSelectItem(filter.getAddressId());
-  }
-
-  public void setAddressSelectItem(SelectItem selectItem) 
-  {
-    if (selectItem != null)
-      filter.setAddressId((String)selectItem.getValue());
-    else
-      filter.setAddressId(null);
-  }
-
   public void onAddressSelect(SelectEvent<SelectItem> event) 
   {
     SelectItem item = event.getObject();
@@ -317,6 +304,19 @@ public class RoomFinderBean extends FinderBean
     public String getId(Address address)
     {
       return address.getAddressId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return filter != null ? filter.getAddressId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      if (filter != null)
+        filter.setAddressId(value);
     }
   }  
 

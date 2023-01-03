@@ -107,12 +107,12 @@
                            value="#{kernelBundle.personAddresses_address}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">                 
-              <p:commandButton action="#{navigatorBean.find('Address', '#{personAddressesTabBean.selectedAddress}')}"
+              <p:commandButton action="#{personAddressesTabBean.addressReferenceHelper.find('personAddressesTabBean.addressReferenceHelper.selectedId')}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
               <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-11"
-                              value="#{personAddressesTabBean.addressSelectItem}" 
+                              value="#{personAddressesTabBean.addressReferenceHelper.selectedItem}" 
                               maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
                               completeMethod="#{personAddressesTabBean.addressReferenceHelper.complete}"
                               converter="selectItemConverter"
