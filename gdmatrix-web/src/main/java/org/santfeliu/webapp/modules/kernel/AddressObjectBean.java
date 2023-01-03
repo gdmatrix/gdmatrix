@@ -38,9 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Address;
-import org.matrix.kernel.AddressView;
 import org.santfeliu.faces.ManualScoped;
-
 import org.santfeliu.webapp.FinderBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -53,7 +51,7 @@ import org.santfeliu.webapp.Tab;
 @Named
 @ManualScoped
 public class AddressObjectBean extends ObjectBean
-{    
+{
   private Address address = new Address();
   private SelectItem streetSelectItem;
   
@@ -98,17 +96,11 @@ public class AddressObjectBean extends ObjectBean
     return isNew() ? "" : getDescription(address.getAddressId());
   }  
   
-  public String getDescription(String personId)
+  public String getDescription(String addressId)
   {
-    return getTypeBean().getDescription(personId);
+    return getTypeBean().getDescription(addressId);
   }  
     
-  public String getDescription(AddressView address)
-  {
-    if (address == null) return "";
-    return address.getDescription();
-  }   
-
   @Override
   public String show()
   {

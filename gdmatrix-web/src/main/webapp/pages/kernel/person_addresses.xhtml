@@ -45,7 +45,7 @@
               <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
                                action="#{personAddressesTabBean.create}"                                  
                                update="@root:@id(edit_panels)"
-                               oncomplete="PF('editDataDialog').show()"                                  
+                               oncomplete="PF('addressDataDialog').show()"                                  
                                alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
             </div>              
           </div>
@@ -79,7 +79,7 @@
 
 
   <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="edit_data_dialog" widgetVar="editDataDialog" 
+  <p:dialog id="address_data_dialog" widgetVar="addressDataDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
             modal="true" responsive="true" closable="true"
             appendTo="@(form)" position="center center" resizable="false">
@@ -110,20 +110,19 @@
               <p:commandButton action="#{navigatorBean.find('Address', '#{personAddressesTabBean.selectedAddress}')}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}"
-                               update="@form" /> 
+                               alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
               <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-11"
                               value="#{personAddressesTabBean.addressSelectItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank"
-                              completeMethod="#{personAddressesTabBean.completeAddress}"
+                              maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
+                              completeMethod="#{personAddressesTabBean.addressReferenceHelper.complete}"
                               converter="selectItemConverter"
                               var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              minQueryLength="3" queryDelay="1000"
+                              queryDelay="1000"
                               onclick="this.setSelectionRange(0, this.value.length)">
                 <p:ajax event="itemSelect" listener="#{personAddressesTabBean.onAddressSelect}" update="edit_panels"/>
                 <p:ajax event="clear" listener="#{personAddressesTabBean.onAddressClear}" update="edit_panels"/>
                 <p:column>
-                  <h:outputText value="#{item.label} (#{item.value})" />
+                  <h:outputText value="#{personAddressesTabBean.addressReferenceHelper.getDescription(item.value)}" />
                 </p:column>
               </p:autoComplete>           
             </div>
@@ -143,7 +142,7 @@
         <p:commandButton action="#{personAddressesTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                          immediate="true" update="edit_panels :mainform:growl" global="false" 
-                         oncomplete="PF('editDataDialog').hide()"/>
+                         oncomplete="PF('addressDataDialog').hide()"/>
       </div>          
 
     </p:outputPanel>

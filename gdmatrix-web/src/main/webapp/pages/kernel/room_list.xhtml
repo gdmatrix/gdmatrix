@@ -1,0 +1,35 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui">
+  
+  <p:dataTable id="full_results_table" value="#{roomFinderBean.resultListHelper.rows}" var="row"
+               stripedRows="true" paginator="true" pageLinks="5" 
+               paginatorPosition="bottom" size="small"
+               rows="10" first="#{roomFinderBean.firstRow}"
+               rowStyleClass="#{row.roomId == roomObjectBean.objectId ? 'current' : ''}"
+               rowIndexVar="rowIndex"               
+               rendered="true">
+    <p:column headerText="#{kernelBundle.room_id}" styleClass="w-1">
+      <h:outputText value="#{row.roomId}" />
+    </p:column>
+    <p:column headerText="#{kernelBundle.room_name}" styleClass="w-8">
+      <h:outputText value="#{row.description}" />
+    </p:column>    
+    <p:column headerText="#{kernelBundle.room_type}" styleClass="w-2">
+      <h:outputText value="#{roomFinderBean.getRoomTypeDescription(row)}" />
+    </p:column>         
+    <p:column styleClass="w-1">
+      <p:commandButton icon="pi pi-external-link" 
+                       styleClass="rounded-button ui-button-flat" 
+                       action="#{roomFinderBean.view(rowIndex)}"
+                       onclick="PF('objectTabs').select(0);"
+                       resetValues="true"
+                       process="@this"
+                       update=":mainform:search_tabs :mainform:context_panel" />     
+    </p:column>
+  </p:dataTable>  
+
+</ui:composition> 
+

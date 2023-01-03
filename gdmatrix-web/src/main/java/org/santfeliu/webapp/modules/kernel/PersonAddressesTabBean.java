@@ -31,25 +31,24 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.kernel.AddressFilter;
-import org.matrix.kernel.AddressView;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.kernel.Address;
 import org.matrix.kernel.KernelManagerPort;
 import org.matrix.kernel.PersonAddress;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
-import org.matrix.web.WebUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.ReferenceHelper;
 import org.santfeliu.webapp.helpers.ResultListHelper;
 
 /**
@@ -59,19 +58,20 @@ import org.santfeliu.webapp.helpers.ResultListHelper;
 @Named
 @ManualScoped
 public class PersonAddressesTabBean extends TabBean 
-{  
-  private static final String ADDRESS_OBJECT_BEAN = "addressObjectBean";
+{
   
   @Inject
   private PersonObjectBean personObjectBean;
-    
+
+  @Inject
+  private AddressObjectBean addressObjectBean;
+  
   //Helpers
   private ResultListHelper<PersonAddressView> resultListHelper;
+  ReferenceHelper<Address> addressReferenceHelper;
   
   private int firstRow;
   private PersonAddress editing;
-  
-  private SelectItem addressSelectItem;
   
   public PersonAddressesTabBean()
   {
@@ -81,6 +81,8 @@ public class PersonAddressesTabBean extends TabBean
   public void init()
   {
     resultListHelper = new PersonAddressResultListHelper();
+    addressReferenceHelper = 
+      new AddressReferenceHelper(DictionaryConstants.ADDRESS_TYPE);    
   }
 
   @Override
@@ -88,6 +90,11 @@ public class PersonAddressesTabBean extends TabBean
   {
     return personObjectBean;
   }
+  
+  public ReferenceHelper<Address> getAddressReferenceHelper() 
+  {
+    return addressReferenceHelper;
+  }  
   
   public PersonAddress getEditing()
   {
@@ -118,23 +125,23 @@ public class PersonAddressesTabBean extends TabBean
   {
     if (editing != null && !isNew(editing))
     {
-      AddressObjectBean addressObjectBean = 
-        WebUtils.getBacking(ADDRESS_OBJECT_BEAN);
       return addressObjectBean.getDescription(editing.getAddressId());
     }
     return null;
   }
   
-  //Address selection
-  public SelectItem getAddressSelectItem()
+  public SelectItem getAddressSelectItem() 
   {
-    return addressSelectItem;
+    return addressReferenceHelper.getSelectItem(editing.getAddressId());
   }
-  
-  public void setAddressSelectItem(SelectItem item)
+
+  public void setAddressSelectItem(SelectItem selectItem) 
   {
-    addressSelectItem = item;
-  }  
+    if (selectItem != null)
+      editing.setAddressId((String)selectItem.getValue());
+    else
+      editing.setAddressId(null);
+  }
 
   public void onAddressSelect(SelectEvent<SelectItem> event) 
   {
@@ -147,68 +154,12 @@ public class PersonAddressesTabBean extends TabBean
   {
     editing.setAddressId(null);
   }  
-  
-  public List<SelectItem> completeAddress(String query)
-  {
-    return completeAddress(query, editing.getAddressId());
-  }  
     
-  private List<SelectItem> completeAddress(String query, String addressId)
-  {
-    ArrayList<SelectItem> items = new ArrayList();
-    AddressObjectBean addressObjectBean = 
-      WebUtils.getBacking(ADDRESS_OBJECT_BEAN);
-    
-    //Add current item
-    if (!isNew(editing))
-    {
-      String description = "";
-      if (addressId != null)
-        description = addressObjectBean.getDescription(addressId);
-      items.add(new SelectItem(addressId, description));
-    }
-        
-    //Query search
-    if (query != null && query.length() >= 3)
-    {
-      AddressFilter filter = new AddressFilter();
-      filter.setStreetName(query);  
-      filter.setMaxResults(10);
-      List<AddressView> addresses = 
-        KernelConfigBean.getPort().findAddressViews(filter);
-      if (addresses != null)
-      {       
-        for (AddressView address : addresses)
-        {
-          String description = addressObjectBean.getDescription(address);
-          SelectItem item = new SelectItem(address.getAddressId(), description);
-          items.add(item);
-        }
-      }
-    }
-    else
-    {
-      //Add favorites TODO
-//      items.addAll(addressObjectBean.getFavorites()); 
-    }
-    
-    return items;
-  }  
-
   public void setSelectedAddress(String addressId)
   {
     editing.setAddressId(addressId);
-    if (addressSelectItem == null || 
-      !addressId.equals(addressSelectItem.getValue()))
-    {
-      AddressObjectBean addressObjectBean = 
-        WebUtils.getBacking(ADDRESS_OBJECT_BEAN);
-      
-      String description = addressObjectBean.getDescription(addressId);
-      addressSelectItem = new SelectItem(addressId, description);       
-    }    
     showDialog();
-  }
+  }  
   
   public String editAddress(PersonAddressView row)
   {
@@ -246,7 +197,6 @@ public class PersonAddressesTabBean extends TabBean
   public String cancel()
   {
     editing = null;
-    addressSelectItem = null;
     info("CANCEL_OBJECT");          
     return null;
   }  
@@ -260,7 +210,7 @@ public class PersonAddressesTabBean extends TabBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing, addressSelectItem };
+    return new Object[]{ editing };
   }
 
   @Override
@@ -270,7 +220,6 @@ public class PersonAddressesTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (PersonAddress)stateArray[0];
-      addressSelectItem = (SelectItem)stateArray[1];
       
       resultListHelper.find();
     }
@@ -293,7 +242,6 @@ public class PersonAddressesTabBean extends TabBean
       if (personAddressId != null && !isEditing(personAddressId))
       {
         editing = KernelConfigBean.getPort().loadPersonAddress(personAddressId);
-        loadAddressSelectItem();     
       }
       else if (personAddressId == null)
       {
@@ -324,7 +272,6 @@ public class PersonAddressesTabBean extends TabBean
         KernelManagerPort port = KernelConfigBean.getPort();
         port.storePersonAddress(editing);
         editing = null;
-        addressSelectItem = null;
         info("STORE_OBJECT");
         hideDialog();
       }
@@ -362,33 +309,16 @@ public class PersonAddressesTabBean extends TabBean
     return null;
   }    
 
-  private void loadAddressSelectItem()
-  {
-    if (editing != null)
-    {
-      AddressObjectBean addressObjectBean = 
-        WebUtils.getBacking(ADDRESS_OBJECT_BEAN);
-      
-      if (editing.getAddressId() != null)
-      {
-        String description = 
-          addressObjectBean.getDescription(editing.getAddressId());
-        addressSelectItem = 
-          new SelectItem(editing.getAddressId(), description);
-      }
-    }
-  }  
-  
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('editDataDialog').show();");    
+    current.executeScript("PF('addressDataDialog').show();");    
   }  
 
   private void hideDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('editDataDialog').hide();");    
+    current.executeScript("PF('addressDataDialog').hide();");    
   }  
   
   private boolean isEditing(String pageObjectId)
@@ -421,8 +351,20 @@ public class PersonAddressesTabBean extends TabBean
       }
       return null;
     }
-
-
   }
+  
+  private class AddressReferenceHelper extends ReferenceHelper<Address>
+  {
+    public AddressReferenceHelper(String typeId)
+    {
+      super(typeId);
+    }
+
+    @Override
+    public String getId(Address address)
+    {
+      return address.getAddressId();
+    }
+  }   
 
 }

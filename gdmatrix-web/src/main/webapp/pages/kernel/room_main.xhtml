@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"                
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+                var="kernelBundle" />
+
+  <div class="ui-fluid formgrid grid">   
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
+      <p:inputText id="name" value="#{roomObjectBean.room.name}" 
+                   styleClass="inputfield w-full" required="true"/>
+    </div>
+
+    <!--TODO: isRenderType -->
+    <p:outputPanel styleClass="field col-3"
+                   rendered="#{roomObjectBean.allTypes.size() > 1}">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_type}" /> 
+      <p:selectOneMenu id="room_type_id" value="#{roomObjectBean.room.roomTypeId}"  
+                       styleClass="inputfield w-full" filter="true" var="t">
+        <f:selectItems value="#{roomObjectBean.allTypes}" 
+                       var="type" itemLabel="#{type.description}" 
+                       itemValue="#{type.typeId}" />
+        <p:column>
+          <h:outputText value="#{typeBean.getDescription(t)}" />
+        </p:column>            
+      </p:selectOneMenu>
+    </p:outputPanel>      
+    
+    <p:outputPanel styleClass="field col-12">  
+      <p:outputLabel for="address"  
+                     value="#{kernelBundle.room_address}"
+                     styleClass="w-full"/>
+      <div class="ui-inputgroup">
+        <p:commandButton action="#{navigatorBean.find('Address', '#{roomObjectBean.room.addressId}')}"
+                         icon="pi pi-search" ajax="false"
+                         styleClass="ui-button-raised"                               
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
+        <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-11"
+                        value="#{roomObjectBean.addressSelectItem}" 
+                        maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
+                        completeMethod="#{roomObjectBean.addressReferenceHelper.complete}"
+                        converter="selectItemConverter"
+                        var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                        queryDelay="1000"
+                        onclick="this.setSelectionRange(0, this.value.length)">
+          <p:ajax event="itemSelect" listener="#{roomObjectBean.onAddressSelect}" update="@this"/>
+          <p:ajax event="clear" listener="#{roomObjectBean.onAddressClear}" update="@this"/>
+          <p:column>
+            <h:outputText value="#{roomObjectBean.addressReferenceHelper.getDescription(item.value)}" />
+          </p:column>
+        </p:autoComplete>
+      </div>
+    </p:outputPanel>      
+
+    <div class="field col-12 md:col-4">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_phone}" />
+      <p:inputText id="phone" value="#{roomObjectBean.room.phone}" 
+                   styleClass="inputfield w-full"/>
+    </div>  
+
+    <div class="field col-12 md:col-4">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_fax}" />
+      <p:inputText id="fax" value="#{roomObjectBean.room.fax}" 
+                   styleClass="inputfield w-full"/>
+    </div>  
+
+    <div class="field col-12 md:col-4">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_email}" />
+      <p:inputText id="email" value="#{roomObjectBean.room.email}" 
+                   styleClass="inputfield w-full"/>
+    </div>  
+
+    <div class="field col-12 md:col-2">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
+      <p:inputText id="capacity" value="#{roomObjectBean.room.capacity}" 
+                   styleClass="inputfield w-full"/>
+    </div>  
+
+    <div class="field col-12 md:col-2">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_area}" />
+      <p:inputText id="area" value="#{roomObjectBean.room.area}" 
+                   styleClass="inputfield w-full"/>
+    </div>          
+
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_schedule}" />
+      <p:inputText id="schedule" value="#{roomObjectBean.room.schedule}" 
+                   styleClass="inputfield w-full"/>
+    </div>  
+
+    <div class="field col-12 md:col-2">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
+      <p:inputText id="spaceId" value="#{roomObjectBean.room.spaceId}" 
+                   styleClass="inputfield w-full"/>
+    </div>  
+
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
+      <p:inputText id="comments" value="#{roomObjectBean.room.comments}" 
+                   styleClass="inputfield w-full"/>
+    </div> 
+
+  </div>
+    
+</ui:composition>

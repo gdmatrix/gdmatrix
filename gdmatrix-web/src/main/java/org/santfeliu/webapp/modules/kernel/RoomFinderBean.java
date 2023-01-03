@@ -33,42 +33,65 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.kernel.AddressFilter;
-import org.matrix.kernel.AddressView;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.kernel.Address;
+import org.matrix.kernel.RoomFilter;
+import org.matrix.kernel.RoomView;
+import org.primefaces.event.SelectEvent;
+import org.santfeliu.dic.web.TypeBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.BigListHelper;
+import org.santfeliu.webapp.helpers.ReferenceHelper;
+import org.santfeliu.webapp.util.WebUtils;
 /**
  *
- * @author blanquepa
+ * @author lopezrj-sf
  */
 @Named
 @ManualScoped
-public class AddressFinderBean extends FinderBean
+public class RoomFinderBean extends FinderBean
 {
   private String smartFilter;  
-  private AddressFilter filter = new AddressFilter();
-  private BigListHelper<AddressView> resultListHelper;
+  private RoomFilter filter = new RoomFilter();
+  private int firstRow;
+  private BigListHelper<RoomView> resultListHelper;
   private boolean isSmartFind;  
+  
+  ReferenceHelper<Address> addressReferenceHelper; 
   
   @Inject
   NavigatorBean navigatorBean;
   
   @Inject
-  AddressObjectBean addressObjectBean;
-  
+  RoomTypeBean roomTypeBean;
+
   @Inject
-  AddressTypeBean addressTypeBean;  
-  
+  RoomObjectBean roomObjectBean;
+
   @PostConstruct
   public void init()
   {
-    resultListHelper = new AddressBigListHelper();
+    resultListHelper = new RoomBigListHelper();
+    addressReferenceHelper = 
+      new AddressReferenceHelper(DictionaryConstants.ADDRESS_TYPE);
+  }
+  
+  @Override
+  public ObjectBean getObjectBean()
+  {
+    return roomObjectBean;
+  }  
+
+  public ReferenceHelper<Address> getAddressReferenceHelper() 
+  {
+    return addressReferenceHelper;
   }
   
   public String getSmartFilter()
@@ -81,46 +104,74 @@ public class AddressFinderBean extends FinderBean
     this.smartFilter = smartFilter;
   }  
     
-  public AddressFilter getFilter()
+  public RoomFilter getFilter()
   {
     return filter;
   }
 
-  public void setFilter(AddressFilter filter)
+  public void setFilter(RoomFilter filter)
   {
     this.filter = filter;
   }
-    
-  public List<String> getFilterAddressId()
+
+  public int getFirstRow()
   {
-    return this.filter.getAddressIdList();
+    return firstRow;
   }
-  
-  public void setFilterAddressId(List<String> addressIds)
+
+  public void setFirstRow(int firstRow)
   {
-    this.filter.getAddressIdList().clear();
-    if (addressIds != null && !addressIds.isEmpty())
-      this.filter.getAddressIdList().addAll(addressIds);
-  }  
-  
+    this.firstRow = firstRow;
+  }
+
   @Override
   public String getObjectId(int position)
-  {
-    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
-      resultListHelper.getRow(position).getAddressId();
+  {    
+    RoomView roomView = (RoomView)resultListHelper.getRow(position);
+    return roomView == null ? NEW_OBJECT_ID : roomView.getRoomId();
   }
 
   @Override
   public int getObjectCount()
   {
-    return resultListHelper.getRows() == null ? 0 : 
-      resultListHelper.getRowCount();
+    return resultListHelper.getRowCount();
   }  
-
-  @Override
-  public ObjectBean getObjectBean()
+  
+  public List<String> getRoomId()
   {
-    return addressObjectBean;
+    return filter.getRoomIdList();
+  }
+
+  public void setRoomId(List<String> roomIds)
+  {
+    filter.getRoomIdList().clear();
+    if (roomIds != null && !roomIds.isEmpty())
+      filter.getRoomIdList().addAll(roomIds);
+  }  
+  
+  public SelectItem getAddressSelectItem() 
+  {
+    return addressReferenceHelper.getSelectItem(filter.getAddressId());
+  }
+
+  public void setAddressSelectItem(SelectItem selectItem) 
+  {
+    if (selectItem != null)
+      filter.setAddressId((String)selectItem.getValue());
+    else
+      filter.setAddressId(null);
+  }
+
+  public void onAddressSelect(SelectEvent<SelectItem> event) 
+  {
+    SelectItem item = event.getObject();
+    String addressId = (String)item.getValue();
+    filter.setAddressId(addressId);
+  }
+
+  public void onAddressClear() 
+  {
+    filter.setAddressId(null);
   }
 
   public BigListHelper getResultListHelper()
@@ -131,7 +182,7 @@ public class AddressFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    isSmartFind = true;
+    isSmartFind = true;    
     doFind(true);
   }
   
@@ -150,17 +201,23 @@ public class AddressFinderBean extends FinderBean
 
   public String clear()
   {
-    filter = new AddressFilter();
+    filter = new RoomFilter();
     smartFilter = null;
     resultListHelper.clear();
     return null;
   }
   
+  public String getRoomTypeDescription(RoomView roomView)
+  {
+    TypeBean typeBean = WebUtils.getBean("typeBean");
+    return ((roomView == null || roomView.getRoomTypeId() == null) ? "" : 
+      typeBean.getDescription(roomView.getRoomTypeId()));
+  }
+  
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, 
-      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+    return new Object[]{ isSmartFind, filter, firstRow, getObjectPosition() };
   }
 
   @Override
@@ -170,12 +227,12 @@ public class AddressFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       isSmartFind = (Boolean)stateArray[0];
-      smartFilter = (String)stateArray[1];
-      filter = (AddressFilter)stateArray[2];
-      resultListHelper.setFirstRowIndex((Integer)stateArray[3]); 
-      setObjectPosition((Integer)stateArray[4]);
+      filter = (RoomFilter)stateArray[1];
 
       doFind(false);
+
+      firstRow = (Integer)stateArray[2];
+      setObjectPosition((Integer)stateArray[3]);
     }
     catch (Exception ex)
     {
@@ -185,18 +242,19 @@ public class AddressFinderBean extends FinderBean
   
   private void doFind(boolean autoLoad)
   {
+    firstRow = 0;
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
 
     if (isSmartFind)
     {
-      filter = addressTypeBean.queryToFilter(smartFilter, baseTypeId);      
+      filter = roomTypeBean.queryToFilter(smartFilter, baseTypeId);
       setTabIndex(0);
     }
     else
-    {      
-      smartFilter = addressTypeBean.filterToQuery(filter);      
+    {
+      smartFilter = roomTypeBean.filterToQuery(filter);
       setTabIndex(1);
-    }    
+    }
     
     resultListHelper.find();
     
@@ -204,26 +262,25 @@ public class AddressFinderBean extends FinderBean
     {  
       if (resultListHelper.getRowCount() == 1)
       {
-        AddressView addressView = 
-          (AddressView) resultListHelper.getRows().get(0);
-        navigatorBean.view(addressView.getAddressId());
-        addressObjectBean.setSearchTabIndex(1);
+        RoomView roomView = (RoomView)resultListHelper.getRows().get(0);
+        navigatorBean.view(roomView.getRoomId());
+        roomObjectBean.setSearchTabIndex(1);
       }
       else
       {
-        addressObjectBean.setSearchTabIndex(0);
+        roomObjectBean.setSearchTabIndex(0);
       }
     }    
   }
-  
-  private class AddressBigListHelper extends BigListHelper<AddressView>
+    
+  private class RoomBigListHelper extends BigListHelper<RoomView>
   {
     @Override
     public int countResults()
     {
       try
       {
-        return KernelModuleBean.getPort(false).countAddresses(filter);
+        return KernelModuleBean.getPort(false).countRooms(filter);
       }
       catch (Exception ex)
       {
@@ -233,13 +290,13 @@ public class AddressFinderBean extends FinderBean
     }
 
     @Override
-    public List<AddressView> getResults(int firstResult, int maxResults)
+    public List<RoomView> getResults(int firstResult, int maxResults)
     {
       try
       {
         filter.setFirstResult(firstResult);
         filter.setMaxResults(maxResults);
-        return KernelModuleBean.getPort(false).findAddressViews(filter);
+        return KernelModuleBean.getPort(false).findRoomViews(filter);
       }
       catch (Exception ex)
       {
@@ -247,7 +304,20 @@ public class AddressFinderBean extends FinderBean
       }
       return null;
     }
-       
   }
+  
+  private class AddressReferenceHelper extends ReferenceHelper<Address>
+  {
+    public AddressReferenceHelper(String typeId)
+    {
+      super(typeId);
+    }
+
+    @Override
+    public String getId(Address address)
+    {
+      return address.getAddressId();
+    }
+  }  
 
 }

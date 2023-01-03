@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://java.sun.com/jsf/core"
+                template="/pages/obj/object_3col.xhtml">
+
+  <ui:define name="filter">
+
+    <p:outputPanel id="filter_panel">
+
+      <p:tabView id="find_selector"
+                 activeIndex="#{themeFinderBean.tabIndex}">
+
+        <p:tab title="Ràpida" id="smart_search">
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="Valor" />
+            <p:inputText id="smartFilter" value="#{themeFinderBean.smartFilter}"
+                         class="inputfield w-full ui-fluid"/>
+          </p:outputPanel>
+
+          <div class="buttons text-right">
+            <p:commandButton value="Clear"
+                             action="#{themeFinderBean.smartClear}"
+                             styleClass="ui-button-raised m-1"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             resetValues="true"                             
+                             />
+            <p:commandButton id="smart_search_button"
+                             value="Search"
+                             action="#{themeFinderBean.smartFind}"
+                             process=":mainform:find_selector"
+                             update=":mainform:search_tabs :mainform:context_panel :mainform:filter_panel"
+                             resetValues="true"
+                             styleClass="ui-button-raised m-1"
+                             oncomplete="endPanel('leftPanel');"/>
+          </div>
+
+        </p:tab>
+
+        <p:tab title="Avançada" id="advanced_search">
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+          <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
+                        var="agendaBundle" />
+          
+          <!-- ThemeId -->
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="#{agendaBundle.theme_id}" />
+            <p:inputText id="themeId" value="#{themeFinderBean.filter.themeId}"
+                         class="inputfield w-full" />
+          </p:outputPanel>
+
+          <!-- Description -->
+          <p:outputPanel styleClass="field">
+            <p:outputLabel for="@next" value="#{agendaBundle.theme_description}" />
+            <p:inputText id="description" value="#{themeFinderBean.filter.description}"
+                         class="inputfield w-full" />
+          </p:outputPanel>
+
+          <div class="text-right">
+            <p:commandButton value="Clear"
+                             action="#{themeFinderBean.clear}"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             resetValues="true"
+                             />
+            <p:commandButton id="advanced_search_button"
+                             value="Search"
+                             action="#{themeFinderBean.find}"
+                             process=":mainform:find_selector"
+                             update=":mainform:search_tabs :mainform:context_panel :mainform:filter_panel"
+                             styleClass="ui-button-raised m-1"
+                             resetValues="true"
+                             oncomplete="endPanel('leftPanel');"
+                             />
+          </div>
+        </p:tab>
+
+      </p:tabView>
+    </p:outputPanel>
+  </ui:define>
+
+  <ui:define name="object">
+    
+    <p:tabView id="search_tabs"
+               widgetVar="searchTabs"
+               binding="#{themeObjectBean.searchTabView}"
+               touchable="false">
+      
+      <p:tab title="Cerca" id="object_search">
+        <f:facet name="title">
+          <i class="pi pi-list m-1"></i>
+          <h:outputText value="Resultats"/>
+        </f:facet>
+        
+        <ui:include src="theme_list.xhtml" />
+      </p:tab>
+
+      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
+             id="object_form">
+
+        <ui:param name="objectBean" value="#{themeObjectBean}" />
+        <ui:include src="/pages/obj/object_standard.xhtml" />
+
+      </p:tab>
+    </p:tabView>
+
+  </ui:define>
+
+</ui:composition>
