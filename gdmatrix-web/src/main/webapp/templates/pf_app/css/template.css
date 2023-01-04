@@ -297,6 +297,19 @@ body .ui-datatable .ui-datatable-header
 }
 
 /*** Dialogs ***/
+body .ui-dialog
+{
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 95%;
+  max-height: 95%;
+}
+
+body .ui-dialog-content
+{
+  overflow-y: hidden !important;
+}
+
 body .ui-dialog .ui-dialog-titlebar .ui-dialog-title
 {
   float: left;

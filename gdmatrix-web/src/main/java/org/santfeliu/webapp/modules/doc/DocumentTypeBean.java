@@ -80,7 +80,7 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     if (query == null) query = "";
 
     DocumentFilter filter = new DocumentFilter();
-    if (query.matches(".*[0-9]+"))
+    if (query.matches(".{0,4}[0-9]+"))
     {
       filter.getDocId().add(query);
     }

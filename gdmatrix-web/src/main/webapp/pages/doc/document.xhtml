@@ -28,10 +28,10 @@
 
           <div class="buttons text-right">
             <p:commandButton value="Clear"
-                             action="#{documentFinderBean.smartClear}"
+                             action="#{documentFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"                                                          
                              />      
             <p:commandButton id="smart_search_button"
@@ -72,7 +72,7 @@
             <p:commandButton value="Clear"
                              action="#{documentFinderBean.clear}"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"                             
                              />
             <p:commandButton id="advanced_search_button"
@@ -92,44 +92,74 @@
   </ui:define>
 
   <ui:define name="object">
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0) 
+        {
+          updateResults();
+          console.info("updateResults");
+        }
+      }
+    </script>
+    <p:remoteCommand name="updateResults" 
+                     action="#{documentFinderBean.update}"
+                     process="@this" 
+                     update=":mainform:search_tabs:result_list" />
 
     <p:tabView id="search_tabs" 
                widgetVar="searchTabs" 
                binding="#{documentObjectBean.searchTabView}"
-               touchable="false">
-      <p:tab title="Cerca" id="document_search">
+               touchable="false"                
+               onTabShow="onTabShow()">
+      <p:tab>
         <f:facet name="title">
           <i class="pi pi-list m-1"></i>
           <h:outputText value="Resultats"/>
         </f:facet>
-        <ui:include src="document_list.xhtml" />
-      </p:tab>      
+        <h:panelGroup id="result_list">
+          <ui:include src="document_list.xhtml" />
+        </h:panelGroup>
+      </p:tab>
 
-      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
-             id="object_form">
-        
-        <ui:param name="objectBean" value="#{documentObjectBean}" />
-        <ui:include src="/pages/obj/object_standard.xhtml" />
-        
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-list m-1"></i>
+          <h:outputText value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"/>
+        </f:facet>
+        <h:panelGroup id="obj_tabs">
+          <ui:param name="objectBean" value="#{documentObjectBean}" />
+          <ui:include src="/pages/obj/object_standard.xhtml" />
+        </h:panelGroup>        
       </p:tab>
     </p:tabView>
     
     <p:dialog id="versions_panel"
               widgetVar="versionsPanel" 
               modal="true"
+              height="auto"
+              resizable="false"
               header="Document #{documentObjectBean.objectId} versions"
-              closeOnEscape="true"  
-              style="max-width: 90%;max-height: 90%;" minWidth="300">
-      <p:repeat value="#{documentObjectBean.versions}" var="docVersion">
-        <div>
-          <p:commandLink value="#{docVersion.version}: #{docVersion.title} - #{docVersion.creationDate}" 
+              closeOnEscape="true">
+      <p:dataTable value="#{documentObjectBean.versions}" 
+                   var="docVersion"
+                   >
+        <p:column headerText="Version">
+          <h:outputText value="#{docVersion.version}" />
+        </p:column>
+        <p:column headerText="Title">
+          <p:commandLink value="#{docVersion.title}" 
                          action="#{documentObjectBean.loadVersion(docVersion.version)}" 
                          process="@this"
                          update=":mainform:search_tabs"
                          oncomplete="PF('versionsPanel').hide()"
                          />
-        </div>
-      </p:repeat>
+        </p:column>
+        <p:column headerText="Creation">
+          <h:outputText value="#{docVersion.creationDate}" />
+        </p:column>
+      </p:dataTable>
       <f:facet name="footer">
         <p:commandButton value="New version" 
                          action="#{documentObjectBean.newVersion}" 

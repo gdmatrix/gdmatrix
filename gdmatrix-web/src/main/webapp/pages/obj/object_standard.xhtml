@@ -13,7 +13,7 @@
                          styleClass="rounded-button ui-button-flat mr-2" 
                          action="#{objectBean.finderBean.viewPrevious}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs"
+                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasPrevious()}"
                          title="Previous" alt="Previous" 
@@ -24,7 +24,7 @@
                          styleClass="rounded-button ui-button-flat ml-2 mr-2" 
                          action="#{objectBean.finderBean.viewNext}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs"
+                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasNext()}"
                          title="Next" alt="Next" 
@@ -46,7 +46,7 @@
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.view('')}"
                          process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs"
+                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
                          resetValues="true"
                          title="#{objectBundle.create}" alt="#{objectBundle.create}" 
                          />
@@ -54,6 +54,8 @@
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
                          rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
+                         process="@this"
+                         partialSubmit="true"
                          update="object_header :mainform:context_panel" 
                          title="Mark" alt="Mark" 
                          />
@@ -61,6 +63,8 @@
                          styleClass="rounded-button ui-button-flat" 
                          action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
                          rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
+                         process="@this"
+                         partialSubmit="true"
                          update="object_header :mainform:context_panel" 
                          title="Unmark" alt="Unmark" 
                          />
@@ -115,7 +119,7 @@
                      value="Save"
                      icon="pi pi-save"
                      process=":mainform:search_tabs"
-                     update=":mainform:search_tabs :mainform:context_panel"
+                     update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                      styleClass="ui-button-raised m-1"                      
                      oncomplete="switchToTabWithErrors()"
                      />
@@ -124,7 +128,7 @@
                      icon="pi pi-undo"
                      process="@this"
                      styleClass="ui-button-raised m-1"
-                     update=":mainform:search_tabs"
+                     update=":mainform:search_tabs:obj_tabs"
                      resetValues="true" 
                      global="false" />
   </div>

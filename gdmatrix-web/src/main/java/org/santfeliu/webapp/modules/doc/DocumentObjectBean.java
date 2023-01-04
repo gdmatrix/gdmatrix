@@ -38,9 +38,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.activation.DataHandler;
+import javax.faces.context.ExternalContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
@@ -55,10 +57,14 @@ import org.matrix.doc.State;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.doc.util.DocumentUtils;
+import static org.santfeliu.doc.web.DocumentUrlBuilder.DOC_SERVLET_URL;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.IOUtils;
+import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.util.MimeTypeMap;
+import org.santfeliu.web.HttpUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
@@ -72,9 +78,19 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
 @ManualScoped
 public class DocumentObjectBean extends ObjectBean
 {
-
   private Document document = new Document();
   private transient List<Document> versions;
+
+//  private transient final ReferenceHelper<Type> typeReferenceHelper =
+//    new ReferenceHelper<Type>(DictionaryConstants.TYPE_TYPE)
+//  {
+//    @Override
+//    public String getId(Type type)
+//    {
+//      return type.getTypeId();
+//    }
+//  };
+
   private transient final PropertyHelper propertyHelper = new PropertyHelper()
   {
     @Override
@@ -123,6 +139,11 @@ public class DocumentObjectBean extends ObjectBean
   {
     return documentFinderBean;
   }
+
+//  public ReferenceHelper getTypeReferenceHelper()
+//  {
+//    return typeReferenceHelper;
+//  }
 
   public PropertyHelper getPropertyHelper()
   {
@@ -180,7 +201,7 @@ public class DocumentObjectBean extends ObjectBean
   public String getContentSize()
   {
     Content content = getContent();
-    if (content.getSize() == null) return "";
+    if (content.getSize() == null || content.getUrl() != null) return "";
 
     long size = content.getSize();
     return DocumentUtils.getSizeString(size);
@@ -203,6 +224,14 @@ public class DocumentObjectBean extends ObjectBean
     }
   }
 
+  public String getContentLanguage()
+  {
+    Content content = getContent();
+    String language = content.getLanguage();
+
+    return language == null ? "" : DocumentUtils.extendLanguage(language);
+  }
+
   @Override
   public String getDescription()
   {
@@ -217,6 +246,85 @@ public class DocumentObjectBean extends ObjectBean
   public void setDocument(Document document)
   {
     this.document = document;
+  }
+
+//  public SelectItem getTypeSelectItem()
+//  {
+//    return typeReferenceHelper.getSelectItem(document.getDocTypeId());
+//  }
+//
+//  public void setTypeSelectItem(SelectItem selectItem)
+//  {
+//    if (selectItem != null)
+//      document.setDocTypeId((String) selectItem.getValue());
+//    else
+//      document.setDocTypeId("Document");
+//  }
+
+  public String getDocumentURL(boolean withContentId, boolean downloadable,
+    boolean fullUrl, int maxFilenameLength)
+  {
+    String url;
+
+    Content content = getContent();
+
+    if (content.getUrl() != null)
+    {
+      url = content.getUrl();
+    }
+    else
+    {
+      String title = document.getTitle() == null ?
+        "document" : document.getTitle();
+
+      ExternalContext extContext = getExternalContext();
+      HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
+      String contextPath = request.getContextPath();
+
+      String extension =
+        MimeTypeMap.getMimeTypeMap().getExtension(content.getContentType());
+
+      String filename = DocumentUtils.getFilename(title);
+      if (filename.length() == 0) filename = "document";
+      else if (filename.length() > maxFilenameLength)
+      {
+        filename = filename.substring(0, maxFilenameLength - 1);
+      }
+      filename = filename + "." + extension;
+
+      StringBuilder urlBuffer = new StringBuilder();
+
+      if (fullUrl)
+      {
+        String serverName = HttpUtils.getServerName(request);
+        String protocol = HttpUtils.getScheme(request);
+        String port = MatrixConfig.getProperty("org.santfeliu.web.defaultPort");
+        port = !"80".equals(port) ? ":" + port : "";
+
+        urlBuffer.append(protocol).append("://")
+          .append(serverName).append(port);
+      }
+
+      urlBuffer.append(contextPath).append(DOC_SERVLET_URL);
+
+      if (withContentId)
+      {
+        urlBuffer.append(content.getContentId());
+      }
+      else
+      {
+        urlBuffer.append(document.getDocId());
+      }
+
+      urlBuffer.append("/").append(filename);
+
+      if (downloadable)
+      {
+        urlBuffer.append("?saveas=").append(filename);
+      }
+      url = urlBuffer.toString();
+    }
+    return url;
   }
 
   @Override
@@ -277,6 +385,8 @@ public class DocumentObjectBean extends ObjectBean
 
     document = DocModuleBean.getPort(false).storeDocument(document);
     setObjectId(document.getDocId());
+
+    documentFinderBean.setRows(null);
 
     System.out.println(">>> stored URL: " + document.getContent().getUrl());
 
@@ -377,7 +487,8 @@ public class DocumentObjectBean extends ObjectBean
           filter.getOrderByProperty().add(order);
           versions = DocModuleBean.getPort(false).findDocuments(filter);
         }
-      } catch (Exception ex)
+      }
+      catch (Exception ex)
       {
         error(ex);
       }

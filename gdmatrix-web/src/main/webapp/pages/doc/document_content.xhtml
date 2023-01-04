@@ -4,16 +4,17 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:pe="http://primefaces.org/ui/extensions">
 
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                   var="caseBundle" />
-        
+    
     <style>
         body ui-fileupload.ui-fileupload-withdropzone.ui-state-drag 
         {
           background: #ffffd6 !important;
-        }
+        } 
     </style>
     
     <h:panelGroup id="content_properties" styleClass="ui-fluid formgrid grid">   
@@ -28,7 +29,7 @@
       
       <h:panelGroup rendered="#{not documentObjectBean.isNew() and documentObjectBean.fileToStore == null}">
 
-        <p:outputPanel styleClass="field col-12 md:col-6" 
+        <p:outputPanel styleClass="field col-12 md:col-12 xl:col-6" 
                        rendered="true">
           <p:outputLabel for="@next" value="ContentId" />
           <p:inputText value="#{documentObjectBean.content.contentId}" 
@@ -36,15 +37,7 @@
                        class="inputfield w-full"/>
         </p:outputPanel> 
 
-        <p:outputPanel styleClass="field col-12 md:col-6" 
-                       rendered="true">
-          <p:outputLabel for="@next" value="ContentType" />
-          <p:inputText value="#{documentObjectBean.content.contentType}" 
-                       readonly="true"                     
-                       class="inputfield w-full"/>
-        </p:outputPanel>
-
-        <p:outputPanel styleClass="field col-12 md:col-6" 
+        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-3" 
                        rendered="true">
           <p:outputLabel for="@next" value="Storage type" />
           <p:inputText value="#{documentObjectBean.contentStorageType}" 
@@ -52,22 +45,71 @@
                        class="inputfield w-full"/>
         </p:outputPanel>
 
-        <p:outputPanel styleClass="field col-12 md:col-6" 
-                       rendered="#{documentObjectBean.contentStorageType != 'EXTERNAL'}">
+        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-3">
           <p:outputLabel for="@next" value="Content size" />
           <p:inputText value="#{documentObjectBean.contentSize}" 
                        readonly="true"
                        class="inputfield w-full"/>
         </p:outputPanel>
-
-        <p:outputPanel styleClass="field col-12 md:col-6" 
-                       rendered="#{documentObjectBean.contentStorageType == 'EXTERNAL'}">
-          <p:outputLabel for="@next" value="External URL" />
-          <p:inputText value="#{documentObjectBean.content.url}" 
+        
+        <p:outputPanel styleClass="field col-12 md:col-12 xl:col-6">
+          <p:outputLabel for="@next" value="Format description" />
+          <p:inputText value="#{documentObjectBean.content.formatDescription} - #{documentObjectBean.content.formatId}" 
                        readonly="true"
                        class="inputfield w-full"/>
         </p:outputPanel>
 
+        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-3" 
+                       rendered="true">
+          <p:outputLabel for="@next" value="ContentType" />
+          <p:inputText value="#{documentObjectBean.content.contentType}" 
+                       readonly="true"                     
+                       class="inputfield w-full"/>
+        </p:outputPanel>        
+        
+        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-3">
+          <p:outputLabel for="@next" value="Content language" />
+          <p:inputText value="#{documentObjectBean.contentLanguage}" 
+                       readonly="true"
+                       class="inputfield w-full"/>
+        </p:outputPanel>
+        
+        <p:outputPanel styleClass="field col-12 md:col-12"
+                       rendered="#{documentObjectBean.content.contentId != null}">
+          <p:outputLabel for="@next" value="Document URL" />
+          <div class="ui-inputgroup">
+            <p:inputText id="doc_url" 
+                         value="#{documentObjectBean.getDocumentURL(false, false, true, 20)}" 
+                         readonly="true"
+                         class="inputfield w-full"/>
+            <p:commandButton id="doc_url_copy" icon="pi pi-copy" />
+            <pe:clipboard trigger="doc_url_copy" action="copy" target="doc_url" />
+            <p:linkButton href="#{documentObjectBean.getDocumentURL(false, true, true, 20)}" 
+                          icon="pi pi-download" />
+            <p:linkButton href="#{documentObjectBean.getDocumentURL(false, false, true, 20)}" 
+                          icon="pi pi-external-link" 
+                          target="_blank" />
+          </div>
+        </p:outputPanel>        
+
+        <p:outputPanel styleClass="field col-12 md:col-12"
+                       rendered="#{documentObjectBean.content.contentId != null}">
+          <p:outputLabel for="@next" value="Content URL" />
+          <div class="ui-inputgroup">
+            <p:inputText id="cnt_url"
+                         value="#{documentObjectBean.getDocumentURL(true, false, true, 20)}" 
+                         readonly="true"
+                         class="inputfield w-full"/>
+            <p:commandButton id="cnt_url_copy" icon="pi pi-copy" />
+            <pe:clipboard trigger="cnt_url_copy" action="copy" target="cnt_url" />
+            <p:linkButton href="#{documentObjectBean.getDocumentURL(true, true, true, 20)}"
+                          icon="pi pi-download"  />
+            <p:linkButton href="#{documentObjectBean.getDocumentURL(true, false, true, 20)}" 
+                          icon="pi pi-external-link" 
+                          target="_blank" />
+          </div>
+        </p:outputPanel>
+        
       </h:panelGroup>
 
       <h:panelGroup rendered="#{documentObjectBean.fileToStore != null}">

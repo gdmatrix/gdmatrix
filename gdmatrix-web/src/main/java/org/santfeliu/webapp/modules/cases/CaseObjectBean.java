@@ -196,6 +196,8 @@ public class CaseObjectBean extends ObjectBean
   {
     cas = CasesModuleBean.getPort(false).storeCase(cas);
     setObjectId(cas.getCaseId());
+
+    caseFinderBean.setRows(null);
   }
 
   @Override

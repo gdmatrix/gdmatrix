@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.doc;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -38,9 +39,11 @@ import javax.inject.Named;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.santfeliu.faces.ManualScoped;
+import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 
 /**
  *
@@ -54,7 +57,7 @@ public class DocumentFinderBean extends FinderBean
   private DocumentFilter filter = new DocumentFilter();
   private List<Document> rows;
   private int firstRow;
-  private boolean isSmartFind;
+  private int findMode;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -151,41 +154,53 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    isSmartFind = true;
+    findMode = 1;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
-  }
-
-  public void smartClear()
-  {
-    smartFilter = null;
-    rows = null;
+    firstRow = 0;
   }
 
   @Override
   public void find()
   {
-    isSmartFind = false;
+    findMode = 2;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter.setDocTypeId(baseTypeId);
+    smartFilter = documentTypeBean.filterToQuery(filter);
     doFind(true);
+    firstRow = 0;
+  }
+
+  public void update()
+  {
+    if (rows == null)
+    {
+      doFind(false);
+    }
   }
 
   public void clear()
   {
     filter = new DocumentFilter();
+    smartFilter = null;
     rows = null;
+    findMode = 0;
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, filter, firstRow, getObjectPosition() };
+    return new Object[]{ findMode, filter, firstRow, getObjectPosition() };
   }
 
   @Override
   public void restoreState(Serializable state)
   {
     Object[] stateArray = (Object[])state;
-    isSmartFind = (Boolean)stateArray[0];
+    findMode = (Integer)stateArray[0];
     filter = (DocumentFilter)stateArray[1];
+    smartFilter = documentTypeBean.filterToQuery(filter);
 
     doFind(false);
 
@@ -197,34 +212,66 @@ public class DocumentFinderBean extends FinderBean
   {
     try
     {
-      firstRow = 0;
-      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-
-      if (isSmartFind)
+      if (findMode == 0)
       {
-        setTabIndex(0);
-        filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);
+        rows = Collections.EMPTY_LIST;
       }
       else
       {
-        smartFilter = documentTypeBean.filterToQuery(filter);
-        filter.setDocTypeId(baseTypeId);
-        setTabIndex(1);
-      }
-
-      filter.setMaxResults(40);
-      rows = DocModuleBean.getPort(false).findDocuments(filter);
-
-      if (autoLoad)
-      {
-        if (rows.size() == 1)
+        if (findMode == 1)
         {
-          navigatorBean.view(rows.get(0).getDocId());
-          documentObjectBean.setSearchTabIndex(1);
+          setTabIndex(0);
         }
         else
         {
-          documentObjectBean.setSearchTabIndex(0);
+          setTabIndex(1);
+        }
+
+        rows = new BigList(20, 10)
+        {
+          @Override
+          public int getElementCount()
+          {
+            try
+            {
+              return DocModuleBean.getPort(false).countDocuments(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return 0;
+            }
+          }
+
+          @Override
+          public List getElements(int firstResult, int maxResults)
+          {
+            try
+            {
+              filter.setFirstResult(firstResult);
+              filter.setMaxResults(maxResults);
+              return DocModuleBean.getPort(false).findDocuments(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return null;
+            }
+          }
+        };
+
+        if (autoLoad)
+        {
+          if (rows.size() == 1)
+          {
+            navigatorBean.view(rows.get(0).getDocId());
+            documentObjectBean.setSearchTabIndex(
+              documentObjectBean.getEditionTabIndex());
+          }
+          else
+          {
+            documentObjectBean.setSearchTabIndex(0);
+          }
         }
       }
     }

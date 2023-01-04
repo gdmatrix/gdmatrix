@@ -33,6 +33,27 @@
         <p:inputText id="docTypeId" value="#{documentObjectBean.document.docTypeId}"
                      required="true"
                      styleClass="inputfield w-full" />
+<!--
+        <div class="ui-inputgroup"> 
+          <p:autoComplete id="type_id"  
+                          value="#{documentObjectBean.typeSelectItem}" 
+                          maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
+                          completeMethod="#{documentObjectBean.typeReferenceHelper.complete}"
+                          converter="selectItemConverter"
+                          var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                          minQueryLength="2" queryDelay="1000"
+                          onclick="this.setSelectionRange(0, this.value.length)">
+            <p:column>
+              <h:outputText value="#{documentObjectBean.typeReferenceHelper.getDescription(item.value)}" />
+            </p:column>           
+          </p:autoComplete>  
+          <p:commandButton icon="pi pi-search"
+                           styleClass="ui-button-raised select-button" 
+                           action="#{navigatorBean.find('Type', 'documentObjectBean.document.docTypeId')}"
+                           alt="#{objectBundle.search}" title="#{objectBundle.search}" ajax="false"
+                            />     
+        </div>
+-->
       </p:outputPanel> 
 
       <p:outputPanel styleClass="field col-12 md:col-4" 

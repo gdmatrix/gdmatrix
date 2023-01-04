@@ -50,16 +50,26 @@
                            action="#{navigatorBean.show('Document', row.document.docId)}" />
         </p:column>
       </p:dataTable>
-      
-      <div>
-        DocId: <p:inputText value="#{caseDocumentsTabBean.newDocId}" />
-        <p:commandButton icon="pi pi-search" 
-                         value="Cerca"
-                         ajax="false"
-                         action="#{navigatorBean.find('Document', 'caseDocumentsTabBean.newDocId')}" />
-
+            
+      <div class="ui-inputgroup">
+        <p:autoComplete value="#{caseDocumentsTabBean.documentReferenceHelper.selectedItem}" 
+                        maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
+                        completeMethod="#{caseDocumentsTabBean.documentReferenceHelper.complete}"
+                        converter="selectItemConverter"
+                        var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                        minQueryLength="2" queryDelay="1000"
+                        onclick="this.setSelectionRange(0, this.value.length)">
+          <p:column>
+            <!--<h:outputText value="#{caseDocumentsTabBean.documentReferenceHelper.getDescription(item.value)}" />-->
+            <h:outputText value="#{item.label}" />
+          </p:column>
+        </p:autoComplete>  
+        <p:commandButton icon="pi pi-search"
+                         styleClass="ui-button-raised select-button" 
+                         action="#{caseDocumentsTabBean.documentReferenceHelper.find('caseDocumentsTabBean.documentReferenceHelper.selectedId')}"
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}" ajax="false" />     
       </div>
-      
+
       <!-- Person data panel -->
 
     </h:panelGroup>
