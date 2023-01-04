@@ -43,7 +43,6 @@ import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
-import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 
 /**
  *
@@ -58,6 +57,7 @@ public class DocumentFinderBean extends FinderBean
   private List<Document> rows;
   private int firstRow;
   private int findMode;
+  private boolean outdated;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -172,9 +172,14 @@ public class DocumentFinderBean extends FinderBean
     firstRow = 0;
   }
 
+  public void outdate()
+  {
+    outdated = true;
+  }
+
   public void update()
   {
-    if (rows == null)
+    if (outdated)
     {
       doFind(false);
     }
@@ -259,6 +264,8 @@ public class DocumentFinderBean extends FinderBean
             }
           }
         };
+
+        outdated = false;
 
         if (autoLoad)
         {

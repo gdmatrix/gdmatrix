@@ -27,7 +27,7 @@
                        oncomplete="PF('versionsPanel').show()"/>
       </p:outputPanel>
       
-      <h:panelGroup rendered="#{not documentObjectBean.isNew() and documentObjectBean.fileToStore == null}">
+      <h:panelGroup rendered="#{documentObjectBean.content != null and documentObjectBean.fileToStore == null}">
 
         <p:outputPanel styleClass="field col-12 md:col-12 xl:col-6" 
                        rendered="true">

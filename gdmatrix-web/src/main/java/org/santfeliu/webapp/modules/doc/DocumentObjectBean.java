@@ -182,13 +182,7 @@ public class DocumentObjectBean extends ObjectBean
 
   public Content getContent()
   {
-    Content content = document.getContent();
-    if (content == null)
-    {
-      content = new Content();
-      document.setContent(content);
-    }
-    return content;
+    return document.getContent();
   }
 
   public String getVersionLabel()
@@ -386,9 +380,7 @@ public class DocumentObjectBean extends ObjectBean
     document = DocModuleBean.getPort(false).storeDocument(document);
     setObjectId(document.getDocId());
 
-    documentFinderBean.setRows(null);
-
-    System.out.println(">>> stored URL: " + document.getContent().getUrl());
+    documentFinderBean.outdate();
 
     if (fileToStore != null)
     {

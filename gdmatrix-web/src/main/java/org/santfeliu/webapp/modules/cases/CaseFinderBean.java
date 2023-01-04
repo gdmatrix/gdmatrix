@@ -57,6 +57,7 @@ public class CaseFinderBean extends FinderBean
   private List<Case> rows;
   private int firstRow;
   private int findMode;
+  private boolean outdated;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -160,9 +161,14 @@ public class CaseFinderBean extends FinderBean
     firstRow = 0;
   }
 
+  public void outdate()
+  {
+    this.outdated = true;
+  }
+
   public void update()
   {
-    if (rows == null)
+    if (outdated)
     {
       doFind(false);
     }
@@ -254,6 +260,8 @@ public class CaseFinderBean extends FinderBean
             }
           }
         };
+
+        outdated = false;
 
         if (autoLoad)
         {
