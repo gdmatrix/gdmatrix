@@ -31,12 +31,14 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Theme;
 import org.matrix.agenda.ThemeFilter;
 import org.santfeliu.faces.ManualScoped;
+import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -54,7 +56,8 @@ public class ThemeFinderBean extends FinderBean
   private ThemeFilter filter = new ThemeFilter();
   private List<Theme> rows;
   private int firstRow;
-  private boolean isSmartFind;
+  private int findMode;
+  private boolean outdated;  
   
   @Inject
   NavigatorBean navigatorBean;
@@ -126,33 +129,47 @@ public class ThemeFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    isSmartFind = true;
+    findMode = 1;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();    
+    filter = themeTypeBean.queryToFilter(smartFilter, baseTypeId);            
     doFind(true);
-  }
-
-  public void smartClear()
-  {
-    smartFilter = null;
-    rows = null;
+    firstRow = 0;    
   }
 
   @Override
   public void find()
   {
-    isSmartFind = false;
+    findMode = 2;
+    smartFilter = themeTypeBean.filterToQuery(filter);    
     doFind(true);
+    firstRow = 0;    
   }
 
+  public void outdate()
+  {
+    this.outdated = true;
+  }  
+  
+  public void update()
+  {
+    if (outdated)
+    {
+      doFind(false);
+    }
+  }  
+  
   public void clear()
   {
     filter = new ThemeFilter();
+    smartFilter = null;    
     rows = null;
+    findMode = 0;    
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, filter, firstRow, getObjectPosition() };
+    return new Object[]{ findMode, filter, firstRow, getObjectPosition() };
   }
 
   @Override
@@ -161,7 +178,7 @@ public class ThemeFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      isSmartFind = (Boolean)stateArray[0];
+      findMode = (Integer)stateArray[0];
       filter = (ThemeFilter)stateArray[1];
 
       doFind(false);
@@ -179,31 +196,69 @@ public class ThemeFinderBean extends FinderBean
   {
     try
     {
-      firstRow = 0;
-      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      
-      if (isSmartFind)
+      if (findMode == 0)
       {
-        filter = themeTypeBean.queryToFilter(smartFilter, baseTypeId);        
-        setTabIndex(0);        
+        rows = Collections.EMPTY_LIST;
       }
       else
       {
-        smartFilter = themeTypeBean.filterToQuery(filter);
-        setTabIndex(1);
-      }
-      rows = AgendaModuleBean.getClient(false).findThemesFromCache(filter);
-
-      if (autoLoad)
-      {
-        if (rows.size() == 1)
+        if (findMode == 1)
         {
-          navigatorBean.view(rows.get(0).getThemeId());
-          themeObjectBean.setSearchTabIndex(1);
+          setTabIndex(0);        
         }
         else
         {
-          themeObjectBean.setSearchTabIndex(0);
+          setTabIndex(1);
+        }
+        rows = new BigList(20, 10)
+        {
+          @Override
+          public int getElementCount()
+          {
+            try
+            {
+              return AgendaModuleBean.getClient(false).
+                countThemesFromCache(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return 0;
+            }
+          }
+
+          @Override
+          public List getElements(int firstResult, int maxResults)
+          {
+            try
+            {
+              filter.setFirstResult(firstResult);
+              filter.setMaxResults(maxResults);
+              return AgendaModuleBean.getClient(false).
+                findThemesFromCache(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return null;
+            }
+          }
+        };
+        
+        outdated = false;        
+        
+        if (autoLoad)
+        {
+          if (rows.size() == 1)
+          {
+            navigatorBean.view(rows.get(0).getThemeId());
+            themeObjectBean.setSearchTabIndex(themeObjectBean.
+              getEditionTabIndex());
+          }
+          else
+          {
+            themeObjectBean.setSearchTabIndex(0);
+          }
         }
       }
     }

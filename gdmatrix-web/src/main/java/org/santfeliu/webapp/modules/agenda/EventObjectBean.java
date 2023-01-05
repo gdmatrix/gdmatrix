@@ -313,6 +313,7 @@ public class EventObjectBean extends ObjectBean
     {
       event = AgendaModuleBean.getClient(false).storeEvent(event);
       setObjectId(event.getEventId());
+      eventFinderBean.outdate();
       info("STORE_OBJECT");
     }
     catch (Exception ex)

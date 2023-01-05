@@ -162,12 +162,6 @@ public class EventPlacesTabBean extends TabBean
     editing.setRoomId(null);
   }
   
-  public void setSelectedAddress(String addressId)
-  {
-    editing.setAddressId(addressId);
-    showDialog();
-  }  
-  
   public void onRoomSelect(SelectEvent<SelectItem> event) 
   {
     try
@@ -190,23 +184,6 @@ public class EventPlacesTabBean extends TabBean
   {
     editing.setRoomId(null);    
     editing.setAddressId(null);
-  }  
-    
-  public void setSelectedRoom(String roomId)
-  {
-    try
-    {
-      editing.setRoomId(roomId);
-      //update address field
-      Room room = KernelModuleBean.getPort(false).loadRoom(roomId);
-      String addressId = room.getAddressId();
-      editing.setAddressId(addressId);      
-      showDialog();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }    
   }  
 
   public String edit(EventPlaceView row)
@@ -418,8 +395,9 @@ public class EventPlacesTabBean extends TabBean
     @Override
     public void setSelectedId(String value)
     {
-      setSelectedAddress(value);
-    }
+      editing.setAddressId(value);
+      showDialog();
+    }    
   }  
 
   private class RoomReferenceHelper extends ReferenceHelper<Room>
@@ -444,7 +422,22 @@ public class EventPlacesTabBean extends TabBean
     @Override
     public void setSelectedId(String value)
     {
-      setSelectedRoom(value);
+      try
+      {
+        editing.setRoomId(value);
+        if (value != null)
+        {
+          //update address field
+          Room room = KernelModuleBean.getPort(false).loadRoom(value);
+          String addressId = room.getAddressId();
+          editing.setAddressId(addressId);      
+        }
+        showDialog();
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }      
     }
   }  
   

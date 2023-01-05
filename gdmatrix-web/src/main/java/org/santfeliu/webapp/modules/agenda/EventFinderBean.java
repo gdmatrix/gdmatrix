@@ -32,7 +32,7 @@ package org.santfeliu.webapp.modules.agenda;
 
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.faces.model.SelectItem;
@@ -49,6 +49,7 @@ import org.matrix.kernel.Room;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
+import org.santfeliu.util.BigList;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -67,13 +68,15 @@ public class EventFinderBean extends FinderBean
   private String smartFilter;
   private EventFilter filter = new EventFilter();
   private List<Event> rows;
-  private int firstRow;
-  private boolean isSmartFind;
+  private int firstRow;  
+  private int findMode;
+  private boolean outdated;  
   
   private String searchEventTypeId;
 
   ReferenceHelper<Person> personReferenceHelper; 
   ReferenceHelper<Room> roomReferenceHelper; 
+  ReferenceHelper<Theme> themeReferenceHelper;
   
   @Inject
   NavigatorBean navigatorBean;
@@ -90,6 +93,8 @@ public class EventFinderBean extends FinderBean
       new PersonReferenceHelper(DictionaryConstants.PERSON_TYPE);
     roomReferenceHelper = 
       new RoomReferenceHelper(DictionaryConstants.ROOM_TYPE);      
+    themeReferenceHelper = 
+      new ThemeReferenceHelper(DictionaryConstants.THEME_TYPE);
   }
   
   @Override
@@ -107,6 +112,11 @@ public class EventFinderBean extends FinderBean
   {
     return roomReferenceHelper;
   }  
+
+  public ReferenceHelper<Theme> getThemeReferenceHelper() 
+  {
+    return themeReferenceHelper;
+  }
   
   public String getSmartFilter()
   {
@@ -214,46 +224,6 @@ public class EventFinderBean extends FinderBean
       filter.getEventId().addAll(eventIds);
   }
   
-  public String getThemeId() 
-  {
-    if (!filter.getThemeId().isEmpty())
-      return filter.getThemeId().get(0);
-    else
-      return null;
-  }
-
-  public void setThemeId(String themeId) 
-  {
-    filter.getThemeId().clear();
-    if (!StringUtils.isBlank(themeId))
-    {
-      filter.getThemeId().add(themeId);
-    }
-  }
-
-  public List<SelectItem> getThemeSelectItems()
-  {
-    List<SelectItem> themeSelectItems = new ArrayList();    
-    try
-    {
-      themeSelectItems.add(new SelectItem(NavigatorBean.NEW_OBJECT_ID, " "));
-      List<Theme> themes = AgendaModuleBean.getClient(false).
-        findThemesFromCache(new ThemeFilter());
-      for (Theme theme : themes)
-      {
-        SelectItem item = new SelectItem(theme.getThemeId(), 
-          theme.getDescription());
-        themeSelectItems.add(item);
-      }
-      return FacesUtils.sortSelectItems(themeSelectItems);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return themeSelectItems;
-  }
-
   //TODO Move to superclass
   public String getLanguage()
   {
@@ -286,37 +256,64 @@ public class EventFinderBean extends FinderBean
   
   @Override
   public void smartFind()
-  {
-    isSmartFind = true;
+  {    
+    findMode = 1;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
+    setFromDate(new Date());
+    filter.setDateComparator("1");
+    searchEventTypeId = null;
     doFind(true);
-  }
-
-  public void smartClear()
-  {
-    smartFilter = null;
-    rows = null;
+    firstRow = 0;
   }
 
   @Override
   public void find()
   {
-    isSmartFind = false;
+    findMode = 2;
+    smartFilter = eventTypeBean.filterToQuery(filter);
+    filter.getEventTypeId().clear();
+    if (!StringUtils.isBlank(searchEventTypeId))
+    {
+      filter.getEventTypeId().add(searchEventTypeId);
+    }
+    if (filter.getStartDateTime() == null)
+    {
+      setFromDate(new Date());
+      filter.setDateComparator("1");
+    }    
     doFind(true);
+    firstRow = 0;    
   }
+  
+  public void outdate()
+  {
+    this.outdated = true;
+  }  
+  
+  public void update()
+  {
+    if (outdated)
+    {
+      doFind(false);
+    }
+  }  
 
   public void clear()
   {
     filter = new EventFilter();
+    smartFilter = null;
     setFromDate(new Date());
     filter.setDateComparator("1");    
     searchEventTypeId = null;
     rows = null;
+    findMode = 0;
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, filter, firstRow, searchEventTypeId, 
+    return new Object[]{ findMode, filter, firstRow, searchEventTypeId, 
       getObjectPosition() };
   }
 
@@ -326,7 +323,7 @@ public class EventFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      isSmartFind = (Boolean)stateArray[0];
+      findMode = (Integer)stateArray[0];
       filter = (EventFilter)stateArray[1];
 
       doFind(false);
@@ -345,44 +342,69 @@ public class EventFinderBean extends FinderBean
   {
     try
     {
-      firstRow = 0;
-      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      
-      if (isSmartFind)
+      if (findMode == 0)
       {
-        filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
-        setFromDate(new Date());
-        filter.setDateComparator("1");
-        searchEventTypeId = null;
-        setTabIndex(0);
+        rows = Collections.EMPTY_LIST;
       }
       else
       {
-        smartFilter = eventTypeBean.filterToQuery(filter);
-        filter.getEventTypeId().clear();
-        if (!StringUtils.isBlank(searchEventTypeId))
+        if (findMode == 1)
         {
-          filter.getEventTypeId().add(searchEventTypeId);
-        }
-        if (filter.getStartDateTime() == null)
-        {
-          setFromDate(new Date());
-          filter.setDateComparator("1");
-        }
-        setTabIndex(1);
-      }
-      rows = AgendaModuleBean.getClient(false).findEventsFromCache(filter);      
-
-      if (autoLoad)
-      {
-        if (rows.size() == 1)
-        {
-          navigatorBean.view(rows.get(0).getEventId());
-          eventObjectBean.setSearchTabIndex(1);
+          setTabIndex(0);        
         }
         else
         {
-          eventObjectBean.setSearchTabIndex(0);
+          setTabIndex(1);
+        }
+        rows = new BigList(20, 10)
+        {
+          @Override
+          public int getElementCount()
+          {
+            try
+            {
+              return AgendaModuleBean.getClient(false).
+                countEventsFromCache(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return 0;
+            }
+          }
+
+          @Override
+          public List getElements(int firstResult, int maxResults)
+          {
+            try
+            {
+              filter.setFirstResult(firstResult);
+              filter.setMaxResults(maxResults);
+              return AgendaModuleBean.getClient(false).
+                findEventsFromCache(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return null;
+            }
+          }
+        };
+        
+        outdated = false;        
+        
+        if (autoLoad)
+        {
+          if (rows.size() == 1)
+          {
+            navigatorBean.view(rows.get(0).getEventId());
+            eventObjectBean.setSearchTabIndex(eventObjectBean.
+              getEditionTabIndex());
+          }
+          else
+          {
+            eventObjectBean.setSearchTabIndex(0);
+          }
         }
       }
     }
@@ -442,9 +464,64 @@ public class EventFinderBean extends FinderBean
     public void setSelectedId(String value)
     {
       if (filter != null)
-      filter.setRoomId(value);
+        filter.setRoomId(value);
     }
   }  
   
+  private class ThemeReferenceHelper extends ReferenceHelper<Theme>
+  {
+    public ThemeReferenceHelper(String typeId)
+    {
+      super(typeId);
+    }
+
+    @Override
+    public String getId(Theme theme)
+    {
+      return theme.getThemeId();
+    }
+        
+    @Override
+    public String getSelectedId()
+    {
+      if (filter != null)
+      {
+        if (!filter.getThemeId().isEmpty())
+          return filter.getThemeId().get(0);
+        else
+          return "";        
+      }
+      else return "";      
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {            
+      if (filter != null)
+      {
+        filter.getThemeId().clear();
+        if (!StringUtils.isBlank(value))
+        {
+          filter.getThemeId().add(value);
+        }
+      }
+    }
+    
+    @Override
+    public ThemeFilter getFilter()
+    {
+      ThemeFilter filter = new ThemeFilter();
+      return filter; 
+    }
+
+    @Override
+    public List<SelectItem> getSelectItems() 
+    {
+      List<SelectItem> items = super.getSelectItems();
+      FacesUtils.sortSelectItems(items);
+      return items;
+    }
+
+  }
   
 }

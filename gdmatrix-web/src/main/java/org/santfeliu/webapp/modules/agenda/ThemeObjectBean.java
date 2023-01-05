@@ -141,6 +141,7 @@ public class ThemeObjectBean extends ObjectBean
     {
       theme = AgendaModuleBean.getClient(false).storeTheme(theme);
       setObjectId(theme.getThemeId());
+      themeFinderBean.outdate();
       info("STORE_OBJECT");
     }
     catch (Exception ex)

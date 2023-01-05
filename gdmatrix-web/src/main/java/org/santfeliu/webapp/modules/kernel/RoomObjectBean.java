@@ -173,6 +173,7 @@ public class RoomObjectBean extends ObjectBean
     {
       room = KernelModuleBean.getPort(false).storeRoom(room);
       setObjectId(room.getRoomId());
+      roomFinderBean.outdate();
       info("STORE_OBJECT");
     }
     catch (Exception ex)

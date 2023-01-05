@@ -100,10 +100,10 @@
                            value="#{agendaBundle.eventThemes_theme}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">
-              <p:selectOneMenu id="theme" value="#{eventThemesTabBean.editing.themeId}"
+              <p:selectOneMenu id="theme" value="#{eventThemesTabBean.themeReferenceHelper.selectedId}"
                                styleClass="inputfield w-full" style="min-width:inherit !important"
                                filter="true" filterMatchMode="contains">
-                <f:selectItems value="#{eventThemesTabBean.themeSelectItems}" />
+                <f:selectItems value="#{eventThemesTabBean.themeReferenceHelper.selectItems}" />
               </p:selectOneMenu>
             </div>
           </p:outputPanel>                    

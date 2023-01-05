@@ -4,7 +4,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
   
-  <p:dataTable id="full_results_table" value="#{eventFinderBean.rows}" var="row"
+  <p:dataTable value="#{eventFinderBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5" 
                paginatorPosition="bottom" size="small"
                rows="10" first="#{eventFinderBean.firstRow}"
@@ -33,8 +33,8 @@
                        onclick="PF('objectTabs').select(0);"
                        resetValues="true"
                        process="@this"
-                       update=":mainform:search_tabs :mainform:context_panel"
-                       />     
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"                       
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel" />     
     </p:column>
   </p:dataTable>  
 

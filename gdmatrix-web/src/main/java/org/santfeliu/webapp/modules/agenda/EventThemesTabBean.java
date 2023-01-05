@@ -42,12 +42,14 @@ import org.matrix.agenda.EventThemeFilter;
 import org.matrix.agenda.EventThemeView;
 import org.matrix.agenda.Theme;
 import org.matrix.agenda.ThemeFilter;
+import org.matrix.dic.DictionaryConstants;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.ReferenceHelper;
 import org.santfeliu.webapp.helpers.ResultListHelper;
 
 /**
@@ -66,6 +68,7 @@ public class EventThemesTabBean extends TabBean
   
   //Helpers
   private ResultListHelper<EventThemeView> resultListHelper;  
+  ReferenceHelper<Theme> themeReferenceHelper; 
   
   private int firstRow;
   private EventTheme editing;
@@ -74,7 +77,9 @@ public class EventThemesTabBean extends TabBean
   public void init()
   {
     System.out.println("Creating " + this);
-    resultListHelper = new EventThemeResultListHelper();    
+    resultListHelper = new EventThemeResultListHelper();
+    themeReferenceHelper = 
+      new ThemeReferenceHelper(DictionaryConstants.THEME_TYPE);    
   }  
   
   @Override
@@ -83,6 +88,11 @@ public class EventThemesTabBean extends TabBean
     return eventObjectBean;
   }
 
+  public ReferenceHelper<Theme> getThemeReferenceHelper() 
+  {
+    return themeReferenceHelper;
+  }  
+  
   public EventTheme getEditing() 
   {
     return editing;
@@ -187,28 +197,6 @@ public class EventThemesTabBean extends TabBean
       error(ex);
     }
   }   
-  
-  public List<SelectItem> getThemeSelectItems()
-  {
-    List<SelectItem> themeSelectItems = new ArrayList();    
-    try
-    {
-      List<Theme> themes = AgendaModuleBean.getClient(false).
-        findThemesFromCache(new ThemeFilter());
-      for (Theme theme : themes)
-      {
-        SelectItem item = new SelectItem(theme.getThemeId(), 
-          theme.getDescription());
-        themeSelectItems.add(item);
-      }
-      return FacesUtils.sortSelectItems(themeSelectItems);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return themeSelectItems;
-  }
     
   private boolean isNew(EventTheme eventTheme)
   {
@@ -301,4 +289,45 @@ public class EventThemesTabBean extends TabBean
     }
   }
   
+  private class ThemeReferenceHelper extends ReferenceHelper<Theme>
+  {
+    public ThemeReferenceHelper(String typeId)
+    {
+      super(typeId);
+    }
+
+    @Override
+    public String getId(Theme theme)
+    {
+      return theme.getThemeId();
+    }
+
+    @Override
+    public String getSelectedId()
+    {
+      return editing != null ? editing.getThemeId() : "";
+    }
+
+    @Override
+    public void setSelectedId(String value)
+    {
+      if (editing != null) editing.setThemeId(value);
+    }
+    
+    @Override
+    public ThemeFilter getFilter()
+    {
+      ThemeFilter filter = new ThemeFilter();
+      return filter; 
+    }
+
+    @Override
+    public List<SelectItem> getSelectItems() 
+    {
+      List<SelectItem> items = super.getSelectItems();
+      FacesUtils.sortSelectItems(items);
+      return items;
+    }
+  }
+
 }

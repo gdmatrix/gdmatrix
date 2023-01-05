@@ -24,10 +24,10 @@
 
           <div class="buttons text-right">
             <p:commandButton value="Clear"
-                             action="#{eventFinderBean.smartClear}"
+                             action="#{eventFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"                             
                              />
             <p:commandButton id="smart_search_button"
@@ -109,16 +109,19 @@
             </p:outputPanel>      
           </p:fieldset>
           
-          <!-- ThemeId -->          
+          <!-- ThemeId -->
+<!--          
           <p:outputPanel styleClass="field" rendered="true">
             <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}:" />
-            <p:selectOneMenu id="themeId" value="#{eventFinderBean.themeId}"
+            <p:selectOneMenu id="themeId" value="#{eventFinderBean.themeReferenceHelper.selectedId}"
                              styleClass="inputfield w-full" style="min-width:inherit !important"
                              filter="true" filterMatchMode="contains">
-              <f:selectItems value="#{eventFinderBean.themeSelectItems}" />
+              <f:selectItem itemValue="" itemLabel="Tots" />              
+              <f:selectItems value="#{eventFinderBean.themeReferenceHelper.selectItems}" />
             </p:selectOneMenu>
           </p:outputPanel>          
-          
+-->
+
           <!-- PersonId -->
           <p:outputPanel styleClass="field" rendered="true">
             <p:outputLabel for="person" value="#{agendaBundle.event_personId}:" />
@@ -173,7 +176,7 @@
             <p:commandButton value="Clear"
                              action="#{eventFinderBean.clear}"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
@@ -193,28 +196,49 @@
   </ui:define>
 
   <ui:define name="object">
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0) 
+        {
+          updateResults();
+          console.info("updateResults");
+        }
+      }
+    </script>
+    <p:remoteCommand name="updateResults"
+                     action="#{eventFinderBean.update}"
+                     process="@this" 
+                     update=":mainform:search_tabs:result_list" />
     
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                binding="#{eventObjectBean.searchTabView}"
-               touchable="false">
+               touchable="false"
+               onTabShow="onTabShow()">
       
       <p:tab title="Cerca" id="object_search">
         <f:facet name="title">
           <i class="pi pi-list m-1"></i>
           <h:outputText value="Resultats"/>
         </f:facet>
-        
-        <ui:include src="event_list.xhtml" />
+        <h:panelGroup id="result_list">        
+          <ui:include src="event_list.xhtml" />
+        </h:panelGroup>
       </p:tab>
 
-      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
-             id="object_form">
-
-        <ui:param name="objectBean" value="#{eventObjectBean}" />
-        <ui:include src="/pages/obj/object_standard.xhtml" />
-
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-list m-1"></i>
+          <h:outputText value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"/>
+        </f:facet>
+        <h:panelGroup id="obj_tabs">
+          <ui:param name="objectBean" value="#{eventObjectBean}" />
+          <ui:include src="/pages/obj/object_standard.xhtml" />
+        </h:panelGroup>        
       </p:tab>
+      
     </p:tabView>
 
   </ui:define>

@@ -24,10 +24,10 @@
 
           <div class="buttons text-right">
             <p:commandButton value="Clear"
-                             action="#{themeFinderBean.smartClear}"
+                             action="#{themeFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"                             
                              />
             <p:commandButton id="smart_search_button"
@@ -65,7 +65,7 @@
             <p:commandButton value="Clear"
                              action="#{themeFinderBean.clear}"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
@@ -85,28 +85,49 @@
   </ui:define>
 
   <ui:define name="object">
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0) 
+        {
+          updateResults();
+          console.info("updateResults");
+        }
+      }
+    </script>
+    <p:remoteCommand name="updateResults"
+                     action="#{themeFinderBean.update}"
+                     process="@this" 
+                     update=":mainform:search_tabs:result_list" />
     
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                binding="#{themeObjectBean.searchTabView}"
-               touchable="false">
+               touchable="false"
+               onTabShow="onTabShow()">
       
       <p:tab title="Cerca" id="object_search">
         <f:facet name="title">
           <i class="pi pi-list m-1"></i>
           <h:outputText value="Resultats"/>
         </f:facet>
-        
-        <ui:include src="theme_list.xhtml" />
+        <h:panelGroup id="result_list">                
+          <ui:include src="theme_list.xhtml" />
+        </h:panelGroup>
       </p:tab>
 
-      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
-             id="object_form">
-
-        <ui:param name="objectBean" value="#{themeObjectBean}" />
-        <ui:include src="/pages/obj/object_standard.xhtml" />
-
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-list m-1"></i>
+          <h:outputText value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"/>
+        </f:facet>
+        <h:panelGroup id="obj_tabs">
+          <ui:param name="objectBean" value="#{themeObjectBean}" />
+          <ui:include src="/pages/obj/object_standard.xhtml" />
+        </h:panelGroup>        
       </p:tab>
+
     </p:tabView>
 
   </ui:define>
