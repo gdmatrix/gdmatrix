@@ -30,18 +30,18 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Country;
 import org.matrix.kernel.CountryFilter;
 import org.santfeliu.faces.ManualScoped;
+import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.ResultListHelper;
+import org.santfeliu.webapp.TypeBean;
 
 /**
  *
@@ -64,7 +64,6 @@ public class CountryFinderBean
   public CountryFinderBean()
   {
     filter = new CountryFilter();
-    resultListHelper = new CountryResultListHelper();
   }
   
   @Override
@@ -76,68 +75,117 @@ public class CountryFinderBean
   @Override
   public String getObjectId(int position)
   {
-    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
-      resultListHelper.getRow(position).getCountryId();
+    return rows == null ? NEW_OBJECT_ID : 
+      rows.get(position).getCountryId();
   }
 
   @Override
   public int getObjectCount()
   {
-    return resultListHelper.getRows() == null ? 0 : 
-      resultListHelper.getRowCount();
+    return rows == null ? 0 : rows.size();
   }    
 
-  public void clear()
+  @Override
+  public CountryFilter createFilter()
   {
-    filter = new CountryFilter();
-    resultListHelper.clear();
+    return new CountryFilter();
   }  
   
   @Override
-  public Serializable saveState()
+  public void smartFind()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, 
-      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+    findMode = 1;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter = countryTypeBean.queryToFilter(smartFilter, baseTypeId);
+    doFind(true);
+    firstRow = 0;
   }
 
   @Override
-  public void restoreState(Serializable state)
+  public void find()
   {
-    try
-    {
-      Object[] stateArray = (Object[])state;
-      isSmartFind = (Boolean)stateArray[0];
-      smartFilter = (String)stateArray[1];
-      filter = (CountryFilter)stateArray[2];
-      
-      doFind(false);
-
-      resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
-      setObjectPosition((Integer)stateArray[4]);      
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }   
+    findMode = 2;
+    smartFilter = countryTypeBean.filterToQuery(filter);
+    doFind(true);
+    firstRow = 0;
+  }    
+  
+  @Override
+  protected TypeBean getTypeBean()
+  {
+    return countryTypeBean;
+  }
   
   @Override
   protected void doFind(boolean autoLoad)
   {
     try
     {
-      resultListHelper.find();
-
-      if (autoLoad)
+      if (findMode == 0)
       {
-        if (resultListHelper.getRowCount() == 1)
+        rows = Collections.EMPTY_LIST;
+      }
+      else
+      {
+        if (findMode == 1)
         {
-          navigatorBean.view(resultListHelper.getRow(0).getCountryId());
-          countryObjectBean.setSearchTabIndex(1);
+          setTabIndex(0);
         }
         else
         {
-          countryObjectBean.setSearchTabIndex(0);
+          setTabIndex(1);
+        }
+
+        rows = new BigList(20, 10)
+        {
+          @Override
+          public int getElementCount()
+          {
+            try
+            {
+              return KernelModuleBean.getPort(false).countCountries(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return 0;
+            }
+          }
+
+          @Override
+          public List getElements(int firstResult, int maxResults)
+          {
+            List<Country> results;            
+            try
+            {
+              filter.setFirstResult(firstResult);
+              filter.setMaxResults(maxResults);
+              
+              results = KernelModuleBean.getPort(false).findCountries(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return null;
+            }
+            return results;
+          }
+        };
+
+        outdated = false;
+
+        if (autoLoad)
+        {
+          if (rows.size() == 1)
+          {
+            navigatorBean.view(rows.get(0).getCountryId());
+            countryObjectBean.setSearchTabIndex(
+              countryObjectBean.getEditionTabIndex());
+          }
+          else
+          {
+            countryObjectBean.setSearchTabIndex(0);
+          }
         }
       }
     }
@@ -147,37 +195,4 @@ public class CountryFinderBean
     }
   }
 
-  private class CountryResultListHelper extends ResultListHelper<Country>
-  {
-
-    @Override
-    public List<Country> getResults(int firstResult, int maxResults)
-    {
-      List<Country> results = new ArrayList();       
-      try
-      {
-        if (isSmartFind)
-        {
-          setTabIndex(0);
-          filter = new CountryFilter();
-          filter.setFirstResult(firstResult);
-          filter.setMaxResults(maxResults);
-          String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-          filter = countryTypeBean.queryToFilter(smartFilter, baseTypeId);
-        }
-        else
-        {
-          smartFilter = countryTypeBean.filterToQuery(filter);          
-          setTabIndex(1);
-        } 
-        results = KernelModuleBean.getPort(false).findCountries(filter);        
-      }
-      catch (Exception ex)
-      {
-        throw new RuntimeException(ex);
-      }
-      return results;
-    }
-  }
-  
 }

@@ -171,6 +171,7 @@ public class StreetObjectBean extends TerritoryObjectBean
     setObjectId(street.getStreetId());
     editing = false; 
     streetSelectItems = null;
+    streetFinderBean.outdate();    
   }     
   
   public List<SelectItem> getStreetSelectItems()

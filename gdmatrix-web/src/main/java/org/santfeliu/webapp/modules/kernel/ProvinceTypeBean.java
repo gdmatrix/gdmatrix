@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
+import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -81,18 +82,27 @@ public class ProvinceTypeBean extends TypeBean<Province, ProvinceFilter>
   @Override
   public ProvinceFilter queryToFilter(String query, String typeId)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    ProvinceFilter filter = new ProvinceFilter();
+    filter.setProvinceName("%" + query + "%");
+    return filter;
   }
 
   @Override
   public String filterToQuery(ProvinceFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    return filter.getProvinceName();
   }
 
   @Override
   public List<Province> find(ProvinceFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    try
+    {
+      return KernelModuleBean.getPort(true).findProvinces(filter);
+    }
+    catch (Exception ex)
+    {
+      return Collections.emptyList();
+    }    
   }
 }

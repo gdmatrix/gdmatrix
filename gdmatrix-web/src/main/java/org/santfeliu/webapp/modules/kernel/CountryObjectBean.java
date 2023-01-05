@@ -143,6 +143,7 @@ public class CountryObjectBean extends TerritoryObjectBean
     setObjectId(country.getCountryId());
     editing = false; 
     countrySelectItems = null;
+    countryFinderBean.outdate();    
   }
 
   public List<SelectItem> getCountrySelectItems()

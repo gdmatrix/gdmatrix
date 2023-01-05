@@ -32,17 +32,18 @@ package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.Province;
 import org.matrix.kernel.ProvinceFilter;
 import org.santfeliu.faces.ManualScoped;
+import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.BigListHelper;
+import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.modules.kernel.ProvinceFinderBean.ProvinceView;
 
 /**
@@ -61,12 +62,14 @@ public class ProvinceFinderBean
   ProvinceObjectBean provinceObjectBean;
   
   @Inject
+  ProvinceTypeBean provinceTypeBean;
+  
+  @Inject
   CountryTypeBean countryTypeBean;
   
   public ProvinceFinderBean()
   {
     filter = new ProvinceFilter();
-    resultListHelper = new ProvinceResultListHelper();
   }
   
   @Override
@@ -78,81 +81,122 @@ public class ProvinceFinderBean
   @Override
   public String getObjectId(int position)
   {
-    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
-      resultListHelper.getRow(position).getProvinceId();
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getProvinceId();
   }
 
   @Override
   public int getObjectCount()
   {
-    return resultListHelper.getRows() == null ? 0 : 
-      resultListHelper.getRowCount();
+    return rows == null ? 0 : rows.size();
   }    
 
-  public void clear()
+  @Override
+  public ProvinceFilter createFilter()
   {
-    filter = new ProvinceFilter();
-    resultListHelper.clear();
+    return new ProvinceFilter();
   } 
   
   @Override
-  public Serializable saveState()
+  public void smartFind()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, 
-      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+    findMode = 1;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter = provinceTypeBean.queryToFilter(smartFilter, baseTypeId);
+    doFind(true);
+    firstRow = 0;
   }
 
   @Override
-  public void restoreState(Serializable state)
+  public void find()
   {
-    try
-    {
-      Object[] stateArray = (Object[])state;
-      isSmartFind = (Boolean)stateArray[0];
-      smartFilter = (String)stateArray[1];
-      filter = (ProvinceFilter)stateArray[2];
-      
-      doFind(false);
+    findMode = 2;
+    smartFilter = provinceTypeBean.filterToQuery(filter);
+    doFind(true);
+    firstRow = 0;
+  }   
 
-      resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
-      setObjectPosition((Integer)stateArray[4]);      
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }     
-      
+  @Override
+  protected TypeBean getTypeBean()
+  {
+    return provinceTypeBean;
+  }
+         
   @Override
   protected void doFind(boolean autoLoad)
   {
     try
     {
-      if (isSmartFind)
+      if (findMode == 0)
       {
-        setTabIndex(0);
-        //TODO: Set Country
-        if (!StringUtils.isBlank(smartFilter))
-          filter.setProvinceName("%" + smartFilter + "%");
+        rows = Collections.EMPTY_LIST;
       }
       else
       {
-        setTabIndex(1);
-      }
-       
-      resultListHelper.find();
-    
-      if (autoLoad)
-      {
-        if (resultListHelper.getRowCount() == 1)
+        if (findMode == 1)
         {
-          ProvinceView view = (ProvinceView) resultListHelper.getRow(0);
-          navigatorBean.view(view.getProvinceId());
-          provinceObjectBean.setSearchTabIndex(1);
+          setTabIndex(0);
         }
         else
         {
-          provinceObjectBean.setSearchTabIndex(0);
+          setTabIndex(1);
+        }
+
+        rows = new BigList(20, 10)
+        {
+          @Override
+          public int getElementCount()
+          {
+            try
+            {
+              return KernelModuleBean.getPort(false).countProvinces(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return 0;
+            }
+          }
+
+          @Override
+          public List getElements(int firstResult, int maxResults)
+          {
+            List<ProvinceView> results = new ArrayList();            
+            try
+            {
+              filter.setFirstResult(firstResult);
+              filter.setMaxResults(maxResults);
+              
+              List<Province> streets =
+                KernelModuleBean.getPort(false).findProvinces(filter);
+              for (Province street : streets)        
+              {
+                ProvinceView view = new ProvinceView(street);
+                results.add(view);
+              }
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+              return null;
+            }
+            return results;
+          }
+        };
+
+        outdated = false;
+
+        if (autoLoad)
+        {
+          if (rows.size() == 1)
+          {
+            navigatorBean.view(rows.get(0).getProvinceId());
+            provinceObjectBean.setSearchTabIndex(
+              provinceObjectBean.getEditionTabIndex());
+          }
+          else
+          {
+            provinceObjectBean.setSearchTabIndex(0);
+          }
         }
       }
     }
@@ -218,44 +262,4 @@ public class ProvinceFinderBean
     }
 
   }
-
-  private class ProvinceResultListHelper extends BigListHelper<ProvinceView>
-  {
-    @Override
-    public int countResults()
-    {
-      try
-      {
-        return KernelModuleBean.getPort(false).countProvinces(filter);
-      }
-      catch (Exception ex)
-      {
-        throw new RuntimeException(ex);
-      }
-    }
-    
-    @Override
-    public List<ProvinceView> getResults(int firstResult, int maxResults)
-    {
-      try
-      {
-        List<ProvinceView> results = new ArrayList<>();
-        filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);
-        List<Province> provinces =
-          KernelModuleBean.getPort(false).findProvinces(filter);
-        for (Province province : provinces)
-        {
-          ProvinceView view = new ProvinceView(province);
-          results.add(view);
-        }
-        return results;
-      }
-      catch (Exception ex)
-      {
-        throw new RuntimeException(ex);
-      }
-    }
-  }
-  
 }

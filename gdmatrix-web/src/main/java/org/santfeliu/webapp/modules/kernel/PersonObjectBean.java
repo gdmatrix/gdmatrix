@@ -52,6 +52,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
 import org.santfeliu.webapp.helpers.ReferenceHelper;
+import org.santfeliu.webapp.helpers.CityReferenceHelper;
 
 /**
  *
@@ -64,7 +65,6 @@ public class PersonObjectBean extends ObjectBean
   private Person person = new Person();
   
   private List<SelectItem> personParticleSelectItems;
-  private List<SelectItem> countrySelectItems;
   private SelectItem[] sexSelectItems;
   
   @Inject
@@ -82,11 +82,11 @@ public class PersonObjectBean extends ObjectBean
   public PersonObjectBean()
   {
     cityReferenceHelper = 
-      new CityReferenceHelper(DictionaryConstants.CITY_TYPE);
+      new CityReferenceHelper("personObjectBean.person.birthCityId");
     countryReferenceHelper = 
-      new CountryReferenceHelper(DictionaryConstants.COUNTRY_TYPE);
+      new CountryReferenceHelper("personObjectBean.person.nationalityId");
     typeReferenceHelper = 
-      new TypeReferenceHelper(DictionaryConstants.TYPE_TYPE);    
+      new TypeReferenceHelper("personObjectBean.person.personTypeId");    
   }
 
   public Person getPerson()
@@ -215,6 +215,7 @@ public class PersonObjectBean extends ObjectBean
   {
     person = KernelModuleBean.getPort(false).storePerson(person);
     setObjectId(person.getPersonId());
+    personFinderBean.outdate();
   }  
   
   @Override
@@ -228,86 +229,32 @@ public class PersonObjectBean extends ObjectBean
   {
     this.person = (Person)state;
   }  
-
-  private class CityReferenceHelper extends ReferenceHelper<City>
-  {
-    public CityReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
-
-    @Override
-    public String getId(City city)
-    {
-      return city.getCityId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return person != null ? person.getBirthCityId() : null;
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      if (person != null)
-        person.setBirthCityId(value);
-    }
-    
-  }
   
   private class CountryReferenceHelper extends ReferenceHelper<Country>
   {
-    public CountryReferenceHelper(String typeId)
+    public CountryReferenceHelper(String expression)
     {
-      super(typeId);
+      super(DictionaryConstants.COUNTRY_TYPE, expression);
     }
 
     @Override
     public String getId(Country country)
     {
       return country.getCountryId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return person != null ? person.getNationalityId() : null;
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      if (person != null)
-        person.setNationalityId(value);
-    }   
+    }  
   }  
   
   private class TypeReferenceHelper extends ReferenceHelper<Type>
   {
-    public TypeReferenceHelper(String typeId)
+    public TypeReferenceHelper(String expression)
     {
-      super(typeId);
+      super(DictionaryConstants.TYPE_TYPE, expression);
     }
 
     @Override
     public String getId(Type type)
     {
       return type.getTypeId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return person != null ? person.getPersonTypeId() : null;
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      if (person != null)
-        person.setPersonTypeId(value) ;
     }
 
     @Override

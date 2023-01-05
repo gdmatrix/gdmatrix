@@ -31,18 +31,18 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.AddressFilter;
 import org.matrix.kernel.AddressView;
 import org.santfeliu.faces.ManualScoped;
+import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.BigListHelper;
 /**
  *
  * @author blanquepa
@@ -53,8 +53,10 @@ public class AddressFinderBean extends FinderBean
 {
   private String smartFilter;  
   private AddressFilter filter = new AddressFilter();
-  private BigListHelper<AddressView> resultListHelper;
-  private boolean isSmartFind;  
+  private List<AddressView> rows;  
+  private int firstRow;
+  private int findMode;
+  private boolean outdated;
   
   @Inject
   NavigatorBean navigatorBean;
@@ -64,13 +66,27 @@ public class AddressFinderBean extends FinderBean
   
   @Inject
   AddressTypeBean addressTypeBean;  
-  
-  @PostConstruct
-  public void init()
+
+  public List<AddressView> getRows()
   {
-    resultListHelper = new AddressBigListHelper();
+    return rows;
   }
-  
+
+  public void setRows(List<AddressView> rows)
+  {
+    this.rows = rows;
+  }
+
+  public int getFirstRow()
+  {
+    return firstRow;
+  }
+
+  public void setFirstRow(int firstRow)
+  {
+    this.firstRow = firstRow;
+  }
+    
   public String getSmartFilter()
   {
     return smartFilter;
@@ -106,15 +122,13 @@ public class AddressFinderBean extends FinderBean
   @Override
   public String getObjectId(int position)
   {
-    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
-      resultListHelper.getRow(position).getAddressId();
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getAddressId();
   }
 
   @Override
   public int getObjectCount()
   {
-    return resultListHelper.getRows() == null ? 0 : 
-      resultListHelper.getRowCount();
+    return rows == null ? 0 : rows.size();
   }  
 
   @Override
@@ -122,45 +136,54 @@ public class AddressFinderBean extends FinderBean
   {
     return addressObjectBean;
   }
-
-  public BigListHelper getResultListHelper()
-  {
-    return resultListHelper;
-  }
      
   @Override
   public void smartFind()
   {
-    isSmartFind = true;
+    findMode = 1;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter = addressTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
-  }
-  
-  public void smartClear()
-  {
-    smartFilter = null;
-    resultListHelper.clear();
+    firstRow = 0;
   }
 
   @Override
   public void find()
   {
-    isSmartFind = false;    
+    findMode = 2;
+    smartFilter = addressTypeBean.filterToQuery(filter);
     doFind(true);
+    firstRow = 0;
   }
 
-  public String clear()
+  public void outdate()
+  {
+    this.outdated = true;
+  }
+
+  public void update()
+  {
+    if (outdated)
+    {
+      doFind(false);
+    }
+  }
+
+  public void clear()
   {
     filter = new AddressFilter();
     smartFilter = null;
-    resultListHelper.clear();
-    return null;
+    rows = null;
+    findMode = 0;
   }
   
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, 
-      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+    return new Object[]
+    {
+      findMode, filter, firstRow, getObjectPosition()
+    };
   }
 
   @Override
@@ -168,86 +191,94 @@ public class AddressFinderBean extends FinderBean
   {
     try
     {
-      Object[] stateArray = (Object[])state;
-      isSmartFind = (Boolean)stateArray[0];
-      smartFilter = (String)stateArray[1];
-      filter = (AddressFilter)stateArray[2];
-      resultListHelper.setFirstRowIndex((Integer)stateArray[3]); 
-      setObjectPosition((Integer)stateArray[4]);
+      Object[] stateArray = (Object[]) state;
+      findMode = (Integer) stateArray[0];
+      filter = (AddressFilter) stateArray[1];
 
       doFind(false);
+
+      firstRow = (Integer) stateArray[2];
+      setObjectPosition((Integer) stateArray[3]);
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }    
+  }
   
   private void doFind(boolean autoLoad)
   {
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-
-    if (isSmartFind)
+    try
     {
-      filter = addressTypeBean.queryToFilter(smartFilter, baseTypeId);      
-      setTabIndex(0);
-    }
-    else
-    {      
-      smartFilter = addressTypeBean.filterToQuery(filter);      
-      setTabIndex(1);
-    }    
-    
-    resultListHelper.find();
-    
-    if (autoLoad)
-    {  
-      if (resultListHelper.getRowCount() == 1)
+      if (findMode == 0)
       {
-        AddressView addressView = 
-          (AddressView) resultListHelper.getRows().get(0);
-        navigatorBean.view(addressView.getAddressId());
-        addressObjectBean.setSearchTabIndex(1);
-      }
+        rows = (BigList<AddressView>) Collections.EMPTY_LIST;
+      }      
       else
-      {
-        addressObjectBean.setSearchTabIndex(0);
+      {     
+        if (findMode == 1)
+        {
+          setTabIndex(0);
+        }
+        else
+        {
+          setTabIndex(1);
+        }
+        
+        rows = new BigList()
+        {
+          @Override
+          public int getElementCount()
+          {
+            try
+            {
+              return KernelModuleBean.getPort(false).countAddresses(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+            }
+            return 0;
+          }
+
+          @Override
+          public List getElements(int firstResult, int maxResults)
+          {
+            try
+            {
+              filter.setFirstResult(firstResult);
+              filter.setMaxResults(maxResults);
+              return KernelModuleBean.getPort(false).findAddressViews(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+            }
+            return null;
+          }
+        };  
+        
+        outdated = false;        
+        
+        if (autoLoad)
+        {
+          if (rows.size() == 1)
+          {
+            AddressView addressView = (AddressView) rows.get(0);
+            navigatorBean.view(addressView.getAddressId());
+            addressObjectBean.setSearchTabIndex(1);
+          }
+          else
+          {
+            addressObjectBean.setSearchTabIndex(0);
+          }
+        }
       }
-    }    
+    }
+    catch(Exception ex)
+    {
+      error(ex);
+    }
   }
   
-  private class AddressBigListHelper extends BigListHelper<AddressView>
-  {
-    @Override
-    public int countResults()
-    {
-      try
-      {
-        return KernelModuleBean.getPort(false).countAddresses(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return 0;
-    }
-
-    @Override
-    public List<AddressView> getResults(int firstResult, int maxResults)
-    {
-      try
-      {
-        filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);
-        return KernelModuleBean.getPort(false).findAddressViews(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return null;
-    }
-       
-  }
-
 }

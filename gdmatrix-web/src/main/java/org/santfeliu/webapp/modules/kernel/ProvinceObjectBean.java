@@ -157,6 +157,7 @@ public class ProvinceObjectBean extends TerritoryObjectBean
     setObjectId(province.getProvinceId());
     editing = false; 
     provinceSelectItems = null;
+    provinceFinderBean.outdate();
   }  
   
   public List<SelectItem> getProvinceSelectItems()

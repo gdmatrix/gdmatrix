@@ -6,80 +6,80 @@
 
   <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
                 var="kernelBundle" />
-  
+
   <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
                 var="objectBundle" />    
-  
+
   <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
     <p:outputPanel class="flex flex-grow-0 justify-content-start align-self-center"
                    rendered="#{objectBean.finderBean.isScrollEnabled()}">
-        <p:commandButton icon="ui-icon pi pi-step-backward" 
-                         styleClass="rounded-button ui-button-flat mr-2" 
-                         action="#{objectBean.finderBean.viewPrevious}"
-                         process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs"
-                         resetValues="true"
-                         disabled="#{not objectBean.finderBean.hasPrevious()}"
-                         title="Previous" alt="Previous" 
-                         />
-        <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}" 
-                      styleClass="align-self-center" />
-        <p:commandButton icon="ui-icon pi pi-step-forward" 
-                         styleClass="rounded-button ui-button-flat ml-2 mr-2" 
-                         action="#{objectBean.finderBean.viewNext}"
-                         process="@this"
-                         update=":mainform:context_panel :mainform:search_tabs"
-                         resetValues="true"
-                         disabled="#{not objectBean.finderBean.hasNext()}"
-                         title="Next" alt="Next" 
-                         />
+      <p:commandButton icon="ui-icon pi pi-step-backward" 
+                       styleClass="rounded-button ui-button-flat mr-2" 
+                       action="#{objectBean.finderBean.viewPrevious}"
+                       process="@this"
+                       update=":mainform:context_panel :mainform:search_tabs"
+                       resetValues="true"
+                       disabled="#{not objectBean.finderBean.hasPrevious()}"
+                       title="Previous" alt="Previous" 
+                       />
+      <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}" 
+                    styleClass="align-self-center" />
+      <p:commandButton icon="ui-icon pi pi-step-forward" 
+                       styleClass="rounded-button ui-button-flat ml-2 mr-2" 
+                       action="#{objectBean.finderBean.viewNext}"
+                       process="@this"
+                       update=":mainform:context_panel :mainform:search_tabs"
+                       resetValues="true"
+                       disabled="#{not objectBean.finderBean.hasNext()}"
+                       title="Next" alt="Next" 
+                       />
     </p:outputPanel>    
     <div class="flex flex-grow-1 justify-content-start align-self-center">
       <h:outputText value="#{objectBean.objectId}" />
       <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
     </div>
     <div class="flex flex-grow-1 justify-content-end">
-        <p:commandButton icon="ui-icon pi pi-arrow-circle-left" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{navigatorBean.select}"
-                         rendered="#{navigatorBean.selectable}"
-                         ajax="false"
-                         title="Select" alt="Select" 
-                         />
-<!--        
-        <p:commandButton icon="ui-icon pi pi-plus-circle" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{navigatorBean.view('')}"
-                         rendered="#{not objectBean.isNew()}"
-                         process="@this"
-                         update=":mainform:search_tabs"
-                         resetValues="true"
-                         title="#{objectBundle.create}" alt="#{objectBundle.create}" 
-                         />
--->
-        <p:commandButton icon="ui-icon pi pi-star" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
-                         rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
-                         update="object_header" 
-                         title="Mark" alt="Mark" 
-                         />
-        <p:commandButton icon="ui-icon pi pi-star-fill" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
-                         rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
-                         update="object_header" 
-                         title="Unmark" alt="Unmark" 
-                         />
-        <p:commandButton icon="ui-icon pi pi-trash" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{objectBean.remove}" 
-                         rendered="#{not objectBean.isNew()}"
-                         process="@this"
-                         update="" 
-                         resetValues="true"
-                         title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
-                         onclick="return confirm('Delete?');"/>
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left" 
+                       styleClass="rounded-button ui-button-flat" 
+                       action="#{navigatorBean.select}"
+                       rendered="#{navigatorBean.selectable}"
+                       ajax="false"
+                       title="Select" alt="Select" 
+                       />
+      <!--        
+              <p:commandButton icon="ui-icon pi pi-plus-circle" 
+                               styleClass="rounded-button ui-button-flat" 
+                               action="#{navigatorBean.view('')}"
+                               rendered="#{not objectBean.isNew()}"
+                               process="@this"
+                               update=":mainform:search_tabs"
+                               resetValues="true"
+                               title="#{objectBundle.create}" alt="#{objectBundle.create}" 
+                               />
+      -->
+      <p:commandButton icon="ui-icon pi pi-star" 
+                       styleClass="rounded-button ui-button-flat" 
+                       action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
+                       rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       update="object_header" 
+                       title="Mark" alt="Mark" 
+                       />
+      <p:commandButton icon="ui-icon pi pi-star-fill" 
+                       styleClass="rounded-button ui-button-flat" 
+                       action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
+                       rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
+                       update="object_header" 
+                       title="Unmark" alt="Unmark" 
+                       />
+      <p:commandButton icon="ui-icon pi pi-trash" 
+                       styleClass="rounded-button ui-button-flat" 
+                       action="#{objectBean.remove}" 
+                       rendered="#{not objectBean.isNew()}"
+                       process="@this"
+                       update="" 
+                       resetValues="true"
+                       title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
+                       onclick="return confirm('Delete?');"/>
     </div>
   </p:outputPanel>  
 
@@ -202,9 +202,49 @@
                            oncomplete="PF('editDataDialog').show()"
                            />
         </div>
-      </p:outputPanel>    
+
+        <div class="ui-fluid formgrid grid"> 
+          <div class="field col-12 md:col-2">
+            <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
+            <p:inputText id="street_type_id" value="#{streetObjectBean.street.streetTypeId}" 
+                         styleClass="inputfield w-full"/>
+          </div>     
+
+          <div class="field col-12 md:col-2">
+            <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
+            <p:inputText id="street_particle" value="#{streetObjectBean.street.particle}" 
+                         styleClass="inputfield w-full"/>
+          </div>
+
+          <div class="field col-12 md:col-6">
+            <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
+            <p:inputText id="street_name" value="#{streetObjectBean.street.name}" 
+                         styleClass="inputfield w-full"/>
+          </div>          
+        </div>
+
+
+
+      </p:outputPanel>  
 
     </div>
+    
+      <p:outputPanel class="text-right" >
+
+        <p:commandButton value="#{objectBundle.store}" 
+                         icon="pi pi-save"
+                         action="#{territoryObjectBean.store}"
+                         update="territory_picker_panel" process="@this"
+                         styleClass="ui-button-raised m-1"
+                         oncomplete="PF('editDataDialog').hide()"/> 
+        <p:commandButton value="#{objectBundle.close}" 
+                         icon="pi pi-times"
+                         action="#{territoryObjectBean.cancel}"
+                         update="editing_panels" process="@this"
+                         styleClass="ui-button-raised m-1"
+                         global="false"
+                         oncomplete="PF('editDataDialog').hide()"/>
+      </p:outputPanel>      
 
   </p:outputPanel> 
 
@@ -293,7 +333,7 @@
                          styleClass="inputfield w-full"/>
           </div>   
         </div>  
-        
+
         <p:outputPanel class="text-right pt-3" >
 
           <p:commandButton value="#{objectBundle.store}" 
@@ -311,48 +351,48 @@
                            oncomplete="PF('editDataDialog').hide()"/>
         </p:outputPanel>          
       </p:panel>
-
-      <p:panel id="editing_street_panel" header="#{kernelBundle.street} #{streetObjectBean.street.streetId}" 
-               rendered="#{streetObjectBean.editing}"> 
-
-        <div class="formgrid grid pl-2">        
-          <div class="field col-12 md:col-2">
-            <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
-            <p:inputText id="street_type_id" value="#{streetObjectBean.street.streetTypeId}" 
-                         styleClass="inputfield w-full"/>
-          </div>     
-
-          <div class="field col-12 md:col-2">
-            <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
-            <p:inputText id="street_particle" value="#{streetObjectBean.street.particle}" 
-                         styleClass="inputfield w-full"/>
-          </div>
-
-          <div class="field col-12 md:col-6">
-            <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
-            <p:inputText id="street_name" value="#{streetObjectBean.street.name}" 
-                         styleClass="inputfield w-full"/>
-          </div>    
-        </div> 
-          
-        <p:outputPanel class="text-right pt-3" >
-
-          <p:commandButton value="#{objectBundle.store}" 
-                           icon="pi pi-save"
-                           action="#{streetObjectBean.store}"
-                           update="object_header editing_panels territory_picker_panel" process="@form @this"
-                           styleClass="ui-button-raised m-1"
-                           oncomplete="PF('editDataDialog').hide()"/> 
-          <p:commandButton value="#{objectBundle.close}" 
-                           icon="pi pi-times"
-                           action="#{streetObjectBean.cancel}"
-                           update="editing_panels" process="@this"
-                           styleClass="ui-button-raised m-1"
-                           global="false"
-                           oncomplete="PF('editDataDialog').hide()"/>
-        </p:outputPanel>         
-      </p:panel>
-
+      <!--
+            <p:panel id="editing_street_panel" header="#{kernelBundle.street} #{streetObjectBean.street.streetId}" 
+                     rendered="#{streetObjectBean.editing}"> 
+      
+              <div class="formgrid grid pl-2">        
+                <div class="field col-12 md:col-2">
+                  <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
+                  <p:inputText id="street_type_id" value="#{streetObjectBean.street.streetTypeId}" 
+                               styleClass="inputfield w-full"/>
+                </div>     
+      
+                <div class="field col-12 md:col-2">
+                  <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
+                  <p:inputText id="street_particle" value="#{streetObjectBean.street.particle}" 
+                               styleClass="inputfield w-full"/>
+                </div>
+      
+                <div class="field col-12 md:col-6">
+                  <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
+                  <p:inputText id="street_name" value="#{streetObjectBean.street.name}" 
+                               styleClass="inputfield w-full"/>
+                </div>    
+              </div> 
+                
+              <p:outputPanel class="text-right pt-3" >
+      
+                <p:commandButton value="#{objectBundle.store}" 
+                                 icon="pi pi-save"
+                                 action="#{streetObjectBean.store}"
+                                 update="object_header editing_panels territory_picker_panel" process="@form @this"
+                                 styleClass="ui-button-raised m-1"
+                                 oncomplete="PF('editDataDialog').hide()"/> 
+                <p:commandButton value="#{objectBundle.close}" 
+                                 icon="pi pi-times"
+                                 action="#{streetObjectBean.cancel}"
+                                 update="editing_panels" process="@this"
+                                 styleClass="ui-button-raised m-1"
+                                 global="false"
+                                 oncomplete="PF('editDataDialog').hide()"/>
+              </p:outputPanel>         
+            </p:panel>
+      -->
     </p:outputPanel>
   </p:dialog>  
 </ui:composition>

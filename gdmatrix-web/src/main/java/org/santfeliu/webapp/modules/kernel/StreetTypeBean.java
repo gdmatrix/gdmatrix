@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.enterprise.context.ApplicationScoped;
@@ -95,19 +96,28 @@ public class StreetTypeBean extends TypeBean<Street, StreetFilter>
   @Override
   public StreetFilter queryToFilter(String query, String typeId)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    StreetFilter filter = new StreetFilter();
+    filter.setStreetName("%" + query + "%");
+    return filter;
   }
 
   @Override
   public String filterToQuery(StreetFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    return filter.getStreetName();
   }
 
   @Override
   public List<Street> find(StreetFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    try
+    {
+      return KernelModuleBean.getPort(true).findStreets(filter);
+    }
+    catch (Exception ex)
+    {
+      return Collections.emptyList();
+    }    
   }
   
   public List<SelectItem> completeStreet(String query, String currentStreetId)

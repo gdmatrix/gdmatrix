@@ -3,7 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:em="http://xmlns.jcp.org/jsf/composite/emcomp">
 
     <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
                   var="kernelBundle" />
@@ -19,15 +20,15 @@
         <p:outputLabel for="passport" value="#{kernelBundle.person_passport}" />
         <p:inputText id="passport" value="#{personObjectBean.person.passport}" />
       </div>           
-
+<!-- 
       <div class="field col-12 md:col-6">
-        <p:outputLabel for="@next" value="#{kernelBundle.person_type}" />
+        <p:outputLabel for="@next" value="#{kernelBundle.person_type}" />       
         <p:selectOneMenu id="person_type_id" value="#{personObjectBean.typeReferenceHelper.selectedId}" >
           <f:selectItem itemLabel="" itemValue=""/>          
           <f:selectItems value="#{personObjectBean.typeReferenceHelper.selectItems}"  />           
         </p:selectOneMenu>
       </div>  
-
+-->
       <div class="field col-12 md:col-12">
         <p:outputLabel for="name" value="#{kernelBundle.person_name}" />        
         <p:inputText id="name" value="#{personObjectBean.person.name}" required="true" />
@@ -76,48 +77,20 @@
 
       <div class="field col-12 md:col-6">
         <h:outputLabel for="@next" value="#{kernelBundle.person_birthCity}" />
-        <div class="ui-inputgroup">
-          <p:commandButton icon="pi pi-search"
-                           styleClass="ui-button-raised select-button" 
-                           action="#{personObjectBean.cityReferenceHelper.find('personObjectBean.cityReferenceHelper.selectedId')}"
-                           alt="#{objectBundle.search}" title="#{objectBundle.search}" ajax="false" />           
-          <p:autoComplete id="person_birth_city"  
-                          value="#{personObjectBean.cityReferenceHelper.selectedItem}" 
-                          maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                          completeMethod="#{personObjectBean.cityReferenceHelper.complete}"
-                          converter="selectItemConverter"
-                          var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                          minQueryLength="2" queryDelay="1000"
-                          onclick="this.setSelectionRange(0, this.value.length)">
-            <p:column>
-              <h:outputText value="#{personObjectBean.cityReferenceHelper.getDescription(item.value)}" />
-            </p:column>           
-          </p:autoComplete>  
-    
-        </div>
+        <em:objectReference helper="#{personObjectBean.cityReferenceHelper}"
+                            styleClass="w-full"
+                            scrollHeight="200"
+                            queryDelay="1000"
+                            minQueryLength="3" />
       </div>
 
       <div class="field col-12 md:col-6">
         <h:outputLabel for="@next" value="#{kernelBundle.person_nationality}" />
-        <div class="ui-inputgroup">  
-          <p:commandButton icon="pi pi-search"
-                           styleClass="ui-button-raised select-button" 
-                           action="#{personObjectBean.countryReferenceHelper.find('personObjectBean.countryReferenceHelper.selectedId')}"
-                           alt="#{objectBundle.search}" title="#{objectBundle.search}" ajax="false" />            
-          <p:autoComplete id="person_nationality"  
-                          value="#{personObjectBean.countryReferenceHelper.selectedItem}" 
-                          maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                          completeMethod="#{personObjectBean.countryReferenceHelper.complete}"
-                          converter="selectItemConverter"
-                          var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                          minQueryLength="2" queryDelay="1000"
-                          onclick="this.setSelectionRange(0, this.value.length)">
-            <p:column>
-              <h:outputText value="#{personObjectBean.countryReferenceHelper.getDescription(item.value)}" />
-            </p:column>           
-          </p:autoComplete> 
-         
-        </div>  
+        <em:objectReference helper="#{personObjectBean.countryReferenceHelper}"
+                            styleClass="w-full"
+                            scrollHeight="200"
+                            queryDelay="1000"
+                            minQueryLength="3" />
       </div> 
 
       <div class="field col-12 md:col-3">

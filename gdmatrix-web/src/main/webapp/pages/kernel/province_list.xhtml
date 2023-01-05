@@ -4,11 +4,11 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
     
-  <p:dataTable id="full_results_table" value="#{provinceFinderBean.resultListHelper.rows}" var="row"
+  <p:dataTable id="full_results_table" value="#{provinceFinderBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5" 
                paginatorPosition="bottom" size="small"
-               rows="#{provinceFinderBean.resultListHelper.pageSize}" 
-               first="#{provinceFinderBean.resultListHelper.firstRowIndex}"
+               rows="10" 
+               first="#{provinceFinderBean.firstRow}"
                rowStyleClass="#{row.provinceId == provinceObjectBean.objectId ? 'current' : ''}"
                rowIndexVar="rowIndex"
                rendered="true">
@@ -25,7 +25,9 @@
       <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
                        action="#{provinceFinderBean.view(rowIndex)}"
                        process="@this"
-                       update=":mainform:search_tabs :mainform:context_panel"
+                       onclick="PF('objectTabs').select(0);"                       
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                        />     
     </p:column>
   </p:dataTable>  

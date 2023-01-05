@@ -13,7 +13,12 @@
       <p:tabView id="find_selector"
                  activeIndex="#{streetFinderBean.tabIndex}">
 
-        <p:tab title="Ràpida" id="smart_search">
+        <p:tab id="smart_search">
+          <f:facet name="title">
+            <span class="pi pi-bolt mr-2"/> 
+            <h:outputText value="Ràpida" /> 
+          </f:facet>  
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="Valor" />
             <p:inputText id="smartFilter" value="#{streetFinderBean.smartFilter}"
@@ -21,25 +26,28 @@
           </p:outputPanel>
 
           <div class="buttons text-right">
-            <p:commandButton value="Clear"                             
-                             action="#{streetFinderBean.smartClear}"
+            <p:commandButton value="Clear"
+                             action="#{streetFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              resetValues="true"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"/>
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list" />
             <p:commandButton id="smart_search_button"
                              value="Search"
-                             action="#{streetFinderBean.smartFind}"                             
+                             action="#{streetFinderBean.smartFind}"                         
                              resetValues="true"
                              process=":mainform:find_selector"
-                             update=":mainform:search_tabs"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              styleClass="ui-button-raised m-1"
                              oncomplete="endPanel('leftPanel');"/>
-          </div>          
+          </div>       
         </p:tab>  
         
-        <p:tab title="Avançada" id="advanced_search">
-        
+        <p:tab id="advanced_search">
+          <f:facet name="title">
+            <span class="pi pi-cog mr-2"/> 
+            <h:outputText value="Avançada" /> 
+          </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
           <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
                         var="kernelBundle" /> 
@@ -60,17 +68,17 @@
           <div class="text-right">
             <p:commandButton value="Clear"
                              action="#{streetFinderBean.clear}"
-                             resetValues="true"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:full_results_table"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
                              value="Search"
-                             action="#{streetFinderBean.find}"                             
-                             resetValues="true"
+                             action="#{streetFinderBean.find}"
                              process=":mainform:find_selector"
-                             update=":mainform:search_tabs"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              styleClass="ui-button-raised m-1"
+                             resetValues="true"
                              oncomplete="endPanel('leftPanel');"
                              />
           </div>  
@@ -88,18 +96,25 @@
                activeIndex="#{streetObjectBean.searchTabIndex}"
                touchable="false">
       
-      <p:tab title="Cerca" id="territory_search">
+      <p:tab title="Cerca">
         <f:facet name="title">
           <i class="pi pi-list m-1"></i>
           <h:outputText value="Resultats"/>
         </f:facet>
-        <ui:include src="street_list.xhtml" />
-      </p:tab>
+        <h:panelGroup id="result_list">        
+          <ui:include src="street_list.xhtml" />
+        </h:panelGroup>
+      </p:tab>      
 
-      <p:tab title="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"
-             id="territory_form">
-        <ui:param name="objectBean" value="#{streetObjectBean}" />
-        <ui:include src="/pages/kernel/territory.xhtml" />
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-list m-1"></i>
+          <h:outputText value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"/>
+        </f:facet>
+        <h:panelGroup id="obj_tabs">   
+          <ui:param name="objectBean" value="#{streetObjectBean}" />
+          <ui:include src="/pages/kernel/territory.xhtml" />
+        </h:panelGroup>        
       </p:tab>
     </p:tabView>    
     

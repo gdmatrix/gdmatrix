@@ -134,6 +134,14 @@ public class AddressObjectBean extends ObjectBean
       streetSelectItem = null;
     }       
   }
+  
+  @Override
+  public void storeObject() throws Exception
+  {
+    address = KernelModuleBean.getPort(false).storeAddress(address);
+    setObjectId(address.getAddressId());
+    addressFinderBean.outdate();
+  }    
 
   @Override
   public void loadTabs()

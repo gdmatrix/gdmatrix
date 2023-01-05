@@ -4,10 +4,10 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
     
-  <p:dataTable id="full_results_table" value="#{cityFinderBean.resultListHelper.rows}" var="row"
+  <p:dataTable id="full_results_table" value="#{cityFinderBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5" 
                paginatorPosition="bottom" size="small"
-               rows="10" first="#{cityFinderBean.resultListHelper.firstRowIndex}"
+               rows="10" first="#{cityFinderBean.firstRow}"
                rowStyleClass="#{row.cityId == cityObjectBean.objectId ? 'current' : ''}"
                rowIndexVar="rowIndex"
                rendered="true">
@@ -24,7 +24,9 @@
       <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
                        action="#{cityFinderBean.view(rowIndex)}"
                        process="@this"
-                       update=":mainform:search_tabs :mainform:context_panel"
+                       onclick="PF('objectTabs').select(0);"                       
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                        />     
     </p:column>
   </p:dataTable>  

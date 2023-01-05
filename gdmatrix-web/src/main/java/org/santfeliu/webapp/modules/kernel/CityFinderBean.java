@@ -32,16 +32,18 @@ package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.City;
 import org.matrix.kernel.CityFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.ResultListHelper;
+import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.modules.kernel.CityFinderBean.CityView;
 
 /**
@@ -67,7 +69,6 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   public CityFinderBean()
   {
     filter = new CityFilter();
-    resultListHelper = new CityResultListHelper();
   }
   
   @Override
@@ -79,84 +80,93 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   @Override
   public String getObjectId(int position)
   {
-    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
-      resultListHelper.getRow(position).getCityId();
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getCityId();
   }
 
   @Override
   public int getObjectCount()
   {
-    return resultListHelper.getRows() == null ? 0 : 
-      resultListHelper.getRowCount();
+    return rows == null ? 0 : rows.size();
   }    
 
-  public void clear()
+  @Override
+  public CityFilter createFilter()
   {
-    filter = new CityFilter();
-    resultListHelper.clear();
+    return new CityFilter();
   }  
   
   @Override
-  public Serializable saveState()
+  public void smartFind()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, 
-      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+    findMode = 1;
+    filter = 
+      cityTypeBean.queryToFilter(smartFilter, DictionaryConstants.CITY_TYPE);
+    doFind(true);
+    firstRow = 0;
   }
 
   @Override
-  public void restoreState(Serializable state)
+  public void find()
   {
-    try
-    {
-      Object[] stateArray = (Object[])state;
-      isSmartFind = (Boolean)stateArray[0];
-      smartFilter = (String)stateArray[1];
-      filter = (CityFilter)stateArray[2];
-      
-      doFind(false);
+    findMode = 2;
+    smartFilter = cityTypeBean.filterToQuery(filter);
+    doFind(true);
+    firstRow = 0;
+  }    
 
-      resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
-      setObjectPosition((Integer)stateArray[4]);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }     
-      
+  @Override
+  protected TypeBean getTypeBean()
+  {
+    return cityTypeBean;
+  }
+        
   @Override
   protected void doFind(boolean autoLoad)
   {
     try
     {
-      if (isSmartFind)
+      if (findMode == 0)
       {
-        setTabIndex(0);
-        String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();        
-        filter = cityTypeBean.queryToFilter(smartFilter, baseTypeId);
+        rows = Collections.EMPTY_LIST;
       }
       else
       {
-        setTabIndex(1);
-      }
-      
-      resultListHelper.find();
-      
-      if (autoLoad)
-      {
-        if (resultListHelper.getRowCount() == 1)
+        if (findMode == 1)
         {
-          CityView view = (CityView) resultListHelper.getRow(0);
-          navigatorBean.view(view.getCityId());
-          cityObjectBean.setSearchTabIndex(1);
+          setTabIndex(0);
         }
         else
         {
-          cityObjectBean.setSearchTabIndex(0);
+          setTabIndex(1);
+        }
+
+        rows = new ArrayList();
+        List<City> cities =
+          KernelModuleBean.getPort(false).findCities(filter);
+        for (City city : cities)        
+        {
+          CityView view = new CityView(city);
+          rows.add(view);
+        }        
+  
+        outdated = false;
+
+        if (autoLoad)
+        {
+          if (rows.size() == 1)
+          {
+            navigatorBean.view(rows.get(0).getCityId());
+            cityObjectBean.setSearchTabIndex(
+              cityObjectBean.getEditionTabIndex());
+          }
+          else
+          {
+            cityObjectBean.setSearchTabIndex(0);
+          }
         }
       }
     }
-    catch (Exception ex)
+    catch(Exception ex)
     {
       error(ex);
     }
@@ -217,43 +227,6 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       this.province = province;
     }
 
-  }
-
-  private class CityResultListHelper extends ResultListHelper<CityView>
-  {
-    @Override
-    public List<CityView> getResults(int firstResult, int maxResults)
-    {
-      List<CityView> results = new ArrayList(); 
-      try
-      {
-        List<City> cities =
-          KernelModuleBean.getPort(false).findCities(filter);
-        for (City city : cities)
-        {
-          CityView view = new CityView(city);
-          results.add(view);
-        }  
-      }
-      catch(Exception ex)
-      {
-        throw new RuntimeException(ex);
-      }
-      return results;
-    }
-
-//    @Override
-//    public int countResults()
-//    {
-//      try
-//      {
-//        return KernelModuleBean.getPort(false).countCities(filter);
-//      }
-//      catch (Exception ex)
-//      {
-//        throw new RuntimeException(ex);
-//      }
-//    }
   }
   
 }

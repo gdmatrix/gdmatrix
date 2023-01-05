@@ -159,6 +159,8 @@ public class CityObjectBean extends TerritoryObjectBean
     setObjectId(city.getCityId());
     editing = false; 
     citySelectItems = null;
+    
+    cityFinderBean.outdate();    
   }   
 
   public List<SelectItem> getCitySelectItems()

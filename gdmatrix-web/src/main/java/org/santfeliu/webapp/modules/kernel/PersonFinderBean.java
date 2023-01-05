@@ -31,20 +31,19 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.kernel.PersonFilter;
 import org.matrix.kernel.PersonView;
 import org.santfeliu.faces.ManualScoped;
-import org.santfeliu.kernel.web.KernelConfigBean;
+import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.BigListHelper;
+
 /**
  *
  * @author blanquepa
@@ -53,23 +52,42 @@ import org.santfeliu.webapp.helpers.BigListHelper;
 @ManualScoped
 public class PersonFinderBean extends FinderBean
 {
-  private String smartFilter;  
+  private String smartFilter;
   private PersonFilter filter = new PersonFilter();
-  private BigListHelper<PersonView> resultListHelper;
-  private boolean isSmartFind;  
-  
+  private List<PersonView> rows;  
+  private int firstRow;
+  private int findMode;
+  private boolean outdated;
+
   @Inject
   NavigatorBean navigatorBean;
   
   @Inject
+  PersonTypeBean personTypeBean;
+
+  @Inject
   PersonObjectBean personObjectBean;
-  
-  @PostConstruct
-  public void init()
+
+  public int getFirstRow()
   {
-    resultListHelper = new PersonBigListHelper();
+    return firstRow;
   }
-  
+
+  public void setFirstRow(int firstRow)
+  {
+    this.firstRow = firstRow;
+  }
+
+  public List<PersonView> getRows()
+  {
+    return rows;
+  }
+
+  public void setRows(List<PersonView> rows)
+  {
+    this.rows = rows;
+  }
+
   public String getSmartFilter()
   {
     return smartFilter;
@@ -78,8 +96,8 @@ public class PersonFinderBean extends FinderBean
   public void setSmartFilter(String smartFilter)
   {
     this.smartFilter = smartFilter;
-  }  
-    
+  }
+
   public PersonFilter getFilter()
   {
     return filter;
@@ -89,32 +107,32 @@ public class PersonFinderBean extends FinderBean
   {
     this.filter = filter;
   }
-  
+
   public List<String> getFilterPersonId()
   {
     return this.filter.getPersonId();
   }
-  
+
   public void setFilterPersonId(List<String> personIds)
   {
     this.filter.getPersonId().clear();
     if (personIds != null && !personIds.isEmpty())
+    {
       this.filter.getPersonId().addAll(personIds);
-  } 
-  
+    }
+  }
+
   @Override
   public String getObjectId(int position)
   {
-    return resultListHelper.getRows() == null ? NEW_OBJECT_ID : 
-      resultListHelper.getRow(position).getPersonId();
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getPersonId();
   }
 
   @Override
   public int getObjectCount()
   {
-    return resultListHelper.getRows() == null ? 0 : 
-      resultListHelper.getRowCount();
-  }    
+    return rows == null ? 0 : rows.size();
+  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -122,46 +140,53 @@ public class PersonFinderBean extends FinderBean
     return personObjectBean;
   }
 
-  public BigListHelper getResultListHelper()
-  {
-    return resultListHelper;
-  }
-     
-  @Override
+   @Override
   public void smartFind()
   {
-    isSmartFind = true;    
-    filter = convert(smartFilter);
+    findMode = 1;
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter = personTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
+    firstRow = 0;
   }
   
-  public void smartClear()
-  {
-    smartFilter = null;
-    resultListHelper.clear();
-  }
-
   @Override
   public void find()
   {
-    isSmartFind = false;    
-    smartFilter = convert(filter);
+    findMode = 2;
+    smartFilter = personTypeBean.filterToQuery(filter);
     doFind(true);
+    firstRow = 0;
+  }  
+  
+  public void outdate()
+  {
+    this.outdated = true;
   }
 
-  public String clear()
+  public void update()
+  {
+    if (outdated)
+    {
+      doFind(false);
+    }
+  }  
+
+  public void clear()
   {
     filter = new PersonFilter();
     smartFilter = null;
-    resultListHelper.clear();
-    return null;
+    rows = null;
+    findMode = 0;
   }
-  
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, 
-      resultListHelper.getFirstRowIndex(), getObjectPosition() };
+    return new Object[]
+    {
+      findMode, filter, firstRow, getObjectPosition()
+    };
   }
 
   @Override
@@ -169,100 +194,93 @@ public class PersonFinderBean extends FinderBean
   {
     try
     {
-      Object[] stateArray = (Object[])state;
-      isSmartFind = (Boolean)stateArray[0];
-      smartFilter = (String)stateArray[1];
-      filter = (PersonFilter)stateArray[2];
-      
+      Object[] stateArray = (Object[]) state;
+      findMode = (Integer) stateArray[0];
+      filter = (PersonFilter) stateArray[1];
+
       doFind(false);
 
-      resultListHelper.setFirstRowIndex((Integer) stateArray[3]);
-      setObjectPosition((Integer)stateArray[4]);
+      firstRow = (Integer) stateArray[2];
+      setObjectPosition((Integer) stateArray[3]);
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }    
-  
+  }
+
   private void doFind(boolean autoLoad)
   {
-    
-    resultListHelper.find();
-    
-    if (autoLoad)
-    {  
-      if (resultListHelper.getRowCount() == 1)
-      {
-        PersonView personView = (PersonView) resultListHelper.getRows().get(0);
-        navigatorBean.view(personView.getPersonId());
-        personObjectBean.setSearchTabIndex(1);
-      }
-      else
-      {
-        personObjectBean.setSearchTabIndex(0);
-      }
-    }    
-  }
-  
-  private PersonFilter convert(String smartValue)
-  {
-    filter = new PersonFilter();
-    if (smartValue != null)
+    try
     {
-      if (smartValue.matches("\\d+"))
-        filter.getPersonId().add(smartValue);
-      else if (smartValue.matches("(\\d+\\D+|\\D+\\d+)"))
-        filter.setNif(smartValue);
+      if (findMode == 0)
+      {
+        rows = (BigList<PersonView>) Collections.EMPTY_LIST;
+      }      
       else
-        filter.setFullName(smartValue);
-    }  
-    return filter;
-  }
-    
-  private String convert(PersonFilter filter)
-  {
-    String value = null;
-    if (!filter.getPersonId().isEmpty())
-      value = filter.getPersonId().get(0);
-    else if (!StringUtils.isBlank(filter.getNif()))
-      value = filter.getNif();
-    else if (!StringUtils.isBlank(filter.getFullName()))
-      value = filter.getFullName();
+      {     
+        if (findMode == 1)
+        {
+          setTabIndex(0);
+        }
+        else
+        {
+          setTabIndex(1);
+        }
+        
+        rows = new BigList()
+        {
+          @Override
+          public int getElementCount()
+          {
+            try
+            {
+              return KernelModuleBean.getPort(false).countPersons(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+            }
+            return 0;
+          }
 
-    return value;
-  }
-  
-  private class PersonBigListHelper extends BigListHelper<PersonView>
-  {
-    @Override
-    public int countResults()
-    {
-      try
-      {
-        return KernelConfigBean.getPort().countPersons(filter);
+          @Override
+          public List getElements(int firstResult, int maxResults)
+          {
+            try
+            {
+              filter.setFirstResult(firstResult);
+              filter.setMaxResults(maxResults);
+              return KernelModuleBean.getPort(false).findPersonViews(filter);
+            }
+            catch (Exception ex)
+            {
+              error(ex);
+            }
+            return null;
+          }
+        };  
+        
+        outdated = false;        
+        
+        if (autoLoad)
+        {
+          if (rows.size() == 1)
+          {
+            PersonView personView = (PersonView) rows.get(0);
+            navigatorBean.view(personView.getPersonId());
+            personObjectBean.setSearchTabIndex(1);
+          }
+          else
+          {
+            personObjectBean.setSearchTabIndex(0);
+          }
+        }
       }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return 0;
     }
-
-    @Override
-    public List<PersonView> getResults(int firstResult, int maxResults)
+    catch(Exception ex)
     {
-      try
-      {
-        filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);
-        return KernelConfigBean.getPort().findPersonViews(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return null;
+      error(ex);
     }
   }
 

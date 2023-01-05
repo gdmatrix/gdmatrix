@@ -31,23 +31,25 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
+import java.util.List;
 import org.santfeliu.webapp.FinderBean;
-import org.santfeliu.webapp.helpers.ResultListHelper;
+import org.santfeliu.webapp.TypeBean;
 
 /**
  *
  * @author blanquepa
- * @param <U> filter
+ * @param <F> filter
  * @param <V> view.
  */
-public abstract class TerritoryFinderBean<U, V extends Serializable> 
+public abstract class TerritoryFinderBean<F, V extends Serializable> 
   extends FinderBean
-{
+{  
   protected String smartFilter;
-  protected U filter;
-  protected boolean isSmartFind;
-  
-  protected ResultListHelper<V> resultListHelper;
+  protected F filter;
+  protected List<V> rows;
+  protected int firstRow;
+  protected int findMode;
+  protected boolean outdated;
 
   public String getSmartFilter()
   {
@@ -59,74 +61,88 @@ public abstract class TerritoryFinderBean<U, V extends Serializable>
     this.smartFilter = smartFilter;
   }
 
-  public U getFilter()
+  public F getFilter()
   {
     return filter;
   }
 
-  public void setFilter(U filter)
+  public void setFilter(F filter)
   {
     this.filter = filter;
   }
 
-  public ResultListHelper getResultListHelper()
+  public List<V> getRows()
   {
-    return resultListHelper;
+    return rows;
   }
 
-  public void setResultListHelper(ResultListHelper resultListHelper)
+  public void setRows(List<V> rows)
   {
-    this.resultListHelper = resultListHelper;
+    this.rows = rows;
   }
 
-  public boolean isIsSmartFind()
+  public int getFirstRow()
   {
-    return isSmartFind;
+    return firstRow;
   }
 
-  public void setIsSmartFind(boolean isSmartFind)
+  public void setFirstRow(int firstRow)
   {
-    this.isSmartFind = isSmartFind;
+    this.firstRow = firstRow;
   }
 
-  @Override
-  public void smartFind()
+  public void outdate()
   {
-    isSmartFind = true;
-    doFind(true);
+    this.outdated = true;
   }
 
-  public void smartClear()
+  public void update()
   {
+    if (outdated)
+    {
+      doFind(false);
+    }
+  }
+  
+  protected abstract F createFilter();
+
+  public void clear()
+  {
+    createFilter();
     smartFilter = null;
-    resultListHelper.getRows().clear();
-  }
-
-  @Override
-  public void find()
-  {
-    isSmartFind = false;
-    doFind(true);
+    rows = null;
+    findMode = 0;
   }
   
   protected abstract void doFind(boolean autoLoad);
-    
+  
+  protected abstract TypeBean getTypeBean();
+  
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ isSmartFind, smartFilter, filter, 
-      resultListHelper.getFirstRowIndex() };
+    return new Object[]{ findMode, getFilter(), firstRow, getObjectPosition() };
   }
 
   @Override
   public void restoreState(Serializable state)
   {
-    Object[] stateArray = (Object[])state;
-    isSmartFind = (Boolean)stateArray[0];
-    smartFilter = (String)stateArray[1];
-    filter = (U)stateArray[2];
-    resultListHelper.setFirstRowIndex((Integer)stateArray[3]);
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      findMode = (Integer)stateArray[0];
+      setFilter((F) stateArray[1]);
+      smartFilter = getTypeBean().filterToQuery(filter);
 
-    doFind(false);
-  }  
+      doFind(false);
+
+      firstRow = (Integer)stateArray[2];
+      setObjectPosition((Integer)stateArray[3]);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }    
+    
 }
