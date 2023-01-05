@@ -44,7 +44,7 @@ import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
  *
  * @author realor
  */
-@Named("recentObjectsBean")
+@Named
 @RequestScoped
 public class RecentObjectsBean
 {

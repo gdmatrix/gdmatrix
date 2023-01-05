@@ -289,6 +289,16 @@ body .ui-datatable .ui-datatable-header
   color: var(--primary-color);
   border-color: transparent;  
 }
+/*** Autocomplete ***/
+body .ui-autocomplete
+{
+  display: flex;
+}
+
+body .ui-autocomplete > input
+{
+  width:100%;
+}
 
 /*** DataTables ***/
 .ui-datatable table

@@ -37,13 +37,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
-import org.matrix.dic.DictionaryConstants;
-import org.matrix.doc.Document;
 import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ReferenceHelper;
+import org.santfeliu.webapp.helpers.DocumentReferenceHelper;
 
 /**
  *
@@ -57,27 +55,8 @@ public class CaseDocumentsTabBean extends TabBean
   private int firstRow;
   private String newDocId; // find/select test;
 
-  private final ReferenceHelper<Document> documentReferenceHelper =
-    new ReferenceHelper<Document>(DictionaryConstants.DOCUMENT_TYPE)
-  {
-    @Override
-    public String getId(Document document)
-    {
-      return document.getDocId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return newDocId;
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      newDocId = value;
-    }
-  };
+  private final DocumentReferenceHelper documentReferenceHelper =
+    new DocumentReferenceHelper("caseDocumentsTabBean.newDocId");
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -104,7 +83,7 @@ public class CaseDocumentsTabBean extends TabBean
     this.caseDocumentViews = caseDocumentViews;
   }
 
-  public ReferenceHelper<Document> getDocumentReferenceHelper()
+  public DocumentReferenceHelper getDocumentReferenceHelper()
   {
     return documentReferenceHelper;
   }

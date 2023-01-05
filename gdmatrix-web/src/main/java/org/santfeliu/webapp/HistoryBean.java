@@ -39,7 +39,7 @@ import org.santfeliu.webapp.NavigatorBean.ReturnInfo;
  *
  * @author realor
  */
-@Named("historyBean")
+@Named
 @RequestScoped
 public class HistoryBean
 {

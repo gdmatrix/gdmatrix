@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+  <h:head>
+    <title>Object reference component</title>
+  </h:head>
+  <h:body>
+    <composite:interface>
+      <composite:attribute name="helper" required="true"/>
+      <composite:attribute name="minQueryLength" required="false" default="2" />
+      <composite:attribute name="queryDelay" required="false" default="1000" />
+      <composite:attribute name="style" required="false" default="" />
+      <composite:attribute name="styleClass" required="false" default="" />
+      <composite:attribute name="scrollHeight" required="false" default="200" />
+      <composite:attribute name="size" required="false" />
+    </composite:interface>
+
+    <composite:implementation>
+      <div class="ui-inputgroup">
+        <p:autoComplete value="#{cc.attrs.helper.selectedItem}"
+                        maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
+                        completeMethod="#{cc.attrs.helper.complete}"
+                        converter="selectItemConverter"
+                        var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                        minQueryLength="#{cc.attrs.minQueryLength}" 
+                        queryDelay="#{cc.attrs.queryDelay}"
+                        style="#{cc.attrs.style}"
+                        styleClass="#{cc.attrs.styleClass}"
+                        size="#{cc.attrs.size}" 
+                        scrollHeight="#{cc.attrs.scrollHeight}"                        
+                        onclick="this.setSelectionRange(0, this.value.length)">
+          <p:column>
+            <h:outputText value="#{item.label}" />
+          </p:column>
+        </p:autoComplete>
+        <p:commandButton icon="pi pi-search"
+                         styleClass="ui-button-raised select-button"
+                         action="#{cc.attrs.helper.find}"
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                         ajax="false" />
+      </div>
+
+    </composite:implementation>
+  </h:body>
+</html>

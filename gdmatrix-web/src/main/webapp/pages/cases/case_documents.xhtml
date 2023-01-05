@@ -3,12 +3,13 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:em="http://xmlns.jcp.org/jsf/composite/emcomp">
 
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                   var="caseBundle" />
 
-    <h:panelGroup>
+    <h:panelGroup>      
       
       <!-- Results table -->
       <p:dataTable id="case_documents_table" value="#{caseDocumentsTabBean.caseDocumentViews}" 
@@ -50,25 +51,12 @@
                            action="#{navigatorBean.show('Document', row.document.docId)}" />
         </p:column>
       </p:dataTable>
-            
-      <div class="ui-inputgroup">
-        <p:autoComplete value="#{caseDocumentsTabBean.documentReferenceHelper.selectedItem}" 
-                        maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
-                        completeMethod="#{caseDocumentsTabBean.documentReferenceHelper.complete}"
-                        converter="selectItemConverter"
-                        var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                        minQueryLength="2" queryDelay="1000"
-                        onclick="this.setSelectionRange(0, this.value.length)">
-          <p:column>
-            <!--<h:outputText value="#{caseDocumentsTabBean.documentReferenceHelper.getDescription(item.value)}" />-->
-            <h:outputText value="#{item.label}" />
-          </p:column>
-        </p:autoComplete>  
-        <p:commandButton icon="pi pi-search"
-                         styleClass="ui-button-raised select-button" 
-                         action="#{caseDocumentsTabBean.documentReferenceHelper.find('caseDocumentsTabBean.documentReferenceHelper.selectedId')}"
-                         alt="#{objectBundle.search}" title="#{objectBundle.search}" ajax="false" />     
-      </div>
+          
+      <em:objectReference helper="#{caseDocumentsTabBean.documentReferenceHelper}"
+                          styleClass="w-full"
+                          scrollHeight="200"
+                          queryDelay="1000"
+                          minQueryLength="3" />
 
       <!-- Person data panel -->
 
