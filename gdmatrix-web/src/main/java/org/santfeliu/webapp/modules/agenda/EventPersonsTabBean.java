@@ -42,7 +42,6 @@ import org.matrix.agenda.Attendant;
 import org.matrix.agenda.AttendantFilter;
 import org.matrix.agenda.AttendantView;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.kernel.Person;
 import org.matrix.web.WebUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -52,7 +51,6 @@ import org.santfeliu.dic.web.TypeBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ReferenceHelper;
 import org.santfeliu.webapp.helpers.ResultListHelper;
 import org.santfeliu.webapp.modules.kernel.PersonObjectBean;
 
@@ -63,19 +61,18 @@ import org.santfeliu.webapp.modules.kernel.PersonObjectBean;
 @Named
 @ManualScoped
 public class EventPersonsTabBean extends TabBean
-{    
-  private static final String TYPE_BEAN = "typeBean";  
-  
+{
+  private static final String TYPE_BEAN = "typeBean";
+
   @Inject
   EventObjectBean eventObjectBean;
 
   @Inject
   PersonObjectBean personObjectBean;
-  
+
   //Helpers
-  private ResultListHelper<AttendantView> resultListHelper;  
-  ReferenceHelper<Person> personReferenceHelper;   
-  
+  private ResultListHelper<AttendantView> resultListHelper;
+
   private int firstRow;
   private Attendant editing;
 
@@ -84,33 +81,26 @@ public class EventPersonsTabBean extends TabBean
   {
     System.out.println("Creating " + this);
     resultListHelper = new EventPersonResultListHelper();
-    personReferenceHelper = 
-      new PersonReferenceHelper(DictionaryConstants.PERSON_TYPE);    
-  }  
-  
+  }
+
   @Override
   public ObjectBean getObjectBean()
   {
     return eventObjectBean;
   }
 
-  public ReferenceHelper<Person> getPersonReferenceHelper() 
-  {
-    return personReferenceHelper;
-  }  
-  
   //TODO Move to superclass
   public String getRootTypeId()
   {
     return DictionaryConstants.ATTENDANT_TYPE;
-  }  
-  
-  public Attendant getEditing() 
+  }
+
+  public Attendant getEditing()
   {
     return editing;
   }
 
-  public void setEditing(Attendant editing) 
+  public void setEditing(Attendant editing)
   {
     this.editing = editing;
   }
@@ -118,8 +108,8 @@ public class EventPersonsTabBean extends TabBean
   public ResultListHelper<AttendantView> getResultListHelper()
   {
     return resultListHelper;
-  }     
-  
+  }
+
   public int getFirstRow()
   {
     return firstRow;
@@ -137,8 +127,8 @@ public class EventPersonsTabBean extends TabBean
       return personObjectBean.getDescription(editing.getPersonId());
     }
     return null;
-  }  
-  
+  }
+
   //TODO Use ObjectDescriptor
   public String getAttendantTypeDescription()
   {
@@ -153,14 +143,14 @@ public class EventPersonsTabBean extends TabBean
         if (type != null) return type.getDescription();
       }
     }
-    return typeId;    
+    return typeId;
   }
 
   public String getAttendedLabel()
   {
     String attended = (String)getValue("#{row.attended}");
     if (attended == null) return "";
-    else switch (attended) 
+    else switch (attended)
     {
       case "S":
         return "SI";
@@ -171,9 +161,9 @@ public class EventPersonsTabBean extends TabBean
       default:
         return "";
     }
-  }  
-  
-  //TODO Use TypedHelper  
+  }
+
+  //TODO Use TypedHelper
   public List<Type> getAllTypes()
   {
     TypeCache tc = TypeCache.getInstance();
@@ -185,7 +175,7 @@ public class EventPersonsTabBean extends TabBean
     }
     return types;
   }
-    
+
   public boolean isHidden()
   {
     if (editing != null && editing.isHidden() != null)
@@ -197,26 +187,26 @@ public class EventPersonsTabBean extends TabBean
   public void setHidden(boolean hidden)
   {
     editing.setHidden(hidden);
-  }  
-  
-  public void onPersonSelect(SelectEvent<SelectItem> event) 
+  }
+
+  public void onPersonSelect(SelectEvent<SelectItem> event)
   {
     SelectItem item = event.getObject();
     String personId = (String)item.getValue();
     editing.setPersonId(personId);
-  }  
+  }
 
-  public void onPersonClear() 
+  public void onPersonClear()
   {
     editing.setPersonId(null);
-  }  
-    
+  }
+
   public void setSelectedPerson(String personId)
   {
     editing.setPersonId(personId);
     showDialog();
-  }  
-  
+  }
+
   public String edit(AttendantView row)
   {
     String attendantId = null;
@@ -224,18 +214,18 @@ public class EventPersonsTabBean extends TabBean
       attendantId = row.getAttendantId();
 
     return editPerson(attendantId);
-  }  
-  
+  }
+
   @Override
   public void load()
   {
     resultListHelper.find();
   }
-  
+
   public void create()
   {
     editing = new Attendant();
-  }    
+  }
 
   @Override
   public void store()
@@ -243,26 +233,26 @@ public class EventPersonsTabBean extends TabBean
     storePerson();
     resultListHelper.find();
   }
-  
+
   public void remove(AttendantView row)
   {
     removePerson(row);
     resultListHelper.find();
   }
-  
+
   public String cancel()
   {
     editing = null;
-    info("CANCEL_OBJECT");          
+    info("CANCEL_OBJECT");
     return null;
-  }  
-  
+  }
+
   public void reset()
   {
     cancel();
     resultListHelper.clear();
-  }  
-  
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -276,27 +266,27 @@ public class EventPersonsTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (Attendant)stateArray[0];
-      
-      resultListHelper.find();
+
+      if (!isNew()) resultListHelper.find();
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }   
-  
+  }
+
   private boolean isNew(Attendant attendant)
   {
     return (attendant != null && attendant.getAttendantId() == null);
-  }  
-  
+  }
+
   private String editPerson(String attendantId)
   {
     try
     {
       if (attendantId != null && !isEditing(attendantId))
       {
-        editing = 
+        editing =
           AgendaModuleBean.getClient(false).loadAttendantFromCache(attendantId);
       }
       else if (attendantId == null)
@@ -309,8 +299,8 @@ public class EventPersonsTabBean extends TabBean
       error(ex);
     }
     return null;
-  }    
-  
+  }
+
   private void storePerson()
   {
     try
@@ -320,7 +310,7 @@ public class EventPersonsTabBean extends TabBean
         //Person must be selected
         if (editing.getPersonId() == null || editing.getPersonId().isEmpty())
         {
-          throw new Exception("PERSON_MUST_BE_SELECTED"); 
+          throw new Exception("PERSON_MUST_BE_SELECTED");
         }
 
         String eventId = eventObjectBean.getObjectId();
@@ -336,24 +326,24 @@ public class EventPersonsTabBean extends TabBean
       error(ex);
       showDialog();
     }
-  }  
-  
+  }
+
   private String removePerson(AttendantView row)
   {
     try
     {
       if (row == null)
         throw new Exception("PERSON_MUST_BE_SELECTED");
-      
+
       String rowAttendantId = row.getAttendantId();
-      
-      if (editing != null && 
+
+      if (editing != null &&
         rowAttendantId.equals(editing.getAttendantId()))
         editing = null;
-            
+
       AgendaModuleBean.getClient(false).removeAttendant(rowAttendantId);
-      
-      info("REMOVE_OBJECT");      
+
+      info("REMOVE_OBJECT");
       return null;
     }
     catch (Exception ex)
@@ -361,27 +351,27 @@ public class EventPersonsTabBean extends TabBean
       error(ex);
     }
     return null;
-  }    
+  }
 
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('personDataDialog').show();");    
-  }  
+    current.executeScript("PF('personDataDialog').show();");
+  }
 
   private void hideDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('personDataDialog').hide();");    
-  }  
-  
+    current.executeScript("PF('personDataDialog').hide();");
+  }
+
   private boolean isEditing(String pageObjectId)
   {
     if (editing == null)
       return false;
-    
-    String attendantId = editing.getAttendantId();    
-    return attendantId != null 
+
+    String attendantId = editing.getAttendantId();
+    return attendantId != null
       && attendantId.equals(pageObjectId);
   }
 
@@ -406,8 +396,8 @@ public class EventPersonsTabBean extends TabBean
     }
     return Collections.emptyList();
   }
-  
-  private class EventPersonResultListHelper extends 
+
+  private class EventPersonResultListHelper extends
     ResultListHelper<AttendantView>
   {
     @Override
@@ -418,7 +408,7 @@ public class EventPersonsTabBean extends TabBean
         AttendantFilter filter = new AttendantFilter();
         filter.setEventId(eventObjectBean.getObjectId());
         filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);        
+        filter.setMaxResults(maxResults);
         return AgendaModuleBean.getClient(false).
           findAttendantViewsFromCache(filter);
       }
@@ -429,31 +419,5 @@ public class EventPersonsTabBean extends TabBean
       return null;
     }
   }
-  
-  private class PersonReferenceHelper extends ReferenceHelper<Person>
-  {
-    public PersonReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
 
-    @Override
-    public String getId(Person person)
-    {
-      return person.getPersonId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return editing != null ? editing.getPersonId() : "";
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      setSelectedPerson(value);
-    }
-  }
-  
 }

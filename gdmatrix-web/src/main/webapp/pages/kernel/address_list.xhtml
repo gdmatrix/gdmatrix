@@ -4,10 +4,12 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
 
-  <p:dataTable id="full_results_table" value="#{addressFinderBean.rows}" var="row"
-               stripedRows="true" paginator="true" pageLinks="5"
+  <p:dataTable value="#{addressFinderBean.rows}"
+               var="row" stripedRows="true" 
+               paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{addressFinderBean.firstRow}"
+               rowStyleClass="#{row.addressId == addressObjectBean.objectId ? 'current' : ''}"
                rows="10"
                rowIndexVar="rowIndex">
 

@@ -5,12 +5,14 @@
   xmlns:p="http://primefaces.org/ui">
   
   <p:dataTable value="#{caseFinderBean.rows}" 
-               var="row" rowIndexVar="rowIndex"
-               stripedRows="true" paginator="true" pageLinks="5" 
+               var="row" stripedRows="true" 
+               paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
-               rows="10" first="#{caseFinderBean.firstRow}"
+               first="#{caseFinderBean.firstRow}"
                rowStyleClass="#{row.caseId == caseObjectBean.objectId ? 'current' : ''}"
-               rendered="true">
+               rows="10"
+               rowIndexVar="rowIndex">
+
     <p:column headerText="#{caseBundle.case_caseId}" styleClass="w-1">
       <h:outputText value="#{row.caseId}" />
     </p:column>   

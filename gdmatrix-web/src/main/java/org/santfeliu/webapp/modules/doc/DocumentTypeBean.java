@@ -56,6 +56,12 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
   }
 
   @Override
+  public String getObjectId(Document document)
+  {
+    return document.getDocId();
+  }
+
+  @Override
   public String describe(Document document)
   {
     return document.getTitle() + " (" + document.getDocId() + ")";
@@ -129,4 +135,8 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     }
   }
 
+  public String getValue(Object object)
+  {
+    return String.valueOf(object);
+  }
 }

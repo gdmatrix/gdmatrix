@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.kernel;
@@ -34,14 +34,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.dic.Type;
-import org.matrix.dic.TypeFilter;
-import org.matrix.kernel.City;
-import org.matrix.kernel.Country;
 import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
@@ -51,8 +48,6 @@ import org.santfeliu.kernel.web.KernelConfigBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
-import org.santfeliu.webapp.helpers.ReferenceHelper;
-import org.santfeliu.webapp.helpers.CityReferenceHelper;
 
 /**
  *
@@ -61,32 +56,24 @@ import org.santfeliu.webapp.helpers.CityReferenceHelper;
 @Named
 @ManualScoped
 public class PersonObjectBean extends ObjectBean
-{   
+{
   private Person person = new Person();
-  
+
   private List<SelectItem> personParticleSelectItems;
   private SelectItem[] sexSelectItems;
-  
+
   @Inject
   PersonTypeBean personTypeBean;
+
   @Inject
   CountryTypeBean countryTypeBean;
-  
+
   @Inject
   PersonFinderBean personFinderBean;
-  
-  ReferenceHelper<City> cityReferenceHelper;
-  ReferenceHelper<Country> countryReferenceHelper;
-  ReferenceHelper<Type> typeReferenceHelper;
 
-  public PersonObjectBean()
+  @PostConstruct
+  public void init()
   {
-    cityReferenceHelper = 
-      new CityReferenceHelper("personObjectBean.person.birthCityId");
-    countryReferenceHelper = 
-      new CountryReferenceHelper("personObjectBean.person.nationalityId");
-    typeReferenceHelper = 
-      new TypeReferenceHelper("personObjectBean.person.personTypeId");    
   }
 
   public Person getPerson()
@@ -99,45 +86,30 @@ public class PersonObjectBean extends ObjectBean
     this.person = person;
   }
 
-  public ReferenceHelper<City> getCityReferenceHelper()
-  {
-    return cityReferenceHelper;
-  }
-
-  public ReferenceHelper<Country> getCountryReferenceHelper()
-  {
-    return countryReferenceHelper;
-  }
-
-  public ReferenceHelper<Type> getTypeReferenceHelper()
-  {
-    return typeReferenceHelper;
-  }
-  
   @Override
   public String getRootTypeId()
   {
     return DictionaryConstants.PERSON_TYPE;
   }
-  
+
   @Override
   public PersonTypeBean getTypeBean()
   {
     return personTypeBean;
-  }  
-  
+  }
+
   @Override
   public Person getObject()
   {
     return isNew() ? null : person;
-  }    
-  
+  }
+
   @Override
   public String getDescription()
   {
     return isNew() ? "" : getDescription(person.getPersonId());
-  }  
-  
+  }
+
   public String getDescription(String personId)
   {
     return getTypeBean().getDescription(personId);
@@ -154,7 +126,7 @@ public class PersonObjectBean extends ObjectBean
   {
     return personFinderBean;
   }
-  
+
   public List<SelectItem> getPersonParticleSelectItems()
   {
     if (personParticleSelectItems == null)
@@ -172,27 +144,27 @@ public class PersonObjectBean extends ObjectBean
       }
     }
     return personParticleSelectItems;
-  }  
+  }
 
 
-  
+
   public SelectItem[] getSexSelectItems()
   {
     if (sexSelectItems == null)
     {
       ResourceBundle bundle = ResourceBundle.getBundle(
-        "org.santfeliu.kernel.web.resources.KernelBundle", getLocale());    
+        "org.santfeliu.kernel.web.resources.KernelBundle", getLocale());
       sexSelectItems = FacesUtils.getEnumSelectItems(Sex.class, bundle);
     }
     return sexSelectItems;
-  } 
-    
+  }
+
   @Override
   public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
       person = KernelConfigBean.getPort().loadPerson(objectId);
-    else 
+    else
       person = new Person();
   }
 
@@ -205,7 +177,7 @@ public class PersonObjectBean extends ObjectBean
     {
       tabs = new ArrayList<>(); // empty list may be read only
       tabs.add(new Tab("Main", "/pages/kernel/person_main.xhtml"));
-      tabs.add(new Tab("Addresses", "/pages/kernel/person_addresses.xhtml", 
+      tabs.add(new Tab("Addresses", "/pages/kernel/person_addresses.xhtml",
         "personAddressesTabBean"));
     }
   }
@@ -216,8 +188,8 @@ public class PersonObjectBean extends ObjectBean
     person = KernelModuleBean.getPort(false).storePerson(person);
     setObjectId(person.getPersonId());
     personFinderBean.outdate();
-  }  
-  
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -228,42 +200,6 @@ public class PersonObjectBean extends ObjectBean
   public void restoreState(Serializable state)
   {
     this.person = (Person)state;
-  }  
-  
-  private class CountryReferenceHelper extends ReferenceHelper<Country>
-  {
-    public CountryReferenceHelper(String expression)
-    {
-      super(DictionaryConstants.COUNTRY_TYPE, expression);
-    }
+  }
 
-    @Override
-    public String getId(Country country)
-    {
-      return country.getCountryId();
-    }  
-  }  
-  
-  private class TypeReferenceHelper extends ReferenceHelper<Type>
-  {
-    public TypeReferenceHelper(String expression)
-    {
-      super(DictionaryConstants.TYPE_TYPE, expression);
-    }
-
-    @Override
-    public String getId(Type type)
-    {
-      return type.getTypeId();
-    }
-
-    @Override
-    public TypeFilter getFilter()
-    {
-      TypeFilter filter = new TypeFilter();
-      filter.setSuperTypeId(getRootTypeId()); //Return person types
-      return filter; 
-    }
-  }    
-    
 }

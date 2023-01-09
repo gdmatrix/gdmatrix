@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.activation.DataHandler;
+import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -80,31 +81,13 @@ public class DocumentObjectBean extends ObjectBean
 {
   private Document document = new Document();
   private transient List<Document> versions;
-
-//  private transient final ReferenceHelper<Type> typeReferenceHelper =
-//    new ReferenceHelper<Type>(DictionaryConstants.TYPE_TYPE)
-//  {
-//    @Override
-//    public String getId(Type type)
-//    {
-//      return type.getTypeId();
-//    }
-//  };
-
-  private transient final PropertyHelper propertyHelper = new PropertyHelper()
-  {
-    @Override
-    public List<Property> getProperties()
-    {
-      return document.getProperty();
-    }
-  };
+  private PropertyHelper propertyHelper;
 
   /* new content */
-  File fileToStore;
-  String fileNameToStore;
-  String urlToStore;
-  String contentIdToStore;
+  private File fileToStore;
+  private String fileNameToStore;
+  private String urlToStore;
+  private String contentIdToStore;
 
   @Inject
   DocumentTypeBean documentTypeBean;
@@ -112,8 +95,17 @@ public class DocumentObjectBean extends ObjectBean
   @Inject
   DocumentFinderBean documentFinderBean;
 
-  public DocumentObjectBean()
+  @PostConstruct
+  public void init()
   {
+    propertyHelper = new PropertyHelper()
+    {
+      @Override
+      public List<Property> getProperties()
+      {
+        return document.getProperty();
+      }
+    };
   }
 
   @Override
@@ -139,11 +131,6 @@ public class DocumentObjectBean extends ObjectBean
   {
     return documentFinderBean;
   }
-
-//  public ReferenceHelper getTypeReferenceHelper()
-//  {
-//    return typeReferenceHelper;
-//  }
 
   public PropertyHelper getPropertyHelper()
   {
@@ -241,19 +228,6 @@ public class DocumentObjectBean extends ObjectBean
   {
     this.document = document;
   }
-
-//  public SelectItem getTypeSelectItem()
-//  {
-//    return typeReferenceHelper.getSelectItem(document.getDocTypeId());
-//  }
-//
-//  public void setTypeSelectItem(SelectItem selectItem)
-//  {
-//    if (selectItem != null)
-//      document.setDocTypeId((String) selectItem.getValue());
-//    else
-//      document.setDocTypeId("Document");
-//  }
 
   public String getDocumentURL(boolean withContentId, boolean downloadable,
     boolean fullUrl, int maxFilenameLength)

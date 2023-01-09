@@ -57,10 +57,16 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
   }
 
   @Override
+  public String getObjectId(Room room)
+  {
+    return room.getRoomId();
+  }
+
+  @Override
   public String describe(Room room)
   {
     try
-    {      
+    {
       RoomFilter filter = new RoomFilter();
       filter.getRoomIdList().add(room.getRoomId());
       List<RoomView> roomViews = getPort(true).findRoomViews(filter);
@@ -74,7 +80,7 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
     {
       error(ex);
     }
-    return room.getRoomId();    
+    return room.getRoomId();
   }
 
   @Override
@@ -89,29 +95,29 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
       return null;
     }
   }
-  
+
   @Override
   public RoomFilter queryToFilter(String query, String typeId)
   {
     if (query == null) query = "";
-    
+
     RoomFilter filter = new RoomFilter();
     if (checkRoomIdValues(query))
     {
       filter.getRoomIdList().addAll(Arrays.asList(query.split(",")));
-    }    
+    }
     else
     {
       try //address
       {
         Integer.parseInt(query);
-        filter.setAddressId(query);        
+        filter.setAddressId(query);
       }
       catch (NumberFormatException ex) //description
       {
         filter.setRoomName(query);
-      }        
-    }    
+      }
+    }
     return filter;
   }
 
@@ -119,10 +125,10 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
   public String filterToQuery(RoomFilter filter)
   {
     String value;
-    
+
     if (!filter.getRoomIdList().isEmpty())
       value = String.join(",", filter.getRoomIdList());
-    else 
+    else
       value = filter.getRoomName();
     return value;
   }
@@ -161,10 +167,10 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
       catch (NumberFormatException ex)
       {
         return false;
-      }      
+      }
     }
     return true;
-  }  
-  
-  
+  }
+
+
 }

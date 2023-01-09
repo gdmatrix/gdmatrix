@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.kernel;
@@ -34,11 +34,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.kernel.Address;
 import org.matrix.kernel.KernelConstants;
 import org.matrix.kernel.Room;
 import org.matrix.web.WebUtils;
@@ -50,7 +50,6 @@ import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
-import org.santfeliu.webapp.helpers.ReferenceHelper;
 
 /**
  *
@@ -60,29 +59,20 @@ import org.santfeliu.webapp.helpers.ReferenceHelper;
 @ManualScoped
 public class RoomObjectBean extends ObjectBean
 {
-  private static final String TYPE_BEAN = "typeBean";  
-  
+  private static final String TYPE_BEAN = "typeBean";
   private Room room = new Room();
 
-  ReferenceHelper<Address> addressReferenceHelper;  
-  
   @Inject
   RoomTypeBean roomTypeBean;
 
   @Inject
   RoomFinderBean roomFinderBean;
 
-  public RoomObjectBean()
+  @PostConstruct
+  public void init()
   {
-    addressReferenceHelper = 
-      new AddressReferenceHelper(DictionaryConstants.ADDRESS_TYPE);    
   }
 
-  public ReferenceHelper<Address> getAddressReferenceHelper() 
-  {
-    return addressReferenceHelper;
-  }  
-  
   @Override
   public String getRootTypeId()
   {
@@ -93,37 +83,37 @@ public class RoomObjectBean extends ObjectBean
   public RoomTypeBean getTypeBean()
   {
     return roomTypeBean;
-  }  
-  
+  }
+
   @Override
   public Room getObject()
   {
     return isNew() ? null : room;
-  }  
-  
+  }
+
   @Override
   public String getDescription()
   {
     return isNew() ? "" : getDescription(room.getRoomId());
   }
-  
+
   public String getDescription(String roomId)
   {
     return getTypeBean().getDescription(roomId);
-  }  
-  
+  }
+
   @Override
   public RoomFinderBean getFinderBean()
   {
     return roomFinderBean;
-  }  
-  
-  public Room getRoom() 
+  }
+
+  public Room getRoom()
   {
     return room;
   }
 
-  public void setRoom(Room room) 
+  public void setRoom(Room room)
   {
     this.room = room;
   }
@@ -133,7 +123,7 @@ public class RoomObjectBean extends ObjectBean
   {
     return "/pages/kernel/room.xhtml";
   }
-  
+
   @Override
   public void loadObject() throws Exception
   {
@@ -148,10 +138,10 @@ public class RoomObjectBean extends ObjectBean
         error(ex);
       }
     }
-    else 
+    else
     {
       room = new Room();
-    }       
+    }
   }
 
   @Override
@@ -163,43 +153,35 @@ public class RoomObjectBean extends ObjectBean
     {
       tabs = new ArrayList<>(); // empty list may be read only
       tabs.add(new Tab("Main", "/pages/kernel/room_main.xhtml"));
-    }    
-  }
-  
-  @Override
-  public void storeObject()
-  {    
-    try
-    {
-      room = KernelModuleBean.getPort(false).storeRoom(room);
-      setObjectId(room.getRoomId());
-      roomFinderBean.outdate();
-      info("STORE_OBJECT");
     }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }  
-  
-  public void onAddressSelect(SelectEvent<SelectItem> event) 
-  {
-    SelectItem item = event.getObject();
-    String addressId = (String)item.getValue();
-    room.setAddressId(addressId);
   }
 
-  public void onAddressClear() 
+  @Override
+  public void storeObject() throws Exception
   {
-    room.setAddressId(null);
+    room = KernelModuleBean.getPort(false).storeRoom(room);
+    setObjectId(room.getRoomId());
+    roomFinderBean.outdate();
   }
-      
-  public String getAdminRole() 
+
+//  public void onAddressSelect(SelectEvent<SelectItem> event)
+//  {
+//    SelectItem item = event.getObject();
+//    String addressId = (String)item.getValue();
+//    room.setAddressId(addressId);
+//  }
+//
+//  public void onAddressClear()
+//  {
+//    room.setAddressId(null);
+//  }
+
+  public String getAdminRole()
   {
     return KernelConstants.KERNEL_ADMIN_ROLE;
   }
 
-  //TODO Use TypedHelper  
+  //TODO Use TypedHelper
   public List<Type> getAllTypes()
   {
     TypeCache tc = TypeCache.getInstance();
@@ -211,7 +193,7 @@ public class RoomObjectBean extends ObjectBean
     }
     return types;
   }
-  
+
   @Override
   public Serializable saveState()
   {
@@ -223,7 +205,7 @@ public class RoomObjectBean extends ObjectBean
   {
     this.room = (Room)state;
   }
-  
+
   private List<SelectItem> getAllTypeItems()
   {
     return getAllTypeItems(DictionaryConstants.READ_ACTION,
@@ -245,32 +227,5 @@ public class RoomObjectBean extends ObjectBean
     }
     return Collections.emptyList();
   }
-  
-  private class AddressReferenceHelper extends ReferenceHelper<Address>
-  {
-    public AddressReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
 
-    @Override
-    public String getId(Address address)
-    {
-      return address.getAddressId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return room != null ? room.getAddressId() : "";
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      if (room != null)
-        room.setAddressId(value);
-    }
-  }
-  
 }

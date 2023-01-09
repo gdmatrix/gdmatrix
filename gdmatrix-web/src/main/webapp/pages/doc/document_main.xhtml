@@ -4,60 +4,45 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
     <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
                   var="documentBundle" />    
     
     <div class="ui-fluid formgrid grid">   
-
-      <p:outputPanel styleClass="w-full m-0 flex justify-content-end">
+      
+      <div class="w-full m-0 flex justify-content-end">
         <p:commandLink value="#{documentObjectBean.versionLabel}" 
                        process="@this"
                        action="#{documentObjectBean.loadVersions}"
                        update=":mainform:versions_panel"
                        oncomplete="PF('versionsPanel').show()"/>
-      </p:outputPanel>
+      </div>      
       
-      <p:outputPanel styleClass="field col-12 md:col-12" 
-                     rendered="true">
-        <p:outputLabel for="title" value="Title" />
-        <p:inputTextarea id="title" value="#{documentObjectBean.document.title}" 
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="DocId" />
+        <p:inputText value="#{documentObjectBean.objectId}" readonly="true" />
+      </div>
+
+      <div class="field col-12 md:col-9">
+        <p:outputLabel for="@next" value="Type" />
+        <emcomp:typeReference value="#{documentObjectBean.document.docTypeId}"
+                              type="Document"
+                              styleClass="w-full"
+                              scrollHeight="200"
+                              queryDelay="1000"
+                              minQueryLength="3" />
+      </div>
+            
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="@next" value="Title" />
+        <p:inputTextarea value="#{documentObjectBean.document.title}" 
                          required="true"
                          styleClass="inputfield w-full"/>
-      </p:outputPanel>       
+      </div>       
       
-      <p:outputPanel styleClass="field col-12 md:col-8"
-                     rendered="true">
-        <p:outputLabel for="docTypeId" value="Tipus"  />        
-        <p:inputText id="docTypeId" value="#{documentObjectBean.document.docTypeId}"
-                     required="true"
-                     styleClass="inputfield w-full" />
-<!--
-        <div class="ui-inputgroup"> 
-          <p:autoComplete id="type_id"  
-                          value="#{documentObjectBean.typeSelectItem}" 
-                          maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                          completeMethod="#{documentObjectBean.typeReferenceHelper.complete}"
-                          converter="selectItemConverter"
-                          var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                          minQueryLength="2" queryDelay="1000"
-                          onclick="this.setSelectionRange(0, this.value.length)">
-            <p:column>
-              <h:outputText value="#{documentObjectBean.typeReferenceHelper.getDescription(item.value)}" />
-            </p:column>           
-          </p:autoComplete>  
-          <p:commandButton icon="pi pi-search"
-                           styleClass="ui-button-raised select-button" 
-                           action="#{navigatorBean.find('Type', 'documentObjectBean.document.docTypeId')}"
-                           alt="#{objectBundle.search}" title="#{objectBundle.search}" ajax="false"
-                            />     
-        </div>
--->
-      </p:outputPanel> 
-
-      <p:outputPanel styleClass="field col-12 md:col-4" 
-                     rendered="true">
+      <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="language" value="Idioma" />
         <p:selectOneMenu id="language"
           value="#{documentObjectBean.document.language}"
@@ -70,9 +55,9 @@
           <f:selectItem itemValue="it" itemLabel="#{documentBundle.selectItemIT}"/>
           <f:selectItem itemValue="de" itemLabel="#{documentBundle.selectItemDE}"/>
         </p:selectOneMenu>
-      </p:outputPanel> 
+      </div> 
 
-      <p:outputPanel styleClass="field col-12 md:col-4">
+      <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="creation_date" value="Creation date" />
         <!-- TODO: disable if not editable -->
         <p:datePicker id="creation_date" 
@@ -85,10 +70,9 @@
                       converter="datePickerConverter" pattern="dd/MM/yyyy"
                       showIcon="true" showTime="false"
                       monthNavigator="true" yearNavigator="true" />
-      </p:outputPanel>         
+      </div>         
 
-      <p:outputPanel styleClass="field col-12 md:col-4" 
-                     rendered="true">
+      <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="state" value="Estat" />
         <p:selectOneMenu id="state" 
                          value="#{documentObjectBean.document.state}"
@@ -97,10 +81,9 @@
           <f:converter converterId="EnumConverter" />
           <f:attribute name="enum" value="org.matrix.doc.State" />
         </p:selectOneMenu>
-      </p:outputPanel> 
+      </div> 
       
-      <p:outputPanel styleClass="field col-12 md:col-4"
-                     rendered="true">
+      <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="lockUserId" value="Bloquejat per"  />        
         <div class="ui-inputgroup">
           <p:inputText id="lockUserId" 
@@ -120,7 +103,7 @@
                            disabled="#{documentObjectBean.isNew()}"
                            rendered="#{documentObjectBean.document.lockUserId != null}" /> 
         </div>
-      </p:outputPanel> 
+      </div> 
       
     </div>
     

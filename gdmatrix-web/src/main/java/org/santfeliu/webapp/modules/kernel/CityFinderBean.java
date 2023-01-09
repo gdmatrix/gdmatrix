@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.kernel;
@@ -53,30 +53,30 @@ import org.santfeliu.webapp.modules.kernel.CityFinderBean.CityView;
 @Named
 @ManualScoped
 public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
-{    
+{
   @Inject
   NavigatorBean navigatorBean;
-  
+
   @Inject
   CityObjectBean cityObjectBean;
-  
+
   @Inject
   CityTypeBean cityTypeBean;
-  
+
   @Inject
-  ProvinceTypeBean provinceTypeBean;  
-  
+  ProvinceTypeBean provinceTypeBean;
+
   public CityFinderBean()
   {
     filter = new CityFilter();
   }
-  
+
   @Override
   public ObjectBean getObjectBean()
   {
     return cityObjectBean;
-  }  
-  
+  }
+
   @Override
   public String getObjectId(int position)
   {
@@ -87,19 +87,20 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   public int getObjectCount()
   {
     return rows == null ? 0 : rows.size();
-  }    
+  }
 
   @Override
   public CityFilter createFilter()
   {
     return new CityFilter();
-  }  
-  
+  }
+
   @Override
   public void smartFind()
   {
-    findMode = 1;
-    filter = 
+    finding = true;
+    setTabIndex(0);
+    filter =
       cityTypeBean.queryToFilter(smartFilter, DictionaryConstants.CITY_TYPE);
     doFind(true);
     firstRow = 0;
@@ -108,47 +109,39 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   @Override
   public void find()
   {
-    findMode = 2;
+    finding = true;
+    setTabIndex(1);
     smartFilter = cityTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
-  }    
+  }
 
   @Override
   protected TypeBean getTypeBean()
   {
     return cityTypeBean;
   }
-        
+
   @Override
   protected void doFind(boolean autoLoad)
   {
     try
     {
-      if (findMode == 0)
+      if (!finding)
       {
         rows = Collections.EMPTY_LIST;
       }
       else
       {
-        if (findMode == 1)
-        {
-          setTabIndex(0);
-        }
-        else
-        {
-          setTabIndex(1);
-        }
-
         rows = new ArrayList();
         List<City> cities =
           KernelModuleBean.getPort(false).findCities(filter);
-        for (City city : cities)        
+        for (City city : cities)
         {
           CityView view = new CityView(city);
           rows.add(view);
-        }        
-  
+        }
+
         outdated = false;
 
         if (autoLoad)
@@ -171,19 +164,19 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       error(ex);
     }
   }
-  
+
   public class CityView implements Serializable
   {
     private String cityId;
     private String name;
     private String provinceId;
-    private String province;    
-    
+    private String province;
+
     public CityView(City city)
     {
-      this.cityId = city.getCityId();      
+      this.cityId = city.getCityId();
       this.name = city.getName();
-      this.provinceId = city.getProvinceId();      
+      this.provinceId = city.getProvinceId();
       this.province = provinceTypeBean.getDescription(provinceId);
     }
 
@@ -228,5 +221,5 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
     }
 
   }
-  
+
 }

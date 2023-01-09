@@ -56,9 +56,9 @@ public class ThemeFinderBean extends FinderBean
   private ThemeFilter filter = new ThemeFilter();
   private List<Theme> rows;
   private int firstRow;
-  private int findMode;
-  private boolean outdated;  
-  
+  private boolean finding;
+  private boolean outdated;
+
   @Inject
   NavigatorBean navigatorBean;
 
@@ -113,7 +113,7 @@ public class ThemeFinderBean extends FinderBean
   {
     this.firstRow = firstRow;
   }
-  
+
   @Override
   public String getObjectId(int position)
   {
@@ -125,51 +125,54 @@ public class ThemeFinderBean extends FinderBean
   {
     return rows == null ? 0 : rows.size();
   }
-  
+
   @Override
   public void smartFind()
   {
-    findMode = 1;
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();    
-    filter = themeTypeBean.queryToFilter(smartFilter, baseTypeId);            
+    finding = true;
+    setTabIndex(0);
+    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+    filter = themeTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
-    firstRow = 0;    
+    firstRow = 0;
   }
 
   @Override
   public void find()
   {
-    findMode = 2;
-    smartFilter = themeTypeBean.filterToQuery(filter);    
+    finding = true;
+    setTabIndex(1);
+    smartFilter = themeTypeBean.filterToQuery(filter);
     doFind(true);
-    firstRow = 0;    
+    firstRow = 0;
   }
 
   public void outdate()
   {
     this.outdated = true;
-  }  
-  
+  }
+
   public void update()
   {
     if (outdated)
     {
       doFind(false);
     }
-  }  
-  
+  }
+
   public void clear()
   {
     filter = new ThemeFilter();
-    smartFilter = null;    
+    smartFilter = null;
     rows = null;
-    findMode = 0;    
+    finding = false;
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ findMode, filter, firstRow, getObjectPosition() };
+    return new Object[]{ finding, getTabIndex(),
+      filter, firstRow, getObjectPosition() };
   }
 
   @Override
@@ -178,13 +181,14 @@ public class ThemeFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      findMode = (Integer)stateArray[0];
-      filter = (ThemeFilter)stateArray[1];
+      finding = (Boolean)stateArray[0];
+      setTabIndex((Integer)stateArray[1]);
+      filter = (ThemeFilter)stateArray[2];
 
       doFind(false);
 
-      firstRow = (Integer)stateArray[2];
-      setObjectPosition((Integer)stateArray[3]);      
+      firstRow = (Integer)stateArray[3];
+      setObjectPosition((Integer)stateArray[4]);
     }
     catch (Exception ex)
     {
@@ -196,20 +200,12 @@ public class ThemeFinderBean extends FinderBean
   {
     try
     {
-      if (findMode == 0)
+      if (!finding)
       {
         rows = Collections.EMPTY_LIST;
       }
       else
       {
-        if (findMode == 1)
-        {
-          setTabIndex(0);        
-        }
-        else
-        {
-          setTabIndex(1);
-        }
         rows = new BigList(20, 10)
         {
           @Override
@@ -244,9 +240,9 @@ public class ThemeFinderBean extends FinderBean
             }
           }
         };
-        
-        outdated = false;        
-        
+
+        outdated = false;
+
         if (autoLoad)
         {
           if (rows.size() == 1)

@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
@@ -40,16 +39,11 @@ import javax.inject.Named;
 import org.matrix.agenda.EventTheme;
 import org.matrix.agenda.EventThemeFilter;
 import org.matrix.agenda.EventThemeView;
-import org.matrix.agenda.Theme;
-import org.matrix.agenda.ThemeFilter;
-import org.matrix.dic.DictionaryConstants;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ReferenceHelper;
 import org.santfeliu.webapp.helpers.ResultListHelper;
 
 /**
@@ -59,17 +53,16 @@ import org.santfeliu.webapp.helpers.ResultListHelper;
 @Named
 @ManualScoped
 public class EventThemesTabBean extends TabBean
-{  
+{
   @Inject
   EventObjectBean eventObjectBean;
 
   @Inject
   ThemeObjectBean themeObjectBean;
-  
+
   //Helpers
-  private ResultListHelper<EventThemeView> resultListHelper;  
-  ReferenceHelper<Theme> themeReferenceHelper; 
-  
+  private ResultListHelper<EventThemeView> resultListHelper;
+
   private int firstRow;
   private EventTheme editing;
 
@@ -78,22 +71,15 @@ public class EventThemesTabBean extends TabBean
   {
     System.out.println("Creating " + this);
     resultListHelper = new EventThemeResultListHelper();
-    themeReferenceHelper = 
-      new ThemeReferenceHelper(DictionaryConstants.THEME_TYPE);    
-  }  
-  
+  }
+
   @Override
   public ObjectBean getObjectBean()
   {
     return eventObjectBean;
   }
 
-  public ReferenceHelper<Theme> getThemeReferenceHelper() 
-  {
-    return themeReferenceHelper;
-  }  
-  
-  public EventTheme getEditing() 
+  public EventTheme getEditing()
   {
     return editing;
   }
@@ -106,8 +92,8 @@ public class EventThemesTabBean extends TabBean
   public ResultListHelper<EventThemeView> getResultListHelper()
   {
     return resultListHelper;
-  }     
-  
+  }
+
   public int getFirstRow()
   {
     return firstRow;
@@ -125,16 +111,16 @@ public class EventThemesTabBean extends TabBean
       return themeObjectBean.getDescription(editing.getThemeId());
     }
     return null;
-  }  
+  }
 
-  public void onThemeSelect(SelectEvent<SelectItem> event) 
+  public void onThemeSelect(SelectEvent<SelectItem> event)
   {
     SelectItem item = event.getObject();
     String themeId = (String)item.getValue();
     editing.setThemeId(themeId);
   }
 
-  public void onThemeClear() 
+  public void onThemeClear()
   {
     editing.setThemeId(null);
   }
@@ -144,11 +130,11 @@ public class EventThemesTabBean extends TabBean
   {
     resultListHelper.find();
   }
-  
+
   public void create()
   {
     editing = new EventTheme();
-  }    
+  }
 
   @Override
   public void store()
@@ -156,26 +142,26 @@ public class EventThemesTabBean extends TabBean
     storeTheme();
     resultListHelper.find();
   }
-  
+
   public void remove(EventThemeView row)
   {
     removeTheme(row);
     resultListHelper.find();
   }
-  
+
   public String cancel()
   {
     editing = null;
-    info("CANCEL_OBJECT");          
+    info("CANCEL_OBJECT");
     return null;
-  }  
-  
+  }
+
   public void reset()
   {
     cancel();
     resultListHelper.clear();
-  }  
-  
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -189,19 +175,19 @@ public class EventThemesTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (EventTheme)stateArray[0];
-      
+
       resultListHelper.find();
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }   
-    
+  }
+
   private boolean isNew(EventTheme eventTheme)
   {
     return (eventTheme != null && eventTheme.getEventThemeId() == null);
-  }  
+  }
 
   private void storeTheme()
   {
@@ -212,7 +198,7 @@ public class EventThemesTabBean extends TabBean
         //Person must be selected
         if (editing.getThemeId() == null || editing.getThemeId().isEmpty())
         {
-          throw new Exception("THEME_MUST_BE_SELECTED"); 
+          throw new Exception("THEME_MUST_BE_SELECTED");
         }
 
         String eventId = eventObjectBean.getObjectId();
@@ -228,23 +214,23 @@ public class EventThemesTabBean extends TabBean
       error(ex);
       showDialog();
     }
-  }  
-  
+  }
+
   private String removeTheme(EventThemeView row)
   {
     try
     {
       if (row == null)
         throw new Exception("THEME_MUST_BE_SELECTED");
-      
+
       String rowEventThemeId = row.getEventThemeId();
-      
+
       if (editing != null && rowEventThemeId.equals(editing.getEventThemeId()))
         editing = null;
-            
+
       AgendaModuleBean.getClient(false).removeEventTheme(rowEventThemeId);
-      
-      info("REMOVE_OBJECT");      
+
+      info("REMOVE_OBJECT");
       return null;
     }
     catch (Exception ex)
@@ -252,21 +238,21 @@ public class EventThemesTabBean extends TabBean
       error(ex);
     }
     return null;
-  }    
+  }
 
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('themeDataDialog').show();");    
-  }  
+    current.executeScript("PF('themeDataDialog').show();");
+  }
 
   private void hideDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('themeDataDialog').hide();");    
-  }  
+    current.executeScript("PF('themeDataDialog').hide();");
+  }
 
-  private class EventThemeResultListHelper extends 
+  private class EventThemeResultListHelper extends
     ResultListHelper<EventThemeView>
   {
     @Override
@@ -286,47 +272,6 @@ public class EventThemesTabBean extends TabBean
         error(ex);
       }
       return null;
-    }
-  }
-  
-  private class ThemeReferenceHelper extends ReferenceHelper<Theme>
-  {
-    public ThemeReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
-
-    @Override
-    public String getId(Theme theme)
-    {
-      return theme.getThemeId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return editing != null ? editing.getThemeId() : "";
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      if (editing != null) editing.setThemeId(value);
-    }
-    
-    @Override
-    public ThemeFilter getFilter()
-    {
-      ThemeFilter filter = new ThemeFilter();
-      return filter; 
-    }
-
-    @Override
-    public List<SelectItem> getSelectItems() 
-    {
-      List<SelectItem> items = super.getSelectItems();
-      FacesUtils.sortSelectItems(items);
-      return items;
     }
   }
 

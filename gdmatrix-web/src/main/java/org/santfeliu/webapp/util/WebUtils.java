@@ -87,7 +87,7 @@ public class WebUtils
     return beanName;
   }
 
-  public static <T> T getValueExpression(String expr)
+  public static <T> T getValue(String expr)
   {
     FacesContext context = FacesContext.getCurrentInstance();
     Application application = context.getApplication();
@@ -95,7 +95,7 @@ public class WebUtils
       .evaluateExpressionGet(context, expr, Object.class);
   }
 
-  public static <T> void setValueExpression(String expr, Class<T> clazz, T value)
+  public static <T> void setValue(String expr, Class<T> clazz, T value)
   {
     FacesContext context = FacesContext.getCurrentInstance();
     ELContext elContext = context.getELContext();

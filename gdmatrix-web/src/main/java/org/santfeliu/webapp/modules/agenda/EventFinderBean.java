@@ -35,19 +35,14 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
-import org.matrix.agenda.Theme;
-import org.matrix.agenda.ThemeFilter;
-import org.matrix.dic.DictionaryConstants;
-import org.matrix.kernel.Person;
-import org.matrix.kernel.Room;
 import org.primefaces.event.SelectEvent;
-import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.TextUtils;
@@ -55,7 +50,6 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.ReferenceHelper;
 
 /**
  *
@@ -68,56 +62,33 @@ public class EventFinderBean extends FinderBean
   private String smartFilter;
   private EventFilter filter = new EventFilter();
   private List<Event> rows;
-  private int firstRow;  
-  private int findMode;
-  private boolean outdated;  
-  
-  private String searchEventTypeId;
+  private int firstRow;
+  private boolean finding;
+  private boolean outdated;
 
-  ReferenceHelper<Person> personReferenceHelper; 
-  ReferenceHelper<Room> roomReferenceHelper; 
-  ReferenceHelper<Theme> themeReferenceHelper;
-  
+  private String searchEventTypeId;
+  private String searchEventThemeId;
+
   @Inject
   NavigatorBean navigatorBean;
 
   @Inject
   EventObjectBean eventObjectBean;
-  
+
   @Inject
-  EventTypeBean eventTypeBean;  
-  
-  public EventFinderBean()
+  EventTypeBean eventTypeBean;
+
+  @PostConstruct
+  public void init()
   {
-    personReferenceHelper = 
-      new PersonReferenceHelper(DictionaryConstants.PERSON_TYPE);
-    roomReferenceHelper = 
-      new RoomReferenceHelper(DictionaryConstants.ROOM_TYPE);      
-    themeReferenceHelper = 
-      new ThemeReferenceHelper(DictionaryConstants.THEME_TYPE);
   }
-  
+
   @Override
   public ObjectBean getObjectBean()
   {
     return eventObjectBean;
   }
 
-  public ReferenceHelper<Person> getPersonReferenceHelper() 
-  {
-    return personReferenceHelper;
-  }  
-  
-  public ReferenceHelper<Room> getRoomReferenceHelper() 
-  {
-    return roomReferenceHelper;
-  }  
-
-  public ReferenceHelper<Theme> getThemeReferenceHelper() 
-  {
-    return themeReferenceHelper;
-  }
-  
   public String getSmartFilter()
   {
     return smartFilter;
@@ -158,16 +129,26 @@ public class EventFinderBean extends FinderBean
     this.firstRow = firstRow;
   }
 
-  public String getSearchEventTypeId() 
+  public String getSearchEventTypeId()
   {
     return searchEventTypeId;
   }
 
-  public void setSearchEventTypeId(String searchEventTypeId) 
+  public void setSearchEventTypeId(String searchEventTypeId)
   {
     this.searchEventTypeId = searchEventTypeId;
   }
-      
+
+  public String getSearchEventThemeId()
+  {
+    return searchEventThemeId;
+  }
+
+  public void setSearchEventThemeId(String searchEventThemeId)
+  {
+    this.searchEventThemeId = searchEventThemeId;
+  }
+
   @Override
   public String getObjectId(int position)
   {
@@ -178,7 +159,7 @@ public class EventFinderBean extends FinderBean
   public int getObjectCount()
   {
     return rows == null ? 0 : rows.size();
-  }  
+  }
 
   public Date getFromDate()
   {
@@ -187,7 +168,7 @@ public class EventFinderBean extends FinderBean
     else
       return null;
   }
-  
+
   public void setFromDate(Date date)
   {
     if (date != null)
@@ -195,7 +176,7 @@ public class EventFinderBean extends FinderBean
     else
       filter.setStartDateTime(null);
   }
-  
+
   public Date getToDate()
   {
     if (filter.getEndDateTime() != null)
@@ -203,7 +184,7 @@ public class EventFinderBean extends FinderBean
     else
       return null;
   }
-  
+
   public void setToDate(Date date)
   {
     if (date != null)
@@ -211,7 +192,7 @@ public class EventFinderBean extends FinderBean
     else
       filter.setEndDateTime(null);
   }
-  
+
   public List<String> getEventId()
   {
     return filter.getEventId();
@@ -223,41 +204,42 @@ public class EventFinderBean extends FinderBean
     if (eventIds != null && !eventIds.isEmpty())
       filter.getEventId().addAll(eventIds);
   }
-  
+
   //TODO Move to superclass
   public String getLanguage()
   {
     return getLocale().getLanguage();
   }
-  
-  public void onPersonSelect(SelectEvent<SelectItem> event) 
+
+  public void onPersonSelect(SelectEvent<SelectItem> event)
   {
     SelectItem item = event.getObject();
     String personId = (String)item.getValue();
     filter.setPersonId(personId);
   }
-  
-  public void onPersonClear() 
+
+  public void onPersonClear()
   {
     filter.setPersonId(null);
   }
 
-  public void onRoomSelect(SelectEvent<SelectItem> event) 
+  public void onRoomSelect(SelectEvent<SelectItem> event)
   {
     SelectItem item = event.getObject();
     String roomId = (String)item.getValue();
     filter.setRoomId(roomId);
   }
 
-  public void onRoomClear() 
+  public void onRoomClear()
   {
     filter.setRoomId(null);
   }
-  
+
   @Override
   public void smartFind()
-  {    
-    findMode = 1;
+  {
+    finding = true;
+    setTabIndex(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
     setFromDate(new Date());
@@ -270,51 +252,60 @@ public class EventFinderBean extends FinderBean
   @Override
   public void find()
   {
-    findMode = 2;
+    finding = true;
+    setTabIndex(1);
     smartFilter = eventTypeBean.filterToQuery(filter);
     filter.getEventTypeId().clear();
     if (!StringUtils.isBlank(searchEventTypeId))
     {
+      filter.getEventTypeId().clear();
       filter.getEventTypeId().add(searchEventTypeId);
     }
     if (filter.getStartDateTime() == null)
     {
       setFromDate(new Date());
       filter.setDateComparator("1");
-    }    
+    }
+    if (!StringUtils.isBlank(searchEventThemeId))
+    {
+      filter.getThemeId().clear();
+      filter.getThemeId().add(searchEventThemeId);
+    }
+
     doFind(true);
-    firstRow = 0;    
+    firstRow = 0;
   }
-  
+
   public void outdate()
   {
     this.outdated = true;
-  }  
-  
+  }
+
   public void update()
   {
     if (outdated)
     {
       doFind(false);
     }
-  }  
+  }
 
   public void clear()
   {
     filter = new EventFilter();
     smartFilter = null;
     setFromDate(new Date());
-    filter.setDateComparator("1");    
+    filter.setDateComparator("1");
     searchEventTypeId = null;
+    searchEventThemeId = null;
     rows = null;
-    findMode = 0;
+    finding = false;
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ findMode, filter, firstRow, searchEventTypeId, 
-      getObjectPosition() };
+    return new Object[]{ finding, getTabIndex(), filter, firstRow,
+      searchEventTypeId, searchEventThemeId, getObjectPosition() };
   }
 
   @Override
@@ -323,14 +314,16 @@ public class EventFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      findMode = (Integer)stateArray[0];
-      filter = (EventFilter)stateArray[1];
+      finding = (Boolean)stateArray[0];
+      setTabIndex((Integer)stateArray[1]);
+      filter = (EventFilter)stateArray[2];
 
       doFind(false);
 
-      firstRow = (Integer)stateArray[2];
-      searchEventTypeId = (String)stateArray[3];
-      setObjectPosition((Integer)stateArray[4]);      
+      firstRow = (Integer)stateArray[3];
+      searchEventTypeId = (String)stateArray[4];
+      searchEventThemeId = (String)stateArray[5];
+      setObjectPosition((Integer)stateArray[6]);
     }
     catch (Exception ex)
     {
@@ -342,20 +335,12 @@ public class EventFinderBean extends FinderBean
   {
     try
     {
-      if (findMode == 0)
+      if (!finding)
       {
         rows = Collections.EMPTY_LIST;
       }
       else
       {
-        if (findMode == 1)
-        {
-          setTabIndex(0);        
-        }
-        else
-        {
-          setTabIndex(1);
-        }
         rows = new BigList(20, 10)
         {
           @Override
@@ -390,9 +375,9 @@ public class EventFinderBean extends FinderBean
             }
           }
         };
-        
-        outdated = false;        
-        
+
+        outdated = false;
+
         if (autoLoad)
         {
           if (rows.size() == 1)
@@ -413,115 +398,5 @@ public class EventFinderBean extends FinderBean
       error(ex);
     }
   }
-  
-  private class PersonReferenceHelper extends ReferenceHelper<Person>
-  {
-    public PersonReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
 
-    @Override
-    public String getId(Person person)
-    {
-      return person.getPersonId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return filter != null ? filter.getPersonId() : "";
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      if (filter != null)
-        filter.setPersonId(value);
-    }
-  }
-  
-  private class RoomReferenceHelper extends ReferenceHelper<Room>
-  {
-    public RoomReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
-
-    @Override
-    public String getId(Room room)
-    {
-      return room.getRoomId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return filter != null ? filter.getRoomId() : "";
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      if (filter != null)
-        filter.setRoomId(value);
-    }
-  }  
-  
-  private class ThemeReferenceHelper extends ReferenceHelper<Theme>
-  {
-    public ThemeReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
-
-    @Override
-    public String getId(Theme theme)
-    {
-      return theme.getThemeId();
-    }
-        
-    @Override
-    public String getSelectedId()
-    {
-      if (filter != null)
-      {
-        if (!filter.getThemeId().isEmpty())
-          return filter.getThemeId().get(0);
-        else
-          return "";        
-      }
-      else return "";      
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {            
-      if (filter != null)
-      {
-        filter.getThemeId().clear();
-        if (!StringUtils.isBlank(value))
-        {
-          filter.getThemeId().add(value);
-        }
-      }
-    }
-    
-    @Override
-    public ThemeFilter getFilter()
-    {
-      ThemeFilter filter = new ThemeFilter();
-      return filter; 
-    }
-
-    @Override
-    public List<SelectItem> getSelectItems() 
-    {
-      List<SelectItem> items = super.getSelectItems();
-      FacesUtils.sortSelectItems(items);
-      return items;
-    }
-
-  }
-  
 }

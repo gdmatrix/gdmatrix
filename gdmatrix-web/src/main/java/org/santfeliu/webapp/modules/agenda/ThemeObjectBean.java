@@ -48,19 +48,15 @@ import org.santfeliu.webapp.Tab;
 @Named
 @ManualScoped
 public class ThemeObjectBean extends ObjectBean
-{  
-  private Theme theme = new Theme(); 
+{
+  private Theme theme = new Theme();
 
   @Inject
-  ThemeTypeBean themeTypeBean;  
-  
+  ThemeTypeBean themeTypeBean;
+
   @Inject
   ThemeFinderBean themeFinderBean;
   
-  public ThemeObjectBean()
-  {
-  }
-
   @Override
   public String getRootTypeId()
   {
@@ -77,17 +73,17 @@ public class ThemeObjectBean extends ObjectBean
   public Theme getObject()
   {
     return isNew() ? null : theme;
-  }  
-  
+  }
+
   @Override
   public String getDescription()
   {
     return isNew() ? "" : getDescription(theme.getThemeId());
   }
-  
+
   public String getDescription(String themeId)
   {
-    return getTypeBean().getDescription(themeId);   
+    return getTypeBean().getDescription(themeId);
   }
 
   @Override
@@ -96,12 +92,12 @@ public class ThemeObjectBean extends ObjectBean
     return themeFinderBean;
   }
 
-  public Theme getTheme() 
+  public Theme getTheme()
   {
     return theme;
   }
 
-  public void setTheme(Theme theme) 
+  public void setTheme(Theme theme)
   {
     this.theme = theme;
   }

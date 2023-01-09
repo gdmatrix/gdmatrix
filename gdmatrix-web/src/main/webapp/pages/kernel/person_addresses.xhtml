@@ -3,7 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
 
   <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
@@ -64,13 +65,14 @@
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 
                            immediate="true" ajax="false" 
+                           styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"/>  
           <p:commandButton action="#{personAddressesTabBean.remove(row)}"
                            update="page_results_table :mainform:growl"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.personAddressId != null}"
-                           styleClass="m-1"
+                           styleClass="rounded-button ui-button-flat"
                            onclick="return confirm('#{objectBundle.confirm_remove}');"/>            
         </h:panelGroup>          
       </p:column> 
@@ -106,8 +108,14 @@
             <p:outputLabel for="address"  
                            value="#{kernelBundle.personAddresses_address}"
                            styleClass="w-full"/>
+            
+            <emcomp:objectReference value="#{personAddressesTabBean.editing.addressId}"
+                                    type="Address"
+                                    />
+            <!--
+            
             <div class="ui-inputgroup">                 
-              <p:commandButton action="#{personAddressesTabBean.addressReferenceHelper.find('personAddressesTabBean.addressReferenceHelper.selectedId')}"
+              <p:commandButton action="#{personAddressesTabBean.addressReferenceHelper.find}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
@@ -122,10 +130,11 @@
                 <p:ajax event="itemSelect" listener="#{personAddressesTabBean.onAddressSelect}" update="edit_panels"/>
                 <p:ajax event="clear" listener="#{personAddressesTabBean.onAddressClear}" update="edit_panels"/>
                 <p:column>
-                  <h:outputText value="#{personAddressesTabBean.addressReferenceHelper.getDescription(item.value)}" />
+                  <h:outputText value="#{item.label}" />
                 </p:column>
-              </p:autoComplete>           
+              </p:autoComplete>
             </div>
+            -->
           </p:outputPanel>         
         </div>
 

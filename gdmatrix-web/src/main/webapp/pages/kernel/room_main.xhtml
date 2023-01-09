@@ -5,12 +5,33 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:pe="http://primefaces.org/ui/extensions"                
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
                 var="kernelBundle" />
 
   <div class="ui-fluid formgrid grid">   
+
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="RoomId" />
+      <p:inputText value="#{roomObjectBean.objectId}" readonly="true" />
+    </div>
+
+    <!--TODO: isRenderType -->
+    <div class="field col-12 md:col-9">
+      <p:outputLabel for="@next" value="#{kernelBundle.room_type}" /> 
+      <p:selectOneMenu value="#{roomObjectBean.room.roomTypeId}"  
+                       styleClass="inputfield w-full" 
+                       filter="true"
+                       filterMatchMode="contains">
+        <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" 
+                       var="item" />
+        <p:column>
+          <h:outputText value="#{item.label}" />
+        </p:column>            
+      </p:selectOneMenu>
+    </div>          
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
@@ -18,46 +39,17 @@
                    styleClass="inputfield w-full" required="true"/>
     </div>
 
-    <!--TODO: isRenderType -->
-    <p:outputPanel styleClass="field col-3"
-                   rendered="#{roomObjectBean.allTypes.size() > 1}">
-      <p:outputLabel for="@next" value="#{kernelBundle.room_type}" /> 
-      <p:selectOneMenu id="room_type_id" value="#{roomObjectBean.room.roomTypeId}"  
-                       styleClass="inputfield w-full" filter="true" var="t">
-        <f:selectItems value="#{roomObjectBean.allTypes}" 
-                       var="type" itemLabel="#{type.description}" 
-                       itemValue="#{type.typeId}" />
-        <p:column>
-          <h:outputText value="#{typeBean.getDescription(t)}" />
-        </p:column>            
-      </p:selectOneMenu>
-    </p:outputPanel>      
-    
-    <p:outputPanel styleClass="field col-12">  
-      <p:outputLabel for="address"  
+    <div class="field col-12">  
+      <p:outputLabel for="@next"  
                      value="#{kernelBundle.room_address}"
                      styleClass="w-full"/>
-      <div class="ui-inputgroup">
-        <p:commandButton action="#{roomObjectBean.addressReferenceHelper.find('roomObjectBean.addressReferenceHelper.selectedId')}"
-                         icon="pi pi-search" ajax="false"
-                         styleClass="ui-button-raised"                               
-                         alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
-        <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-11"
-                        value="#{roomObjectBean.addressReferenceHelper.selectedItem}" 
-                        maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                        completeMethod="#{roomObjectBean.addressReferenceHelper.complete}"
-                        converter="selectItemConverter"
-                        var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                        queryDelay="1000"
-                        onclick="this.setSelectionRange(0, this.value.length)">
-          <p:ajax event="itemSelect" listener="#{roomObjectBean.onAddressSelect}" update="@this"/>
-          <p:ajax event="clear" listener="#{roomObjectBean.onAddressClear}" update="@this"/>
-          <p:column>
-            <h:outputText value="#{roomObjectBean.addressReferenceHelper.getDescription(item.value)}" />
-          </p:column>
-        </p:autoComplete>
-      </div>
-    </p:outputPanel>      
+      <emcomp:objectReference value="#{roomObjectBean.room.addressId}"
+                              type="Address"
+                              styleClass="w-full"
+                              scrollHeight="200"
+                              queryDelay="1000"
+                              minQueryLength="3" />
+    </div>      
 
     <div class="field col-12 md:col-4">
       <p:outputLabel for="@next" value="#{kernelBundle.room_phone}" />
@@ -108,5 +100,5 @@
     </div> 
 
   </div>
-    
+
 </ui:composition>

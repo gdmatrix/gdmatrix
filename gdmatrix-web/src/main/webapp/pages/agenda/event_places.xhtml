@@ -126,7 +126,7 @@
                            value="#{agendaBundle.eventPlaces_address}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">
-              <p:commandButton action="#{eventPlacesTabBean.addressReferenceHelper.find('eventPlacesTabBean.addressReferenceHelper.selectedId')}"
+              <p:commandButton action="#{eventPlacesTabBean.addressReferenceHelper.find}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" />               
@@ -141,7 +141,7 @@
                 <p:ajax event="itemSelect" listener="#{eventPlacesTabBean.onAddressSelect}" update="place_edit_panels"/>
                 <p:ajax event="clear" listener="#{eventPlacesTabBean.onAddressClear}" update="place_edit_panels"/>
                 <p:column>                 
-                  <h:outputText value="#{eventPlacesTabBean.addressReferenceHelper.getDescription(item.value)}" />
+                  <h:outputText value="#{item.label}" />
                 </p:column>        
               </p:autoComplete>             
             </div>
@@ -153,7 +153,7 @@
                            value="#{agendaBundle.eventPlaces_room}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">
-              <p:commandButton action="#{eventPlacesTabBean.roomReferenceHelper.find('eventPlacesTabBean.roomReferenceHelper.selectedId')}"
+              <p:commandButton action="#{eventPlacesTabBean.roomReferenceHelper.find}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" />               
@@ -168,7 +168,7 @@
                 <p:ajax event="itemSelect" listener="#{eventPlacesTabBean.onRoomSelect}" update="place_edit_panels"/>
                 <p:ajax event="clear" listener="#{eventPlacesTabBean.onRoomClear}" update="place_edit_panels"/>                
                 <p:column>                 
-                  <h:outputText value="#{eventPlacesTabBean.roomReferenceHelper.getDescription(item.value)}" />
+                  <h:outputText value="#{item.label}" />
                 </p:column>        
               </p:autoComplete>             
             </div>

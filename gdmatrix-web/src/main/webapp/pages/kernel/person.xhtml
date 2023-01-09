@@ -138,8 +138,9 @@
     
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
-               activeIndex="#{personObjectBean.searchTabIndex}"
-               touchable="false">
+               binding="#{personObjectBean.searchTabView}"
+               touchable="false"
+               onTabShow="onTabShow()">
       
       <p:tab>
         <f:facet name="title">

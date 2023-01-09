@@ -5,7 +5,8 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://java.sun.com/jsf/core"
-                template="/pages/obj/object_3col.xhtml">
+                template="/pages/obj/object_3col.xhtml"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <ui:define name="filter">
 
@@ -46,27 +47,41 @@
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
           <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                         var="agendaBundle" />
-          
+
           <!-- RoomId -->
-          <p:outputPanel styleClass="field">
+          <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_id}" />
-            <p:chips id="roomId" value="#{roomFinderBean.roomId}"
+            <p:chips value="#{roomFinderBean.roomId}"
                      addOnPaste="true" separator=","
                      class="inputfield w-full"/>            
-          </p:outputPanel>
+          </div>
 
           <!-- Name -->
-          <p:outputPanel styleClass="field">
+          <div Class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
-            <p:inputText id="roomName" value="#{roomFinderBean.filter.roomName}"
+            <p:inputText value="#{roomFinderBean.filter.roomName}"
                          class="inputfield w-full" />
-          </p:outputPanel>
+          </div>
 
           <!-- TypeId -->    
           <p:outputPanel styleClass="field" 
                          rendered="#{roomObjectBean.allTypes.size() > 1}">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />    
-            <p:selectOneMenu id="roomTypeId" value="#{roomFinderBean.filter.roomTypeId}"  
+            <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
+            <p:selectOneMenu value="#{roomFinderBean.filter.roomTypeId}"  
+                             styleClass="inputfield w-full" 
+                             style="min-width:inherit !important"
+                             filter="true" 
+                             filterMatchMode="contains">
+              <f:selectItem itemValue="" itemLabel="#{kernelBundle.room_allTypes}" />
+              <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" 
+                             var="item" />
+              <p:column>
+                <h:outputText value="#{item.value != '' ? item.label : kernelBundle.room_allTypes}" />
+              </p:column>            
+            </p:selectOneMenu>
+            
+            <!--
+            <p:selectOneMenu value="#{roomFinderBean.filter.roomTypeId}"  
                              styleClass="inputfield w-full" filter="true" filterMatchMode="contains"
                              style="min-width:inherit !important" var="t">
               <f:selectItem itemValue="" itemLabel="#{kernelBundle.room_allTypes}" />              
@@ -77,53 +92,41 @@
                 <h:outputText value="#{t != '' ? typeBean.getDescription(t) : kernelBundle.room_allTypes}" />
               </p:column>
             </p:selectOneMenu>
+            -->
           </p:outputPanel>                         
-          
+
           <!-- AddressId -->
-          <p:outputPanel styleClass="field" rendered="true">
-            <p:outputLabel for="address" value="#{kernelBundle.room_address}:" />
-            <div class="ui-inputgroup">
-              <p:commandButton action="#{roomFinderBean.addressReferenceHelper.find('roomFinderBean.addressReferenceHelper.selectedId')}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
-              <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-10"
-                              value="#{roomFinderBean.addressReferenceHelper.selectedItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                              completeMethod="#{roomFinderBean.addressReferenceHelper.complete}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{roomFinderBean.onAddressSelect}" update="@this"/>
-                <p:ajax event="clear" listener="#{roomFinderBean.onAddressClear}" update="@this"/>
-                <p:column>                 
-                  <h:outputText value="#{roomFinderBean.addressReferenceHelper.getDescription(item.value)}" />
-                </p:column>        
-              </p:autoComplete>           
-            </div>
-          </p:outputPanel>          
-          
+          <div class="field">
+            <p:outputLabel for="@next" value="#{kernelBundle.room_address}:" />
+            <emcomp:objectReference value="#{roomFinderBean.filter.addressId}"
+                                    type="Address"
+                                    process=":mainform:filter_panel"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3" />
+          </div>
+
           <!-- Capacity -->          
-          <p:outputPanel styleClass="field" rendered="true">
+          <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}:" />
             <p:inputText id="roomCapacity" value="#{roomFinderBean.filter.capacity}" 
                          class="inputfield w-full" />            
-          </p:outputPanel>          
-          
+          </div>
+
           <!-- SpaceId -->          
-          <p:outputPanel styleClass="field" rendered="true">
+          <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}:" />
             <p:inputText id="roomSpaceId" value="#{roomFinderBean.filter.spaceId}" 
                          class="inputfield w-full" />            
-          </p:outputPanel>          
-          
+          </div>          
+
           <!-- Comments -->          
-          <p:outputPanel styleClass="field" rendered="true">
+          <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_comments}:" />
             <p:inputText id="roomComments" value="#{roomFinderBean.filter.comments}" 
                          class="inputfield w-full" />            
-          </p:outputPanel>          
+          </div>          
 
           <div class="text-right">
             <p:commandButton value="Clear"
@@ -153,7 +156,7 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");
@@ -164,13 +167,13 @@
                      action="#{roomFinderBean.update}"
                      process="@this" 
                      update=":mainform:search_tabs:result_list" />    
-    
+
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                binding="#{roomObjectBean.searchTabView}"
                touchable="false"
                onTabShow="onTabShow()">
-      
+
       <p:tab title="Cerca" id="object_search">
         <f:facet name="title">
           <i class="pi pi-list m-1"></i>
@@ -191,7 +194,7 @@
           <ui:include src="/pages/obj/object_standard.xhtml" />
         </h:panelGroup>        
       </p:tab>
-      
+
     </p:tabView>
 
   </ui:define>

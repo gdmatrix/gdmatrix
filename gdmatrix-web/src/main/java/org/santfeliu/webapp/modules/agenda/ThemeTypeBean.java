@@ -56,6 +56,12 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
   }
 
   @Override
+  public String getObjectId(Theme theme)
+  {
+    return theme.getThemeId();
+  }
+
+  @Override
   public String describe(Theme theme)
   {
     return theme.getDescription();
@@ -81,10 +87,10 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
 
     ThemeFilter filter = new ThemeFilter();
     if (checkIntegerValues(query))
-    {        
+    {
       filter.setThemeId(query);
     }
-    else        
+    else
     {
       if (!StringUtils.isBlank(query)) filter.setDescription(query);
     }
@@ -118,7 +124,7 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
       return Collections.EMPTY_LIST;
     }
   }
-  
+
   private boolean checkIntegerValues(String s)
   {
     String[] split = s.split(",");
@@ -131,9 +137,9 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
       catch (NumberFormatException ex)
       {
         return false;
-      }      
+      }
     }
     return true;
-  }  
+  }
 
 }

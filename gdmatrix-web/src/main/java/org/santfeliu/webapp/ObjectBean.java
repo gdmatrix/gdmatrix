@@ -44,6 +44,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import org.primefaces.component.tabview.TabView;
+import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
@@ -63,10 +64,7 @@ public abstract class ObjectBean extends BaseBean
     return this;
   }
 
-  public TypeBean getTypeBean()
-  {
-    return null;
-  }
+  public abstract TypeBean getTypeBean();
 
   public abstract FinderBean getFinderBean();
 
@@ -172,6 +170,12 @@ public abstract class ObjectBean extends BaseBean
     return null;
   }
 
+  public BaseTypeInfo getBaseTypeInfo()
+  {
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    return navigatorBean.getBaseTypeInfo();
+  }
+
   public void load()
   {
     try
@@ -236,8 +240,7 @@ public abstract class ObjectBean extends BaseBean
 
       Object object = getObject();
 
-      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-      navigatorBean.getBaseTypeInfo().visit(objectId);
+      getBaseTypeInfo().visit(objectId);
 
       TypeBean typeBean = getTypeBean();
       if (typeBean != null)

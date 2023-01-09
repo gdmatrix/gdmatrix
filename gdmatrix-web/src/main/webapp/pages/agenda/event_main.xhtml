@@ -12,18 +12,26 @@
     
     <div class="ui-fluid formgrid grid">   
       
-      <p:outputPanel styleClass="field col-12" 
-                     rendered="true">
-        <p:outputLabel for="title" value="#{agendaBundle.event_title}" />
-        <p:inputText id="title" value="#{eventObjectBean.event.summary}" 
-                     required="true"
-                     styleClass="inputfield w-full"/>
-      </p:outputPanel>
-
-      <p:outputPanel styleClass="field col-12"
-                     rendered="#{eventObjectBean.allTypes.size() > 1}">
-        <p:outputLabel for="event_type_id" value="#{agendaBundle.event_type}" /> 
-        <p:selectOneMenu id="event_type_id" value="#{eventObjectBean.event.eventTypeId}"  
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="EventId" />
+        <p:inputText value="#{eventObjectBean.objectId}" readonly="true" />
+      </div>
+      
+      <div class="field col-12 md:col-9">
+        <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
+          <p:selectOneMenu value="#{eventObjectBean.event.eventTypeId}"
+                           styleClass="inputfield w-full" filter="true"
+                           style="min-width:inherit !important"
+                           filterMatchMode="contains">
+            <f:selectItem itemValue="" itemLabel="" />
+            <f:selectItems value="#{typeTypeBean.getSelectItems('Event')}"
+                           var="item"/>
+            <p:column>
+              <h:outputText value="#{item.label}" />
+            </p:column>
+          </p:selectOneMenu>
+<!--        
+        <p:selectOneMenu value="#{eventObjectBean.event.eventTypeId}"  
                          styleClass="inputfield w-full" filter="true" var="t">
           <f:selectItems value="#{eventObjectBean.allTypes}" 
                          var="type" itemLabel="#{type.description}" 
@@ -35,26 +43,36 @@
             <h:outputText value="#{typeBean.getDescription(t)}" />
           </p:column>            
         </p:selectOneMenu>
-      </p:outputPanel>
-
-      <p:outputPanel styleClass="field col-12 md:col-3">
-        <p:outputLabel for="start_date" value="#{agendaBundle.event_startDate}" />
-        <!-- TODO: disable if not editable -->
-        <p:datePicker id="start_date" value="#{eventObjectBean.startDateTime}" 
-                      locale="#{eventObjectBean.language}" 
-                      showIcon="true" showTime="true"
-                      monthNavigator="true" yearNavigator="true" />
-      </p:outputPanel>     
-
-      <p:outputPanel styleClass="field col-12 md:col-3"
+-->
+      </div>
+      
+      <div class="field col-12" 
                      rendered="true">
-        <p:outputLabel for="end_date" value="#{agendaBundle.event_endDate}" />
+        <p:outputLabel for="title" value="#{agendaBundle.event_title}" />
+        <p:inputText id="title" value="#{eventObjectBean.event.summary}" 
+                     required="true"
+                     styleClass="inputfield w-full"/>
+      </div>
+
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="#{agendaBundle.event_startDate}" />
         <!-- TODO: disable if not editable -->
-        <p:datePicker id="end_date" value="#{eventObjectBean.endDateTime}" 
+        <p:datePicker value="#{eventObjectBean.startDateTime}" 
                       locale="#{eventObjectBean.language}" 
                       showIcon="true" showTime="true"
+                      autocomplete="off"
                       monthNavigator="true" yearNavigator="true" />
-      </p:outputPanel>        
+      </div>     
+
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="#{agendaBundle.event_endDate}" />
+        <!-- TODO: disable if not editable -->
+        <p:datePicker value="#{eventObjectBean.endDateTime}" 
+                      locale="#{eventObjectBean.language}" 
+                      showIcon="true" showTime="true"
+                      autocomplete="off"
+                      monthNavigator="true" yearNavigator="true" />
+      </div>        
 
       <p:outputPanel styleClass="field col-12 md:col-3" rendered="#{eventObjectBean.creationDateTime != null}">
         <p:outputLabel value="#{agendaBundle.event_creationDateTime}"/>
@@ -78,18 +96,15 @@
         <h:outputText value="#{eventObjectBean.event.changeUserId}"/>
       </p:outputPanel>
 
-      <p:outputPanel styleClass="field col-12"
-                     rendered="true">
+      <div class="field col-12">
         <p:outputLabel for="description" value="#{agendaBundle.event_description}"  />        
         <p:inputTextarea id="description" value="#{eventObjectBean.event.description}" 
                          styleClass="inputfield w-full" />
-      </p:outputPanel> 
+      </div> 
 
-      <p:outputPanel styleClass="field col-12"
-                     rendered="true">
-        <p:outputLabel for="detail" value="#{agendaBundle.event_detail}"  />    
-        <pe:ckEditor id="detail"
-                     value="#{eventObjectBean.event.detail}"
+      <div class="field col-12">
+        <p:outputLabel for="@next" value="#{agendaBundle.event_detail}"  />    
+        <pe:ckEditor value="#{eventObjectBean.event.detail}"
                      enterMode="CKEDITOR.ENTER_BR"
                      font='Courier New'
                      fontSize='11px'
@@ -97,25 +112,22 @@
                      readonly="#{not eventObjectBean.editable}"
                      width="100%"> 
         </pe:ckEditor>          
+      </div> 
 
-      </p:outputPanel> 
-
-      <p:outputPanel styleClass="field col-12"
-                     rendered="true">
+      <div class="field col-12">
         <p:outputLabel for="comments" value="#{agendaBundle.event_hiddenComments}"  />        
         <p:inputTextarea id="comments" value="#{eventObjectBean.event.comments}" 
                          styleClass="inputfield w-full" />
-      </p:outputPanel> 
+      </div> 
 
-      <p:outputPanel styleClass="field col-12"
-                     rendered="true">
-        <p:selectBooleanCheckbox id="onlyAttendants" value="#{eventObjectBean.onlyAttendants}" />
+      <div class="field col-12">
+        <p:selectBooleanCheckbox id="onlyAttendants" value="#{eventObjectBean.onlyAttendants}" styleClass="mr-2" />
         <p:outputLabel for="onlyAttendants" value="#{agendaBundle.event_onlyAttendants}" />
-      </p:outputPanel>
+      </div>
 
       <p:outputPanel styleClass="field col-12"
                      rendered="#{eventObjectBean.new}">
-        <p:selectBooleanCheckbox id="autoAttendant" value="#{eventObjectBean.autoAttendant}" />
+        <p:selectBooleanCheckbox id="autoAttendant" value="#{eventObjectBean.autoAttendant}"  styleClass="mr-2" />
         <p:outputLabel for="autoAttendant" value="#{agendaBundle.event_autoAttendant}" />
       </p:outputPanel>
       

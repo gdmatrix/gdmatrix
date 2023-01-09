@@ -5,12 +5,13 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://java.sun.com/jsf/core"
-                template="/pages/obj/object_3col.xhtml">
+                template="/pages/obj/object_3col.xhtml"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
-
+      
       <p:tabView id="find_selector"
                  activeIndex="#{eventFinderBean.tabIndex}">
 
@@ -28,7 +29,7 @@
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"                             
+                             resetValues="true"
                              />
             <p:commandButton id="smart_search_button"
                              value="Search"
@@ -46,131 +47,120 @@
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
           <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                         var="agendaBundle" />
-          
+
           <!-- EventId -->
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="#{agendaBundle.event_id}" />
             <p:chips id="eventId" value="#{eventFinderBean.eventId}"
                      addOnPaste="true" separator=","
-                     class="inputfield w-full"/>            
+                     class="inputfield w-full"/>
           </p:outputPanel>
 
           <!-- Content -->
           <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_content}" />
+            <p:outputLabel for="content" value="#{agendaBundle.event_content}" />
             <p:inputText id="content" value="#{eventFinderBean.filter.content}"
                          class="inputfield w-full" />
           </p:outputPanel>
 
-          <!-- TypeId -->    
-          <p:outputPanel styleClass="field" 
+          <!-- TypeId -->
+          <p:outputPanel styleClass="field"
                          rendered="#{eventObjectBean.allTypes.size() > 1}">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />    
-            <p:selectOneMenu id="typeId" value="#{eventFinderBean.searchEventTypeId}"  
+            <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
+            <p:selectOneMenu value="#{eventFinderBean.searchEventTypeId}"
+                             styleClass="inputfield w-full" filter="true"
+                             filterMatchMode="contains"
+                             style="min-width:inherit !important">
+              <f:selectItem itemValue="" itemLabel="Tots" />
+              <f:selectItems value="#{typeTypeBean.getSelectItems('Event')}"
+                             var="item"/>
+              <p:column>
+                <h:outputText value="#{item.label}" />
+              </p:column>
+            </p:selectOneMenu>
+<!--
+            <p:selectOneMenu id="typeId" value="#{eventFinderBean.searchEventTypeId}"
                              styleClass="inputfield w-full" filter="true" filterMatchMode="contains"
                              style="min-width:inherit !important" var="t">
-              <f:selectItems value="#{eventObjectBean.allTypes}" 
-                             var="type" itemLabel="#{type.description}#{eventObjectBean.isPublicType(type.typeId) ? ' Ⓦ' : ''}" 
-                             itemValue="#{type.typeId}" />  
+              <f:selectItems value="#{eventObjectBean.allTypes}"
+                             var="type" itemLabel="#{type.description}#{eventObjectBean.isPublicType(type.typeId) ? ' Ⓦ' : ''}"
+                             itemValue="#{type.typeId}" />
               <p:column>
                 <h:outputText value="#{typeBean.getDescription(t)}#{eventObjectBean.isPublicType(t) ? ' Ⓦ' : ''}" />
               </p:column>
             </p:selectOneMenu>
-          </p:outputPanel>     
-                    
-          <!-- Dates -->    
-          <p:fieldset legend="#{agendaBundle.eventSearch_date}" 
+-->
+          </p:outputPanel>
+
+          <!-- Dates -->
+          <p:fieldset legend="#{agendaBundle.eventSearch_date}"
                       toggleable="true">
             <p:outputPanel styleClass="formgrid grid">
 
-              <p:outputPanel styleClass="field col-12">   
+              <p:outputPanel styleClass="field col-12">
                 <p:selectOneMenu id="dateComparator" value="#{eventFinderBean.filter.dateComparator}"
                                  styleClass="inputfield w-full" style="vertical-align:middle">
                   <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="1" />
                   <f:selectItem itemLabel="#{agendaBundle.event_endDate}" itemValue="2" />
                   <f:selectItem itemLabel="#{agendaBundle.eventSearch_activeDate}" itemValue="3" />
-                </p:selectOneMenu>      
+                </p:selectOneMenu>
               </p:outputPanel>
 
               <div class="field col-12 md:col-6">
                 <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from} " />
-                <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}" 
+                <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}"
                               locale="#{eventFinderBean.language}" inputStyleClass="w-12"
-                              styleClass="inputfield w-full" showIcon="false" 
-                              monthNavigator="true" yearNavigator="true" />  
+                              styleClass="inputfield w-full" showIcon="false"
+                              autocomplete="off"
+                              monthNavigator="true" yearNavigator="true" />
               </div>
               <div class="field col-12 md:col-6">
                 <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to} " />
-                <p:datePicker id="end_date" value="#{eventFinderBean.toDate}" 
+                <p:datePicker id="end_date" value="#{eventFinderBean.toDate}"
                               locale="#{eventFinderBean.language}" inputStyleClass="w-12"
-                              styleClass="inputfield w-full" showIcon="false" 
-                              monthNavigator="true" yearNavigator="true" />  
+                              styleClass="inputfield w-full" showIcon="false"
+                              autocomplete="off"
+                              monthNavigator="true" yearNavigator="true" />
               </div>
-            </p:outputPanel>      
+            </p:outputPanel>
           </p:fieldset>
-          
+
           <!-- ThemeId -->
-<!--          
-          <p:outputPanel styleClass="field" rendered="true">
+          <div class="field">
             <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}:" />
-            <p:selectOneMenu id="themeId" value="#{eventFinderBean.themeReferenceHelper.selectedId}"
-                             styleClass="inputfield w-full" style="min-width:inherit !important"
-                             filter="true" filterMatchMode="contains">
-              <f:selectItem itemValue="" itemLabel="Tots" />              
-              <f:selectItems value="#{eventFinderBean.themeReferenceHelper.selectItems}" />
+            <p:selectOneMenu value="#{eventFinderBean.searchEventThemeId}"
+                             styleClass="inputfield w-full"
+                             style="min-width:inherit !important"
+                             filter="true"
+                             filterMatchMode="contains">
+              <f:selectItem itemValue="" itemLabel="Tots" />
+              <f:selectItems value="#{themeTypeBean.selectItems}" />
             </p:selectOneMenu>
-          </p:outputPanel>          
--->
+          </div>
 
           <!-- PersonId -->
           <p:outputPanel styleClass="field" rendered="true">
-            <p:outputLabel for="person" value="#{agendaBundle.event_personId}:" />
-            <div class="ui-inputgroup">
-              <p:commandButton action="#{eventFinderBean.personReferenceHelper.find('eventFinderBean.personReferenceHelper.selectedId')}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
-              <p:autoComplete id="person" styleClass="inputfield w-11" inputStyleClass="w-10"
-                              value="#{eventFinderBean.personReferenceHelper.selectedItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                              completeMethod="#{eventFinderBean.personReferenceHelper.complete}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{eventFinderBean.onPersonSelect}" update="@this"/>
-                <p:ajax event="clear" listener="#{eventFinderBean.onPersonClear}" update="@this"/>
-                <p:column>                 
-                  <h:outputText value="#{eventFinderBean.personReferenceHelper.getDescription(item.value)}" />
-                </p:column>        
-              </p:autoComplete>           
-            </div>
-          </p:outputPanel>          
+            <p:outputLabel for="@next" value="#{agendaBundle.event_personId}:" />
+            <emcomp:objectReference value="#{eventFinderBean.filter.personId}"
+                                    type="Person"
+                                    process=":mainform:filter_panel"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3" />
+          </p:outputPanel>
 
           <!-- Room -->
           <p:outputPanel styleClass="field" rendered="true">
-            <p:outputLabel for="room" value="#{agendaBundle.event_place}:" />
-            <div class="ui-inputgroup">
-              <p:commandButton action="#{eventFinderBean.roomReferenceHelper.find('eventFinderBean.roomReferenceHelper.selectedId')}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
-              <p:autoComplete id="room" styleClass="inputfield w-11" inputStyleClass="w-10"
-                              value="#{eventFinderBean.roomReferenceHelper.selectedItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank" cache="true"                              
-                              completeMethod="#{eventFinderBean.roomReferenceHelper.complete}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{eventFinderBean.onRoomSelect}" update="@this"/>
-                <p:ajax event="clear" listener="#{eventFinderBean.onRoomClear}" update="@this"/>
-                <p:column>                 
-                  <h:outputText value="#{eventFinderBean.roomReferenceHelper.getDescription(item.value)}" />
-                </p:column>        
-              </p:autoComplete>           
-            </div>
-          </p:outputPanel>          
+            <p:outputLabel for="@next" value="#{agendaBundle.event_place}:" />
+            <emcomp:objectReference value="#{eventFinderBean.filter.roomId}"
+                                    type="Room"
+                                    process=":mainform:filter_panel"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3" />
+          </p:outputPanel>
           
           <div class="text-right">
             <p:commandButton value="Clear"
@@ -192,7 +182,9 @@
         </p:tab>
 
       </p:tabView>
+
     </p:outputPanel>
+    
   </ui:define>
 
   <ui:define name="object">
@@ -200,7 +192,7 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");
@@ -209,21 +201,21 @@
     </script>
     <p:remoteCommand name="updateResults"
                      action="#{eventFinderBean.update}"
-                     process="@this" 
+                     process="@this"
                      update=":mainform:search_tabs:result_list" />
-    
+
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                binding="#{eventObjectBean.searchTabView}"
                touchable="false"
                onTabShow="onTabShow()">
-      
+
       <p:tab title="Cerca" id="object_search">
         <f:facet name="title">
           <i class="pi pi-list m-1"></i>
           <h:outputText value="Resultats"/>
         </f:facet>
-        <h:panelGroup id="result_list">        
+        <h:panelGroup id="result_list">
           <ui:include src="event_list.xhtml" />
         </h:panelGroup>
       </p:tab>
@@ -236,9 +228,9 @@
         <h:panelGroup id="obj_tabs">
           <ui:param name="objectBean" value="#{eventObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
-        </h:panelGroup>        
+        </h:panelGroup>
       </p:tab>
-      
+
     </p:tabView>
 
   </ui:define>

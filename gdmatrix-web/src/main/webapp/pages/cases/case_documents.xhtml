@@ -4,7 +4,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:em="http://xmlns.jcp.org/jsf/composite/emcomp">
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
     <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                   var="caseBundle" />
@@ -52,11 +52,12 @@
         </p:column>
       </p:dataTable>
           
-      <em:objectReference helper="#{caseDocumentsTabBean.documentReferenceHelper}"
-                          styleClass="w-full"
-                          scrollHeight="200"
-                          queryDelay="1000"
-                          minQueryLength="3" />
+      <emcomp:objectReference value="#{caseDocumentsTabBean.newDocId}"
+                              type="Document"
+                              styleClass="w-full"
+                              scrollHeight="200"
+                              queryDelay="1000"
+                              minQueryLength="3" />
 
       <!-- Person data panel -->
 

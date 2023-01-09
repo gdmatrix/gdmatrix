@@ -36,18 +36,16 @@ import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.EventPlace;
 import org.matrix.agenda.EventPlaceFilter;
 import org.matrix.agenda.EventPlaceView;
-import org.matrix.dic.DictionaryConstants;
-import org.matrix.kernel.Address;
 import org.matrix.kernel.Room;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ReferenceHelper;
 import org.santfeliu.webapp.helpers.ResultListHelper;
 import org.santfeliu.webapp.modules.kernel.AddressObjectBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
@@ -68,49 +66,33 @@ public class EventPlacesTabBean extends TabBean
   AddressObjectBean addressObjectBean;
 
   @Inject
-  RoomObjectBean roomObjectBean;  
-  
+  RoomObjectBean roomObjectBean;
+
   //Helpers
   private ResultListHelper<EventPlaceView> resultListHelper;
-  ReferenceHelper<Address> addressReferenceHelper;   
-  ReferenceHelper<Room> roomReferenceHelper;  
-  
+
   private int firstRow;
   private EventPlace editing;
-  
+
   @PostConstruct
   public void init()
   {
     System.out.println("Creating " + this);
     resultListHelper = new EventPlaceResultListHelper();
-    addressReferenceHelper = 
-      new AddressReferenceHelper(DictionaryConstants.ADDRESS_TYPE);
-    roomReferenceHelper = 
-      new RoomReferenceHelper(DictionaryConstants.ROOM_TYPE);    
-  }  
-  
+  }
+
   @Override
   public ObjectBean getObjectBean()
   {
     return eventObjectBean;
   }
 
-  public ReferenceHelper<Address> getAddressReferenceHelper() 
-  {
-    return addressReferenceHelper;
-  }
-  
-  public ReferenceHelper<Room> getRoomReferenceHelper() 
-  {
-    return roomReferenceHelper;
-  }
-
-  public EventPlace getEditing() 
+  public EventPlace getEditing()
   {
     return editing;
   }
 
-  public void setEditing(EventPlace editing) 
+  public void setEditing(EventPlace editing)
   {
     this.editing = editing;
   }
@@ -118,8 +100,43 @@ public class EventPlacesTabBean extends TabBean
   public ResultListHelper<EventPlaceView> getResultListHelper()
   {
     return resultListHelper;
-  }     
-  
+  }
+
+  public void setAddressId(String addreddId)
+  {
+    editing.setAddressId(addreddId);
+    showDialog();
+  }
+
+  public String getAddressId()
+  {
+    return editing.getAddressId();
+  }
+
+  public void setRoomId(String roomId)
+  {
+    try
+    {
+      editing.setRoomId(roomId);
+      if (!StringUtils.isBlank(roomId))
+      {
+        Room room = KernelModuleBean.getPort(false).loadRoom(roomId);
+        String addressId = room.getAddressId();
+        editing.setAddressId(addressId);
+      }
+      showDialog();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public String getRoomId()
+  {
+    return editing.getRoomId();
+  }
+
   public int getFirstRow()
   {
     return firstRow;
@@ -140,29 +157,29 @@ public class EventPlacesTabBean extends TabBean
       }
       else
       {
-        return addressObjectBean.getDescription(editing.getAddressId());        
+        return addressObjectBean.getDescription(editing.getAddressId());
       }
     }
     return null;
-  }  
-  
-  public void onAddressSelect(SelectEvent<SelectItem> event) 
+  }
+
+  public void onAddressSelect(SelectEvent<SelectItem> event)
   {
     SelectItem item = event.getObject();
     String addressId = (String)item.getValue();
     editing.setAddressId(addressId);
     //Reset room
     editing.setRoomId(null);
-  }  
-  
+  }
+
   public void onAddressClear()
   {
     editing.setAddressId(null);
     //Reset room
     editing.setRoomId(null);
   }
-  
-  public void onRoomSelect(SelectEvent<SelectItem> event) 
+
+  public void onRoomSelect(SelectEvent<SelectItem> event)
   {
     try
     {
@@ -179,12 +196,12 @@ public class EventPlacesTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   public void onRoomClear()
   {
-    editing.setRoomId(null);    
+    editing.setRoomId(null);
     editing.setAddressId(null);
-  }  
+  }
 
   public String edit(EventPlaceView row)
   {
@@ -193,18 +210,18 @@ public class EventPlacesTabBean extends TabBean
       eventPlaceId = row.getEventPlaceId();
 
     return editPlace(eventPlaceId);
-  }  
-  
+  }
+
   @Override
   public void load()
   {
     resultListHelper.find();
   }
-  
+
   public void create()
   {
     editing = new EventPlace();
-  }    
+  }
 
   @Override
   public void store()
@@ -212,26 +229,26 @@ public class EventPlacesTabBean extends TabBean
     storePlace();
     resultListHelper.find();
   }
-  
+
   public void remove(EventPlaceView row)
   {
     removePlace(row);
     resultListHelper.find();
   }
-  
+
   public String cancel()
   {
     editing = null;
     info("CANCEL_OBJECT");
     return null;
-  }  
-  
+  }
+
   public void reset()
   {
     cancel();
     resultListHelper.clear();
   }
-  
+
   @Override
   public Serializable saveState()
   {
@@ -245,26 +262,27 @@ public class EventPlacesTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (EventPlace)stateArray[0];
-      resultListHelper.find();
+
+      if (!isNew()) resultListHelper.find();
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }   
-  
+  }
+
   private boolean isNew(EventPlace eventPlace)
   {
     return (eventPlace != null && eventPlace.getEventPlaceId() == null);
-  }  
-  
+  }
+
   private String editPlace(String eventPlaceId)
   {
     try
     {
       if (eventPlaceId != null && !isEditing(eventPlaceId))
       {
-        editing = 
+        editing =
           AgendaModuleBean.getClient(false).loadEventPlace(eventPlaceId);
       }
       else if (eventPlaceId == null)
@@ -277,18 +295,18 @@ public class EventPlacesTabBean extends TabBean
       error(ex);
     }
     return null;
-  }    
-  
+  }
+
   private void storePlace()
   {
     try
     {
       if (editing != null)
       {
-        //Person must be selected        
-        if ((editing.getAddressId() == null || editing.getAddressId().isEmpty()) 
+        //Person must be selected
+        if ((editing.getAddressId() == null || editing.getAddressId().isEmpty())
           && (editing.getRoomId() == null || editing.getRoomId().isEmpty()))
-          throw new Exception("PLACE_MUST_BE_SELECTED");         
+          throw new Exception("PLACE_MUST_BE_SELECTED");
 
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
@@ -303,24 +321,24 @@ public class EventPlacesTabBean extends TabBean
       error(ex);
       showDialog();
     }
-  }  
-  
+  }
+
   private String removePlace(EventPlaceView row)
   {
     try
     {
       if (row == null)
         throw new Exception("PLACE_MUST_BE_SELECTED");
-      
+
       String rowEventPlaceId = row.getEventPlaceId();
-      
-      if (editing != null && 
+
+      if (editing != null &&
         rowEventPlaceId.equals(editing.getEventPlaceId()))
         editing = null;
-            
+
       AgendaModuleBean.getClient(false).removeEventPlace(rowEventPlaceId);
-      
-      info("REMOVE_OBJECT");      
+
+      info("REMOVE_OBJECT");
       return null;
     }
     catch (Exception ex)
@@ -328,30 +346,30 @@ public class EventPlacesTabBean extends TabBean
       error(ex);
     }
     return null;
-  }    
-  
+  }
+
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('placeDataDialog').show();");    
-  }  
+    current.executeScript("PF('placeDataDialog').show();");
+  }
 
   private void hideDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('placeDataDialog').hide();");    
-  }  
-  
+    current.executeScript("PF('placeDataDialog').hide();");
+  }
+
   private boolean isEditing(String pageObjectId)
   {
     if (editing == null)
       return false;
-    
+
     String eventPlaceId = editing.getEventPlaceId();
     return eventPlaceId != null && eventPlaceId.equals(pageObjectId);
   }
-  
-  private class EventPlaceResultListHelper 
+
+  private class EventPlaceResultListHelper
     extends ResultListHelper<EventPlaceView>
   {
     @Override
@@ -362,7 +380,7 @@ public class EventPlacesTabBean extends TabBean
         EventPlaceFilter filter = new EventPlaceFilter();
         filter.setEventId(eventObjectBean.getObjectId());
         filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);        
+        filter.setMaxResults(maxResults);
         return AgendaModuleBean.getClient(false).findEventPlaceViews(filter);
       }
       catch (Exception ex)
@@ -373,72 +391,4 @@ public class EventPlacesTabBean extends TabBean
     }
   }
 
-  private class AddressReferenceHelper extends ReferenceHelper<Address>
-  {
-    public AddressReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
-
-    @Override
-    public String getId(Address address)
-    {
-      return address.getAddressId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return editing != null ? editing.getAddressId() : "";
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      editing.setAddressId(value);
-      showDialog();
-    }    
-  }  
-
-  private class RoomReferenceHelper extends ReferenceHelper<Room>
-  {
-    public RoomReferenceHelper(String typeId)
-    {
-      super(typeId);
-    }
-
-    @Override
-    public String getId(Room room)
-    {
-      return room.getRoomId();
-    }
-
-    @Override
-    public String getSelectedId()
-    {
-      return editing != null ? editing.getRoomId() : "";
-    }
-
-    @Override
-    public void setSelectedId(String value)
-    {
-      try
-      {
-        editing.setRoomId(value);
-        if (value != null)
-        {
-          //update address field
-          Room room = KernelModuleBean.getPort(false).loadRoom(value);
-          String addressId = room.getAddressId();
-          editing.setAddressId(addressId);      
-        }
-        showDialog();
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }      
-    }
-  }  
-  
 }

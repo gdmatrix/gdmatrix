@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
@@ -55,14 +56,7 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
-  private transient final PropertyHelper propertyHelper = new PropertyHelper()
-  {
-    @Override
-    public List<Property> getProperties()
-    {
-      return cas.getProperty();
-    }
-  };
+  private PropertyHelper propertyHelper;
 
   @Inject
   CaseTypeBean caseTypeBean;
@@ -70,8 +64,17 @@ public class CaseObjectBean extends ObjectBean
   @Inject
   CaseFinderBean caseFinderBean;
 
-  public CaseObjectBean()
+  @PostConstruct
+  public void init()
   {
+    propertyHelper = new PropertyHelper()
+    {
+      @Override
+      public List<Property> getProperties()
+      {
+        return cas.getProperty();
+      }
+    };
   }
 
   @Override

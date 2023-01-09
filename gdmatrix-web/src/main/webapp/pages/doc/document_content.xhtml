@@ -19,63 +19,59 @@
     
     <h:panelGroup id="content_properties" styleClass="ui-fluid formgrid grid">   
       
-      <p:outputPanel styleClass="w-full m-0 flex justify-content-end">
+      <div class="w-full m-0 flex justify-content-end">
         <p:commandLink value="#{documentObjectBean.versionLabel}" 
                        process="@this"
                        action="#{documentObjectBean.loadVersions}"
                        update=":mainform:versions_panel"
                        oncomplete="PF('versionsPanel').show()"/>
-      </p:outputPanel>
+      </div>
       
       <h:panelGroup rendered="#{documentObjectBean.content != null and documentObjectBean.fileToStore == null}">
 
-        <p:outputPanel styleClass="field col-12 md:col-12 xl:col-6" 
-                       rendered="true">
+        <div class="field col-12 md:col-12 xl:col-6">
           <p:outputLabel for="@next" value="ContentId" />
           <p:inputText value="#{documentObjectBean.content.contentId}" 
                        readonly="true"
                        class="inputfield w-full"/>
-        </p:outputPanel> 
+        </div> 
 
-        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-3" 
-                       rendered="true">
+        <div class="field col-12 md:col-6 xl:col-3" >
           <p:outputLabel for="@next" value="Storage type" />
           <p:inputText value="#{documentObjectBean.contentStorageType}" 
                        readonly="true"
                        class="inputfield w-full"/>
-        </p:outputPanel>
+        </div>
 
-        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-3">
+        <div class="field col-12 md:col-6 xl:col-3">
           <p:outputLabel for="@next" value="Content size" />
           <p:inputText value="#{documentObjectBean.contentSize}" 
                        readonly="true"
                        class="inputfield w-full"/>
-        </p:outputPanel>
+        </div>
         
-        <p:outputPanel styleClass="field col-12 md:col-12 xl:col-6">
+        <div class="field col-12 md:col-12 xl:col-6">
           <p:outputLabel for="@next" value="Format description" />
           <p:inputText value="#{documentObjectBean.content.formatDescription} - #{documentObjectBean.content.formatId}" 
                        readonly="true"
                        class="inputfield w-full"/>
-        </p:outputPanel>
+        </div>
 
-        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-3" 
-                       rendered="true">
+        <div class="field col-12 md:col-6 xl:col-3">
           <p:outputLabel for="@next" value="ContentType" />
           <p:inputText value="#{documentObjectBean.content.contentType}" 
                        readonly="true"                     
                        class="inputfield w-full"/>
-        </p:outputPanel>        
+        </div>        
         
-        <p:outputPanel styleClass="field col-12 md:col-6 xl:col-3">
+        <div class="field col-12 md:col-6 xl:col-3">
           <p:outputLabel for="@next" value="Content language" />
           <p:inputText value="#{documentObjectBean.contentLanguage}" 
                        readonly="true"
                        class="inputfield w-full"/>
-        </p:outputPanel>
+        </div>
         
-        <p:outputPanel styleClass="field col-12 md:col-12"
-                       rendered="#{documentObjectBean.content.contentId != null}">
+        <div class="field col-12 md:col-12">
           <p:outputLabel for="@next" value="Document URL" />
           <div class="ui-inputgroup">
             <p:inputText id="doc_url" 
@@ -90,10 +86,9 @@
                           icon="pi pi-external-link" 
                           target="_blank" />
           </div>
-        </p:outputPanel>        
+        </div>        
 
-        <p:outputPanel styleClass="field col-12 md:col-12"
-                       rendered="#{documentObjectBean.content.contentId != null}">
+        <div class="field col-12 md:col-12">
           <p:outputLabel for="@next" value="Content URL" />
           <div class="ui-inputgroup">
             <p:inputText id="cnt_url"
@@ -108,7 +103,7 @@
                           icon="pi pi-external-link" 
                           target="_blank" />
           </div>
-        </p:outputPanel>
+        </div>
         
       </h:panelGroup>
 

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -63,28 +64,29 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
 @ManualScoped
 public class EventObjectBean extends ObjectBean
 {
-  private static final String TYPE_BEAN = "typeBean";  
-  
-  private Event event = new Event();  
+  private static final String TYPE_BEAN = "typeBean";
+
+  private Event event = new Event();
   private boolean autoAttendant;
+  private PropertyHelper propertyHelper;
 
   @Inject
   EventTypeBean eventTypeBean;
 
   @Inject
-  EventFinderBean eventFinderBean; 
-  
-  private final transient PropertyHelper propertyHelper = new PropertyHelper()
+  EventFinderBean eventFinderBean;
+
+  @PostConstruct
+  public void init()
   {
-    @Override
-    public List<Property> getProperties()
+    propertyHelper = new PropertyHelper()
     {
-      return event.getProperty();
-    }
-  };  
-  
-  public EventObjectBean()
-  {
+      @Override
+      public List<Property> getProperties()
+      {
+        return event.getProperty();
+      }
+    };
   }
 
   @Override
@@ -97,24 +99,24 @@ public class EventObjectBean extends ObjectBean
   public EventTypeBean getTypeBean()
   {
     return eventTypeBean;
-  }  
-  
+  }
+
   @Override
   public Event getObject()
   {
     return isNew() ? null : event;
-  }  
-  
+  }
+
   @Override
   public String getDescription()
   {
-    return isNew() ? "" : getDescription(event.getEventId());    
+    return isNew() ? "" : getDescription(event.getEventId());
   }
-  
+
   public String getDescription(String eventId)
   {
     return getTypeBean().getDescription(eventId);
-  }  
+  }
 
   @Override
   public EventFinderBean getFinderBean()
@@ -125,8 +127,8 @@ public class EventObjectBean extends ObjectBean
   public PropertyHelper getPropertyHelper()
   {
     return propertyHelper;
-  }  
-  
+  }
+
   public Event getEvent()
   {
     return event;
@@ -137,12 +139,12 @@ public class EventObjectBean extends ObjectBean
     this.event = event;
   }
 
-  public boolean isAutoAttendant() 
+  public boolean isAutoAttendant()
   {
     return autoAttendant;
   }
 
-  public void setAutoAttendant(boolean autoAttendant) 
+  public void setAutoAttendant(boolean autoAttendant)
   {
     this.autoAttendant = autoAttendant;
   }
@@ -175,7 +177,7 @@ public class EventObjectBean extends ObjectBean
     {
       if (date == null)
         date = new Date();
-      event.setStartDateTime(TextUtils.formatDate(date, "yyyyMMddHHmmss"));      
+      event.setStartDateTime(TextUtils.formatDate(date, "yyyyMMddHHmmss"));
     }
   }
 
@@ -186,7 +188,7 @@ public class EventObjectBean extends ObjectBean
       event.setEndDateTime(TextUtils.formatDate(date, "yyyyMMddHHmmss"));
     }
   }
-  
+
   public Date getCreationDateTime()
   {
     if (event != null && event.getCreationDateTime() != null)
@@ -194,15 +196,15 @@ public class EventObjectBean extends ObjectBean
     else
       return null;
   }
-  
+
   public void setCreationDateTime(Date date)
   {
     if (date != null && event != null)
     {
       event.setCreationDateTime(TextUtils.formatDate(date, "yyyyMMddHHmmss"));
     }
-  }  
-  
+  }
+
   public Date getChangeDateTime()
   {
     if (event != null && event.getChangeDateTime() != null)
@@ -210,14 +212,14 @@ public class EventObjectBean extends ObjectBean
     else
       return null;
   }
-  
+
   public void setChangeDateTime(Date date)
   {
     if (date != null && event != null)
     {
       event.setChangeDateTime(TextUtils.formatDate(date, "yyyyMMddHHmmss"));
     }
-  }  
+  }
 
   public boolean isOnlyAttendants()
   {
@@ -230,26 +232,26 @@ public class EventObjectBean extends ObjectBean
   public void setOnlyAttendants(boolean value)
   {
     event.setOnlyAttendants(value);
-  }  
-  
+  }
+
   //TODO: Move to superclass
   public boolean isEditable()
   {
     return true;
   }
-  
+
   //TODO Move to superclass
   public String getLanguage()
   {
     return getLocale().getLanguage();
   }
-    
-  //TODO Move to superclass  
-  public String getAdminRole() 
+
+  //TODO Move to superclass
+  public String getAdminRole()
   {
     return AgendaConstants.AGENDA_ADMIN_ROLE;
-  }  
-  
+  }
+
   //TODO Use TypedHelper
   public boolean isPublicType(String typeId)
   {
@@ -258,13 +260,13 @@ public class EventObjectBean extends ObjectBean
       Type type = TypeCache.getInstance().getType(typeId);
       if (type != null)
       {
-        return type.canPerformAction(DictionaryConstants.READ_ACTION, 
+        return type.canPerformAction(DictionaryConstants.READ_ACTION,
             Collections.singleton(SecurityConstants.EVERYONE_ROLE));
       }
     }
     return false;
   }
-  
+
   //TODO Use TypedHelper
   public List<Type> getAllTypes()
   {
@@ -297,29 +299,21 @@ public class EventObjectBean extends ObjectBean
     {
       tabs = new ArrayList<>(); // empty list may be read only
       tabs.add(new Tab("Main", "/pages/agenda/event_main.xhtml"));
-      tabs.add(new Tab("Persons", "/pages/agenda/event_persons.xhtml", 
+      tabs.add(new Tab("Persons", "/pages/agenda/event_persons.xhtml",
         "eventPersonsTabBean"));
-      tabs.add(new Tab("Themes", "/pages/agenda/event_themes.xhtml", 
+      tabs.add(new Tab("Themes", "/pages/agenda/event_themes.xhtml",
         "eventThemesTabBean"));
-      tabs.add(new Tab("Places", "/pages/agenda/event_places.xhtml", 
+      tabs.add(new Tab("Places", "/pages/agenda/event_places.xhtml",
         "eventPlacesTabBean"));
     }
   }
 
   @Override
-  public void storeObject()
-  {    
-    try
-    {
-      event = AgendaModuleBean.getClient(false).storeEvent(event);
-      setObjectId(event.getEventId());
-      eventFinderBean.outdate();
-      info("STORE_OBJECT");
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+  public void storeObject() throws Exception
+  {
+    event = AgendaModuleBean.getClient(false).storeEvent(event);
+    setObjectId(event.getEventId());
+    eventFinderBean.outdate();
   }
 
   @Override
@@ -332,8 +326,8 @@ public class EventObjectBean extends ObjectBean
   public void restoreState(Serializable state)
   {
     this.event = (Event)state;
-  }  
-  
+  }
+
   private List<SelectItem> getAllTypeItems()
   {
     return getAllTypeItems(DictionaryConstants.READ_ACTION,
@@ -354,11 +348,11 @@ public class EventObjectBean extends ObjectBean
       error(ex);
     }
     return Collections.emptyList();
-  }  
+  }
 
   private Date getDate(String dateTime)
   {
     return TextUtils.parseInternalDate(dateTime);
-  }  
+  }
 
 }

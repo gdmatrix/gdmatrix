@@ -23,9 +23,9 @@
 
     <composite:implementation>
       <div class="ui-inputgroup">
-        <p:autoComplete value="#{objectReferenceBean.selectItem}"
+        <p:autoComplete value="#{typeReferenceBean.selectItem}"
                         maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
-                        completeMethod="#{objectReferenceBean.complete}"
+                        completeMethod="#{typeReferenceBean.complete}"
                         converter="selectItemConverter"                        
                         var="item" itemValue="#{item}" itemLabel="#{item.label}"
                         minQueryLength="#{cc.attrs.minQueryLength}" 
@@ -40,7 +40,7 @@
           </p:column>
         </p:autoComplete>
         <h:commandButton style="display: none"
-                         action="#{objectReferenceBean.find}"
+                         action="#{typeReferenceBean.find}"
                          immediate="true">
         </h:commandButton>
         <p:commandButton icon="pi pi-search"

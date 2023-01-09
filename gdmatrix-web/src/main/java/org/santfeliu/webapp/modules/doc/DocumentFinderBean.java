@@ -56,7 +56,7 @@ public class DocumentFinderBean extends FinderBean
   private DocumentFilter filter = new DocumentFilter();
   private List<Document> rows;
   private int firstRow;
-  private int findMode;
+  private boolean finding;
   private boolean outdated;
 
   @Inject
@@ -72,10 +72,6 @@ public class DocumentFinderBean extends FinderBean
   public DocumentObjectBean getObjectBean()
   {
     return documentObjectBean;
-  }
-
-  public DocumentFinderBean()
-  {
   }
 
   @PostConstruct
@@ -154,7 +150,8 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    findMode = 1;
+    finding = true;
+    setTabIndex(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -164,7 +161,8 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public void find()
   {
-    findMode = 2;
+    finding = true;
+    setTabIndex(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter.setDocTypeId(baseTypeId);
     smartFilter = documentTypeBean.filterToQuery(filter);
@@ -190,48 +188,41 @@ public class DocumentFinderBean extends FinderBean
     filter = new DocumentFilter();
     smartFilter = null;
     rows = null;
-    findMode = 0;
+    finding = false;
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ findMode, filter, firstRow, getObjectPosition() };
+    return new Object[]{ finding, getTabIndex(),
+      filter, firstRow, getObjectPosition() };
   }
 
   @Override
   public void restoreState(Serializable state)
   {
     Object[] stateArray = (Object[])state;
-    findMode = (Integer)stateArray[0];
-    filter = (DocumentFilter)stateArray[1];
+    finding = (Boolean)stateArray[0];
+    setTabIndex((Integer)stateArray[1]);
+    filter = (DocumentFilter)stateArray[2];
     smartFilter = documentTypeBean.filterToQuery(filter);
 
     doFind(false);
 
-    firstRow = (Integer)stateArray[2];
-    setObjectPosition((Integer)stateArray[3]);
+    firstRow = (Integer)stateArray[3];
+    setObjectPosition((Integer)stateArray[4]);
   }
 
   private void doFind(boolean autoLoad)
   {
     try
     {
-      if (findMode == 0)
+      if (!finding)
       {
         rows = Collections.EMPTY_LIST;
       }
       else
       {
-        if (findMode == 1)
-        {
-          setTabIndex(0);
-        }
-        else
-        {
-          setTabIndex(1);
-        }
-
         rows = new BigList(20, 10)
         {
           @Override

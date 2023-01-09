@@ -271,7 +271,7 @@ public class NavigatorBean extends WebBean implements Serializable
 
     String expression = selectionInfo.expression;
     if (!expression.startsWith("#{")) expression = "#{" + expression + "}";
-    WebUtils.setValueExpression(expression, String.class, selectedObjectId);
+    WebUtils.setValue(expression, String.class, selectedObjectId);
 
     System.out.println(">>> select : " +
       selectionInfo.expression + " = " + selectedObjectId);
@@ -371,6 +371,11 @@ public class NavigatorBean extends WebBean implements Serializable
     public BaseTypeInfo(String mid)
     {
       this.mid = mid;
+    }
+
+    public String getMid()
+    {
+      return mid;
     }
 
     public String getLabel()

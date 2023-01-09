@@ -56,16 +56,16 @@ public class CasePersonsTabBean extends TabBean
   @Inject
   CaseObjectBean caseObjectBean;
 
-  @Override
-  public ObjectBean getObjectBean()
-  {
-    return caseObjectBean;
-  }
-
   @PostConstruct
   public void init()
   {
     System.out.println("Creating " + this);
+  }
+
+  @Override
+  public ObjectBean getObjectBean()
+  {
+    return caseObjectBean;
   }
 
   public List<CasePersonView> getCasePersonViews()

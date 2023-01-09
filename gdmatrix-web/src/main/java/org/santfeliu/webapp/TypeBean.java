@@ -30,14 +30,19 @@
  */
 package org.santfeliu.webapp;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
+import javax.faces.model.SelectItem;
+import org.apache.commons.lang.StringUtils;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -57,6 +62,7 @@ public abstract class TypeBean<T, F> extends WebBean
     if (typeBean == null)
     {
       Type type = TypeCache.getInstance().getType(typeId);
+      if (type == null) return null;
       String rootTypeId = type.getRootTypeId();
       typeBean = instances.get(rootTypeId);
     }
@@ -79,6 +85,8 @@ public abstract class TypeBean<T, F> extends WebBean
   }
 
   public abstract String getRootTypeId();
+
+  public abstract String getObjectId(T object);
 
   public abstract String describe(T object);
 
@@ -128,14 +136,91 @@ public abstract class TypeBean<T, F> extends WebBean
 
   public abstract List<T> find(F filter);
 
-  public List<T> find(String query)
+  public List<T> findByQuery(String query)
   {
     return find(queryToFilter(query, getRootTypeId()));
   }
 
-  public List<T> find(String query, String typeId)
+  public List<T> findByQuery(String query, String typeId)
   {
     return find(queryToFilter(query, typeId));
   }
-  
+
+  public List<SelectItem> getSelectItems()
+  {
+    return getSelectItems("", getRootTypeId(), false, true);
+  }
+
+  public List<SelectItem> getSelectItems(String typeId)
+  {
+    return getSelectItems("", typeId, false, true);
+  }
+
+  public List<SelectItem> getSelectItems(String query, String typeId,
+    boolean addNavigatorItems, boolean sorted)
+  {
+    if (typeId == null) typeId = getRootTypeId();
+
+    List<SelectItem> items = new ArrayList<>();
+
+    if (StringUtils.isBlank(query) && addNavigatorItems)
+    {
+      addNavigatorItems(items, typeId);
+    }
+    else
+    {
+      List<T> objects = findByQuery(query, typeId);
+      for (T object : objects)
+      {
+        String objectId = getObjectId(object);
+        String description = describe(object);
+        items.add(new SelectItem(objectId, description));
+      }
+    }
+
+    if (sorted)
+    {
+      sortSelectItems(items);
+    }
+
+    return items;
+  }
+
+  protected void addNavigatorItems(List<SelectItem> items, String typeId)
+  {
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    NavigatorBean.BaseTypeInfo baseTypeInfo =
+      navigatorBean.getBaseTypeInfo(typeId);
+
+    if (baseTypeInfo != null)
+    {
+      List<String> ids = new ArrayList();
+      ids.addAll(baseTypeInfo.getRecentObjectIdList());
+      List<String> favIds = baseTypeInfo.getFavoriteObjectIdList();
+      if (!favIds.isEmpty())
+      {
+        favIds.stream().filter(id -> !ids.contains(id))
+          .forEach(id -> ids.add(id));
+      }
+      if (!ids.isEmpty())
+      {
+        ids.stream().filter(id -> !StringUtils.isBlank(id))
+          .forEach(id -> items.add(new SelectItem(id, getDescription(id))));
+      }
+    }
+  }
+
+  protected void sortSelectItems(List<SelectItem> items)
+  {
+    Collections.sort(items, (SelectItem i1, SelectItem i2) ->
+    {
+      if (i1 != null && i2 != null)
+        return i1.getLabel().compareTo(i2.getLabel());
+      else if (i1 == null)
+        return 1;
+      else
+        return -1;
+    });
+  }
+
 }

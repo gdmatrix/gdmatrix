@@ -56,7 +56,7 @@ public class CaseFinderBean extends FinderBean
   private CaseFilter filter = new CaseFilter();
   private List<Case> rows;
   private int firstRow;
-  private int findMode;
+  private boolean finding;
   private boolean outdated;
 
   @Inject
@@ -143,7 +143,8 @@ public class CaseFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    findMode = 1;
+    finding = true;
+    setTabIndex(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = caseTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -153,7 +154,8 @@ public class CaseFinderBean extends FinderBean
   @Override
   public void find()
   {
-    findMode = 2;
+    finding = true;
+    setTabIndex(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter.setCaseTypeId(baseTypeId);
     smartFilter = caseTypeBean.filterToQuery(filter);
@@ -179,13 +181,14 @@ public class CaseFinderBean extends FinderBean
     filter = new CaseFilter();
     smartFilter = null;
     rows = null;
-    findMode = 0;
+    finding = false;
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ findMode, filter, firstRow, getObjectPosition() };
+    return new Object[]{ finding, getTabIndex(), filter, firstRow,
+      getObjectPosition() };
   }
 
   @Override
@@ -194,14 +197,15 @@ public class CaseFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      findMode = (Integer)stateArray[0];
-      filter = (CaseFilter)stateArray[1];
+      finding = (Boolean)stateArray[0];
+      setTabIndex((Integer)stateArray[1]);
+      filter = (CaseFilter)stateArray[2];
       smartFilter = caseTypeBean.filterToQuery(filter);
 
       doFind(false);
 
-      firstRow = (Integer)stateArray[2];
-      setObjectPosition((Integer)stateArray[3]);
+      firstRow = (Integer)stateArray[3];
+      setObjectPosition((Integer)stateArray[4]);
     }
     catch (Exception ex)
     {
@@ -213,21 +217,12 @@ public class CaseFinderBean extends FinderBean
   {
     try
     {
-      if (findMode == 0)
+      if (!finding)
       {
         rows = Collections.EMPTY_LIST;
       }
       else
       {
-        if (findMode == 1)
-        {
-          setTabIndex(0);
-        }
-        else
-        {
-          setTabIndex(1);
-        }
-
         rows = new BigList(20, 10)
         {
           @Override

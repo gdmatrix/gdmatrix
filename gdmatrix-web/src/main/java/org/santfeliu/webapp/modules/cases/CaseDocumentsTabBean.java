@@ -41,7 +41,6 @@ import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.DocumentReferenceHelper;
 
 /**
  *
@@ -55,22 +54,19 @@ public class CaseDocumentsTabBean extends TabBean
   private int firstRow;
   private String newDocId; // find/select test;
 
-  private final DocumentReferenceHelper documentReferenceHelper =
-    new DocumentReferenceHelper("caseDocumentsTabBean.newDocId");
-
   @Inject
   CaseObjectBean caseObjectBean;
-
-  @Override
-  public ObjectBean getObjectBean()
-  {
-    return caseObjectBean;
-  }
 
   @PostConstruct
   public void init()
   {
     System.out.println("Creating " + this);
+  }
+
+  @Override
+  public ObjectBean getObjectBean()
+  {
+    return caseObjectBean;
   }
 
   public List<CaseDocumentView> getCaseDocumentViews()
@@ -81,11 +77,6 @@ public class CaseDocumentsTabBean extends TabBean
   public void setCaseDocumentViews(List<CaseDocumentView> caseDocumentViews)
   {
     this.caseDocumentViews = caseDocumentViews;
-  }
-
-  public DocumentReferenceHelper getDocumentReferenceHelper()
-  {
-    return documentReferenceHelper;
   }
 
   public String getNewDocId()

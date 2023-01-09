@@ -31,6 +31,7 @@
 package org.santfeliu.webapp;
 
 import java.io.Serializable;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
  *
@@ -48,6 +49,11 @@ public abstract class TabBean extends BaseBean
   public void setObjectId(String objectId)
   {
     this.objectId = objectId;
+  }
+
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(objectId);
   }
 
   public boolean isModified()
@@ -74,7 +80,7 @@ public abstract class TabBean extends BaseBean
   {
     try
     {
-      load();
+      if (!isNew()) load();
     }
     catch (Exception ex)
     {

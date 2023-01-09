@@ -57,6 +57,12 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
   }
 
   @Override
+  public String getObjectId(Event event)
+  {
+    return event.getEventId();
+  }
+
+  @Override
   public String describe(Event event)
   {
     return event.getSummary();
@@ -79,13 +85,13 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
   public EventFilter queryToFilter(String query, String typeId)
   {
     if (query == null) query = "";
-    
+
     EventFilter filter = new EventFilter();
     if (checkIntegerValues(query))
     {
       filter.getEventId().addAll(Arrays.asList(query.split(",")));
     }
-    else        
+    else
     {
       if (!StringUtils.isBlank(query)) filter.setContent(query);
     }
@@ -123,7 +129,7 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
       return Collections.EMPTY_LIST;
     }
   }
-  
+
   private boolean checkIntegerValues(String s)
   {
     String[] split = s.split(",");
@@ -136,9 +142,9 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
       catch (NumberFormatException ex)
       {
         return false;
-      }      
+      }
     }
     return true;
-  }  
+  }
 
 }

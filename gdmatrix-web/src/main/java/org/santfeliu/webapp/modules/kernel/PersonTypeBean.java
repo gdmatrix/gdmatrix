@@ -56,21 +56,27 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
   }
 
   @Override
+  public String getObjectId(Person person)
+  {
+    return person.getPersonId();
+  }
+
+  @Override
   public String describe(Person person)
   {
     return person.getName()
-    + (person.getFirstParticle() != null ? 
-      " " + person.getFirstParticle() : 
+    + (person.getFirstParticle() != null ?
+      " " + person.getFirstParticle() :
       "")
-    + (person.getFirstSurname() != null ? 
-      " " + person.getFirstSurname() : 
+    + (person.getFirstSurname() != null ?
+      " " + person.getFirstSurname() :
       "")
-    + (person.getSecondParticle() != null ? 
-      " " + person.getSecondParticle() : 
+    + (person.getSecondParticle() != null ?
+      " " + person.getSecondParticle() :
       "")
-    + (person.getSecondSurname() != null ? 
-      " " + person.getSecondSurname() : 
-      "");    
+    + (person.getSecondSurname() != null ?
+      " " + person.getSecondSurname() :
+      "");
   }
 
   @Override
@@ -85,19 +91,19 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
       return null;
     }
   }
-  
+
   @Override
   public PersonFilter queryToFilter(String query, String typeId)
   {
     if (query == null) query = "";
 
-    PersonFilter filter = new PersonFilter();    
+    PersonFilter filter = new PersonFilter();
     if (query.matches("\\d+"))
       filter.getPersonId().add(query);
     else if (query.matches("(\\d+\\D+|\\D+\\d+)"))
       filter.setNif(query);
     else
-      filter.setFullName(query);    
+      filter.setFullName(query);
     filter.setMaxResults(10);
     return filter;
   }

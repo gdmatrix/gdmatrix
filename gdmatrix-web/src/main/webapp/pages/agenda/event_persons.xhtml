@@ -137,7 +137,7 @@
                            value="#{kernelBundle.eventPersons_person}"
                            styleClass="w-full"/>
             <div class="ui-inputgroup">                 
-              <p:commandButton action="#{eventPersonsTabBean.personReferenceHelper.find('eventPersonsTabBean.personReferenceHelper.selectedId')}"
+              <p:commandButton action="#{eventPersonsTabBean.personReferenceHelper.find}"
                                icon="pi pi-search" ajax="false"
                                styleClass="ui-button-raised"                               
                                alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
@@ -152,9 +152,9 @@
                 <p:ajax event="itemSelect" listener="#{eventPersonsTabBean.onPersonSelect}" update="person_edit_panels"/>
                 <p:ajax event="clear" listener="#{eventPersonsTabBean.onPersonClear}" update="person_edit_panels"/>
                 <p:column>
-                  <h:outputText value="#{eventPersonsTabBean.personReferenceHelper.getDescription(item.value)}" />
+                  <h:outputText value="#{item.label}" />
                 </p:column>
-              </p:autoComplete>           
+              </p:autoComplete>
             </div>
           </p:outputPanel>
           

@@ -55,6 +55,12 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
   }
 
   @Override
+  public String getObjectId(Case cas)
+  {
+    return cas.getCaseId();
+  }
+
+  @Override
   public String describe(Case cas)
   {
     return cas.getTitle();

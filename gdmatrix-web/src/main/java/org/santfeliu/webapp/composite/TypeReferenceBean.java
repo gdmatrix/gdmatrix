@@ -28,85 +28,61 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.kernel;
+package org.santfeliu.webapp.composite;
 
-import java.util.Collections;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
+import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
-import org.matrix.dic.DictionaryConstants;
-import org.matrix.kernel.Country;
-import org.matrix.kernel.CountryFilter;
-import org.santfeliu.webapp.TypeBean;
-import javax.enterprise.context.ApplicationScoped;
+import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
+import org.santfeliu.webapp.NavigatorBean;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
- * @author blanquepa
+ * @author realor
  */
 @Named
 @ApplicationScoped
-public class CountryTypeBean extends TypeBean<Country, CountryFilter>
+public class TypeReferenceBean extends ObjectReferenceBean
 {
+  @Inject
+  TypeTypeBean typeTypeBean;
+
   @Override
-  public String getRootTypeId()
+  public List<SelectItem> complete(String query)
   {
-    return DictionaryConstants.COUNTRY_TYPE;
+    String typeId = getTypeId();
+    System.out.println("TypeId: " + getTypeId());
+
+    return typeTypeBean.getSelectItems(query, typeId, true, true);
   }
 
   @Override
-  public String getObjectId(Country country)
+  public SelectItem getSelectItem()
   {
-    return country.getCountryId();
-  }
-
-  @Override
-  public String describe(Country country)
-  {
-    return country.getName();
-  }
-
-  @Override
-  public Country loadObject(String objectId)
-  {
-    try
+    String objectId = WebUtils.getValue("#{cc.attrs.value}");
+    if (StringUtils.isBlank(objectId))
     {
-      if (!StringUtils.isBlank(objectId))
-      {
-        return KernelModuleBean.getPort(true).loadCountry(objectId);
-      }
+      return new SelectItem(NEW_OBJECT_ID, "");
     }
-    catch (Exception ex)
+    else
     {
+      return new SelectItem(objectId, typeTypeBean.getDescription(objectId));
     }
-    return null;
   }
 
   @Override
-  public CountryFilter queryToFilter(String query, String typeId)
+  public String find()
   {
-    CountryFilter filter = new CountryFilter();
-    filter.setCountryName("%" + query + "%");
-    return filter;
-  }
-
-  @Override
-  public String filterToQuery(CountryFilter filter)
-  {
-    return filter.getCountryName();
-  }
-
-  @Override
-  public List<Country> find(CountryFilter filter)
-  {
-    try
-    {
-      return KernelModuleBean.getPort(true).findCountries(filter);
-    }
-    catch (Exception ex)
-    {
-      return Collections.emptyList();
-    }
+    // TODO: preset typeId in typeFinderBean
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    return navigatorBean.find(TYPE_TYPE,
+      getValueExpression().getExpressionString());
   }
 
 }
