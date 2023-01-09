@@ -179,7 +179,7 @@ public class PersonFinderBean extends FinderBean
     filter = new PersonFilter();
     smartFilter = null;
     rows = null;
-    finding = true;
+    finding = false;
   }
 
   @Override

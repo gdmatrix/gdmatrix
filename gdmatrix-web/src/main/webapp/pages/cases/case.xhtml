@@ -20,11 +20,12 @@
             <h:outputText value="Ràpida" /> 
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
-          <p:outputPanel styleClass="field">
+          
+          <div class="buttons field">
             <p:outputLabel for="@next" value="Valor" />
             <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          </div>
 
           <div class="buttons text-right">
             <p:commandButton value="Clear"
@@ -56,37 +57,38 @@
                         var="caseBundle" />
 
           <!-- CaseId -->
-          <p:outputPanel styleClass="field">
+          <div class="field">
             <p:outputLabel for="@next" value="CaseId" />
             <p:chips id="case_id" value="#{caseFinderBean.caseIdList}"
                      class="inputfield w-full" />
-          </p:outputPanel>          
+          </div>          
           
           <!-- Title -->
-          <p:outputPanel styleClass="field">
+          <div class="field">
             <p:outputLabel for="@next" value="Title" />
             <p:inputText id="title" value="#{caseFinderBean.filter.title}"
                          class="inputfield w-full" />
-          </p:outputPanel>
+          </div>
 
           <!-- Description -->
-          <p:outputPanel styleClass="field">
+          <div class="field">
             <p:outputLabel for="@next" value="Description" />
             <p:inputText id="description" value="#{caseFinderBean.filter.description}"
                          class="inputfield w-full" />
-          </p:outputPanel>
+          </div>
 
           <!-- searchExpression -->
-          <p:outputPanel styleClass="field">
+          <div class="field">
             <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}:" />
             <p:inputText id="searchExpression" value="#{caseFinderBean.filter.searchExpression}"
                          styleClass="inputfield w-full"/>
-          </p:outputPanel>
+          </div>
 
-          <div class="text-right">
+          <div class="buttons text-right">
             <p:commandButton value="Clear"
                              action="#{caseFinderBean.clear}"
                              process=":mainform:find_selector"
+                             styleClass="ui-button-raised m-1"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"
                              />

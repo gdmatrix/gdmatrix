@@ -20,11 +20,11 @@
           </f:facet>          
           <p:defaultCommand target="smart_search_button" scope="smart_search" />    
 
-          <p:outputPanel styleClass="field">
+          <div class="field">
             <p:outputLabel for="@next" value="Valor" />
             <p:inputText id="smartFilter" value="#{documentFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          </div>
 
           <div class="buttons text-right">
             <p:commandButton value="Clear"
@@ -55,23 +55,24 @@
                         var="docBundle" />
 
           <!-- docId -->
-          <p:outputPanel styleClass="field">
+          <div class="field">
             <p:outputLabel for="@next" value="DocId" />
             <p:chips id="doc_id" value="#{documentFinderBean.docIdList}"
                      class="inputfield w-full" />
-          </p:outputPanel>          
+          </div>          
           
           <!-- Title -->
-          <p:outputPanel styleClass="field">
+          <div class="field">
             <p:outputLabel for="@next" value="Title" />        
             <p:inputText id="title" value="#{documentFinderBean.filter.title}" 
                          class="inputfield w-full" />
-          </p:outputPanel>  
+          </div>  
 
-          <div class="text-right">
+          <div class="buttons text-right">
             <p:commandButton value="Clear"
                              action="#{documentFinderBean.clear}"
                              process=":mainform:find_selector"
+                             styleClass="ui-button-raised m-1"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"                             
                              />
