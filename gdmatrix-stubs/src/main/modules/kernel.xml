@@ -625,6 +625,10 @@
       </property>
       <property name="cityName" type="xs:string" minOccurs="0">
       </property>
+      <property name="firstResult" type="xs:int">
+      </property>
+      <property name="maxResults" type="xs:int">
+      </property>      
     </struct>
 
     <struct name="StreetFilter">

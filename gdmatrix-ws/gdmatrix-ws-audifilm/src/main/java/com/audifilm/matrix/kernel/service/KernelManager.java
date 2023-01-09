@@ -811,9 +811,74 @@ public class KernelManager implements KernelManagerPort
   }
 
   @Override
-  public List<Address> findAddresses(AddressFilter filter)
+  public List<Address> findAddresses(AddressFilter globalFilter)
   {
-    return null;
+    if (globalFilter.getAddressIdList().isEmpty() &&
+      StringUtils.isBlank(globalFilter.getAddressTypeId()) &&
+      StringUtils.isBlank(globalFilter.getStreetTypeId())&&
+      StringUtils.isBlank(globalFilter.getCityName()) &&
+      StringUtils.isBlank(globalFilter.getStreetName()) &&
+      StringUtils.isBlank(globalFilter.getCountryName()) &&
+      StringUtils.isBlank(globalFilter.getDescription()) &&
+      StringUtils.isBlank(globalFilter.getNumber()) &&
+      StringUtils.isBlank(globalFilter.getGisReference()) &&
+      globalFilter.getMaxResults() == 0)
+      throw new WebServiceException("FILTER_NOT_ALLOWED");
+
+    AddressFilter filter =
+      getEndpoint().toLocal(AddressFilter.class, globalFilter);
+
+    List<Address> addresses = new ArrayList();
+    List<String> simpleAddressIdList = new ArrayList();
+    List<String> versionedAddressIdList = new ArrayList();
+
+    for(String addressId : filter.getAddressIdList())
+    {
+      VersionIdentifier vAddressId = new VersionIdentifier(addressId);
+      if (vAddressId.hasVersion())
+      {
+        versionedAddressIdList.add(addressId);
+      }
+      else
+      {
+        simpleAddressIdList.add(addressId);
+      }
+    }
+
+    if (filter.getAddressIdList().isEmpty() || simpleAddressIdList.size()>0)
+    {
+      Query query = entityManager.createNamedQuery("findAddresses");
+      //Si no es filtra per cap ID llavors no es tenen en compte les versions.
+      //Si sí que es filtra per id però son tots versionats llavors no s'ha de
+      //fer aquesta cerca.
+      filter.getAddressIdList().retainAll(simpleAddressIdList);
+      setAddressFilterParameters(query, filter);
+
+      List<DBAddress> resultList = query.getResultList();
+      for (DBAddress dbAddress : resultList)
+      {
+        Address address = new Address();
+        dbAddress.copyTo(endpoint, address);
+        addresses.add(address);
+      }
+    }
+    if (versionedAddressIdList.size()>0)
+    {
+
+      //Si tinc almenys un id versionat -> Buscar Fotos a CASES
+      filter.getAddressIdList().clear();
+      filter.getAddressIdList().addAll(versionedAddressIdList);
+
+      List<Object[]> resultList = findFotosAdreces(filter);
+      for (Object[] row : resultList)
+      {        
+        DBAddress dbAddress = (DBAddress)row[2];
+        Address address = new Address();
+        dbAddress.copyTo(endpoint, address);
+        addresses.add(address);
+      }
+    }
+    return addresses;
   }
 
   @Override
@@ -1801,6 +1866,13 @@ public class KernelManager implements KernelManagerPort
     query.setParameter("countryId", countryId);
     query.setParameter("provinceId", provinceId);
     query.setParameter("name", cityName);
+
+    query.setFirstResult(filter.getFirstResult());
+    int maxResults = filter.getMaxResults();
+    if (maxResults > 0)
+    {
+      query.setMaxResults(maxResults);
+    }    
 
     List<DBCity> dbCities = query.getResultList();
     for (DBCity dbCity : dbCities)

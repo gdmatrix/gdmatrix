@@ -449,7 +449,31 @@ public class KernelManager implements KernelManagerPort
   @Override
   public List<Address> findAddresses(AddressFilter filter)
   {
-    return null;
+    if (filter.getAddressIdList().isEmpty() &&
+      StringUtils.isBlank(filter.getAddressTypeId()) &&
+      StringUtils.isBlank(filter.getStreetTypeId())&&
+      StringUtils.isBlank(filter.getCityName()) &&
+      StringUtils.isBlank(filter.getStreetName()) &&
+      StringUtils.isBlank(filter.getCountryName()) &&
+      StringUtils.isBlank(filter.getDescription()) &&
+      StringUtils.isBlank(filter.getNumber()) &&
+      StringUtils.isBlank(filter.getGisReference()) &&
+      filter.getMaxResults() == 0)
+      throw new WebServiceException("FILTER_NOT_ALLOWED");
+
+    List<Address> addresses = new ArrayList();
+    Query query = entityManager.createNamedQuery("findAddresses");
+
+    setAddressFilterParameters(query, filter);
+
+    List<DBAddress> resultList = query.getResultList();
+    for (DBAddress dbAddress : resultList)
+    {
+      Address address = new Address();
+      dbAddress.copyTo(address);
+      addresses.add(address);
+    }
+    return addresses;
   }
 
   @Override
@@ -1276,6 +1300,14 @@ public class KernelManager implements KernelManagerPort
     query.setParameter("countryId", countryId);
     query.setParameter("provinceId", provinceId);
     query.setParameter("name", cityName);
+    
+    query.setFirstResult(filter.getFirstResult());
+    int maxResults = filter.getMaxResults();
+    if (maxResults > 0)
+    {
+      query.setMaxResults(maxResults);
+    }    
+    
     List<DBCity> dbCities = query.getResultList();
     for (DBCity dbCity : dbCities)
     {

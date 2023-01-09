@@ -110,14 +110,11 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
   {
     try
     {
-      //CityFilter hasn't maxResults, protect empty filters.
-      if (filter != null && !StringUtils.isBlank(filter.getCityName()))
-        return KernelModuleBean.getPort(false).findCities(filter);
+      return KernelModuleBean.getPort(true).findCities(filter);
     }
     catch (Exception ex)
     {
-    }
-    
-    return Collections.emptyList();
+      return Collections.emptyList();      
+    }    
   }
 }
