@@ -84,10 +84,9 @@
       </div> 
       
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="lockUserId" value="Bloquejat per"  />        
-        <div class="ui-inputgroup">
-          <p:inputText id="lockUserId" 
-                       value="#{documentObjectBean.document.lockUserId}"
+        <p:outputLabel for="@next" value="Bloquejat per"  />        
+        <p:outputPanel class="ui-inputgroup">
+          <p:inputText value="#{documentObjectBean.document.lockUserId}"
                        disabled="true"
                        styleClass="inputfield w-full" />
           <p:commandButton icon="pi pi-lock-open" 
@@ -102,7 +101,7 @@
                            update="@parent"
                            disabled="#{documentObjectBean.isNew()}"
                            rendered="#{documentObjectBean.document.lockUserId != null}" /> 
-        </div>
+        </p:outputPanel>
       </div> 
       
     </div>

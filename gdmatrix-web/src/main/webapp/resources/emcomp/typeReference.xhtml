@@ -19,11 +19,16 @@
       <composite:attribute name="scrollHeight" required="false" default="200" />
       <composite:attribute name="size" required="false" />
       <composite:attribute name="process" required="false" default="@form" />
+      <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
+      <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
+      <composite:clientBehavior name="query" targets="autocomplete" event="query" />
+      <composite:clientBehavior name="clear" targets="autocomplete" event="clear" />
     </composite:interface>
 
     <composite:implementation>
       <div class="ui-inputgroup">
-        <p:autoComplete value="#{typeReferenceBean.selectItem}"
+        <p:autoComplete id="autocomplete"
+                        value="#{typeReferenceBean.selectItem}"
                         maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
                         completeMethod="#{typeReferenceBean.complete}"
                         converter="selectItemConverter"                        

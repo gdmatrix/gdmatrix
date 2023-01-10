@@ -33,10 +33,12 @@ package org.santfeliu.webapp.modules.cases;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
+import org.primefaces.event.SelectEvent;
 import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -118,5 +120,24 @@ public class CaseDocumentsTabBean extends TabBean
       }
     }
     else caseDocumentViews = Collections.EMPTY_LIST;
+  }
+
+  @Override
+  public boolean isModified()
+  {
+    // Test
+    return true;
+  }
+
+  @Override
+  public void store()
+  {
+    System.out.println("NewDocId: " + newDocId);
+  }
+
+  public void onDocumentClear()
+  {
+    System.out.println("clear");
+    newDocId = null;
   }
 }
