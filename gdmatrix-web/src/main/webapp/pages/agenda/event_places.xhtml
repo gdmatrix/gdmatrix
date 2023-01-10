@@ -3,7 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                 var="agendaBundle" />
@@ -122,56 +123,30 @@
 
           <!-- Address -->
           <p:outputPanel styleClass="field col-12 md:col-6">  
-            <p:outputLabel for="address"  
+            <p:outputLabel for="@next"  
                            value="#{agendaBundle.eventPlaces_address}"
                            styleClass="w-full"/>
-            <div class="ui-inputgroup">
-              <p:commandButton action="#{eventPlacesTabBean.addressReferenceHelper.find}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}" />               
-              <p:autoComplete id="address"
-                              value="#{eventPlacesTabBean.addressReferenceHelper.selectedItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                              completeMethod="#{eventPlacesTabBean.addressReferenceHelper.complete}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{eventPlacesTabBean.onAddressSelect}" update="place_edit_panels"/>
-                <p:ajax event="clear" listener="#{eventPlacesTabBean.onAddressClear}" update="place_edit_panels"/>
-                <p:column>                 
-                  <h:outputText value="#{item.label}" />
-                </p:column>        
-              </p:autoComplete>             
-            </div>
+            <emcomp:objectReference value="#{eventPlacesTabBean.addressId}"
+                                    type="Address"
+                                    process=":mainform:filter_panel"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3" />            
           </p:outputPanel>         
 
           <!-- Room -->
           <p:outputPanel styleClass="field col-12 md:col-6">  
-            <p:outputLabel for="room"  
+            <p:outputLabel for="@next"  
                            value="#{agendaBundle.eventPlaces_room}"
                            styleClass="w-full"/>
-            <div class="ui-inputgroup">
-              <p:commandButton action="#{eventPlacesTabBean.roomReferenceHelper.find}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}" />               
-              <p:autoComplete id="room"
-                              value="#{eventPlacesTabBean.roomReferenceHelper.selectedItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                              completeMethod="#{eventPlacesTabBean.roomReferenceHelper.complete}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{eventPlacesTabBean.onRoomSelect}" update="place_edit_panels"/>
-                <p:ajax event="clear" listener="#{eventPlacesTabBean.onRoomClear}" update="place_edit_panels"/>                
-                <p:column>                 
-                  <h:outputText value="#{item.label}" />
-                </p:column>        
-              </p:autoComplete>             
-            </div>
+            <emcomp:objectReference value="#{eventPlacesTabBean.roomId}"
+                                    type="Room"
+                                    process=":mainform:filter_panel"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3" />            
           </p:outputPanel>         
           
           <!-- Comments -->

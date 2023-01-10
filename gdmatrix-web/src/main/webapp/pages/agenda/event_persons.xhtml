@@ -3,7 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                 var="agendaBundle" />
@@ -121,41 +122,32 @@
           <!-- Type -->
           <p:outputPanel styleClass="field col-12 md:col-6" 
                          rendered="true">
-            <p:outputLabel for="attendantTypeId" 
+            <p:outputLabel for="@next" 
                            value="#{agendaBundle.attendants_type}" />
-            <p:selectOneMenu id="attendantTypeId" 
-                             value="#{eventPersonsTabBean.editing.attendantTypeId}"
-                             disabled="#{!eventObjectBean.editable}" autoWidth="false">              
-              <f:selectItems value="#{eventPersonsTabBean.allTypes}" 
-                             var="type" itemLabel="#{type.description}" 
-                             itemValue="#{type.typeId}" />                
-            </p:selectOneMenu>
+            <p:selectOneMenu value="#{eventPersonsTabBean.editing.attendantTypeId}"  
+                             styleClass="inputfield w-full" 
+                             filter="true"
+                             filterMatchMode="contains">
+              <f:selectItems value="#{typeTypeBean.getSelectItems('Attendant')}" 
+                             var="item" />
+              <p:column>
+                <h:outputText value="#{item.label}" />
+              </p:column>       
+            </p:selectOneMenu>            
           </p:outputPanel>
           
+          <!-- Person -->
           <p:outputPanel styleClass="field col-12">  
-            <p:outputLabel for="person"  
-                           value="#{kernelBundle.eventPersons_person}"
+            <p:outputLabel for="@next"  
+                           value="#{agendaBundle.attendants_person}"
                            styleClass="w-full"/>
-            <div class="ui-inputgroup">                 
-              <p:commandButton action="#{eventPersonsTabBean.personReferenceHelper.find}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
-              <p:autoComplete id="person" styleClass="inputfield w-11" inputStyleClass="w-11"
-                              value="#{eventPersonsTabBean.personReferenceHelper.selectedItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                              completeMethod="#{eventPersonsTabBean.personReferenceHelper.complete}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{eventPersonsTabBean.onPersonSelect}" update="person_edit_panels"/>
-                <p:ajax event="clear" listener="#{eventPersonsTabBean.onPersonClear}" update="person_edit_panels"/>
-                <p:column>
-                  <h:outputText value="#{item.label}" />
-                </p:column>
-              </p:autoComplete>
-            </div>
+            <emcomp:objectReference value="#{eventPersonsTabBean.personId}"
+                                    type="Person"
+                                    process=":mainform:filter_panel"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3" />              
           </p:outputPanel>
           
           <!-- Hidden -->

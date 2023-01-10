@@ -189,6 +189,17 @@ public class EventPersonsTabBean extends TabBean
     editing.setHidden(hidden);
   }
 
+  public void setPersonId(String personId)
+  {
+    editing.setPersonId(personId);
+    showDialog();
+  }
+
+  public String getPersonId()
+  {
+    return editing.getPersonId();
+  }  
+  
   public void onPersonSelect(SelectEvent<SelectItem> event)
   {
     SelectItem item = event.getObject();
