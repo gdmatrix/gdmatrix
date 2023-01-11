@@ -98,6 +98,8 @@ public class DocumentObjectBean extends ObjectBean
   @PostConstruct
   public void init()
   {
+    System.out.println("Creating " + this);
+
     propertyHelper = new PropertyHelper()
     {
       @Override

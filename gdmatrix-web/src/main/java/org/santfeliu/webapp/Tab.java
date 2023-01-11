@@ -40,7 +40,7 @@ public class Tab implements Serializable
 {
   private final String label;
   private final String url;
-  private final String backingName;
+  private final String beanName;
 
   public Tab(String label, String url)
   {
@@ -48,11 +48,11 @@ public class Tab implements Serializable
   }
 
 
-  public Tab(String label, String url, String backingName)
+  public Tab(String label, String url, String beanName)
   {
     this.label = label;
     this.url = url;
-    this.backingName = backingName;
+    this.beanName = beanName;
   }
 
   public String getLabel()
@@ -67,6 +67,6 @@ public class Tab implements Serializable
 
   public String getBeanName()
   {
-    return backingName;
+    return beanName;
   }
 }

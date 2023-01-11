@@ -53,7 +53,7 @@
                          process="#{cc.attrs.process}"
                          update="@none"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}" 
-                         oncomplete="var e=event.srcElement;if(e.tagName=='SPAN')e=e.parentElement;e.previousSibling.click();"
+                         oncomplete="if (document.getElementsByClassName('ui-growl-item').length==0) {var e=event.srcElement;if(e.tagName=='SPAN')e=e.parentElement;e.previousSibling.click()};"
                          />
       </div>
     </composite:implementation>

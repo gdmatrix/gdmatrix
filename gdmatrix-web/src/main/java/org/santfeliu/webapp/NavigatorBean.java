@@ -579,11 +579,14 @@ public class NavigatorBean extends WebBean implements Serializable
           if (beanInstance instanceof TabBean)
           {
             TabBean tabBean = (TabBean)beanInstance;
-            Serializable state = tabBean.saveState();
-            if (state != null)
+            if (!tabBean.isNew())
             {
-              System.out.println(">>> saveBean: " + beanName + "@" + baseTypeId);
-              beanStateMap.put(beanName, state);
+              Serializable state = tabBean.saveState();
+              if (state != null)
+              {
+                System.out.println(">>> saveBean: " + beanName + "@" + baseTypeId);
+                beanStateMap.put(beanName, state);
+              }
             }
           }
         }
