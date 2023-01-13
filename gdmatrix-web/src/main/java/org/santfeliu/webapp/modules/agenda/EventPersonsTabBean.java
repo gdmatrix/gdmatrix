@@ -31,22 +31,17 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Attendant;
 import org.matrix.agenda.AttendantFilter;
 import org.matrix.agenda.AttendantView;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.web.WebUtils;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.dic.web.TypeBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -61,8 +56,6 @@ import org.santfeliu.webapp.modules.kernel.PersonObjectBean;
 @ManualScoped
 public class EventPersonsTabBean extends TabBean
 {
-  private static final String TYPE_BEAN = "typeBean";
-
   @Inject
   EventObjectBean eventObjectBean;
 
@@ -160,19 +153,6 @@ public class EventPersonsTabBean extends TabBean
       default:
         return "";
     }
-  }
-
-  //TODO Use TypedHelper
-  public List<Type> getAllTypes()
-  {
-    TypeCache tc = TypeCache.getInstance();
-    List<Type> types = new ArrayList<>();
-    List<SelectItem> items = getAllTypeItems();
-    for (SelectItem i : items)
-    {
-      types.add(tc.getType(String.valueOf(i.getValue())));
-    }
-    return types;
   }
 
   public boolean isHidden()
@@ -370,28 +350,6 @@ public class EventPersonsTabBean extends TabBean
     String attendantId = editing.getAttendantId();
     return attendantId != null
       && attendantId.equals(pageObjectId);
-  }
-
-  private List<SelectItem> getAllTypeItems()
-  {
-    return getAllTypeItems(DictionaryConstants.READ_ACTION,
-      DictionaryConstants.CREATE_ACTION, DictionaryConstants.WRITE_ACTION);
-  }
-
-  private List<SelectItem> getAllTypeItems(String... actions)
-  {
-    try
-    {
-      String typeId = getRootTypeId();
-      TypeBean typeBean = WebUtils.getBacking(TYPE_BEAN);
-      String adminRole = eventObjectBean.getAdminRole();
-      return typeBean.getAllSelectItems(typeId, adminRole, actions, true);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return Collections.emptyList();
   }
 
   private class EventPersonResultListHelper extends

@@ -64,8 +64,7 @@
           </div>
 
           <!-- TypeId -->    
-          <p:outputPanel styleClass="field" 
-                         rendered="#{roomObjectBean.allTypes.size() > 1}">
+          <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
             <p:selectOneMenu value="#{roomFinderBean.filter.roomTypeId}"  
                              styleClass="inputfield w-full" 
@@ -79,21 +78,7 @@
                 <h:outputText value="#{item.value != '' ? item.label : kernelBundle.room_allTypes}" />
               </p:column>            
             </p:selectOneMenu>
-            
-            <!--
-            <p:selectOneMenu value="#{roomFinderBean.filter.roomTypeId}"  
-                             styleClass="inputfield w-full" filter="true" filterMatchMode="contains"
-                             style="min-width:inherit !important" var="t">
-              <f:selectItem itemValue="" itemLabel="#{kernelBundle.room_allTypes}" />              
-              <f:selectItems value="#{roomObjectBean.allTypes}" 
-                             var="type" itemLabel="#{type.description}" 
-                             itemValue="#{type.typeId}" />  
-              <p:column>
-                <h:outputText value="#{t != '' ? typeBean.getDescription(t) : kernelBundle.room_allTypes}" />
-              </p:column>
-            </p:selectOneMenu>
-            -->
-          </p:outputPanel>                         
+          </div>                         
 
           <!-- AddressId -->
           <div class="field">

@@ -32,19 +32,12 @@ package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.KernelConstants;
 import org.matrix.kernel.Room;
-import org.matrix.web.WebUtils;
-import org.santfeliu.dic.Type;
-import org.santfeliu.dic.TypeCache;
-import org.santfeliu.dic.web.TypeBean;
 import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -58,7 +51,6 @@ import org.santfeliu.webapp.Tab;
 @ManualScoped
 public class RoomObjectBean extends ObjectBean
 {
-  private static final String TYPE_BEAN = "typeBean";
   private Room room = new Room();
 
   @Inject
@@ -173,19 +165,6 @@ public class RoomObjectBean extends ObjectBean
     return KernelConstants.KERNEL_ADMIN_ROLE;
   }
 
-  //TODO Use TypedHelper
-  public List<Type> getAllTypes()
-  {
-    TypeCache tc = TypeCache.getInstance();
-    List<Type> types = new ArrayList<>();
-    List<SelectItem> items = getAllTypeItems();
-    for (SelectItem i : items)
-    {
-      types.add(tc.getType(String.valueOf(i.getValue())));
-    }
-    return types;
-  }
-
   @Override
   public Serializable saveState()
   {
@@ -197,27 +176,4 @@ public class RoomObjectBean extends ObjectBean
   {
     this.room = (Room)state;
   }
-
-  private List<SelectItem> getAllTypeItems()
-  {
-    return getAllTypeItems(DictionaryConstants.READ_ACTION,
-      DictionaryConstants.CREATE_ACTION, DictionaryConstants.WRITE_ACTION);
-  }
-
-  private List<SelectItem> getAllTypeItems(String... actions)
-  {
-    try
-    {
-      String typeId = getRootTypeId();
-      TypeBean typeBean = WebUtils.getBacking(TYPE_BEAN);
-      String adminRole = getAdminRole();
-      return typeBean.getAllSelectItems(typeId, adminRole, actions, true);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return Collections.emptyList();
-  }
-
 }

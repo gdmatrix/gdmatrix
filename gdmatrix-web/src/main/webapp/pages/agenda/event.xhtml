@@ -64,33 +64,20 @@
           </p:outputPanel>
 
           <!-- TypeId -->
-          <p:outputPanel styleClass="field"
-                         rendered="#{eventObjectBean.allTypes.size() > 1}">
+          <div class="field">
             <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
             <p:selectOneMenu value="#{eventFinderBean.searchEventTypeId}"
                              styleClass="inputfield w-full" filter="true"
                              filterMatchMode="contains"
                              style="min-width:inherit !important">
               <f:selectItem itemValue="" itemLabel="Tots" />
-              <f:selectItems value="#{typeTypeBean.getSelectItems('Event')}"
+              <f:selectItems value="#{eventObjectBean.selectItems}"
                              var="item"/>
               <p:column>
                 <h:outputText value="#{item.label}" />
               </p:column>
             </p:selectOneMenu>
-<!--
-            <p:selectOneMenu id="typeId" value="#{eventFinderBean.searchEventTypeId}"
-                             styleClass="inputfield w-full" filter="true" filterMatchMode="contains"
-                             style="min-width:inherit !important" var="t">
-              <f:selectItems value="#{eventObjectBean.allTypes}"
-                             var="type" itemLabel="#{type.description}#{eventObjectBean.isPublicType(type.typeId) ? ' Ⓦ' : ''}"
-                             itemValue="#{type.typeId}" />
-              <p:column>
-                <h:outputText value="#{typeBean.getDescription(t)}#{eventObjectBean.isPublicType(t) ? ' Ⓦ' : ''}" />
-              </p:column>
-            </p:selectOneMenu>
--->
-          </p:outputPanel>
+          </div>
 
           <!-- Dates -->
           <p:fieldset legend="#{agendaBundle.eventSearch_date}"

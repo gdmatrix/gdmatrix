@@ -45,16 +45,15 @@ import org.matrix.agenda.Event;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.matrix.security.SecurityConstants;
-import org.matrix.web.WebUtils;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.dic.web.TypeBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
 import org.santfeliu.webapp.helpers.PropertyHelper;
+import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 
 /**
  *
@@ -64,8 +63,6 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
 @ManualScoped
 public class EventObjectBean extends ObjectBean
 {
-  private static final String TYPE_BEAN = "typeBean";
-
   private Event event = new Event();
   private boolean autoAttendant;
   private PropertyHelper propertyHelper;
@@ -76,6 +73,9 @@ public class EventObjectBean extends ObjectBean
   @Inject
   EventFinderBean eventFinderBean;
 
+  @Inject
+  TypeTypeBean typeTypeBean;  
+  
   @PostConstruct
   public void init()
   {
@@ -252,32 +252,19 @@ public class EventObjectBean extends ObjectBean
     return AgendaConstants.AGENDA_ADMIN_ROLE;
   }
 
-  //TODO Use TypedHelper
-  public boolean isPublicType(String typeId)
+  public List<SelectItem> getSelectItems()
   {
-    if (!StringUtils.isBlank(typeId))
+    List<SelectItem> itemList = new ArrayList();
+    itemList.addAll(typeTypeBean.getSelectItems(getRootTypeId()));
+    for (SelectItem item : itemList)
     {
-      Type type = TypeCache.getInstance().getType(typeId);
-      if (type != null)
+      String typeId = (String)item.getValue();
+      if (isPublicType(typeId))
       {
-        return type.canPerformAction(DictionaryConstants.READ_ACTION,
-            Collections.singleton(SecurityConstants.EVERYONE_ROLE));
+        item.setLabel(item.getLabel() + " Ⓦ");
       }
     }
-    return false;
-  }
-
-  //TODO Use TypedHelper
-  public List<Type> getAllTypes()
-  {
-    TypeCache tc = TypeCache.getInstance();
-    List<Type> types = new ArrayList<>();
-    List<SelectItem> items = getAllTypeItems();
-    for (SelectItem i : items)
-    {
-      types.add(tc.getType(String.valueOf(i.getValue())));
-    }
-    return types;
+    return itemList;
   }
 
   @Override
@@ -328,31 +315,23 @@ public class EventObjectBean extends ObjectBean
     this.event = (Event)state;
   }
 
-  private List<SelectItem> getAllTypeItems()
-  {
-    return getAllTypeItems(DictionaryConstants.READ_ACTION,
-      DictionaryConstants.CREATE_ACTION, DictionaryConstants.WRITE_ACTION);
-  }
-
-  private List<SelectItem> getAllTypeItems(String... actions)
-  {
-    try
-    {
-      String typeId = getRootTypeId();
-      TypeBean typeBean = WebUtils.getBacking(TYPE_BEAN);
-      String adminRole = getAdminRole();
-      return typeBean.getAllSelectItems(typeId, adminRole, actions, true);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return Collections.emptyList();
-  }
-
   private Date getDate(String dateTime)
   {
     return TextUtils.parseInternalDate(dateTime);
   }
+  
+  private boolean isPublicType(String typeId)
+  {
+    if (!StringUtils.isBlank(typeId))
+    {
+      Type type = TypeCache.getInstance().getType(typeId);
+      if (type != null)
+      {
+        return type.canPerformAction(DictionaryConstants.READ_ACTION,
+            Collections.singleton(SecurityConstants.EVERYONE_ROLE));
+      }
+    }
+    return false;
+  }  
 
 }

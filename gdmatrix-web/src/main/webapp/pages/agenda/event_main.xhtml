@@ -19,31 +19,17 @@
       
       <div class="field col-12 md:col-9">
         <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
-          <p:selectOneMenu value="#{eventObjectBean.event.eventTypeId}"
-                           styleClass="inputfield w-full" filter="true"
-                           style="min-width:inherit !important"
-                           filterMatchMode="contains">
-            <f:selectItem itemValue="" itemLabel="" />
-            <f:selectItems value="#{typeTypeBean.getSelectItems('Event')}"
-                           var="item"/>
-            <p:column>
-              <h:outputText value="#{item.label}" />
-            </p:column>
-          </p:selectOneMenu>
-<!--        
-        <p:selectOneMenu value="#{eventObjectBean.event.eventTypeId}"  
-                         styleClass="inputfield w-full" filter="true" var="t">
-          <f:selectItems value="#{eventObjectBean.allTypes}" 
-                         var="type" itemLabel="#{type.description}" 
-                         itemValue="#{type.typeId}" />
-          <p:column style="width:30%">
-            <h:outputText value="#{t}" />
+        <p:selectOneMenu value="#{eventObjectBean.event.eventTypeId}"
+                         styleClass="inputfield w-full" filter="true"
+                         style="min-width:inherit !important"
+                         filterMatchMode="contains">
+          <f:selectItem itemValue="" itemLabel="" />
+          <f:selectItems value="#{eventObjectBean.selectItems}"
+                         var="item"/>
+          <p:column>
+            <h:outputText value="#{item.label}" />
           </p:column>
-          <p:column style="width:70%">
-            <h:outputText value="#{typeBean.getDescription(t)}" />
-          </p:column>            
         </p:selectOneMenu>
--->
       </div>
       
       <div class="field col-12" 
