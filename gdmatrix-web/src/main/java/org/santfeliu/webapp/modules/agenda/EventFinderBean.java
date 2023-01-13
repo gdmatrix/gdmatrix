@@ -36,13 +36,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
-import org.primefaces.event.SelectEvent;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.TextUtils;
@@ -211,23 +209,9 @@ public class EventFinderBean extends FinderBean
     return getLocale().getLanguage();
   }
 
-  public void onPersonSelect(SelectEvent<SelectItem> event)
-  {
-    SelectItem item = event.getObject();
-    String personId = (String)item.getValue();
-    filter.setPersonId(personId);
-  }
-
   public void onPersonClear()
   {
     filter.setPersonId(null);
-  }
-
-  public void onRoomSelect(SelectEvent<SelectItem> event)
-  {
-    SelectItem item = event.getObject();
-    String roomId = (String)item.getValue();
-    filter.setRoomId(roomId);
   }
 
   public void onRoomClear()

@@ -48,8 +48,10 @@
                               styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3" />
-    </div>      
+                              minQueryLength="3">
+        <p:ajax event="clear" listener="#{roomObjectBean.onAddressClear}" update="@this" />
+      </emcomp:objectReference>
+    </div>
 
     <div class="field col-12 md:col-4">
       <p:outputLabel for="@next" value="#{kernelBundle.room_phone}" />

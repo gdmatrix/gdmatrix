@@ -33,17 +33,13 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.kernel.KernelManagerPort;
 import org.matrix.kernel.PersonAddress;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
 import org.santfeliu.faces.ManualScoped;
-import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.ResultListHelper;
@@ -56,7 +52,6 @@ import org.santfeliu.webapp.helpers.ResultListHelper;
 @ManualScoped
 public class PersonAddressesTabBean extends TabBean
 {
-
   @Inject
   private PersonObjectBean personObjectBean;
 
@@ -119,31 +114,20 @@ public class PersonAddressesTabBean extends TabBean
     return null;
   }
 
-  public void onAddressSelect(SelectEvent<SelectItem> event)
-  {
-    SelectItem item = event.getObject();
-    String addressId = (String) item.getValue();
-    editing.setAddressId(addressId);
-  }
-
-  public void onAddressClear()
-  {
-    editing.setAddressId(null);
-  }
-
-  public void setSelectedAddress(String addressId)
+  public void setAddressId(String addressId)
   {
     editing.setAddressId(addressId);
     showDialog();
   }
 
-  public String editAddress(PersonAddressView row)
+  public String getAddressId()
   {
-    String personAddressId = null;
-    if (row != null)
-      personAddressId = row.getPersonAddressId();
-
-    return editAddress(personAddressId);
+    return editing.getAddressId();
+  }    
+  
+  public void onAddressClear()
+  {
+    editing.setAddressId(null);
   }
 
   @Override
@@ -197,7 +181,7 @@ public class PersonAddressesTabBean extends TabBean
       Object[] stateArray = (Object[])state;
       editing = (PersonAddress)stateArray[0];
 
-      resultListHelper.find();
+      if (!isNew()) resultListHelper.find();
     }
     catch (Exception ex)
     {
@@ -209,26 +193,6 @@ public class PersonAddressesTabBean extends TabBean
   {
     return (personAddress != null &&
       personAddress.getPersonAddressId() == null);
-  }
-
-  private String editAddress(String personAddressId)
-  {
-    try
-    {
-      if (personAddressId != null && !isEditing(personAddressId))
-      {
-        editing = KernelConfigBean.getPort().loadPersonAddress(personAddressId);
-      }
-      else if (personAddressId == null)
-      {
-        editing = new PersonAddress();
-      }
-    }
-    catch(Exception ex)
-    {
-      error(ex);
-    }
-    return null;
   }
 
   private void storeAddress()
@@ -245,8 +209,7 @@ public class PersonAddressesTabBean extends TabBean
 
         String personId = personObjectBean.getObjectId();
         editing.setPersonId(personId);
-        KernelManagerPort port = KernelConfigBean.getPort();
-        port.storePersonAddress(editing);
+        KernelModuleBean.getPort(false).storePersonAddress(editing);
         editing = null;
         info("STORE_OBJECT");
         hideDialog();
@@ -272,8 +235,7 @@ public class PersonAddressesTabBean extends TabBean
         rowPersonAddressId.equals(editing.getPersonAddressId()))
         editing = null;
 
-      KernelManagerPort port = KernelConfigBean.getPort();
-      port.removePersonAddress(rowPersonAddressId);
+      KernelModuleBean.getPort(false).removePersonAddress(rowPersonAddressId);
 
       info("REMOVE_OBJECT");
       return null;
@@ -297,16 +259,6 @@ public class PersonAddressesTabBean extends TabBean
     current.executeScript("PF('addressDataDialog').hide();");
   }
 
-  private boolean isEditing(String pageObjectId)
-  {
-    if (editing == null)
-      return false;
-
-    String personAddressId = editing.getPersonAddressId();
-    return personAddressId != null
-      && personAddressId.equals(pageObjectId);
-  }
-
   private class PersonAddressResultListHelper extends
     ResultListHelper<PersonAddressView>
   {
@@ -319,7 +271,7 @@ public class PersonAddressesTabBean extends TabBean
         filter.setPersonId(personObjectBean.getObjectId());
         filter.setFirstResult(firstResult);
         filter.setMaxResults(maxResults);
-        return KernelConfigBean.getPort().findPersonAddressViews(filter);
+        return KernelModuleBean.getPort(false).findPersonAddressViews(filter);
       }
       catch (Exception ex)
       {

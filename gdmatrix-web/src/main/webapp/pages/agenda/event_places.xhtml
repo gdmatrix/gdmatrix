@@ -61,7 +61,7 @@
           <div><h:outputText value="#{row.addressView != null ? row.addressView.description : ''}" /></div>
         </div>
       </p:column>      
-      
+
       <p:column styleClass="w-2 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
@@ -82,7 +82,8 @@
                            styleClass="rounded-button ui-button-flat"                              
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            ajax="true" process="@this" update=":mainform:search_tabs:tabs:place_data_dialog place_results_table"
-                           oncomplete="PF('placeDataDialog').show()"/>          
+                           oncomplete="PF('placeDataDialog').show()"
+                           resetValues="true" />        
           <p:commandButton action="#{eventPlacesTabBean.remove(row)}"
                            ajax="true" update="place_results_table :mainform:growl"
                            icon="pi pi-trash"
@@ -132,7 +133,10 @@
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"
-                                    minQueryLength="3" />            
+                                    minQueryLength="3">
+              <p:ajax event="itemSelect" listener="#{eventPlacesTabBean.onAddressSelect}" update=":mainform:search_tabs:tabs:place_edit_panels" />
+              <p:ajax event="clear" listener="#{eventPlacesTabBean.onAddressClear}" update=":mainform:search_tabs:tabs:place_edit_panels" />
+            </emcomp:objectReference>
           </p:outputPanel>         
 
           <!-- Room -->
@@ -146,9 +150,12 @@
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"
-                                    minQueryLength="3" />            
+                                    minQueryLength="3">
+              <p:ajax event="itemSelect" listener="#{eventPlacesTabBean.onRoomSelect}" update=":mainform:search_tabs:tabs:place_edit_panels"/>
+              <p:ajax event="clear" listener="#{eventPlacesTabBean.onRoomClear}" update=":mainform:search_tabs:tabs:place_edit_panels"/>
+            </emcomp:objectReference>
           </p:outputPanel>         
-          
+
           <!-- Comments -->
           <p:outputPanel styleClass="field col-12" 
                          rendered="true">
@@ -161,7 +168,7 @@
         </div>
 
       </p:panel>              
-      
+
       <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
                     var="objectBundle" />        
 
@@ -179,6 +186,6 @@
     </p:outputPanel>
 
   </p:dialog>     
-    
-    
+
+
 </ui:composition>

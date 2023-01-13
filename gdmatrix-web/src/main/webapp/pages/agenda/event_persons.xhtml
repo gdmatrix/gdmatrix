@@ -78,7 +78,8 @@
                            styleClass="rounded-button ui-button-flat"                               
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            ajax="true" process="@this" update=":mainform:search_tabs:tabs:person_data_dialog person_results_table"
-                           oncomplete="PF('personDataDialog').show()"/>          
+                           oncomplete="PF('personDataDialog').show()"
+                           resetValues="true" />          
           <p:commandButton action="#{eventPersonsTabBean.remove(row)}"
                            ajax="true" update="person_results_table :mainform:growl"
                            icon="pi pi-trash"
@@ -147,7 +148,9 @@
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"
-                                    minQueryLength="3" />              
+                                    minQueryLength="3">
+              <p:ajax event="clear" listener="#{eventPersonsTabBean.onPersonClear}" update="@id(person_edit_panels)" />
+            </emcomp:objectReference>
           </p:outputPanel>
           
           <!-- Hidden -->

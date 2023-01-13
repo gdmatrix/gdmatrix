@@ -13,12 +13,12 @@
   <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="page_results_table" value="#{personAddressesTabBean.resultListHelper.rows}" 
+    <p:dataTable id="address_results_table" value="#{personAddressesTabBean.resultListHelper.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom" 
                  rowIndexVar="firstRow"
-                 first="#{personAddressesTabBean.resultListHelper.firstRowIndex}"
+                 first="#{personAddressesTabBean.firstRow}"
                  rows="#{personAddressesTabBean.resultListHelper.pageSize}"
                  multiViewState="true"                   
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -36,16 +36,16 @@
                             rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}" >
                 <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
                             rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="pdf" target="page_results_table" fileName="results" pageOnly="true"/>
+                  <p:dataExporter type="pdf" target="address_results_table" fileName="results" pageOnly="true"/>
                 </p:menuitem>
                 <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
                             rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="csv" target="page_results_table" fileName="results" pageOnly="true" />
+                  <p:dataExporter type="csv" target="address_results_table" fileName="results" pageOnly="true" />
                 </p:menuitem> 
               </p:menuButton>  
-              <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
+              <p:commandButton icon="pi pi-plus-circle text-xl" styleClass="ui-button-flat" 
                                action="#{personAddressesTabBean.create}"                                  
-                               update="@root:@id(edit_panels)"
+                               update="@root:@id(address_edit_panels)"
                                oncomplete="PF('addressDataDialog').show()"                                  
                                alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
             </div>              
@@ -68,7 +68,7 @@
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"/>  
           <p:commandButton action="#{personAddressesTabBean.remove(row)}"
-                           update="page_results_table :mainform:growl"
+                           update="address_results_table :mainform:growl"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.personAddressId != null}"
@@ -98,43 +98,26 @@
       </p:outputPanel>
     </f:facet>
 
-    <p:outputPanel id="edit_panels">
+    <p:outputPanel id="address_edit_panels">
       <p:panel id="edit_address_form" rendered="#{personAddressesTabBean.editing != null}"
                styleClass="mt-2">
 
         <div class="ui-fluid formgrid grid" >
 
           <p:outputPanel styleClass="field col-12">  
-            <p:outputLabel for="address"  
+            <p:outputLabel for="@next"  
                            value="#{kernelBundle.personAddresses_address}"
                            styleClass="w-full"/>
             
-            <emcomp:objectReference value="#{personAddressesTabBean.editing.addressId}"
+            <emcomp:objectReference value="#{personAddressesTabBean.addressId}"
                                     type="Address"
-                                    />
-            <!--
-            
-            <div class="ui-inputgroup">                 
-              <p:commandButton action="#{personAddressesTabBean.addressReferenceHelper.find}"
-                               icon="pi pi-search" ajax="false"
-                               styleClass="ui-button-raised"                               
-                               alt="#{objectBundle.search}" title="#{objectBundle.search}" /> 
-              <p:autoComplete id="address" styleClass="inputfield w-11" inputStyleClass="w-11"
-                              value="#{personAddressesTabBean.addressReferenceHelper.selectedItem}" 
-                              maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                              completeMethod="#{personAddressesTabBean.addressReferenceHelper.complete}"
-                              converter="selectItemConverter"
-                              var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                              queryDelay="1000"
-                              onclick="this.setSelectionRange(0, this.value.length)">
-                <p:ajax event="itemSelect" listener="#{personAddressesTabBean.onAddressSelect}" update="edit_panels"/>
-                <p:ajax event="clear" listener="#{personAddressesTabBean.onAddressClear}" update="edit_panels"/>
-                <p:column>
-                  <h:outputText value="#{item.label}" />
-                </p:column>
-              </p:autoComplete>
-            </div>
-            -->
+                                    process=":mainform:filter_panel"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3">
+              <p:ajax event="clear" listener="#{personAddressesTabBean.onAddressClear}" update="@id(address_edit_panels)"/>
+            </emcomp:objectReference>                        
           </p:outputPanel>         
         </div>
 
@@ -147,10 +130,10 @@
         <p:commandButton action="#{personAddressesTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
-                         update="page_results_table edit_panels :mainform:growl" />
+                         update="address_results_table address_edit_panels :mainform:growl" />
         <p:commandButton action="#{personAddressesTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update="edit_panels :mainform:growl" global="false" 
+                         immediate="true" update="address_edit_panels :mainform:growl" global="false" 
                          oncomplete="PF('addressDataDialog').hide()"/>
       </div>          
 

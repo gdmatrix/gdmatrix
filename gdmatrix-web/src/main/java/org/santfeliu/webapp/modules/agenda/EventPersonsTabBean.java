@@ -44,7 +44,6 @@ import org.matrix.agenda.AttendantView;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.web.WebUtils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.web.TypeBean;
@@ -200,22 +199,9 @@ public class EventPersonsTabBean extends TabBean
     return editing.getPersonId();
   }  
   
-  public void onPersonSelect(SelectEvent<SelectItem> event)
-  {
-    SelectItem item = event.getObject();
-    String personId = (String)item.getValue();
-    editing.setPersonId(personId);
-  }
-
   public void onPersonClear()
   {
     editing.setPersonId(null);
-  }
-
-  public void setSelectedPerson(String personId)
-  {
-    editing.setPersonId(personId);
-    showDialog();
   }
 
   public String edit(AttendantView row)

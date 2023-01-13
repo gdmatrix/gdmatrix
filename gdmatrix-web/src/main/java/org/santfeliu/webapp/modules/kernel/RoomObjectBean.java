@@ -42,7 +42,6 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.KernelConstants;
 import org.matrix.kernel.Room;
 import org.matrix.web.WebUtils;
-import org.primefaces.event.SelectEvent;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.web.TypeBean;
@@ -164,17 +163,10 @@ public class RoomObjectBean extends ObjectBean
     roomFinderBean.outdate();
   }
 
-//  public void onAddressSelect(SelectEvent<SelectItem> event)
-//  {
-//    SelectItem item = event.getObject();
-//    String addressId = (String)item.getValue();
-//    room.setAddressId(addressId);
-//  }
-//
-//  public void onAddressClear()
-//  {
-//    room.setAddressId(null);
-//  }
+  public void onAddressClear()
+  {
+    room.setAddressId(null);
+  }
 
   public String getAdminRole()
   {

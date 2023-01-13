@@ -34,12 +34,10 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.RoomFilter;
 import org.matrix.kernel.RoomView;
-import org.primefaces.event.SelectEvent;
 import org.santfeliu.dic.web.TypeBean;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
@@ -146,13 +144,6 @@ public class RoomFinderBean extends FinderBean
     filter.getRoomIdList().clear();
     if (roomIds != null && !roomIds.isEmpty())
       filter.getRoomIdList().addAll(roomIds);
-  }
-
-  public void onAddressSelect(SelectEvent<SelectItem> event)
-  {
-    SelectItem item = event.getObject();
-    String addressId = (String)item.getValue();
-    filter.setAddressId(addressId);
   }
 
   public void onAddressClear()
