@@ -19,6 +19,7 @@
       <composite:attribute name="scrollHeight" required="false" default="200" />
       <composite:attribute name="size" required="false" />
       <composite:attribute name="process" required="false" default="@form" />
+      <composite:attribute name="update" required="false" default="@none" />
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
       <composite:clientBehavior name="query" targets="autocomplete" event="query" />
@@ -51,9 +52,9 @@
         <p:commandButton icon="pi pi-search"
                          styleClass="ui-button-raised select-button"
                          process="#{cc.attrs.process}"
-                         update="@none"
-                         alt="#{objectBundle.search}" title="#{objectBundle.search}" 
-                         oncomplete="if (document.getElementsByClassName('ui-growl-item').length==0) {var e=event.srcElement;if(e.tagName=='SPAN')e=e.parentElement;e.previousSibling.click()};"
+                         update="#{cc.attrs.update}"
+                         oncomplete="if (document.getElementsByClassName('ui-growl-item').length==0) {document.getElementById(this.source).previousSibling.click();}"
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}"
                          />
       </div>
     </composite:implementation>

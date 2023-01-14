@@ -180,6 +180,7 @@ public abstract class ObjectBean extends BaseBean
   {
     try
     {
+      clear();
       loadObject();
       loadTabs();
       loadActiveTab();
@@ -298,7 +299,7 @@ public abstract class ObjectBean extends BaseBean
 
   public void cancel()
   {
-    clear();
+    getTabView().setActiveIndex(0);
     load();
   }
 

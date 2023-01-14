@@ -34,8 +34,10 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import javax.enterprise.context.spi.AlterableContext;
 import javax.enterprise.context.spi.Contextual;
@@ -62,7 +64,7 @@ public class ManualContext implements AlterableContext, Serializable
   {
     Bean bean = (Bean)contextual;
     Map<String, T> map = getMap();
-    String key = getKey(bean);
+    String key = getBeanName(bean);
     return map.get(key);
   }
 
@@ -71,7 +73,7 @@ public class ManualContext implements AlterableContext, Serializable
   {
     Bean<T> bean = (Bean<T>)contextual;
     Map<String, T> map = getMap();
-    String key = getKey(bean);
+    String key = getBeanName(bean);
     T instance = map.get(key);
     if (instance == null)
     {
@@ -86,23 +88,32 @@ public class ManualContext implements AlterableContext, Serializable
   {
     Bean bean = (Bean)contextual;
     Map<String, Object> map = getMap();
-    String key = getKey(bean);
-    map.remove(key);
+    String beanName = getBeanName(bean);
+    map.remove(beanName);
   }
 
   public void destroy(Predicate<Object> predicate)
   {
+    List<String> beanNames = new ArrayList<>();
+
     Map<String, Object> map = getMap();
     List<Map.Entry<String, Object>> entries = new ArrayList<>(map.entrySet());
     entries.forEach(entry ->
     {
-      String key = entry.getKey();
+      String beanName = entry.getKey();
       Object instance = entry.getValue();
       if (predicate.test(instance))
       {
-        map.remove(key);
+        beanNames.add(beanName);
       }
     });
+
+    map.keySet().removeAll(beanNames);
+  }
+
+  public Set<String> getBeanNames()
+  {
+    return getMap().keySet();
   }
 
   @Override
@@ -111,7 +122,7 @@ public class ManualContext implements AlterableContext, Serializable
     return true;
   }
 
-  private String getKey(Bean bean)
+  private String getBeanName(Bean bean)
   {
     return bean.getBeanClass().getName();
   }
