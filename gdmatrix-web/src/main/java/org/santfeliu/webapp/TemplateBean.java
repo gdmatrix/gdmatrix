@@ -34,6 +34,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import org.primefaces.model.menu.DefaultSubMenu;
 import org.primefaces.model.menu.MenuElement;
@@ -54,6 +57,7 @@ public class TemplateBean implements Serializable
 
   private MatrixMenuModel matrixMenuModel;
   private List<MatrixMenuItem> highlightedItems;
+  private String componentTree;
 
   public MatrixMenuModel getPFMenuModel()
   {
@@ -100,6 +104,37 @@ public class TemplateBean implements Serializable
       }
     }
     return menuItems;
+  }
+
+  public void showComponentTree()
+  {
+    FacesContext context = FacesContext.getCurrentInstance();
+    UIViewRoot viewRoot = context.getViewRoot();
+    StringBuilder buffer = new StringBuilder();
+    printComponent(viewRoot, 0, buffer);
+    componentTree = buffer.toString();
+  }
+
+  public String getComponentTree()
+  {
+    return componentTree;
+  }
+
+  private void printComponent(UIComponent component, int indent,
+    StringBuilder buffer)
+  {
+    for (int i = 0; i < indent; i++)
+    {
+      buffer.append("  ");
+    }
+    buffer.append(component.getClass().getName()).
+      append(": ").append(component.getId()).append("\n");
+
+    List<UIComponent> children = component.getChildren();
+    for (UIComponent c : children)
+    {
+      printComponent(c, indent + 2, buffer);
+    }
   }
 
 }

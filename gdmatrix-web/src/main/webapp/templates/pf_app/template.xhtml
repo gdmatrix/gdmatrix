@@ -19,6 +19,14 @@
                   class="ml-1 rounded-button ui-button-flat" />
         <p:outputLabel class="flex align-items-center text-xl ml-1" 
           value="#{userSessionBean.menuModel.selectedMenuItem.properties.description}" />
+        <p:commandButton action="#{templateBean.showComponentTree}" 
+                         styleClass="rounded-button ui-button-flat ml-2"
+                         icon="pi pi-sitemap"
+                         rendered="#{userSessionBean.administrator}"
+                         alt="Component tree"
+                         process="@this"
+                         update=":mainform:component_tree"
+                         oncomplete="PF('componentTree').show()" />
       </div>
 
       <div class="flex justify-content-end align-items-center">
@@ -72,6 +80,18 @@
       <div class="p-text-center">
         <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
       </div>
+    </p:dialog>
+    
+    <p:dialog id="component_tree" 
+              widgetVar="componentTree" modal="true" closable="true" 
+              resizable="false">
+      <f:facet name="header">
+        <div>Component tree</div>
+      </f:facet>
+      <pre>
+        <h:outputText value="#{templateBean.componentTree}"
+                      rendered="#{templateBean.componentTree != null}" />      
+      </pre>
     </p:dialog>
     
     <p:growl id="growl">
