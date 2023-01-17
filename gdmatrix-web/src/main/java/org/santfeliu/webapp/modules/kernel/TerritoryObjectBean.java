@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.TypeBean;
 
 /**
  *
@@ -38,37 +39,58 @@ import org.santfeliu.webapp.ObjectBean;
  */
 
 public abstract class TerritoryObjectBean extends ObjectBean
-{  
-  protected boolean editing;
-  
-  public boolean isEditing()
-  {
-    return editing;
-  }
-
-  public void setEditing(boolean editing)
-  {
-    this.editing = editing;
-  }
-  
+{      
   public abstract void createObject();
   
   public void create()
   {
     createObject();
-    edit();
   }
     
-  public void edit()
-  {
-    editing = true;
-  }  
-  
   @Override
   public void cancel()
   {
     super.cancel();
-    editing = false;
   }
+  
+  @Override
+  public void store()
+  {
+    try
+    {
+      storeObject();
 
+      Object object = getObject();
+
+      getBaseTypeInfo().visit(objectId);
+
+      TypeBean typeBean = getTypeBean();
+      if (typeBean != null)
+      {
+        typeBean.updateDescription(objectId, object);
+      }
+
+      info("STORE_OBJECT");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public abstract void removeObject() throws Exception;
+   
+  @Override
+  public void remove()
+  {
+    try
+    {
+      removeObject();
+      info("REMOVE_OBJECT");
+    }
+    catch(Exception ex)
+    {
+      error(ex);
+    }
+  }
 }

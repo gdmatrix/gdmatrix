@@ -141,7 +141,6 @@ public class CityObjectBean extends TerritoryObjectBean
         provinceObjectBean.loadObject();
         loadCitySelectItems();
       }
-      editing = false;
     }
     else
     {
@@ -152,16 +151,24 @@ public class CityObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    if (!city.getProvinceId().equals(provinceObjectBean.getObjectId()))
+    if (!provinceObjectBean.getObjectId().equals(city.getProvinceId()))
       city.setProvinceId(provinceObjectBean.getObjectId());
-
+    
     city = KernelModuleBean.getPort(false).storeCity(city);
     setObjectId(city.getCityId());
-    editing = false; 
     citySelectItems = null;
     
     cityFinderBean.outdate();    
-  }   
+  } 
+
+  
+  @Override
+  public void removeObject() throws Exception
+  {
+    KernelModuleBean.getPort(false).removeCity(objectId);
+    cityFinderBean.doFind(false);    
+    setSearchTabIndex(0);
+  }    
 
   public List<SelectItem> getCitySelectItems()
   {
@@ -207,8 +214,7 @@ public class CityObjectBean extends TerritoryObjectBean
     try
     {
       loadObject();
-      streetObjectBean.createObject();
-      streetObjectBean.loadStreetSelectItems();
+//      streetObjectBean.loadStreetSelectItems();
     }
     catch (Exception ex)
     {

@@ -21,11 +21,12 @@
     <p:column headerText="País" styleClass="w-4">
       <h:outputText value="#{row.country}" />
     </p:column>      
-    <p:column styleClass="w-1">
+    <p:column styleClass="w-1">      
       <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
                        action="#{provinceFinderBean.view(rowIndex)}"
                        process="@this"
-                       onclick="PF('objectTabs').select(0);"                       
+                       onclick="PF('objectTabs').select(0);"  
+                       resetValues="true"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                        />     

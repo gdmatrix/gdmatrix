@@ -82,7 +82,22 @@
   </ui:define>
 
   <ui:define name="object">
-
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0) 
+        {
+          updateResults();
+          console.info("updateResults");
+        }
+      }
+    </script>
+    <p:remoteCommand name="updateResults"
+                     action="#{addressFinderBean.update}"
+                     process="@this" 
+                     update=":mainform:search_tabs:result_list" /> 
+    
     <p:tabView id="search_tabs" 
                widgetVar="searchTabs" 
                binding="#{provinceObjectBean.searchTabView}"
@@ -99,8 +114,8 @@
 
       <p:tab>
         <f:facet name="title">
-          <i class="pi pi-list m-1"></i>
-          <h:outputText value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}"/>
+          <i class="pi pi-pencil mr-2"></i>
+          <h:outputText value="Edició"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">   
           <ui:param name="objectBean" value="#{provinceObjectBean}" />

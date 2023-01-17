@@ -140,7 +140,6 @@ public class ProvinceObjectBean extends TerritoryObjectBean
         countryObjectBean.loadObject();
         loadProvinceSelectItems();
       }
-      editing = false;
     }
     else 
     {
@@ -151,14 +150,24 @@ public class ProvinceObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    if (!province.getCountryId().equals(countryObjectBean.getObjectId()))
+    if (!countryObjectBean.getObjectId().equals(province.getCountryId()))
+    {
       province.setCountryId(countryObjectBean.getObjectId());    
+      province.setProvinceId(null);
+    }
     province = KernelModuleBean.getPort(false).storeProvince(province);
     setObjectId(province.getProvinceId());
-    editing = false; 
     provinceSelectItems = null;
     provinceFinderBean.outdate();
   }  
+  
+  @Override
+  public void removeObject() throws Exception
+  {
+    KernelModuleBean.getPort(false).removeProvince(objectId);
+    provinceFinderBean.doFind(false);    
+    setSearchTabIndex(0);
+  }
   
   public List<SelectItem> getProvinceSelectItems()
   {
@@ -203,7 +212,6 @@ public class ProvinceObjectBean extends TerritoryObjectBean
     try
     {
       loadObject();
-      cityObjectBean.createObject();
       cityObjectBean.loadCitySelectItems();
     }
     catch (Exception ex)

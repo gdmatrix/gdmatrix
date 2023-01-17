@@ -128,7 +128,6 @@ public class CountryObjectBean extends TerritoryObjectBean
     if (objectId != null && !isNew())
     {
       country = KernelModuleBean.getPort(false).loadCountry(objectId);
-      editing = false;
     }
     else 
     {
@@ -141,10 +140,17 @@ public class CountryObjectBean extends TerritoryObjectBean
   {
     country = KernelModuleBean.getPort(false).storeCountry(country);
     setObjectId(country.getCountryId());
-    editing = false; 
     countrySelectItems = null;
     countryFinderBean.outdate();    
   }
+  
+  @Override
+  public void removeObject() throws Exception
+  {
+    KernelModuleBean.getPort(false).removeCountry(objectId);
+    countryFinderBean.doFind(false);    
+    setSearchTabIndex(0);
+  }  
 
   public List<SelectItem> getCountrySelectItems()
   {
@@ -178,8 +184,7 @@ public class CountryObjectBean extends TerritoryObjectBean
     try
     {
       loadObject();
-      provinceObjectBean.createObject();
-      provinceObjectBean.loadProvinceSelectItems();
+      provinceObjectBean.loadProvinceSelectItems();  
     }
     catch (Exception ex)
     {

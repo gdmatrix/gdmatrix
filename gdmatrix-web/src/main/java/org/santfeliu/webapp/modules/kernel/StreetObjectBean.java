@@ -31,16 +31,11 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.KernelManagerPort;
 import org.matrix.kernel.Street;
-import org.matrix.kernel.StreetFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -57,7 +52,6 @@ public class StreetObjectBean extends TerritoryObjectBean
 
   private Street street = new Street();
   private String streetId;
-  private List<SelectItem> streetSelectItems;
 
   @Inject
   StreetFinderBean streetFinderBean;
@@ -148,9 +142,7 @@ public class StreetObjectBean extends TerritoryObjectBean
       {
         cityObjectBean.setObjectId(street.getCityId());
         cityObjectBean.loadObject();
-        loadStreetSelectItems();
       }
-      editing = false;
     }
     else
     {
@@ -161,52 +153,21 @@ public class StreetObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    if (!street.getCityId().equals(cityObjectBean.getObjectId()))
+    if (!cityObjectBean.getObjectId().equals(street.getCityId()))
       street.setCityId(cityObjectBean.getObjectId());
     street = KernelModuleBean.getPort(false).storeStreet(street);
     setObjectId(street.getStreetId());
-    editing = false;
-    streetSelectItems = null;
     streetFinderBean.outdate();
   }
-
-  public List<SelectItem> getStreetSelectItems()
+  
+  
+  @Override
+  public void removeObject() throws Exception
   {
-    if (streetSelectItems == null)
-    {
-      try
-      {
-        loadStreetSelectItems();
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
-
-    return streetSelectItems;
-  }
-
-  public void loadStreetSelectItems() throws Exception
-  {
-    streetSelectItems = new ArrayList<>();
-    StreetFilter filter = new StreetFilter();
-    String cityId = cityObjectBean.getObjectId();
-    if (!StringUtils.isBlank(cityId))
-    {
-      filter.setCityId(cityId);
-
-      List<Street> streets =
-        KernelModuleBean.getPort(false).findStreets(filter);
-
-      for (Street s : streets)
-      {
-        SelectItem item =
-          new SelectItem(s.getStreetId(), s.getStreetTypeId() + " " + s.getName());
-        streetSelectItems.add(item);
-      }
-    }
-  }
+    KernelModuleBean.getPort(false).removeStreet(objectId);
+    streetFinderBean.doFind(false);    
+    setSearchTabIndex(0);
+  }    
 
   public void onStreetChange()
   {
