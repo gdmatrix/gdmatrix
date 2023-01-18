@@ -103,7 +103,7 @@
                            value="#{countryObjectBean.objectId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
-                           required="false">
+                           required="true">
             <p:ajax listener="#{countryObjectBean.onCountryChange}" update="province_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
             <f:selectItems value="#{countryObjectBean.countrySelectItems}" />
@@ -121,7 +121,7 @@
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Country'}">      
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Name" />
-          <p:inputText id="country_name" value="#{countryObjectBean.country.name}" required="false"/>
+          <p:inputText id="country_name" value="#{countryObjectBean.country.name}" required="true"/>
         </div>     
 
         <div class="field col-12 md:col-3">
@@ -144,7 +144,7 @@
           
           <p:selectOneMenu id="province_selector" value="#{provinceObjectBean.objectId}" 
                            filter="true"
-                           disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="false">
+                           disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="true">
             <p:ajax listener="#{provinceObjectBean.onProvinceChange}" update="city_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{provinceObjectBean.provinceSelectItems}"/>
@@ -162,7 +162,7 @@
           <div class="field col-12">
             <p:outputLabel for="@next" value="#{kernelBundle.province}" />
             <p:inputText id="provinceName" value="#{provinceObjectBean.province.name}" 
-                         styleClass="inputfield w-full" required="false"/>
+                         styleClass="inputfield w-full" required="true"/>
           </div>         
       </h:panelGroup>
       
@@ -174,7 +174,7 @@
           <p:selectOneMenu id="city_selector" value="#{cityObjectBean.objectId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
-                            required="false">
+                            required="true">
             <p:ajax listener="#{cityObjectBean.onCityChange}" />
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{cityObjectBean.citySelectItems}"/>
@@ -192,7 +192,7 @@
         <div class="field col-12">
           <p:outputLabel for="@next" value="#{kernelBundle.city}" />
           <p:inputText id="city_name" value="#{cityObjectBean.city.name}" 
-                       styleClass="inputfield w-full" required="false"/>
+                       styleClass="inputfield w-full" required="true"/>
         </div>          
       </h:panelGroup>
 
@@ -201,7 +201,7 @@
         <div class="field col-12 md:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
           <p:inputText id="street_type_id" value="#{streetObjectBean.street.streetTypeId}" 
-                       styleClass="inputfield w-full" required="false"/>
+                       styleClass="inputfield w-full" required="true"/>
         </div>     
 
         <div class="field col-12 md:col-2">
@@ -213,7 +213,7 @@
         <div class="field col-12 md:col-8">
           <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
           <p:inputText id="street_name" value="#{streetObjectBean.street.name}" 
-                       styleClass="inputfield w-full" required="false"/>
+                       styleClass="inputfield w-full" required="true"/>
         </div>   
       </h:panelGroup>
 
