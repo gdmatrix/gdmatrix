@@ -30,9 +30,11 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -89,15 +91,28 @@ public class ProvinceTypeBean extends TypeBean<Province, ProvinceFilter>
   @Override
   public ProvinceFilter queryToFilter(String query, String typeId)
   {
+    if (query == null)
+      query = "";
+    
     ProvinceFilter filter = new ProvinceFilter();
-    filter.setProvinceName("%" + query + "%");
+      if (!query.startsWith("%")) query = "%" + query;
+      if (!query.endsWith("%")) query += "%"; 
+      
+    filter.setProvinceName(query);
+    
     return filter;
   }
 
   @Override
   public String filterToQuery(ProvinceFilter filter)
   {
-    return filter.getProvinceName();
+    String query = filter != null && filter.getProvinceName() != null 
+      ? filter.getProvinceName() : "";
+    
+    if (query.startsWith("%")) query = query.substring(1);
+    if (query.endsWith("%")) query = query.substring(0, query.length() - 1);   
+    
+    return query;
   }
 
   @Override
@@ -111,5 +126,26 @@ public class ProvinceTypeBean extends TypeBean<Province, ProvinceFilter>
     {
       return Collections.emptyList();
     }
+  }
+  
+  public List<SelectItem> getProvinceSelectItems(String countryId)
+  {
+    List<SelectItem> selectItems = new ArrayList<>();    
+    ProvinceFilter filter = new ProvinceFilter();
+
+    if (!StringUtils.isBlank(countryId))
+    {
+      filter.setCountryId(countryId);
+      List<Province> provinces = find(filter);
+
+      for (Province p : provinces)
+      {
+        SelectItem item = 
+          new SelectItem(p.getProvinceId(), p.getName());
+        selectItems.add(item);
+      }     
+    } 
+    
+    return selectItems;
   }
 }

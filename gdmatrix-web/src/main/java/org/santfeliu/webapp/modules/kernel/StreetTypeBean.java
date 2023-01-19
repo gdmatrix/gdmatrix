@@ -104,15 +104,28 @@ public class StreetTypeBean extends TypeBean<Street, StreetFilter>
   @Override
   public StreetFilter queryToFilter(String query, String typeId)
   {
+    if (query == null)
+      query = "";
+    
     StreetFilter filter = new StreetFilter();
-    filter.setStreetName("%" + query + "%");
+      if (!query.startsWith("%")) query = "%" + query;
+      if (!query.endsWith("%")) query += "%"; 
+      
+    filter.setStreetName(query);
+
     return filter;
   }
 
   @Override
   public String filterToQuery(StreetFilter filter)
   {
-    return filter.getStreetName();
+    String query = filter != null && filter.getStreetName() != null ? 
+      filter.getStreetName() : "";
+    
+    if (query.startsWith("%")) query = query.substring(1);
+    if (query.endsWith("%")) query = query.substring(0, query.length() - 1); 
+    
+    return query;
   }
 
   @Override

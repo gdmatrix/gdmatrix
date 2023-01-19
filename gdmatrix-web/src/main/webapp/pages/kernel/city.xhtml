@@ -12,7 +12,7 @@
     <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector" 
                  activeIndex="#{cityFinderBean.tabIndex}">
- 
+
         <p:tab id="smart_search">
           <f:facet name="title">
             <span class="pi pi-bolt mr-2"/> 
@@ -51,11 +51,40 @@
           <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
                         var="docBundle" />
 
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="Name" />        
-            <p:inputText id="title" value="#{cityFinderBean.filter.cityName}" 
-                         class="inputfield w-full" />
-          </p:outputPanel>  
+          <div class="ui-fluid formgrid grid">             
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.country}" />          
+              <p:selectOneMenu id="country_selector" 
+                               value="#{cityFinderBean.filter.countryId}" 
+                               filter="true"
+                               autoWidth="false">
+                <p:ajax listener="#{cityFinderBean.onCountryChange}" update="province_selector"/>
+                <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
+                <f:selectItems value="#{countryTypeBean.selectItems}" />
+              </p:selectOneMenu>  
+            </div>   
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.province}" />          
+              <p:selectOneMenu id="province_selector" 
+                               value="#{cityFinderBean.filter.provinceId}" 
+                               filter="true"
+                               autoWidth="false">
+                <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
+                <f:selectItems value="#{cityFinderBean.provinceSelectItems}" />
+              </p:selectOneMenu>  
+            </div> 
+
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="Name" />        
+              <p:inputText id="title" value="#{cityFinderBean.filter.cityName}" 
+                           class="inputfield w-full" />
+            </div> 
+
+          </div>            
+
           <div class="text-right">
             <p:commandButton value="Clear"
                              action="#{cityFinderBean.clear}"
@@ -84,7 +113,7 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");

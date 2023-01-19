@@ -98,6 +98,11 @@
       <p:autoUpdate />
     </p:growl>
     
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350" >
+        <p:commandButton value="Acceptar" type="button" styleClass="ui-confirmdialog-yes" />      
+        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no"/>
+    </p:confirmDialog>
+    
     <script>
       function onResize()
       {

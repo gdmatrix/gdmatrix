@@ -31,16 +31,13 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.KernelManagerPort;
 import org.matrix.kernel.Province;
-import org.matrix.kernel.ProvinceFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -67,6 +64,9 @@ public class ProvinceObjectBean extends TerritoryObjectBean
   
   @Inject
   ProvinceTypeBean provinceTypeBean;
+  
+  @Inject
+  NavigatorBean navigatorBean;
 
   public Province getProvince()
   {
@@ -150,11 +150,10 @@ public class ProvinceObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    if (!countryObjectBean.getObjectId().equals(province.getCountryId()))
-    {
-      province.setCountryId(countryObjectBean.getObjectId());    
-      province.setProvinceId(null);
-    }
+    String countryId = countryObjectBean.getCountry().getCountryId();
+    if (!countryId.equals(province.getCountryId()))
+      province.setCountryId(countryId);    
+    
     province = KernelModuleBean.getPort(false).storeProvince(province);
     setObjectId(province.getProvinceId());
     provinceSelectItems = null;
@@ -166,7 +165,7 @@ public class ProvinceObjectBean extends TerritoryObjectBean
   {
     KernelModuleBean.getPort(false).removeProvince(objectId);
     provinceFinderBean.doFind(false);    
-    setSearchTabIndex(0);
+    navigatorBean.view("");
   }
   
   public List<SelectItem> getProvinceSelectItems()
@@ -184,34 +183,25 @@ public class ProvinceObjectBean extends TerritoryObjectBean
     }
     
     return provinceSelectItems;
-  }  
+  } 
+
+  @Override
+  public void cancel()
+  {
+    countryObjectBean.cancel();
+    super.cancel(); 
+  }
   
   public void loadProvinceSelectItems() throws Exception
   {
-    provinceSelectItems = new ArrayList<>();    
-    ProvinceFilter filter = new ProvinceFilter();
     String countryId = countryObjectBean.getCountry().getCountryId();
-
-    if (!StringUtils.isBlank(countryId))
-    {
-      filter.setCountryId(countryId);
-      List<Province> provinces = 
-        KernelModuleBean.getPort(false).findProvinces(filter);
-
-      for (Province p : provinces)
-      {
-        SelectItem item = 
-          new SelectItem(p.getProvinceId(), p.getName());
-        provinceSelectItems.add(item);
-      }     
-    }
+    provinceSelectItems = provinceTypeBean.getProvinceSelectItems(countryId);    
   }
   
   public void onProvinceChange()
   {
     try
     {
-      loadObject();
       cityObjectBean.loadCitySelectItems();
     }
     catch (Exception ex)

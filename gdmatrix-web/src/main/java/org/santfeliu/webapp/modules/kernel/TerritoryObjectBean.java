@@ -46,13 +46,13 @@ public abstract class TerritoryObjectBean extends ObjectBean
   {
     createObject();
   }
-    
+
   @Override
   public void cancel()
   {
-    super.cancel();
+    load();
   }
-  
+      
   @Override
   public void store()
   {

@@ -85,15 +85,28 @@ public class CountryTypeBean extends TypeBean<Country, CountryFilter>
   @Override
   public CountryFilter queryToFilter(String query, String typeId)
   {
+    if (query == null)
+      query = "";
+    
     CountryFilter filter = new CountryFilter();
-    filter.setCountryName("%" + query + "%");
+      if (!query.startsWith("%")) query = "%" + query;
+      if (!query.endsWith("%")) query += "%"; 
+      
+    filter.setCountryName(query);
+    
     return filter;
   }
 
   @Override
   public String filterToQuery(CountryFilter filter)
   {
-    return filter.getCountryName();
+    String query = filter != null && filter.getCountryName() != null 
+      ? filter.getCountryName() : "";
+    
+    if (query.startsWith("%")) query = query.substring(1);
+    if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
+
+    return query;
   }
 
   @Override

@@ -68,6 +68,9 @@ public class CityObjectBean extends TerritoryObjectBean
   
   @Inject
   CityTypeBean cityTypeBean;
+  
+  @Inject
+  NavigatorBean navigatorBean;
 
   public City getCity()
   {
@@ -151,8 +154,9 @@ public class CityObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    if (!provinceObjectBean.getObjectId().equals(city.getProvinceId()))
-      city.setProvinceId(provinceObjectBean.getObjectId());
+    String provinceId = provinceObjectBean.getProvince().getProvinceId();
+    if (!provinceId.equals(city.getProvinceId()))
+        city.setProvinceId(provinceId);
     
     city = KernelModuleBean.getPort(false).storeCity(city);
     setObjectId(city.getCityId());
@@ -167,9 +171,16 @@ public class CityObjectBean extends TerritoryObjectBean
   {
     KernelModuleBean.getPort(false).removeCity(objectId);
     cityFinderBean.doFind(false);    
-    setSearchTabIndex(0);
+    navigatorBean.view("");
   }    
 
+  @Override
+  public void cancel()
+  {
+    provinceObjectBean.cancel();    
+    super.cancel(); 
+  }
+  
   public List<SelectItem> getCitySelectItems()
   {
     if (citySelectItems == null)
@@ -213,7 +224,7 @@ public class CityObjectBean extends TerritoryObjectBean
   {
     try
     {
-      loadObject();
+//      loadObject();
 //      streetObjectBean.loadStreetSelectItems();
     }
     catch (Exception ex)

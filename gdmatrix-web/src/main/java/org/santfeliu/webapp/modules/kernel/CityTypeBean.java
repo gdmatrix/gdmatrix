@@ -30,9 +30,11 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -93,9 +95,14 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
   @Override
   public CityFilter queryToFilter(String query, String typeId)
   {
+    if (query == null)
+      query = "";
+    
     CityFilter filter = new CityFilter();
-    if (!StringUtils.isBlank(query))
-      filter.setCityName("%" + query + "%");
+      if (!query.startsWith("%")) query = "%" + query;
+      if (!query.endsWith("%")) query += "%"; 
+      
+    filter.setCityName(query);
 
     return filter;
   }
@@ -103,9 +110,11 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
   @Override
   public String filterToQuery(CityFilter filter)
   {
-    String query = "";
-    if (filter != null)
-      query = filter.getCityName();
+    String query = filter != null && filter.getCityName() != null 
+      ? filter.getCityName() : "";
+    
+    if (query.startsWith("%")) query = query.substring(1);
+    if (query.endsWith("%")) query = query.substring(0, query.length() - 1);  
 
     return query;
   }
@@ -122,5 +131,26 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
     }
 
     return Collections.emptyList();
+  }
+
+  public List<SelectItem> getCitySelectItems(String provinceId)
+  {
+    List<SelectItem> selectItems = new ArrayList<>();    
+    CityFilter filter = new CityFilter();
+
+    if (!StringUtils.isBlank(provinceId))
+    {
+      filter.setProvinceId(provinceId);
+      List<City> cities = find(filter);
+
+      for (City c : cities)
+      {
+        SelectItem item = 
+          new SelectItem(c.getCityId(), c.getName());
+        selectItems.add(item);
+      }     
+    } 
+    
+    return selectItems;
   }
 }

@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Street;
@@ -63,9 +64,15 @@ public class StreetFinderBean
 
   @Inject
   StreetTypeBean streetTypeBean;
+  
+  @Inject
+  ProvinceTypeBean provinceTypeBean;  
 
   @Inject
   CityTypeBean cityTypeBean;
+  
+  private List<SelectItem> provinceSelectItems;
+  private List<SelectItem> citySelectItems;
 
   public StreetFinderBean()
   {
@@ -199,6 +206,57 @@ public class StreetFinderBean
     {
       error(ex);
     }
+  }
+    
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ finding, getFilter(), firstRow, getObjectPosition(), provinceSelectItems, citySelectItems };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      finding = (Boolean)stateArray[0];
+      setFilter((StreetFilter) stateArray[1]);
+      smartFilter = getTypeBean().filterToQuery(filter);
+
+      doFind(false);
+
+      firstRow = (Integer)stateArray[2];
+      setObjectPosition((Integer)stateArray[3]);
+      provinceSelectItems = (List<SelectItem>) stateArray[4];
+      citySelectItems = (List<SelectItem>) stateArray[5];
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public void onCountryChange()
+  {
+    provinceSelectItems = 
+      provinceTypeBean.getProvinceSelectItems(filter.getCountryId());
+  }
+  
+  public List<SelectItem> getProvinceSelectItems()
+  {
+    return provinceSelectItems;
+  }
+
+  public void onProvinceChange()
+  {
+    citySelectItems = 
+      cityTypeBean.getCitySelectItems(filter.getProvinceId());
+  }
+  
+  public List<SelectItem> getCitySelectItems()
+  {
+    return citySelectItems;
   }
 
   public class StreetView implements Serializable

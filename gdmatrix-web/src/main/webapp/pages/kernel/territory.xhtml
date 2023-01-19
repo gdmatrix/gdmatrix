@@ -77,8 +77,9 @@
                        process="@this"
                        update=":mainform:search_tabs" 
                        resetValues="true"
-                       title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
-                       onclick="return confirm('Delete?');"/>
+                       title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
+        <p:confirm header="Esborrat de #{objectBean.getDescription()}" message="Segur que vols esborrar aquest objecte?" icon="pi pi-info-circle" />
+      </p:commandButton>
       <p:commandButton icon="ui-icon pi pi-times" 
                        action="#{navigatorBean.close}"
                        ajax="false"
@@ -100,13 +101,13 @@
         <p:outputLabel for="@next" value="#{kernelBundle.country}" />
         <div class="ui-inputgroup">
           <p:selectOneMenu id="country_selector" 
-                           value="#{countryObjectBean.objectId}" 
+                           value="#{countryObjectBean.country.countryId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
                            required="true">
             <p:ajax listener="#{countryObjectBean.onCountryChange}" update="province_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
-            <f:selectItems value="#{countryObjectBean.countrySelectItems}" />
+            <f:selectItems value="#{countryTypeBean.selectItems}" />
           </p:selectOneMenu>
 
           <p:commandButton rendered="#{not empty countryObjectBean.country.countryId}"
@@ -142,7 +143,7 @@
         <p:outputLabel for="@next" value="#{kernelBundle.province}"  />
         <div class="ui-inputgroup"> 
           
-          <p:selectOneMenu id="province_selector" value="#{provinceObjectBean.objectId}" 
+          <p:selectOneMenu id="province_selector" value="#{provinceObjectBean.province.provinceId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="true">
             <p:ajax listener="#{provinceObjectBean.onProvinceChange}" update="city_selector"/>
@@ -171,7 +172,7 @@
                      rendered="#{objectBean.rootTypeId == 'Street'}">
         <p:outputLabel for="@next" value="#{kernelBundle.city}"  />
         <div class="ui-inputgroup"> 
-          <p:selectOneMenu id="city_selector" value="#{cityObjectBean.objectId}" 
+          <p:selectOneMenu id="city_selector" value="#{cityObjectBean.city.cityId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
                             required="true">
@@ -228,14 +229,16 @@
                        styleClass="ui-button-raised m-1"
                        /> 
 
-      <p:commandButton value="#{objectBundle.cancel}" 
+      <p:commandButton action="#{objectBean.cancel}" 
+                       value="#{objectBundle.cancel}" 
                        icon="pi pi-undo"
-                       action="#{objectBean.cancel}"
-                       update="territory_panel" 
-                       process="@this territory_panel"
+                       process="@this"
                        styleClass="ui-button-raised m-1"
+                       update="territory_panel"
                        global="false"
+                       resetValues="true"
                         />
+              
     </div>    
 
   </p:outputPanel> 

@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -65,6 +66,8 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
 
   @Inject
   ProvinceTypeBean provinceTypeBean;
+  
+  private List<SelectItem> provinceSelectItems;
 
   public CityFinderBean()
   {
@@ -164,6 +167,46 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       error(ex);
     }
   }
+  
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ finding, getFilter(), firstRow, getObjectPosition(), provinceSelectItems };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      finding = (Boolean)stateArray[0];
+      setFilter((CityFilter) stateArray[1]);
+      smartFilter = getTypeBean().filterToQuery(filter);
+
+      doFind(false);
+
+      firstRow = (Integer)stateArray[2];
+      setObjectPosition((Integer)stateArray[3]);
+      provinceSelectItems = (List<SelectItem>) stateArray[4];
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  } 
+  
+  public void onCountryChange()
+  {
+    provinceSelectItems = 
+      provinceTypeBean.getProvinceSelectItems(filter.getCountryId());
+  }
+  
+  public List<SelectItem> getProvinceSelectItems()
+  {
+    return provinceSelectItems;
+  }
+    
 
   public class CityView implements Serializable
   {

@@ -31,14 +31,12 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Country;
-import org.matrix.kernel.CountryFilter;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -61,6 +59,9 @@ public class CountryObjectBean extends TerritoryObjectBean
   
   @Inject
   CountryTypeBean countryTypeBean;
+  
+  @Inject
+  NavigatorBean navigatorBean;
   
   private List<SelectItem> countrySelectItems;
 
@@ -149,9 +150,10 @@ public class CountryObjectBean extends TerritoryObjectBean
   {
     KernelModuleBean.getPort(false).removeCountry(objectId);
     countryFinderBean.doFind(false);    
-    setSearchTabIndex(0);
+    navigatorBean.view("");
   }  
 
+  /*
   public List<SelectItem> getCountrySelectItems()
   {
     if (countrySelectItems == null)
@@ -178,12 +180,11 @@ public class CountryObjectBean extends TerritoryObjectBean
     
     return countrySelectItems;
   }   
-  
+  */
   public void onCountryChange()
   {
     try
     {
-      loadObject();
       provinceObjectBean.loadProvinceSelectItems();  
     }
     catch (Exception ex)

@@ -62,6 +62,9 @@ public class StreetObjectBean extends TerritoryObjectBean
   @Inject
   StreetTypeBean streetTypeBean;
   
+  @Inject
+  NavigatorBean navigatorBean;
+  
   public Street getStreet()
   {
     return street;
@@ -153,21 +156,27 @@ public class StreetObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    if (!cityObjectBean.getObjectId().equals(street.getCityId()))
-      street.setCityId(cityObjectBean.getObjectId());
+    if (!cityObjectBean.getCity().getCityId().equals(street.getCityId()))
+      street.setCityId(cityObjectBean.getCity().getCityId());
     street = KernelModuleBean.getPort(false).storeStreet(street);
     setObjectId(street.getStreetId());
     streetFinderBean.outdate();
   }
-  
   
   @Override
   public void removeObject() throws Exception
   {
     KernelModuleBean.getPort(false).removeStreet(objectId);
     streetFinderBean.doFind(false);    
-    setSearchTabIndex(0);
+    navigatorBean.view("");
   }    
+
+  @Override
+  public void cancel()
+  {
+    cityObjectBean.cancel();    
+    super.cancel();
+  }
 
   public void onStreetChange()
   {
@@ -192,9 +201,4 @@ public class StreetObjectBean extends TerritoryObjectBean
   {
     this.street = (Street)street;
   }
-
-
-
-
-
 }

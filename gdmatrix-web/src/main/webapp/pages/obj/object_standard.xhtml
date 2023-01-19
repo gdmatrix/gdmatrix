@@ -74,8 +74,11 @@
                          process="@this"
                          update=":mainform:search_tabs:tabs" 
                          resetValues="true"
-                         title="#{objectBundle.delete}" alt="#{objectBundle.delete}"
-                         onclick="return confirm('Delete?');"/>
+                         title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
+          <p:confirm header="Esborrat de #{objectBean.getDescription()}" 
+                     message="Segur que vols esborrar aquest objecte?" 
+                     icon="pi pi-info-circle" />
+        </p:commandButton>
         <p:commandButton icon="ui-icon pi pi-cog" 
                          action="#{navigatorBean.view('')}"
                          styleClass="rounded-button ui-button-flat" 
