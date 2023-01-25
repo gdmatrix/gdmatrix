@@ -1,33 +1,33 @@
-<ui:composition 
+<ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets"    
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-  xmlns:f="http://java.sun.com/jsf/core"  
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:p="http://primefaces.org/ui">
 
   <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
     <p:outputPanel class="flex flex-grow-0 justify-content-start align-self-center"
                    rendered="#{objectBean.finderBean.isScrollEnabled()}">
-        <p:commandButton icon="ui-icon pi pi-step-backward" 
-                         styleClass="rounded-button ui-button-flat mr-2" 
+        <p:commandButton icon="ui-icon pi pi-step-backward"
+                         styleClass="rounded-button ui-button-flat mr-2"
                          action="#{objectBean.finderBean.viewPrevious}"
                          process="@this"
                          update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasPrevious()}"
-                         title="Previous" alt="Previous" 
+                         title="Previous" alt="Previous"
                          />
-        <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}" 
+        <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}"
                       styleClass="align-self-center" />
-        <p:commandButton icon="ui-icon pi pi-step-forward" 
-                         styleClass="rounded-button ui-button-flat ml-2 mr-2" 
+        <p:commandButton icon="ui-icon pi pi-step-forward"
+                         styleClass="rounded-button ui-button-flat ml-2 mr-2"
                          action="#{objectBean.finderBean.viewNext}"
                          process="@this"
                          update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasNext()}"
-                         title="Next" alt="Next" 
+                         title="Next" alt="Next"
                          />
     </p:outputPanel>
     <div class="flex flex-grow-1 justify-content-start align-self-center">
@@ -35,70 +35,70 @@
       <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
     </div>
     <div class="flex flex-grow-1 justify-content-end">
-        <p:commandButton icon="ui-icon pi pi-arrow-circle-left" 
-                         styleClass="rounded-button ui-button-flat" 
+        <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                         styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.select}"
                          rendered="#{navigatorBean.selectable}"
                          ajax="false"
-                         title="Select" alt="Select" 
+                         title="Select" alt="Select"
                          />
-        <p:commandButton icon="ui-icon pi pi-plus-circle" 
-                         styleClass="rounded-button ui-button-flat" 
+        <p:commandButton icon="ui-icon pi pi-plus-circle"
+                         styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.view('')}"
                          process="@this"
                          update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
                          resetValues="true"
-                         title="#{objectBundle.create}" alt="#{objectBundle.create}" 
+                         title="#{objectBundle.create}" alt="#{objectBundle.create}"
                          />
-        <p:commandButton icon="ui-icon pi pi-star" 
-                         styleClass="rounded-button ui-button-flat" 
+        <p:commandButton icon="ui-icon pi pi-star"
+                         styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
                          rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
                          process="@this"
                          partialSubmit="true"
-                         update="object_header :mainform:context_panel" 
-                         title="Mark" alt="Mark" 
+                         update="object_header :mainform:context_panel"
+                         title="Mark" alt="Mark"
                          />
-        <p:commandButton icon="ui-icon pi pi-star-fill" 
-                         styleClass="rounded-button ui-button-flat" 
+        <p:commandButton icon="ui-icon pi pi-star-fill"
+                         styleClass="rounded-button ui-button-flat"
                          action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
                          rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
                          process="@this"
                          partialSubmit="true"
-                         update="object_header :mainform:context_panel" 
-                         title="Unmark" alt="Unmark" 
+                         update="object_header :mainform:context_panel"
+                         title="Unmark" alt="Unmark"
                          />
-        <p:commandButton icon="ui-icon pi pi-trash" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{objectBean.remove}" 
+        <p:commandButton icon="ui-icon pi pi-trash"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{objectBean.remove}"
                          process="@this"
-                         update=":mainform:search_tabs:tabs" 
+                         update=":mainform:search_tabs:tabs"
                          resetValues="true"
                          title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
-          <p:confirm header="Esborrat de #{objectBean.getDescription()}" 
-                     message="Segur que vols esborrar aquest objecte?" 
+          <p:confirm header="Esborrat de #{objectBean.getDescription()}"
+                     message="Segur que vols esborrar aquest objecte?"
                      icon="pi pi-info-circle" />
         </p:commandButton>
-        <p:commandButton icon="ui-icon pi pi-cog" 
+        <p:commandButton icon="ui-icon pi pi-cog"
                          action="#{navigatorBean.view('')}"
-                         styleClass="rounded-button ui-button-flat" 
-                         update=":mainform:search_tabs:tabs" 
+                         styleClass="rounded-button ui-button-flat"
+                         update=":mainform:search_tabs:tabs"
                          title="Actions" alt="Actions"
                          onclick="return confirm('#{objectBundle.confirm_full_remove}');"/>
-        <p:commandButton icon="ui-icon pi pi-times" 
+        <p:commandButton icon="ui-icon pi pi-times"
                          action="#{navigatorBean.close}"
                          ajax="false"
                          immediate="true"
-                         styleClass="rounded-button ui-button-flat" 
+                         styleClass="rounded-button ui-button-flat"
                          title="Close" alt="Close" />
     </div>
   </p:outputPanel>
-    
+
   <f:metadata>
-    <f:viewAction action="#{objectBean.selectTabWithErrors}" 
+    <f:viewAction action="#{objectBean.selectTabWithErrors}"
                   onPostback="true" phase="PROCESS_VALIDATIONS" />
 
-    <f:viewAction action="#{objectBean.loadActiveTab}" 
+    <f:viewAction action="#{objectBean.loadActiveTab}"
                   onPostback="true" />
   </f:metadata>
 
@@ -107,7 +107,7 @@
              id="tabs"
              widgetVar="objectTabs"
              touchable="false"
-             binding="#{objectBean.tabView}">    
+             binding="#{objectBean.tabView}">
     <c:forEach items="#{objectBean.tabs}" var="tab" >
       <p:tab title="#{tab.label}"
              disabled="#{objectBean.isDisabledTab(tab)}">
@@ -118,55 +118,21 @@
   </p:tabView>
 
   <div class="tab_footer text-right pt-3">
-    <p:commandButton action="#{objectBean.store}" 
+    <p:commandButton action="#{objectBean.store}"
                      value="Save"
                      icon="pi pi-save"
-                     process=":mainform:search_tabs"
+                     process=":mainform:search_tabs:obj_tabs"
                      update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
-                     styleClass="ui-button-raised m-1"                      
-                     oncomplete="switchToTabWithErrors()"
-                     />
-    <p:commandButton action="#{objectBean.cancel}" 
+                     styleClass="ui-button-raised m-1" />
+    <p:commandButton action="#{objectBean.cancel}"
                      value="Cancel"
                      icon="pi pi-undo"
                      process="@this"
                      styleClass="ui-button-raised m-1"
                      update=":mainform:search_tabs:obj_tabs"
-                     resetValues="true" 
+                     resetValues="true"
                      global="false" />
   </div>
-  
-  <script>
-    function switchToTabWithErrors()
-    {
-      var elems = document.getElementsByClassName("ui-state-error");
-      for (var elem of elems)
-      {
-        var index = findTabIndex(elem);
-        if (index !== -1)
-        {
-          console.info("switch to tab " + index);
-          PF('objectTabs').select(index);
-          break;
-        }
-      }
-    }
-    
-    function findTabIndex(elem)
-    {
-      var parent = elem.parentElement;
-      while (parent &amp;&amp; !parent.classList.contains("ui-tabs-panel"))
-      {
-        parent = parent.parentElement;
-      }
-      if (parent)
-      {
-        var tabs =  Array.prototype.slice.call(parent.parentElement.children);
-        return tabs.indexOf(parent);
-      }      
-      return -1;
-    }    
-  </script>
 
-</ui:composition> 
+</ui:composition>
 
