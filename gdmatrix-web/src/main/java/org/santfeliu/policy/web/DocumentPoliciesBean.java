@@ -291,6 +291,8 @@ public class DocumentPoliciesBean extends PageBean
   {
     try
     {
+      getMessageList().clear();
+
       ListHandler handler = new ListHandler();
       handler.setFilter(record ->
         record.getThreadID() == Thread.currentThread().getId());

@@ -1442,7 +1442,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
       client.put("externalContext", getExternalContext());
       client.put("request", getExternalContext().getRequest());
       client.put("application", getApplication());
-      result = client.executeScript(action);
+      result = client.executeAction(action);
     }
 
     return result;

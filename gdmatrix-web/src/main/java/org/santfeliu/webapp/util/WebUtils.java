@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
+import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.context.ExternalContext;
@@ -106,6 +107,27 @@ public class WebUtils
     valueExpression.setValue(elContext, value);
   }
 
+  public static ValueExpression createValueExpression(String expr, Class type)
+  {
+    FacesContext context = FacesContext.getCurrentInstance();
+    ELContext elContext = context.getELContext();
+    Application application = context.getApplication();
+    ExpressionFactory expressionFactory = application.getExpressionFactory();
+    return expressionFactory.createValueExpression(elContext, expr, type);
+  }
+
+  public static MethodExpression createMethodExpression(String expr,
+    Class returnType, Class... parameterTypes)
+  {
+    FacesContext context = FacesContext.getCurrentInstance();
+    ELContext elContext = context.getELContext();
+    Application application = context.getApplication();
+    ExpressionFactory expressionFactory = application.getExpressionFactory();
+    return expressionFactory.createMethodExpression(elContext, expr,
+      returnType, parameterTypes);
+  }
+
+  @Deprecated
   public static <T> T getBacking(MenuItemCursor mic)
   {
     String backingName = mic.getProperty(OBJECT_BACKING);
@@ -115,6 +137,7 @@ public class WebUtils
       return getBackingFromAction(mic.getAction());
   }
 
+  @Deprecated
   public static <T> T getBackingFromAction(String actionExpression)
   {
     String backingName = getBackingName(actionExpression);
@@ -124,6 +147,7 @@ public class WebUtils
       return null;
   }
 
+  @Deprecated
   public static <T> T getBackingIfExists(String name)
   {
     FacesContext context = FacesContext.getCurrentInstance();
@@ -132,6 +156,7 @@ public class WebUtils
     return (T)requestMap.get(name);
   }
 
+  @Deprecated
   private static String getBackingName(String action)
   {
     if (action != null)
@@ -205,6 +230,7 @@ public class WebUtils
     return Boolean.parseBoolean(value);
   }
 
+  @Deprecated
   public static boolean clearBacking(String backingName)
   {
     FacesContext context = FacesContext.getCurrentInstance();

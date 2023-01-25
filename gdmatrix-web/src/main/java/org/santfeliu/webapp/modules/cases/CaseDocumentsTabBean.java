@@ -121,13 +121,6 @@ public class CaseDocumentsTabBean extends TabBean
   }
 
   @Override
-  public boolean isModified()
-  {
-    // Test
-    return true;
-  }
-
-  @Override
   public void store()
   {
     System.out.println("NewDocId: " + newDocId);

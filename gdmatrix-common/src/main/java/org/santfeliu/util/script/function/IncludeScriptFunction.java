@@ -84,8 +84,8 @@ public class IncludeScriptFunction extends BaseFunction
         {
           jsName = reference;
         }
-        ScriptClient client = new ScriptClient();
-        client.executeScript(jsName, scope);
+        ScriptClient client = new ScriptClient(scope);
+        client.executeScript(jsName);
       }
     }
     catch (Exception ex)

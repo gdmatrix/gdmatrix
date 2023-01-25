@@ -103,9 +103,9 @@ public abstract class ObjectBean extends BaseBean
   public int getTabIndex()
   {
     if (tabView == null)
-    {
+  {
       tabView = new TabView();
-    }
+  }
     return tabView.getActiveIndex();
   }
 
@@ -299,7 +299,7 @@ public abstract class ObjectBean extends BaseBean
 
   public void cancel()
   {
-    getTabView().setActiveIndex(0);
+    setTabIndex(0);
     load();
   }
 

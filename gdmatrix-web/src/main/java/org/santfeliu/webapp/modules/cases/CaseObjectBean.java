@@ -30,22 +30,28 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.component.UIComponent;
+import javax.faces.event.ComponentSystemEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
+import org.primefaces.PrimeFaces;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
 import org.santfeliu.webapp.helpers.PropertyHelper;
+import org.santfeliu.webapp.util.ComponentUtils;
 
 /**
  *
@@ -180,6 +186,15 @@ public class CaseObjectBean extends ObjectBean
       cas = CasesModuleBean.getPort(false).loadCase(objectId);
     }
     else cas = new Case();
+
+    if (PrimeFaces.current().isAjaxRequest())
+    {
+      UIComponent panel =
+        ComponentUtils.findComponent(":mainform:search_tabs:tabs:dyn_form");
+
+      panel.getChildren().clear();
+      includeDynamicComponents(panel);
+    }
   }
 
   @Override
@@ -215,6 +230,43 @@ public class CaseObjectBean extends ObjectBean
   public void restoreState(Serializable state)
   {
     this.cas = (Case)state;
+  }
+
+  public void loadDynamicComponents(ComponentSystemEvent event)
+  {
+    try
+    {
+      UIComponent panel = event.getComponent();
+      if (panel.getChildCount() == 0)
+      {
+        includeDynamicComponents(panel);
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  private void includeDynamicComponents(UIComponent parent) throws Exception
+  {
+    // load dynamic fields
+
+    String formName = getProperty("formName");
+    if (!StringUtils.isBlank(formName))
+    {
+      ComponentUtils.includeFormComponents(parent, formName,
+        "caseObjectBean.propertyHelper.value",
+        Collections.emptyMap()); // TODO: take map from cas
+    }
+    else
+    {
+      String scriptName = getProperty("scriptName");
+      if (!StringUtils.isBlank(scriptName))
+      {
+        ComponentUtils.includeScriptComponents(parent, scriptName);
+      }
+    }
   }
 
 }
