@@ -8,17 +8,26 @@ tr.current { font-weight: bold; }
   {
     padding: 4px;
     overflow: auto;
-    margin: 0 !important;
+  }
+  
+  .central_column.m-1
+  {
+    margin: 0 !important;    
   }
 
   .side_panel.left
   {
     padding-left: 4px;
   }
-
+  
   .side_panel.right
   {
     padding-right: 4px;
+  }
+
+  .side_button.left
+  {
+    margin-left: 32px !important;
   }
 }
 
@@ -35,7 +44,12 @@ tr.current { font-weight: bold; }
     width: 400px !important;
     max-width: 100%;
     margin: 0 !important;
-  }        
+  }
+
+  .side_panel.m-1
+  {
+    margin: 0 !important;    
+  }
   
   .side_panel.left
   {
@@ -57,7 +71,7 @@ tr.current { font-weight: bold; }
   .side_button.first_time
   {
     display: block;
-  }
+  }  
 }
 
 .side_panel

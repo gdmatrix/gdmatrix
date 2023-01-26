@@ -9,7 +9,8 @@
   <ui:define name="template">
 
     <p:sidebar widgetVar="menu" baseZIndex="50000000" style="overflow: scroll">
-      <p:menu id="vertical_menu" styleClass="vertical_menu" model="#{templateBean.PFMenuModel}" toggleable="true"/>     
+      <p:menu id="vertical_menu" styleClass="vertical_menu" 
+              model="#{templateBean.PFMenuModel}" toggleable="true"/>     
     </p:sidebar>
     
     <!-- header -->
@@ -52,24 +53,22 @@
         </p:commandButton>                                    
       </div>                     
     </div>
-
-    <!--
-    <p:tabMenu model="#{templateBean.PFMenuModel}" />
-    -->
     
-    <p:toolbar class="app_toolbar">
-      <p:toolbarGroup>
-        <p:repeat value="#{templateBean.highlightedItems}" var="item">
-          <p:commandButton action="#{item.getUrl()}" icon="#{item.getIcon()}" 
-            styleClass="#{item.isSelected() ? 'current' : ''}" ajax="false"
-            title="#{item.getProperty('label')}" 
-            onclick="#{item.getOnclick()}"/>
-        </p:repeat>        
-      </p:toolbarGroup>    
-    </p:toolbar>
+    <div class="app_content">
+      <p:toolbar class="app_toolbar">
+        <p:toolbarGroup>
+          <p:repeat value="#{templateBean.highlightedItems}" var="item">
+            <p:commandButton action="#{item.getUrl()}" icon="#{item.getIcon()}" 
+              styleClass="#{item.isSelected() ? 'current' : ''}" ajax="false"
+              title="#{item.getProperty('label')}" 
+              onclick="#{item.getOnclick()}"/>
+          </p:repeat>        
+        </p:toolbarGroup>    
+      </p:toolbar>
 
-    <div class="app_body">
-      <ui:insert name="body"></ui:insert>
+      <div class="app_body">
+        <ui:insert name="body"></ui:insert>
+      </div>      
     </div>
 
     <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" delay="1000" />
