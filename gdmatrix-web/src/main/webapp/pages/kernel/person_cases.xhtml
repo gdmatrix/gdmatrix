@@ -26,26 +26,19 @@
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex align-items-center">
-          <div class="w-9">
-
-          </div>          
-          <div class="flex flex-row-reverse w-3">    
-            <div class="m-1">
-              <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
-                            rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}" >
-                <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
-                            rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="pdf" target="case_results_table" fileName="results" pageOnly="true"/>
-                </p:menuitem>
-                <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
-                            rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="csv" target="case_results_table" fileName="results" pageOnly="true" />
-                </p:menuitem> 
-              </p:menuButton>                        
-            </div>              
-          </div>
-        </div>
+        <div class="flex flex-row-reverse w-12">    
+          <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
+                        rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}" >
+            <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
+                        rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}">
+              <p:dataExporter type="pdf" target="case_results_table" fileName="results" pageOnly="true"/>
+            </p:menuitem>
+            <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
+                        rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}">
+              <p:dataExporter type="csv" target="case_results_table" fileName="results" pageOnly="true" />
+            </p:menuitem> 
+          </p:menuButton>                        
+        </div>              
       </f:facet>      
       <p:column headerText="#{kernelBundle.personCases_id}" styleClass="w-1"
                 exportHeaderValue="#{kernelBundle.personCases_id}">

@@ -32,7 +32,6 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.component.UIComponent;
@@ -46,7 +45,6 @@ import org.matrix.cases.InterventionView;
 import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.faces.ManualScoped;
-import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -63,7 +61,7 @@ public class CaseInterventionsTabBean extends TabBean
 {
   private List<InterventionView> interventionViews;
   private int firstRow;
-  private Intervention intervention = new Intervention();
+  private Intervention intervention;
   private PropertyHelper propertyHelper;
 
   @Inject
@@ -77,7 +75,8 @@ public class CaseInterventionsTabBean extends TabBean
       @Override
       public List<Property> getProperties()
       {
-        return intervention.getProperty();
+        return intervention != null ? intervention.getProperty() :
+          Collections.emptyList();
       }
     };
   }
@@ -100,11 +99,14 @@ public class CaseInterventionsTabBean extends TabBean
   
   public String getPersonId()
   {
-    return intervention.getPersonId();
+    return intervention != null ? intervention.getPersonId() : null;
   }
   
   public void setPersonId(String personId)
   {
+    if (intervention == null)
+      intervention = new Intervention();
+    
     intervention.setPersonId(personId);
     showDialog();    
   }
@@ -134,47 +136,49 @@ public class CaseInterventionsTabBean extends TabBean
     this.firstRow = firstRow;
   }
 
-  public Date getStartDateTime()
+  public String getStartDateTime()
   {
-    if (intervention.getStartDate() != null)
-    {
-      return TextUtils.parseInternalDate(
-        intervention.getStartDate() + intervention.getStartTime());
-    }
-    else
-    {
+    if (intervention == null)
       return null;
-    }
+    
+    String startDate = intervention.getStartDate() != null ? 
+      intervention.getStartDate() : "";
+    String startTime = intervention.getStartTime() != null ?
+      intervention.getStartTime() : "";
+    
+    return startDate + startTime;
   }
 
-  public Date getEndDateTime()
+  public String getEndDateTime()
   {
-    if (intervention.getEndDate() != null)
-    {
-      return TextUtils.parseInternalDate(
-        intervention.getEndDate() + intervention.getEndTime());
-    }
-    else
-    {
+    if (intervention == null)
       return null;
+    
+    String endDate = intervention.getEndDate() != null ? 
+      intervention.getEndDate() : "";
+    String endTime = intervention.getEndTime() != null ?
+      intervention.getEndTime() : "";
+    
+    return endDate + endTime;
+  }
+
+  public void setStartDateTime(String date)
+  {
+    if (intervention != null && date != null)
+    {
+      intervention.setStartDate(date.substring(0, 8));
+      if (date.length() > 8)
+        intervention.setStartTime(date.substring(8));
     }
   }
 
-  public void setStartDateTime(Date date)
+  public void setEndDateTime(String date)
   {
-    if (date != null)
+    if (intervention != null && date != null)
     {
-      intervention.setStartDate(TextUtils.formatDate(date, "yyyyMMdd"));
-      intervention.setStartTime(TextUtils.formatDate(date, "HHmmss"));
-    }
-  }
-
-  public void setEndDateTime(Date date)
-  {
-    if (date != null)
-    {
-      intervention.setEndDate(TextUtils.formatDate(date, "yyyyMMdd"));
-      intervention.setEndTime(TextUtils.formatDate(date, "HHmmss"));
+      intervention.setEndDate(date.substring(0, 8));
+      if (date.length() > 8)
+        intervention.setEndTime(date.substring(8));
     }
   }
   
@@ -213,7 +217,7 @@ public class CaseInterventionsTabBean extends TabBean
     }
     else
     {
-      interventionViews = Collections.EMPTY_LIST;
+      interventionViews = Collections.emptyList();
     }
       
   }
@@ -254,13 +258,14 @@ public class CaseInterventionsTabBean extends TabBean
     String caseId = getObjectId();
     intervention.setCaseId(caseId);
     CasesModuleBean.getPort(false).storeIntervention(intervention);
-    intervention = new Intervention();
     load();
+    intervention = null;    
   }
 
   public void cancel()
   {
-    intervention = new Intervention();
+    info("CANCEL_OBJECT");    
+    intervention = null;
   }
 
   public void remove(InterventionView interventionView)

@@ -26,30 +26,23 @@
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex align-items-center">
-          <div class="w-9">
-
-          </div>          
-          <div class="flex flex-row-reverse w-3">    
-            <div class="m-1">
-              <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
-                            rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}" >
-                <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
-                            rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="pdf" target="address_results_table" fileName="results" pageOnly="true"/>
-                </p:menuitem>
-                <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
-                            rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="csv" target="address_results_table" fileName="results" pageOnly="true" />
-                </p:menuitem> 
-              </p:menuButton>  
-              <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
-                               action="#{personAddressesTabBean.create}"                                  
-                               update="@root:@id(address_edit_panels)"
-                               oncomplete="PF('addressDataDialog').show()"                                  
-                               alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
-            </div>              
-          </div>
+        <div class="flex flex-row-reverse w-12">    
+          <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
+                        rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}" >
+            <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
+                        rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
+              <p:dataExporter type="pdf" target="address_results_table" fileName="results" pageOnly="true"/>
+            </p:menuitem>
+            <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
+                        rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
+              <p:dataExporter type="csv" target="address_results_table" fileName="results" pageOnly="true" />
+            </p:menuitem> 
+          </p:menuButton>  
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+                           action="#{personAddressesTabBean.create}"                                  
+                           update="@root:@id(address_edit_panels)"
+                           oncomplete="PF('addressDataDialog').show()"                                  
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
         </div>
       </f:facet>      
       <p:column headerText="#{kernelBundle.personAddresses_id}" styleClass="w-1"
@@ -81,8 +74,8 @@
       </p:column> 
     </p:dataTable>
   </h:panelGroup>
-  
- 
+
+
   <!-- Only works appendTo="@(form)" with one single form -->    
   <p:dialog id="address_data_dialog" widgetVar="addressDataDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
@@ -111,7 +104,7 @@
             <p:outputLabel for="@next"  
                            value="#{kernelBundle.personAddresses_address}"
                            styleClass="w-full"/>
-            
+
             <emcomp:objectReference value="#{personAddressesTabBean.addressId}"
                                     type="Address"
                                     process=":mainform:filter_panel"
@@ -125,7 +118,7 @@
         </div>
 
       </p:panel>              
-      
+
       <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
                     var="objectBundle" />        
 

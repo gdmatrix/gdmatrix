@@ -414,7 +414,7 @@ body .ui-datepicker .ui-datepicker-calendar td
 }
 
 /* menu */
-body .ui-menu
+body .vertical_menu.ui-menu
 {
   width: 100%;
   border: 0;
