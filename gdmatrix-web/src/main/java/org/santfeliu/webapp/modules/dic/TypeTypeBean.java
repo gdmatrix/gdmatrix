@@ -126,7 +126,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       if (typeId != null)
       {
         types = Collections.singletonList(
-          TypeCache.getInstance().getType(filter.getTypeId()));
+          TypeCache.getInstance().getType(filter.getTypeId()));       
       }
       else
       {

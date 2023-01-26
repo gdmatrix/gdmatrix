@@ -43,7 +43,7 @@
                   <p:dataExporter type="csv" target="address_results_table" fileName="results" pageOnly="true" />
                 </p:menuitem> 
               </p:menuButton>  
-              <p:commandButton icon="pi pi-plus-circle text-xl" styleClass="ui-button-flat" 
+              <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                                action="#{personAddressesTabBean.create}"                                  
                                update="@root:@id(address_edit_panels)"
                                oncomplete="PF('addressDataDialog').show()"                                  
@@ -66,20 +66,23 @@
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 
                            immediate="true" ajax="false" 
                            styleClass="rounded-button ui-button-flat"
-                           alt="#{objectBundle.show}" title="#{objectBundle.show}"/>  
+                           alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
           <p:commandButton action="#{personAddressesTabBean.remove(row)}"
                            update="address_results_table :mainform:growl"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.personAddressId != null}"
-                           styleClass="rounded-button ui-button-flat"
-                           onclick="return confirm('#{objectBundle.confirm_remove}');"/>            
+                           styleClass="rounded-button ui-button-flat">            
+            <p:confirm header="Esborrat de #{row.address.description}" 
+                       message="Segur que vols esborrar aquest objecte?" 
+                       icon="pi pi-info-circle" />
+          </p:commandButton>
         </h:panelGroup>          
       </p:column> 
     </p:dataTable>
   </h:panelGroup>
-
-
+  
+ 
   <!-- Only works appendTo="@(form)" with one single form -->    
   <p:dialog id="address_data_dialog" widgetVar="addressDataDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 

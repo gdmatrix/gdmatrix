@@ -59,7 +59,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
     String typeId = getTypeId();
     System.out.println("TypeId: " + getTypeId());
 
-    return typeTypeBean.getSelectItems(query, typeId, true, true);
+    return typeTypeBean.getSelectItems(query, typeId, false, true);
   }
 
   @Override

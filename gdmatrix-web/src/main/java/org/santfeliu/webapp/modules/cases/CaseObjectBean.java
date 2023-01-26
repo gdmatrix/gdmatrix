@@ -30,9 +30,9 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -208,6 +208,7 @@ public class CaseObjectBean extends ObjectBean
       tabs.add(new Tab("Main", "/pages/cases/case_main.xhtml"));
       tabs.add(new Tab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
       tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
+      tabs.add(new Tab("Actuacions", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean"));
     }
   }
 

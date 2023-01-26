@@ -1,0 +1,172 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+
+  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+                var="kernelBundle" />
+
+  <h:panelGroup>
+
+    <!-- Results table -->
+    <p:dataTable id="contact_results_table" value="#{personContactsTabBean.resultListHelper.rows}" 
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true"
+                 size="small" paginatorPosition="bottom" 
+                 rowIndexVar="firstRow"
+                 first="#{personContactsTabBean.firstRow}"
+                 rows="#{personContactsTabBean.resultListHelper.pageSize}"
+                 multiViewState="true"                   
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex align-items-center">
+          <div class="w-9">
+
+          </div>          
+          <div class="flex flex-row-reverse w-3">    
+            <div class="m-1">
+              <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
+                            rendered="#{personContactsTabBean.resultListHelper.rowCount > 0}" >
+                <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
+                            rendered="#{personContactsTabBean.resultListHelper.rowCount > 0}">
+                  <p:dataExporter type="pdf" target="case_results_table" fileName="results" pageOnly="true"/>
+                </p:menuitem>
+                <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
+                            rendered="#{personContactsTabBean.resultListHelper.rowCount > 0}">
+                  <p:dataExporter type="csv" target="case_results_table" fileName="results" pageOnly="true" />
+                </p:menuitem> 
+              </p:menuButton>   
+              <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+                               action="#{personContactsTabBean.create}" 
+                               update=":mainform:search_tabs:tabs:contact_edit_panels"
+                               oncomplete="PF('contactDataDialog').show()"                                 
+                               alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+            </div>              
+          </div>
+        </div>
+      </f:facet>      
+      <p:column headerText="#{kernelBundle.personContacts_type}" styleClass="w-2"
+                exportHeaderValue="#{kernelBundle.personContacts_type}">
+        <h:outputText value="#{row.contactTypeLabel}" />
+      </p:column>
+      <p:column headerText="#{kernelBundle.personContacts_contact}" styleClass="w-3"
+                exportHeaderValue="#{kernelBundle.personContacts_contact}">
+        <h:outputText value="#{row.value}"/>
+      </p:column>       
+      <p:column headerText="#{kernelBundle.personContacts_comments}" styleClass="w-5"
+                exportHeaderValue="#{kernelBundle.personContacts_comments}">
+        <h:outputText value="#{row.comments}"/>
+      </p:column>          
+      <p:column styleClass="w-2 text-right" exportable="false">
+        <h:panelGroup>
+          <p:commandButton action="#{personContactsTabBean.edit(row)}"
+                           icon="pi pi-pencil"
+                           rendered="#{row.contactId != null}"
+                           styleClass="rounded-button ui-button-flat"                               
+                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                           ajax="true" update=":mainform:search_tabs:tabs:contact_edit_panels"
+                           resetValues="true"
+                           oncomplete="PF('contactDataDialog').show()" />
+          <p:commandButton action="#{personContactsTabBean.remove(row)}"
+                           ajax="true" update="contact_results_table :mainform:growl"
+                           icon="pi pi-trash"
+                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                           rendered="#{row.contactId != null}"
+                           styleClass="rounded-button ui-button-flat">            
+            <p:confirm header="Esborrat de #{row.value}" message="Segur que vols esborrar aquest objecte?" icon="pi pi-info-circle" />
+          </p:commandButton>
+        </h:panelGroup>
+      </p:column>  
+    </p:dataTable>
+  </h:panelGroup>
+
+
+  <!-- Only works appendTo="@(form)" with one single form -->    
+  <p:dialog id="contact_data_dialog" widgetVar="contactDataDialog" 
+            styleClass="edit_data_dialog" style="max-width:800px" 
+            modal="true" responsive="true" closable="true"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>       
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <h:outputText value="#{personObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{personObjectBean.getTabs().get(personObjectBean.tabIndex).getLabel()}" />   
+        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{personContactsTabBean.editing.contactId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <p:outputPanel id="contact_edit_panels">
+      <p:panel id="edit_contact_form" rendered="#{personContactsTabBean.editing != null}"
+               styleClass="mt-2">
+
+        <div class="ui-fluid formgrid grid" >
+
+<!--    
+          <p:outputPanel styleClass="field col-12 md:col-6">
+            <p:outputLabel for="contactTypeId" 
+                           value="#{kernelBundle.personContacts_type}" />
+            <p:selectOneMenu id="contactTypeId" styleClass="inputfield w-full"
+                             value="#{personContactsTabBean.editing.contactTypeId}"
+                             disabled="#{!personBacking.editable}">
+              <f:selectItems value="#{personContactsTabBean.contactTypeItems}" />
+            </p:selectOneMenu>
+          </p:outputPanel>
+-->       
+          
+          <p:outputPanel styleClass="field col-12 md:col-6">
+            <p:outputLabel for="@next" 
+                           value="#{kernelBundle.personContacts_type}" />          
+            <emcomp:typeReference value="#{personContactsTabBean.editing.contactTypeId}"
+                                  type="Contact"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3" />
+          </p:outputPanel>
+         
+          <p:outputPanel styleClass="field col-12 md:col-6">
+            <p:outputLabel for="contact" 
+                           value="#{kernelBundle.personContacts_contact}"/>
+            <p:inputText id="contact" value="#{personContactsTabBean.editing.value}"
+                         styleClass="inputfield w-full" />
+          </p:outputPanel>
+
+          <p:outputPanel styleClass="field col-12">
+            <p:outputLabel for="comments" 
+                           value="#{kernelBundle.personContacts_comments}"/>
+            <p:inputTextarea id="comments" value="#{personContactsTabBean.editing.comments}"
+                             styleClass="inputfield w-full" autoResize="false" />
+          </p:outputPanel> 
+
+        </div>
+      </p:panel>   
+
+      <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                    var="objectBundle" /> 
+      
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{personContactsTabBean.store}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         update="contact_results_table contact_edit_panels :mainform:growl"
+                         oncomplete="PF('contactDataDialog').hide()" />
+        <p:commandButton action="#{personContactsTabBean.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                         immediate="true" update="contact_edit_panels :mainform:growl" global="false" 
+                         oncomplete="PF('contactDataDialog').hide()" />
+      </div>         
+
+    </p:outputPanel>
+
+  </p:dialog>  
+
+</ui:composition>

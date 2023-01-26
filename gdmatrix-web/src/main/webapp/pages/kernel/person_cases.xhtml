@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+
+  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+                var="kernelBundle" />
+
+  <h:panelGroup>
+
+    <!-- Results table -->
+    <p:dataTable id="case_results_table" value="#{personCasesTabBean.resultListHelper.rows}" 
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true"
+                 size="small" paginatorPosition="bottom" 
+                 rowIndexVar="firstRow"
+                 first="#{personCasesTabBean.firstRow}"
+                 rows="#{personCasesTabBean.resultListHelper.pageSize}"
+                 multiViewState="true"                   
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex align-items-center">
+          <div class="w-9">
+
+          </div>          
+          <div class="flex flex-row-reverse w-3">    
+            <div class="m-1">
+              <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
+                            rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}" >
+                <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
+                            rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}">
+                  <p:dataExporter type="pdf" target="case_results_table" fileName="results" pageOnly="true"/>
+                </p:menuitem>
+                <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
+                            rendered="#{personCasesTabBean.resultListHelper.rowCount > 0}">
+                  <p:dataExporter type="csv" target="case_results_table" fileName="results" pageOnly="true" />
+                </p:menuitem> 
+              </p:menuButton>                        
+            </div>              
+          </div>
+        </div>
+      </f:facet>      
+      <p:column headerText="#{kernelBundle.personCases_id}" styleClass="w-1"
+                exportHeaderValue="#{kernelBundle.personCases_id}">
+        <h:outputText value="#{row.caseObject.caseId}"/>
+      </p:column>       
+      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="w-4"
+                exportHeaderValue="#{kernelBundle.personCases_title}">
+        <h:outputText value="#{row.caseObject.title}"/>
+      </p:column>       
+      <p:column headerText="#{kernelBundle.personCases_type}" styleClass="w-3"
+                exportHeaderValue="#{kernelBundle.personCases_type}">
+        <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
+      </p:column>
+      <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="w-3"
+                exportHeaderValue="#{kernelBundle.personCases_comments}">
+        <h:outputText value="#{row.comments}"/>
+      </p:column>          
+      <p:column styleClass="w-1 text-right" exportable="false">
+        <h:panelGroup>
+          <p:commandButton icon="pi pi-external-link"  
+                           action="#{navigatorBean.show(row.caseObject.caseTypeId, row.caseObject.caseId)}" 
+                           immediate="true" ajax="false" 
+                           styleClass="rounded-button ui-button-flat"
+                           alt="#{objectBundle.show}" title="#{objectBundle.show}"/>            
+        </h:panelGroup>          
+      </p:column> 
+    </p:dataTable>
+  </h:panelGroup>
+
+</ui:composition>

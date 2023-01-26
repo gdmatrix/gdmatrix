@@ -179,6 +179,10 @@ public class PersonObjectBean extends ObjectBean
       tabs.add(new Tab("Main", "/pages/kernel/person_main.xhtml"));
       tabs.add(new Tab("Addresses", "/pages/kernel/person_addresses.xhtml",
         "personAddressesTabBean"));
+      tabs.add(new Tab("Contacts", "/pages/kernel/person_contacts.xhtml",
+        "personContactsTabBean"));      
+      tabs.add(new Tab("Cases", "/pages/kernel/person_cases.xhtml",
+        "personCasesTabBean"));      
     }
   }
 
