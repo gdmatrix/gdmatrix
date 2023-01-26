@@ -311,8 +311,7 @@ public class EventFinderBean extends FinderBean
     Event event = AgendaModuleBean.getClient(true).loadEventFromCache(eventId);
     event.setStartDateTime(toDateString(ldtStart));
     event.setEndDateTime(toDateString(ldtEnd));
-    AgendaModuleBean.getClient(true).storeEvent(event);
-    outdate();
+    updateEvent(event);
     info("Esdeveniment mogut amb èxit");
   }
 
@@ -324,8 +323,7 @@ public class EventFinderBean extends FinderBean
     String eventId = resizeEvent.getScheduleEvent().getId();
     Event event = AgendaModuleBean.getClient(true).loadEventFromCache(eventId);
     event.setEndDateTime(toDateString(ldtEnd));
-    AgendaModuleBean.getClient(true).storeEvent(event);
-    outdate();
+    updateEvent(event);
     info("Esdeveniment modificat amb èxit");
   }
 
@@ -528,6 +526,21 @@ public class EventFinderBean extends FinderBean
   {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     return localDateTime.format(formatter);
+  }
+
+  private void updateEvent(Event event)
+  {
+    AgendaModuleBean.getClient(true).storeEvent(event);
+    outdate();
+    if (event.getEventId().equals(eventObjectBean.getEvent().getEventId()))
+    {
+      //Refresh edition tab
+      try
+      {
+        eventObjectBean.loadObject();
+      }
+      catch (Exception ex) { }
+    }
   }
 
 }
