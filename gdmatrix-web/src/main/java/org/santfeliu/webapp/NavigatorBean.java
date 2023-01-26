@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
@@ -132,6 +133,23 @@ public class NavigatorBean extends WebBean implements Serializable
   {
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
     return baseTypeInfo == null? NEW_OBJECT_ID : baseTypeInfo.getObjectId();
+  }
+
+  public String getUrlChangeScript()
+  {
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    if (baseTypeInfo != null)
+    {
+      ObjectBean objectBean = baseTypeInfo.getObjectBean();
+      if (objectBean != null)
+      {
+        String page = baseTypeInfo.getObjectBean().show();
+        String seed = UUID.randomUUID().toString();
+        return "<script>window.history.replaceState({},'','" + page +
+          "?xmid=" + baseTypeInfo.getMid() + "&seed=" + seed + "');</script>";
+      }
+    }
+    return "";
   }
 
   public String show()

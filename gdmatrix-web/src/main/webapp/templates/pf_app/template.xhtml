@@ -115,9 +115,11 @@
         }                
       }  
       onResize();
-      window.addEventListener("resize", onResize);
+      window.addEventListener("resize", onResize);      
     </script>
     
+    <h:outputText value="#{navigatorBean.urlChangeScript}" escape="false" /> 
+
   </ui:define>
 
 </ui:composition>
