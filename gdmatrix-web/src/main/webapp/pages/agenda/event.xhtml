@@ -201,7 +201,9 @@
                touchable="false"
                onTabShow="onTabShow()">
 
-      <p:tab title="Cerca" id="object_search">
+      <p:ajax event="tabChange" listener="#{eventObjectBean.onTabChange}" />
+
+      <p:tab title="Resultats" id="event_list_tab">
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
           <h:outputText value="Resultats"/>
@@ -211,7 +213,7 @@
         </h:panelGroup>
       </p:tab>
 
-      <p:tab>
+      <p:tab title="Calendari" id="event_schedule_tab">
         <f:facet name="title">
           <i class="pi pi-calendar mr-2"></i>
           <h:outputText value="Calendari"/>
@@ -221,7 +223,7 @@
         </h:panelGroup>
       </p:tab>
 
-      <p:tab>
+      <p:tab title="Edició" id="event_object_tab">
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>
           <h:outputText value="Edició"/>

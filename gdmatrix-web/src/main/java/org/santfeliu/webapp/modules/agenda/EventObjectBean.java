@@ -45,6 +45,7 @@ import org.matrix.agenda.Event;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.matrix.security.SecurityConstants;
+import org.primefaces.event.TabChangeEvent;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.ManualScoped;
@@ -298,6 +299,23 @@ public class EventObjectBean extends ObjectBean
         "eventThemesTabBean"));
       tabs.add(new Tab("Places", "/pages/agenda/event_places.xhtml",
         "eventPlacesTabBean"));
+    }
+  }
+
+  public void onTabChange(TabChangeEvent tabEvent)
+  {
+    org.primefaces.component.tabview.Tab activeTab = tabEvent.getTab();
+    if (activeTab.getId().equals("event_list_tab"))
+    {
+      setSearchTabIndex(0);
+    }
+    else if (activeTab.getId().equals("event_schedule_tab"))
+    {
+      setSearchTabIndex(1);
+    }
+    else if (activeTab.getId().equals("event_object_tab"))
+    {
+      setSearchTabIndex(2);
     }
   }
 

@@ -326,6 +326,12 @@ public class EventFinderBean extends FinderBean
     updateEvent(event);
     info("Esdeveniment modificat amb èxit");
   }
+  
+  public void onViewChange(SelectEvent selectEvent)
+  {
+    String view = (String)selectEvent.getObject();
+    setScheduleView(view);
+  }
 
   @Override
   public void smartFind()
@@ -484,7 +490,11 @@ public class EventFinderBean extends FinderBean
           }
           else
           {
-            eventObjectBean.setSearchTabIndex(0);
+            if (eventObjectBean.getSearchTabIndex() ==
+              eventObjectBean.getEditionTabIndex())
+            {
+              eventObjectBean.setSearchTabIndex(0);
+            }
           }
         }
       }

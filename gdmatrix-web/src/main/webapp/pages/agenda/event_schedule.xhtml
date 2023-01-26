@@ -22,7 +22,7 @@
             process="@this"
             update=":mainform:search_tabs:obj_tabs" />
     <p:ajax event="viewChange"
-            process="@this" oncomplete="PF('schedule').update()" />
+            process="@this" listener="#{eventFinderBean.onViewChange}" />
   </p:schedule>
 
 </ui:composition>
