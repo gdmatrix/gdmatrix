@@ -74,8 +74,8 @@ public class EventObjectBean extends ObjectBean
   EventFinderBean eventFinderBean;
 
   @Inject
-  TypeTypeBean typeTypeBean;  
-  
+  TypeTypeBean typeTypeBean;
+
   @PostConstruct
   public void init()
   {
@@ -147,6 +147,12 @@ public class EventObjectBean extends ObjectBean
   public void setAutoAttendant(boolean autoAttendant)
   {
     this.autoAttendant = autoAttendant;
+  }
+
+  @Override
+  public int getEditionTabIndex()
+  {
+    return 2;
   }
 
   @Override
@@ -319,7 +325,7 @@ public class EventObjectBean extends ObjectBean
   {
     return TextUtils.parseInternalDate(dateTime);
   }
-  
+
   private boolean isPublicType(String typeId)
   {
     if (!StringUtils.isBlank(typeId))
@@ -332,6 +338,6 @@ public class EventObjectBean extends ObjectBean
       }
     }
     return false;
-  }  
+  }
 
 }

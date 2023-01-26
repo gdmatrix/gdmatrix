@@ -1,11 +1,11 @@
-<ui:composition 
+<ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:p="http://primefaces.org/ui">
-  
+
   <p:dataTable value="#{eventFinderBean.rows}" var="row"
-               stripedRows="true" paginator="true" pageLinks="5" 
+               stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                rows="10" first="#{eventFinderBean.firstRow}"
                rowStyleClass="#{row.eventId == eventObjectBean.objectId ? 'current' : ''}"
@@ -13,10 +13,10 @@
                rendered="true">
     <p:column headerText="#{agendaBundle.event_id}" styleClass="w-1">
       <h:outputText value="#{row.eventId}" />
-    </p:column>   
+    </p:column>
     <p:column headerText="#{agendaBundle.event_type}" styleClass="w-2">
       <h:outputText value="#{row.eventTypeId}" />
-    </p:column>         
+    </p:column>
     <p:column headerText="#{agendaBundle.event_startDate}" styleClass="w-2">
       <h:outputText value="#{row.startDateTime}" converter="DateTimeConverter" />
     </p:column>
@@ -27,16 +27,16 @@
       <h:outputText value="#{row.summary}" />
     </p:column>
     <p:column styleClass="w-1">
-      <p:commandButton icon="pi pi-external-link" 
-                       styleClass="rounded-button ui-button-flat" 
+      <p:commandButton icon="pi pi-external-link"
+                       styleClass="rounded-button ui-button-flat"
                        action="#{eventFinderBean.view(rowIndex)}"
                        onclick="PF('objectTabs').select(0);"
                        resetValues="true"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"                       
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel" />     
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel" />
     </p:column>
-  </p:dataTable>  
+  </p:dataTable>
 
-</ui:composition> 
+</ui:composition>
 

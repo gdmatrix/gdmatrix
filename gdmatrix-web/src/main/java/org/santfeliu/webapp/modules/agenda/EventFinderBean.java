@@ -32,6 +32,10 @@ package org.santfeliu.webapp.modules.agenda;
 
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +45,13 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
+import org.primefaces.event.schedule.ScheduleEntryMoveEvent;
+import org.primefaces.event.schedule.ScheduleEntryResizeEvent;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultScheduleEvent;
+import org.primefaces.model.DefaultScheduleModel;
+import org.primefaces.model.ScheduleEvent;
+import org.primefaces.model.ScheduleModel;
 import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.TextUtils;
@@ -66,6 +77,12 @@ public class EventFinderBean extends FinderBean
 
   private String searchEventTypeId;
   private String searchEventThemeId;
+
+  //Schedule
+  private ScheduleModel eventModel;
+  private String serverTimeZone = ZoneId.systemDefault().toString();
+  private String scheduleView;
+  private LocalDate scheduleInitialDate;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -147,6 +164,57 @@ public class EventFinderBean extends FinderBean
     this.searchEventThemeId = searchEventThemeId;
   }
 
+  public ScheduleModel getEventModel()
+  {
+    if (eventModel == null)
+    {
+      eventModel = loadEventModel();
+    }
+    return eventModel;
+  }
+
+  public String getServerTimeZone()
+  {
+    return serverTimeZone;
+  }
+
+  public void setServerTimeZone(String serverTimeZone)
+  {
+    this.serverTimeZone = serverTimeZone;
+  }
+
+  public String getScheduleView()
+  {
+    return scheduleView;
+  }
+
+  public void setScheduleView(String scheduleView)
+  {
+    this.scheduleView = scheduleView;
+  }
+
+  public LocalDate getScheduleInitialDate()
+  {
+    if (scheduleInitialDate == null)
+    {
+      if (filter.getStartDateTime() != null)
+      {
+        scheduleInitialDate =
+          toLocalDateTime(filter.getStartDateTime()).toLocalDate();
+      }
+      else
+      {
+        scheduleInitialDate = LocalDate.now();
+      }
+    }
+    return scheduleInitialDate;
+  }
+
+  public void setScheduleInitialDate(LocalDate scheduleInitialDate)
+  {
+    this.scheduleInitialDate = scheduleInitialDate;
+  }
+
   @Override
   public String getObjectId(int position)
   {
@@ -219,6 +287,48 @@ public class EventFinderBean extends FinderBean
     filter.setRoomId(null);
   }
 
+  public void onEventSelect(SelectEvent<ScheduleEvent<?>> selectEvent)
+  {
+    ScheduleEvent<?> event = selectEvent.getObject();
+    navigatorBean.view(event.getId());
+  }
+
+  public void onDateSelect(SelectEvent<LocalDateTime> selectEvent)
+  {
+    LocalDateTime localDateTime = selectEvent.getObject();
+    info(localDateTime.toString());
+  }
+
+  public void onEventMove(ScheduleEntryMoveEvent moveEvent)
+  {
+    int minutes = (moveEvent.getDayDelta() * 24 * 60) +
+      moveEvent.getMinuteDelta();
+    LocalDateTime ldtStart = moveEvent.getScheduleEvent().getStartDate();
+    ldtStart.plusMinutes(minutes);
+    LocalDateTime ldtEnd = moveEvent.getScheduleEvent().getEndDate();
+    ldtEnd.plusMinutes(minutes);
+    String eventId = moveEvent.getScheduleEvent().getId();
+    Event event = AgendaModuleBean.getClient(true).loadEventFromCache(eventId);
+    event.setStartDateTime(toDateString(ldtStart));
+    event.setEndDateTime(toDateString(ldtEnd));
+    AgendaModuleBean.getClient(true).storeEvent(event);
+    outdate();
+    info("Esdeveniment mogut amb èxit");
+  }
+
+  public void onEventResize(ScheduleEntryResizeEvent resizeEvent)
+  {
+    int minutes = resizeEvent.getMinuteDeltaEnd();
+    LocalDateTime ldtEnd = resizeEvent.getScheduleEvent().getEndDate();
+    ldtEnd.plusMinutes(minutes);
+    String eventId = resizeEvent.getScheduleEvent().getId();
+    Event event = AgendaModuleBean.getClient(true).loadEventFromCache(eventId);
+    event.setEndDateTime(toDateString(ldtEnd));
+    AgendaModuleBean.getClient(true).storeEvent(event);
+    outdate();
+    info("Esdeveniment modificat amb èxit");
+  }
+
   @Override
   public void smartFind()
   {
@@ -289,7 +399,8 @@ public class EventFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ finding, getTabIndex(), filter, firstRow,
-      searchEventTypeId, searchEventThemeId, getObjectPosition() };
+      searchEventTypeId, searchEventThemeId, getObjectPosition(),
+      scheduleInitialDate, scheduleView };
   }
 
   @Override
@@ -308,6 +419,8 @@ public class EventFinderBean extends FinderBean
       searchEventTypeId = (String)stateArray[4];
       searchEventThemeId = (String)stateArray[5];
       setObjectPosition((Integer)stateArray[6]);
+      scheduleInitialDate = (LocalDate)stateArray[7];
+      scheduleView = (String)stateArray[8];
     }
     catch (Exception ex)
     {
@@ -364,6 +477,7 @@ public class EventFinderBean extends FinderBean
 
         if (autoLoad)
         {
+          scheduleInitialDate = null;
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getEventId());
@@ -376,11 +490,44 @@ public class EventFinderBean extends FinderBean
           }
         }
       }
+      eventModel = null;
     }
     catch (Exception ex)
     {
       error(ex);
     }
+  }
+
+  private ScheduleModel loadEventModel()
+  {
+    eventModel = new DefaultScheduleModel();
+    if (rows != null)
+    {
+      for (Event row : rows)
+      {
+        DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
+          .id(row.getEventId())
+          .title(row.getSummary())
+          .startDate(toLocalDateTime(row.getStartDateTime()))
+          .endDate(toLocalDateTime(row.getEndDateTime()))
+          .description(row.getSummary())
+          .build();
+        eventModel.addEvent(event);
+      }
+    }
+    return eventModel;
+  }
+
+  private LocalDateTime toLocalDateTime(String dateString)
+  {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    return LocalDateTime.parse(dateString, formatter);
+  }
+
+  private String toDateString(LocalDateTime localDateTime)
+  {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    return localDateTime.format(formatter);
   }
 
 }
