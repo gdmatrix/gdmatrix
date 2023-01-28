@@ -978,7 +978,7 @@
     <filter-name>RemoteIpFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+      
   <filter>
     <filter-name>ShortcutFilter</filter-name>
     <filter-class>org.santfeliu.web.filter.ShortcutFilter</filter-class>
@@ -987,7 +987,16 @@
     <filter-name>ShortcutFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+
+  <filter>
+    <filter-name>NoCacheFilter</filter-name>
+    <filter-class>org.santfeliu.web.filter.NoCacheFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>NoCacheFilter</filter-name>
+    <url-pattern>/pages/*</url-pattern>
+  </filter-mapping>  
+      
   <filter>
     <filter-name>ExtensionsFilter</filter-name>
     <filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>

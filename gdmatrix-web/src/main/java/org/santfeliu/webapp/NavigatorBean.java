@@ -144,9 +144,8 @@ public class NavigatorBean extends WebBean implements Serializable
       if (objectBean != null)
       {
         String page = baseTypeInfo.getObjectBean().show();
-        String seed = UUID.randomUUID().toString();
         return "<script>window.history.replaceState({},'','" + page +
-          "?xmid=" + baseTypeInfo.getMid() + "&seed=" + seed + "');</script>";
+          "?xmid=" + baseTypeInfo.getMid() + "');</script>";
       }
     }
     return "";
