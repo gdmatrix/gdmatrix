@@ -30,12 +30,13 @@
  */
 package org.santfeliu.webapp.modules.agenda;
 
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +50,7 @@ import org.primefaces.event.schedule.ScheduleEntryMoveEvent;
 import org.primefaces.event.schedule.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
-import org.primefaces.model.DefaultScheduleModel;
+import org.primefaces.model.LazyScheduleModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
 import org.santfeliu.faces.ManualScoped;
@@ -83,6 +84,7 @@ public class EventFinderBean extends FinderBean
   private String serverTimeZone = ZoneId.systemDefault().toString();
   private String scheduleView;
   private LocalDate scheduleInitialDate;
+  private LocalDateTime scheduleStart;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -326,11 +328,21 @@ public class EventFinderBean extends FinderBean
     updateEvent(event);
     info("Esdeveniment modificat amb èxit");
   }
-  
+
   public void onViewChange(SelectEvent selectEvent)
   {
     String view = (String)selectEvent.getObject();
     setScheduleView(view);
+    if ("dayGridMonth".equals(view) && scheduleStart.getDayOfMonth() != 1)
+    {
+      TemporalAdjuster ta = TemporalAdjusters.firstDayOfNextMonth();
+      LocalDate firstDayOfNextMonth = scheduleStart.with(ta).toLocalDate();
+      setScheduleInitialDate(firstDayOfNextMonth);
+    }
+    else
+    {
+      setScheduleInitialDate(scheduleStart.toLocalDate());
+    }
   }
 
   @Override
@@ -442,7 +454,7 @@ public class EventFinderBean extends FinderBean
       }
       else
       {
-        rows = new BigList(20, 10)
+        rows = new BigList(100, 50)
         {
           @Override
           public int getElementCount()
@@ -498,7 +510,6 @@ public class EventFinderBean extends FinderBean
           }
         }
       }
-      eventModel = null;
     }
     catch (Exception ex)
     {
@@ -508,21 +519,32 @@ public class EventFinderBean extends FinderBean
 
   private ScheduleModel loadEventModel()
   {
-    eventModel = new DefaultScheduleModel();
-    if (rows != null)
+    eventModel = new LazyScheduleModel()
     {
-      for (Event row : rows)
+      @Override
+      public void loadEvents(LocalDateTime start, LocalDateTime end)
       {
-        DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
-          .id(row.getEventId())
-          .title(row.getSummary())
-          .startDate(toLocalDateTime(row.getStartDateTime()))
-          .endDate(toLocalDateTime(row.getEndDateTime()))
-          .description(row.getSummary())
-          .build();
-        eventModel.addEvent(event);
+
+        if (rows != null)
+        {
+          for (Event row : rows)
+          {
+            if (mustIncludeEvent(row, start, end))
+            {
+              DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
+                .id(row.getEventId())
+                .title(row.getSummary())
+                .startDate(toLocalDateTime(row.getStartDateTime()))
+                .endDate(toLocalDateTime(row.getEndDateTime()))
+                .description(row.getSummary())
+                .build();
+              addEvent(event);
+            }
+          }
+        }
+        scheduleStart = start;
       }
-    }
+    };
     return eventModel;
   }
 
@@ -553,4 +575,14 @@ public class EventFinderBean extends FinderBean
     }
   }
 
+  private boolean mustIncludeEvent(Event row, LocalDateTime viewStart,
+    LocalDateTime viewEnd)
+  {
+    Date eventStartDate = TextUtils.parseInternalDate(row.getStartDateTime());
+    Date eventEndDate = TextUtils.parseInternalDate(row.getEndDateTime());
+    Date viewStartDate = TextUtils.parseInternalDate(toDateString(viewStart));
+    Date viewEndDate = TextUtils.parseInternalDate(toDateString(viewEnd));
+    return (!eventStartDate.after(viewEndDate) &&
+      eventEndDate.after(viewStartDate));
+  }
 }
