@@ -1,35 +1,37 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.menu.model;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -37,6 +39,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.matrix.cms.Property;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.santfeliu.cms.CNode;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
@@ -50,10 +57,12 @@ import org.santfeliu.web.ApplicationBean;
  */
 public class MenuItemCursor
 {
+  public static final String PROPERTY_SEPARATOR = "::";
+
   private MenuModel menuModel;
   private String mid;
   private PropertiesMap properties = new PropertiesMap();
-  
+
   MenuItemCursor(MenuModel menuModel, String mid)
   {
     this.menuModel = menuModel;
@@ -84,7 +93,7 @@ public class MenuItemCursor
   {
     try
     {
-      CNode node = getNode(mid);      
+      CNode node = getNode(mid);
       if (node != null) return node.getPropertiesMap();
     }
     catch (Exception ex)
@@ -92,8 +101,8 @@ public class MenuItemCursor
     }
     return Collections.EMPTY_MAP;
   }
-  
-  public String getProperty(String propertyName) 
+
+  public String getProperty(String propertyName)
   {
     return (String)properties.get(propertyName);   // with inheritance
   }
@@ -127,6 +136,39 @@ public class MenuItemCursor
     }
   }
 
+  public JSONObject getJSON()
+  {
+    return getJSON("");
+  }
+
+  public JSONObject getJSON(String basePath)
+  {
+    try
+    {
+      CNode node = getNode(mid);
+      if (node != null)
+      {
+        TreeNode<String> rootTreeNode = getTreeNode(node, basePath);
+        return getJSON(rootTreeNode);
+      }
+    }
+    catch (Exception ex)
+    {
+    }
+    return null;
+  }
+
+  public String getJSONString()
+  {
+    return getJSONString("");
+  }
+
+  public String getJSONString(String basePath)
+  {
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    return gson.toJson(getJSON(basePath));
+  }
+
   public String getLabel()
   {
     String labelValue = getBrowserSensitiveProperty(MenuModel.LABEL);
@@ -141,43 +183,43 @@ public class MenuItemCursor
   public String getAction()
   {
     return getBrowserSensitiveProperty(MenuModel.ACTION, false);
-  }  
+  }
 
   public String getBrowserSensitiveProperty(String propertyName)
   {
     return getBrowserSensitiveProperty(propertyName, true);
   }
 
-  public String getBrowserSensitiveProperty(String propertyName, 
+  public String getBrowserSensitiveProperty(String propertyName,
     boolean inherit)
   {
-    Map propertyMap = (inherit ? getProperties() : getDirectProperties());            
-    String value = 
+    Map propertyMap = (inherit ? getProperties() : getDirectProperties());
+    String value =
       (String)propertyMap.get(propertyName + "." + menuModel.getBrowserType());
     if (value == null)
     {
-      value = (String)propertyMap.get(propertyName);      
+      value = (String)propertyMap.get(propertyName);
     }
     return value;
   }
-  
+
   public List getBrowserSensitiveMultiValuedProperty(String propertyName)
   {
     return getBrowserSensitiveMultiValuedProperty(propertyName, true);
   }
 
-  public List getBrowserSensitiveMultiValuedProperty(String propertyName, 
+  public List getBrowserSensitiveMultiValuedProperty(String propertyName,
     boolean inherit)
   {
     List result;
     String browserPropertyName = propertyName + "." + menuModel.getBrowserType();
-    result = (inherit ? 
-      getMultiValuedProperty(browserPropertyName) : 
+    result = (inherit ?
+      getMultiValuedProperty(browserPropertyName) :
       getDirectMultiValuedProperty(browserPropertyName));
     if (result == Collections.EMPTY_LIST)
     {
-      result = (inherit ? 
-        getMultiValuedProperty(propertyName) : 
+      result = (inherit ?
+        getMultiValuedProperty(propertyName) :
         getDirectMultiValuedProperty(propertyName));
     }
     return result;
@@ -219,12 +261,12 @@ public class MenuItemCursor
   {
     return getMultiValuedProperty(MenuModel.EDIT_ROLES);
   }
-  
+
   public String getCertificateRequired()
   {
     return getProperty(MenuModel.CERTIFICATE_REQUIRED);
   }
-  
+
   public boolean isNull()
   {
     return mid == null;
@@ -340,7 +382,7 @@ public class MenuItemCursor
 
   public boolean isRendered()
   {
-    String renderedValue = 
+    String renderedValue =
       getBrowserSensitiveProperty(MenuModel.RENDERED, false);
     renderedValue = TextUtils.replaceReservedWords(renderedValue);
     String value = evalExpression(renderedValue);
@@ -357,7 +399,7 @@ public class MenuItemCursor
       {
         if (menuItem.isRendered() && !menuItem.getMid().equals(mid)) return true;
         menuItem = menuItem.getNext();
-      }      
+      }
     }
     return false;
   }
@@ -372,7 +414,7 @@ public class MenuItemCursor
     }
     return false;
   }
-  
+
   public int getChildCount()
   {
     int childCount = 0;
@@ -438,7 +480,7 @@ public class MenuItemCursor
   {
     return containsSelection();
   }
-  
+
   public boolean containsSelection()
   {
     if (mid == null) return false;
@@ -482,9 +524,9 @@ public class MenuItemCursor
     }
     return new MenuItemCursor(menuModel, parentMid);
   }
-  
+
   public MenuItemCursor getParentWithAction()
-  {    
+  {
     try
     {
       MenuItemCursor parent = getParent();
@@ -574,12 +616,12 @@ public class MenuItemCursor
     }
     return new MenuItemCursor(menuModel, previousMid);
   }
-  
+
   public MenuItemCursor getClone()
   {
     return new MenuItemCursor(menuModel, mid);
   }
-  
+
   public MenuItemCursor getRoot()
   {
     String rootMid = null;
@@ -597,7 +639,7 @@ public class MenuItemCursor
     }
     return new MenuItemCursor(menuModel, rootMid);
   }
-  
+
   public boolean select()
   {
     if (mid != null)
@@ -607,7 +649,7 @@ public class MenuItemCursor
     }
     return false;
   }
-  
+
   public boolean moveNext()
   {
     try
@@ -629,7 +671,7 @@ public class MenuItemCursor
     mid = null;
     return false;
   }
-  
+
   public boolean movePrevious()
   {
     try
@@ -648,7 +690,7 @@ public class MenuItemCursor
     catch (Exception ex)
     {
     }
-    mid = null;    
+    mid = null;
     return false;
   }
 
@@ -672,7 +714,7 @@ public class MenuItemCursor
     }
     return false;
   }
-  
+
   public boolean moveFirstChild()
   {
     try
@@ -716,7 +758,7 @@ public class MenuItemCursor
     mid = null;
     return false;
   }
-  
+
   @Override
   public boolean equals(Object o)
   {
@@ -749,7 +791,7 @@ public class MenuItemCursor
   {
     return (mid == null) ? null : menuModel.getCWorkspace().getNode(mid);
   }
-  
+
   private CNode getNextVisibleNode(CNode node) throws Exception
   {
     while (node != null && !menuModel.isVisibleNode(node))
@@ -758,7 +800,7 @@ public class MenuItemCursor
     }
     return node;
   }
-  
+
   private CNode getPreviousVisibleNode(CNode node) throws Exception
   {
     while (node != null && !menuModel.isVisibleNode(node))
@@ -767,9 +809,122 @@ public class MenuItemCursor
     }
     return node;
   }
-  
+
+  private TreeNode<String> getTreeNode(CNode node, String basePath)
+  {
+    TreeNode<String> rootTreeNode = new DefaultTreeNode("Root", null, null);
+    List<Property> propertyList = node.getProperties(true);
+    for (Property property : propertyList)
+    {
+      if (property.getName().startsWith(basePath))
+      {
+        TreeNode<String> parentNode = rootTreeNode;
+        String[] path = property.getName().split(PROPERTY_SEPARATOR);
+        for (int i = 0; i < path.length; i++)
+        {
+          TreeNode<String> auxNode = getDescendant(parentNode, path[i]);
+          if (auxNode == null)
+          {
+            auxNode = new DefaultTreeNode("Node", path[i], parentNode);
+          }
+          else
+          {
+            //nothing to do
+          }
+          parentNode = auxNode;
+        }
+        parentNode.setType("Property");
+        for (String value : property.getValue())
+        {
+          new DefaultTreeNode("Value", value, parentNode);
+        }
+      }
+    }
+    return rootTreeNode;
+  }
+
+  private TreeNode<String> getDescendant(TreeNode<String> treeNode,
+    String search)
+  {
+    for (TreeNode<String> child : treeNode.getChildren())
+    {
+      if (search.equals(child.getData())) return child;
+    }
+    return null;
+  }
+
+  private boolean allDescendantsAreInteger(TreeNode<String> treeNode)
+  {
+    if (treeNode.getChildren().isEmpty()) return false;
+
+    for (TreeNode<String> child : treeNode.getChildren())
+    {
+      try
+      {
+        Integer.parseInt(child.getData());
+      }
+      catch (NumberFormatException ex)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private JSONObject getJSON(TreeNode<String> treeNode)
+  {
+    JSONObject jsonObject = new JSONObject();
+    for (TreeNode<String> child : treeNode.getChildren())
+    {
+      addToJSON(jsonObject, child);
+    }
+    return jsonObject;
+  }
+
+  private void addToJSON(JSONObject jsonObject, TreeNode<String> treeNode)
+  {
+    if (treeNode.getType().equals("Node"))
+    {
+      if (allDescendantsAreInteger(treeNode))
+      {
+        JSONArray jsonArray = new JSONArray();
+        jsonObject.put(treeNode.getData(), jsonArray);
+        for (TreeNode<String> child : treeNode.getChildren())
+        {
+          jsonArray.add(getJSON(child));
+        }
+      }
+      else
+      {
+        JSONObject json = new JSONObject();
+        jsonObject.put(treeNode.getData(), json);
+        for (TreeNode<String> child : treeNode.getChildren())
+        {
+          addToJSON(json, child);
+        }
+      }
+    }
+    else if (treeNode.getType().equals("Property"))
+    {
+      String propertyName = (String)treeNode.getData();
+      if (treeNode.getChildCount() > 1)
+      {
+        JSONArray values = new JSONArray();
+        for (TreeNode<String> child : treeNode.getChildren())
+        {
+          values.add(child.getData());
+        }
+        jsonObject.put(propertyName, values);
+      }
+      else
+      {
+        jsonObject.put(propertyName, treeNode.getChildren().get(0).getData());
+      }
+    }
+  }
+
   // ****** class that implements inheritance and localization ******
-  
+
   class PropertiesMap implements Map
   {
     public int size()
@@ -781,7 +936,7 @@ public class MenuItemCursor
     {
       return getProperties(mid).isEmpty();
     }
-    
+
     public boolean containsKey(Object key)
     {
       boolean containsKey = false;
@@ -806,7 +961,7 @@ public class MenuItemCursor
       }
       return containsKey;
     }
-    
+
     public boolean containsValue(Object value)
     {
       boolean containsValue = false;
@@ -831,9 +986,9 @@ public class MenuItemCursor
       }
       return containsValue;
     }
-    
+
     public Object get(Object key)
-    {      
+    {
       Object value = null;
       try
       {
@@ -844,9 +999,9 @@ public class MenuItemCursor
           Map properties = node.getPropertiesMap();
           if (properties.containsKey(key))
           {
-            value = properties.get(key);            
+            value = properties.get(key);
             found = true;
-          }          
+          }
           else
           {
             node = node.getParent();
@@ -871,53 +1026,53 @@ public class MenuItemCursor
       throws Exception
     {
       CNode node = getNode(mid);
-      
+
       List<String> values = node.getMultiPropertyValue(propertyName);
       return values == null ? Collections.EMPTY_LIST : values;
     }
-    
+
     public Object put(Object key, Object value)
     {
       // not implemented
       return null;
     }
-    
+
     public Object remove(Object key)
     {
       // not implemented
       return null;
     }
-    
+
     public void putAll(Map t)
     {
       // not implemented
     }
-    
+
     public void clear()
     {
       // not implemented
     }
-    
+
     public Set keySet()
     {
       return getProperties(mid).keySet();
     }
-    
+
     public Collection values()
     {
       return getProperties(mid).values();
     }
-    
+
     public Set entrySet()
     {
       return getProperties(mid).entrySet();
     }
-    
+
     public boolean equals(Object o)
     {
       return getProperties(mid).equals(o);
     }
-    
+
     public int hashCode()
     {
       return getProperties(mid).hashCode();
@@ -927,7 +1082,7 @@ public class MenuItemCursor
     {
       try
       {
-        CNode node = getNode(mid);      
+        CNode node = getNode(mid);
         if (node != null)
         {
           return node.getPropertiesMap();

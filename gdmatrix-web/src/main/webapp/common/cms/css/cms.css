@@ -548,6 +548,17 @@ a.imageButton img:hover
   height: 98%;
 }
 
+/* json.xhtml styles */
+
+.nodeJsonPanel .CodeMirror
+{
+  font-family: "Courier New", Courier, Monospaced;
+  font-size: 12px;
+  color: black;
+  width: 98%;
+  height: 98%;
+}
+
 /* sync.xhtml styles */
 
 .nodeSyncPanel .noNodesLabel, 

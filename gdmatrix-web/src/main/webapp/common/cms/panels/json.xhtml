@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+  <p:outputPanel styleClass="nodeJsonPanel contentPanel"
+         rendered="#{nodeEditBean.jsonTabSelected}">
+
+    <p:outputPanel id="jsonToolsPanel" styleClass="buttonsPanel">
+      <p:commandLink actionListener="#{nodeEditBean.savePropertiesFromJSON()}" styleClass="imageButton"
+                     rendered="#{nodeEditBean.appendNodeEnabled}"
+                     update="@this :mainform:topPanel :mainform:tree :mainform:rootSelectionPanel :mainform:rightPanel :mainform:messagesPanel" ajax="true">
+        <h:graphicImage alt="#{cmsBundle.saveJSON}" url="/common/cms/images/save.png" title="#{cmsBundle.saveJSON}" />
+      </p:commandLink>
+      <p:commandLink actionListener="#{nodeEditBean.revertJSON}" styleClass="imageButton"
+                     rendered="#{nodeEditBean.appendNodeEnabled}"
+                     update="@this jsonTextPanel :mainform:messagesPanel" ajax="true" global="false">
+        <h:graphicImage alt="#{cmsBundle.revert}" url="/common/cms/images/revert.png" title="#{cmsBundle.revert}" />
+      </p:commandLink>
+    </p:outputPanel>
+    <p:outputPanel id="jsonTextPanel" styleClass="jsonTextPanel expand">
+      <pe:codeMirror theme="elegant"
+                     value="#{nodeEditBean.jsonText}"
+                     lineNumbers="true"
+                     matchBrackets="true" />
+    </p:outputPanel>
+
+  </p:outputPanel>
+
+</ui:composition>
+
+

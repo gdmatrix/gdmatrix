@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.matrix.pf.cms;
@@ -67,9 +67,9 @@ public class SystemConfigBacking extends WebBacking
   @CMSProperty
   public static final String DESCRIPTION = "description";
   @CMSProperty
-  public static final String ACTION = "action";  
+  public static final String ACTION = "action";
   @CMSProperty
-  public static final String FRAME = "frame";   
+  public static final String FRAME = "frame";
   @CMSProperty
   public static final String TEMPLATE = "template";
   @CMSProperty
@@ -77,13 +77,13 @@ public class SystemConfigBacking extends WebBacking
   @CMSProperty
   public static final String TOPWEB = "topWeb";
   @CMSProperty
-  public static final String ROLES_SELECT = "roles.select";  
+  public static final String ROLES_SELECT = "roles.select";
   @CMSProperty
-  public static final String ROLES_UPDATE = "roles.update";  
+  public static final String ROLES_UPDATE = "roles.update";
   @CMSProperty
-  public static final String BEAN_NAME = "beanName";  
+  public static final String BEAN_NAME = "beanName";
   @CMSProperty
-  public static final String BEAN_ACTION = "beanAction"; 
+  public static final String BEAN_ACTION = "beanAction";
   @CMSProperty
   public static final String RENDERED = "rendered";
   @CMSProperty
@@ -98,49 +98,49 @@ public class SystemConfigBacking extends WebBacking
   public static final String CERTIFICATE_REQUIRED = "certificateRequired";
 
   private final CMSConfigHelper configHelper;
-  
+
   public SystemConfigBacking()
   {
     configHelper = new CMSConfigHelper();
   }
-  
+
   //LABEL
-  
+
   public String getLabel()
   {
     return getDirectMenuItemProperty(LABEL);
   }
-  
+
   public void setLabel(String label)
   {
     configHelper.setProperty(LABEL, label);
   }
 
-  //DESCRIPTION  
-  
+  //DESCRIPTION
+
   public String getDescription()
   {
     return getDirectMenuItemProperty(DESCRIPTION);
   }
-  
+
   public void setDescription(String description)
   {
     configHelper.setProperty(DESCRIPTION, description);
-  }  
-  
+  }
+
   //ACTION
-  
+
   public String getAction()
   {
     return getDirectMenuItemProperty(ACTION);
   }
-  
+
   public void setAction(String action)
   {
     configHelper.setProperty(ACTION, action);
     if (action != null)
     {
-      if (action.startsWith("#{") && action.endsWith("}") && 
+      if (action.startsWith("#{") && action.endsWith("}") &&
         action.contains("."))
       {
         String auxAction = action.replace("#{", "").replace("}", "");
@@ -150,7 +150,7 @@ public class SystemConfigBacking extends WebBacking
       else
       {
         configHelper.setProperty(BEAN_NAME, null);
-        configHelper.setProperty(BEAN_ACTION, null);        
+        configHelper.setProperty(BEAN_ACTION, null);
       }
     }
     else
@@ -192,8 +192,8 @@ public class SystemConfigBacking extends WebBacking
       return new ArrayList();
     }
   }
-  
-  private List<String> getBeanActions(CMSManagedBeanIntrospector introspector, 
+
+  private List<String> getBeanActions(CMSManagedBeanIntrospector introspector,
     String beanName)
   {
     try
@@ -208,21 +208,21 @@ public class SystemConfigBacking extends WebBacking
         result.addAll(actionMap.keySet());
         Collections.sort(result);
       }
-      return result;      
+      return result;
     }
     catch (Exception ex)
     {
-      return new ArrayList();     
+      return new ArrayList();
     }
-  }  
-  
+  }
+
   //FRAME
-  
+
   public String getFrame()
   {
     return getProperty(FRAME, true);
   }
-  
+
   public void setFrame(String frame)
   {
     configHelper.setProperty(FRAME, frame);
@@ -234,7 +234,7 @@ public class SystemConfigBacking extends WebBacking
   }
 
   //TEMPLATE
-  
+
   public String getTemplate()
   {
     String template = getProperty(TEMPLATE, true);
@@ -244,12 +244,12 @@ public class SystemConfigBacking extends WebBacking
     }
     return template;
   }
-  
+
   public void setTemplate(String template)
   {
     configHelper.setProperty(TEMPLATE, template);
   }
-  
+
   public String getInheritedTemplate()
   {
     String template = getProperty(TEMPLATE, false);
@@ -261,42 +261,42 @@ public class SystemConfigBacking extends WebBacking
   }
 
   //ROLES_SELECT
-  
+
   public List<String> getRolesSelect()
   {
     return getMultivaluedProperty(ROLES_SELECT, true);
   }
-  
+
   public void setRolesSelect(List<String> rolesSelect)
   {
     configHelper.setMultivaluedProperty(ROLES_SELECT, rolesSelect);
-  }    
+  }
 
   public List<String> getInheritedRolesSelect()
   {
     return getMultivaluedProperty(ROLES_SELECT, false);
   }
-  
+
   //ROLES_UPDATE
-  
+
   public List<String> getRolesUpdate()
   {
     return getMultivaluedProperty(ROLES_UPDATE, true);
   }
-  
+
   public void setRolesUpdate(List<String> rolesUpdate)
   {
     configHelper.setMultivaluedProperty(ROLES_UPDATE, rolesUpdate);
-  }    
+  }
 
   public List<String> getInheritedRolesUpdate()
   {
     return getMultivaluedProperty(ROLES_UPDATE, false);
   }
-  
+
   //COMPLETE ROLE
-  
-  public List<String> completeRole(String query) 
+
+  public List<String> completeRole(String query)
   {
     List<String> result = new ArrayList();
     String queryLowerCase = query.toLowerCase();
@@ -310,19 +310,19 @@ public class SystemConfigBacking extends WebBacking
     }
     return result;
   }
-  
+
   //TOPWEB
-  
+
   public String getTopWeb()
   {
     return getProperty(TOPWEB, true);
   }
-  
+
   public void setTopWeb(String topWeb)
   {
     configHelper.setProperty(TOPWEB, topWeb);
   }
-  
+
   public String getInheritedTopWeb()
   {
     return getProperty(TOPWEB, false);
@@ -334,17 +334,17 @@ public class SystemConfigBacking extends WebBacking
   }
 
   //RENDERED
-  
+
   public String getRendered()
   {
     return getProperty(RENDERED, true);
   }
-  
+
   public void setRendered(String rendered)
   {
     configHelper.setProperty(RENDERED, rendered);
   }
-  
+
   public String getInheritedRendered()
   {
     return getProperty(RENDERED, false);
@@ -354,26 +354,26 @@ public class SystemConfigBacking extends WebBacking
   {
     return "true";
   }
-  
+
   //TOPIC
-  
+
   public String getTopic()
   {
     return getDirectMenuItemProperty(TOPIC);
   }
-  
+
   public void setTopic(String topic)
   {
     configHelper.setProperty(TOPIC, topic);
   }
 
   //URL
-  
+
   public String getUrl()
   {
     return getProperty(URL, true);
   }
-  
+
   public void setUrl(String url)
   {
     configHelper.setProperty(URL, url);
@@ -383,19 +383,19 @@ public class SystemConfigBacking extends WebBacking
   {
     return getProperty(URL, false);
   }
-  
+
   //TARGET
-  
+
   public String getTarget()
   {
     return getDirectMenuItemProperty(TARGET);
   }
-  
+
   public void setTarget(String target)
   {
     configHelper.setProperty(TARGET, target);
   }
-  
+
   public List<SelectItem> getTargets()
   {
     List<SelectItem> result = new ArrayList();
@@ -405,14 +405,14 @@ public class SystemConfigBacking extends WebBacking
     result.add(new SelectItem("_top", "_top"));
     return result;
   }
-  
+
   //ENABLED
-    
+
   public String getEnabled()
   {
     return getProperty(ENABLED, true);
   }
-  
+
   public void setEnabled(String enabled)
   {
     configHelper.setProperty(ENABLED, enabled);
@@ -421,15 +421,15 @@ public class SystemConfigBacking extends WebBacking
   public String getInheritedEnabled()
   {
     return getProperty(ENABLED, false);
-  }  
+  }
 
   //CERTIFICATE_REQUIRED
-    
+
   public String getCertificateRequired()
   {
     return getProperty(CERTIFICATE_REQUIRED, true);
   }
-  
+
   public void setCertificateRequired(String certificateRequired)
   {
     configHelper.setProperty(CERTIFICATE_REQUIRED, certificateRequired);
@@ -438,27 +438,27 @@ public class SystemConfigBacking extends WebBacking
   public String getInheritedCertificateRequired()
   {
     return getProperty(CERTIFICATE_REQUIRED, false);
-  }  
+  }
 
   public List<SelectItem> getRequiredCertificates()
   {
     List<SelectItem> result = new ArrayList();
-    result.add(new SelectItem(MenuModel.CLIENT_CERTIFICATE, 
+    result.add(new SelectItem(MenuModel.CLIENT_CERTIFICATE,
       MenuModel.CLIENT_CERTIFICATE));
-    result.add(new SelectItem(MenuModel.SERVER_CERTIFICATE, 
+    result.add(new SelectItem(MenuModel.SERVER_CERTIFICATE,
       MenuModel.SERVER_CERTIFICATE));
     return result;
   }
-  
+
   //OTHER METHODS
-  
+
   public List<Path> getFolders(String path)
   {
     List<Path> folders = null;
     String absoluteWebPath = getExternalContext().getRealPath("/");
     Path parent = Paths.get(absoluteWebPath + path);
     try
-    {  
+    {
       folders = Files.list(parent).filter(Files::isDirectory)
         .collect(Collectors.toList());
     }
@@ -470,16 +470,16 @@ public class SystemConfigBacking extends WebBacking
     }
     return folders;
   }
-  
+
   public void store()
   {
     try
     {
       configHelper.saveProperties();
-      
+
       NodeEditBean nodeEditBean = getNodeEditBean();
       CNode selectedCNode = configHelper.getSelectedCNode();
-      Node selectedNode = selectedCNode.getNode();      
+      Node selectedNode = selectedCNode.getNode();
       if (selectedCNode.isRoot())
       {
         nodeEditBean.resetRootSelectionPanel();
@@ -493,12 +493,13 @@ public class SystemConfigBacking extends WebBacking
       }
       else
       {
-        nodeEditBean.resetTopPanel();       
+        nodeEditBean.resetTopPanel();
         nodeEditBean.resetPropertiesPanel();
-        nodeEditBean.resetCssPanel();        
-        nodeEditBean.resetSyncPanel();        
+        nodeEditBean.resetCssPanel();
+        nodeEditBean.resetJsonPanel();
+        nodeEditBean.resetSyncPanel();
       }
-      info("NODE_SAVED");      
+      info("NODE_SAVED");
     }
     catch (Exception ex)
     {
@@ -507,12 +508,12 @@ public class SystemConfigBacking extends WebBacking
         log(Level.SEVERE, null, ex);
     }
   }
-  
+
   public void revertProperties()
   {
     try
     {
-      info("NODE_REVERTED");      
+      info("NODE_REVERTED");
     }
     catch (Exception ex)
     {
@@ -520,11 +521,11 @@ public class SystemConfigBacking extends WebBacking
     }
   }
 
-  public CMSConfigHelper getConfigHelper() 
+  public CMSConfigHelper getConfigHelper()
   {
     return configHelper;
   }
-  
+
   private List<Role> getAllRoles()
   {
     try
@@ -534,7 +535,7 @@ public class SystemConfigBacking extends WebBacking
     }
     catch (Exception ex)
     {
-      return new ArrayList();      
+      return new ArrayList();
     }
   }
 
