@@ -31,7 +31,8 @@
                              styleClass="ui-button-raised m-1"
                              resetValues="true"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list" />
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             disableOnAjax="true"/>
             <p:commandButton id="smart_search_button"
                              value="Search"
                              action="#{personFinderBean.smartFind}"                         
@@ -39,7 +40,8 @@
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              styleClass="ui-button-raised m-1"
-                             oncomplete="endPanel('leftPanel');"/>
+                             oncomplete="endPanel('leftPanel');"
+                             disableOnAjax="true"/>
           </div>          
         </p:tab>  
         

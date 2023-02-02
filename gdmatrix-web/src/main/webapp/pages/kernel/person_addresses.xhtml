@@ -38,7 +38,7 @@
               <p:dataExporter type="csv" target="address_results_table" fileName="results" pageOnly="true" />
             </p:menuitem> 
           </p:menuButton>  
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
                            action="#{personAddressesTabBean.create}"                                  
                            update="@root:@id(address_edit_panels)"
                            oncomplete="PF('addressDataDialog').show()"                                  
@@ -95,7 +95,7 @@
     </f:facet>
 
     <p:outputPanel id="address_edit_panels">
-      <p:panel id="edit_address_form" rendered="#{personAddressesTabBean.editing != null}"
+      <p:panel id="edit_address_form" rendered="#{personAddressesTabBean.personAddress != null}"
                styleClass="mt-2">
 
         <div class="ui-fluid formgrid grid" >

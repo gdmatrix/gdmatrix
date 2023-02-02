@@ -54,32 +54,32 @@
 
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.address_id}" />
-            <p:chips id="addressId" value="#{addressFinderBean.filterAddressId}"
+            <p:chips id="address_id" value="#{addressFinderBean.filterAddressId}"
                      addOnPaste="true" separator=","
                      class="inputfield w-full ui-fluid"/>
           </div>
 
           <div class="field">    
             <p:outputLabel for="@next" value="#{kernelBundle.city_name}" />
-            <p:inputText id="cityName" value="#{addressFinderBean.filter.cityName}"
+            <p:inputText id="city_name" value="#{addressFinderBean.filter.cityName}"
                          styleClass="inputfield w-full" /> 
           </div>
 
           <div class="field">    
             <p:outputLabel for="@next" value="#{kernelBundle.address_type}" />
-            <p:inputText id="addressType" value="#{addressFinderBean.filter.addressTypeId}"
+            <p:inputText id="address_type" value="#{addressFinderBean.filter.addressTypeId}"
                          styleClass="inputfield w-full" /> 
           </div>      
 
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />        
-            <p:inputText id="streeType" value="#{addressFinderBean.filter.streetTypeId}" 
+            <p:inputText id="street_type" value="#{addressFinderBean.filter.streetTypeId}" 
                          class="inputfield w-full" />
           </div>      
 
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />        
-            <p:inputText id="streetName" value="#{addressFinderBean.filter.streetName}" 
+            <p:inputText id="street_name" value="#{addressFinderBean.filter.streetName}" 
                          class="inputfield w-full" />
           </div>
 
@@ -103,7 +103,7 @@
 
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.address_gis_reference}" />
-            <p:inputText id="gisReference" value="#{addressFinderBean.filter.gisReference}" 
+            <p:inputText id="gis_reference" value="#{addressFinderBean.filter.gisReference}" 
                          class="inputfield w-full"/>
           </div>   
 

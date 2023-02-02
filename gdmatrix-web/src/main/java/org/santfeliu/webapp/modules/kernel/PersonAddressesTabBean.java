@@ -62,7 +62,7 @@ public class PersonAddressesTabBean extends TabBean
   private ResultListHelper<PersonAddressView> resultListHelper;
 
   private int firstRow;
-  private PersonAddress editing;
+  private PersonAddress personAddress;
 
   public PersonAddressesTabBean()
   {
@@ -80,14 +80,14 @@ public class PersonAddressesTabBean extends TabBean
     return personObjectBean;
   }
 
-  public PersonAddress getEditing()
+  public PersonAddress getPersonAddress()
   {
-    return editing;
+    return personAddress;
   }
 
-  public void setEditing(PersonAddress editing)
+  public void setPersonAddress(PersonAddress personAddress)
   {
-    this.editing = editing;
+    this.personAddress = personAddress;
   }
 
   public ResultListHelper<PersonAddressView> getResultListHelper()
@@ -107,27 +107,27 @@ public class PersonAddressesTabBean extends TabBean
 
   public String getPageObjectDescription()
   {
-    if (editing != null && !isNew(editing))
+    if (personAddress != null && !isNew(personAddress))
     {
-      return addressObjectBean.getDescription(editing.getAddressId());
+      return addressObjectBean.getDescription(personAddress.getAddressId());
     }
     return null;
   }
 
   public void setAddressId(String addressId)
   {
-    editing.setAddressId(addressId);
+    personAddress.setAddressId(addressId);
     showDialog();
   }
 
   public String getAddressId()
   {
-    return editing.getAddressId();
+    return personAddress.getAddressId();
   }    
   
   public void onAddressClear()
   {
-    editing.setAddressId(null);
+    personAddress.setAddressId(null);
   }
 
   @Override
@@ -138,7 +138,7 @@ public class PersonAddressesTabBean extends TabBean
 
   public void create()
   {
-    editing = new PersonAddress();
+    personAddress = new PersonAddress();
   }
   
   @Override
@@ -156,7 +156,7 @@ public class PersonAddressesTabBean extends TabBean
 
   public String cancel()
   {
-    editing = null;
+    personAddress = null;
     info("CANCEL_OBJECT");
     return null;
   }
@@ -170,7 +170,7 @@ public class PersonAddressesTabBean extends TabBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing };
+    return new Object[]{ personAddress };
   }
 
   @Override
@@ -179,7 +179,7 @@ public class PersonAddressesTabBean extends TabBean
     try
     {
       Object[] stateArray = (Object[])state;
-      editing = (PersonAddress)stateArray[0];
+      personAddress = (PersonAddress)stateArray[0];
 
       if (!isNew()) resultListHelper.find();
     }
@@ -199,18 +199,18 @@ public class PersonAddressesTabBean extends TabBean
   {
     try
     {
-      if (editing != null)
+      if (personAddress != null)
       {
         //Address must be selected
-        if (editing.getAddressId() == null || editing.getAddressId().isEmpty())
+        if (personAddress.getAddressId() == null || personAddress.getAddressId().isEmpty())
         {
           throw new Exception("ADDRESS_MUST_BE_SELECTED");
         }
 
         String personId = personObjectBean.getObjectId();
-        editing.setPersonId(personId);
-        KernelModuleBean.getPort(false).storePersonAddress(editing);
-        editing = null;
+        personAddress.setPersonId(personId);
+        KernelModuleBean.getPort(false).storePersonAddress(personAddress);
+        personAddress = null;
         info("STORE_OBJECT");
         hideDialog();
       }
@@ -231,9 +231,9 @@ public class PersonAddressesTabBean extends TabBean
 
       String rowPersonAddressId = row.getPersonAddressId();
 
-      if (editing != null &&
-        rowPersonAddressId.equals(editing.getPersonAddressId()))
-        editing = null;
+      if (personAddress != null &&
+        rowPersonAddressId.equals(personAddress.getPersonAddressId()))
+        personAddress = null;
 
       KernelModuleBean.getPort(false).removePersonAddress(rowPersonAddressId);
 

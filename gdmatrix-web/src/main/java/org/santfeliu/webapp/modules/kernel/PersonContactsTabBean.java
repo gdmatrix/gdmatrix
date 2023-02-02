@@ -59,7 +59,7 @@ public class PersonContactsTabBean extends TabBean
   private ResultListHelper<ContactView> resultListHelper;
 
   private int firstRow;
-  private Contact editing;
+  private Contact contact;
 
   public PersonContactsTabBean()
   {
@@ -92,14 +92,14 @@ public class PersonContactsTabBean extends TabBean
     this.firstRow = firstRow;
   }
 
-  public Contact getEditing()
+  public Contact getContact()
   {
-    return editing;
+    return contact;
   }
 
-  public void setEditing(Contact editing)
+  public void setContact(Contact contact)
   {
-    this.editing = editing;
+    this.contact = contact;
   }
 
   @Override
@@ -110,7 +110,7 @@ public class PersonContactsTabBean extends TabBean
 
   public void create()
   {
-    editing = new Contact();
+    contact = new Contact();
   }
 
   public void edit(ContactView contact)
@@ -125,12 +125,12 @@ public class PersonContactsTabBean extends TabBean
 
       if (contactId != null)
       {
-        editing = KernelModuleBean.getPort(false).loadContact(contactId);
-        editing.setContactId(contactId);
+        this.contact = KernelModuleBean.getPort(false).loadContact(contactId);
+        this.contact.setContactId(contactId);
       }
       else
       {
-        editing = new Contact();
+        this.contact = new Contact();
       }
     }
     catch (Exception ex)
@@ -142,17 +142,17 @@ public class PersonContactsTabBean extends TabBean
   @Override
   public void store() throws Exception
   {
-    if (editing != null)
+    if (contact != null)
     {
-      KernelModuleBean.getPort(false).storeContact(editing);
-      editing = null;
+      KernelModuleBean.getPort(false).storeContact(contact);
+      contact = null;
     }
     resultListHelper.find();
   }
 
   public void cancel()
   {
-    editing = null;
+    contact = null;
   }
 
   public void remove(ContactView contact)

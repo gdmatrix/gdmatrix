@@ -77,10 +77,11 @@
 
       <div class="field col-12 md:col-3">
         <p:outputLabel for="birth_date" value="#{kernelBundle.person_birthDate}" />
-        <p:datePicker id="birth_date" value="#{personObjectBean.person.birthDate}" locale="ca"
-                      showIcon="true" converter="datePickerConverter" pattern="dd/MM/yyyy"
-                      monthNavigator="true" yearNavigator="true" focusOnSelect="false"
-                      touchUI="true">
+        <p:datePicker id="birth_date" value="#{personObjectBean.person.birthDate}" 
+                      autocomplete="off" placeholder="dd/MM/aaaa" locale="es" 
+                      showOnFocus="false" touchUI="true" 
+                      converter="datePickerConverter" pattern="dd/MM/yyyy" 
+                      showIcon="true" showTime="false">
         </p:datePicker>
       </div>
 

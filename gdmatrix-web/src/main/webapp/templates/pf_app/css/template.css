@@ -278,7 +278,7 @@ body .ui-datatable .ui-datatable-header
 .ui-menu-button.ui-button-flat button
 {
   background-color: transparent;
-  color: var(--primary-color);
+  color: var(--primary-500);
   border-color: transparent;  
 }
 /*** Autocomplete ***/

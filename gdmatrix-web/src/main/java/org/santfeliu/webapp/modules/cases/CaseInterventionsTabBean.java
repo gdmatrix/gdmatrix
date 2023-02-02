@@ -36,6 +36,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ComponentSystemEvent;
+import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -44,6 +45,7 @@ import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
 import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
 import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -63,7 +65,7 @@ public class CaseInterventionsTabBean extends TabBean
   private int firstRow;
   private Intervention intervention;
   private PropertyHelper propertyHelper;
-
+  
   @Inject
   CaseObjectBean caseObjectBean;
 
@@ -162,23 +164,39 @@ public class CaseInterventionsTabBean extends TabBean
     return endDate + endTime;
   }
 
-  public void setStartDateTime(String date)
+  public void setStartDateTime(String dateTime)
   {
-    if (intervention != null && date != null)
+    String date = null;
+    String time = null;
+    
+    if (dateTime != null)
     {
-      intervention.setStartDate(date.substring(0, 8));
-      if (date.length() > 8)
-        intervention.setStartTime(date.substring(8));
+      date = dateTime.substring(0, 8);
+      time = dateTime.length() > 8 ? dateTime.substring(8) : null;
+    }
+    
+    if (intervention != null)
+    {
+      intervention.setStartDate(date);
+      intervention.setStartTime(time);
     }
   }
 
-  public void setEndDateTime(String date)
+  public void setEndDateTime(String dateTime)
   {
-    if (intervention != null && date != null)
+    String date = null;
+    String time = null;
+    
+    if (dateTime != null)
     {
-      intervention.setEndDate(date.substring(0, 8));
-      if (date.length() > 8)
-        intervention.setEndTime(date.substring(8));
+      date = dateTime.substring(0, 8);
+      time = dateTime.length() > 8 ? dateTime.substring(8) : null;
+    }
+    
+    if (intervention != null)
+    {
+      intervention.setEndDate(date);
+      intervention.setEndTime(time);
     }
   }
   
@@ -190,7 +208,7 @@ public class CaseInterventionsTabBean extends TabBean
   public void onPersonClear()
   {
     intervention.setPersonId(null);
-  }  
+  } 
   
   public void create()
   {
@@ -236,7 +254,8 @@ public class CaseInterventionsTabBean extends TabBean
       {
         intervention = CasesModuleBean.getPort(false).loadIntervention(intId);
         UIComponent panel =
-          ComponentUtils.findComponent(":mainform:search_tabs:tabs:dyn_form");
+          ComponentUtils.findComponent(":mainform:search_tabs:tabs:" +  
+            caseObjectBean.getCurrentTab().getLabel() + ":int_dyn_form");
 
         panel.getChildren().clear();
         includeDynamicComponents(panel);        
@@ -307,6 +326,27 @@ public class CaseInterventionsTabBean extends TabBean
     }
   }  
   
+  public void onTypeSelect(SelectEvent<SelectItem> event)
+  {
+    changeForm();
+  }
+  
+  public void changeForm()
+  {
+    try
+    {
+      UIComponent panel =
+        ComponentUtils.findComponent(":mainform:search_tabs:tabs:" 
+          + caseObjectBean.getCurrentTab().getLabel() + ":int_dyn_form");
+      panel.getChildren().clear();
+      includeDynamicComponents(panel);    
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
+  
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
     try
@@ -328,7 +368,8 @@ public class CaseInterventionsTabBean extends TabBean
     try
     {      
       PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('interventionDataDialog').show();");
+      current.executeScript("PF('interventionDataDialog_" 
+        + caseObjectBean.getCurrentTab().getLabel() + "').show();");
     }
     catch (Exception ex)
     {

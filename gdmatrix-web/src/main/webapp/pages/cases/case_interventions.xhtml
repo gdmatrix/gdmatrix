@@ -36,8 +36,8 @@
           </p:menuButton>   
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{caseInterventionsTabBean.create}" 
-                           update=":mainform:search_tabs:tabs:intervention_edit_panels"
-                           oncomplete="PF('interventionDataDialog').show()"                                 
+                           update="@parent:@parent:@parent:intervention_edit_panels"
+                           oncomplete="PF('interventionDataDialog_#{tab.label}').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>              
       </f:facet>      
@@ -74,12 +74,12 @@
                            rendered="#{row.intId != null}"
                            styleClass="rounded-button ui-button-flat"                               
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           process="@this" update=":mainform:search_tabs:tabs:intervention_edit_panels"
+                           process="@this" update="@parent:@parent:@parent:@parent:intervention_edit_panels"
                            resetValues="true"
-                           oncomplete="PF('interventionDataDialog').show()" />
+                           oncomplete="PF('interventionDataDialog_#{tab.label}').show()" />
           <p:commandButton action="#{caseInterventionsTabBean.remove(row)}"
                            process="@this" 
-                           update=":mainform:search_tabs:tabs:intervention_edit_panels case_interventions_table :mainform:growl"
+                           update="@parent:@parent:@parent:@parent:intervention_edit_panels case_interventions_table :mainform:growl"
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
@@ -95,7 +95,7 @@
   </h:panelGroup>
 
   <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="intervention_data_dialog" widgetVar="interventionDataDialog" 
+  <p:dialog id="intervention_data_dialog" widgetVar="interventionDataDialog_#{tab.label}" 
             styleClass="edit_data_dialog" style="max-width:800px" 
             modal="true" responsive="true" closable="true"
             appendTo="@(form)" position="center center" resizable="false">
@@ -123,14 +123,16 @@
             <p:outputLabel for="@next"  
                            value="#{caseBundle.caseInterventions_type}"
                            styleClass="w-full" />
-
             <emcomp:typeReference value="#{caseInterventionsTabBean.intervention.intTypeId}"
-                                  process="@this :mainform:search_tabs:tabs:intervention_edit_panels"
+                                  process="@this @parent:@parent:@parent:intervention_edit_panels"
                                   type="#{caseInterventionsTabBean.baseIntTypeId != null ? caseInterventionsTabBean.baseIntTypeId : 'Intervention'}"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  minQueryLength="3" />   
+                                  minQueryLength="3">   
+              <p:ajax event="itemSelect" listener="#{caseInterventionsTabBean.onTypeSelect}" 
+                      process="@this" update="@parent:@parent:@parent:int_dyn_form" />
+            </emcomp:typeReference>
           </p:outputPanel>    
 
 
@@ -140,20 +142,20 @@
             <p:outputLabel for="@next" 
                            value="#{caseBundle.caseInterventions_startDate}"/>
             <p:datePicker id="start_date" value="#{caseInterventionsTabBean.startDateTime}"     
-                          locale="es" showTime="true"
-                          showIcon="true"
-                          monthNavigator="true" yearNavigator="true"
-                          converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm"/>
+                          autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
+                          locale="es" showOnFocus="false" touchUI="true" 
+                          converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
+                          showIcon="true" showTime="true"/>
           </p:outputPanel>
 
           <p:outputPanel class="field col-12 md:col-3">
             <p:outputLabel for="@next" 
                            value="#{caseBundle.caseInterventions_endDate}"/>
             <p:datePicker id="end_date" value="#{caseInterventionsTabBean.endDateTime}"
-                          locale="es" showTime="true"
-                          showIcon="true"
-                          monthNavigator="true" yearNavigator="true" 
-                          converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" />
+                          autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
+                          locale="es" showOnFocus="false" touchUI="true" 
+                          converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
+                          showIcon="true" showTime="true"/>
           </p:outputPanel> 
 
           <!-- Person -->
@@ -164,13 +166,13 @@
 
             <emcomp:objectReference value="#{caseInterventionsTabBean.personId}"
                                     type="Person"
-                                    process="@this :mainform:search_tabs:tabs:intervention_edit_panels"
+                                    process="@this @parent:@parent:@parent:intervention_edit_panels"
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"
                                     minQueryLength="3">
               <p:ajax event="clear" listener="#{caseInterventionsTabBean.onPersonClear}" 
-                      update=":mainform:search_tabs:tabs:intervention_edit_panels" />
+                      update="@parent:@parent:@parent:intervention_edit_panels" />
             </emcomp:objectReference>  
           </p:outputPanel>            
 
@@ -182,7 +184,7 @@
           </p:outputPanel>
 
           <!-- Dynamic form -->
-          <h:panelGroup id="dyn_form" layout="block">
+          <h:panelGroup id="int_dyn_form" layout="block">
             <f:event type="postAddToView" listener="#{caseInterventionsTabBean.loadDynamicComponents}" />
           </h:panelGroup>
 
@@ -197,12 +199,12 @@
         <p:commandButton action="#{caseInterventionsTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          update="case_interventions_table intervention_edit_panels"
-                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('interventionDataDialog').hide()"/>
+                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('interventionDataDialog_#{tab.label}').hide()"/>
         <p:commandButton action="#{caseInterventionsTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                          update="intervention_edit_panels :mainform:growl" global="false" 
                          immediate="true"
-                         oncomplete="PF('interventionDataDialog').hide()"/>
+                         oncomplete="PF('interventionDataDialog_#{tab.label}').hide()"/>
       </div>      
 
     </p:outputPanel>    

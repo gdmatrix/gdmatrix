@@ -38,7 +38,7 @@
               <p:dataExporter type="csv" target="case_results_table" fileName="results" pageOnly="true" />
             </p:menuitem> 
           </p:menuButton>   
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
                            action="#{personContactsTabBean.create}" 
                            update=":mainform:search_tabs:tabs:contact_edit_panels"
                            oncomplete="PF('contactDataDialog').show()"                                 
@@ -94,50 +94,40 @@
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{personObjectBean.getTabs().get(personObjectBean.tabIndex).getLabel()}" />   
         <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{personContactsTabBean.editing.contactId}" />
+        <h:outputText value="#{personContactsTabBean.contact.contactId}" />
       </p:outputPanel>
     </f:facet>
 
     <p:outputPanel id="contact_edit_panels">
-      <p:panel id="edit_contact_form" rendered="#{personContactsTabBean.editing != null}"
+      <p:panel id="edit_contact_form" rendered="#{personContactsTabBean.contact != null}"
                styleClass="mt-2">
 
         <div class="ui-fluid formgrid grid" >
 
-          <!--    
-                    <p:outputPanel styleClass="field col-12 md:col-6">
-                      <p:outputLabel for="contactTypeId" 
-                                     value="#{kernelBundle.personContacts_type}" />
-                      <p:selectOneMenu id="contactTypeId" styleClass="inputfield w-full"
-                                       value="#{personContactsTabBean.editing.contactTypeId}"
-                                       disabled="#{!personBacking.editable}">
-                        <f:selectItems value="#{personContactsTabBean.contactTypeItems}" />
-                      </p:selectOneMenu>
-                    </p:outputPanel>
-          -->       
-
           <p:outputPanel styleClass="field col-12 md:col-6">
             <p:outputLabel for="@next" 
                            value="#{kernelBundle.personContacts_type}" />          
-            <emcomp:typeReference value="#{personContactsTabBean.editing.contactTypeId}"
+            <emcomp:typeReference value="#{personContactsTabBean.contact.contactTypeId}"
                                   type="Contact"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  minQueryLength="3" />
+                                  minQueryLength="3"
+                                  required="true"/>
           </p:outputPanel>
 
           <p:outputPanel styleClass="field col-12 md:col-6">
             <p:outputLabel for="contact" 
                            value="#{kernelBundle.personContacts_contact}"/>
-            <p:inputText id="contact" value="#{personContactsTabBean.editing.value}"
-                         styleClass="inputfield w-full" />
+            <p:inputText id="contact" value="#{personContactsTabBean.contact.value}"
+                         styleClass="inputfield w-full"
+                         required="true"/>
           </p:outputPanel>
 
           <p:outputPanel styleClass="field col-12">
             <p:outputLabel for="comments" 
                            value="#{kernelBundle.personContacts_comments}"/>
-            <p:inputTextarea id="comments" value="#{personContactsTabBean.editing.comments}"
+            <p:inputTextarea id="comments" value="#{personContactsTabBean.contact.comments}"
                              styleClass="inputfield w-full" autoResize="false" />
           </p:outputPanel> 
 
@@ -151,7 +141,7 @@
         <p:commandButton action="#{personContactsTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          update="contact_results_table contact_edit_panels :mainform:growl"
-                         oncomplete="PF('contactDataDialog').hide()" />
+                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('contactDataDialog').hide()" />
         <p:commandButton action="#{personContactsTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                          immediate="true" update="contact_edit_panels :mainform:growl" global="false" 

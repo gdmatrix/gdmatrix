@@ -30,12 +30,8 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
@@ -44,7 +40,6 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Address;
 import org.matrix.kernel.AddressFilter;
-import org.matrix.kernel.AddressView;
 import org.matrix.kernel.KernelList;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.webapp.TypeBean;
