@@ -1,0 +1,160 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://java.sun.com/jsf/core"
+                template="/pages/obj/object_3col.xhtml">
+  <ui:define name="filter">
+    <p:outputPanel id="filter_panel">
+      <p:tabView id="find_selector"
+                 activeIndex="#{typeFinderBean.tabIndex}">
+
+        <p:tab id="smart_search">
+          <f:facet name="title">
+            <span class="pi pi-bolt mr-2"/> 
+            <h:outputText value="Ràpida" /> 
+          </f:facet>
+
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+
+          <div class="buttons field">
+            <p:outputLabel for="@next" value="Valor" />
+            <p:inputText id="smartFilter" value="#{typeFinderBean.smartFilter}"
+                         class="inputfield w-full ui-fluid"/>
+          </div>
+
+          <div class="buttons text-right">
+            <p:commandButton value="Clear"
+                             action="#{typeFinderBean.clear}"
+                             styleClass="ui-button-raised m-1"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             resetValues="true"                             
+                             />
+            <p:commandButton id="smart_search_button"
+                             value="Search"
+                             action="#{typeFinderBean.smartFind}"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             resetValues="true"
+                             styleClass="ui-button-raised m-1"
+                             oncomplete="endPanel('leftPanel');"/>
+          </div>          
+        </p:tab>        
+        <p:tab id="advanced_search">
+          <f:facet name="title">
+            <span class="pi pi-cog mr-2"/> 
+            <h:outputText value="Avançada" /> 
+          </f:facet>
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+          <f:loadBundle basename="org.santfeliu.dic.web.resources.DictionaryBundle"
+                        var="dicBundle" />
+
+          <div class="ui-fluid formgrid grid">
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="Root" />
+              <p:selectOneMenu value="#{typeFinderBean.rootTypeId}"
+                               styleClass="inputfield w-full" filter="true"
+                               filterMatchMode="contains" autoWidth="false">
+                <f:selectItem itemValue="" itemLabel="" />
+                <f:selectItems value="#{typeTypeBean.rootTypeIdSelectItems}"
+                               var="item"/>
+                <p:column>
+                  <h:outputText value="#{item.label}" />
+                </p:column>
+              </p:selectOneMenu>
+            </div>
+
+            <p:outputPanel styleClass="field col-12">
+              <p:outputLabel for="@next" value="TypeId" />
+              <p:inputText id="type_id" value="#{typeFinderBean.filter.typeId}" />
+            </p:outputPanel>   
+
+            <p:outputPanel styleClass="field col-12">
+              <p:outputLabel for="@next" value="SuperTypeId" />
+              <p:inputText id="super_type_id" value="#{typeFinderBean.filter.superTypeId}" />
+            </p:outputPanel> 
+
+            <p:outputPanel styleClass="field col-12">
+              <p:outputLabel for="@next" value="Description" />
+              <p:inputText id="description" value="#{typeFinderBean.filter.description}" />
+            </p:outputPanel>             
+          </div>   
+
+          <div class="text-right">
+            <p:commandButton value="Clear"
+                             action="#{typeFinderBean.clear}"
+                             process=":mainform:find_selector"
+                             styleClass="ui-button-raised m-1"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             resetValues="true"
+                             />
+            <p:commandButton id="advanced_search_button"
+                             value="Search"
+                             action="#{typeFinderBean.find}"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             styleClass="ui-button-raised m-1"
+                             resetValues="true"
+                             oncomplete="endPanel('leftPanel');"
+                             />
+          </div>
+
+        </p:tab>          
+
+      </p:tabView>      
+    </p:outputPanel>    
+  </ui:define>
+
+  <ui:define name="object">
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0)
+        {
+          updateResults();
+          console.info("updateResults");
+        }
+      }
+    </script>  
+    <p:remoteCommand name="updateResults"
+                     action="#{typeFinderBean.update}"
+                     process="@this" 
+                     update=":mainform:search_tabs:result_list" />
+
+    <p:tabView id="search_tabs"
+               widgetVar="searchTabs"
+               binding="#{typeObjectBean.searchTabView}"
+               touchable="false"
+               onTabShow="onTabShow()">
+
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-list mr-2"></i>
+          <h:outputText value="Resultats"/>
+        </f:facet>
+        <h:panelGroup id="result_list">
+          <ui:include src="type_list.xhtml" />
+        </h:panelGroup>        
+      </p:tab>
+
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-pencil mr-2"></i>
+          <h:outputText value="Edició"/>
+        </f:facet>
+        <h:panelGroup id="obj_tabs">
+          <ui:param name="objectBean" value="#{typeObjectBean}" />
+          <ui:include src="/pages/obj/object_standard.xhtml" />
+        </h:panelGroup>        
+      </p:tab>      
+
+    </p:tabView>    
+  </ui:define>
+
+</ui:composition>  
+

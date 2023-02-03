@@ -1,0 +1,38 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui">
+  
+  <p:dataTable value="#{typeFinderBean.rows}" 
+               var="row" stripedRows="true" 
+               paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               first="#{typeFinderBean.firstRow}"
+               rowStyleClass="#{row.typeId == typeObjectBean.objectId ? 'current' : ''}"
+               rows="10"
+               rowIndexVar="rowIndex">
+
+    <p:column headerText="#{dicBundle.type_typeId}" styleClass="w-4">
+      <h:outputText value="#{row.typeId}" />
+    </p:column>         
+    <p:column headerText="#{dicBundle.type_description}" styleClass="w-4">
+      <h:outputText value="#{row.description}" />
+    </p:column>
+    <p:column headerText="#{dicBundle.type_superTypeId}" styleClass="w-4">
+      <h:outputText value="#{row.superTypeId}" />
+    </p:column>    
+    <p:column styleClass="w-1">
+      <p:commandButton icon="pi pi-external-link" 
+                       styleClass="rounded-button ui-button-flat" 
+                       action="#{typeFinderBean.view(rowIndex)}"
+                       onclick="PF('objectTabs').select(0);"
+                       resetValues="true"
+                       process="@this"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       />     
+    </p:column>
+  </p:dataTable>  
+  
+</ui:composition>

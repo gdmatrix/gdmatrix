@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.dic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
@@ -56,6 +57,32 @@ import org.santfeliu.webapp.util.WebUtils;
 @ApplicationScoped
 public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 {
+  private List<SelectItem> rootTypeIdSelectItems;
+  
+  @PostConstruct
+  public void init()
+  {
+    rootTypeIdSelectItems = new ArrayList<>();
+    ArrayList<String> rootTypeIds = new ArrayList<>();
+    rootTypeIds.addAll(DictionaryConstants.rootTypeIds);
+    Collections.sort(rootTypeIds);
+
+    for (String typeId : rootTypeIds)
+    {
+      SelectItem selectItem = new SelectItem();
+      selectItem.setLabel(typeId);
+      selectItem.setValue(typeId);
+      rootTypeIdSelectItems.add(selectItem);
+    }    
+  }
+
+  public List<SelectItem> getRootTypeIdSelectItems()
+  {
+    return rootTypeIdSelectItems;
+  }
+  
+  
+  
   @Override
   public String getRootTypeId()
   {
@@ -84,20 +111,29 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   public TypeFilter queryToFilter(String query, String typeId)
   {
     TypeFilter filter = new TypeFilter();
-
-    // TODO: more intelligent search
-    filter.setDescription(query);
-
+    String typePath = null;
+    
     if (!StringUtils.isBlank(typeId))
     {
-      String typePath = TYPE_PATH_SEPARATOR + typeId + TYPE_PATH_SEPARATOR + "%";
+      typePath = TYPE_PATH_SEPARATOR + typeId + TYPE_PATH_SEPARATOR + "%";
       org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
       if (type != null && !type.isRootType())
       {
         typePath = "%" + typePath;
       }
-      filter.setTypePath(typePath);
     }
+
+    // TODO: more intelligent search
+    if (query != null && query.contains(":"))
+    {
+      query = query.substring(query.indexOf(":") + 1) + "%";
+      typePath = (typePath != null ? typePath : "") + "%" + 
+        TYPE_PATH_SEPARATOR + query + TYPE_PATH_SEPARATOR + "%";
+    }
+    else
+      filter.setDescription(query);
+
+    filter.setTypePath(typePath);      
 
     return filter;
   }

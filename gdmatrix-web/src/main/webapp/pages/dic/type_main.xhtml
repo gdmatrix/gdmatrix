@@ -1,0 +1,95 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle basename="org.santfeliu.dic.web.resources.DictionaryBundle"
+                var="dicBundle" />
+
+  <div class="ui-fluid formgrid grid">
+
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="TypeId" />
+      <p:inputText value="#{typeObjectBean.objectId}" required="true"/>
+    </div>
+
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="SupertypeId" />    
+      <p:autoComplete id="supertypeid"
+                      value="#{typeObjectBean.superTypeSelectItem}"
+                      maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
+                      minQueryLength="3" queryDelay="1000"
+                      completeMethod="#{typeObjectBean.complete}"
+                      converter="selectItemConverter"                        
+                      var="item" itemValue="#{item}" itemLabel="#{item.label}"
+                      onclick="this.setSelectionRange(0, this.value.length)"
+                      required="true"> 
+        <!--
+        <p:ajax event="itemSelect" listener="#{eventPersonsBacking.onPersonSelect}" />
+        <p:ajax event="clear" listener="#{eventPersonsBacking.onPersonClear}" /> 
+        -->
+        <p:column>                 
+          <h:outputText value="#{item.label}" />
+        </p:column>        
+      </p:autoComplete>          
+    </div>   
+
+    <div class="field col-12 md:col-12">
+      <p:outputLabel for="@next" value="Description" />
+      <p:inputText value="#{typeObjectBean.type.description}"
+                   required="true" />
+    </div>    
+
+    <div class="field col-12 md:col-12">
+      <p:outputLabel for="@next" value="Detail" />
+      <p:inputTextarea value="#{typeObjectBean.type.detail}"
+                       />
+    </div>  
+    
+    <div class="field col-12">
+      <p:selectBooleanCheckbox id="instantiable" value="#{typeObjectBean.type.instantiable}" styleClass="mr-2" />
+      <p:outputLabel for="instantiable" value="Instantiable" />
+    </div>    
+
+    <div class="field col-12">
+      <p:selectBooleanCheckbox id="restricted" value="#{typeObjectBean.type.restricted}" styleClass="mr-2" />
+      <p:outputLabel for="restricted" value="Restricted properties" />
+    </div>        
+
+    <p:outputPanel styleClass="field col-12 md:col-3" 
+                   rendered="#{typeObjectBean.type.creationDateTime != null}">
+      <p:outputLabel for="@next" value="Creació"/>
+      <p:datePicker  id="creation_date_time" value="#{typeObjectBean.type.creationDateTime}" 
+                     locale="es" converter="datePickerConverter"
+                     showIcon="false" disabled="true" showTime="true" />          
+    </p:outputPanel> 
+    
+    <p:outputPanel styleClass="field col-12 md:col-3" 
+                   rendered="#{typeObjectBean.type.creationDateTime != null}">        
+      <p:outputLabel for="@next" value="Usuari creador" />
+      <p:inputText id="creation_user_id" value="#{typeObjectBean.type.creationUserId}" disabled="true"/>
+    </p:outputPanel>     
+
+    <p:outputPanel styleClass="field col-12 md:col-3"
+                   rendered="#{typeObjectBean.type.changeDateTime != null}">
+      <p:outputLabel value="Darrera modificació"/>
+      <p:datePicker id="change_date_time" value="#{typeObjectBean.type.changeDateTime}" 
+                     locale="es" converter="datePickerConverter"
+                     showIcon="false" disabled="true" showTime="true" />          
+    </p:outputPanel>       
+    
+    <p:outputPanel styleClass="field col-12 md:col-3"
+                   rendered="#{typeObjectBean.type.changeDateTime != null}">        
+      <p:outputLabel for="@next" value="Usuari modificador" />
+      <p:inputText id="change_user_id" value="#{typeObjectBean.type.changeUserId}" disabled="true"/>
+    </p:outputPanel>       
+  
+
+   
+    
+  </div>  
+</ui:composition>

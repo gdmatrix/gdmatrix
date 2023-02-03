@@ -159,12 +159,11 @@ public abstract class TypeBean<T, F> extends WebBean
   public List<SelectItem> getSelectItems(String query, String typeId,
     boolean addNavigatorItems, boolean sorted)
   {
-    if (typeId == null) typeId = getRootTypeId();
-
     List<SelectItem> items = new ArrayList<>();
 
     if (StringUtils.isBlank(query) && addNavigatorItems)
     {
+      if (typeId == null) typeId = getRootTypeId();      
       addNavigatorItems(items, typeId);
     }
     else
