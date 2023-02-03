@@ -30,8 +30,9 @@
  */
 package org.santfeliu.webapp;
 
+import java.io.Serializable;
 import java.util.List;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.event.NodeCollapseEvent;
@@ -39,14 +40,15 @@ import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
  * @author realor
  */
 @Named
-@RequestScoped
-public class RecentObjectsBean
+@ViewScoped
+public class RecentObjectsBean implements Serializable
 {
   private TreeNode treeNode;
   private int updateCount = -1;
@@ -56,7 +58,8 @@ public class RecentObjectsBean
 
   public TreeNode getTreeNode()
   {
-    if (navigatorBean.getUpdateCount() != updateCount)
+    if (WebUtils.isRenderResponsePhase() &&
+        navigatorBean.getUpdateCount() != updateCount)
     {
       treeNode = null;
     }

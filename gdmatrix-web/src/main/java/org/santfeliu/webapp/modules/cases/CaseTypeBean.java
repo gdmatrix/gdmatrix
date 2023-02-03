@@ -134,4 +134,9 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     }
   }
 
+  @Override
+  public String getViewId()
+  {
+    return "/pages/cases/case.xhtml";
+  }
 }

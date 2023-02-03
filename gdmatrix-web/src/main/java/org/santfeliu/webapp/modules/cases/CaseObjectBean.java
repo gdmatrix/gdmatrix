@@ -38,6 +38,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ComponentSystemEvent;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -45,7 +46,6 @@ import org.matrix.cases.Case;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -58,7 +58,7 @@ import org.santfeliu.webapp.util.ComponentUtils;
  * @author realor
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();

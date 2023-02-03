@@ -30,50 +30,73 @@
  */
 package org.santfeliu.webapp;
 
-import javax.enterprise.context.RequestScoped;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.santfeliu.webapp.NavigatorBean.ReturnInfo;
+import org.santfeliu.webapp.NavigatorBean.Leap;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
  * @author realor
  */
 @Named
-@RequestScoped
-public class HistoryBean
+@ViewScoped
+public class HistoryBean implements Serializable
 {
   @Inject
   NavigatorBean navigatorBean;
+  List<Leap> entries;
+  private int updateCount = -1;
 
-  public String getDescription(ReturnInfo returnInfo)
+  public List<Leap> getEntries()
   {
-    String baseTypeId = returnInfo.getBaseTypeId();
-    TypeBean typeBean = TypeBean.getInstance(baseTypeId);
-    if (typeBean == null) return baseTypeId + " " + returnInfo.getObjectId();
-    return typeBean.getDescription(returnInfo.getObjectId());
+    if (WebUtils.isRenderResponsePhase() &&
+        navigatorBean.getUpdateCount() != updateCount)
+    {
+      entries = null;
+    }
+
+    if (entries == null)
+    {
+      entries = new ArrayList<>();
+      entries.addAll(navigatorBean.getHistory().getEntries());
+      updateCount = navigatorBean.getUpdateCount();
+    }
+    return entries;
   }
 
-  public boolean isCurrentBaseType(ReturnInfo returnInfo)
+  public String getDescription(Leap leap)
+  {
+    String baseTypeId = leap.getBaseTypeId();
+    TypeBean typeBean = TypeBean.getInstance(baseTypeId);
+    if (typeBean == null) return baseTypeId + " " + leap.getObjectId();
+    return typeBean.getDescription(leap.getObjectId());
+  }
+
+  public boolean isCurrentBaseType(Leap leap)
   {
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    return returnInfo.getBaseTypeId().equals(baseTypeId);
+    return leap.getBaseTypeId().equals(baseTypeId);
   }
 
-  public void view(ReturnInfo returnInfo)
+  public void view(Leap leap)
   {
-    navigatorBean.view(returnInfo.getObjectId());
+    navigatorBean.view(leap.getObjectId());
   }
 
-  public String show(ReturnInfo returnInfo)
+  public String show(Leap leap)
   {
-    return navigatorBean.show(returnInfo.getBaseTypeId(),
-      returnInfo.getObjectId(), returnInfo.getTabIndex());
+    return navigatorBean.show(leap.getBaseTypeId(),
+      leap.getObjectId(), leap.getDetailSelector());
   }
 
-  public String getIcon(ReturnInfo returnInfo)
+  public String getIcon(Leap leap)
   {
-    String baseTypeId = returnInfo.getBaseTypeId();
+    String baseTypeId = leap.getBaseTypeId();
     NavigatorBean.BaseTypeInfo baseTypeInfo =
       navigatorBean.getBaseTypeInfo(baseTypeId);
     return baseTypeInfo.getIcon();

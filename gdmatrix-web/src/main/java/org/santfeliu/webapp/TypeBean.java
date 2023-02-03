@@ -92,6 +92,12 @@ public abstract class TypeBean<T, F> extends WebBean
 
   public abstract T loadObject(String objectId);
 
+  //TODO: make abstract
+  public String getViewId()
+  {
+    return "blank";
+  }
+
   public synchronized String getDescription(String objectId)
   {
     String description = descriptions.get(objectId);
@@ -163,7 +169,7 @@ public abstract class TypeBean<T, F> extends WebBean
 
     if (StringUtils.isBlank(query) && addNavigatorItems)
     {
-      if (typeId == null) typeId = getRootTypeId();      
+      if (typeId == null) typeId = getRootTypeId();
       addNavigatorItems(items, typeId);
     }
     else

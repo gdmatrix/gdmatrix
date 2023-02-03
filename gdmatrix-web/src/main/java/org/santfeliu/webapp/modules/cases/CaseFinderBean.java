@@ -33,11 +33,11 @@ package org.santfeliu.webapp.modules.cases;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -49,7 +49,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author realor
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class CaseFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -187,7 +187,7 @@ public class CaseFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getTabIndex(), filter, firstRow,
+    return new Object[]{ finding, getFilterSelector(), filter, firstRow,
       getObjectPosition() };
   }
 
@@ -198,7 +198,7 @@ public class CaseFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setTabIndex((Integer)stateArray[1]);
+      setFilterSelector((Integer)stateArray[1]);
       filter = (CaseFilter)stateArray[2];
       smartFilter = caseTypeBean.filterToQuery(filter);
 
@@ -263,12 +263,12 @@ public class CaseFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getCaseId());
-            caseObjectBean.setSearchTabIndex(
-              caseObjectBean.getEditionTabIndex());
+            caseObjectBean.setSearchSelector(
+              caseObjectBean.getEditionSelector());
           }
           else
           {
-            caseObjectBean.setSearchTabIndex(0);
+            caseObjectBean.setSearchSelector(0);
           }
         }
       }

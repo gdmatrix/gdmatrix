@@ -67,7 +67,7 @@
           <p:outputPanel id="context_panel">
             <p:tabView styleClass="context_tabs"
                        dynamic="true"
-                       activeIndex="#{navigatorBean.tabIndex}">
+                       activeIndex="#{navigatorBean.contextSelector}">
 
               <p:ajax event="tabChange" process="@this" />
 
@@ -102,28 +102,28 @@
               </p:tab>
               <p:tab title="Historial">
                 <div class="history">
-                  <p:repeat value="#{navigatorBean.history.entries}" 
-                            var="returnInfo">
+                  <ui:repeat value="#{historyBean.entries}" 
+                            var="leap">
                     <div class="return_info">
-                      <p:commandLink action="#{historyBean.show(returnInfo)}" 
+                      <p:commandLink action="#{historyBean.show(leap)}" 
                                      process="@this" 
-                                     rendered="#{not historyBean.isCurrentBaseType(returnInfo)}"
+                                     rendered="#{not historyBean.isCurrentBaseType(leap)}"
                                      immediate="true"
                                      ajax="false">
-                        <span class="#{historyBean.getIcon(returnInfo)}" />
-                        <h:outputText value="#{historyBean.getDescription(returnInfo)}" /> 
+                        <span class="#{historyBean.getIcon(leap)}" />
+                        <h:outputText value="#{historyBean.getDescription(leap)}" /> 
                       </p:commandLink>
-                      <p:commandLink action="#{historyBean.view(returnInfo)}"
+                      <p:commandLink action="#{historyBean.view(leap)}"
                                      process="@this" 
-                                     rendered="#{historyBean.isCurrentBaseType(returnInfo)}"
+                                     rendered="#{historyBean.isCurrentBaseType(leap)}"
                                      resetValues="true"
                                      oncomplete="endPanel('rightPanel');"
                                      update=":mainform:central_column :mainform:context_panel">
-                        <span class="#{historyBean.getIcon(returnInfo)}" />
-                        <h:outputText value="#{historyBean.getDescription(returnInfo)}" /> 
+                        <span class="#{historyBean.getIcon(leap)}" />
+                        <h:outputText value="#{historyBean.getDescription(leap)}" /> 
                       </p:commandLink>
                     </div>
-                  </p:repeat>
+                  </ui:repeat>
                 </div>
               </p:tab>
               <p:tab id="favorites">
@@ -132,7 +132,7 @@
                   <h:outputText value="Favorits" /> 
                 </f:facet>
                 <div class="favorites">
-                  <p:repeat value="#{favoriteObjectsBean.favoriteObjects}" 
+                  <ui:repeat value="#{favoriteObjectsBean.favoriteObjects}" 
                             var="favorite">
                     <div class="favorite">
                       <p:commandLink action="#{navigatorBean.view(favorite.objectId)}"
@@ -145,7 +145,7 @@
                                       styleClass="#{favoriteObjectsBean.isSelectedObject(favorite) ? 'current' : ''}"/> 
                       </p:commandLink>
                     </div>
-                  </p:repeat>
+                  </ui:repeat>
                 </div>
               </p:tab>
 

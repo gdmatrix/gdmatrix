@@ -34,11 +34,11 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -49,7 +49,8 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
  * @author realor
  */
 @Named
-@ManualScoped
+//@ManualScoped
+@ViewScoped
 public class DocumentFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -194,7 +195,7 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getTabIndex(),
+    return new Object[]{ finding, getFilterSelector(),
       filter, firstRow, getObjectPosition() };
   }
 
@@ -203,7 +204,7 @@ public class DocumentFinderBean extends FinderBean
   {
     Object[] stateArray = (Object[])state;
     finding = (Boolean)stateArray[0];
-    setTabIndex((Integer)stateArray[1]);
+    setFilterSelector((Integer)stateArray[1]);
     filter = (DocumentFilter)stateArray[2];
     smartFilter = documentTypeBean.filterToQuery(filter);
 
@@ -263,12 +264,12 @@ public class DocumentFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getDocId());
-            documentObjectBean.setSearchTabIndex(
-              documentObjectBean.getEditionTabIndex());
+            documentObjectBean.setSearchSelector(
+              documentObjectBean.getEditionSelector());
           }
           else
           {
-            documentObjectBean.setSearchTabIndex(0);
+            documentObjectBean.setSearchSelector(0);
           }
         }
       }

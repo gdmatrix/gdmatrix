@@ -31,19 +31,21 @@
 package org.santfeliu.webapp;
 
 import edu.emory.mathcs.backport.java.util.Collections;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
  * @author realor
  */
 @Named
-@RequestScoped
-public class FavoriteObjectsBean
+@ViewScoped
+public class FavoriteObjectsBean implements Serializable
 {
   private List<FavoriteObject> favoriteObjects;
   private int updateCount;
@@ -53,7 +55,8 @@ public class FavoriteObjectsBean
 
   public List<FavoriteObject> getFavoriteObjects()
   {
-    if (navigatorBean.getUpdateCount() != updateCount)
+    if (WebUtils.isRenderResponsePhase() &&
+        navigatorBean.getUpdateCount() != updateCount)
     {
       favoriteObjects = null;
     }

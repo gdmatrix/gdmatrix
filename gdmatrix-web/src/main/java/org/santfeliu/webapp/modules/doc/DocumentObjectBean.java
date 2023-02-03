@@ -41,6 +41,7 @@ import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +61,6 @@ import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.doc.util.DocumentUtils;
 import static org.santfeliu.doc.web.DocumentUrlBuilder.DOC_SERVLET_URL;
 import org.santfeliu.faces.FacesUtils;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MatrixConfig;
@@ -76,7 +76,8 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
  * @author realor
  */
 @Named
-@ManualScoped
+//@ManualScoped
+@ViewScoped
 public class DocumentObjectBean extends ObjectBean
 {
   private Document document = new Document();

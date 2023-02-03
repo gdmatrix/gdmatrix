@@ -139,4 +139,10 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
   {
     return String.valueOf(object);
   }
+
+  @Override
+  public String getViewId()
+  {
+    return "/pages/doc/document.xhtml";
+  }
 }

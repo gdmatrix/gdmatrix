@@ -93,10 +93,7 @@ public class ComponentBuilder
 
     if (componentType == null) componentType = tag;
 
-    Application application =
-      FacesContext.getCurrentInstance().getApplication();
-
-    UIComponent component = application.createComponent(componentType);
+    UIComponent component = WebUtils.createComponent(componentType);
     if (!stack.isEmpty())
     {
       UIComponent parent = (UIComponent)stack.peek();

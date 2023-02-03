@@ -38,9 +38,12 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import javax.faces.FacesException;
 import javax.faces.application.Application;
+import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
@@ -125,6 +128,26 @@ public class WebUtils
     ExpressionFactory expressionFactory = application.getExpressionFactory();
     return expressionFactory.createMethodExpression(elContext, expr,
       returnType, parameterTypes);
+  }
+
+  public static <T extends UIComponent> T createComponent(String componentType)
+    throws FacesException
+  {
+    Application application =
+      FacesContext.getCurrentInstance().getApplication();
+
+    return (T) application.createComponent(componentType);
+  }
+
+  public static boolean isRenderResponsePhase()
+  {
+    PhaseId phaseId = FacesContext.getCurrentInstance().getCurrentPhaseId();
+    return phaseId.equals(PhaseId.RENDER_RESPONSE);
+  }
+
+  public static boolean isPostback()
+  {
+    return FacesContext.getCurrentInstance().isPostback();
   }
 
   @Deprecated
