@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -53,7 +54,6 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.webapp.FinderBean;
@@ -66,7 +66,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class EventFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -349,7 +349,7 @@ public class EventFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
     setFromDate(new Date());
@@ -363,7 +363,7 @@ public class EventFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     smartFilter = eventTypeBean.filterToQuery(filter);
     filter.getEventTypeId().clear();
     if (!StringUtils.isBlank(searchEventTypeId))
@@ -414,7 +414,7 @@ public class EventFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getTabIndex(), filter, firstRow,
+    return new Object[]{ finding, getFilterSelector(), filter, firstRow,
       searchEventTypeId, searchEventThemeId, getObjectPosition(),
       scheduleInitialDate, scheduleView };
   }
@@ -426,7 +426,7 @@ public class EventFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setTabIndex((Integer)stateArray[1]);
+      setFilterSelector((Integer)stateArray[1]);
       filter = (EventFilter)stateArray[2];
 
       doFind(false);
@@ -497,15 +497,15 @@ public class EventFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getEventId());
-            eventObjectBean.setSearchTabIndex(eventObjectBean.
-              getEditionTabIndex());
+            eventObjectBean.setSearchSelector(eventObjectBean.
+              getEditionSelector());
           }
           else
           {
-            if (eventObjectBean.getSearchTabIndex() ==
-              eventObjectBean.getEditionTabIndex())
+            if (eventObjectBean.getSearchSelector() ==
+              eventObjectBean.getEditionSelector())
             {
-              eventObjectBean.setSearchTabIndex(0);
+              eventObjectBean.setSearchSelector(0);
             }
           }
         }

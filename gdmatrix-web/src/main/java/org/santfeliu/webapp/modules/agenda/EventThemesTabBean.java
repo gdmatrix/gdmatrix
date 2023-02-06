@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.EventTheme;
@@ -41,7 +42,6 @@ import org.matrix.agenda.EventThemeFilter;
 import org.matrix.agenda.EventThemeView;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.ResultListHelper;
@@ -51,7 +51,7 @@ import org.santfeliu.webapp.helpers.ResultListHelper;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class EventThemesTabBean extends TabBean
 {
   @Inject

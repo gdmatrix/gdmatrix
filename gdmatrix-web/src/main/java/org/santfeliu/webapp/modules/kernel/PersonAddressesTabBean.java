@@ -33,13 +33,13 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.PersonAddress;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
 import org.primefaces.PrimeFaces;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.ResultListHelper;
@@ -49,7 +49,7 @@ import org.santfeliu.webapp.helpers.ResultListHelper;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class PersonAddressesTabBean extends TabBean
 {
   @Inject

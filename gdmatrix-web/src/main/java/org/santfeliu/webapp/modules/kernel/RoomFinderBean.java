@@ -34,12 +34,12 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.RoomFilter;
 import org.matrix.kernel.RoomView;
 import org.santfeliu.dic.web.TypeBean;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -52,7 +52,7 @@ import org.santfeliu.webapp.util.WebUtils;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class RoomFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -155,7 +155,7 @@ public class RoomFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = roomTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -166,7 +166,7 @@ public class RoomFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     smartFilter = roomTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -203,7 +203,7 @@ public class RoomFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getTabIndex(), filter,
+    return new Object[]{ finding, getFilterSelector(), filter,
       firstRow, getObjectPosition() };
   }
 
@@ -214,7 +214,7 @@ public class RoomFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setTabIndex((Integer)stateArray[1]);
+      setFilterSelector((Integer)stateArray[1]);
       filter = (RoomFilter)stateArray[2];
 
       doFind(false);
@@ -276,11 +276,11 @@ public class RoomFinderBean extends FinderBean
         if (rows.size() == 1)
         {
           navigatorBean.view(rows.get(0).getRoomId());
-          roomObjectBean.setSearchTabIndex(roomObjectBean.getEditionTabIndex());
+          roomObjectBean.setSearchSelector(roomObjectBean.getEditionSelector());
         }
         else
         {
-          roomObjectBean.setSearchTabIndex(0);
+          roomObjectBean.setSearchSelector(0);
         }
       }
     }

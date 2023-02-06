@@ -33,11 +33,11 @@ package org.santfeliu.webapp.modules.agenda;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Theme;
 import org.matrix.agenda.ThemeFilter;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -49,7 +49,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class ThemeFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -130,7 +130,7 @@ public class ThemeFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = themeTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -141,7 +141,7 @@ public class ThemeFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     smartFilter = themeTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -171,7 +171,7 @@ public class ThemeFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getTabIndex(),
+    return new Object[]{ finding, getFilterSelector(),
       filter, firstRow, getObjectPosition() };
   }
 
@@ -182,7 +182,7 @@ public class ThemeFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setTabIndex((Integer)stateArray[1]);
+      setFilterSelector((Integer)stateArray[1]);
       filter = (ThemeFilter)stateArray[2];
 
       doFind(false);
@@ -248,12 +248,12 @@ public class ThemeFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getThemeId());
-            themeObjectBean.setSearchTabIndex(themeObjectBean.
-              getEditionTabIndex());
+            themeObjectBean.setSearchSelector(themeObjectBean.
+              getEditionSelector());
           }
           else
           {
-            themeObjectBean.setSearchTabIndex(0);
+            themeObjectBean.setSearchSelector(0);
           }
         }
       }

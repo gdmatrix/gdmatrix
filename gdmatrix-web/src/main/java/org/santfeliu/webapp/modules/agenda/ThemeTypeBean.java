@@ -60,6 +60,12 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
   {
     return theme.getThemeId();
   }
+  
+  @Override
+  public String getViewId()
+  {
+    return "/pages/agenda/theme.xhtml";
+  }  
 
   @Override
   public String describe(Theme theme)

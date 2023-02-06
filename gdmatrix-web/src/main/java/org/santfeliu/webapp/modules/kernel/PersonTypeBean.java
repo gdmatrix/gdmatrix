@@ -60,6 +60,12 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
   {
     return person.getPersonId();
   }
+  
+  @Override
+  public String getViewId()
+  {
+    return "/pages/kernel/person.xhtml";
+  }  
 
   @Override
   public String describe(Person person)

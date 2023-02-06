@@ -63,6 +63,12 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
   }
 
   @Override
+  public String getViewId()
+  {
+    return "/pages/kernel/room.xhtml";
+  }  
+  
+  @Override
   public String describe(Room room)
   {
     try

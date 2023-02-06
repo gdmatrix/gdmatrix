@@ -61,6 +61,12 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
   {
     return event.getEventId();
   }
+  
+  @Override
+  public String getViewId()
+  {
+    return "/pages/agenda/event.xhtml";
+  }  
 
   @Override
   public String describe(Event event)

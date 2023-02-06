@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.agenda;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Attendant;
@@ -42,7 +43,6 @@ import org.matrix.dic.DictionaryConstants;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.ResultListHelper;
@@ -53,7 +53,7 @@ import org.santfeliu.webapp.modules.kernel.PersonObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class EventPersonsTabBean extends TabBean
 {
   @Inject

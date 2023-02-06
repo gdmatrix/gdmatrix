@@ -32,11 +32,11 @@ package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.agenda.Theme;
 import org.matrix.dic.DictionaryConstants;
-import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
@@ -46,7 +46,7 @@ import org.santfeliu.webapp.Tab;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class ThemeObjectBean extends ObjectBean
 {
   private Theme theme = new Theme();

@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +49,6 @@ import org.matrix.security.SecurityConstants;
 import org.primefaces.event.TabChangeEvent;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -61,7 +61,7 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class EventObjectBean extends ObjectBean
 {
   private Event event = new Event();
@@ -151,7 +151,7 @@ public class EventObjectBean extends ObjectBean
   }
 
   @Override
-  public int getEditionTabIndex()
+  public int getEditionSelector()
   {
     return 2;
   }
@@ -307,15 +307,15 @@ public class EventObjectBean extends ObjectBean
     org.primefaces.component.tabview.Tab activeTab = tabEvent.getTab();
     if (activeTab.getId().equals("event_list_tab"))
     {
-      setSearchTabIndex(0);
+      setSearchSelector(0);
     }
     else if (activeTab.getId().equals("event_schedule_tab"))
     {
-      setSearchTabIndex(1);
+      setSearchSelector(1);
     }
     else if (activeTab.getId().equals("event_object_tab"))
     {
-      setSearchTabIndex(2);
+      setSearchSelector(2);
     }
   }
 

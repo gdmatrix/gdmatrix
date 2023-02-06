@@ -107,7 +107,7 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-3xl mx-2 my-1"/>       
         <h:outputText value="#{eventObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventObjectBean.getTabs().get(eventObjectBean.tabIndex).getLabel()}" />   
+        <h:outputText value="#{eventObjectBean.getTabs().get(eventObjectBean.detailSelector).getLabel()}" />   
         <i class="pi pi-angle-right mx-2"></i> 
         <h:outputText value="#{eventPersonsTabBean.pageObjectDescription}" />
       </p:outputPanel>

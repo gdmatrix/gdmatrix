@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -43,7 +44,6 @@ import org.matrix.agenda.EventPlaceView;
 import org.matrix.kernel.Room;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.ResultListHelper;
@@ -56,7 +56,7 @@ import org.santfeliu.webapp.modules.kernel.RoomObjectBean;
  * @author lopezrj-sf
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class EventPlacesTabBean extends TabBean
 {
   @Inject
