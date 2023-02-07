@@ -76,6 +76,7 @@ public class NavigatorBean extends WebBean implements Serializable
   private String lastBaseTypeId;
   private int contextSelector;
   private int updateCount;
+  private Leap inProgressLeap;
 
   public BaseTypeInfo getBaseTypeInfo()
   {
@@ -310,7 +311,7 @@ public class NavigatorBean extends WebBean implements Serializable
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     userSessionBean.getMenuModel().setSelectedMid(baseTypeInfo.getMid());
 
-    baseTypeInfo.inProgressLeap = leap;
+    inProgressLeap = leap;
 
     TypeBean typeBean = TypeBean.getInstance(baseTypeId);
 
@@ -318,22 +319,27 @@ public class NavigatorBean extends WebBean implements Serializable
   }
 
   /**
-   * Constructs an objectBean instance in its @PostContruct method
-   * (render response phase).
-   *
-   * @param objectBean the instance that calls this method.
-  */
-  public void construct(ObjectBean objectBean)
+   * Called before render response
+   */
+  public void contructBeans()
   {
-    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
-    if (baseTypeInfo != null && baseTypeInfo.inProgressLeap != null)
-    {
-      baseTypeInfo.inProgressLeap.construct(objectBean);
-      baseTypeInfo.inProgressLeap = null;
-      baseTypeInfo.visit(objectBean.getObjectId());
-      lastBaseTypeId = baseTypeInfo.getBaseTypeId();
-      history.remove(baseTypeInfo.getBaseTypeId(), objectBean.getObjectId());
-    }
+    System.out.println("PhaseListener before render response");
+
+    if (inProgressLeap == null) return;
+
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo(inProgressLeap.baseTypeId);
+    if (baseTypeInfo == null) return;
+
+    ObjectBean objectBean = baseTypeInfo.getObjectBean();
+    if (objectBean == null) return;
+
+    Leap leap = inProgressLeap;
+    inProgressLeap = null;
+    leap.construct(objectBean);
+
+    baseTypeInfo.visit(objectBean.getObjectId());
+    lastBaseTypeId = baseTypeInfo.getBaseTypeId();
+    history.remove(baseTypeInfo.getBaseTypeId(), objectBean.getObjectId());
   }
 
   public History getHistory()
@@ -369,7 +375,6 @@ public class NavigatorBean extends WebBean implements Serializable
     String mid;
     List<String> recentObjectIdList = new ArrayList<>();
     Map<String, Serializable> beanStateMap = new HashMap<>();
-    Leap inProgressLeap;
     SelectLeap selectLeap;
     boolean featured = true;
 
@@ -761,6 +766,8 @@ public class NavigatorBean extends WebBean implements Serializable
     @Override
     public void construct(ObjectBean objectBean)
     {
+      System.out.println(">> construct " + objectBean);
+
       objectBean.setObjectId(objectId);
       objectBean.setSearchSelector(searchSelector == -1 ?
         objectBean.getEditionSelector() : searchSelector);
@@ -773,8 +780,11 @@ public class NavigatorBean extends WebBean implements Serializable
       baseTypeInfo.restoreTabBeansState(objectBean.getTabs());
       baseTypeInfo.restoreBeanState(objectBean.getFinderBean());
       baseTypeInfo.clearBeansState();
+
+      System.out.println("selectExpression: " + selectExpression);
+      System.out.println("selectedObjectId: " + selectedObjectId);
+
       WebUtils.setValue(selectExpression, String.class, selectedObjectId);
     }
   }
-
 }

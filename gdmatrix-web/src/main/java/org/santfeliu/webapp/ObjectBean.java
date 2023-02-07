@@ -35,7 +35,6 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -58,15 +57,6 @@ public abstract class ObjectBean extends BaseBean
   protected List<Tab> tabs = Collections.EMPTY_LIST;
   private transient TabView searchTabView;
   private transient TabView detailTabView;
-
-  @PostConstruct
-  void create()
-  {
-    System.out.println("CREATING " + getClass().getSimpleName());
-
-    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-    navigatorBean.construct(this);
-  }
 
   @Override
   public ObjectBean getObjectBean()

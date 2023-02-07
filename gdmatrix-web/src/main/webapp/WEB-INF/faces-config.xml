@@ -13,6 +13,7 @@
   <lifecycle>
     <phase-listener>org.santfeliu.faces.beansaver.BeanSaverListener</phase-listener>    
     <phase-listener>org.santfeliu.cms.CMSListener</phase-listener>
+    <phase-listener>org.santfeliu.webapp.NavigatorPhaseListener</phase-listener>
     <phase-listener>org.santfeliu.faces.DebugPhaseListener</phase-listener>    
   </lifecycle>
       
