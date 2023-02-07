@@ -101,19 +101,19 @@
         <p:outputLabel for="@next" value="#{kernelBundle.country}" />
         <div class="ui-inputgroup">
           <p:selectOneMenu id="country_selector" 
-                           value="#{countryObjectBean.country.countryId}" 
+                           value="#{objectBean.country.countryId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
                            required="true">
-            <p:ajax listener="#{countryObjectBean.onCountryChange}" update="province_selector"/>
+            <p:ajax update="province_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
             <f:selectItems value="#{countryTypeBean.selectItems}" />
           </p:selectOneMenu>
 
-          <p:commandButton rendered="#{not empty countryObjectBean.country.countryId}"
+          <p:commandButton rendered="#{not empty objectBean.country.countryId}"
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           action="#{navigatorBean.show('Country', countryObjectBean.country.countryId)}" 
+                           action="#{navigatorBean.show('Country', objectBean.country.countryId)}" 
                            ajax="false"
                            />
         </div>     
@@ -122,17 +122,17 @@
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Country'}">      
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" value="Name" />
-          <p:inputText id="country_name" value="#{countryObjectBean.country.name}" required="true"/>
+          <p:inputText id="country_name" value="#{objectBean.country.name}" required="true"/>
         </div>     
 
         <div class="field col-12 md:col-3">
           <p:outputLabel for="@next" value="ISO Code" />
-          <p:inputText id="iso_code" value="#{countryObjectBean.country.ISOCode}" />
+          <p:inputText id="iso_code" value="#{objectBean.country.ISOCode}" />
         </div>
 
         <div class="field col-12 md:col-3">
           <p:outputLabel for="@next" value="Language" />
-          <p:inputText id="language" value="#{countryObjectBean.country.language}" />
+          <p:inputText id="language" value="#{objectBean.country.language}" />
         </div>        
       </h:panelGroup>         
       
@@ -143,18 +143,18 @@
         <p:outputLabel for="@next" value="#{kernelBundle.province}"  />
         <div class="ui-inputgroup"> 
           
-          <p:selectOneMenu id="province_selector" value="#{provinceObjectBean.province.provinceId}" 
+          <p:selectOneMenu id="province_selector" value="#{objectBean.province.provinceId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="true">
-            <p:ajax listener="#{provinceObjectBean.onProvinceChange}" update="city_selector"/>
+            <p:ajax update="city_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
-            <f:selectItems value="#{provinceObjectBean.provinceSelectItems}"/>
+            <f:selectItems value="#{provinceTypeBean.getProvinceSelectItems(objectBean.country.countryId)}"/>
           </p:selectOneMenu>
          
-          <p:commandButton rendered="#{not empty provinceObjectBean.province.provinceId}"
+          <p:commandButton rendered="#{not empty objectBean.province.provinceId}"
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           action="#{navigatorBean.show('Province', provinceObjectBean.province.provinceId)}" 
+                           action="#{navigatorBean.show('Province', objectBean.province.provinceId)}" 
                            ajax="false"
                            />
         </div>
@@ -162,7 +162,7 @@
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Province'}">      
           <div class="field col-12">
             <p:outputLabel for="@next" value="#{kernelBundle.province}" />
-            <p:inputText id="province_name" value="#{provinceObjectBean.province.name}" 
+            <p:inputText id="province_name" value="#{objectBean.province.name}" 
                          styleClass="inputfield w-full" required="true"/>
           </div>         
       </h:panelGroup>
@@ -172,19 +172,18 @@
                      rendered="#{objectBean.rootTypeId == 'Street'}">
         <p:outputLabel for="@next" value="#{kernelBundle.city}"  />
         <div class="ui-inputgroup"> 
-          <p:selectOneMenu id="city_selector" value="#{cityObjectBean.city.cityId}" 
+          <p:selectOneMenu id="city_selector" value="#{objectBean.city.cityId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
                             required="true">
-            <p:ajax listener="#{cityObjectBean.onCityChange}" />
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
-            <f:selectItems value="#{cityObjectBean.citySelectItems}"/>
+            <f:selectItems value="#{cityTypeBean.getCitySelectItems(streetObjectBean.province.provinceId)}"/>
           </p:selectOneMenu>
 
-          <p:commandButton rendered="#{not empty cityObjectBean.city.cityId}"
+          <p:commandButton rendered="#{not empty objectBean.city.cityId}"
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           action="#{navigatorBean.show('City', cityObjectBean.city.cityId)}" 
+                           action="#{navigatorBean.show('City', objectBean.city.cityId)}" 
                            ajax="false"
                            />
         </div>
@@ -192,7 +191,7 @@
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'City'}">
         <div class="field col-12">
           <p:outputLabel for="@next" value="#{kernelBundle.city}" />
-          <p:inputText id="city_name" value="#{cityObjectBean.city.name}" 
+          <p:inputText id="city_name" value="#{objectBean.city.name}" 
                        styleClass="inputfield w-full" required="true"/>
         </div>          
       </h:panelGroup>
@@ -201,19 +200,19 @@
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Street'}">
         <div class="field col-12 md:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
-          <p:inputText id="street_type_id" value="#{streetObjectBean.street.streetTypeId}" 
+          <p:inputText id="street_type_id" value="#{objectBean.street.streetTypeId}" 
                        styleClass="inputfield w-full" required="true"/>
         </div>     
 
         <div class="field col-12 md:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
-          <p:inputText id="street_particle" value="#{streetObjectBean.street.particle}" 
+          <p:inputText id="street_particle" value="#{objectBean.street.particle}" 
                        styleClass="inputfield w-full"/>
         </div>
 
         <div class="field col-12 md:col-8">
           <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
-          <p:inputText id="street_name" value="#{streetObjectBean.street.name}" 
+          <p:inputText id="street_name" value="#{objectBean.street.name}" 
                        styleClass="inputfield w-full" required="true"/>
         </div>   
       </h:panelGroup>

@@ -34,11 +34,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Province;
 import org.matrix.kernel.ProvinceFilter;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -51,7 +51,7 @@ import org.santfeliu.webapp.modules.kernel.ProvinceFinderBean.ProvinceView;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class ProvinceFinderBean
   extends TerritoryFinderBean<ProvinceFilter, ProvinceView>
 {
@@ -100,7 +100,7 @@ public class ProvinceFinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = provinceTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -111,7 +111,7 @@ public class ProvinceFinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     smartFilter = provinceTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -183,12 +183,12 @@ public class ProvinceFinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getProvinceId());
-            provinceObjectBean.setSearchTabIndex(
-              provinceObjectBean.getEditionTabIndex());
+            provinceObjectBean.setSearchSelector(
+              provinceObjectBean.getEditionSelector());
           }
           else
           {
-            provinceObjectBean.setSearchTabIndex(0);
+            provinceObjectBean.setSearchSelector(0);
           }
         }
       }

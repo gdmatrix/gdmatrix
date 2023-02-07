@@ -32,7 +32,9 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.util.Collections;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.dic.DictionaryConstants;
@@ -43,6 +45,8 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
  *
  * @author blanquepa
  */
+@Named
+@ApplicationScoped
 public class InterventionTypeBean 
   extends TypeBean<Intervention, InterventionFilter>
 { 

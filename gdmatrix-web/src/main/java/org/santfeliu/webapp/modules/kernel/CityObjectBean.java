@@ -31,17 +31,12 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.City;
-import org.matrix.kernel.CityFilter;
 import org.matrix.kernel.KernelManagerPort;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 
@@ -50,38 +45,19 @@ import org.santfeliu.webapp.NavigatorBean;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class CityObjectBean extends TerritoryObjectBean
 {
-
-  private City city = new City();
-  private List<SelectItem> citySelectItems;
-
   @Inject
   CityFinderBean cityFinderBean;
-  
-  @Inject
-  ProvinceObjectBean provinceObjectBean;
-  
-  @Inject
-  StreetObjectBean streetObjectBean;
-  
+      
   @Inject
   CityTypeBean cityTypeBean;
   
   @Inject
   NavigatorBean navigatorBean;
-
-  public City getCity()
-  {
-    return city;
-  }
-
-  public void setCity(City city)
-  {
-    this.city = city;
-  }
-
+  
+  
   @Override
   public FinderBean getFinderBean()
   {
@@ -92,12 +68,6 @@ public class CityObjectBean extends TerritoryObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.CITY_TYPE;
-  }
-
-  @Override
-  public String show()
-  {
-    return "/pages/kernel/city.xhtml";
   }
 
   @Override
@@ -127,7 +97,8 @@ public class CityObjectBean extends TerritoryObjectBean
   public void createObject()
   {
     city = new City();
-    city.setProvinceId(provinceObjectBean.getProvince().getProvinceId());
+    if (province != null)
+      city.setProvinceId(province.getProvinceId());
     setObjectId(NavigatorBean.NEW_OBJECT_ID);
   }
 
@@ -137,13 +108,7 @@ public class CityObjectBean extends TerritoryObjectBean
     if (objectId != null && !isNew())
     {
       KernelManagerPort port = KernelModuleBean.getPort(false);
-      city = port.loadCity(objectId);
-      if (!city.getProvinceId().equals(provinceObjectBean.getObjectId()))
-      {
-        provinceObjectBean.setObjectId(city.getProvinceId());
-        provinceObjectBean.loadObject();
-        loadCitySelectItems();
-      }
+      loadCity(port, objectId);
     }
     else
     {
@@ -154,13 +119,12 @@ public class CityObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    String provinceId = provinceObjectBean.getProvince().getProvinceId();
+    String provinceId = province.getProvinceId();
     if (!provinceId.equals(city.getProvinceId()))
         city.setProvinceId(provinceId);
     
     city = KernelModuleBean.getPort(false).storeCity(city);
     setObjectId(city.getCityId());
-    citySelectItems = null;
     
     cityFinderBean.outdate();    
   } 
@@ -174,64 +138,45 @@ public class CityObjectBean extends TerritoryObjectBean
     navigatorBean.view("");
   }    
 
-  @Override
-  public void cancel()
-  {
-    provinceObjectBean.cancel();    
-    super.cancel(); 
-  }
-  
-  public List<SelectItem> getCitySelectItems()
-  {
-    if (citySelectItems == null)
-    {
-      try
-      {
-        loadCitySelectItems();
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
+    
+//  public List<SelectItem> getCitySelectItems()
+//  {
+//    if (citySelectItems == null)
+//    {
+//      try
+//      {
+//        loadCitySelectItems();
+//      }
+//      catch (Exception ex)
+//      {
+//        error(ex);
+//      }
+//    }
+//
+//    return citySelectItems;
+//  }
 
-    return citySelectItems;
-  }
-
-  public void loadCitySelectItems() throws Exception
-  {
-    citySelectItems = new ArrayList<>();
-    CityFilter filter = new CityFilter();
-    String provinceId = provinceObjectBean.getProvince().getProvinceId();
-
-    if (!StringUtils.isBlank(provinceId))
-    {
-      filter.setProvinceId(provinceId);
-
-      List<City> cities
-        = KernelModuleBean.getPort(false).findCities(filter);
-
-      for (City c : cities)
-      {
-        SelectItem item
-          = new SelectItem(c.getCityId(), c.getName());
-        citySelectItems.add(item);
-      }
-    }
-  }
-
-  public void onCityChange()
-  {
-    try
-    {
-//      loadObject();
-//      streetObjectBean.loadStreetSelectItems();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
+//  public void loadCitySelectItems() throws Exception
+//  {
+//    citySelectItems = new ArrayList<>();
+//    CityFilter filter = new CityFilter();
+//    String provinceId = provinceObjectBean.getProvince().getProvinceId();
+//
+//    if (!StringUtils.isBlank(provinceId))
+//    {
+//      filter.setProvinceId(provinceId);
+//
+//      List<City> cities
+//        = KernelModuleBean.getPort(false).findCities(filter);
+//
+//      for (City c : cities)
+//      {
+//        SelectItem item
+//          = new SelectItem(c.getCityId(), c.getName());
+//        citySelectItems.add(item);
+//      }
+//    }
+//  }
 
   @Override
   public Serializable saveState()

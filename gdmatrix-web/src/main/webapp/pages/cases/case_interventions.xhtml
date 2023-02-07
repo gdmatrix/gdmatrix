@@ -37,7 +37,7 @@
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{caseInterventionsTabBean.create}" 
                            update="@parent:@parent:@parent:intervention_edit_panels"
-                           oncomplete="PF('interventionDataDialog_#{tab.label}').show()"                                 
+                           oncomplete="PF('interventionDataDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>              
       </f:facet>      
@@ -76,7 +76,7 @@
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            process="@this" update="@parent:@parent:@parent:@parent:intervention_edit_panels"
                            resetValues="true"
-                           oncomplete="PF('interventionDataDialog_#{tab.label}').show()" />
+                           oncomplete="PF('interventionDataDialog').show()" />
           <p:commandButton action="#{caseInterventionsTabBean.remove(row)}"
                            process="@this" 
                            update="@parent:@parent:@parent:@parent:intervention_edit_panels case_interventions_table :mainform:growl"
@@ -95,7 +95,7 @@
   </h:panelGroup>
 
   <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="intervention_data_dialog" widgetVar="interventionDataDialog_#{tab.label}" 
+  <p:dialog id="intervention_data_dialog" widgetVar="interventionDataDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
             modal="true" responsive="true" closable="true"
             appendTo="@(form)" position="center center" resizable="false">
@@ -106,7 +106,7 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
         <h:outputText value="#{caseObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{caseObjectBean.getTabs().get(caseObjectBean.tabIndex).getLabel()}" />   
+        <h:outputText value="#{caseObjectBean.getTabs().get(caseObjectBean.detailSelector).getLabel()}" />   
         <i class="pi pi-angle-right mx-2"></i> 
         <h:outputText value="#{caseInterventionsTabBean.intervention.getIntId()}" />
       </p:outputPanel>
@@ -199,12 +199,12 @@
         <p:commandButton action="#{caseInterventionsTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          update="case_interventions_table intervention_edit_panels"
-                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('interventionDataDialog_#{tab.label}').hide()"/>
+                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('interventionDataDialog').hide()"/>
         <p:commandButton action="#{caseInterventionsTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                          update="intervention_edit_panels :mainform:growl" global="false" 
                          immediate="true"
-                         oncomplete="PF('interventionDataDialog_#{tab.label}').hide()"/>
+                         oncomplete="PF('interventionDataDialog').hide()"/>
       </div>      
 
     </p:outputPanel>    

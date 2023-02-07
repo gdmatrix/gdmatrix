@@ -33,11 +33,11 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Address;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.Tab;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class AddressObjectBean extends ObjectBean
 {
   private Address address = new Address();
@@ -98,12 +98,6 @@ public class AddressObjectBean extends ObjectBean
   public String getDescription(String addressId)
   {
     return getTypeBean().getDescription(addressId);
-  }
-
-  @Override
-  public String show()
-  {
-    return "/pages/kernel/address.xhtml";
   }
 
   @Override

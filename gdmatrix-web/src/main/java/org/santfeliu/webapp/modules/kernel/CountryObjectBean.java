@@ -31,13 +31,11 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.List;
-import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Country;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 
@@ -46,34 +44,17 @@ import org.santfeliu.webapp.NavigatorBean;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class CountryObjectBean extends TerritoryObjectBean
-{
-  private Country country = new Country();
-  
+{  
   @Inject
   CountryFinderBean countryFinderBean;
-  
-  @Inject
-  ProvinceObjectBean provinceObjectBean;
   
   @Inject
   CountryTypeBean countryTypeBean;
   
   @Inject
   NavigatorBean navigatorBean;
-  
-  private List<SelectItem> countrySelectItems;
-
-  public Country getCountry()
-  {
-    return country;
-  }
-
-  public void setCountry(Country country)
-  {
-    this.country = country;
-  }
   
   @Override
   public FinderBean getFinderBean()
@@ -85,12 +66,6 @@ public class CountryObjectBean extends TerritoryObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.COUNTRY_TYPE;
-  }
-
-  @Override
-  public String show()
-  {
-    return "/pages/kernel/country.xhtml";
   }
   
   @Override
@@ -141,7 +116,6 @@ public class CountryObjectBean extends TerritoryObjectBean
   {
     country = KernelModuleBean.getPort(false).storeCountry(country);
     setObjectId(country.getCountryId());
-    countrySelectItems = null;
     countryFinderBean.outdate();    
   }
   
@@ -152,46 +126,6 @@ public class CountryObjectBean extends TerritoryObjectBean
     countryFinderBean.doFind(false);    
     navigatorBean.view("");
   }  
-
-  /*
-  public List<SelectItem> getCountrySelectItems()
-  {
-    if (countrySelectItems == null)
-    {
-      countrySelectItems = new ArrayList<>();
-      try
-      {
-        CountryFilter filter = new CountryFilter();
-        List<Country> countries = 
-          KernelModuleBean.getPort(false).findCountries(filter);
-        
-        for (Country c : countries)
-        {
-          SelectItem item = 
-            new SelectItem(c.getCountryId(), c.getName());
-          countrySelectItems.add(item);
-        }        
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
-    
-    return countrySelectItems;
-  }   
-  */
-  public void onCountryChange()
-  {
-    try
-    {
-      provinceObjectBean.loadProvinceSelectItems();  
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }      
   
   @Override
   public Serializable saveState()

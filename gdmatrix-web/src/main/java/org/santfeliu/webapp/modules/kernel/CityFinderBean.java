@@ -35,12 +35,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.City;
 import org.matrix.kernel.CityFilter;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -52,7 +52,7 @@ import org.santfeliu.webapp.modules.kernel.CityFinderBean.CityView;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
 {
   @Inject
@@ -102,7 +102,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     filter =
       cityTypeBean.queryToFilter(smartFilter, DictionaryConstants.CITY_TYPE);
     doFind(true);
@@ -113,7 +113,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     smartFilter = cityTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -152,12 +152,12 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getCityId());
-            cityObjectBean.setSearchTabIndex(
-              cityObjectBean.getEditionTabIndex());
+            cityObjectBean.setSearchSelector(
+              cityObjectBean.getEditionSelector());
           }
           else
           {
-            cityObjectBean.setSearchTabIndex(0);
+            cityObjectBean.setSearchSelector(0);
           }
         }
       }

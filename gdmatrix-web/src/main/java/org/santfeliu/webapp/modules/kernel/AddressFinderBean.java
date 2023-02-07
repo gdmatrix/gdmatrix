@@ -33,11 +33,11 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.AddressFilter;
 import org.matrix.kernel.AddressView;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class AddressFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -141,7 +141,7 @@ public class AddressFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = addressTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -152,7 +152,7 @@ public class AddressFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     smartFilter = addressTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -184,7 +184,7 @@ public class AddressFinderBean extends FinderBean
   {
     return new Object[]
     {
-      finding, getTabIndex(), filter, firstRow, getObjectPosition()
+      finding, getFilterSelector(), filter, firstRow, getObjectPosition()
     };
   }
 
@@ -195,7 +195,7 @@ public class AddressFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[]) state;
       finding = (Boolean) stateArray[0];
-      setTabIndex((Integer) stateArray[1]);
+      setFilterSelector((Integer) stateArray[1]);
       filter = (AddressFilter) stateArray[2];
 
       doFind(false);
@@ -260,11 +260,11 @@ public class AddressFinderBean extends FinderBean
           {
             AddressView addressView = (AddressView) rows.get(0);
             navigatorBean.view(addressView.getAddressId());
-            addressObjectBean.setSearchTabIndex(1);
+            addressObjectBean.setSearchSelector(1);
           }
           else
           {
-            addressObjectBean.setSearchTabIndex(0);
+            addressObjectBean.setSearchSelector(0);
           }
         }
       }

@@ -31,12 +31,12 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.KernelManagerPort;
 import org.matrix.kernel.Street;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 
@@ -45,19 +45,15 @@ import org.santfeliu.webapp.NavigatorBean;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class StreetObjectBean extends TerritoryObjectBean
 {
   public static final String DEFAULT_CITY_NAME = "defaultCityName";
 
-  private Street street = new Street();
   private String streetId;
 
   @Inject
   StreetFinderBean streetFinderBean;
-
-  @Inject
-  private CityObjectBean cityObjectBean;
 
   @Inject
   StreetTypeBean streetTypeBean;
@@ -65,16 +61,6 @@ public class StreetObjectBean extends TerritoryObjectBean
   @Inject
   NavigatorBean navigatorBean;
   
-  public Street getStreet()
-  {
-    return street;
-  }
-
-  public void setStreet(Street street)
-  {
-    this.street = street;
-  }
-
   public String getStreetId()
   {
     return streetId;
@@ -95,12 +81,6 @@ public class StreetObjectBean extends TerritoryObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.STREET_TYPE;
-  }
-
-  @Override
-  public String show()
-  {
-    return "/pages/kernel/street.xhtml";
   }
 
   @Override
@@ -131,7 +111,8 @@ public class StreetObjectBean extends TerritoryObjectBean
   {
     street = new Street();
     setObjectId(NavigatorBean.NEW_OBJECT_ID);
-    street.setCityId(cityObjectBean.getCity().getCityId());
+    if (city != null)
+      street.setCityId(city.getCityId());
   }
 
   @Override
@@ -140,12 +121,7 @@ public class StreetObjectBean extends TerritoryObjectBean
     if (objectId != null && !isNew())
     {
       KernelManagerPort port = KernelModuleBean.getPort(false);
-      street = port.loadStreet(objectId);
-      if (!street.getCityId().equals(cityObjectBean.getObjectId()))
-      {
-        cityObjectBean.setObjectId(street.getCityId());
-        cityObjectBean.loadObject();
-      }
+      loadStreet(port, objectId);
     }
     else
     {
@@ -156,8 +132,8 @@ public class StreetObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    if (!cityObjectBean.getCity().getCityId().equals(street.getCityId()))
-      street.setCityId(cityObjectBean.getCity().getCityId());
+    if (!city.getCityId().equals(street.getCityId()))
+      street.setCityId(city.getCityId());
     street = KernelModuleBean.getPort(false).storeStreet(street);
     setObjectId(street.getStreetId());
     streetFinderBean.outdate();
@@ -170,25 +146,6 @@ public class StreetObjectBean extends TerritoryObjectBean
     streetFinderBean.doFind(false);    
     navigatorBean.view("");
   }    
-
-  @Override
-  public void cancel()
-  {
-    cityObjectBean.cancel();    
-    super.cancel();
-  }
-
-  public void onStreetChange()
-  {
-    try
-    {
-      loadObject();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
 
   @Override
   public Serializable saveState()

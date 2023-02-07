@@ -33,13 +33,13 @@ package org.santfeliu.webapp.modules.dic;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Type;
 import org.matrix.dic.TypeFilter;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -50,7 +50,7 @@ import org.santfeliu.webapp.ObjectBean;
  *
  * @author blanquepa
  */
-@ManualScoped
+@ViewScoped
 @Named
 public class TypeFinderBean extends FinderBean
 {
@@ -142,7 +142,7 @@ public class TypeFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     if (typeTypeBean.getRootTypeId().equals(baseTypeId))
       baseTypeId = null;
@@ -155,7 +155,7 @@ public class TypeFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     if (typeTypeBean.getRootTypeId().equals(baseTypeId))
       baseTypeId = null;
@@ -196,7 +196,7 @@ public class TypeFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getTabIndex(), filter, firstRow,
+    return new Object[]{ finding, getFilterSelector(), filter, firstRow,
       getObjectPosition(), rootTypeId };
   }
 
@@ -207,7 +207,7 @@ public class TypeFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setTabIndex((Integer)stateArray[1]);
+      setFilterSelector((Integer)stateArray[1]);
       filter = (TypeFilter)stateArray[2];
       smartFilter = typeTypeBean.filterToQuery(filter);
 
@@ -273,12 +273,12 @@ public class TypeFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getTypeId());
-            typeObjectBean.setSearchTabIndex(
-              typeObjectBean.getEditionTabIndex());
+            typeObjectBean.setSearchSelector(
+              typeObjectBean.getEditionSelector());
           }
           else
           {
-            typeObjectBean.setSearchTabIndex(0);
+            typeObjectBean.setSearchSelector(0);
           }
         }
       }

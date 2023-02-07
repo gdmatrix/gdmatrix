@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
@@ -43,7 +44,6 @@ import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
 import org.santfeliu.faces.FacesUtils;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -54,7 +54,7 @@ import org.santfeliu.webapp.Tab;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class PersonObjectBean extends ObjectBean
 {
   private Person person = new Person();
@@ -113,12 +113,6 @@ public class PersonObjectBean extends ObjectBean
   public String getDescription(String personId)
   {
     return getTypeBean().getDescription(personId);
-  }
-
-  @Override
-  public String show()
-  {
-    return "/pages/kernel/person.xhtml";
   }
 
   @Override

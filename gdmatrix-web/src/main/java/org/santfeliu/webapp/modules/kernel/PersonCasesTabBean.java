@@ -33,11 +33,11 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.ResultListHelper;
@@ -49,7 +49,7 @@ import org.santfeliu.webapp.modules.cases.CasesModuleBean;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class PersonCasesTabBean extends TabBean
 {
   @Inject

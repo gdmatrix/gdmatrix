@@ -33,11 +33,11 @@ package org.santfeliu.webapp.modules.dic;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Type;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -49,7 +49,7 @@ import org.santfeliu.webapp.TypeBean;
  *
  * @author blanquepa
  */
-@ManualScoped
+@ViewScoped
 @Named
 public class TypeObjectBean extends ObjectBean
 {
@@ -121,12 +121,6 @@ public class TypeObjectBean extends ObjectBean
       tabs.add(new Tab("Main", "/pages/dic/type_main.xhtml"));
     }
   }  
-
-  @Override
-  public String show()
-  {
-    return "/pages/dic/type.xhtml";
-  }
   
   //Person selection
   public SelectItem getSuperTypeSelectItem()

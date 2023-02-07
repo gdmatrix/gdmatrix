@@ -32,11 +32,11 @@ package org.santfeliu.webapp.modules.kernel;
 
 import java.util.Collections;
 import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Country;
 import org.matrix.kernel.CountryFilter;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.TypeBean;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class CountryFinderBean
   extends TerritoryFinderBean<CountryFilter, Country>
 {
@@ -95,7 +95,7 @@ public class CountryFinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = countryTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -106,7 +106,7 @@ public class CountryFinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     smartFilter = countryTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -172,12 +172,12 @@ public class CountryFinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getCountryId());
-            countryObjectBean.setSearchTabIndex(
-              countryObjectBean.getEditionTabIndex());
+            countryObjectBean.setSearchSelector(
+              countryObjectBean.getEditionSelector());
           }
           else
           {
-            countryObjectBean.setSearchTabIndex(0);
+            countryObjectBean.setSearchSelector(0);
           }
         }
       }

@@ -37,6 +37,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +47,6 @@ import org.matrix.cases.InterventionView;
 import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.santfeliu.faces.ManualScoped;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -58,7 +58,7 @@ import org.santfeliu.webapp.util.ComponentUtils;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class CaseInterventionsTabBean extends TabBean
 {
   private List<InterventionView> interventionViews;
@@ -253,12 +253,15 @@ public class CaseInterventionsTabBean extends TabBean
       if (intId != null)
       {
         intervention = CasesModuleBean.getPort(false).loadIntervention(intId);
-        UIComponent panel =
-          ComponentUtils.findComponent(":mainform:search_tabs:tabs:" +  
-            caseObjectBean.getCurrentTab().getLabel() + ":int_dyn_form");
 
-        panel.getChildren().clear();
-        includeDynamicComponents(panel);        
+        UIComponent panel =
+          ComponentUtils.findComponent(":mainform:search_tabs:tabs:int_dyn_form");
+        if (panel != null)
+        {
+          panel.getChildren().clear();
+          includeDynamicComponents(panel);        
+        }
+
       }
       else
       {
@@ -336,8 +339,7 @@ public class CaseInterventionsTabBean extends TabBean
     try
     {
       UIComponent panel =
-        ComponentUtils.findComponent(":mainform:search_tabs:tabs:" 
-          + caseObjectBean.getCurrentTab().getLabel() + ":int_dyn_form");
+        ComponentUtils.findComponent(":mainform:search_tabs:tabs:int_dyn_form");
       panel.getChildren().clear();
       includeDynamicComponents(panel);    
     }
@@ -368,8 +370,7 @@ public class CaseInterventionsTabBean extends TabBean
     try
     {      
       PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('interventionDataDialog_" 
-        + caseObjectBean.getCurrentTab().getLabel() + "').show();");
+      current.executeScript("PF('interventionDataDialog').show();");
     }
     catch (Exception ex)
     {

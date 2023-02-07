@@ -121,5 +121,11 @@ public class CountryTypeBean extends TypeBean<Country, CountryFilter>
       return Collections.emptyList();
     }
   }
+  
+  @Override
+  public String getViewId()
+  {
+    return "/pages/kernel/country.xhtml";
+  }  
 
 }

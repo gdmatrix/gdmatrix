@@ -196,6 +196,12 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
       return Collections.EMPTY_LIST;
     }
   }
+  
+  @Override
+  public String getViewId()
+  {
+    return "/pages/kernel/address.xhtml";
+  }  
 
   private List<SelectItem> getStreetTypeSelectItems()
   {

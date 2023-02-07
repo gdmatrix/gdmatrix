@@ -33,11 +33,11 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.PersonFilter;
 import org.matrix.kernel.PersonView;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -49,7 +49,7 @@ import org.santfeliu.webapp.ObjectBean;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class PersonFinderBean extends FinderBean
 {
   private String smartFilter;
@@ -144,7 +144,7 @@ public class PersonFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = personTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -155,7 +155,7 @@ public class PersonFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     smartFilter = personTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -187,7 +187,7 @@ public class PersonFinderBean extends FinderBean
   {
     return new Object[]
     {
-      finding, getTabIndex(), filter, firstRow, getObjectPosition()
+      finding, getFilterSelector(), filter, firstRow, getObjectPosition()
     };
   }
 
@@ -198,7 +198,7 @@ public class PersonFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[]) state;
       finding = (Boolean) stateArray[0];
-      setTabIndex((Integer) stateArray[1]);
+      setFilterSelector((Integer) stateArray[1]);
       filter = (PersonFilter) stateArray[2];
 
       doFind(false);
@@ -263,11 +263,11 @@ public class PersonFinderBean extends FinderBean
           {
             PersonView personView = (PersonView) rows.get(0);
             navigatorBean.view(personView.getPersonId());
-            personObjectBean.setSearchTabIndex(1);
+            personObjectBean.setSearchSelector(1);
           }
           else
           {
-            personObjectBean.setSearchTabIndex(0);
+            personObjectBean.setSearchSelector(0);
           }
         }
       }

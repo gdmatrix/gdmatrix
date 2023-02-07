@@ -40,7 +40,6 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
-import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
@@ -250,7 +249,10 @@ public abstract class ObjectBean extends BaseBean
   }
 
   @Deprecated
-  public abstract String show();
+  public String show()
+  {
+    return null;
+  }
 
   public abstract Object getObject();
 

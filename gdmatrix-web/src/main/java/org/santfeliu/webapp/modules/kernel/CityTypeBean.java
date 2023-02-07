@@ -153,4 +153,10 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
     
     return selectItems;
   }
+  
+  @Override
+  public String getViewId()
+  {
+    return "/pages/kernel/city.xhtml";
+  }  
 }

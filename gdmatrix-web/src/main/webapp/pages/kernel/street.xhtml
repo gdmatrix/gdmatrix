@@ -11,7 +11,7 @@
     <p:outputPanel id="filter_panel">
       
       <p:tabView id="find_selector"
-                 activeIndex="#{streetFinderBean.tabIndex}">
+                 activeIndex="#{streetFinderBean.filterSelector}">
 
         <p:tab id="smart_search">
           <f:facet name="title">
@@ -97,23 +97,23 @@
            
          </div>
           
-          <div class="text-right">
-            <p:commandButton value="Clear"
-                             action="#{streetFinderBean.clear}"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"
-                             />
-            <p:commandButton id="advanced_search_button"
-                             value="Search"
-                             action="#{streetFinderBean.find}"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             styleClass="ui-button-raised m-1"
-                             resetValues="true"
-                             oncomplete="endPanel('leftPanel');"
-                             />
-          </div>  
+        <div class="text-right">
+          <p:commandButton value="Clear"
+                           action="#{streetFinderBean.clear}"
+                           process=":mainform:find_selector"
+                           update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                           resetValues="true"
+                           />
+          <p:commandButton id="advanced_search_button"
+                           value="Search"
+                           action="#{streetFinderBean.find}"
+                           process=":mainform:find_selector"
+                           update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                           styleClass="ui-button-raised m-1"
+                           resetValues="true"
+                           oncomplete="endPanel('leftPanel');"
+                           />
+        </div>  
 
         </p:tab> 
         
@@ -139,7 +139,7 @@
                      update=":mainform:search_tabs:result_list" />      
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
-               activeIndex="#{streetObjectBean.searchTabIndex}"
+               activeIndex="#{streetObjectBean.searchSelector}"
                touchable="false">
       
       <p:tab title="Cerca">

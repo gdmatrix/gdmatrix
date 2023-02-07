@@ -33,12 +33,12 @@ package org.santfeliu.webapp.modules.kernel;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Contact;
 import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.ResultListHelper;
@@ -48,7 +48,7 @@ import org.santfeliu.webapp.helpers.ResultListHelper;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class PersonContactsTabBean extends TabBean
 {
 

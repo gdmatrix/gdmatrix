@@ -31,14 +31,12 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.List;
-import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.KernelManagerPort;
 import org.matrix.kernel.Province;
-import org.santfeliu.faces.ManualScoped;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 
@@ -47,36 +45,17 @@ import org.santfeliu.webapp.NavigatorBean;
  * @author blanquepa
  */
 @Named
-@ManualScoped
+@ViewScoped
 public class ProvinceObjectBean extends TerritoryObjectBean
-{
-  private Province province = new Province();
-  private List<SelectItem> provinceSelectItems;
-  
+{  
   @Inject
   ProvinceFinderBean provinceFinderBean;
-  
-  @Inject
-  CountryObjectBean countryObjectBean;
-  
-  @Inject
-  CityObjectBean cityObjectBean;
-  
+   
   @Inject
   ProvinceTypeBean provinceTypeBean;
   
   @Inject
   NavigatorBean navigatorBean;
-
-  public Province getProvince()
-  {
-    return province;
-  }
-
-  public void setProvince(Province province)
-  {
-    this.province = province;
-  }
   
   @Override
   public FinderBean getFinderBean()
@@ -88,12 +67,6 @@ public class ProvinceObjectBean extends TerritoryObjectBean
   public String getRootTypeId()
   {
     return DictionaryConstants.PROVINCE_TYPE;
-  }
-
-  @Override
-  public String show()
-  {
-    return "/pages/kernel/province.xhtml";
   }
   
   @Override
@@ -124,7 +97,8 @@ public class ProvinceObjectBean extends TerritoryObjectBean
   {
     province = new Province();
     setObjectId(NavigatorBean.NEW_OBJECT_ID);
-    province.setCountryId(countryObjectBean.getCountry().getCountryId());
+    if (country != null)
+      province.setCountryId(country.getCountryId());
   }
   
   @Override
@@ -133,13 +107,7 @@ public class ProvinceObjectBean extends TerritoryObjectBean
     if (objectId != null && !isNew())
     {
       KernelManagerPort port = KernelModuleBean.getPort(false);
-      province = port.loadProvince(objectId);
-      if (!province.getCountryId().equals(countryObjectBean.getObjectId()))
-      {
-        countryObjectBean.setObjectId(province.getCountryId());
-        countryObjectBean.loadObject();
-        loadProvinceSelectItems();
-      }
+      loadProvince(port, objectId);
     }
     else 
     {
@@ -150,13 +118,12 @@ public class ProvinceObjectBean extends TerritoryObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    String countryId = countryObjectBean.getCountry().getCountryId();
+    String countryId = country.getCountryId();
     if (!countryId.equals(province.getCountryId()))
       province.setCountryId(countryId);    
     
     province = KernelModuleBean.getPort(false).storeProvince(province);
     setObjectId(province.getProvinceId());
-    provinceSelectItems = null;
     provinceFinderBean.outdate();
   }  
   
@@ -167,49 +134,7 @@ public class ProvinceObjectBean extends TerritoryObjectBean
     provinceFinderBean.doFind(false);    
     navigatorBean.view("");
   }
-  
-  public List<SelectItem> getProvinceSelectItems()
-  {
-    if (provinceSelectItems == null)
-    {
-      try
-      {
-        loadProvinceSelectItems();
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-    }
-    
-    return provinceSelectItems;
-  } 
-
-  @Override
-  public void cancel()
-  {
-    countryObjectBean.cancel();
-    super.cancel(); 
-  }
-  
-  public void loadProvinceSelectItems() throws Exception
-  {
-    String countryId = countryObjectBean.getCountry().getCountryId();
-    provinceSelectItems = provinceTypeBean.getProvinceSelectItems(countryId);    
-  }
-  
-  public void onProvinceChange()
-  {
-    try
-    {
-      cityObjectBean.loadCitySelectItems();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }      
-  
+      
   @Override
   public Serializable saveState()
   {

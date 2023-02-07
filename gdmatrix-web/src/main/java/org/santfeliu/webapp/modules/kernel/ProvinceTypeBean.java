@@ -148,4 +148,10 @@ public class ProvinceTypeBean extends TypeBean<Province, ProvinceFilter>
     
     return selectItems;
   }
+  
+  @Override
+  public String getViewId()
+  {
+    return "/pages/kernel/province.xhtml";
+  }  
 }

@@ -92,7 +92,7 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
         <h:outputText value="#{personObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{personObjectBean.getTabs().get(personObjectBean.tabIndex).getLabel()}" />   
+        <h:outputText value="#{personObjectBean.getTabs().get(personObjectBean.detailSelector).getLabel()}" />   
         <i class="pi pi-angle-right mx-2"></i> 
         <h:outputText value="#{personContactsTabBean.contact.contactId}" />
       </p:outputPanel>

@@ -236,4 +236,10 @@ public class StreetTypeBean extends TypeBean<Street, StreetFilter>
     return items;
   }
 
+  @Override
+  public String getViewId()
+  {
+    return "/pages/kernel/street.xhtml";
+  }  
+  
 }

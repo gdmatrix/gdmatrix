@@ -180,6 +180,12 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     }
     return types;
   }
+  
+  @Override
+  public String getViewId()
+  {
+    return "/pages/dic/type.xhtml";
+  }  
 
   @Override
   protected void addNavigatorItems(List<SelectItem> items, String typeId)
