@@ -374,6 +374,7 @@ public class DocumentObjectBean extends ObjectBean
     tabs = new ArrayList<>();
     tabs.add(new Tab("Main", "/pages/doc/document_main.xhtml"));
     tabs.add(new Tab("Content", "/pages/doc/document_content.xhtml"));
+    tabs.add(new Tab("Cases", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
   }
 
   public void lock()
@@ -498,7 +499,7 @@ public class DocumentObjectBean extends ObjectBean
   @Override
   public void restoreState(Serializable state)
   {
-    this.document = (Document) document;
+    this.document = (Document) state;
   }
 
 }

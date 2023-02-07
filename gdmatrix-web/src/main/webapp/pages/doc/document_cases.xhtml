@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                var="caseBundle" />
+
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                var="objectBundle" />         
+  
+  <h:panelGroup>      
+
+    <!-- Results table -->
+    <p:dataTable id="document_cases_table" value="#{documentCasesTabBean.caseDocumentViews}" 
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" 
+                 size="small" paginatorPosition="bottom" 
+                 rowIndexVar="firstRow" first="#{documentCasesTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex align-items-center">
+          <div class="w-9">
+            <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+                             action="#{documentCasesTabBean.create}" 
+                             process="@this"
+                             update="@parent:@parent:@parent:document_cases_panels"
+                             oncomplete="PF('documentCasesDialog').show()"                                 
+                             alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+          </div>          
+        </div>
+      </f:facet>      
+
+      <p:column headerText="docId" styleClass="w-1"
+                exportHeaderValue="docId">
+        <h:outputText value="#{row.caseObject.caseId}" />
+      </p:column> 
+
+      <p:column headerText="Title" styleClass="w-3"
+                exportHeaderValue="Title">
+        <h:outputText value="#{row.caseObject.title}"/>
+      </p:column>
+
+      <p:column headerText="Type" styleClass="w-3"
+                exportHeaderValue="Type">
+        <h:outputText value="#{row.caseObject.caseTypeId}"/>
+      </p:column>
+
+      <p:column styleClass="w-1">
+        <p:commandButton icon="pi pi-pencil" 
+                         styleClass="rounded-button ui-button-flat" 
+                         action="#{documentCasesTabBean.edit(row)}" 
+                         process="@this" update="@parent:@parent:@parent:@parent:document_cases_panels"
+                         oncomplete="PF('documentCasesDialog').show()"
+                         />
+        <p:commandButton icon="pi pi-external-link" 
+                         styleClass="rounded-button ui-button-flat" 
+                         ajax="false"
+                         action="#{navigatorBean.show(row.caseObject.caseTypeId, row.caseObject.caseId)}" />
+      </p:column>
+    </p:dataTable>
+
+  </h:panelGroup>
+
+  <!-- Only works appendTo="@(form)" with one single form -->    
+  <p:dialog id="document_cases_dialog" widgetVar="documentCasesDialog" 
+            styleClass="edit_data_dialog" style="max-width:800px" 
+            modal="true" responsive="true" closable="true"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <p:autoUpdate />        
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <h:outputText value="#{documentObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{documentObjectBean.getCurrentTab().getLabel()}" />   
+        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{documentCasesTabBean.caseDocument.caseDocId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <p:outputPanel id="document_cases_panels">
+      <p:panel styleClass="mt-2"
+               rendered="#{documentCasesTabBean.caseDocument != null}">
+
+        <div class="ui-fluid formgrid grid" >
+
+          <div class="field col-12">  
+            <p:outputLabel for="@next"
+                           value="Expedient"
+                           styleClass="w-full" />
+            <emcomp:objectReference value="#{documentCasesTabBean.caseId}"
+                                    process="@this @parent:@parent:@parent:document_cases_panels"
+                                    type="Case"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3">
+            </emcomp:objectReference>
+          </div>              
+
+          <!-- Comments -->
+          <div class="field col-12">
+            <p:outputLabel for="@next"
+                           value="Volume" />
+            <p:inputText value="#{documentCasesTabBean.caseDocument.volume}" />
+          </div>
+          
+          <!-- Comments -->
+          <div class="field col-12">
+            <p:outputLabel for="@next"
+                           value="Comments" />
+            <p:inputTextarea value="#{documentCasesTabBean.caseDocument.comments}" />
+          </div>
+
+        </div>
+
+      </p:panel>     
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{documentCasesTabBean.store}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         update="document_cases_table document_cases_panels"
+                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('documentCasesDialog').hide()"/>
+        <p:commandButton action="#{documentCasesTabBean.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                         update="document_cases_panels :mainform:growl" global="false" 
+                         oncomplete="PF('documentCasesDialog').hide()"/>
+      </div>      
+
+    </p:outputPanel>    
+  </p:dialog>  
+
+</ui:composition>

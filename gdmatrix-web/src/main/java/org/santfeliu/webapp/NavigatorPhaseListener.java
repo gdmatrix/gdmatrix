@@ -50,7 +50,7 @@ public class NavigatorPhaseListener implements PhaseListener
   public void beforePhase(PhaseEvent pe)
   {
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-    navigatorBean.contructBeans();
+    navigatorBean.constructBeans();
   }
 
   @Override
