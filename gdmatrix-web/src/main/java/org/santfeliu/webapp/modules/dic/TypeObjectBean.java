@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -150,5 +151,18 @@ public class TypeObjectBean extends ObjectBean
       baseTypeId = null;    
     return typeTypeBean.getSelectItems(query, baseTypeId, true, true);
   }
+  
+  public List<org.santfeliu.dic.Type> getSuperTypes()
+  {
+    List<org.santfeliu.dic.Type> result = new ArrayList<>();
+    String typeId = type.getTypeId();
+    if (typeId != null && typeId.trim().length() > 0)
+    {
+      TypeCache cache = TypeCache.getInstance();
+      org.santfeliu.dic.Type t = cache.getType(typeId);
+      if (t != null) result = t.getSuperTypes();
+    }
+    return result;
+  }  
   
 }

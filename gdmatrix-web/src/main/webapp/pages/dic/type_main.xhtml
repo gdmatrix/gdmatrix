@@ -10,7 +10,23 @@
   <f:loadBundle basename="org.santfeliu.dic.web.resources.DictionaryBundle"
                 var="dicBundle" />
 
+    <ui:repeat value="#{typeObjectBean.superTypes}" var="type">      
+      <h:panelGroup class="" style="display:block">
+        <span class="#{favoriteObjectsBean.icon} mr-2" />
+        <p:commandLink action="#{navigatorBean.view(type.getTypeId())}" 
+                       process="@this" 
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel">
+          <h:outputText value="#{type.typeId} : #{type.description}" />
+        </p:commandLink>
+      </h:panelGroup>
+      <h:panelGroup>
+        <span class="pi pi-arrow-up mr-2" />
+      </h:panelGroup>
+    </ui:repeat>     
+  
   <div class="ui-fluid formgrid grid">
+    
+ 
 
     <div class="field col-12 md:col-6">
       <p:outputLabel for="@next" value="TypeId" />
@@ -63,9 +79,10 @@
     <p:outputPanel styleClass="field col-12 md:col-3" 
                    rendered="#{typeObjectBean.type.creationDateTime != null}">
       <p:outputLabel for="@next" value="Creació"/>
-      <p:datePicker  id="creation_date_time" value="#{typeObjectBean.type.creationDateTime}" 
+      <p:datePicker  id="creation_date_time" value="#{typeObjectBean.type.creationDateTime}"
+                     pattern="dd/MM/yyyy HH:mm:ss"
                      locale="es" converter="datePickerConverter"
-                     showIcon="false" disabled="true" showTime="true" />          
+                     showIcon="true" disabled="true" showTime="true" />          
     </p:outputPanel> 
     
     <p:outputPanel styleClass="field col-12 md:col-3" 
@@ -78,8 +95,9 @@
                    rendered="#{typeObjectBean.type.changeDateTime != null}">
       <p:outputLabel value="Darrera modificació"/>
       <p:datePicker id="change_date_time" value="#{typeObjectBean.type.changeDateTime}" 
+                    pattern="dd/MM/yyyy HH:mm:ss"
                      locale="es" converter="datePickerConverter"
-                     showIcon="false" disabled="true" showTime="true" />          
+                     showIcon="true" disabled="true" showTime="true" />          
     </p:outputPanel>       
     
     <p:outputPanel styleClass="field col-12 md:col-3"
@@ -87,9 +105,6 @@
       <p:outputLabel for="@next" value="Usuari modificador" />
       <p:inputText id="change_user_id" value="#{typeObjectBean.type.changeUserId}" disabled="true"/>
     </p:outputPanel>       
-  
-
-   
     
   </div>  
 </ui:composition>
