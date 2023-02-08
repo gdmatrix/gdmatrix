@@ -511,5 +511,10 @@ function checkFirefoxFontSizeChange()
   }, 4000);          
 }
 
+function isFacesError()
+{
+  return document.getElementsByClassName('ui-growl-image-error').length > 0; 
+}
+
 initKeyCapture();
 checkFirefoxFontSizeChange();

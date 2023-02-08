@@ -42,6 +42,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.faces.event.FacesEvent;
 import javax.faces.view.ViewScoped;
 import org.primefaces.component.tabview.TabView;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
@@ -236,6 +237,26 @@ public abstract class ObjectBean extends BaseBean
     if (selector >= tabs.size()) return null;
 
     return tabs.get(selector);
+  }
+
+  public void updateCurrentTab(FacesEvent event)
+  {
+    UIComponent component = event.getComponent();
+    UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
+    while (component != null && component != viewRoot)
+    {
+      if (component instanceof org.primefaces.component.tabview.Tab)
+      {
+        TabView currentTabView = (TabView)component.getParent();
+        int index = currentTabView.getChildren().indexOf(component);
+        if (index >= 0)
+        {
+          setDetailSelector(index);
+          break;
+        }
+      }
+      component = component.getParent();
+    }
   }
 
   @Deprecated

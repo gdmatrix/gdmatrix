@@ -55,7 +55,7 @@
                          styleClass="ui-button-raised select-button"
                          process="#{cc.attrs.process}"
                          update="#{cc.attrs.update}"
-                         oncomplete="if (document.getElementsByClassName('ui-growl-item').length==0) {document.getElementById(this.source).previousSibling.click();}"
+                         oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}"
                          />
       </div>
