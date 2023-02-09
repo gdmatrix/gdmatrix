@@ -9,6 +9,8 @@
 
   <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                 var="caseBundle" />
+  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                var="objectBundle" />     
   <h:panelGroup>
 
     <!-- Results table -->
@@ -19,24 +21,16 @@
                  rowIndexVar="firstRow" first="#{caseInterventionsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rows="5" rowsPerPageTemplate="5,10,25,50">
+                 rows="10" rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex flex-row-reverse w-12">      
-          <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
-                        rendered="#{caseInterventionsTabBean.interventionViews.size() > 0}" >
-            <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
-                        rendered="#{caseInterventionsTabBean.interventionViews.size() > 0}">
-              <p:dataExporter type="pdf" target="case_interventions_table" fileName="results" pageOnly="true"/>
-            </p:menuitem>
-            <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
-                        rendered="#{caseInterventionsTabBean.interventionViews.size() > 0}">
-              <p:dataExporter type="csv" target="case_interventions_table" fileName="results" pageOnly="true" />
-            </p:menuitem> 
-          </p:menuButton>   
+        <div class="flex flex-row-reverse w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{caseInterventionsTabBean.create}" 
-                           update="@parent:@parent:@parent:intervention_edit_panels"
+                           process="@this"
+                           update="@parent:@parent:@parent:case_interventions_dialog"
+                           resetValues="true"
+                           actionListener="#{caseObjectBean.updateCurrentTab}"                           
                            oncomplete="PF('interventionDataDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>              
@@ -74,12 +68,14 @@
                            rendered="#{row.intId != null}"
                            styleClass="rounded-button ui-button-flat"                               
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           process="@this" update="@parent:@parent:@parent:@parent:intervention_edit_panels"
+                           process="@this" 
+                           update="@parent:@parent:@parent:@parent:case_interventions_dialog"
                            resetValues="true"
+                           actionListener="#{caseObjectBean.updateCurrentTab}"
                            oncomplete="PF('interventionDataDialog').show()" />
           <p:commandButton action="#{caseInterventionsTabBean.remove(row)}"
                            process="@this" 
-                           update="@parent:@parent:@parent:@parent:intervention_edit_panels case_interventions_table :mainform:growl"
+                           update="@parent:@parent:@parent:@parent:case_interventions_dialog case_interventions_table :mainform:growl"
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
@@ -95,7 +91,7 @@
   </h:panelGroup>
 
   <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="intervention_data_dialog" widgetVar="interventionDataDialog" 
+  <p:dialog id="case_interventions_dialog" widgetVar="interventionDataDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
             modal="true" responsive="true" closable="true"
             appendTo="@(form)" position="center center" resizable="false">
@@ -112,102 +108,101 @@
       </p:outputPanel>
     </f:facet>  
 
-    <p:outputPanel id="intervention_edit_panels">
-      <p:panel id="edit_intervention_form"
-               styleClass="mt-2"
-               rendered="#{caseInterventionsTabBean.intervention != null}">
+    <p:panel id="case_interventions_panel"
+             styleClass="mt-2"
+             rendered="#{caseInterventionsTabBean.intervention != null}">
 
-        <div class="ui-fluid formgrid grid" >        
+      <div class="ui-fluid formgrid grid" >        
 
-          <p:outputPanel styleClass="field col-12">  
-            <p:outputLabel for="@next"  
-                           value="#{caseBundle.caseInterventions_type}"
-                           styleClass="w-full" />
-            <emcomp:typeReference value="#{caseInterventionsTabBean.intervention.intTypeId}"
-                                  process="@this @parent:@parent:@parent:intervention_edit_panels"
-                                  type="#{caseInterventionsTabBean.baseIntTypeId != null ? caseInterventionsTabBean.baseIntTypeId : 'Intervention'}"
+        <p:outputPanel styleClass="field col-12">  
+          <p:outputLabel for="@next"  
+                         value="#{caseBundle.caseInterventions_type}"
+                         styleClass="w-full" />
+          <emcomp:typeReference value="#{caseInterventionsTabBean.intervention.intTypeId}"
+                                process="@(.savable)"
+                                type="#{caseInterventionsTabBean.baseIntTypeId != null ? caseInterventionsTabBean.baseIntTypeId : 'Intervention'}"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3">   
+            <p:ajax event="itemSelect" listener="#{caseInterventionsTabBean.onTypeSelect}" 
+                    process="@this" update="@parent:@parent:@parent:int_dyn_form" />
+          </emcomp:typeReference>
+        </p:outputPanel>    
+
+
+
+        <!-- Dates -->
+        <p:outputPanel styleClass="field col-12 md:col-3">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.caseInterventions_startDate}"/>
+          <p:datePicker id="start_date" value="#{caseInterventionsTabBean.startDateTime}"     
+                        styleClass="savable"
+                        autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
+                        locale="es" showOnFocus="false" touchUI="true" 
+                        converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
+                        showIcon="true" showTime="true"/>
+        </p:outputPanel>
+
+        <p:outputPanel class="field col-12 md:col-3">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.caseInterventions_endDate}"/>
+          <p:datePicker id="end_date" value="#{caseInterventionsTabBean.endDateTime}"
+                        styleClass="savable"
+                        autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
+                        locale="es" showOnFocus="false" touchUI="true" 
+                        converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
+                        showIcon="true" showTime="true"/>
+        </p:outputPanel> 
+
+        <!-- Person -->
+        <p:outputPanel styleClass="field col-12 md:col-6">  
+          <p:outputLabel for="@next"  
+                         value="#{caseBundle.caseInterventions_person}"
+                         styleClass="w-full" />
+
+          <emcomp:objectReference value="#{caseInterventionsTabBean.personId}"
+                                  type="Person"
+                                  process="@this @parent:@parent:@parent:case_interventions_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  minQueryLength="3">   
-              <p:ajax event="itemSelect" listener="#{caseInterventionsTabBean.onTypeSelect}" 
-                      process="@this" update="@parent:@parent:@parent:int_dyn_form" />
-            </emcomp:typeReference>
-          </p:outputPanel>    
+                                  minQueryLength="3">
+            <p:ajax event="clear" listener="#{caseInterventionsTabBean.onPersonClear}" 
+                    update="@this" />
+          </emcomp:objectReference>  
+        </p:outputPanel>            
 
+        <!-- Comments -->
+        <p:outputPanel class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseInterventions_comments}" />
+          <p:inputTextarea id="comments" value="#{caseInterventionsTabBean.intervention.comments}" 
+                           styleClass="savable"/>
+        </p:outputPanel>
 
+        <!-- Dynamic form -->
+        <h:panelGroup id="int_dyn_form" layout="block">
+          <f:event type="postAddToView" listener="#{caseInterventionsTabBean.loadDynamicComponents}" />
+        </h:panelGroup>
 
-          <!-- Dates -->
-          <p:outputPanel styleClass="field col-12 md:col-3">
-            <p:outputLabel for="@next" 
-                           value="#{caseBundle.caseInterventions_startDate}"/>
-            <p:datePicker id="start_date" value="#{caseInterventionsTabBean.startDateTime}"     
-                          autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
-                          locale="es" showOnFocus="false" touchUI="true" 
-                          converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
-                          showIcon="true" showTime="true"/>
-          </p:outputPanel>
+      </div>
 
-          <p:outputPanel class="field col-12 md:col-3">
-            <p:outputLabel for="@next" 
-                           value="#{caseBundle.caseInterventions_endDate}"/>
-            <p:datePicker id="end_date" value="#{caseInterventionsTabBean.endDateTime}"
-                          autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
-                          locale="es" showOnFocus="false" touchUI="true" 
-                          converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
-                          showIcon="true" showTime="true"/>
-          </p:outputPanel> 
+    </p:panel>     
 
-          <!-- Person -->
-          <p:outputPanel styleClass="field col-12 md:col-6">  
-            <p:outputLabel for="@next"  
-                           value="#{caseBundle.caseInterventions_person}"
-                           styleClass="w-full" />
+    <div class="field col-12 text-right">
+      <p:commandButton action="#{caseInterventionsTabBean.store}" 
+                       styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                       process="case_interventions_dialog"
+                       update="case_interventions_table case_interventions_panel"
+                       oncomplete="if (!isFacesError()) PF('interventionDataDialog').hide()"/>
+      <p:commandButton action="#{caseInterventionsTabBean.cancel}" 
+                       styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                       update="case_interventions_dialog :mainform:growl" global="false" 
+                       immediate="true"
+                       oncomplete="PF('interventionDataDialog').hide()"/>
+    </div>      
 
-            <emcomp:objectReference value="#{caseInterventionsTabBean.personId}"
-                                    type="Person"
-                                    process="@this @parent:@parent:@parent:intervention_edit_panels"
-                                    styleClass="w-full"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3">
-              <p:ajax event="clear" listener="#{caseInterventionsTabBean.onPersonClear}" 
-                      update="@parent:@parent:@parent:intervention_edit_panels" />
-            </emcomp:objectReference>  
-          </p:outputPanel>            
-
-          <!-- Comments -->
-          <p:outputPanel class="field col-12">
-            <p:outputLabel for="@next"
-                           value="#{caseBundle.caseInterventions_comments}" />
-            <p:inputTextarea id="comments" value="#{caseInterventionsTabBean.intervention.comments}" />
-          </p:outputPanel>
-
-          <!-- Dynamic form -->
-          <h:panelGroup id="int_dyn_form" layout="block">
-            <f:event type="postAddToView" listener="#{caseInterventionsTabBean.loadDynamicComponents}" />
-          </h:panelGroup>
-
-        </div>
-
-      </p:panel>     
-
-      <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
-                    var="objectBundle" />         
-
-      <div class="field col-12 text-right">
-        <p:commandButton action="#{caseInterventionsTabBean.store}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                         update="case_interventions_table intervention_edit_panels"
-                         oncomplete="if (args &amp;&amp; !args.validationFailed) PF('interventionDataDialog').hide()"/>
-        <p:commandButton action="#{caseInterventionsTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         update="intervention_edit_panels :mainform:growl" global="false" 
-                         immediate="true"
-                         oncomplete="PF('interventionDataDialog').hide()"/>
-      </div>      
-
-    </p:outputPanel>    
   </p:dialog>  
 
 </ui:composition>

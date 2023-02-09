@@ -10,6 +10,9 @@
   <ui:define name="body">
 
     <h:outputStylesheet library="css" name="object_3col.css" />
+    
+    <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
+                  var="objectBundle" />     
 
     <p:button onclick="return showPanel('leftPanel');"  
               icon="pi pi-search" 
@@ -30,7 +33,7 @@
                  class="side_panel left m-1 first_time"> 
           <f:facet name="header">
             <i class="pi pi-search m-1"></i>
-            <p:outputLabel value="Cerca" />
+            <p:outputLabel value="#{objectBundle.search}" />
             <p:commandLink onclick="return closePanel('leftPanel');" 
                            class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
               <span class="ui-icon ui-icon-closethick"></span>
@@ -57,7 +60,7 @@
                  class="side_panel right m-1 first_time"> 
           <f:facet name="header">
             <i class="pi pi-sitemap m-1"></i>
-            <span>Context</span>
+            <span>#{objectBundle.context}</span>
             <p:commandLink onclick="return closePanel('rightPanel');" 
                            class="ui-panel-titlebar-icon ui-corner-all ui-state-default">
               <span class="ui-icon ui-icon-closethick"></span>
@@ -71,7 +74,7 @@
 
               <p:ajax event="tabChange" process="@this" />
 
-              <p:tab title="Recents">
+              <p:tab title="#{objectBundle.recent}">
                 <p:tree value="#{recentObjectsBean.treeNode}" 
                         var="data" nodeVar="node"
                         animate="true"
@@ -100,7 +103,7 @@
                   </p:treeNode>
                 </p:tree>
               </p:tab>
-              <p:tab title="Historial">
+              <p:tab title="#{objectBundle.history}">
                 <div class="history">
                   <ui:repeat value="#{historyBean.entries}" 
                             var="leap">
@@ -129,7 +132,7 @@
               <p:tab id="favorites">
                 <f:facet name="title">
                   <span class="pi pi-star-fill mr-2"/> 
-                  <h:outputText value="Favorits" /> 
+                  <h:outputText value="#{objectBundle.favorites}" /> 
                 </f:facet>
                 <div class="favorites">
                   <ui:repeat value="#{favoriteObjectsBean.favoriteObjects}" 

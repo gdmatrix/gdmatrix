@@ -14,19 +14,19 @@
         <p:tab id="smart_search">
           <f:facet name="title">
             <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="Ràpida" /> 
+            <h:outputText value="#{objectBundle.quick}" /> 
           </f:facet>
 
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
           <div class="buttons field">
-            <p:outputLabel for="@next" value="Valor" />
+            <p:outputLabel for="@next" value="#{objectBundle.value}" />
             <p:inputText id="smartFilter" value="#{typeFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
           </div>
 
           <div class="buttons text-right">
-            <p:commandButton value="Clear"
+            <p:commandButton value="#{objectBundle.clear}"
                              action="#{typeFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
@@ -34,7 +34,7 @@
                              resetValues="true"                             
                              />
             <p:commandButton id="smart_search_button"
-                             value="Search"
+                             value="#{objectBundle.search}"
                              action="#{typeFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
@@ -46,7 +46,7 @@
         <p:tab id="advanced_search">
           <f:facet name="title">
             <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="Avançada" /> 
+            <h:outputText value="#{objectBundle.advanced}" /> 
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
           <f:loadBundle basename="org.santfeliu.dic.web.resources.DictionaryBundle"
@@ -93,7 +93,7 @@
                              resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
-                             value="Search"
+                             value="#{objectBundle.search}"
                              action="#{typeFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
@@ -135,7 +135,7 @@
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
-          <h:outputText value="Resultats"/>
+          <h:outputText value="#{objectBundle.list}"/>
         </f:facet>
         <h:panelGroup id="result_list">
           <ui:include src="type_list.xhtml" />
@@ -145,7 +145,7 @@
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>
-          <h:outputText value="Edició"/>
+          <h:outputText value="#{objectBundle.edition}"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">
           <ui:param name="objectBean" value="#{typeObjectBean}" />
