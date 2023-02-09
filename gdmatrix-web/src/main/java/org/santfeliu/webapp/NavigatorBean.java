@@ -53,7 +53,6 @@ import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
-import org.santfeliu.webapp.modules.doc.DocumentObjectBean;
 
 /**
  *
@@ -133,7 +132,7 @@ public class NavigatorBean extends WebBean implements Serializable
       ObjectBean objectBean = baseTypeInfo.getObjectBean();
       if (objectBean != null)
       {
-        String page = baseTypeInfo.getObjectBean().show();
+        String page = objectBean.getTypeBean().getViewId();
         return "<script>window.history.replaceState({},'','" + page +
           "?xmid=" + baseTypeInfo.getMid() + "');</script>";
       }
