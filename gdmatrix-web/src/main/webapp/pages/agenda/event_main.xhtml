@@ -5,7 +5,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:pe="http://primefaces.org/ui/extensions"                
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
     <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                   var="agendaBundle" />
@@ -60,28 +61,14 @@
                       monthNavigator="true" yearNavigator="true" />
       </div>        
 
-      <p:outputPanel styleClass="field col-12 md:col-3" rendered="#{eventObjectBean.creationDateTime != null}">
-        <p:outputLabel value="#{agendaBundle.event_creationDateTime}"/>
-        <p:datePicker value="#{eventObjectBean.creationDateTime}" 
-                      locale="#{eventObjectBean.language}" 
-                      showIcon="true" disabled="true" showTime="true" />          
-        <p:outputLabel value="#{agendaBundle.event_createdBy}:"
-          styleClass="textBox" style="margin-right: 2px"
-          rendered="#{eventObjectBean.event.creationUserId != null}"/>
-        <h:outputText value="#{eventObjectBean.event.creationUserId}"/>
-      </p:outputPanel>
-
-      <p:outputPanel styleClass="field col-12 md:col-3" rendered="#{eventObjectBean.changeDateTime != null}">
-        <p:outputLabel value="#{agendaBundle.event_changeDateTime}"/>
-        <p:datePicker  value="#{eventObjectBean.changeDateTime}" 
-                      locale="#{eventObjectBean.language}" 
-                      showIcon="true" disabled="true" showTime="true" />          
-        <p:outputLabel value="#{agendaBundle.event_changedBy}:"
-          styleClass="textBox" style="margin-right: 2px"
-          rendered="#{eventObjectBean.event.changeUserId != null}"/>
-        <h:outputText value="#{eventObjectBean.event.changeUserId}"/>
-      </p:outputPanel>
-
+      <div class="field col-12 md:col-6"></div>
+      
+      <emcomp:auditData creationDateTime="#{eventObjectBean.event.creationDateTime}"
+                        creationUserId="#{eventObjectBean.event.creationUserId}"
+                        changeDateTime="#{eventObjectBean.event.changeDateTime}"
+                        changeUserId="#{eventObjectBean.event.changeUserId}"
+                        rendered="#{!eventObjectBean.new}" />
+      
       <div class="field col-12">
         <p:outputLabel for="description" value="#{agendaBundle.event_description}"  />        
         <p:inputTextarea id="description" value="#{eventObjectBean.event.description}" 
