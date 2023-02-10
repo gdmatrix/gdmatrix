@@ -30,14 +30,17 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
+import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -50,9 +53,9 @@ import org.santfeliu.webapp.TabBean;
 @ViewScoped
 public class CaseDocumentsTabBean extends TabBean
 {
-  private List<CaseDocumentView> caseDocumentViews;
+  private List<CaseDocumentView> rows;
   private int firstRow;
-  private String newDocId; // find/select test;
+  private CaseDocument editing;
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -69,24 +72,38 @@ public class CaseDocumentsTabBean extends TabBean
     return caseObjectBean;
   }
 
-  public List<CaseDocumentView> getCaseDocumentViews()
+  public List<CaseDocumentView> getRows()
   {
-    return caseDocumentViews;
+    return rows;
   }
 
-  public void setCaseDocumentViews(List<CaseDocumentView> caseDocumentViews)
+  public void setRows(List<CaseDocumentView> caseDocumentViews)
   {
-    this.caseDocumentViews = caseDocumentViews;
+    this.rows = caseDocumentViews;
   }
 
-  public String getNewDocId()
+  public CaseDocument getEditing()
   {
-    return newDocId;
+    return editing;
   }
 
-  public void setNewDocId(String newDocId)
+  public void setEditing(CaseDocument caseDocument)
   {
-    this.newDocId = newDocId;
+    this.editing = caseDocument;
+  }
+
+  public String getDocId()
+  {
+    return editing == null ? NEW_OBJECT_ID : editing.getDocId();
+  }
+
+  public void setDocId(String docId)
+  {
+    if (editing != null)
+    {
+      editing.setDocId(docId);
+      showDialog();
+    }
   }
 
   public int getFirstRow()
@@ -109,7 +126,7 @@ public class CaseDocumentsTabBean extends TabBean
       {
         CaseDocumentFilter filter = new CaseDocumentFilter();
         filter.setCaseId(objectId);
-        caseDocumentViews =
+        rows =
           CasesModuleBean.getPort(false).findCaseDocumentViews(filter);
       }
       catch (Exception ex)
@@ -117,18 +134,111 @@ public class CaseDocumentsTabBean extends TabBean
         error(ex);
       }
     }
-    else caseDocumentViews = Collections.EMPTY_LIST;
+    else rows = Collections.EMPTY_LIST;
   }
 
   @Override
   public void store()
   {
-    System.out.println("NewDocId: " + newDocId);
+    try
+    {
+      editing.setCaseId(objectId);
+      if (editing.getCaseDocTypeId() == null)
+      {
+        editing.setCaseDocTypeId("CaseDocument");
+      }
+      CasesModuleBean.getPort(false).storeCaseDocument(editing);
+      load();
+      editing = null;
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
-  public void onDocumentClear()
+  public void cancel()
   {
-    System.out.println("clear");
-    newDocId = null;
+    info("CANCEL_OBJECT");
+    editing = null;
   }
+
+  public void create()
+  {
+    editing = new CaseDocument();
+  }
+
+  public void edit(CaseDocumentView caseDocView)
+  {
+    if (caseDocView != null)
+    {
+      try
+      {
+        editing = CasesModuleBean.getPort(false)
+          .loadCaseDocument(caseDocView.getCaseDocId());
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+    else
+    {
+      create();
+    }
+  }
+
+  public void remove(CaseDocumentView caseDocView)
+  {
+    if (caseDocView != null)
+    {
+      try
+      {
+        CasesModuleBean.getPort(false)
+          .removeCaseDocument(caseDocView.getCaseDocId());
+        load();
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ editing };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      editing = (CaseDocument)stateArray[0];
+
+      load();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  private void showDialog()
+  {
+    try
+    {
+      PrimeFaces current = PrimeFaces.current();
+      current.executeScript("PF('caseDocumentsDialog').show();");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+
 }

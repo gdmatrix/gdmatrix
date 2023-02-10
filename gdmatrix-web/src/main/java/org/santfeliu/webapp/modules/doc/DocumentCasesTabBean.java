@@ -42,7 +42,6 @@ import javax.inject.Named;
 import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
-import org.matrix.cases.Intervention;
 import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -56,9 +55,9 @@ import org.santfeliu.webapp.TabBean;
 @ViewScoped
 public class DocumentCasesTabBean extends TabBean
 {
-  private List<CaseDocumentView> caseDocumentViews;
+  private List<CaseDocumentView> rows;
   private int firstRow;
-  private CaseDocument caseDocument;
+  private CaseDocument editing;
 
   @Inject
   DocumentObjectBean documentObjectBean;
@@ -75,36 +74,36 @@ public class DocumentCasesTabBean extends TabBean
     return documentObjectBean;
   }
 
-  public List<CaseDocumentView> getCaseDocumentViews()
+  public List<CaseDocumentView> getRows()
   {
-    return caseDocumentViews;
+    return rows;
   }
 
-  public void setCaseDocumentViews(List<CaseDocumentView> caseDocumentViews)
+  public void setRows(List<CaseDocumentView> caseDocumentViews)
   {
-    this.caseDocumentViews = caseDocumentViews;
+    this.rows = caseDocumentViews;
   }
 
-  public CaseDocument getCaseDocument()
+  public CaseDocument getEditing()
   {
-    return caseDocument;
+    return editing;
   }
 
-  public void setCaseDocument(CaseDocument caseDocument)
+  public void setEditing(CaseDocument caseDocument)
   {
-    this.caseDocument = caseDocument;
+    this.editing = caseDocument;
   }
 
   public String getCaseId()
   {
-    return caseDocument == null ? NEW_OBJECT_ID : caseDocument.getCaseId();
+    return editing == null ? NEW_OBJECT_ID : editing.getCaseId();
   }
 
   public void setCaseId(String caseId)
   {
-    if (caseDocument != null)
+    if (editing != null)
     {
-      caseDocument.setCaseId(caseId);
+      editing.setCaseId(caseId);
       showDialog();
     }
   }
@@ -129,7 +128,7 @@ public class DocumentCasesTabBean extends TabBean
       {
         CaseDocumentFilter filter = new CaseDocumentFilter();
         filter.setDocId(objectId);
-        caseDocumentViews =
+        rows =
           CasesModuleBean.getPort(false).findCaseDocumentViews(filter);
       }
       catch (Exception ex)
@@ -137,7 +136,7 @@ public class DocumentCasesTabBean extends TabBean
         error(ex);
       }
     }
-    else caseDocumentViews = Collections.EMPTY_LIST;
+    else rows = Collections.EMPTY_LIST;
   }
 
   @Override
@@ -145,14 +144,14 @@ public class DocumentCasesTabBean extends TabBean
   {
     try
     {
-      caseDocument.setDocId(objectId);
-      if (caseDocument.getCaseDocTypeId() == null)
+      editing.setDocId(objectId);
+      if (editing.getCaseDocTypeId() == null)
       {
-        caseDocument.setCaseDocTypeId("CaseDocument");
+        editing.setCaseDocTypeId("CaseDocument");
       }
-      CasesModuleBean.getPort(false).storeCaseDocument(caseDocument);
+      CasesModuleBean.getPort(false).storeCaseDocument(editing);
       load();
-      caseDocument = null;
+      editing = null;
     }
     catch (Exception ex)
     {
@@ -163,12 +162,12 @@ public class DocumentCasesTabBean extends TabBean
   public void cancel()
   {
     info("CANCEL_OBJECT");
-    caseDocument = null;
+    editing = null;
   }
 
   public void create()
   {
-    caseDocument = new CaseDocument();
+    editing = new CaseDocument();
   }
 
   public void edit(CaseDocumentView caseDocView)
@@ -177,7 +176,7 @@ public class DocumentCasesTabBean extends TabBean
     {
       try
       {
-        caseDocument = CasesModuleBean.getPort(false)
+        editing = CasesModuleBean.getPort(false)
           .loadCaseDocument(caseDocView.getCaseDocId());
       }
       catch (Exception ex)
@@ -191,10 +190,27 @@ public class DocumentCasesTabBean extends TabBean
     }
   }
 
+  public void remove(CaseDocumentView caseDocView)
+  {
+    if (caseDocView != null)
+    {
+      try
+      {
+        CasesModuleBean.getPort(false)
+          .removeCaseDocument(caseDocView.getCaseDocId());
+        load();
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ caseDocument };
+    return new Object[]{ editing };
   }
 
   @Override
@@ -203,7 +219,7 @@ public class DocumentCasesTabBean extends TabBean
     try
     {
       Object[] stateArray = (Object[])state;
-      caseDocument = (CaseDocument)stateArray[0];
+      editing = (CaseDocument)stateArray[0];
 
       load();
     }
