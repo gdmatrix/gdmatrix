@@ -12,10 +12,10 @@
   <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="place_results_table" value="#{eventPlacesTabBean.resultListHelper.rows}" 
+    <p:dataTable id="event_places_table" value="#{eventPlacesTabBean.resultListHelper.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" 
-                 size="small" paginatorPosition="bottom" 
+                 resizableColumns="false" showGridlines="true"
+                 size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{eventPlacesTabBean.firstRow}"
                  rows="#{eventPlacesTabBean.resultListHelper.pageSize}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -25,167 +25,171 @@
       <f:facet name="header">
         <div class="flex align-items-center">
           <div class="w-9">
+            <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                             action="#{eventPlacesTabBean.create}"
+                             process="@this"
+                             update="@root:@id(event_places_dialog)"
+                             resetValues="true"
+                             actionListener="#{eventObjectBean.updateCurrentTab}"
+                             oncomplete="PF('eventPlacesDialog').show()"
+                             alt="#{objectBundle.add}" title="#{objectBundle.add}" />
           </div>
-          <div class="flex flex-row-reverse w-3">    
+          <div class="flex flex-row-reverse w-3">
             <div class="m-1">
               <p:menuButton icon="pi pi-file-excel text-xl" styleClass="ui-menu-button ui-button-flat"
                             rendered="#{eventPlacesTabBean.resultListHelper.rowCount > 0}" >
                 <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf text-xl" styleClass="m-1 ui-button-flat" ajax="false"
                             rendered="#{eventPlacesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="pdf" target="place_results_table" fileName="results" pageOnly="true"/>
+                  <p:dataExporter type="pdf" target="event_places_table" fileName="results" pageOnly="true"/>
                 </p:menuitem>
                 <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel text-xl" styleClass="m-1 ui-button-flat" ajax="false"
                             rendered="#{eventPlacesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="csv" target="place_results_table" fileName="results" pageOnly="true" />
-                </p:menuitem> 
-              </p:menuButton>  
-              <p:commandButton icon="pi pi-plus-circle text-xl" styleClass="ui-button-flat" 
-                               action="#{eventPlacesTabBean.create}" ajax="true"                                 
-                               update="@root:@id(place_edit_panels)"
-                               oncomplete="PF('placeDataDialog').show()"                                  
-                               alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
-            </div>              
-          </div>          
+                  <p:dataExporter type="csv" target="event_places_table" fileName="results" pageOnly="true" />
+                </p:menuitem>
+              </p:menuButton>
+            </div>
+          </div>
         </div>
-      </f:facet>      
+      </f:facet>
 
       <p:column headerText="#{agendaBundle.eventPlaces_id}" styleClass="w-1"
                 exportHeaderValue="#{agendaBundle.eventPlaces_id}">
         <h:outputText value="#{row.eventPlaceId}" />
-      </p:column> 
+      </p:column>
 
-      <p:column headerText="#{agendaBundle.eventPlaces_place}" styleClass="w-3"
+      <p:column headerText="#{agendaBundle.eventPlaces_place}" styleClass="w-9"
                 exportHeaderValue="#{agendaBundle.eventPlaces_place}">
         <div>
           <div><h:outputText value="#{row.roomView != null ? row.roomView.description : ''}" /></div>
           <div><h:outputText value="#{row.addressView != null ? row.addressView.description : ''}" /></div>
         </div>
-      </p:column>      
+      </p:column>
 
-      <p:column styleClass="w-2 text-right" exportable="false">
-        <h:panelGroup>
-          <p:commandButton icon="pi pi-external-link"  
-                           action="#{navigatorBean.show('Room', row.roomView.roomId)}" 
-                           immediate="true" ajax="false" 
-                           alt="#{objectBundle.show}" title="#{objectBundle.show}"
-                           rendered="#{row.roomView != null}"
-                           styleClass="rounded-button ui-button-flat" /> 
-          <p:commandButton icon="pi pi-external-link"  
-                           action="#{navigatorBean.show('Address', row.addressView.addressId)}" 
-                           immediate="true" ajax="false" 
-                           alt="#{objectBundle.show}" title="#{objectBundle.show}"
-                           rendered="#{row.roomView == null}"
-                           styleClass="rounded-button ui-button-flat" /> 
-          <p:commandButton action="#{eventPlacesTabBean.edit(row)}"
-                           icon="pi pi-pencil"
-                           rendered="#{row.eventPlaceId != null}"
-                           styleClass="rounded-button ui-button-flat"                              
-                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           ajax="true" process="@this" update=":mainform:search_tabs:tabs:place_data_dialog place_results_table"
-                           oncomplete="PF('placeDataDialog').show()"
-                           resetValues="true" />        
-          <p:commandButton action="#{eventPlacesTabBean.remove(row)}"
-                           ajax="true" update="place_results_table :mainform:growl"
-                           icon="pi pi-trash"
-                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           rendered="#{row.eventPlaceId != null}"
-                           styleClass="rounded-button ui-button-flat"
-                           onclick="return confirm('#{objectBundle.confirm_remove}');"/>            
-        </h:panelGroup>
-      </p:column>       
+      <p:column styleClass="w-2" exportable="false">
+        <p:commandButton action="#{eventPlacesTabBean.edit(row)}"
+                         icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                         process="@this"
+                         update="@root:@id(event_places_dialog)"
+                         resetValues="true"
+                         actionListener="#{eventObjectBean.updateCurrentTab}"
+                         oncomplete="PF('eventPlacesDialog').show()" />
+        <p:commandButton icon="pi pi-external-link"
+                         action="#{navigatorBean.show('Room', row.roomView.roomId)}"
+                         ajax="false"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                         rendered="#{row.roomView != null}"
+                         styleClass="rounded-button ui-button-flat" />
+        <p:commandButton icon="pi pi-external-link"
+                         action="#{navigatorBean.show('Address', row.addressView.addressId)}"
+                         ajax="false"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                         rendered="#{row.roomView == null}"
+                         styleClass="rounded-button ui-button-flat" />
+        <p:commandButton action="#{eventPlacesTabBean.remove(row)}"
+                         update="event_places_table :mainform:growl"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat"
+                         onclick="return confirm('#{objectBundle.confirm_remove}');"/>
+      </p:column>
+
     </p:dataTable>
 
   </h:panelGroup>
 
-  <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="place_data_dialog" widgetVar="placeDataDialog" 
-            styleClass="edit_data_dialog" style="max-width:800px" 
-            modal="true" responsive="true" closable="true"
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="event_places_dialog" widgetVar="eventPlacesDialog"
+            styleClass="edit_data_dialog" style="max-width:800px"
+            modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
-      <p:outputPanel styleClass="text-2xl">
-        <p:autoUpdate />        
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-3xl mx-2 my-1"/>       
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{eventObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventObjectBean.getTabs().get(eventObjectBean.detailSelector).getLabel()}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{eventObjectBean.getCurrentTab().getLabel()}" />
+        <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{eventPlacesTabBean.pageObjectDescription}" />
       </p:outputPanel>
     </f:facet>
 
-    <p:outputPanel id="place_edit_panels">
-      <p:panel id="edit_place_form" 
-               styleClass="mt-2"
-               rendered="#{eventPlacesTabBean.editing != null}">
+    <p:outputPanel styleClass="mt-2" id="event_places_panel"
+                   rendered="#{eventPlacesTabBean.editing != null}">
 
-        <div class="ui-fluid formgrid grid" >
+      <div class="ui-fluid formgrid grid" >
 
-          <!-- Address -->
-          <p:outputPanel styleClass="field col-12 md:col-6">  
-            <p:outputLabel for="@next"  
-                           value="#{agendaBundle.eventPlaces_address}"
-                           styleClass="w-full"/>
-            <emcomp:objectReference value="#{eventPlacesTabBean.addressId}"
-                                    type="Address"
-                                    process=":mainform:filter_panel"
-                                    styleClass="w-full"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3">
-              <p:ajax event="itemSelect" listener="#{eventPlacesTabBean.onAddressSelect}" update=":mainform:search_tabs:tabs:place_edit_panels" />
-              <p:ajax event="clear" listener="#{eventPlacesTabBean.onAddressClear}" update=":mainform:search_tabs:tabs:place_edit_panels" />
-            </emcomp:objectReference>
-          </p:outputPanel>         
-
-          <!-- Room -->
-          <p:outputPanel styleClass="field col-12 md:col-6">  
-            <p:outputLabel for="@next"  
-                           value="#{agendaBundle.eventPlaces_room}"
-                           styleClass="w-full"/>
-            <emcomp:objectReference value="#{eventPlacesTabBean.roomId}"
-                                    type="Room"
-                                    process=":mainform:filter_panel"
-                                    styleClass="w-full"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3">
-              <p:ajax event="itemSelect" listener="#{eventPlacesTabBean.onRoomSelect}" update=":mainform:search_tabs:tabs:place_edit_panels"/>
-              <p:ajax event="clear" listener="#{eventPlacesTabBean.onRoomClear}" update=":mainform:search_tabs:tabs:place_edit_panels"/>
-            </emcomp:objectReference>
-          </p:outputPanel>         
-
-          <!-- Comments -->
-          <p:outputPanel styleClass="field col-12" 
-                         rendered="true">
-            <p:outputLabel for="comments" 
-                           value="#{agendaBundle.eventPlaces_comments}"/>
-            <p:inputTextarea id="comments" value="#{eventPlacesTabBean.editing.comments}"
-                             styleClass="inputfield w-full" autoResize="false" />
-          </p:outputPanel>
-
+        <!-- Address -->
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{agendaBundle.eventPlaces_address}"
+                         styleClass="w-full" indicateRequired="true" />
+          <emcomp:objectReference id="objRefAddress"
+                                  value="#{eventPlacesTabBean.addressId}"
+                                  type="Address"
+                                  process="@(.savable)"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3"
+                                  required="true"
+                                  widgetVar="objRefAddressAutocomplete">
+            <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefRoom):autocomplete" />
+            <p:ajax event="clear" process="@none" oncomplete="PF('objRefRoomAutocomplete').clear()" />
+          </emcomp:objectReference>
         </div>
 
-      </p:panel>              
+        <!-- Room -->
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{agendaBundle.eventPlaces_room}"
+                         styleClass="w-full"/>
+          <emcomp:objectReference id="objRefRoom"
+                                  value="#{eventPlacesTabBean.roomId}"
+                                  type="Room"
+                                  process="@(.savable)"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3"
+                                  widgetVar="objRefRoomAutocomplete">
+            <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefAddress):autocomplete" />
+            <p:ajax event="clear" process="@none" oncomplete="PF('objRefAddressAutocomplete').clear()" />
+          </emcomp:objectReference>
+        </div>
 
-      <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
-                    var="objectBundle" />        
+        <!-- Comments -->
+        <div class="field col-12">
+          <p:outputLabel for="comments"
+                         value="#{agendaBundle.eventPlaces_comments}"/>
+          <p:inputTextarea id="comments" value="#{eventPlacesTabBean.editing.comments}"
+                           styleClass="inputfield w-full savable" autoResize="false" />
+        </div>
 
-      <div class="field col-12 text-right">
-        <p:commandButton action="#{eventPlacesTabBean.store}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                         disabled="#{!eventObjectBean.editable}"
-                         update="place_results_table place_edit_panels :mainform:growl" />
-        <p:commandButton action="#{eventPlacesTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update="place_edit_panels :mainform:growl" global="false" 
-                         oncomplete="PF('placeDataDialog').hide()"/>
-      </div>          
+      </div>
 
     </p:outputPanel>
 
-  </p:dialog>     
+    <f:facet name="footer">
 
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{eventPlacesTabBean.store}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         disabled="#{!eventObjectBean.editable}"
+                         process="event_places_dialog"
+                         update="event_places_table event_places_panel"
+                         oncomplete="if (!isFacesError()) PF('eventPlacesDialog').hide()" />
+        <p:commandButton action="#{eventPlacesTabBean.cancel}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="event_places_dialog :mainform:growl" global="false"
+                         oncomplete="PF('eventPlacesDialog').hide()" />
+      </div>
+
+    </f:facet>
+
+  </p:dialog>
 
 </ui:composition>

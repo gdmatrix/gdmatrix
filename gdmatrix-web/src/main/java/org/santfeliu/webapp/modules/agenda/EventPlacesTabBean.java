@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.agenda;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,7 +42,6 @@ import org.matrix.agenda.EventPlaceFilter;
 import org.matrix.agenda.EventPlaceView;
 import org.matrix.kernel.Room;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.helpers.ResultListHelper;
@@ -102,9 +100,10 @@ public class EventPlacesTabBean extends TabBean
     return resultListHelper;
   }
 
-  public void setAddressId(String addreddId)
+  public void setAddressId(String addressId)
   {
-    editing.setAddressId(addreddId);
+    editing.setAddressId(addressId);
+    editing.setRoomId(null);
     showDialog();
   }
 
@@ -161,46 +160,6 @@ public class EventPlacesTabBean extends TabBean
       }
     }
     return null;
-  }
-
-  public void onAddressSelect(SelectEvent<SelectItem> event)
-  {
-    SelectItem item = event.getObject();
-    String addressId = (String)item.getValue();
-    editing.setAddressId(addressId);
-    //Reset room
-    editing.setRoomId(null);
-  }
-
-  public void onAddressClear()
-  {
-    editing.setAddressId(null);
-    //Reset room
-    editing.setRoomId(null);
-  }
-
-  public void onRoomSelect(SelectEvent<SelectItem> event)
-  {
-    try
-    {
-      SelectItem item = event.getObject();
-      String roomId = (String)item.getValue();
-      editing.setRoomId(roomId);
-      //update address field
-      Room room = KernelModuleBean.getPort(false).loadRoom(roomId);
-      String addressId = room.getAddressId();
-      editing.setAddressId(addressId);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public void onRoomClear()
-  {
-    editing.setRoomId(null);
-    editing.setAddressId(null);
   }
 
   public String edit(EventPlaceView row)
@@ -282,7 +241,7 @@ public class EventPlacesTabBean extends TabBean
     {
       if (eventPlaceId != null && !isEditing(eventPlaceId))
       {
-        editing =
+        editing = 
           AgendaModuleBean.getClient(false).loadEventPlace(eventPlaceId);
       }
       else if (eventPlaceId == null)
@@ -290,7 +249,7 @@ public class EventPlacesTabBean extends TabBean
         editing = new EventPlace();
       }
     }
-    catch(Exception ex)
+    catch (Exception ex)
     {
       error(ex);
     }
@@ -306,7 +265,9 @@ public class EventPlacesTabBean extends TabBean
         //Person must be selected
         if ((editing.getAddressId() == null || editing.getAddressId().isEmpty())
           && (editing.getRoomId() == null || editing.getRoomId().isEmpty()))
+        {
           throw new Exception("PLACE_MUST_BE_SELECTED");
+        }
 
         String eventId = eventObjectBean.getObjectId();
         editing.setEventId(eventId);
@@ -332,9 +293,11 @@ public class EventPlacesTabBean extends TabBean
 
       String rowEventPlaceId = row.getEventPlaceId();
 
-      if (editing != null &&
+      if (editing != null && 
         rowEventPlaceId.equals(editing.getEventPlaceId()))
+      {
         editing = null;
+      }
 
       AgendaModuleBean.getClient(false).removeEventPlace(rowEventPlaceId);
 
@@ -351,13 +314,13 @@ public class EventPlacesTabBean extends TabBean
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('placeDataDialog').show();");
+    current.executeScript("PF('eventPlacesDialog').show();");
   }
 
   private void hideDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('placeDataDialog').hide();");
+    current.executeScript("PF('eventPlacesDialog').hide();");
   }
 
   private boolean isEditing(String pageObjectId)

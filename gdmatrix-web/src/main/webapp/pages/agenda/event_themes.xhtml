@@ -11,10 +11,10 @@
   <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="theme_results_table" value="#{eventThemesTabBean.resultListHelper.rows}" 
+    <p:dataTable id="event_themes_table" value="#{eventThemesTabBean.resultListHelper.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" 
-                 size="small" paginatorPosition="bottom" 
+                 resizableColumns="false" showGridlines="true"
+                 size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{eventThemesTabBean.firstRow}"
                  rows="#{eventThemesTabBean.resultListHelper.pageSize}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -22,112 +22,116 @@
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
+
         <div class="flex align-items-center">
           <div class="w-9">
+            <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                             action="#{eventThemesTabBean.create}"
+                             process="@this"
+                             update="@root:@id(event_themes_dialog)"
+                             resetValues="true"
+                             actionListener="#{eventObjectBean.updateCurrentTab}"
+                             oncomplete="PF('eventThemesDialog').show()"
+                             alt="#{objectBundle.add}" title="#{objectBundle.add}" />
           </div>
-          <div class="flex flex-row-reverse w-3">    
+          <div class="flex flex-row-reverse w-3">
             <div class="m-1">
               <p:menuButton icon="pi pi-file-excel text-xl" styleClass="ui-menu-button ui-button-flat"
                             rendered="#{eventThemesTabBean.resultListHelper.rowCount > 0}" >
                 <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf text-xl" styleClass="m-1 ui-button-flat" ajax="false"
                             rendered="#{eventThemesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="pdf" target="theme_results_table" fileName="results" pageOnly="true"/>
+                  <p:dataExporter type="pdf" target="event_themes_table" fileName="results" pageOnly="true"/>
                 </p:menuitem>
                 <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel text-xl" styleClass="m-1 ui-button-flat" ajax="false"
                             rendered="#{eventThemesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="csv" target="theme_results_table" fileName="results" pageOnly="true" />
-                </p:menuitem> 
-              </p:menuButton>  
-              <p:commandButton icon="pi pi-plus-circle text-xl" styleClass="ui-button-flat" 
-                               action="#{eventThemesTabBean.create}" ajax="true"                               
-                               update="@root:@id(theme_edit_panels)"
-                               oncomplete="PF('themeDataDialog').show()"                               
-                               alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
+                  <p:dataExporter type="csv" target="event_themes_table" fileName="results" pageOnly="true" />
+                </p:menuitem>
+              </p:menuButton>
             </div>
-          </div>          
+          </div>
         </div>
-      </f:facet>      
+
+      </f:facet>
 
       <p:column headerText="#{agendaBundle.eventThemes_themeId}" styleClass="w-1"
                 exportHeaderValue="#{agendaBundle.eventThemes_themeId}">
         <h:outputText value="#{row.themeId}" />
-      </p:column> 
-      <p:column headerText="#{agendaBundle.eventThemes_theme}" styleClass="w-3"
+      </p:column>
+
+      <p:column headerText="#{agendaBundle.eventThemes_theme}" styleClass="w-10"
                 exportHeaderValue="#{agendaBundle.eventThemes_theme}">
         <h:outputText value="#{row.description}"/>
       </p:column>
-      <p:column styleClass="w-2 text-right" exportable="false">
-        <h:panelGroup>
-          <p:commandButton action="#{eventThemesTabBean.remove(row)}"
-                           ajax="true" update="theme_results_table :mainform:growl"
-                           icon="pi pi-trash"
-                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           rendered="#{row.eventThemeId != null}"
-                           styleClass="rounded-button ui-button-flat"
-                           onclick="return confirm('#{objectBundle.confirm_remove}');"/>            
-        </h:panelGroup>          
-      </p:column>       
+
+      <p:column styleClass="w-1" exportable="false">
+        <p:commandButton action="#{eventThemesTabBean.remove(row)}"
+                         update="event_themes_table :mainform:growl"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat"
+                         onclick="return confirm('#{objectBundle.confirm_remove}');"/>
+      </p:column>
+
     </p:dataTable>
 
   </h:panelGroup>
 
-  <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="theme_data_dialog" widgetVar="themeDataDialog" 
-            styleClass="edit_data_dialog" style="max-width:800px" 
-            modal="true" responsive="true" closable="true"
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="event_themes_dialog" widgetVar="eventThemesDialog"
+            styleClass="edit_data_dialog" style="max-width:800px"
+            modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
-      <p:outputPanel styleClass="text-2xl">
-        <p:autoUpdate />        
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-3xl mx-2 my-1"/>       
+
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{eventObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventObjectBean.getTabs().get(eventObjectBean.detailSelector).getLabel()}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{eventObjectBean.getCurrentTab().getLabel()}" />
+        <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{eventThemesTabBean.pageObjectDescription}" />
       </p:outputPanel>
+
     </f:facet>
 
-    <p:outputPanel id="theme_edit_panels">
-      <p:panel id="edit_theme_form" 
-               styleClass="mt-2"
-               rendered="#{eventThemesTabBean.editing != null}">
+    <p:panel styleClass="mt-2" id="event_themes_panel"
+             rendered="#{eventThemesTabBean.editing != null}">
 
-        <div class="ui-fluid formgrid grid">          
-          <p:outputPanel styleClass="field col-12">  
-            <p:outputLabel for="theme"  
-                           value="#{agendaBundle.eventThemes_theme}"
-                           styleClass="w-full"/>
-            <div class="ui-inputgroup">
-              <p:selectOneMenu id="theme" value="#{eventThemesTabBean.editing.themeId}"
-                               styleClass="inputfield w-full" style="min-width:inherit !important"
-                               filter="true" filterMatchMode="contains">
-                <f:selectItems value="#{themeTypeBean.selectItems}" />
-              </p:selectOneMenu>
-            </div>
-          </p:outputPanel>                    
+      <div class="ui-fluid formgrid grid">
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{agendaBundle.eventThemes_theme}"
+                         styleClass="w-full" />
+          <p:selectOneMenu id="theme" value="#{eventThemesTabBean.editing.themeId}"
+                           styleClass="inputfield w-full" style="min-width:inherit !important"
+                           filter="true" filterMatchMode="contains" required="true">
+            <f:selectItem itemLabel="" itemValue="" />
+            <f:selectItems value="#{themeTypeBean.selectItems}" />
+          </p:selectOneMenu>
         </div>
+      </div>
 
-      </p:panel>              
-      
-      <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
-                    var="objectBundle" />        
+    </p:panel>
+
+    <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{eventThemesTabBean.store}" 
+        <p:commandButton action="#{eventThemesTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!eventObjectBean.editable}"
-                         update="theme_results_table theme_edit_panels :mainform:growl" />
-        <p:commandButton action="#{eventThemesTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update="theme_edit_panels :mainform:growl" global="false" 
-                         oncomplete="PF('themeDataDialog').hide()"/>
-      </div>          
+                         process="event_themes_dialog"
+                         update="event_themes_table event_themes_panel"
+                         oncomplete="if (!isFacesError()) PF('eventThemesDialog').hide()" />
+        <p:commandButton action="#{eventThemesTabBean.cancel}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="event_themes_dialog :mainform:growl" global="false"
+                         oncomplete="PF('eventThemesDialog').hide()" />
+      </div>
 
-    </p:outputPanel>
+    </f:facet>
 
-  </p:dialog>     
-    
-    
+  </p:dialog>
+
 </ui:composition>

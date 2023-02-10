@@ -20,7 +20,8 @@
       <composite:attribute name="size" required="false" />
       <composite:attribute name="process" required="false" default="@form" />
       <composite:attribute name="update" required="false" default="@none" />
-      <composite:attribute name="required" required="false" default="false" />       
+      <composite:attribute name="required" required="false" default="false" />
+      <composite:attribute name="widgetVar" required="false" />
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
       <composite:clientBehavior name="query" targets="autocomplete" event="query" />
@@ -33,20 +34,21 @@
                         value="#{objectReferenceBean.selectItem}"
                         maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
                         completeMethod="#{objectReferenceBean.complete}"
-                        converter="selectItemConverter"                        
+                        converter="selectItemConverter"
                         var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                        minQueryLength="#{cc.attrs.minQueryLength}" 
+                        minQueryLength="#{cc.attrs.minQueryLength}"
                         queryDelay="#{cc.attrs.queryDelay}"
                         style="#{cc.attrs.style}"
                         styleClass="#{cc.attrs.styleClass}"
                         size="#{cc.attrs.size}"
-                        scrollHeight="#{cc.attrs.scrollHeight}"                        
+                        scrollHeight="#{cc.attrs.scrollHeight}"
                         onclick="this.setSelectionRange(0, this.value.length)"
-                        required="#{cc.attrs.required}">
+                        required="#{cc.attrs.required}"
+                        widgetVar="#{cc.attrs.widgetVar}">
           <p:column>
             <h:outputText value="#{item.label}" />
           </p:column>
-        </p:autoComplete>        
+        </p:autoComplete>
         <h:commandButton style="display: none"
                          action="#{objectReferenceBean.find}"
                          immediate="true">

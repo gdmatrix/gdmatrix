@@ -177,11 +177,6 @@ public class EventPersonsTabBean extends TabBean
   public String getPersonId()
   {
     return editing.getPersonId();
-  }  
-  
-  public void onPersonClear()
-  {
-    editing.setPersonId(null);
   }
 
   public String edit(AttendantView row)
@@ -263,7 +258,7 @@ public class EventPersonsTabBean extends TabBean
     {
       if (attendantId != null && !isEditing(attendantId))
       {
-        editing =
+        editing = 
           AgendaModuleBean.getClient(false).loadAttendantFromCache(attendantId);
       }
       else if (attendantId == null)
@@ -271,7 +266,7 @@ public class EventPersonsTabBean extends TabBean
         editing = new Attendant();
       }
     }
-    catch(Exception ex)
+    catch (Exception ex)
     {
       error(ex);
     }
@@ -314,9 +309,11 @@ public class EventPersonsTabBean extends TabBean
 
       String rowAttendantId = row.getAttendantId();
 
-      if (editing != null &&
+      if (editing != null && 
         rowAttendantId.equals(editing.getAttendantId()))
+      {
         editing = null;
+      }
 
       AgendaModuleBean.getClient(false).removeAttendant(rowAttendantId);
 
@@ -333,13 +330,13 @@ public class EventPersonsTabBean extends TabBean
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('personDataDialog').show();");
+    current.executeScript("PF('eventPersonsDialog').show();");
   }
 
   private void hideDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('personDataDialog').hide();");
+    current.executeScript("PF('eventPersonsDialog').hide();");
   }
 
   private boolean isEditing(String pageObjectId)

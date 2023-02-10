@@ -292,13 +292,13 @@ public class EventObjectBean extends ObjectBean
     if (tabs.isEmpty())
     {
       tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Main", "/pages/agenda/event_main.xhtml"));
-      tabs.add(new Tab("Persons", "/pages/agenda/event_persons.xhtml",
+      tabs.add(new Tab("Principal", "/pages/agenda/event_main.xhtml"));
+      tabs.add(new Tab("Assistents", "/pages/agenda/event_persons.xhtml",
         "eventPersonsTabBean"));
-      tabs.add(new Tab("Themes", "/pages/agenda/event_themes.xhtml",
-        "eventThemesTabBean"));
-      tabs.add(new Tab("Places", "/pages/agenda/event_places.xhtml",
+      tabs.add(new Tab("Llocs", "/pages/agenda/event_places.xhtml",
         "eventPlacesTabBean"));
+      tabs.add(new Tab("Temes", "/pages/agenda/event_themes.xhtml",
+        "eventThemesTabBean"));
     }
   }
 

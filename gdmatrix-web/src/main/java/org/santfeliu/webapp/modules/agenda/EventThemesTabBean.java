@@ -226,7 +226,9 @@ public class EventThemesTabBean extends TabBean
       String rowEventThemeId = row.getEventThemeId();
 
       if (editing != null && rowEventThemeId.equals(editing.getEventThemeId()))
+      {
         editing = null;
+      }
 
       AgendaModuleBean.getClient(false).removeEventTheme(rowEventThemeId);
 
@@ -243,13 +245,13 @@ public class EventThemesTabBean extends TabBean
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('themeDataDialog').show();");
+    current.executeScript("PF('eventThemesDialog').show();");
   }
 
   private void hideDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('themeDataDialog').hide();");
+    current.executeScript("PF('eventThemesDialog').hide();");
   }
 
   private class EventThemeResultListHelper extends

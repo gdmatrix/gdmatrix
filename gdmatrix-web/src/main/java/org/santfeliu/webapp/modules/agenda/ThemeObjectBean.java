@@ -126,7 +126,7 @@ public class ThemeObjectBean extends ObjectBean
     if (tabs.isEmpty())
     {
       tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Main", "/pages/agenda/theme_main.xhtml"));
+      tabs.add(new Tab("Principal", "/pages/agenda/theme_main.xhtml"));
     }
   }
 

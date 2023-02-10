@@ -143,7 +143,7 @@ public class RoomObjectBean extends ObjectBean
     if (tabs.isEmpty())
     {
       tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Main", "/pages/kernel/room_main.xhtml"));
+      tabs.add(new Tab("Principal", "/pages/kernel/room_main.xhtml"));
     }
   }
 
