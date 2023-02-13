@@ -19,11 +19,13 @@
             <h:outputText value="#{objectBundle.quick}" /> 
           </f:facet>  
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{cityFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          
+          <div class="ui-fluid formgrid grid"> 
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{cityFinderBean.smartFilter}"/>
+            </div>
+          </div>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -80,7 +82,7 @@
             <div class="field col-12">
               <p:outputLabel for="@next" value="Name" />        
               <p:inputText id="title" value="#{cityFinderBean.filter.cityName}" 
-                           class="inputfield w-full" />
+                           />
             </div> 
 
           </div>            

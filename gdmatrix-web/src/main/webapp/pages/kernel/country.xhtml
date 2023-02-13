@@ -10,7 +10,7 @@
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
-      
+
       <p:tabView id="find_selector" 
                  activeIndex="#{countryFinderBean.filterSelector}">
 
@@ -20,11 +20,12 @@
             <h:outputText value="#{objectBundle.quick}" /> 
           </f:facet>  
           <p:defaultCommand target="smart_search_button" scope="smart_search" />  
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{countryFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          <div class="ui-fluid formgrid grid"> 
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{countryFinderBean.smartFilter}" />
+            </div>
+          </div>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -43,41 +44,41 @@
                              oncomplete="endPanel('leftPanel');"/>
           </div>              
         </p:tab>
-<!--
-        <p:tab id="advanced_search">
-          <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
-          </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
-          <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
-                        var="docBundle" />
-
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="Name" />        
-            <p:inputText id="title" value="#{countryFinderBean.filter.countryName}" 
-                         class="inputfield w-full" />
-          </p:outputPanel>  
-
-          <div class="text-right">
-            <p:commandButton value="#{objectBundle.clear}"
-                             action="#{countryFinderBean.clear}"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"
-                             />
-            <p:commandButton id="advanced_search_button"
-                             value="#{objectBundle.search}"
-                             action="#{countryFinderBean.find}"
-                             process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             styleClass="ui-button-raised m-1"
-                             resetValues="true"
-                             oncomplete="endPanel('leftPanel');"
-                             />
-          </div>    
-        </p:tab>
--->
+        <!--
+                <p:tab id="advanced_search">
+                  <f:facet name="title">
+                    <span class="pi pi-cog mr-2"/> 
+                    <h:outputText value="#{objectBundle.advanced}" /> 
+                  </f:facet>
+                  <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+                  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
+                                var="docBundle" />
+        
+                  <p:outputPanel styleClass="field">
+                    <p:outputLabel for="@next" value="Name" />        
+                    <p:inputText id="title" value="#{countryFinderBean.filter.countryName}" 
+                                  />
+                  </p:outputPanel>  
+        
+                  <div class="text-right">
+                    <p:commandButton value="#{objectBundle.clear}"
+                                     action="#{countryFinderBean.clear}"
+                                     process=":mainform:find_selector"
+                                     update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                                     resetValues="true"
+                                     />
+                    <p:commandButton id="advanced_search_button"
+                                     value="#{objectBundle.search}"
+                                     action="#{countryFinderBean.find}"
+                                     process=":mainform:find_selector"
+                                     update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                                     styleClass="ui-button-raised m-1"
+                                     resetValues="true"
+                                     oncomplete="endPanel('leftPanel');"
+                                     />
+                  </div>    
+                </p:tab>
+        -->
       </p:tabView>
     </p:outputPanel>
   </ui:define>
@@ -87,7 +88,7 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");

@@ -4,12 +4,13 @@
                 xmlns:f="http://java.sun.com/jsf/core"  
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="/pages/obj/object_3col.xhtml">
-    
+                template="/pages/obj/object_3col.xhtml"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
   <ui:define name="filter"> 
-    
+
     <p:outputPanel id="filter_panel">
-      
+
       <p:tabView id="find_selector"
                  activeIndex="#{streetFinderBean.filterSelector}">
 
@@ -19,11 +20,13 @@
             <h:outputText value="#{objectBundle.quick}" /> 
           </f:facet>  
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{streetFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          
+          <div class="ui-fluid formgrid grid"> 
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{streetFinderBean.smartFilter}" />
+            </div>
+          </div>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -42,7 +45,7 @@
                              oncomplete="endPanel('leftPanel');"/>
           </div>       
         </p:tab>  
-        
+
         <p:tab id="advanced_search">
           <f:facet name="title">
             <span class="pi pi-cog mr-2"/> 
@@ -51,82 +54,57 @@
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
           <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
                         var="kernelBundle" /> 
-         <div class="ui-fluid formgrid grid">             
 
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.country}" />          
-              <p:selectOneMenu id="country_selector" 
-                               value="#{streetFinderBean.filter.countryId}" 
-                               filter="true"
-                               autoWidth="false">
-                <p:ajax listener="#{streetFinderBean.onCountryChange}" update="province_selector"/>
-                <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
-                <f:selectItems value="#{countryTypeBean.selectItems}" />
-              </p:selectOneMenu>  
-            </div>   
+          <div class="ui-fluid formgrid grid">             
 
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{kernelBundle.province}" />          
-              <p:selectOneMenu id="province_selector" 
-                               value="#{streetFinderBean.filter.provinceId}" 
-                               filter="true"
-                               autoWidth="false">
-                <p:ajax listener="#{streetFinderBean.onProvinceChange}" update="city_selector"/>                
-                <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
-                <f:selectItems value="#{streetFinderBean.provinceSelectItems}" />
-              </p:selectOneMenu>  
-            </div> 
-           
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.city}" />          
-              <p:selectOneMenu id="city_selector" 
-                               value="#{streetFinderBean.filter.cityId}" 
-                               filter="true"
-                               autoWidth="false">
-                <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
-                <f:selectItems value="#{streetFinderBean.citySelectItems}" />
-              </p:selectOneMenu>  
+
+              <emcomp:objectReference type="City" value="#{streetFinderBean.filter.cityId}"
+                                      queryDelay="1000"
+                                      minQueryLength="3"
+                                      process="@this">
+              </emcomp:objectReference>
             </div>            
-           
-           
+
+
             <div class="field col-12">
               <p:outputLabel for="@next" value="Name" />        
-              <p:inputText id="title" value="#{streetFinderBean.filter.streetName}" 
-                           class="inputfield w-full" />
+              <p:inputText id="title" value="#{streetFinderBean.filter.streetName}" />
             </div> 
-           
-         </div>
-          
-        <div class="text-right">
-          <p:commandButton value="#{objectBundle.clear}"
-                           action="#{streetFinderBean.clear}"
-                           process=":mainform:find_selector"
-                           update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                           resetValues="true"
-                           />
-          <p:commandButton id="advanced_search_button"
-                           value="#{objectBundle.search}"
-                           action="#{streetFinderBean.find}"
-                           process=":mainform:find_selector"
-                           update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                           styleClass="ui-button-raised m-1"
-                           resetValues="true"
-                           oncomplete="endPanel('leftPanel');"
-                           />
-        </div>  
+
+          </div>
+
+          <div class="text-right">
+            <p:commandButton value="#{objectBundle.clear}"
+                             action="#{streetFinderBean.clear}"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             resetValues="true"
+                             />
+            <p:commandButton id="advanced_search_button"
+                             value="#{objectBundle.search}"
+                             action="#{streetFinderBean.find}"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             styleClass="ui-button-raised m-1"
+                             resetValues="true"
+                             oncomplete="endPanel('leftPanel');"
+                             />
+          </div>  
 
         </p:tab> 
-        
+
       </p:tabView>
     </p:outputPanel>    
   </ui:define>
-  
+
   <ui:define name="object">
     <script>
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");
@@ -141,7 +119,7 @@
                widgetVar="searchTabs"
                activeIndex="#{streetObjectBean.searchSelector}"
                touchable="false">
-      
+
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
@@ -163,7 +141,7 @@
         </h:panelGroup>        
       </p:tab>
     </p:tabView>    
-    
+
   </ui:define>
-  
+
 </ui:composition>

@@ -4,10 +4,11 @@
                 xmlns:f="http://java.sun.com/jsf/core"  
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="/pages/obj/object_3col.xhtml">
+                template="/pages/obj/object_3col.xhtml"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <ui:define name="filter"> 
-   
+
     <p:outputPanel id="filter_panel">
 
       <p:tabView id="find_selector"
@@ -19,11 +20,13 @@
             <h:outputText value="#{objectBundle.quick}" /> 
           </f:facet>  
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{addressFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          
+          <div class="ui-fluid formgrid grid"> 
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{addressFinderBean.smartFilter}" />
+            </div>
+          </div>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -48,74 +51,75 @@
             <span class="pi pi-cog mr-2"/> 
             <h:outputText value="#{objectBundle.advanced}" /> 
           </f:facet>
-          
+
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" /> 
-          
+
           <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
                         var="kernelBundle" /> 
 
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.address_id}" />
-            <p:chips id="address_id" value="#{addressFinderBean.filterAddressId}"
-                     addOnPaste="true" separator=","
-                     class="inputfield w-full ui-fluid"/>
+          <div class="ui-fluid formgrid grid"> 
+            
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.address_id}" />
+              <p:chips id="address_id" value="#{addressFinderBean.filterAddressId}"
+                       addOnPaste="true" separator=","/>
+            </div>
+
+            <div class="field col-12">    
+              <p:outputLabel for="@next" value="#{kernelBundle.city_name}" />
+              <p:inputText id="city_name" value="#{addressFinderBean.filter.cityName}"
+                           /> 
+            </div>
+
+            <div class="field col-12">    
+              <p:outputLabel for="@next" value="#{kernelBundle.address_type}" />
+           
+              <p:selectOneMenu value="#{addressFinderBean.filter.addressTypeId}"  
+                               filter="true" autoWidth="false" >
+                <f:selectItem itemLabel="" itemValue="" />
+                <f:selectItems value="#{typeTypeBean.getSelectItems('Address')}" var="item" />           
+              </p:selectOneMenu> 
+            </div>      
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />        
+              <p:inputText id="street_name" value="#{addressFinderBean.filter.streetName}" 
+                           />
+            </div>
+
+            <div class="field md:col-4">
+              <p:outputLabel for="@next" value="#{kernelBundle.address_number}" />        
+              <p:inputText id="number" value="#{addressFinderBean.filter.number}" 
+                           />
+            </div>
+
+            <div class="field md:col-4">
+              <p:outputLabel for="@next" value="#{kernelBundle.address_floor}" />
+              <p:inputText id="floor" value="#{addressFinderBean.filter.floor}" 
+                           />
+            </div>    
+
+            <div class="field md:col-4">
+              <p:outputLabel for="@next" value="#{kernelBundle.address_door}" />
+              <p:inputText id="door" value="#{addressFinderBean.filter.door}" 
+                           />
+            </div>   
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.address_gis_reference}" />
+              <p:inputText id="gis_reference" value="#{addressFinderBean.filter.gisReference}" 
+                           />
+            </div>   
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.address_comments}" />
+              <p:inputText id="comments" value="#{addressFinderBean.filter.comments}" 
+                           />
+            </div>           
+
           </div>
 
-          <div class="field">    
-            <p:outputLabel for="@next" value="#{kernelBundle.city_name}" />
-            <p:inputText id="city_name" value="#{addressFinderBean.filter.cityName}"
-                         styleClass="inputfield w-full" /> 
-          </div>
-
-          <div class="field">    
-            <p:outputLabel for="@next" value="#{kernelBundle.address_type}" />
-            <p:inputText id="address_type" value="#{addressFinderBean.filter.addressTypeId}"
-                         styleClass="inputfield w-full" /> 
-          </div>      
-
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />        
-            <p:inputText id="street_type" value="#{addressFinderBean.filter.streetTypeId}" 
-                         class="inputfield w-full" />
-          </div>      
-
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />        
-            <p:inputText id="street_name" value="#{addressFinderBean.filter.streetName}" 
-                         class="inputfield w-full" />
-          </div>
-
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.address_number}" />        
-            <p:inputText id="number" value="#{addressFinderBean.filter.number}" 
-                         class="inputfield w-full" />
-          </div>
-
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.address_floor}" />
-            <p:inputText id="floor" value="#{addressFinderBean.filter.floor}" 
-                         class="inputfield w-full"/>
-          </div>    
-
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.address_door}" />
-            <p:inputText id="door" value="#{addressFinderBean.filter.door}" 
-                         class="inputfield w-full"/>
-          </div>   
-
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.address_gis_reference}" />
-            <p:inputText id="gis_reference" value="#{addressFinderBean.filter.gisReference}" 
-                         class="inputfield w-full"/>
-          </div>   
-
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.address_comments}" />
-            <p:inputText id="comments" value="#{addressFinderBean.filter.comments}" 
-                         class="inputfield w-full"/>
-          </div>           
-
-          <div class="text-right">
+          <div class="text-right col-12">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{addressFinderBean.clear}"
                              process=":mainform:find_selector"
@@ -132,7 +136,7 @@
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"
                              />
-          </div>         
+          </div>           
         </p:tab> 
 
       </p:tabView>
@@ -144,7 +148,7 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");
@@ -182,7 +186,7 @@
           <ui:include src="/pages/obj/object_standard.xhtml" />
         </h:panelGroup>
       </p:tab>
-      
+
     </p:tabView>    
 
   </ui:define>

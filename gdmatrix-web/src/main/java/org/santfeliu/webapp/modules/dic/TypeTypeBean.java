@@ -98,7 +98,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   @Override
   public String describe(Type type)
   {
-    return type.getDescription() + " (" + type.getTypeId() + ")";
+    return type.getDescription();
   }
 
   @Override

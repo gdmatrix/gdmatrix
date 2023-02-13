@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+                var="kernelBundle" />
+
+  <p:dataTable id="address_persons_table" value="#{addressPersonsTabBean.rows}" 
+               var="row" stripedRows="true" paginator="true" pageLinks="5"
+               resizableColumns="false" showGridlines="true"  rows="10"
+               size="small" paginatorPosition="bottom" 
+               rowIndexVar="firstRow" first="#{addressPersonsTabBean.firstRow}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+               rowsPerPageTemplate="5,10,25,50">
+
+    <f:facet name="header">
+      <div class="flex flex-row-reverse col-12">    
+        <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+                         action="#{addressPersonsTabBean.create}" 
+                         process="@this"
+                         update="@parent:@parent:@parent:address_persons_dialog"
+                         resetValues="true"
+                         actionListener="#{addressObjectBean.updateCurrentTab}"
+                         oncomplete="PF('addressPersonsDialog').show()"                                 
+                         alt="#{objectBundle.add}" title="#{objectBundle.add}" />                     
+      </div>
+    </f:facet>   
+
+    <p:column headerText="#{kernelBundle.address_id}" styleClass="col-1">
+      <h:outputText value="#{row.person.personId}" />
+    </p:column>   
+
+    <p:column headerText="#{kernelBundle.person_full_name}" styleClass="col-9">
+      <h:outputText value="#{row.person.fullName}" />
+    </p:column> 
+
+    <p:column headerText="#{kernelBundle.person_nif}" styleClass="col-1">
+      <h:outputText value="#{row.person.nif}" />
+    </p:column>     
+
+    <p:column styleClass="col-2 text-right">
+      <p:commandButton icon="pi pi-external-link"  
+                       action="#{navigatorBean.show('Person', row.person.personId)}" 
+                       immediate="true" ajax="false" 
+                       styleClass="rounded-button ui-button-flat"
+                       alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
+      <p:commandButton action="#{addressPersonsTabBean.remove(row)}"
+                       update="address_persons_table :mainform:growl"
+                       icon="pi pi-trash"
+                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                       rendered="#{row.personAddressId != null}"
+                       styleClass="rounded-button ui-button-flat">            
+        <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                   message="#{objectBundle.confirm_remove_message}" 
+                   icon="pi pi-info-circle" />
+      </p:commandButton>
+    </p:column>    
+
+  </p:dataTable>  
+
+  <!-- Only works appendTo="@(form)" with one single form -->    
+  <p:dialog id="address_persons_dialog" widgetVar="addressPersonsDialog" 
+            styleClass="edit_data_dialog" style="max-width:800px" 
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel styleClass="text-2xl">
+        <p:autoUpdate />        
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-3xl mx-2 my-1"/>       
+        <h:outputText value="#{addressObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{addressObjectBean.getCurrentTab().getLabel()}" />   
+        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{addressPersonsTabBean.editing.personAddressId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <p:panel id="address_persons_panel" 
+             rendered="#{addressPersonsTabBean.editing != null}"
+             styleClass="mt-2">
+      
+      <div class="ui-fluid formgrid grid" >
+        
+        <div class="field col-12">    
+          <p:outputLabel for="@next"  
+                         value="#{kernelBundle.person}" />
+          
+          <emcomp:objectReference value="#{addressPersonsTabBean.editing.personId}"
+                                  type="Person"
+                                  process="@(.savable)"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3">
+          </emcomp:objectReference>                        
+        </div>         
+      </div>
+    </p:panel>              
+
+    <f:facet name="footer">
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{addressPersonsTabBean.store}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         disabled="#{!personBean.editable}"
+                         update="address_persons_table address_persons_panel"
+                         oncomplete="if (!isFacesError()) PF('addressPersonsDialog').hide()"/>
+        <p:commandButton action="#{addressPersonsTabBean.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                         immediate="true" update=" address_persons_panel" global="false" 
+                         oncomplete="PF('addressPersonsDialog').hide()"/>
+      </div> 
+    </f:facet>      
+
+  </p:dialog>    
+
+</ui:composition>

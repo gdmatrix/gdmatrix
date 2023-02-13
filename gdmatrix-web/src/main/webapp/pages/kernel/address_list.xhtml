@@ -13,22 +13,22 @@
                rows="10"
                rowIndexVar="rowIndex">
 
-    <p:column headerText="Id." styleClass="w-1">
+    <p:column headerText="#{kernelBundle.address_id}" styleClass="col-1">
       <h:outputText value="#{row.addressId}" />
     </p:column>                
-    <p:column headerText="#{kernelBundle.address}" styleClass="w-4">
+    <p:column headerText="#{kernelBundle.address}" styleClass="col-4">
       <h:outputText value="#{row.description}" />
     </p:column> 
-    <p:column headerText="#{kernelBundle.city}" styleClass="w-2">
+    <p:column headerText="#{kernelBundle.city}" styleClass="col-3">
       <h:outputText value="#{row.city}" />
     </p:column>   
-    <p:column headerText="#{kernelBundle.province}" styleClass="w-2">
+    <p:column headerText="#{kernelBundle.province}" styleClass="col-1">
       <h:outputText value="#{row.province}" />
     </p:column>  
-    <p:column headerText="#{kernelBundle.country}" styleClass="w-2">
+    <p:column headerText="#{kernelBundle.country}" styleClass="col-1">
       <h:outputText value="#{row.country}" />
     </p:column>      
-    <p:column styleClass="w-1">
+    <p:column styleClass="col-1">
       <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
                        action="#{addressFinderBean.view(rowIndex)}"
                        resetValues="true"

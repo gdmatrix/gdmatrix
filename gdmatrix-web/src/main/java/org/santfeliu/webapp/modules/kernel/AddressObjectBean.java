@@ -116,16 +116,9 @@ public class AddressObjectBean extends ObjectBean
   public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
-    {
       address = KernelModuleBean.getPort(false).loadAddress(objectId);
-//      String streetId = address.getStreetId();
-//      streetSelectItem = createStreetSelectItem(streetId);
-    }
     else
-    {
       address = new Address();
-//      streetSelectItem = null;
-    }
   }
 
   @Override
@@ -145,45 +138,9 @@ public class AddressObjectBean extends ObjectBean
     {
       tabs = new ArrayList<>(); // empty list may be read only
       tabs.add(new Tab("Main", "/pages/kernel/address_main.xhtml"));
+      tabs.add(new Tab("Persons", "/pages/kernel/address_persons.xhtml", "addressPersonsTabBean"));
     }
   }
-
-//  public SelectItem getStreetSelectItem()
-//  {
-//    return streetSelectItem;
-//  }
-//
-//  public void selectStreet(String streetId)
-//  {
-//    if (address != null)
-//    {
-//      address.setStreetId(streetId);
-//      createStreetSelectItem(streetId);
-//    }
-//  }
-//
-//  public void setStreetSelectItem(SelectItem streetSelectItem)
-//  {
-//    this.streetSelectItem = streetSelectItem;
-//    if (address != null && streetSelectItem != null)
-//      this.address.setStreetId((String) streetSelectItem.getValue());
-//  }
-//
-//  private SelectItem createStreetSelectItem(String streetId)
-//  {
-//    String description = streetTypeBean.getDescription(streetId);
-//    return new SelectItem(streetId, description);
-//  }
-//
-//  public List<SelectItem> completeStreet(String query)
-//  {
-//    return streetTypeBean.completeStreet(query, address.getStreetId());
-//  }
-//
-//  public void onStreetClear()
-//  {
-//    address.setStreetId(null);
-//  }
 
   @Override
   public Serializable saveState()

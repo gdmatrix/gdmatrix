@@ -6,146 +6,119 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
-                  var="kernelBundle" />
+  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+                var="kernelBundle" />
 
-      <div class="ui-fluid formgrid grid">
+  <div class="ui-fluid formgrid grid">
 
-        <div class="field col-12 md:col-3">
-          <p:outputLabel for="@next" value="AddressId" />
-          <p:inputText value="#{addressObjectBean.objectId}" readonly="true" />
-        </div>
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_id}" />
+      <p:inputText value="#{addressObjectBean.objectId}" readonly="true" />
+    </div>
 
-        <div class="field col-12 md:col-9">
-          <p:outputLabel for="@next" value="#{kernelBundle.address_type}" />
-          <p:selectOneMenu value="#{addressObjectBean.address.addressTypeId}"  
-                           styleClass="inputfield w-full"
-                           filter="true">
-            <f:selectItems value="#{typeTypeBean.getSelectItems('Address')}" var="item" />
-            <p:column>
-              <h:outputText value="#{item.label}" />
-            </p:column>            
-          </p:selectOneMenu>          
-        </div> 
+    <div class="field col-12 md:col-9">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_type}" />
+      <p:selectOneMenu value="#{addressObjectBean.address.addressTypeId}"  
+                       filter="true">
+        <f:selectItems value="#{typeTypeBean.getSelectItems('Address')}" var="item" />         
+      </p:selectOneMenu>  
+    </div> 
 
-        <div class="field col-12 md:col-8">
-          <p:outputLabel for="@next" value="#{kernelBundle.street}"  />
-          <emcomp:objectReference value="#{addressObjectBean.address.streetId}"
-                                  type="Street"
-                                  styleClass="w-full"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  minQueryLength="3" />
-        </div>   
+    <div class="field col-12 md:col-8">
+      <p:outputLabel for="@next" value="#{kernelBundle.street}"  />
+      <emcomp:objectReference value="#{addressObjectBean.address.streetId}"
+                              type="Street"
+                              styleClass="w-full"
+                              scrollHeight="200"
+                              queryDelay="1000"
+                              minQueryLength="3" />
+    </div>   
 
-        <div class="field col-12 md:col-2">
-          <p:outputLabel for="@next" value="Km" />
-          <p:inputText id="km" value="#{addressObjectBean.address.km}" 
-                       styleClass="inputfield w-full"/>
-        </div> 
+    <div class="field col-12 md:col-2">
+      <p:outputLabel for="@next" value="Km" />
+      <p:inputText id="km" value="#{addressObjectBean.address.km}" 
+                   />
+    </div> 
 
-        <div class="field col-8 md:col-2">
-          <p:outputLabel for="@next" value="#{kernelBundle.address_number} 1" />
-          <p:inputText id="number1" value="#{addressObjectBean.address.number1}" 
-                       styleClass="inputfield w-full"/>
-        </div>  
+    <div class="field col-8 md:col-2">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_number} 1" />
+      <p:inputText id="number1" value="#{addressObjectBean.address.number1}" 
+                   />
+    </div>  
 
-        <div class="field col-4 md:col-1">          
-          <p:outputLabel for="@next" value="#{kernelBundle.address_bis}" />
-          <p:inputText id="bis1" value="#{addressObjectBean.address.bis1}" 
-                       styleClass="inputfield w-full"/>          
-        </div>  
+    <div class="field col-4 md:col-1">          
+      <p:outputLabel for="@next" value="#{kernelBundle.address_bis}" />
+      <p:inputText id="bis1" value="#{addressObjectBean.address.bis1}" 
+                   />          
+    </div>  
 
-        <div class="field col-8 md:col-2">
-          <p:outputLabel for="@next" value="#{kernelBundle.address_number} 2" />
-          <p:inputText id="number2" value="#{addressObjectBean.address.number2}" 
-                       styleClass="inputfield w-full"/>
-        </div>  
+    <div class="field col-8 md:col-2">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_number} 2" />
+      <p:inputText id="number2" value="#{addressObjectBean.address.number2}" 
+                   />
+    </div>  
 
-        <div class="field col-4 md:col-1">            
-          <p:outputLabel for="@next" value="#{kernelBundle.address_bis}" />
-          <p:inputText id="bis2" value="#{addressObjectBean.address.bis2}" 
-                       styleClass="inputfield w-full"/>          
-        </div> 
+    <div class="field col-4 md:col-1">            
+      <p:outputLabel for="@next" value="#{kernelBundle.address_bis}" />
+      <p:inputText id="bis2" value="#{addressObjectBean.address.bis2}" 
+                   />          
+    </div> 
 
 
-        <div class="field col-12 md:col-1">
-          <p:outputLabel for="@next" value="#{kernelBundle.address_block}" />
-          <p:inputText id="block" value="#{addressObjectBean.address.block}" 
-                       styleClass="inputfield w-full"/>
-        </div> 
+    <div class="field col-12 md:col-1">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_block}" />
+      <p:inputText id="block" value="#{addressObjectBean.address.block}" 
+                   />
+    </div> 
 
-        <div class="field col-12 md:col-1">          
-          <p:outputLabel for="@next" value="#{kernelBundle.address_entrance_hall}" />
-          <p:inputText id="entrance_hall" value="#{addressObjectBean.address.entranceHall}" 
-                       styleClass="inputfield w-full"/>    
-        </div> 
+    <div class="field col-12 md:col-1">          
+      <p:outputLabel for="@next" value="#{kernelBundle.address_entrance_hall}" />
+      <p:inputText id="entrance_hall" value="#{addressObjectBean.address.entranceHall}" 
+                   />    
+    </div> 
 
-        <div class="field col-12 md:col-1">          
-          <p:outputLabel for="@next" value="#{kernelBundle.address_stair}" />
-          <p:inputText id="stair" value="#{addressObjectBean.address.stair}" 
-                       styleClass="inputfield w-full"/>             
-        </div> 
+    <div class="field col-12 md:col-1">          
+      <p:outputLabel for="@next" value="#{kernelBundle.address_stair}" />
+      <p:inputText id="stair" value="#{addressObjectBean.address.stair}" 
+                   />             
+    </div> 
 
-        <div class="field col-12 md:col-1">
-          <p:outputLabel for="@next" value="#{kernelBundle.address_floor}" />
-          <p:inputText id="floor" value="#{addressObjectBean.address.floor}" 
-                       styleClass="inputfield w-full"/>
-        </div> 
+    <div class="field col-12 md:col-1">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_floor}" />
+      <p:inputText id="floor" value="#{addressObjectBean.address.floor}" 
+                   />
+    </div> 
 
-        <div class="field col-12 md:col-1">          
-          <p:outputLabel for="@next" value="#{kernelBundle.address_door}" />
-          <p:inputText id="door" value="#{addressObjectBean.address.door}" 
-                       styleClass="inputfield w-full"/>          
-        </div> 
+    <div class="field col-12 md:col-1">          
+      <p:outputLabel for="@next" value="#{kernelBundle.address_door}" />
+      <p:inputText id="door" value="#{addressObjectBean.address.door}" 
+                   />          
+    </div> 
 
-        <div class="field col-12 md:col-3">
-          <p:outputLabel for="@next" value="#{kernelBundle.address_postal_code}" />
-          <p:inputText id="postal_code" value="#{addressObjectBean.address.postalCode}" 
-                       styleClass="inputfield w-full"/>
-        </div> 
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_postal_code}" />
+      <p:inputText id="postal_code" value="#{addressObjectBean.address.postalCode}" 
+                   />
+    </div> 
 
-        <div class="field col-12 md:col-3">          
-          <p:outputLabel for="@next" value="#{kernelBundle.address_post_office_box}" />
-          <p:inputText id="post_office_box" value="#{addressObjectBean.address.postOfficeBox}" 
-                       styleClass="inputfield w-full"/>          
-        </div> 
+    <div class="field col-12 md:col-3">          
+      <p:outputLabel for="@next" value="#{kernelBundle.address_post_office_box}" />
+      <p:inputText id="post_office_box" value="#{addressObjectBean.address.postOfficeBox}" 
+                   />          
+    </div> 
 
-        <div class="field col-12 md:col-3">
-          <p:outputLabel for="@next" value="#{kernelBundle.address_gis_reference}" />
-          <p:inputText id="gis_reference" value="#{addressObjectBean.address.gisReference}" 
-                       styleClass="inputfield w-full"/>
-        </div> 
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_gis_reference}" />
+      <p:inputText id="gis_reference" value="#{addressObjectBean.address.gisReference}" 
+                   />
+    </div> 
 
-        <div class="field col-12">
-          <p:outputLabel for="@next" value="#{kernelBundle.address_comments}" />
-          <p:inputText id="comments" value="#{addressObjectBean.address.comments}" 
-                       styleClass="inputfield w-full"/>
-        </div> 
+    <div class="field col-12">
+      <p:outputLabel for="@next" value="#{kernelBundle.address_comments}" />
+      <p:inputText id="comments" value="#{addressObjectBean.address.comments}" 
+                   />
+    </div> 
 
-      </div>   
-<!--
-      <p:dialog id="countryToStreetDialog" dynamic="true"  modal="true" 
-                widgetVar="countryToStreetDialog" styleClass="w-6"
-                appendTo="@(form)">
-
-        <ui:include src="country_to_street.xhtml" />
-
-        <div class="text-right pt-3">
-          <p:commandButton value="#{objectBundle.select}" 
-                           icon="pi pi-check"
-                           oncomplete="PF('countryToStreetDialog').hide()" 
-                           action="#{addressObjectBean.selectStreet(countryToStreetBacking.streetId)}"
-                           update="street" styleClass="ui-button-raised m-1"/> 
-          <p:commandButton value="#{objectBundle.close}" 
-                           icon="pi pi-times"
-                           onclick="PF('countryToStreetDialog').hide()" styleClass="ui-button-raised m-1"
-                           global="false"/>
-        </div>
-
-      </p:dialog>
-
--->
-
+  </div>   
 
 </ui:composition>

@@ -75,16 +75,16 @@
                          update=":mainform:search_tabs:tabs"
                          resetValues="true"
                          title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
-          <p:confirm header="Esborrat de #{objectBean.getDescription()}"
-                     message="Segur que vols esborrar aquest objecte?"
-                     icon="pi pi-info-circle" />
+            <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                       message="#{objectBundle.confirm_remove_message}" 
+                       icon="pi pi-info-circle" />
         </p:commandButton>
         <p:commandButton icon="ui-icon pi pi-cog"
                          action="#{navigatorBean.view('')}"
                          styleClass="rounded-button ui-button-flat"
                          update=":mainform:search_tabs:tabs"
-                         title="Actions" alt="Actions"
-                         onclick="return confirm('#{objectBundle.confirm_full_remove}');"/>
+                         process="@this"
+                         title="Actions" alt="Actions"/>
         <p:commandButton icon="ui-icon pi pi-times"
                          action="#{navigatorBean.close}"
                          ajax="false"
@@ -119,13 +119,13 @@
 
   <div class="tab_footer text-right pt-3">
     <p:commandButton action="#{objectBean.store}"
-                     value="Save"
+                     value="#{objectBundle.store}"
                      icon="pi pi-save"
                      process=":mainform:search_tabs:obj_tabs"
                      update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                      styleClass="ui-button-raised m-1" />
     <p:commandButton action="#{objectBean.cancel}"
-                     value="Cancel"
+                     value="#{objectBundle.cancel}"
                      icon="pi pi-undo"
                      process="@this"
                      styleClass="ui-button-raised m-1"

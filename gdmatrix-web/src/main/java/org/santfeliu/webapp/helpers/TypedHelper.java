@@ -30,178 +30,75 @@
  */
 package org.santfeliu.webapp.helpers;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
-import javax.faces.model.SelectItem;
+import java.util.Locale;
+import javax.faces.context.FacesContext;
 import org.apache.commons.lang.StringUtils;
-import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.PropertyDefinition;
-import org.matrix.web.WebUtils;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
-import org.santfeliu.dic.web.TypeBean;
-import org.santfeliu.webapp.BaseBean;
+import org.santfeliu.faces.Translator;
+import org.santfeliu.web.ApplicationBean;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
  * @author blanquepa
  */
-public abstract class TypedHelper extends BaseBean
-  implements Serializable
-{
-  public static final String TYPEID_SEPARATOR = ";";
-  
-  private static final String TYPE_BEAN = "typeBean";
-
-  protected final BaseBean baseBean;
-
-  public TypedHelper(BaseBean baseBean)
-  {
-    this.baseBean = baseBean;
-  }
-  
+public abstract class TypedHelper implements Serializable
+{  
   public abstract String getTypeId();
   
-  public abstract String getAdminRole();
-  
-  public List<Type> getAllTypes()
-  {
-    TypeCache tc = TypeCache.getInstance();
-    List<Type> types = new ArrayList<>();
-    List<SelectItem> items = getAllTypeItems();
-    for (SelectItem i : items)
-    {
-      types.add(tc.getType(String.valueOf(i.getValue())));
-    }
-    return types;
-  }
-
-  public List<SelectItem> getAllTypeItems()
-  {
-    return getAllTypeItems(DictionaryConstants.READ_ACTION,
-      DictionaryConstants.CREATE_ACTION, DictionaryConstants.WRITE_ACTION);
-  }
-
   public boolean isPropertyHidden(String propName)
   {
     PropertyDefinition pd = getPropertyDefinition(getTypeId(), propName);     
     return isPropertyHidden(pd);
   }
     
-  public boolean isPropertyHidden(PropertyDefinition pd)
+  public String getPropertyLabel(String propName, String altName)
+  {
+    String label = altName;
+    PropertyDefinition pd = getPropertyDefinition(getTypeId(), propName);
+    if (pd != null)
+    {
+      ApplicationBean applicationBean = WebUtils.getBean("applicationBean");
+      Translator translator = applicationBean.getTranslator();
+      StringWriter sw = new StringWriter();
+      StringReader sr = new StringReader(pd.getDescription());
+      String group = "typeId:" + getTypeId();
+      try
+      {
+        Locale locale = 
+          FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        translator.translate(sr, sw, "text/plain", locale.getLanguage(), group);
+        label = sw.toString();
+      }
+      catch (IOException ex)
+      {
+      }
+    }
+    return label;    
+  }  
+    
+  private boolean isPropertyHidden(PropertyDefinition pd)
   {
     if (pd == null)
       return true;
     
     String propName = pd.getName();
-    propName = "render" + StringUtils.capitalize(propName);
     
-    String value = getNodeProperty(propName);
+    propName = "render" + StringUtils.capitalize(propName);
+    String value = WebUtils.getMenuItemProperty(propName);
     if (value != null)
       return !Boolean.parseBoolean(value);
 
     return pd.isHidden(); 
   }
   
-  public String getPropertyLabel(String propName, String altName)
-  {
-    PropertyDefinition pd
-      = getPropertyDefinition(getTypeId(), propName);
-
-    return pd != null ? pd.getDescription() : altName;
-  }
-
-  /**
-   * Get property from dictionary definition.
-   * @param name
-   * @return Property value.
-   */
-  @Override
-  public String getProperty(String name)
-  {
-    String value = getNodeProperty(name);
-    
-    if (value == null)
-      value = getFirstPropertyDefinitionValue(name);
-    
-    return value;
-  }
-  
-  /**
-   * Get multi-valued property from dictionary definition.
-   * @param name
-   * @return List of values.
-   */
-  public List<String> getMultivaluedProperty(String name)
-  {
-    List<String> values = getMultivaluedNodeProperty(name);
-    
-    if (values == null || values.isEmpty())
-      values = getPropertyDefinitionValue(name);
-
-    return values;
-  }  
-
-  // Private methods 
-  
-  private String getNodeProperty(String propName)
-  {
-    String value;
-//    TODO
-//    if (baseBean instanceof TabBean)
-//      value = ((TabPage)backing).getTabHelper().getProperty(propName);
-//    else
-      value = WebUtils.getMenuItemProperty(propName); 
-    
-    return value;
-  }
-  
-  private List<String> getMultivaluedNodeProperty(String propName)
-  {
-    List<String> values;
-//    TODO:
-//    if (baseBean instanceof TabBean)
-//      values = ((TabPage)backing).getTabHelper()
-//        .getMultivaluedProperty(propName);
-//    else
-      values = WebUtils.getMultivaluedMenuItemProperty(propName);
-    return values;
-  }
-   
-  private String getFirstPropertyDefinitionValue(String propName)
-  {
-    List<String> values = getPropertyDefinitionValue(propName);
-    return !values.isEmpty() ? values.get(0) : null;
-  }  
-  
-  private List<String> getPropertyDefinitionValue(String propName)
-  {
-    PropertyDefinition pd
-      = getPropertyDefinition(getTypeId(), propName);
-    if (pd != null)
-    {
-      List<String> values = pd.getValue();
-      if (values != null && values.size() == 1)
-      {
-        String value = values.get(0);
-        if (value != null && value.contains(";"))
-        {
-          String[] parts = value.split(";");
-          return Arrays.asList(parts);
-        }
-      }
-      
-      return values;
-    }
-    else
-    {
-      return Collections.emptyList();
-    }
-  }
-
   private PropertyDefinition getPropertyDefinition(String typeId,
     String propName)
   {
@@ -223,22 +120,6 @@ public abstract class TypedHelper extends BaseBean
       }
     }
     return null;
-  }
-
-  private List<SelectItem> getAllTypeItems(String... actions)
-  {
-    try
-    {
-      String typeId = getTypeId();
-      TypeBean typeBean = WebUtils.getBacking(TYPE_BEAN);
-      String adminRole = getAdminRole();
-      return typeBean.getAllSelectItems(typeId, adminRole, actions, true);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return Collections.emptyList();
   }
 
 

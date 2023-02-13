@@ -13,7 +13,7 @@
   <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="address_results_table" value="#{personAddressesTabBean.resultListHelper.rows}" 
+    <p:dataTable id="person_addresses_table" value="#{personAddressesTabBean.resultListHelper.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom" 
@@ -27,21 +27,13 @@
 
       <f:facet name="header">
         <div class="flex flex-row-reverse w-12">    
-          <p:menuButton icon="pi pi-file-excel" styleClass="ui-menu-button rounded-button ui-button-flat"
-                        rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}" >
-            <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf" styleClass="m-1 ui-button-flat" ajax="false"
-                        rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
-              <p:dataExporter type="pdf" target="address_results_table" fileName="results" pageOnly="true"/>
-            </p:menuitem>
-            <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel" styleClass="m-1 ui-button-flat" ajax="false"
-                        rendered="#{personAddressesTabBean.resultListHelper.rowCount > 0}">
-              <p:dataExporter type="csv" target="address_results_table" fileName="results" pageOnly="true" />
-            </p:menuitem> 
-          </p:menuButton>  
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
-                           action="#{personAddressesTabBean.create}"                                  
-                           update="@root:@id(address_edit_panels)"
-                           oncomplete="PF('addressDataDialog').show()"                                  
+                           action="#{personAddressesTabBean.create}"   
+                           process="@this"
+                           update="@parent:@parent:@parent:person_addresses_dialog"
+                           resetValues="true"
+                           actionListener="#{personObjectBean.updateCurrentTab}"                           
+                           oncomplete="PF('personAddressesDialog').show()"                                  
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
         </div>
       </f:facet>      
@@ -61,13 +53,13 @@
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
           <p:commandButton action="#{personAddressesTabBean.remove(row)}"
-                           update="address_results_table :mainform:growl"
+                           update="person_addresses_table :mainform:growl"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.personAddressId != null}"
                            styleClass="rounded-button ui-button-flat">            
-            <p:confirm header="Esborrat de #{row.address.description}" 
-                       message="Segur que vols esborrar aquest objecte?" 
+            <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                       message="#{objectBundle.confirm_remove_message}" 
                        icon="pi pi-info-circle" />
           </p:commandButton>
         </h:panelGroup>          
@@ -77,9 +69,9 @@
 
 
   <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="address_data_dialog" widgetVar="addressDataDialog" 
+  <p:dialog id="person_addresses_dialog" widgetVar="personAddressesDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
-            modal="true" responsive="true" closable="true"
+            modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
@@ -88,54 +80,50 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-3xl mx-2 my-1"/>       
         <h:outputText value="#{personObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{personObjectBean.getTabs().get(personObjectBean.detailSelector).getLabel()}" />   
+        <h:outputText value="#{personObjectBean.getCurrentTab().getLabel()}" />   
         <i class="pi pi-angle-right mx-2"></i> 
         <h:outputText value="#{personAddressesTabBean.pageObjectDescription}" />
       </p:outputPanel>
     </f:facet>
 
-    <p:outputPanel id="address_edit_panels">
-      <p:panel id="edit_address_form" rendered="#{personAddressesTabBean.personAddress != null}"
-               styleClass="mt-2">
+    <p:panel id="person_addresses_panel" 
+             rendered="#{personAddressesTabBean.editing != null}"
+             styleClass="mt-2">
 
-        <div class="ui-fluid formgrid grid" >
-
-          <p:outputPanel styleClass="field col-12">  
-            <p:outputLabel for="@next"  
-                           value="#{kernelBundle.personAddresses_address}"
-                           styleClass="w-full"/>
-
-            <emcomp:objectReference value="#{personAddressesTabBean.addressId}"
-                                    type="Address"
-                                    process=":mainform:filter_panel"
-                                    styleClass="w-full"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3">
-              <p:ajax event="clear" listener="#{personAddressesTabBean.onAddressClear}" update="@id(address_edit_panels)"/>
-            </emcomp:objectReference>                        
-          </p:outputPanel>         
-        </div>
-
-      </p:panel>              
-
+      <div class="ui-fluid formgrid grid" >
       
+        <p:outputPanel styleClass="field col-12">  
+          <p:outputLabel for="@next"  
+                         value="#{kernelBundle.personAddresses_address}"/>
 
+          <emcomp:objectReference value="#{personAddressesTabBean.editing.addressId}"
+                                  type="Address"
+                                  process="@(.savable)"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3">
+          </emcomp:objectReference>                        
+        </p:outputPanel>      
+
+      </div>
+
+    </p:panel>  
+
+    <f:facet name="footer">
       <div class="field col-12 text-right">
         <p:commandButton action="#{personAddressesTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
-                         update="address_results_table address_edit_panels :mainform:growl" />
+                         update="person_addresses_table person_addresses_panel" 
+                         oncomplete="if (!isFacesError()) PF('personAddressesDialog').hide()"/>
         <p:commandButton action="#{personAddressesTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update="address_edit_panels :mainform:growl" global="false" 
-                         oncomplete="PF('addressDataDialog').hide()"/>
+                         immediate="true" update="person_addresses_panel" global="false" 
+                         oncomplete="PF('personAddressesDialog').hide()"/>
       </div>          
-
-    </p:outputPanel>
+    </f:facet>
 
   </p:dialog>     
-
-
 
 </ui:composition>

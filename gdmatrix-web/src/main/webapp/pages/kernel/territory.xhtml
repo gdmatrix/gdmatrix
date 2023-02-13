@@ -75,7 +75,9 @@
                        update=":mainform:search_tabs" 
                        resetValues="true"
                        title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
-        <p:confirm header="Esborrat de #{objectBean.getDescription()}" message="Segur que vols esborrar aquest objecte?" icon="pi pi-info-circle" />
+            <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                       message="#{objectBundle.confirm_remove_message}" 
+                       icon="pi pi-info-circle" />
       </p:commandButton>
       <p:commandButton icon="ui-icon pi pi-times" 
                        action="#{navigatorBean.close}"
@@ -160,7 +162,7 @@
           <div class="field col-12">
             <p:outputLabel for="@next" value="#{kernelBundle.province}" />
             <p:inputText id="province_name" value="#{objectBean.province.name}" 
-                         styleClass="inputfield w-full" required="true"/>
+                         required="true"/>
           </div>         
       </h:panelGroup>
       
@@ -189,7 +191,7 @@
         <div class="field col-12">
           <p:outputLabel for="@next" value="#{kernelBundle.city}" />
           <p:inputText id="city_name" value="#{objectBean.city.name}" 
-                       styleClass="inputfield w-full" required="true"/>
+                       required="true"/>
         </div>          
       </h:panelGroup>
 
@@ -198,19 +200,18 @@
         <div class="field col-12 md:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
           <p:inputText id="street_type_id" value="#{objectBean.street.streetTypeId}" 
-                       styleClass="inputfield w-full" required="true"/>
+                       required="true"/>
         </div>     
 
         <div class="field col-12 md:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
-          <p:inputText id="street_particle" value="#{objectBean.street.particle}" 
-                       styleClass="inputfield w-full"/>
+          <p:inputText id="street_particle" value="#{objectBean.street.particle}" />
         </div>
 
         <div class="field col-12 md:col-8">
           <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
           <p:inputText id="street_name" value="#{objectBean.street.name}" 
-                       styleClass="inputfield w-full" required="true"/>
+                       required="true"/>
         </div>   
       </h:panelGroup>
 
