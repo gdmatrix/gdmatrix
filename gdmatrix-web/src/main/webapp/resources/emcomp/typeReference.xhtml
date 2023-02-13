@@ -43,10 +43,24 @@
                         scrollHeight="#{cc.attrs.scrollHeight}"                        
                         onclick="this.setSelectionRange(0, this.value.length)"
                         required="#{cc.attrs.required}">
+
+          <p:ajax event="itemSelect" listener="#{typeReferenceBean.onItemSelect}" 
+                  process="@this" update="@none"/>
+
+          <p:ajax event="clear" listener="#{typeReferenceBean.onClear}" 
+                  process="@this" update="@none"/>
+
           <p:column>
             <h:outputText value="#{item.label}" />
           </p:column>
         </p:autoComplete>
+        <p:commandButton id="show_button"
+                         icon="pi pi-external-link"
+                         styleClass="ui-button-raised select-button"
+                         ajax="false"
+                         immediate="true"
+                         action="#{typeReferenceBean.show}"
+                         />
         <h:commandButton style="display: none"
                          action="#{typeReferenceBean.find}"
                          immediate="true">

@@ -45,10 +45,24 @@
                         onclick="this.setSelectionRange(0, this.value.length)"
                         required="#{cc.attrs.required}"
                         widgetVar="#{cc.attrs.widgetVar}">
+          
+          <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}" 
+                  process="@this" update="@none"/>
+
+          <p:ajax event="clear" listener="#{objectReferenceBean.onClear}" 
+                  process="@this" update="@none"/>
+          
           <p:column>
             <h:outputText value="#{item.label}" />
           </p:column>
         </p:autoComplete>
+        <p:commandButton id="show_button"
+                         icon="pi pi-external-link"
+                         styleClass="ui-button-raised select-button"
+                         ajax="false"
+                         immediate="true"
+                         action="#{objectReferenceBean.show}"
+                         />
         <h:commandButton style="display: none"
                          action="#{objectReferenceBean.find}"
                          immediate="true">

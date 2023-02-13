@@ -38,6 +38,7 @@ import javax.faces.el.CompositeComponentExpressionHolder;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.TypeBean;
@@ -85,6 +86,30 @@ public class ObjectReferenceBean
       String objectId = (String)selectItem.getValue();
       WebUtils.setValue("#{cc.attrs.value}", String.class, objectId);
     }
+  }
+
+  public void onItemSelect(SelectEvent event)
+  {
+    SelectItem selectItem = (SelectItem)event.getObject();
+    String objectId = (String)selectItem.getValue();
+    if (NEW_OBJECT_ID.equals(objectId)) objectId = null;
+    WebUtils.setValue("#{cc.attrs.value}", String.class, objectId);
+  }
+
+  public void onClear()
+  {
+    WebUtils.setValue("#{cc.attrs.value}", String.class, null);
+  }
+
+  public String show()
+  {
+    String objectId = WebUtils.getValue("#{cc.attrs.value}");
+    if (objectId == null) objectId = NEW_OBJECT_ID;
+
+    String typeId = getTypeId();
+
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    return navigatorBean.show(typeId, objectId);
   }
 
   public String find()

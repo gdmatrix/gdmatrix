@@ -77,6 +77,16 @@ public class TypeReferenceBean extends ObjectReferenceBean
   }
 
   @Override
+  public String show()
+  {
+    String typeId = WebUtils.getValue("#{cc.attrs.value}");
+    if (typeId == null) typeId = NEW_OBJECT_ID;
+
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    return navigatorBean.show(TYPE_TYPE, typeId);
+  }
+
+  @Override
   public String find()
   {
     // TODO: preset typeId in typeFinderBean
