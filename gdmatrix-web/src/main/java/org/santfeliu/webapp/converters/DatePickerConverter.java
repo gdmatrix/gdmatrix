@@ -30,48 +30,60 @@
  */
 package org.santfeliu.webapp.converters;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Locale;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.santfeliu.util.TextUtils;
 
 /**
  *
  * @author blanquepa
  */
 @FacesConverter(value = "datePickerConverter")
-public class DatePickerConverter implements Converter<String>, Serializable
-{
-  private static final String INTERNAL_DATETIME_FORMAT = "yyyyMMddHHmmss";
-  private static final String INTERNAL_DATE_FORMAT = "yyyyMMdd";
-  private static final String INTERNAL_TIME_FORMAT = "HHmmss";
-  
-  private static final String USER_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
-  private static final String USER_DATE_FORMAT = "dd/MM/yyyy";
-  private static final String USER_TIME_FORMAT = "HH:mm:ss";
-  
-  private String internalFormat = INTERNAL_DATE_FORMAT;    
-  private String userFormat = USER_DATE_FORMAT;
-
-
+public class DatePickerConverter extends DateConverter 
+{  
   public DatePickerConverter()
   {
   }
   
-  public DatePickerConverter(String userFormat, String internalFormat)
-  {
-    this.userFormat = userFormat;
-    this.internalFormat = internalFormat;
-  }
-  
   @Override
   public String getAsString(FacesContext fc, UIComponent uic, 
-    String internalDate)
+    String internalDate)    
   {
+    String userFormat = getUserFormat(uic);
+    
+    return getAsString(fc, internalDate, userFormat);
+  }
+
+  @Override
+  public String getAsObject(FacesContext fc, UIComponent uic, String userDate)
+  { 
+    String userFormat = getUserFormat(uic);
+    String internalFormat = getInternalFormat(uic);  
+    
+    return getAsObject(fc, userDate, userFormat, internalFormat);
+  }  
+    
+  private String getInternalFormat(UIComponent uic)
+  {
+    String internalFormat = INTERNAL_DATE_FORMAT;
+    if (uic != null)
+    {  
+      Boolean showTime = (Boolean)uic.getAttributes().get("showTime"); 
+      Boolean timeOnly = (Boolean)uic.getAttributes().get("timeOnly");      
+      if (showTime)
+        internalFormat = INTERNAL_DATETIME_FORMAT;
+      else if (timeOnly)
+        internalFormat = INTERNAL_TIME_FORMAT;
+    }      
+      
+    return internalFormat;
+  }
+  
+
+  private String getUserFormat(UIComponent uic)
+  {
+    String userFormat = USER_DATE_FORMAT;
+    
     if (uic != null)
     {
       String uFormat = (String)uic.getAttributes().get("pattern");
@@ -81,45 +93,14 @@ public class DatePickerConverter implements Converter<String>, Serializable
       {
         Boolean showTime = (Boolean)uic.getAttributes().get("showTime");
         Boolean timeOnly = (Boolean)uic.getAttributes().get("timeOnly");  
-        if (showTime)
+        if (showTime != null && showTime)
           userFormat = USER_DATETIME_FORMAT;
-        else if (timeOnly)
+        else if (timeOnly != null && timeOnly)
           userFormat = USER_TIME_FORMAT;
       }
     }
-    if (internalDate != null)
-    {
-      Date date = TextUtils.parseInternalDate(internalDate);
-      Locale locale = fc.getViewRoot().getLocale();
-      return TextUtils.formatDate(date, userFormat, locale);
-    }
-    else
-      return internalDate != null ? internalDate : null;
-  }
-
-  @Override
-  public String getAsObject(FacesContext fc, UIComponent uic, String userDate)
-  {
-    if (uic != null)
-    {
-      String uFormat = (String)uic.getAttributes().get("pattern");        
-      if (uFormat != null)
-        userFormat = uFormat;
-
-      Boolean showTime = (Boolean)uic.getAttributes().get("showTime"); 
-      Boolean timeOnly = (Boolean)uic.getAttributes().get("timeOnly");      
-      if (showTime)
-        internalFormat = INTERNAL_DATETIME_FORMAT;
-      else if (timeOnly)
-        internalFormat = INTERNAL_TIME_FORMAT;
-    }
-    Date date = TextUtils.parseUserDate(userDate, userFormat);
-    if (date != null)
-    {
-      Locale locale = fc.getViewRoot().getLocale();
-      return TextUtils.formatDate(date, internalFormat, locale);
-    }
-    else
-      return userDate;
-  }
+    return userFormat;
+  }  
+  
+  
 }
