@@ -4,28 +4,28 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
     
-  <p:dataTable value="#{documentFinderBean.rows}" 
+  <p:dataTable value="#{roleFinderBean.rows}" 
                var="row" stripedRows="true" 
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
-               first="#{documentFinderBean.firstRow}"
-               rowStyleClass="#{row.docId == documentObjectBean.objectId ? 'current' : ''}"
+               first="#{roleFinderBean.firstRow}"
+               rowStyleClass="#{row.roleId == roleObjectBean.objectId ? 'current' : ''}"
                rows="10"
                rowIndexVar="rowIndex">
 
-    <p:column headerText="docId" styleClass="w-1">
-      <h:outputText value="#{row.docId}" />
+    <p:column headerText="roleId" styleClass="w-1" style="white-space: nowrap">
+      <h:outputText value="#{row.roleId}" />
     </p:column>   
     <p:column headerText="Type" styleClass="w-2">
-      <h:outputText value="#{row.docTypeId}" />
+      <h:outputText value="#{row.roleTypeId}" />
     </p:column>         
-    <p:column headerText="Title" styleClass="w-8">
-      <h:outputText value="#{row.title}" />
+    <p:column headerText="Name" styleClass="w-8">
+      <h:outputText value="#{row.name}" />
     </p:column>
     <p:column styleClass="w-1">
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat"  
-                       action="#{documentFinderBean.view(rowIndex)}"
+                       action="#{roleFinderBean.view(rowIndex)}"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"

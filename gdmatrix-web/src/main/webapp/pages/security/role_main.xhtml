@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+    <f:loadBundle basename="org.santfeliu.security.web.resources.SecurityBundle"
+                  var="securityBundle" />    
+    
+    <div class="ui-fluid formgrid grid">
+            
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="RoleId" />
+        <p:inputText value="#{roleObjectBean.objectId}" 
+                     readonly="#{not roleObjectBean.isNew()}" />
+      </div>
+
+      <div class="field col-12 md:col-9">
+        <p:outputLabel for="@next" value="RoleTypeId" />
+        <p:selectOneMenu value="#{roleObjectBean.role.roleTypeId}"
+                         styleClass="inputfield w-full"
+                         filter="true">
+          <f:selectItems value="#{typeTypeBean.getSelectItems('Role')}" 
+                         var="item" />
+          <p:column>
+            <h:outputText value="#{item.label}" />
+          </p:column>
+        </p:selectOneMenu>
+      </div>
+            
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="@next" value="Name" />
+        <p:inputText value="#{roleObjectBean.role.name}" 
+                     required="true"
+                     styleClass="inputfield w-full"/>
+      </div>
+
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="@next" value="Description" />
+        <p:inputTextarea value="#{roleObjectBean.role.description}" 
+                         styleClass="inputfield w-full"/>
+      </div>
+      
+      <emcomp:auditData creationUserId="#{roleObjectBean.role.creationUserId}" 
+                        creationDateTime="#{roleObjectBean.role.creationDateTime}" 
+                        changeUserId="#{roleObjectBean.role.changeUserId}" 
+                        changeDateTime="#{roleObjectBean.role.changeDateTime}" />
+      
+    </div>
+    
+</ui:composition>

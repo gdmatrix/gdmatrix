@@ -28,7 +28,7 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.doc;
+package org.santfeliu.webapp.modules.security;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -37,12 +37,13 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.doc.Document;
-import org.matrix.doc.DocumentFilter;
+import org.matrix.security.Role;
+import org.matrix.security.RoleFilter;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
 
 /**
  *
@@ -50,11 +51,11 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
  */
 @Named
 @ViewScoped
-public class DocumentFinderBean extends FinderBean
+public class RoleFinderBean extends FinderBean
 {
   private String smartFilter;
-  private DocumentFilter filter = new DocumentFilter();
-  private List<Document> rows;
+  private RoleFilter filter = new RoleFilter();
+  private List<Role> rows;
   private int firstRow;
   private boolean finding;
   private boolean outdated;
@@ -63,15 +64,15 @@ public class DocumentFinderBean extends FinderBean
   NavigatorBean navigatorBean;
 
   @Inject
-  DocumentTypeBean documentTypeBean;
+  RoleTypeBean roleTypeBean;
 
   @Inject
-  DocumentObjectBean documentObjectBean;
+  RoleObjectBean roleObjectBean;
 
   @Override
-  public DocumentObjectBean getObjectBean()
+  public RoleObjectBean getObjectBean()
   {
-    return documentObjectBean;
+    return roleObjectBean;
   }
 
   @PostConstruct
@@ -79,7 +80,6 @@ public class DocumentFinderBean extends FinderBean
   {
     System.out.println("Creating " + this);
   }
-
 
   public String getSmartFilter()
   {
@@ -91,12 +91,12 @@ public class DocumentFinderBean extends FinderBean
     this.smartFilter = smartFilter;
   }
 
-  public DocumentFilter getFilter()
+  public RoleFilter getFilter()
   {
     return filter;
   }
 
-  public void setFilter(DocumentFilter filter)
+  public void setFilter(RoleFilter filter)
   {
     this.filter = filter;
   }
@@ -104,7 +104,7 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public String getObjectId(int position)
   {
-    return rows == null ? NEW_OBJECT_ID : rows.get(position).getDocId();
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getRoleId();
   }
 
   @Override
@@ -113,26 +113,26 @@ public class DocumentFinderBean extends FinderBean
     return rows == null ? 0 : rows.size();
   }
 
-  public List<String> getDocIdList()
+  public List<String> getRoleIdList()
   {
-    return filter.getDocId();
+    return filter.getRoleId();
   }
 
-  public void setDocIdList(List<String> docIdList)
+  public void setRoleIdList(List<String> roleIdList)
   {
-    filter.getDocId().clear();
-    if (docIdList != null)
+    filter.getRoleId().clear();
+    if (roleIdList != null)
     {
-      filter.getDocId().addAll(docIdList);
+      filter.getRoleId().addAll(roleIdList);
     }
   }
 
-  public List<Document> getRows()
+  public List<Role> getRows()
   {
     return rows;
   }
 
-  public void setRows(List<Document> rows)
+  public void setRows(List<Role> rows)
   {
     this.rows = rows;
   }
@@ -151,9 +151,9 @@ public class DocumentFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);
+    filter = roleTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
     firstRow = 0;
   }
@@ -162,10 +162,10 @@ public class DocumentFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterSelector(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter.setDocTypeId(baseTypeId);
-    smartFilter = documentTypeBean.filterToQuery(filter);
+    filter.setRoleTypeId(baseTypeId);
+    smartFilter = roleTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
   }
@@ -185,7 +185,7 @@ public class DocumentFinderBean extends FinderBean
 
   public void clear()
   {
-    filter = new DocumentFilter();
+    filter = new RoleFilter();
     smartFilter = null;
     rows = null;
     finding = false;
@@ -204,8 +204,8 @@ public class DocumentFinderBean extends FinderBean
     Object[] stateArray = (Object[])state;
     finding = (Boolean)stateArray[0];
     setFilterSelector((Integer)stateArray[1]);
-    filter = (DocumentFilter)stateArray[2];
-    smartFilter = documentTypeBean.filterToQuery(filter);
+    filter = (RoleFilter)stateArray[2];
+    smartFilter = roleTypeBean.filterToQuery(filter);
 
     doFind(false);
 
@@ -230,7 +230,7 @@ public class DocumentFinderBean extends FinderBean
           {
             try
             {
-              return DocModuleBean.getPort(false).countDocuments(filter);
+              return getPort(false).countRoles(filter);
             }
             catch (Exception ex)
             {
@@ -246,7 +246,7 @@ public class DocumentFinderBean extends FinderBean
             {
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
-              return DocModuleBean.getPort(false).findDocuments(filter);
+              return getPort(false).findRoles(filter);
             }
             catch (Exception ex)
             {
@@ -262,13 +262,13 @@ public class DocumentFinderBean extends FinderBean
         {
           if (rows.size() == 1)
           {
-            navigatorBean.view(rows.get(0).getDocId());
-            documentObjectBean.setSearchSelector(
-              documentObjectBean.getEditionSelector());
+            navigatorBean.view(rows.get(0).getRoleId());
+            roleObjectBean.setSearchSelector(
+              roleObjectBean.getEditionSelector());
           }
           else
           {
-            documentObjectBean.setSearchSelector(0);
+            roleObjectBean.setSearchSelector(0);
           }
         }
       }

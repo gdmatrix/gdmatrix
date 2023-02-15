@@ -76,7 +76,6 @@ import org.santfeliu.webapp.helpers.PropertyHelper;
  * @author realor
  */
 @Named
-//@ManualScoped
 @ViewScoped
 public class DocumentObjectBean extends ObjectBean
 {
@@ -299,12 +298,6 @@ public class DocumentObjectBean extends ObjectBean
   }
 
   @Override
-  public String show()
-  {
-    return "/pages/doc/document.xhtml";
-  }
-
-  @Override
   public void loadObject() throws Exception
   {
     versions = null;
@@ -375,6 +368,7 @@ public class DocumentObjectBean extends ObjectBean
     tabs.add(new Tab("Main", "/pages/doc/document_main.xhtml"));
     tabs.add(new Tab("Content", "/pages/doc/document_content.xhtml"));
     tabs.add(new Tab("Cases", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
+    tabs.add(new Tab("ACL", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
   }
 
   public void lock()
