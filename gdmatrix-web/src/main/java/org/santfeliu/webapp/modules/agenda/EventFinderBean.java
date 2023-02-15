@@ -279,16 +279,6 @@ public class EventFinderBean extends FinderBean
     return getLocale().getLanguage();
   }
 
-  public void onPersonClear()
-  {
-    filter.setPersonId(null);
-  }
-
-  public void onRoomClear()
-  {
-    filter.setRoomId(null);
-  }
-
   public void onEventSelect(SelectEvent<ScheduleEvent<?>> selectEvent)
   {
     ScheduleEvent<?> event = selectEvent.getObject();

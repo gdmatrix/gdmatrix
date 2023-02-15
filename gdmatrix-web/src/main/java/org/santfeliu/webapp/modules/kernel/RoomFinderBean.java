@@ -146,11 +146,6 @@ public class RoomFinderBean extends FinderBean
       filter.getRoomIdList().addAll(roomIds);
   }
 
-  public void onAddressClear()
-  {
-    filter.setAddressId(null);
-  }
-
   @Override
   public void smartFind()
   {

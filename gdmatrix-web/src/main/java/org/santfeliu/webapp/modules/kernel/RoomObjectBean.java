@@ -155,11 +155,6 @@ public class RoomObjectBean extends ObjectBean
     roomFinderBean.outdate();
   }
 
-  public void onAddressClear()
-  {
-    room.setAddressId(null);
-  }
-
   public String getAdminRole()
   {
     return KernelConstants.KERNEL_ADMIN_ROLE;
