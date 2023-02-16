@@ -9,12 +9,11 @@
 
   <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                 var="caseBundle" />
-  <f:loadBundle basename="org.santfeliu.web.obj.resources.ObjectBundle" 
-                var="objectBundle" />     
+
   <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="case_interventions_table" value="#{caseInterventionsTabBean.interventionViews}" 
+    <p:dataTable id="case_interventions_table" value="#{caseInterventionsTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" 
                  size="small" paginatorPosition="bottom"
@@ -25,7 +24,13 @@
 
       <f:facet name="header">
         <div class="flex flex-row-reverse w-12">        
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseInterventionsTabBean.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{caseInterventionsTabBean.switchView}"
+                           process="@this"
+                           update="case_interventions_table"
+                           resetValues="true"
+                           alt="" title="" />                  
+          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
                            action="#{caseInterventionsTabBean.create}" 
                            process="@this"
                            update="@parent:@parent:@parent:case_interventions_dialog"
@@ -35,33 +40,42 @@
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>              
       </f:facet>      
+      
+      <p:headerRow field="intTypeId" expandable="true"
+                   expanded="true" rendered="#{caseInterventionsTabBean.groupedView}">
+        <p:column colspan="6" >
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.intTypeId)}"/>
+        </p:column>
+      </p:headerRow>        
 
-      <p:column headerText="#{caseBundle.caseInterventions_id}" styleClass="w-1"
-                exportHeaderValue="#{caseBundle.interventions_id}">
-        <h:outputText value="#{row.intId}" />
+      <p:column headerText="#{caseBundle.caseInterventions_id}" styleClass="col-1"
+                >
+        <h:outputText value="#{row.intId}"/>
       </p:column> 
 
-      <p:column headerText="#{caseBundle.caseInterventions_type}" styleClass="w-4"
-                exportHeaderValue="#{caseBundle.interventions_type}">
+      <p:column headerText="#{caseBundle.caseInterventions_type}" 
+                styleClass="w-4"
+                rendered="#{!caseInterventionsTabBean.groupedView}">
         <h:outputText value="#{typeTypeBean.getDescription(row.intTypeId)}"/>
       </p:column>        
 
-      <p:column headerText="#{caseBundle.caseInterventions_person}" styleClass="w-4"
-                exportHeaderValue="#{caseBundle.interventions_person}">
+      <p:column headerText="#{caseBundle.caseInterventions_person}" 
+                styleClass="#{!caseInterventionsTabBean.groupedView} ? 'col-4' : 'col-8'"
+                >
         <h:outputText value="#{row.personView.fullName}"/>
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseInterventions_startDate}" styleClass="w-1"
-                exportHeaderValue="#{caseBundle.caseInterventions_startDate}">
-        <h:outputText value="#{row.startDate}"/>
+      <p:column headerText="#{caseBundle.caseInterventions_startDate}" styleClass="col-1 text-center"
+                >
+        <h:outputText value="#{row.startDate}" converter="dateConverter"/>
       </p:column>  
 
-      <p:column headerText="#{caseBundle.caseInterventions_endDate}" styleClass="w-1"
-                exportHeaderValue="#{caseBundle.caseInterventions_endDate}">
-        <h:outputText value="#{row.endDate}"/>
+      <p:column headerText="#{caseBundle.caseInterventions_endDate}" styleClass="col-1 text-center"
+                >
+        <h:outputText value="#{row.endDate}" converter="dateConverter"/>
       </p:column>   
 
-      <p:column styleClass="w-1 text-right" exportable="false">
+      <p:column styleClass="col-1 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton action="#{caseInterventionsTabBean.edit(row)}"
                            icon="pi pi-pencil"
@@ -81,7 +95,9 @@
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.intId != null}"
                            styleClass="rounded-button ui-button-flat">            
-            <p:confirm header="Esborrat de #{row.intId}" message="Segur que vols esborrar aquest objecte?" icon="pi pi-info-circle" />
+            <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                       message="#{objectBundle.confirm_remove_message}" 
+                       icon="pi pi-info-circle" />
           </p:commandButton>
         </h:panelGroup>
       </p:column>          
@@ -93,7 +109,7 @@
   <!-- Only works appendTo="@(form)" with one single form -->    
   <p:dialog id="case_interventions_dialog" widgetVar="interventionDataDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
-            modal="true" responsive="true" closable="true"
+            modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
@@ -102,15 +118,15 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
         <h:outputText value="#{caseObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{caseObjectBean.getTabs().get(caseObjectBean.detailSelector).getLabel()}" />   
+        <h:outputText value="#{caseObjectBean.getCurrentTab().getLabel()}" />   
         <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{caseInterventionsTabBean.intervention.getIntId()}" />
+        <h:outputText value="#{caseInterventionsTabBean.editing.getIntId()}" />
       </p:outputPanel>
     </f:facet>  
 
     <p:panel id="case_interventions_panel"
              styleClass="mt-2"
-             rendered="#{caseInterventionsTabBean.intervention != null}">
+             rendered="#{caseInterventionsTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >        
 
@@ -118,7 +134,7 @@
           <p:outputLabel for="@next"  
                          value="#{caseBundle.caseInterventions_type}"
                          styleClass="w-full" />
-          <emcomp:typeReference value="#{caseInterventionsTabBean.intervention.intTypeId}"
+          <emcomp:typeReference value="#{caseInterventionsTabBean.intTypeId}"
                                 process="@(.savable)"
                                 type="#{caseInterventionsTabBean.baseIntTypeId != null ? caseInterventionsTabBean.baseIntTypeId : 'Intervention'}"
                                 styleClass="w-full"
@@ -177,7 +193,7 @@
         <p:outputPanel class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_comments}" />
-          <p:inputTextarea id="comments" value="#{caseInterventionsTabBean.intervention.comments}" 
+          <p:inputTextarea id="comments" value="#{caseInterventionsTabBean.editing.comments}" 
                            styleClass="savable"/>
         </p:outputPanel>
 

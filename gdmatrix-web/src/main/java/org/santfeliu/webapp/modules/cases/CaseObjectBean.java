@@ -51,6 +51,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.Tab;
 import org.santfeliu.webapp.helpers.PropertyHelper;
+import org.santfeliu.webapp.helpers.TypedHelper;
 import org.santfeliu.webapp.util.ComponentUtils;
 
 /**
@@ -63,6 +64,7 @@ public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
   private PropertyHelper propertyHelper;
+  private TypedHelper typedHelper;
 
   @Inject
   CaseTypeBean caseTypeBean;
@@ -81,6 +83,16 @@ public class CaseObjectBean extends ObjectBean
       public List<Property> getProperties()
       {
         return cas.getProperty();
+      }
+    };
+
+    typedHelper = new TypedHelper()
+    {
+      @Override
+      public String getTypeId()
+      {
+        return isNew() ? getBaseTypeInfo().getBaseTypeId() : 
+          cas.getCaseTypeId();
       }
     };
   }
@@ -106,6 +118,11 @@ public class CaseObjectBean extends ObjectBean
   public PropertyHelper getPropertyHelper()
   {
     return propertyHelper;
+  }
+
+  public TypedHelper getTypedHelper()
+  {
+    return typedHelper;
   }
 
   @Override
@@ -139,17 +156,25 @@ public class CaseObjectBean extends ObjectBean
   public Date getStartDateTime()
   {
     if (cas != null && cas.getStartDate() != null)
+    {
       return getDate(cas.getStartDate(), cas.getStartTime());
+    }
     else
+    {
       return null;
+    }
   }
 
   public Date getEndDateTime()
   {
     if (cas != null && cas.getEndDate() != null)
+    {
       return getDate(cas.getEndDate(), cas.getEndTime());
+    }
     else
+    {
       return null;
+    }
   }
 
   public void setStartDateTime(Date date)
@@ -157,7 +182,9 @@ public class CaseObjectBean extends ObjectBean
     if (cas != null)
     {
       if (date == null)
+      {
         date = new Date();
+      }
       cas.setStartDate(TextUtils.formatDate(date, "yyyyMMdd"));
       cas.setStartTime(TextUtils.formatDate(date, "HHmmss"));
     }
@@ -182,15 +209,14 @@ public class CaseObjectBean extends ObjectBean
   public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
-    {
       cas = CasesModuleBean.getPort(false).loadCase(objectId);
-    }
-    else cas = new Case();
+    else
+      cas = new Case();
 
     if (PrimeFaces.current().isAjaxRequest())
     {
-      UIComponent panel =
-        ComponentUtils.findComponent(":mainform:search_tabs:tabs:dyn_form");
+      UIComponent panel
+        = ComponentUtils.findComponent(":mainform:search_tabs:tabs:dyn_form");
 
       panel.getChildren().clear();
       includeDynamicComponents(panel);
@@ -209,6 +235,7 @@ public class CaseObjectBean extends ObjectBean
       tabs.add(new Tab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
       tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
       tabs.add(new Tab("Actuacions", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean"));
+      tabs.add(new Tab("Cases", "/pages/cases/case_cases.xhtml", "caseCasesTabBean"));
     }
   }
 
@@ -230,7 +257,7 @@ public class CaseObjectBean extends ObjectBean
   @Override
   public void restoreState(Serializable state)
   {
-    this.cas = (Case)state;
+    this.cas = (Case) state;
   }
 
   public void loadDynamicComponents(ComponentSystemEvent event)

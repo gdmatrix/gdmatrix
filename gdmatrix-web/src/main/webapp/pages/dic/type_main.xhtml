@@ -44,10 +44,6 @@
                       var="item" itemValue="#{item}" itemLabel="#{item.label}"
                       onclick="this.setSelectionRange(0, this.value.length)"
                       required="true"> 
-        <!--
-        <p:ajax event="itemSelect" listener="#{eventPersonsBacking.onPersonSelect}" />
-        <p:ajax event="clear" listener="#{eventPersonsBacking.onPersonClear}" /> 
-        -->
         <p:column>                 
           <h:outputText value="#{item.label}" />
         </p:column>        

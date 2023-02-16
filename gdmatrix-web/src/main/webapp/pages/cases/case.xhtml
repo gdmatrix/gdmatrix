@@ -17,18 +17,18 @@
         <p:tab id="smart_search">
           <f:facet name="title">
             <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="Ràpida" /> 
+            <h:outputText value="#{objectBundle.quick}" /> 
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
           
           <div class="buttons field">
-            <p:outputLabel for="@next" value="Valor" />
+            <p:outputLabel for="@next" value="#{objectBundle.value}" />
             <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
           </div>
 
           <div class="buttons text-right">
-            <p:commandButton value="Clear"
+            <p:commandButton value="#{objectBundle.clear}"
                              action="#{caseFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
@@ -36,7 +36,7 @@
                              resetValues="true"                             
                              />
             <p:commandButton id="smart_search_button"
-                             value="Search"
+                             value="#{objectBundle.search}"
                              action="#{caseFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
@@ -50,7 +50,7 @@
         <p:tab id="advanced_search">
           <f:facet name="title">
             <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="Avançada" /> 
+            <h:outputText value="#{objectBundle.advanced}" /> 
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
           <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"

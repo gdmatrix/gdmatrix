@@ -61,9 +61,10 @@ import org.santfeliu.webapp.util.ComponentUtils;
 @ViewScoped
 public class CaseInterventionsTabBean extends TabBean
 {
-  private List<InterventionView> interventionViews;
+  private List<InterventionView> rows;
+  private Intervention editing;  
   private int firstRow;
-  private Intervention intervention;
+  private boolean groupedView = true;
   private PropertyHelper propertyHelper;
   
   @Inject
@@ -77,7 +78,7 @@ public class CaseInterventionsTabBean extends TabBean
       @Override
       public List<Property> getProperties()
       {
-        return intervention != null ? intervention.getProperty() :
+        return editing != null ? editing.getProperty() :
           Collections.emptyList();
       }
     };
@@ -89,27 +90,37 @@ public class CaseInterventionsTabBean extends TabBean
     return caseObjectBean;
   }
 
-  public Intervention getIntervention()
+  public Intervention getEditing()
   {
-    return intervention;
+    return editing;
   }
 
-  public void setIntervention(Intervention intervention)
+  public void setEditing(Intervention editing)
   {
-    this.intervention = intervention;
+    this.editing = editing;
+  }
+
+  public boolean isGroupedView()
+  {
+    return groupedView;
+  }
+
+  public void setGroupedView(boolean groupedView)
+  {
+    this.groupedView = groupedView;
   }
   
   public String getPersonId()
   {
-    return intervention != null ? intervention.getPersonId() : null;
+    return editing != null ? editing.getPersonId() : null;
   }
   
   public void setPersonId(String personId)
   {
-    if (intervention == null)
-      intervention = new Intervention();
+    if (editing == null)
+      editing = new Intervention();
     
-    intervention.setPersonId(personId);
+    editing.setPersonId(personId);
     showDialog();    
   }
 
@@ -118,14 +129,14 @@ public class CaseInterventionsTabBean extends TabBean
     return propertyHelper;
   }
 
-  public List<InterventionView> getInterventionViews()
+  public List<InterventionView> getRows()
   {
-    return interventionViews;
+    return rows;
   }
 
-  public void setInterventionViews(List<InterventionView> interventionViews)
+  public void setRows(List<InterventionView> rows)
   {
-    this.interventionViews = interventionViews;
+    this.rows = rows;
   }
 
   public int getFirstRow()
@@ -140,26 +151,26 @@ public class CaseInterventionsTabBean extends TabBean
 
   public String getStartDateTime()
   {
-    if (intervention == null)
+    if (editing == null)
       return null;
     
-    String startDate = intervention.getStartDate() != null ? 
-      intervention.getStartDate() : "";
-    String startTime = intervention.getStartTime() != null ?
-      intervention.getStartTime() : "";
+    String startDate = editing.getStartDate() != null ? 
+      editing.getStartDate() : "";
+    String startTime = editing.getStartTime() != null ?
+      editing.getStartTime() : "";
     
     return startDate + startTime;
   }
 
   public String getEndDateTime()
   {
-    if (intervention == null)
+    if (editing == null)
       return null;
     
-    String endDate = intervention.getEndDate() != null ? 
-      intervention.getEndDate() : "";
-    String endTime = intervention.getEndTime() != null ?
-      intervention.getEndTime() : "";
+    String endDate = editing.getEndDate() != null ? 
+      editing.getEndDate() : "";
+    String endTime = editing.getEndTime() != null ?
+      editing.getEndTime() : "";
     
     return endDate + endTime;
   }
@@ -175,10 +186,10 @@ public class CaseInterventionsTabBean extends TabBean
       time = dateTime.length() > 8 ? dateTime.substring(8) : null;
     }
     
-    if (intervention != null)
+    if (editing != null)
     {
-      intervention.setStartDate(date);
-      intervention.setStartTime(time);
+      editing.setStartDate(date);
+      editing.setStartTime(time);
     }
   }
 
@@ -193,27 +204,47 @@ public class CaseInterventionsTabBean extends TabBean
       time = dateTime.length() > 8 ? dateTime.substring(8) : null;
     }
     
-    if (intervention != null)
+    if (editing != null)
     {
-      intervention.setEndDate(date);
-      intervention.setEndTime(time);
+      editing.setEndDate(date);
+      editing.setEndTime(time);
     }
+  }
+  
+  public void setIntTypeId(String intTypeId)
+  {
+    if (editing != null)
+      editing.setIntTypeId(intTypeId);
+    
+    showDialog();
+  }
+  
+  public String getIntTypeId()
+  {
+    return editing == null ? NEW_OBJECT_ID : editing.getIntTypeId();    
   }
   
   public String getBaseIntTypeId()
   {
+    //TODO: Get from JSON tabs
     return getProperty("intTypeId");
   }
   
   public void onPersonClear()
   {
-    intervention.setPersonId(null);
+    editing.setPersonId(null);
   } 
   
   public void create()
   {
-    intervention = new Intervention();
+    editing = new Intervention();
+    editing.setCaseId(objectId);
   }
+  
+  public void switchView()
+  {
+    groupedView = !groupedView;
+  }  
 
   @Override
   public void load() throws Exception
@@ -225,8 +256,7 @@ public class CaseInterventionsTabBean extends TabBean
       {
         InterventionFilter filter = new InterventionFilter();
         filter.setCaseId(objectId);
-        interventionViews
-          = CasesModuleBean.getPort(false).findInterventionViews(filter);
+        rows = CasesModuleBean.getPort(false).findInterventionViews(filter);
       }
       catch (Exception ex)
       {
@@ -235,9 +265,8 @@ public class CaseInterventionsTabBean extends TabBean
     }
     else
     {
-      interventionViews = Collections.emptyList();
-    }
-      
+      rows = Collections.emptyList();
+    }      
   }
 
   public void edit(InterventionView intView)
@@ -252,7 +281,7 @@ public class CaseInterventionsTabBean extends TabBean
     {
       if (intId != null)
       {
-        intervention = CasesModuleBean.getPort(false).loadIntervention(intId);
+        editing = CasesModuleBean.getPort(false).loadIntervention(intId);
 
         UIComponent panel =
           ComponentUtils.findComponent(":mainform:search_tabs:tabs:int_dyn_form");
@@ -278,25 +307,25 @@ public class CaseInterventionsTabBean extends TabBean
   public void store() throws Exception
   {
     String caseId = getObjectId();
-    intervention.setCaseId(caseId);
-    CasesModuleBean.getPort(false).storeIntervention(intervention);
+    editing.setCaseId(caseId);
+    CasesModuleBean.getPort(false).storeIntervention(editing);
     load();
-    intervention = null;    
+    editing = null;    
   }
 
   public void cancel()
   {
     info("CANCEL_OBJECT");    
-    intervention = null;
+    editing = null;
   }
 
-  public void remove(InterventionView interventionView)
+  public void remove(InterventionView row)
   {
     try
     {
-      if (interventionView != null)
+      if (row != null)
       {
-        String intId = interventionView.getIntId();
+        String intId = row.getIntId();
         CasesModuleBean.getPort(false).removeIntervention(intId);
         load();
       }
@@ -310,7 +339,7 @@ public class CaseInterventionsTabBean extends TabBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ intervention };
+    return new Object[]{ editing, groupedView };
   }
 
   @Override
@@ -319,7 +348,8 @@ public class CaseInterventionsTabBean extends TabBean
     try
     {
       Object[] stateArray = (Object[])state;
-      intervention = (Intervention)stateArray[0];
+      editing = (Intervention)stateArray[0];
+      groupedView = (boolean)stateArray[1];
 
       if (!isNew()) load();
     }

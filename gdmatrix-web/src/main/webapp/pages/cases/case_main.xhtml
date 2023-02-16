@@ -13,29 +13,30 @@
     <div class="ui-fluid formgrid grid">
 
       <div class="field col-12 md:col-3">
-        <p:outputLabel for="@next" value="CaseId" />
+        <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
         <p:inputText value="#{caseObjectBean.objectId}" readonly="true" />
       </div>
 
-      <div class="field col-12 md:col-9">
-        <p:outputLabel for="@next" value="Type" />
+      <p:outputPanel class="field col-12 md:col-9" rendered="#{not caseObjectBean.typedHelper.isPropertyHidden('caseTypeId')}">
+        <p:outputLabel for="@next" value="#{caseObjectBean.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />
         <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
-                              type="Case"
+                              type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
                               styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
                               minQueryLength="3" />
-      </div>
+      </p:outputPanel>
 
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="Title" />
+        <p:outputLabel for="@next" 
+                       value="#{caseObjectBean.typedHelper.getPropertyLabel('title', caseBundle.case_title)}" />
         <p:inputTextarea value="#{caseObjectBean.case.title}"
                          required="true"
                          class="inputfield w-full"/>
       </div>
 
       <div class="field col-12 md:col-3">
-        <p:outputLabel for="@next" value="Start date" />
+        <p:outputLabel for="@next" value="#{caseObjectBean.typedHelper.getPropertyLabel('startDate', caseBundle.case_startDate)}" />
         <!-- TODO: disable if not editable -->
         <p:datePicker value="#{caseObjectBean.startDateTime}"
                       autocomplete="off"
@@ -47,7 +48,7 @@
       </div>
 
       <div class="field col-12 md:col-3">
-        <p:outputLabel for="@next" value="End date" />
+        <p:outputLabel for="@next" value="#{caseObjectBean.typedHelper.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
         <!-- TODO: disable if not editable -->
         <p:datePicker value="#{caseObjectBean.endDateTime}"
                       autocomplete="off"
@@ -58,29 +59,28 @@
                       monthNavigator="true" yearNavigator="true" />
       </div>
 
-      <div class="field col-12 md:col-6">
-        <p:outputLabel for="@next" value="State" />
+      <p:outputPanel class="field col-12 md:col-6" rendered="#{not caseObjectBean.typedHelper.isPropertyHidden('state')}">
+        <p:outputLabel for="@next" value="#{caseBundle.case_state}" />
         <p:inputText value="#{caseObjectBean.case.state}"
                      class="inputfield w-full"/>
-      </div>
+      </p:outputPanel>
 
-      <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="Description" />
+      <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.typedHelper.isPropertyHidden('description')}">
+        <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
         <p:inputTextarea value="#{caseObjectBean.case.description}"
                          styleClass="inputfield w-full" />
-      </div>
+      </p:outputPanel>
 
-      <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="Comments" />
+      <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.typedHelper.isPropertyHidden('comments')}">
+        <p:outputLabel for="@next" value="#{caseBundle.case_comments}" />
         <p:inputTextarea value="#{caseObjectBean.case.comments}"
                          styleClass="inputfield w-full" />
-      </div>
+      </p:outputPanel>
       
     </div>
 
     <h:panelGroup id="dyn_form" styleClass="ui-fluid formgrid grid" layout="block">
       <f:event type="postAddToView" listener="#{caseObjectBean.loadDynamicComponents}" />
     </h:panelGroup>
-    
     
 </ui:composition>
