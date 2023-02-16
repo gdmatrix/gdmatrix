@@ -30,8 +30,6 @@
  */
 package org.santfeliu.cms.web;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -92,6 +90,7 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBeanIntrospector;
 import org.santfeliu.web.bean.CMSProperty;
+import org.santfeliu.util.json.JSONUtils;
 
 /**
  *
@@ -2105,7 +2104,7 @@ public class NodeEditBean extends FacesBean implements Serializable
     try
     {
       if (StringUtils.isBlank(jsonText)) jsonText = "{}";
-      propertyList = getPropertiesFromJSON();
+      propertyList = JSONUtils.getProperties(jsonText);
       userPropertyList = null;
       beanNameProperty = null;
       beanActionProperty = null;
@@ -2122,62 +2121,6 @@ public class NodeEditBean extends FacesBean implements Serializable
   }
 
   // ********* Private methods ********
-
-  private List<Property> getPropertiesFromJSON()
-  {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    Map<String, Object> map = gson.fromJson(jsonText, HashMap.class);
-    return getPropertiesFromMap(map, "");
-  }
-
-  private List<Property> getPropertiesFromMap(
-    Map<String, Object> map, String prefix)
-  {
-    List<Property> result = new ArrayList();
-    for (String name : map.keySet())
-    {
-      Object value = map.get(name);
-      if (value instanceof String)
-      {
-        Property prop = new Property();
-        prop.setName(prefix + name);
-        prop.getValue().add((String)value);
-        result.add(prop);
-      }
-      else if (value instanceof Map)
-      {
-        result.addAll(getPropertiesFromMap((Map)value,
-          prefix + name + MenuItemCursor.PROPERTY_SEPARATOR));
-      }
-      else if (value instanceof List)
-      {
-        List values = (List)value;
-        if (values.size() > 0)
-        {
-          if (values.get(0) instanceof String) //list of strings
-          {
-            Property prop = new Property();
-            prop.setName(prefix + name);
-            for (int i = 0; i < values.size(); i++)
-            {
-              prop.getValue().add((String)values.get(i));
-            }
-            result.add(prop);
-          }
-          else if (values.get(0) instanceof Map) //list of maps
-          {
-            for (int i = 0; i < values.size(); i++)
-            {
-              result.addAll(getPropertiesFromMap((Map)values.get(i), prefix +
-                  name + MenuItemCursor.PROPERTY_SEPARATOR +
-                  i + MenuItemCursor.PROPERTY_SEPARATOR));
-            }
-          }
-        }
-      }
-    }
-    return result;
-  }
 
   private void expandNode(TreeNode<NodeInfo> node)
   {

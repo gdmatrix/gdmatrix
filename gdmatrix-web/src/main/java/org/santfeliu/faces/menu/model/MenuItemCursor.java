@@ -30,8 +30,6 @@
  */
 package org.santfeliu.faces.menu.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -39,17 +37,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.matrix.cms.Property;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
 import org.santfeliu.cms.CNode;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.Translator;
 import org.santfeliu.faces.menu.util.MenuUtils;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.web.ApplicationBean;
+import org.santfeliu.util.json.JSONUtils;
 
 /**
  *
@@ -57,8 +52,6 @@ import org.santfeliu.web.ApplicationBean;
  */
 public class MenuItemCursor
 {
-  public static final String PROPERTY_SEPARATOR = "::";
-
   private MenuModel menuModel;
   private String mid;
   private PropertiesMap properties = new PropertiesMap();
@@ -143,19 +136,7 @@ public class MenuItemCursor
 
   public JSONObject getJSON(String basePath)
   {
-    try
-    {
-      CNode node = getNode(mid);
-      if (node != null)
-      {
-        TreeNode<String> rootTreeNode = getTreeNode(node, basePath);
-        return getJSON(rootTreeNode);
-      }
-    }
-    catch (Exception ex)
-    {
-    }
-    return null;
+    return JSONUtils.getJSON(mid, basePath);
   }
 
   public String getJSONString()
@@ -165,8 +146,7 @@ public class MenuItemCursor
 
   public String getJSONString(String basePath)
   {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    return gson.toJson(getJSON(basePath));
+    return JSONUtils.getJSONString(mid, basePath);
   }
 
   public String getLabel()
@@ -808,119 +788,6 @@ public class MenuItemCursor
       node = node.getPreviousSibling();
     }
     return node;
-  }
-
-  private TreeNode<String> getTreeNode(CNode node, String basePath)
-  {
-    TreeNode<String> rootTreeNode = new DefaultTreeNode("Root", null, null);
-    List<Property> propertyList = node.getProperties(true);
-    for (Property property : propertyList)
-    {
-      if (property.getName().startsWith(basePath))
-      {
-        TreeNode<String> parentNode = rootTreeNode;
-        String[] path = property.getName().split(PROPERTY_SEPARATOR);
-        for (int i = 0; i < path.length; i++)
-        {
-          TreeNode<String> auxNode = getDescendant(parentNode, path[i]);
-          if (auxNode == null)
-          {
-            auxNode = new DefaultTreeNode("Node", path[i], parentNode);
-          }
-          else
-          {
-            //nothing to do
-          }
-          parentNode = auxNode;
-        }
-        parentNode.setType("Property");
-        for (String value : property.getValue())
-        {
-          new DefaultTreeNode("Value", value, parentNode);
-        }
-      }
-    }
-    return rootTreeNode;
-  }
-
-  private TreeNode<String> getDescendant(TreeNode<String> treeNode,
-    String search)
-  {
-    for (TreeNode<String> child : treeNode.getChildren())
-    {
-      if (search.equals(child.getData())) return child;
-    }
-    return null;
-  }
-
-  private boolean allDescendantsAreInteger(TreeNode<String> treeNode)
-  {
-    if (treeNode.getChildren().isEmpty()) return false;
-
-    for (TreeNode<String> child : treeNode.getChildren())
-    {
-      try
-      {
-        Integer.parseInt(child.getData());
-      }
-      catch (NumberFormatException ex)
-      {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private JSONObject getJSON(TreeNode<String> treeNode)
-  {
-    JSONObject jsonObject = new JSONObject();
-    for (TreeNode<String> child : treeNode.getChildren())
-    {
-      addToJSON(jsonObject, child);
-    }
-    return jsonObject;
-  }
-
-  private void addToJSON(JSONObject jsonObject, TreeNode<String> treeNode)
-  {
-    if (treeNode.getType().equals("Node"))
-    {
-      if (allDescendantsAreInteger(treeNode))
-      {
-        JSONArray jsonArray = new JSONArray();
-        jsonObject.put(treeNode.getData(), jsonArray);
-        for (TreeNode<String> child : treeNode.getChildren())
-        {
-          jsonArray.add(getJSON(child));
-        }
-      }
-      else
-      {
-        JSONObject json = new JSONObject();
-        jsonObject.put(treeNode.getData(), json);
-        for (TreeNode<String> child : treeNode.getChildren())
-        {
-          addToJSON(json, child);
-        }
-      }
-    }
-    else if (treeNode.getType().equals("Property"))
-    {
-      String propertyName = (String)treeNode.getData();
-      if (treeNode.getChildCount() > 1)
-      {
-        JSONArray values = new JSONArray();
-        for (TreeNode<String> child : treeNode.getChildren())
-        {
-          values.add(child.getData());
-        }
-        jsonObject.put(propertyName, values);
-      }
-      else
-      {
-        jsonObject.put(propertyName, treeNode.getChildren().get(0).getData());
-      }
-    }
   }
 
   // ****** class that implements inheritance and localization ******
