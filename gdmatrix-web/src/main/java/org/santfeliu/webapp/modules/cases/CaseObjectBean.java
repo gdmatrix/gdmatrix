@@ -236,6 +236,8 @@ public class CaseObjectBean extends ObjectBean
       tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
       tabs.add(new Tab("Actuacions", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean"));
       tabs.add(new Tab("Cases", "/pages/cases/case_cases.xhtml", "caseCasesTabBean"));
+      tabs.add(new Tab("Cases2", "/pages/cases/case_cases.xhtml", "caseCasesTabBean"));
+      tabs.add(new Tab("Actuacions2", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean"));      
     }
   }
 

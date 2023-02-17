@@ -9,6 +9,8 @@
 
   <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                 var="caseBundle" />
+  
+  <f:subview id="case_interventions_subview_#{tab.label}">
 
   <h:panelGroup>
 
@@ -21,7 +23,7 @@
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rows="10" rowsPerPageTemplate="5,10,25,50">
-
+        <p:ajax event="page" listener="#{caseObjectBean.updateCurrentTab}" />
       <f:facet name="header">
         <div class="flex flex-row-reverse w-12">        
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseInterventionsTabBean.groupedView ? 'ui-button-flat' : ''}"
@@ -220,5 +222,7 @@
     </div>      
 
   </p:dialog>  
+  
+  </f:subview>  
 
 </ui:composition>

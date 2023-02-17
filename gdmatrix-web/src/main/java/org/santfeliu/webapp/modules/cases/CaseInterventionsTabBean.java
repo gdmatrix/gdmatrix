@@ -44,6 +44,7 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
+import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -239,11 +240,27 @@ public class CaseInterventionsTabBean extends TabBean
   {
     editing = new Intervention();
     editing.setCaseId(objectId);
+    String baseTypeId = getTabBaseTypeId();
+    if (baseTypeId != null)
+      editing.setIntTypeId(baseTypeId);    
   }
   
   public void switchView()
   {
     groupedView = !groupedView;
+  } 
+  
+  //TODO: get property from JSON  
+  private String getTabBaseTypeId()
+  {
+    String typeId;
+        
+    String tabPrefix = String.valueOf(caseObjectBean.getDetailSelector());
+    typeId = getProperty("tabs::" + tabPrefix + "::typeId");
+    if (typeId == null)
+      typeId = DictionaryConstants.INTERVENTION_TYPE; 
+    
+    return typeId;
   }  
 
   @Override
@@ -256,6 +273,11 @@ public class CaseInterventionsTabBean extends TabBean
       {
         InterventionFilter filter = new InterventionFilter();
         filter.setCaseId(objectId);
+        
+        String typeId = getTabBaseTypeId();
+        if (typeId != null)
+          filter.setIntTypeId(typeId);
+        
         rows = CasesModuleBean.getPort(false).findInterventionViews(filter);
       }
       catch (Exception ex)

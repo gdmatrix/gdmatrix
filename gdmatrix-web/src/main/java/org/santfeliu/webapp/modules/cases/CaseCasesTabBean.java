@@ -149,7 +149,9 @@ public class CaseCasesTabBean extends TabBean
   {
     editing = new CaseCase();
     editing.setCaseId(objectId);
-    editing.setCaseCaseTypeId(getTabBaseTypeId());
+    String baseTypeId = getTabBaseTypeId();
+    if (baseTypeId != null && !baseTypeId.contains(TYPEID_SEPARATOR))
+      editing.setCaseCaseTypeId(baseTypeId);
   }
   
   public void switchView()
@@ -303,7 +305,8 @@ public class CaseCasesTabBean extends TabBean
     try
     {
       PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('caseCasesDialog').show();");
+      current.executeScript("PF('caseCasesDialog" + 
+        caseObjectBean.getDetailSelector() + "').show();");
     }
     catch (Exception ex)
     {
