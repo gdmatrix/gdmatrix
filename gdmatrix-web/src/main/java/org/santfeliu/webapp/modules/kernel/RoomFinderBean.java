@@ -150,7 +150,7 @@ public class RoomFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = roomTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -161,7 +161,7 @@ public class RoomFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     smartFilter = roomTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -198,7 +198,7 @@ public class RoomFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterSelector(), filter,
+    return new Object[]{ finding, getFilterTabSelector(), filter,
       firstRow, getObjectPosition() };
   }
 
@@ -209,7 +209,7 @@ public class RoomFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setFilterSelector((Integer)stateArray[1]);
+      setFilterTabSelector((Integer)stateArray[1]);
       filter = (RoomFilter)stateArray[2];
 
       doFind(false);
@@ -271,11 +271,11 @@ public class RoomFinderBean extends FinderBean
         if (rows.size() == 1)
         {
           navigatorBean.view(rows.get(0).getRoomId());
-          roomObjectBean.setSearchSelector(roomObjectBean.getEditionSelector());
+          roomObjectBean.setSearchTabSelector(roomObjectBean.getEditModeSelector());
         }
         else
         {
-          roomObjectBean.setSearchSelector(0);
+          roomObjectBean.setSearchTabSelector(0);
         }
       }
     }

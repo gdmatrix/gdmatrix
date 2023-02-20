@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.doc;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -39,6 +40,8 @@ import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
 
 /**
@@ -78,6 +81,28 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     {
       return null;
     }
+  }
+
+  @Override
+  public String getTypeId(Document document)
+  {
+    return document.getDocTypeId();
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/doc/document.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Main", "/pages/doc/document_main.xhtml"));
+    editTabs.add(new EditTab("Content", "/pages/doc/document_content.xhtml"));
+    editTabs.add(new EditTab("Cases", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
+    editTabs.add(new EditTab("ACL", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
   }
 
   @Override
@@ -138,11 +163,5 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
   public String getValue(Object object)
   {
     return String.valueOf(object);
-  }
-
-  @Override
-  public String getViewId()
-  {
-    return "/pages/doc/document.xhtml";
   }
 }

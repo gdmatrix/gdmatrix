@@ -42,6 +42,7 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Province;
 import org.matrix.kernel.ProvinceFilter;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.ObjectSetup;
 
 /**
  *
@@ -89,29 +90,44 @@ public class ProvinceTypeBean extends TypeBean<Province, ProvinceFilter>
   }
 
   @Override
+  public String getTypeId(Province province)
+  {
+    return DictionaryConstants.PROVINCE_TYPE;
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/kernel/province.xhtml");
+
+    return objectSetup;
+  }
+
+  @Override
   public ProvinceFilter queryToFilter(String query, String typeId)
   {
     if (query == null)
       query = "";
-    
+
     ProvinceFilter filter = new ProvinceFilter();
       if (!query.startsWith("%")) query = "%" + query;
-      if (!query.endsWith("%")) query += "%"; 
-      
+      if (!query.endsWith("%")) query += "%";
+
     filter.setProvinceName(query);
-    
+
     return filter;
   }
 
   @Override
   public String filterToQuery(ProvinceFilter filter)
   {
-    String query = filter != null && filter.getProvinceName() != null 
+    String query = filter != null && filter.getProvinceName() != null
       ? filter.getProvinceName() : "";
-    
+
     if (query.startsWith("%")) query = query.substring(1);
-    if (query.endsWith("%")) query = query.substring(0, query.length() - 1);   
-    
+    if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
+
     return query;
   }
 
@@ -127,10 +143,10 @@ public class ProvinceTypeBean extends TypeBean<Province, ProvinceFilter>
       return Collections.emptyList();
     }
   }
-  
+
   public List<SelectItem> getProvinceSelectItems(String countryId)
   {
-    List<SelectItem> selectItems = new ArrayList<>();    
+    List<SelectItem> selectItems = new ArrayList<>();
     ProvinceFilter filter = new ProvinceFilter();
 
     if (!StringUtils.isBlank(countryId))
@@ -140,18 +156,13 @@ public class ProvinceTypeBean extends TypeBean<Province, ProvinceFilter>
 
       for (Province p : provinces)
       {
-        SelectItem item = 
+        SelectItem item =
           new SelectItem(p.getProvinceId(), p.getName());
         selectItems.add(item);
-      }     
-    } 
-    
+      }
+    }
+
     return selectItems;
   }
-  
-  @Override
-  public String getViewId()
-  {
-    return "/pages/kernel/province.xhtml";
-  }  
+
 }

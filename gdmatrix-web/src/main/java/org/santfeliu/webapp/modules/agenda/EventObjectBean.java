@@ -52,7 +52,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.Tab;
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 
@@ -151,15 +151,9 @@ public class EventObjectBean extends ObjectBean
   }
 
   @Override
-  public int getEditionSelector()
+  public int getEditModeSelector()
   {
     return 2;
-  }
-
-  @Override
-  public String show()
-  {
-    return "/pages/agenda/event.xhtml";
   }
 
   public Date getStartDateTime()
@@ -284,38 +278,20 @@ public class EventObjectBean extends ObjectBean
     else event = new Event();
   }
 
-  @Override
-  public void loadTabs()
-  {
-    super.loadTabs();
-
-    if (tabs.isEmpty())
-    {
-      tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Principal", "/pages/agenda/event_main.xhtml"));
-      tabs.add(new Tab("Assistents", "/pages/agenda/event_persons.xhtml",
-        "eventPersonsTabBean"));
-      tabs.add(new Tab("Llocs", "/pages/agenda/event_places.xhtml",
-        "eventPlacesTabBean"));
-      tabs.add(new Tab("Temes", "/pages/agenda/event_themes.xhtml",
-        "eventThemesTabBean"));
-    }
-  }
-
   public void onTabChange(TabChangeEvent tabEvent)
   {
     org.primefaces.component.tabview.Tab activeTab = tabEvent.getTab();
     if (activeTab.getId().equals("event_list_tab"))
     {
-      setSearchSelector(0);
+      setSearchTabSelector(0);
     }
     else if (activeTab.getId().equals("event_schedule_tab"))
     {
-      setSearchSelector(1);
+      setSearchTabSelector(1);
     }
     else if (activeTab.getId().equals("event_object_tab"))
     {
-      setSearchSelector(2);
+      setSearchTabSelector(2);
     }
   }
 

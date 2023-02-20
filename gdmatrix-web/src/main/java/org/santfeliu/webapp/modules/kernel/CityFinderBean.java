@@ -102,7 +102,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     filter =
       cityTypeBean.queryToFilter(smartFilter, DictionaryConstants.CITY_TYPE);
     doFind(true);
@@ -113,7 +113,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     smartFilter = cityTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -152,12 +152,12 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getCityId());
-            cityObjectBean.setSearchSelector(
-              cityObjectBean.getEditionSelector());
+            cityObjectBean.setSearchTabSelector(
+              cityObjectBean.getEditModeSelector());
           }
           else
           {
-            cityObjectBean.setSearchSelector(0);
+            cityObjectBean.setSearchTabSelector(0);
           }
         }
       }

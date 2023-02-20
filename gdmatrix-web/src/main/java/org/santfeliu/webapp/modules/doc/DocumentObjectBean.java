@@ -68,7 +68,7 @@ import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.HttpUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.Tab;
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 
 /**
@@ -359,16 +359,6 @@ public class DocumentObjectBean extends ObjectBean
       fileToStore = null;
     }
     versions = null;
-  }
-
-  @Override
-  public void loadTabs()
-  {
-    tabs = new ArrayList<>();
-    tabs.add(new Tab("Main", "/pages/doc/document_main.xhtml"));
-    tabs.add(new Tab("Content", "/pages/doc/document_content.xhtml"));
-    tabs.add(new Tab("Cases", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
-    tabs.add(new Tab("ACL", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
   }
 
   public void lock()

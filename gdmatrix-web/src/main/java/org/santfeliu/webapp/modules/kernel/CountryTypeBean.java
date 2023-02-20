@@ -39,6 +39,7 @@ import org.matrix.kernel.Country;
 import org.matrix.kernel.CountryFilter;
 import org.santfeliu.webapp.TypeBean;
 import javax.enterprise.context.ApplicationScoped;
+import org.santfeliu.webapp.setup.ObjectSetup;
 
 /**
  *
@@ -83,26 +84,41 @@ public class CountryTypeBean extends TypeBean<Country, CountryFilter>
   }
 
   @Override
+  public String getTypeId(Country country)
+  {
+    return DictionaryConstants.COUNTRY_TYPE;
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/kernel/country.xhtml");
+
+    return objectSetup;
+  }
+
+  @Override
   public CountryFilter queryToFilter(String query, String typeId)
   {
     if (query == null)
       query = "";
-    
+
     CountryFilter filter = new CountryFilter();
       if (!query.startsWith("%")) query = "%" + query;
-      if (!query.endsWith("%")) query += "%"; 
-      
+      if (!query.endsWith("%")) query += "%";
+
     filter.setCountryName(query);
-    
+
     return filter;
   }
 
   @Override
   public String filterToQuery(CountryFilter filter)
   {
-    String query = filter != null && filter.getCountryName() != null 
+    String query = filter != null && filter.getCountryName() != null
       ? filter.getCountryName() : "";
-    
+
     if (query.startsWith("%")) query = query.substring(1);
     if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
 
@@ -121,11 +137,5 @@ public class CountryTypeBean extends TypeBean<Country, CountryFilter>
       return Collections.emptyList();
     }
   }
-  
-  @Override
-  public String getViewId()
-  {
-    return "/pages/kernel/country.xhtml";
-  }  
 
 }

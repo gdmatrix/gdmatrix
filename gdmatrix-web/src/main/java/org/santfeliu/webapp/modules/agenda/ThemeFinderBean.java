@@ -130,7 +130,7 @@ public class ThemeFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = themeTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -141,7 +141,7 @@ public class ThemeFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     smartFilter = themeTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -171,7 +171,7 @@ public class ThemeFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterSelector(),
+    return new Object[]{ finding, getFilterTabSelector(),
       filter, firstRow, getObjectPosition() };
   }
 
@@ -182,7 +182,7 @@ public class ThemeFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setFilterSelector((Integer)stateArray[1]);
+      setFilterTabSelector((Integer)stateArray[1]);
       filter = (ThemeFilter)stateArray[2];
 
       doFind(false);
@@ -248,12 +248,11 @@ public class ThemeFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getThemeId());
-            themeObjectBean.setSearchSelector(themeObjectBean.
-              getEditionSelector());
+            themeObjectBean.setSearchTabSelector(themeObjectBean.getEditModeSelector());
           }
           else
           {
-            themeObjectBean.setSearchSelector(0);
+            themeObjectBean.setSearchTabSelector(0);
           }
         }
       }

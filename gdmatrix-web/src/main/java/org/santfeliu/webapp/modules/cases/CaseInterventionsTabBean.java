@@ -32,7 +32,9 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.component.UIComponent;
 import javax.faces.event.ComponentSystemEvent;
@@ -50,7 +52,9 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.setup.PropertyMap;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.util.ComponentUtils;
 
@@ -62,12 +66,19 @@ import org.santfeliu.webapp.util.ComponentUtils;
 @ViewScoped
 public class CaseInterventionsTabBean extends TabBean
 {
-  private List<InterventionView> rows;
-  private Intervention editing;  
-  private int firstRow;
-  private boolean groupedView = true;
+  Map<String, TabInstance> tabInstances = new HashMap<>();
+
+  public class TabInstance
+  {
+    String objectId = NEW_OBJECT_ID;
+    List<InterventionView> rows;
+    int firstRow = 0;
+    boolean groupedView = true;
+  }
+
+  private Intervention editing;
   private PropertyHelper propertyHelper;
-  
+
   @Inject
   CaseObjectBean caseObjectBean;
 
@@ -91,6 +102,36 @@ public class CaseInterventionsTabBean extends TabBean
     return caseObjectBean;
   }
 
+  public TabInstance getCurrentTabInstance()
+  {
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    TabInstance tabInstance = tabInstances.get(editTab.getSubviewId());
+    if (tabInstance == null)
+    {
+      tabInstance = new TabInstance();
+      tabInstances.put(editTab.getSubviewId(), tabInstance);
+    }
+    return tabInstance;
+  }
+
+  @Override
+  public String getObjectId()
+  {
+    return getCurrentTabInstance().objectId;
+  }
+
+  @Override
+  public void setObjectId(String objectId)
+  {
+    getCurrentTabInstance().objectId = objectId;
+  }
+
+  @Override
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
+  }
+
   public Intervention getEditing()
   {
     return editing;
@@ -103,26 +144,26 @@ public class CaseInterventionsTabBean extends TabBean
 
   public boolean isGroupedView()
   {
-    return groupedView;
+    return getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
   {
-    this.groupedView = groupedView;
+    getCurrentTabInstance().groupedView = groupedView;
   }
-  
+
   public String getPersonId()
   {
     return editing != null ? editing.getPersonId() : null;
   }
-  
+
   public void setPersonId(String personId)
   {
     if (editing == null)
       editing = new Intervention();
-    
+
     editing.setPersonId(personId);
-    showDialog();    
+    showDialog();
   }
 
   public PropertyHelper getPropertyHelper()
@@ -132,34 +173,34 @@ public class CaseInterventionsTabBean extends TabBean
 
   public List<InterventionView> getRows()
   {
-    return rows;
+    return getCurrentTabInstance().rows;
   }
 
   public void setRows(List<InterventionView> rows)
   {
-    this.rows = rows;
+    this.getCurrentTabInstance().rows = rows;
   }
 
   public int getFirstRow()
   {
-    return firstRow;
+    return getCurrentTabInstance().firstRow;
   }
 
   public void setFirstRow(int firstRow)
   {
-    this.firstRow = firstRow;
+    getCurrentTabInstance().firstRow = firstRow;
   }
 
   public String getStartDateTime()
   {
     if (editing == null)
       return null;
-    
-    String startDate = editing.getStartDate() != null ? 
+
+    String startDate = editing.getStartDate() != null ?
       editing.getStartDate() : "";
     String startTime = editing.getStartTime() != null ?
       editing.getStartTime() : "";
-    
+
     return startDate + startTime;
   }
 
@@ -167,12 +208,12 @@ public class CaseInterventionsTabBean extends TabBean
   {
     if (editing == null)
       return null;
-    
-    String endDate = editing.getEndDate() != null ? 
+
+    String endDate = editing.getEndDate() != null ?
       editing.getEndDate() : "";
     String endTime = editing.getEndTime() != null ?
       editing.getEndTime() : "";
-    
+
     return endDate + endTime;
   }
 
@@ -180,13 +221,13 @@ public class CaseInterventionsTabBean extends TabBean
   {
     String date = null;
     String time = null;
-    
+
     if (dateTime != null)
     {
       date = dateTime.substring(0, 8);
       time = dateTime.length() > 8 ? dateTime.substring(8) : null;
     }
-    
+
     if (editing != null)
     {
       editing.setStartDate(date);
@@ -198,87 +239,81 @@ public class CaseInterventionsTabBean extends TabBean
   {
     String date = null;
     String time = null;
-    
+
     if (dateTime != null)
     {
       date = dateTime.substring(0, 8);
       time = dateTime.length() > 8 ? dateTime.substring(8) : null;
     }
-    
+
     if (editing != null)
     {
       editing.setEndDate(date);
       editing.setEndTime(time);
     }
   }
-  
+
   public void setIntTypeId(String intTypeId)
   {
     if (editing != null)
       editing.setIntTypeId(intTypeId);
-    
+
     showDialog();
   }
-  
+
   public String getIntTypeId()
   {
-    return editing == null ? NEW_OBJECT_ID : editing.getIntTypeId();    
+    return editing == null ? NEW_OBJECT_ID : editing.getIntTypeId();
   }
-  
+
   public String getBaseIntTypeId()
   {
     //TODO: Get from JSON tabs
     return getProperty("intTypeId");
   }
-  
+
   public void onPersonClear()
   {
     editing.setPersonId(null);
-  } 
-  
+  }
+
   public void create()
   {
     editing = new Intervention();
-    editing.setCaseId(objectId);
+    editing.setCaseId(getObjectId());
     String baseTypeId = getTabBaseTypeId();
     if (baseTypeId != null)
-      editing.setIntTypeId(baseTypeId);    
+      editing.setIntTypeId(baseTypeId);
   }
-  
+
   public void switchView()
   {
-    groupedView = !groupedView;
-  } 
-  
-  //TODO: get property from JSON  
+    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
+  }
+
   private String getTabBaseTypeId()
   {
-    String typeId;
-        
-    String tabPrefix = String.valueOf(caseObjectBean.getDetailSelector());
-    typeId = getProperty("tabs::" + tabPrefix + "::typeId");
-    if (typeId == null)
-      typeId = DictionaryConstants.INTERVENTION_TYPE; 
-    
-    return typeId;
-  }  
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    return editTab.getProperties().getString("typeId");
+  }
 
   @Override
   public void load() throws Exception
   {
-    System.out.println("load interventions:" + objectId);
-    if (!NEW_OBJECT_ID.equals(objectId))
+    System.out.println("load interventions:" + getObjectId());
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
       {
         InterventionFilter filter = new InterventionFilter();
-        filter.setCaseId(objectId);
-        
+        filter.setCaseId(getObjectId());
+
         String typeId = getTabBaseTypeId();
         if (typeId != null)
           filter.setIntTypeId(typeId);
-        
-        rows = CasesModuleBean.getPort(false).findInterventionViews(filter);
+
+        getCurrentTabInstance().rows =
+          CasesModuleBean.getPort(false).findInterventionViews(filter);
       }
       catch (Exception ex)
       {
@@ -287,8 +322,11 @@ public class CaseInterventionsTabBean extends TabBean
     }
     else
     {
-      rows = Collections.emptyList();
-    }      
+      TabInstance tabInstance = getCurrentTabInstance();
+      tabInstance.objectId = NEW_OBJECT_ID;
+      tabInstance.rows = Collections.EMPTY_LIST;
+      tabInstance.firstRow = 0;
+    }
   }
 
   public void edit(InterventionView intView)
@@ -306,11 +344,11 @@ public class CaseInterventionsTabBean extends TabBean
         editing = CasesModuleBean.getPort(false).loadIntervention(intId);
 
         UIComponent panel =
-          ComponentUtils.findComponent(":mainform:search_tabs:tabs:int_dyn_form");
+          ComponentUtils.findComponent(":mainform:search_tabs:int_dyn_form");
         if (panel != null)
         {
           panel.getChildren().clear();
-          includeDynamicComponents(panel);        
+          includeDynamicComponents(panel);
         }
 
       }
@@ -332,12 +370,12 @@ public class CaseInterventionsTabBean extends TabBean
     editing.setCaseId(caseId);
     CasesModuleBean.getPort(false).storeIntervention(editing);
     load();
-    editing = null;    
+    editing = null;
   }
 
   public void cancel()
   {
-    info("CANCEL_OBJECT");    
+    info("CANCEL_OBJECT");
     editing = null;
   }
 
@@ -357,11 +395,11 @@ public class CaseInterventionsTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing, groupedView };
+    return new Object[]{ editing };
   }
 
   @Override
@@ -371,36 +409,35 @@ public class CaseInterventionsTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (Intervention)stateArray[0];
-      groupedView = (boolean)stateArray[1];
 
-      if (!isNew()) load();
+      load();
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }  
-  
+  }
+
   public void onTypeSelect(SelectEvent<SelectItem> event)
   {
     changeForm();
   }
-  
+
   public void changeForm()
   {
     try
     {
       UIComponent panel =
-        ComponentUtils.findComponent(":mainform:search_tabs:tabs:int_dyn_form");
+        ComponentUtils.findComponent(":mainform:search_tabs:int_dyn_form");
       panel.getChildren().clear();
-      includeDynamicComponents(panel);    
+      includeDynamicComponents(panel);
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }  
-  
+  }
+
   public void loadDynamicComponents(ComponentSystemEvent event)
   {
     try
@@ -415,12 +452,12 @@ public class CaseInterventionsTabBean extends TabBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private void showDialog()
   {
     try
-    {      
+    {
       PrimeFaces current = PrimeFaces.current();
       current.executeScript("PF('interventionDataDialog').show();");
     }
@@ -428,13 +465,14 @@ public class CaseInterventionsTabBean extends TabBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private void includeDynamicComponents(UIComponent parent) throws Exception
   {
     // load dynamic fields
+    PropertyMap properties = caseObjectBean.getActiveEditTab().getProperties();
+    String formName = properties.getString("formName");
 
-    String formName = getProperty("formName");
     if (!StringUtils.isBlank(formName))
     {
       ComponentUtils.includeFormComponents(parent, formName,
@@ -443,11 +481,11 @@ public class CaseInterventionsTabBean extends TabBean
     }
     else
     {
-      String scriptName = getProperty("scriptName");
+      String scriptName = properties.getString("scriptName");
       if (!StringUtils.isBlank(scriptName))
       {
         ComponentUtils.includeScriptComponents(parent, scriptName);
       }
     }
-  }  
+  }
 }

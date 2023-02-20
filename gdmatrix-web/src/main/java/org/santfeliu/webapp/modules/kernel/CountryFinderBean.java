@@ -95,7 +95,7 @@ public class CountryFinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = countryTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -106,7 +106,7 @@ public class CountryFinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     smartFilter = countryTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -172,12 +172,12 @@ public class CountryFinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getCountryId());
-            countryObjectBean.setSearchSelector(
-              countryObjectBean.getEditionSelector());
+            countryObjectBean.setSearchTabSelector(
+              countryObjectBean.getEditModeSelector());
           }
           else
           {
-            countryObjectBean.setSearchSelector(0);
+            countryObjectBean.setSearchTabSelector(0);
           }
         }
       }

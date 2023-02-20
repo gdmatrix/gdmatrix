@@ -144,7 +144,7 @@ public class CaseFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = caseTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -155,7 +155,7 @@ public class CaseFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterTabSelector(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter.setCaseTypeId(baseTypeId);
     smartFilter = caseTypeBean.filterToQuery(filter);
@@ -187,7 +187,7 @@ public class CaseFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterSelector(), filter, firstRow,
+    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
       getObjectPosition() };
   }
 
@@ -198,7 +198,7 @@ public class CaseFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setFilterSelector((Integer)stateArray[1]);
+      setFilterTabSelector((Integer)stateArray[1]);
       filter = (CaseFilter)stateArray[2];
       smartFilter = caseTypeBean.filterToQuery(filter);
 
@@ -263,12 +263,12 @@ public class CaseFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getCaseId());
-            caseObjectBean.setSearchSelector(
-              caseObjectBean.getEditionSelector());
+            caseObjectBean.setSearchTabSelector(
+              caseObjectBean.getEditModeSelector());
           }
           else
           {
-            caseObjectBean.setSearchSelector(0);
+            caseObjectBean.setSearchTabSelector(0);
           }
         }
       }

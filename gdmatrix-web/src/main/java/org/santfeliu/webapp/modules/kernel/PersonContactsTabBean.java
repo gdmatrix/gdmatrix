@@ -59,7 +59,7 @@ public class PersonContactsTabBean extends TabBean
   private ResultListHelper<ContactView> resultListHelper;
 
   private int firstRow;
-  private Contact contact;
+  private Contact editing;
 
   public PersonContactsTabBean()
   {
@@ -92,14 +92,14 @@ public class PersonContactsTabBean extends TabBean
     this.firstRow = firstRow;
   }
 
-  public Contact getContact()
+  public Contact getEditing()
   {
-    return contact;
+    return editing;
   }
 
-  public void setContact(Contact contact)
+  public void setEditing(Contact contact)
   {
-    this.contact = contact;
+    this.editing = contact;
   }
 
   @Override
@@ -110,7 +110,7 @@ public class PersonContactsTabBean extends TabBean
 
   public void create()
   {
-    contact = new Contact();
+    editing = new Contact();
   }
 
   public void edit(ContactView contact)
@@ -125,12 +125,12 @@ public class PersonContactsTabBean extends TabBean
 
       if (contactId != null)
       {
-        this.contact = KernelModuleBean.getPort(false).loadContact(contactId);
-        this.contact.setContactId(contactId);
+        this.editing = KernelModuleBean.getPort(false).loadContact(contactId);
+        this.editing.setContactId(contactId);
       }
       else
       {
-        this.contact = new Contact();
+        this.editing = new Contact();
       }
     }
     catch (Exception ex)
@@ -142,17 +142,17 @@ public class PersonContactsTabBean extends TabBean
   @Override
   public void store() throws Exception
   {
-    if (contact != null)
+    if (editing != null)
     {
-      KernelModuleBean.getPort(false).storeContact(contact);
-      contact = null;
+      KernelModuleBean.getPort(false).storeContact(editing);
+      editing = null;
     }
     resultListHelper.find();
   }
 
   public void cancel()
   {
-    contact = null;
+    editing = null;
   }
 
   public void remove(ContactView contact)
@@ -164,7 +164,7 @@ public class PersonContactsTabBean extends TabBean
         String contactId = contact.getContactId();
         KernelModuleBean.getPort(false).removeContact(contactId);
       }
-      resultListHelper.find();      
+      resultListHelper.find();
     }
     catch (Exception ex)
     {

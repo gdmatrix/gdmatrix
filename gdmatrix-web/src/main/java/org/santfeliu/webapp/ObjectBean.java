@@ -30,8 +30,10 @@
  */
 package org.santfeliu.webapp;
 
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -42,11 +44,16 @@ import javax.enterprise.inject.spi.CDI;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
-import javax.faces.event.FacesEvent;
 import javax.faces.view.ViewScoped;
+import org.matrix.dic.PropertyDefinition;
 import org.primefaces.component.tabview.TabView;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.setup.ObjectSetup;
+import org.santfeliu.webapp.setup.ObjectSetupCache;
+import org.santfeliu.webapp.setup.SearchTab;
 
 /**
  *
@@ -55,9 +62,9 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 public abstract class ObjectBean extends BaseBean
 {
   protected String objectId = NEW_OBJECT_ID;
-  protected List<Tab> tabs = Collections.EMPTY_LIST;
-  private transient TabView searchTabView;
-  private transient TabView detailTabView;
+  private int searchTabSelector;
+  private int editTabSelector;
+  private transient ObjectSetup objectSetup;
 
   @Override
   public ObjectBean getObjectBean()
@@ -91,178 +98,73 @@ public abstract class ObjectBean extends BaseBean
     return NEW_OBJECT_ID.equals(objectId);
   }
 
-  public TabView getSearchTabView()
+  public int getSearchTabSelector()
   {
-    return searchTabView;
+    return searchTabSelector;
   }
 
-  public void setSearchTabView(TabView tabView)
+  public void setSearchTabSelector(int selector)
   {
-    this.searchTabView = tabView;
+    this.searchTabSelector = selector;
   }
 
-  public int getSearchSelector()
+  public int getEditTabSelector()
   {
-    if (searchTabView == null)
-    {
-      try
-      {
-        searchTabView =
-          WebUtils.createComponent("org.primefaces.component.TabView");
-      }
-      catch (Exception ex)
-      {
-        return 0;
-      }
-    }
-    return searchTabView.getActiveIndex();
+    return editTabSelector;
   }
 
-  public void setSearchSelector(int selector)
+  public void setEditTabSelector(int selector)
   {
-    if (searchTabView == null)
-    {
-      try
-      {
-        searchTabView =
-          WebUtils.createComponent("org.primefaces.component.TabView");
-      }
-      catch (Exception ex)
-      {
-        return;
-      }
-    }
-    searchTabView.setActiveIndex(selector);
+    this.editTabSelector = selector;
   }
 
-  public TabView getDetailTabView()
-  {
-    return detailTabView;
-  }
-
-  public void setDetailTabView(TabView tabView)
-  {
-    this.detailTabView = tabView;
-  }
-
-  public int getDetailSelector()
-  {
-    if (detailTabView == null)
-    {
-      try
-      {
-        detailTabView =
-          WebUtils.createComponent("org.primefaces.component.TabView");
-      }
-      catch (Exception ex)
-      {
-        return 0;
-      }
-    }
-    return detailTabView.getActiveIndex();
-  }
-
-  public void setDetailSelector(int selector)
-  {
-    if (detailTabView == null)
-    {
-      try
-      {
-        detailTabView =
-          WebUtils.createComponent("org.primefaces.component.TabView");
-      }
-      catch (Exception ex)
-      {
-        return;
-      }
-    }
-    detailTabView.setActiveIndex(selector);
-  }
-
-  public int getEditionSelector()
+  public int getEditModeSelector()
   {
     return 1;
   }
 
-  @Deprecated
-  public TabView getTabView()
+  public List<SearchTab> getSearchTabs()
   {
-    return getDetailTabView();
+    return objectSetup == null ?
+      Collections.EMPTY_LIST : objectSetup.getSearchTabs();
   }
 
-  @Deprecated
-  public void setTabView(TabView tabView)
+  public List<EditTab> getEditTabs()
   {
-    this.setDetailTabView(tabView);
+    return objectSetup == null ?
+      Collections.EMPTY_LIST : objectSetup.getEditTabs();
   }
 
-  @Deprecated
-  public int getTabIndex()
+  public EditTab getActiveEditTab()
   {
-    return getDetailSelector();
+    int selector = getEditTabSelector();
+    if (selector >= getEditTabs().size()) return null;
+
+    return getEditTabs().get(selector);
   }
 
-  @Deprecated
-  public void setTabIndex(int selector)
+  public List<String> getDialogViewIds()
   {
-    setDetailSelector(selector);
-  }
-
-  @Deprecated
-  public int getSearchTabIndex()
-  {
-    return getSearchSelector();
-  }
-
-  @Deprecated
-  public void setSearchTabIndex(int selector)
-  {
-    setSearchSelector(selector);
-  }
-
-  @Deprecated
-  public int getEditionTabIndex()
-  {
-    return getEditionSelector();
-  }
-
-  public List<Tab> getTabs()
-  {
-    return tabs;
-  }
-
-  public Tab getCurrentTab()
-  {
-    int selector = getDetailSelector();
-    if (selector >= tabs.size()) return null;
-
-    return tabs.get(selector);
-  }
-
-  public void updateCurrentTab(FacesEvent event)
-  {
-    UIComponent component = event.getComponent();
-    UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
-    while (component != null && component != viewRoot)
+    List<String> dialogViewIds = new ArrayList<>();
+    for (EditTab tab : getEditTabs())
     {
-      if (component instanceof org.primefaces.component.tabview.Tab)
+      String dialogViewId = tab.getDialogViewId();
+      if (!dialogViewIds.contains(dialogViewId))
       {
-        TabView currentTabView = (TabView)component.getParent();
-        int index = currentTabView.getChildren().indexOf(component);
-        if (index >= 0)
-        {
-          setDetailSelector(index);
-          break;
-        }
+        dialogViewIds.add(dialogViewId);
       }
-      component = component.getParent();
     }
+    return dialogViewIds;
   }
 
-  @Deprecated
-  public String show()
+  public ObjectSetup getObjectSetup()
   {
-    return null;
+    return objectSetup;
+  }
+
+  public TabBean getTabBean(EditTab editTab)
+  {
+    return (TabBean)WebUtils.getBean(editTab.getBeanName());
   }
 
   public abstract Object getObject();
@@ -279,8 +181,8 @@ public abstract class ObjectBean extends BaseBean
     {
       clear();
       loadObject();
-      loadTabs();
-      loadActiveTab();
+      loadObjectSetup();
+      loadActiveEditTab();
 
       Object object = getObject();
       TypeBean typeBean = getTypeBean();
@@ -299,13 +201,37 @@ public abstract class ObjectBean extends BaseBean
   {
   }
 
-  public void loadTabs()
+  public void loadObjectSetup() throws Exception
   {
+    String setupName = getProperty("objectSetup");
+    if (setupName == null)
+    {
+      // look in dictionary
+      if (!isNew())
+      {
+        String typeId = getTypeBean().getTypeId(getObject());
+        Type type = TypeCache.getInstance().getType(typeId);
+        PropertyDefinition propdef = type.getPropertyDefinition("objectSetup");
+        if (propdef != null && !propdef.getValue().isEmpty())
+        {
+          setupName = propdef.getValue().get(0);
+        }
+      }
+    }
+
+    if (setupName != null)
+    {
+      objectSetup = ObjectSetupCache.getConfig(setupName);
+    }
+    else
+    {
+      objectSetup = getTypeBean().getObjectSetup();
+    }
   }
 
-  public void loadActiveTab() throws Exception
+  public void loadActiveEditTab() throws Exception
   {
-    Tab tab = getCurrentTab();
+    EditTab tab = getActiveEditTab();
     if (tab == null) return;
 
     String beanName = tab.getBeanName();
@@ -324,7 +250,7 @@ public abstract class ObjectBean extends BaseBean
     }
   }
 
-  public boolean isDisabledTab(Tab tab)
+  public boolean isDisabledEditTab(EditTab tab)
   {
     return tab.getBeanName() != null && NEW_OBJECT_ID.equals(objectId);
   }
@@ -361,7 +287,7 @@ public abstract class ObjectBean extends BaseBean
   public void storeTabs() throws Exception
   {
     BeanManager beanManager = CDI.current().getBeanManager();
-    for (Tab tab : tabs)
+    for (EditTab tab : getEditTabs())
     {
       String beanName = tab.getBeanName();
       if (beanName != null)
@@ -396,7 +322,7 @@ public abstract class ObjectBean extends BaseBean
 
   public void cancel()
   {
-    setDetailSelector(0);
+    setEditTabSelector(0);
     load();
   }
 
@@ -434,7 +360,7 @@ public abstract class ObjectBean extends BaseBean
     BeanManager beanManager = CDI.current().getBeanManager();
     Context context = beanManager.getContext(ViewScoped.class);
 
-    for (Tab tab : tabs)
+    for (EditTab tab : getEditTabs())
     {
       String beanName = tab.getBeanName();
       if (beanName == null) continue;

@@ -144,7 +144,7 @@ public class PersonFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = personTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -155,7 +155,7 @@ public class PersonFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     smartFilter = personTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -187,7 +187,7 @@ public class PersonFinderBean extends FinderBean
   {
     return new Object[]
     {
-      finding, getFilterSelector(), filter, firstRow, getObjectPosition()
+      finding, getFilterTabSelector(), filter, firstRow, getObjectPosition()
     };
   }
 
@@ -198,7 +198,7 @@ public class PersonFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[]) state;
       finding = (Boolean) stateArray[0];
-      setFilterSelector((Integer) stateArray[1]);
+      setFilterTabSelector((Integer) stateArray[1]);
       filter = (PersonFilter) stateArray[2];
 
       doFind(false);
@@ -263,11 +263,11 @@ public class PersonFinderBean extends FinderBean
           {
             PersonView personView = (PersonView) rows.get(0);
             navigatorBean.view(personView.getPersonId());
-            personObjectBean.setSearchSelector(1);
+            personObjectBean.setSearchTabSelector(1);
           }
           else
           {
-            personObjectBean.setSearchSelector(0);
+            personObjectBean.setSearchTabSelector(0);
           }
         }
       }

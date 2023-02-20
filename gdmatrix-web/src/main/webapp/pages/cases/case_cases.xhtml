@@ -1,217 +1,113 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                 var="caseBundle" />
-  
-  <f:subview id="case_cases_subview_#{tab.label}">
-    <h:panelGroup>
-      <!-- Results table -->
-      <p:dataTable id="case_cases_table" value="#{caseCasesTabBean.rows}" 
-                   var="row" stripedRows="true" paginator="true" pageLinks="5"
-                   resizableColumns="false" showGridlines="true" 
-                   size="small" paginatorPosition="bottom"
-                   rowIndexVar="firstRow" first="#{caseCasesTabBean.firstRow}"
-                   paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                   currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                   rows="10" rowsPerPageTemplate="5,10,25,50">
 
-        <f:facet name="header">
-          <div class="flex flex-row-reverse w-12">
+  <f:subview id="#{tab.subviewId}">
 
-            <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseCasesTabBean.groupedView ? 'ui-button-flat' : ''}"
-                             action="#{caseCasesTabBean.switchView}"
-                             process="@this"
-                             update="case_cases_table"
-                             resetValues="true"
-                             actionListener="#{caseObjectBean.updateCurrentTab}"
-                             alt="" title="" />          
-            <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
-                             action="#{caseCasesTabBean.create}" 
-                             process="@this"
-                             update="@parent:@parent:@parent:case_cases_dialog"
-                             resetValues="true"
-                             actionListener="#{caseObjectBean.updateCurrentTab}"                           
-                             oncomplete="PF('caseCasesDialog').show()"                                 
-                             alt="#{objectBundle.add}" title="#{objectBundle.add}" />
-          </div>              
-        </f:facet> 
-
-        <p:headerRow field="caseCaseTypeId" expandable="true"
-                     expanded="true" rendered="#{caseCasesTabBean.groupedView}">
-          <p:column colspan="7" >
-            <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.caseCaseTypeId)}"/>
-          </p:column>
-        </p:headerRow>         
-
-        <p:column styleClass="w-2rem">
-          <i class="pi pi-#{caseCasesTabBean.isReverseRelation(row) ? 'arrow-left' : 'arrow-right'} text-xl" 
-             style="#{caseCasesTabBean.isReverseRelation(row) ? 'color:red' : 'color:green'}"></i>
-        </p:column>         
-
-        <p:column headerText="#{caseBundle.caseCases_id}" styleClass="col-1">
-          <h:outputText value="#{caseCasesTabBean.isReverseRelation(row) ? row.mainCase.caseId : row.relCase.caseId}" />
-        </p:column> 
-
-        <p:column headerText="#{caseBundle.caseCases_type}" styleClass="col-3"
-                  rendered="#{!caseCasesTabBean.groupedView}">
-          <h:outputText value="#{typeTypeBean.getDescription(row.caseCaseTypeId)}"/>
-        </p:column>        
-
-        <p:column headerText="#{caseBundle.caseCases_title}" styleClass="#{caseCasesTabBean.groupedView ? 'col-7' : 'col-4'}">
-          <h:outputText value="#{caseCasesTabBean.isReverseRelation(row) ? row.mainCase.title : row.relCase.title}" />
-        </p:column>         
-
-        <p:column headerText="#{caseBundle.caseCases_startDate}" styleClass="col-1 text-center">
-          <h:outputText value="#{row.startDate}" converter="dateConverter" />
-        </p:column>  
-
-        <p:column headerText="#{caseBundle.caseCases_endDate}" styleClass="col-1 text-center">
-          <h:outputText value="#{row.endDate}" converter="dateConverter" />
-        </p:column>   
-
-        <p:column styleClass="col-2 text-right" exportable="false">
-          <h:panelGroup>
-            <p:commandButton action="#{caseCasesTabBean.edit(row)}"
-                             icon="pi pi-pencil"
-                             rendered="#{row.caseCaseId != null and not caseCasesTabBean.isReverseRelation(row)}"
-                             styleClass="rounded-button ui-button-flat"                               
-                             alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                             process="@this" 
-                             update="@parent:@parent:@parent:@parent:case_cases_dialog"
-                             resetValues="true"
-                             actionListener="#{caseObjectBean.updateCurrentTab}"
-                             oncomplete="PF('caseCasesDialog').show()" />
-            <p:commandButton action="#{caseCasesTabBean.remove(row)}"
-                             process="@this" 
-                             update="@parent:@parent:@parent:@parent:case_cases_dialog case_cases_table :mainform:growl"
-                             resetValues="true"
-                             icon="pi pi-trash"
-                             alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                             rendered="#{row.caseCaseId != null}"
-                             styleClass="rounded-button ui-button-flat">            
-              <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                         message="#{objectBundle.confirm_remove_message}" 
-                         icon="pi pi-info-circle" />
-            </p:commandButton>
-            <p:commandButton icon="pi pi-external-link" 
-                             styleClass="rounded-button ui-button-flat" 
-                             ajax="false"
-                             action="#{navigatorBean.show(
-                                       (caseCasesTabBean.isReverseRelation(row) ?  row.mainCase.caseTypeId : row.relCase.caseTypeId), 
-                                       (caseCasesTabBean.isReverseRelation(row) ?  row.mainCase.caseId : row.relCase.caseId))}" />          
-          </h:panelGroup>
-        </p:column>          
-
-      </p:dataTable>    
-    </h:panelGroup>
-
-    <p:dialog id="case_cases_dialog" widgetVar="caseCasesDialog" 
-              styleClass="edit_data_dialog" style="max-width:800px" 
-              modal="true" responsive="true" closable="false"
-              appendTo="@(form)" position="center center" resizable="false">
+    <!-- Results table -->
+    <p:dataTable id="case_cases_table" value="#{caseCasesTabBean.rows}" 
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" 
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{caseCasesTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rows="10" rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <p:outputPanel>
-          <p:autoUpdate />        
-          <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
-          <h:outputText value="#{caseObjectBean.description}" />
-          <i class="pi pi-angle-right mx-2"></i>
-          <h:outputText value="#{caseObjectBean.getCurrentTab().getLabel()}" />   
-          <i class="pi pi-angle-right mx-2"></i> 
-          <h:outputText value="#{caseCasesTabBean.editing.caseCaseId}" />
-        </p:outputPanel>
-      </f:facet>  
+        <div class="flex justify-content-end w-12">
 
-      <p:panel id="case_cases_panel"
-               styleClass="mt-2"
-               rendered="#{caseCasesTabBean.editing != null}">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseCasesTabBean.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{caseCasesTabBean.switchView}"
+                           process="@this"
+                           update="case_cases_table"
+                           resetValues="true"
+                           alt="" title="" />          
+          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
+                           action="#{caseCasesTabBean.create}" 
+                           process="@this"
+                           update=":mainform:search_tabs:case_cases_dialog"
+                           resetValues="true"
+                           oncomplete="PF('caseCasesDialog').show()"                                 
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>              
+      </f:facet> 
 
-        <div class="ui-fluid formgrid grid" >        
+      <p:headerRow field="caseCaseTypeId" expandable="true"
+                   expanded="true" rendered="#{caseCasesTabBean.groupedView}">
+        <p:column colspan="7" >
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.caseCaseTypeId)}"/>
+        </p:column>
+      </p:headerRow>         
 
-          <!-- Type -->
-          <p:outputPanel styleClass="field col-12">  
-            <p:outputLabel for="@next"  
-                           value="#{caseBundle.caseCases_type}"
-                           styleClass="w-full" />
-            <emcomp:typeReference value="#{caseCasesTabBean.caseCaseTypeId}"
-                                  process="@(.savable)"
-                                  type="CaseCase"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  minQueryLength="3">   
-            </emcomp:typeReference>
-          </p:outputPanel>
+      <p:column styleClass="w-2rem">
+        <i class="pi pi-#{caseCasesTabBean.isReverseRelation(row) ? 'arrow-left' : 'arrow-right'} text-xl" 
+           style="#{caseCasesTabBean.isReverseRelation(row) ? 'color:red' : 'color:green'}"></i>
+      </p:column>         
 
-          <!-- Rel Case -->     
-          <p:outputPanel styleClass="field col-12">  
-            <p:outputLabel for="@next"  
-                           value="#{caseBundle.caseCases_case}"
-                           styleClass="w-full" />
-            <emcomp:objectReference value="#{caseCasesTabBean.relCaseId}"
-                                    process="@(.savable)"
-                                    type="Case"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3">   
-            </emcomp:objectReference>
-          </p:outputPanel>            
+      <p:column headerText="#{caseBundle.caseCases_id}" styleClass="col-1">
+        <h:outputText value="#{caseCasesTabBean.isReverseRelation(row) ? row.mainCase.caseId : row.relCase.caseId}" />
+      </p:column> 
 
-          <!-- Dates -->
-          <p:outputPanel styleClass="field col-12 md:col-3">
-            <p:outputLabel for="@next" 
-                           value="#{caseBundle.caseCases_startDate}"/>
-            <p:datePicker id="start_date" value="#{caseCasesTabBean.editing.startDate}"     
-                          styleClass="savable"
-                          autocomplete="off" placeholder="dd/mm/aaaa" 
-                          locale="es" showOnFocus="false" touchUI="true" 
-                          converter="datePickerConverter" pattern="dd/MM/yyyy" 
-                          showIcon="true" showTime="false"/>
-          </p:outputPanel>
+      <p:column headerText="#{caseBundle.caseCases_type}" styleClass="col-3"
+                rendered="#{!caseCasesTabBean.groupedView}">
+        <h:outputText value="#{typeTypeBean.getDescription(row.caseCaseTypeId)}"/>
+      </p:column>        
 
-          <p:outputPanel class="field col-12 md:col-3">
-            <p:outputLabel for="@next" 
-                           value="#{caseBundle.caseCases_endDate}"/>
-            <p:datePicker id="end_date" value="#{caseCasesTabBean.editing.endDate}"
-                          styleClass="savable"
-                          autocomplete="off" placeholder="dd/mm/aaaa" 
-                          locale="es" showOnFocus="false" touchUI="true" 
-                          converter="datePickerConverter" pattern="dd/MM/yyyy" 
-                          showIcon="true" showTime="false"/>
-          </p:outputPanel> 
+      <p:column headerText="#{caseBundle.caseCases_title}" styleClass="#{caseCasesTabBean.groupedView ? 'col-7' : 'col-4'}">
+        <h:outputText value="#{caseCasesTabBean.isReverseRelation(row) ? row.mainCase.title : row.relCase.title}" />
+      </p:column>         
 
-          <!-- Comments -->
-          <p:outputPanel class="field col-12">
-            <p:outputLabel for="@next"
-                           value="#{caseBundle.caseCases_comments}" />
-            <p:inputTextarea id="comments" value="#{caseCasesTabBean.editing.comments}" 
-                             styleClass="savable"/>
-          </p:outputPanel>
+      <p:column headerText="#{caseBundle.caseCases_startDate}" styleClass="col-1 text-center">
+        <h:outputText value="#{row.startDate}" converter="dateConverter" />
+      </p:column>  
 
-        </div>
+      <p:column headerText="#{caseBundle.caseCases_endDate}" styleClass="col-1 text-center">
+        <h:outputText value="#{row.endDate}" converter="dateConverter" />
+      </p:column>   
 
-      </p:panel>     
+      <p:column styleClass="col-2 text-right" exportable="false">
+        <h:panelGroup>
+          <p:commandButton action="#{caseCasesTabBean.edit(row)}"
+                           icon="pi pi-pencil"
+                           rendered="#{row.caseCaseId != null and not caseCasesTabBean.isReverseRelation(row)}"
+                           styleClass="rounded-button ui-button-flat"                               
+                           alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                           process="@this" 
+                           update=":mainform:search_tabs:case_cases_dialog"
+                           resetValues="true"
+                           oncomplete="PF('caseCasesDialog').show()" />
+          <p:commandButton action="#{caseCasesTabBean.remove(row)}"
+                           process="@this" 
+                           update=":mainform:search_tabs:case_cases_dialog case_cases_table :mainform:growl"
+                           resetValues="true"
+                           icon="pi pi-trash"
+                           alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                           rendered="#{row.caseCaseId != null}"
+                           styleClass="rounded-button ui-button-flat">            
+            <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                       message="#{objectBundle.confirm_remove_message}" 
+                       icon="pi pi-info-circle" />
+          </p:commandButton>
+          <p:commandButton icon="pi pi-external-link" 
+                           styleClass="rounded-button ui-button-flat" 
+                           ajax="false"
+                           action="#{navigatorBean.show(
+                                     (caseCasesTabBean.isReverseRelation(row) ?  row.mainCase.caseTypeId : row.relCase.caseTypeId), 
+                                     (caseCasesTabBean.isReverseRelation(row) ?  row.mainCase.caseId : row.relCase.caseId))}" />          
+        </h:panelGroup>
+      </p:column>          
 
-      <div class="field col-12 text-right">
-        <p:commandButton action="#{caseCasesTabBean.store}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                         process="case_cases_dialog"
-                         update="case_cases_table case_cases_panel"
-                         oncomplete="if (!isFacesError()) PF('caseCasesDialog').hide()"/>
-        <p:commandButton action="#{caseCasesTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         update="case_cases_dialog :mainform:growl" global="false" 
-                         immediate="true"
-                         oncomplete="PF('caseCasesDialog').hide()"/>
-      </div>      
+    </p:dataTable>
 
-    </p:dialog>  
   </f:subview>
 
 </ui:composition>

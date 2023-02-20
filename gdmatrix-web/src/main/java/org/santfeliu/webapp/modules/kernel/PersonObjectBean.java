@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
@@ -47,7 +46,6 @@ import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.Tab;
 
 /**
  *
@@ -140,8 +138,6 @@ public class PersonObjectBean extends ObjectBean
     return personParticleSelectItems;
   }
 
-
-
   public SelectItem[] getSexSelectItems()
   {
     if (sexSelectItems == null)
@@ -160,24 +156,6 @@ public class PersonObjectBean extends ObjectBean
       person = KernelConfigBean.getPort().loadPerson(objectId);
     else
       person = new Person();
-  }
-
-  @Override
-  public void loadTabs()
-  {
-    super.loadTabs();
-
-    if (tabs.isEmpty())
-    {
-      tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Main", "/pages/kernel/person_main.xhtml"));
-      tabs.add(new Tab("Addresses", "/pages/kernel/person_addresses.xhtml",
-        "personAddressesTabBean"));
-      tabs.add(new Tab("Contacts", "/pages/kernel/person_contacts.xhtml",
-        "personContactsTabBean"));      
-      tabs.add(new Tab("Cases", "/pages/kernel/person_cases.xhtml",
-        "personCasesTabBean"));      
-    }
   }
 
   @Override

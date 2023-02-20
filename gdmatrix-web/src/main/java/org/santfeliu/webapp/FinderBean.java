@@ -39,29 +39,17 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 public abstract class FinderBean extends BaseBean
 {
-  private int filterSelector;
+  private int filterTabSelector;
   private int objectPosition = -1;
 
-  public int getFilterSelector()
+  public int getFilterTabSelector()
   {
-    return filterSelector;
+    return filterTabSelector;
   }
 
-  public void setFilterSelector(int filterSelector)
+  public void setFilterTabSelector(int selector)
   {
-    this.filterSelector = filterSelector;
-  }
-
-  @Deprecated
-  public int getTabIndex()
-  {
-    return getFilterSelector();
-  }
-
-  @Deprecated
-  public void setTabIndex(int tabIndex)
-  {
-    this.setFilterSelector(tabIndex);
+    this.filterTabSelector = selector;
   }
 
   public abstract void find();

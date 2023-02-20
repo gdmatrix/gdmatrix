@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +48,7 @@ import org.primefaces.PrimeFaces;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.Tab;
+import org.santfeliu.webapp.setup.PropertyMap;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.helpers.TypedHelper;
 import org.santfeliu.webapp.util.ComponentUtils;
@@ -91,7 +90,7 @@ public class CaseObjectBean extends ObjectBean
       @Override
       public String getTypeId()
       {
-        return isNew() ? getBaseTypeInfo().getBaseTypeId() : 
+        return isNew() ? getBaseTypeInfo().getBaseTypeId() :
           cas.getCaseTypeId();
       }
     };
@@ -145,12 +144,6 @@ public class CaseObjectBean extends ObjectBean
   public void setCase(Case cas)
   {
     this.cas = cas;
-  }
-
-  @Override
-  public String show()
-  {
-    return "/pages/cases/case.xhtml";
   }
 
   public Date getStartDateTime()
@@ -224,24 +217,6 @@ public class CaseObjectBean extends ObjectBean
   }
 
   @Override
-  public void loadTabs()
-  {
-    super.loadTabs();
-
-    if (tabs.isEmpty())
-    {
-      tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Main", "/pages/cases/case_main.xhtml"));
-      tabs.add(new Tab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
-      tabs.add(new Tab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean"));
-      tabs.add(new Tab("Actuacions", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean"));
-      tabs.add(new Tab("Cases", "/pages/cases/case_cases.xhtml", "caseCasesTabBean"));
-      tabs.add(new Tab("Cases2", "/pages/cases/case_cases.xhtml", "caseCasesTabBean"));
-      tabs.add(new Tab("Actuacions2", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean"));      
-    }
-  }
-
-  @Override
   public void storeObject() throws Exception
   {
     cas = CasesModuleBean.getPort(false).storeCase(cas);
@@ -281,8 +256,9 @@ public class CaseObjectBean extends ObjectBean
   private void includeDynamicComponents(UIComponent parent) throws Exception
   {
     // load dynamic fields
+    PropertyMap properties = this.getObjectSetup().getProperties();
 
-    String formName = getProperty("formName");
+    String formName = properties.getString("formName");
     if (!StringUtils.isBlank(formName))
     {
       ComponentUtils.includeFormComponents(parent, formName,
@@ -291,7 +267,7 @@ public class CaseObjectBean extends ObjectBean
     }
     else
     {
-      String scriptName = getProperty("scriptName");
+      String scriptName = properties.getString("scriptName");
       if (!StringUtils.isBlank(scriptName))
       {
         ComponentUtils.includeScriptComponents(parent, scriptName);

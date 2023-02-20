@@ -13,10 +13,15 @@
     <p:outputPanel id="filter_panel">
 
       <p:tabView id="find_selector"
-                 activeIndex="#{eventFinderBean.filterSelector}">
+                 activeIndex="#{eventFinderBean.filterTabSelector}">
 
-        <p:tab title="Ràpida" id="smart_search">
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+        <p:tab id="smart_search">
+          <f:facet name="title">
+            <span class="pi pi-bolt mr-2"/> 
+            <h:outputText value="#{objectBundle.quick}" /> 
+          </f:facet>          
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />    
+
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="Valor" />
             <p:inputText id="smartFilter" value="#{eventFinderBean.smartFilter}"
@@ -24,7 +29,7 @@
           </p:outputPanel>
 
           <div class="buttons text-right">
-            <p:commandButton value="Clear"
+            <p:commandButton value="#{objectBundle.clear}"
                              action="#{eventFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
@@ -32,7 +37,7 @@
                              resetValues="true"
                              />
             <p:commandButton id="smart_search_button"
-                             value="Search"
+                             value="#{objectBundle.search}"
                              action="#{eventFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:search_tabs :mainform:context_panel :mainform:filter_panel"
@@ -43,8 +48,13 @@
 
         </p:tab>
 
-        <p:tab title="Avançada" id="advanced_search">
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+        <p:tab id="advanced_search">
+          <f:facet name="title">
+            <span class="pi pi-cog mr-2"/> 
+            <h:outputText value="#{objectBundle.advanced}" /> 
+          </f:facet>
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+
           <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                         var="agendaBundle" />
 
@@ -152,14 +162,15 @@
           </p:outputPanel>
 
           <div class="text-right">
-            <p:commandButton value="Clear"
+            <p:commandButton value="#{objectBundle.clear}"
                              action="#{eventFinderBean.clear}"
+                             styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
-                             value="Search"
+                             value="#{objectBundle.search}"
                              action="#{eventFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:search_tabs :mainform:context_panel :mainform:filter_panel"
@@ -195,23 +206,23 @@
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
-               binding="#{eventObjectBean.searchTabView}"
+               activeIndex="#{eventObjectBean.searchTabSelector}"
                touchable="false"
                onTabShow="onTabShow()">
 
       <p:ajax event="tabChange" listener="#{eventObjectBean.onTabChange}" />
 
-      <p:tab title="Resultats" id="event_list_tab">
+      <p:tab id="event_list_tab">
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
-          <h:outputText value="Resultats"/>
+          <h:outputText value="#{objectBundle.list}"/>
         </f:facet>
         <h:panelGroup id="result_list">
           <ui:include src="event_list.xhtml" />
         </h:panelGroup>
       </p:tab>
 
-      <p:tab title="Calendari" id="event_schedule_tab">
+      <p:tab id="event_schedule_tab">
         <f:facet name="title">
           <i class="pi pi-calendar mr-2"></i>
           <h:outputText value="Calendari"/>
@@ -221,10 +232,10 @@
         </h:panelGroup>
       </p:tab>
 
-      <p:tab title="Edició" id="event_object_tab">
+      <p:tab>
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>
-          <h:outputText value="Edició"/>
+          <h:outputText value="#{objectBundle.edition}"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">
           <ui:param name="objectBean" value="#{eventObjectBean}" />

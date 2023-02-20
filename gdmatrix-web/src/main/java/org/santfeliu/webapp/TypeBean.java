@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -55,6 +56,8 @@ public abstract class TypeBean<T, F> extends WebBean
   static final HashMap<String, TypeBean> instances = new HashMap<>();
 
   private final HashMap<String, String> descriptions = new HashMap<>();
+
+  private ObjectSetup objectSetup;
 
   public static TypeBean getInstance(String typeId)
   {
@@ -82,20 +85,27 @@ public abstract class TypeBean<T, F> extends WebBean
   public void init(@Observes @Initialized(ApplicationScoped.class) Object init)
   {
     TypeBean.register(this);
+    objectSetup = createObjectSetup();
   }
 
   public abstract String getRootTypeId();
 
   public abstract String getObjectId(T object);
 
+  public abstract String getTypeId(T object);
+
   public abstract String describe(T object);
 
   public abstract T loadObject(String objectId);
 
-  //TODO: make abstract
   public String getViewId()
   {
-    return "blank";
+    return objectSetup.getViewId();
+  }
+
+  public ObjectSetup getObjectSetup()
+  {
+    return objectSetup;
   }
 
   public synchronized String getDescription(String objectId)
@@ -135,6 +145,8 @@ public abstract class TypeBean<T, F> extends WebBean
   {
     descriptions.clear();
   }
+
+  public abstract ObjectSetup createObjectSetup();
 
   public abstract F queryToFilter(String query, String typeId);
 

@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -38,6 +39,8 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.cases.CasesModuleBean.getPort;
 
 /**
@@ -77,6 +80,29 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     {
       return null;
     }
+  }
+
+  @Override
+  public String getTypeId(Case cas)
+  {
+    return cas.getCaseTypeId();
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/cases/case.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Main", "/pages/cases/case_main.xhtml"));
+    editTabs.add(new EditTab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
+    editTabs.add(new EditTab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", "/pages/cases/case_documents_dialog.xhtml"));
+    editTabs.add(new EditTab("Actuacions", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", "act1", "/pages/cases/case_interventions_dialog.xhtml"));
+    editTabs.add(new EditTab("Cases", "/pages/cases/case_cases.xhtml", "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
   }
 
   @Override
@@ -132,11 +158,5 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     {
       return Collections.EMPTY_LIST;
     }
-  }
-
-  @Override
-  public String getViewId()
-  {
-    return "/pages/cases/case.xhtml";
   }
 }

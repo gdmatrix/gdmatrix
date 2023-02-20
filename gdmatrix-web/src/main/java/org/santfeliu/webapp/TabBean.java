@@ -1,4 +1,4 @@
-/*
+ /*
  * GDMatrix
  *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
@@ -30,8 +30,10 @@
  */
 package org.santfeliu.webapp;
 
+import org.santfeliu.webapp.setup.EditTab;
 import java.io.Serializable;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -39,7 +41,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
  */
 public abstract class TabBean extends BaseBean
 {
-  protected String objectId = NavigatorBean.NEW_OBJECT_ID;
+  private String objectId = NavigatorBean.NEW_OBJECT_ID;
 
   public String getObjectId()
   {
@@ -87,4 +89,21 @@ public abstract class TabBean extends BaseBean
       // ignore
     }
   }
+
+  public String getAbsoluteId(String relativeId)
+  {
+    EditTab editTab = getObjectBean().getActiveEditTab();
+    if (editTab == null) return "";
+
+    String beanName = WebUtils.getBeanName(this);
+
+    if (!beanName.equals(editTab.getBeanName())) return "";
+
+    String id = ":mainform:search_tabs:tabs";
+    if (editTab.getSubviewId() != null) id += ":" + editTab.getSubviewId();
+    id += ":" + relativeId;
+
+    return id;
+  }
+
 }

@@ -1,0 +1,115 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                var="caseBundle" />
+
+  <p:dialog id="case_cases_dialog" widgetVar="caseCasesDialog" 
+            styleClass="edit_data_dialog" style="max-width:800px" 
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <p:autoUpdate />        
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <h:outputText value="#{caseObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />   
+        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{caseCasesTabBean.editing.caseCaseId}" />
+      </p:outputPanel>
+    </f:facet>  
+
+    <h:panelGroup id="case_cases_panel"
+                  styleClass="mt-2"
+                  layout="block"
+                  rendered="#{caseCasesTabBean.editing != null}">
+
+      <div class="ui-fluid formgrid grid" >        
+
+        <!-- Type -->
+        <p:outputPanel styleClass="field col-12">  
+          <p:outputLabel for="@next"  
+                         value="#{caseBundle.caseCases_type}"
+                         styleClass="w-full" />
+          <emcomp:typeReference value="#{caseCasesTabBean.caseCaseTypeId}"
+                                process="@(.savable)"
+                                type="CaseCase"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3">   
+          </emcomp:typeReference>
+        </p:outputPanel>
+
+        <!-- Rel Case -->     
+        <p:outputPanel styleClass="field col-12">  
+          <p:outputLabel for="@next"  
+                         value="#{caseBundle.caseCases_case}"
+                         styleClass="w-full" />
+          <emcomp:objectReference value="#{caseCasesTabBean.relCaseId}"
+                                  process="@(.savable)"
+                                  type="Case"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3">   
+          </emcomp:objectReference>
+        </p:outputPanel>            
+
+        <!-- Dates -->
+        <p:outputPanel styleClass="field col-12 md:col-3">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.caseCases_startDate}"/>
+          <p:datePicker id="start_date" value="#{caseCasesTabBean.editing.startDate}"     
+                        styleClass="savable"
+                        autocomplete="off" placeholder="dd/mm/aaaa" 
+                        locale="es" showOnFocus="false" touchUI="true" 
+                        converter="datePickerConverter" pattern="dd/MM/yyyy" 
+                        showIcon="true" showTime="false"/>
+        </p:outputPanel>
+
+        <p:outputPanel class="field col-12 md:col-3">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.caseCases_endDate}"/>
+          <p:datePicker id="end_date" value="#{caseCasesTabBean.editing.endDate}"
+                        styleClass="savable"
+                        autocomplete="off" placeholder="dd/mm/aaaa" 
+                        locale="es" showOnFocus="false" touchUI="true" 
+                        converter="datePickerConverter" pattern="dd/MM/yyyy" 
+                        showIcon="true" showTime="false"/>
+        </p:outputPanel> 
+
+        <!-- Comments -->
+        <p:outputPanel class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseCases_comments}" />
+          <p:inputTextarea id="comments" value="#{caseCasesTabBean.editing.comments}" 
+                           styleClass="savable"/>
+        </p:outputPanel>
+
+      </div>
+
+    </h:panelGroup>     
+
+    <div class="field col-12 text-right">
+      <p:commandButton action="#{caseCasesTabBean.store}" 
+                       styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                       process="case_cases_dialog"
+                       update="#{caseCasesTabBean.getAbsoluteId('case_cases_table')} case_cases_panel"
+                       oncomplete="if (!isFacesError()) PF('caseCasesDialog').hide()"/>
+      <p:commandButton action="#{caseCasesTabBean.cancel}" 
+                       styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                       update="case_cases_dialog :mainform:growl" global="false" 
+                       immediate="true"
+                       oncomplete="PF('caseCasesDialog').hide()"/>
+    </div>      
+
+  </p:dialog>
+
+</ui:composition>

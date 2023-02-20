@@ -151,7 +151,7 @@ public class DocumentFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setTabIndex(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = documentTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -162,7 +162,7 @@ public class DocumentFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setTabIndex(1);
+    setFilterTabSelector(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter.setDocTypeId(baseTypeId);
     smartFilter = documentTypeBean.filterToQuery(filter);
@@ -194,7 +194,7 @@ public class DocumentFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterSelector(),
+    return new Object[]{ finding, getFilterTabSelector(),
       filter, firstRow, getObjectPosition() };
   }
 
@@ -203,7 +203,7 @@ public class DocumentFinderBean extends FinderBean
   {
     Object[] stateArray = (Object[])state;
     finding = (Boolean)stateArray[0];
-    setFilterSelector((Integer)stateArray[1]);
+    setFilterTabSelector((Integer)stateArray[1]);
     filter = (DocumentFilter)stateArray[2];
     smartFilter = documentTypeBean.filterToQuery(filter);
 
@@ -263,12 +263,12 @@ public class DocumentFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getDocId());
-            documentObjectBean.setSearchSelector(
-              documentObjectBean.getEditionSelector());
+            documentObjectBean.setSearchTabSelector(
+              documentObjectBean.getEditModeSelector());
           }
           else
           {
-            documentObjectBean.setSearchSelector(0);
+            documentObjectBean.setSearchTabSelector(0);
           }
         }
       }

@@ -98,7 +98,7 @@
     <f:viewAction action="#{objectBean.selectTabWithErrors}"
                   onPostback="true" phase="PROCESS_VALIDATIONS" />
 
-    <f:viewAction action="#{objectBean.loadActiveTab}"
+    <f:viewAction action="#{objectBean.loadActiveEditTab}"
                   onPostback="true" />
   </f:metadata>
 
@@ -107,16 +107,20 @@
              id="tabs"
              widgetVar="objectTabs"
              touchable="false"
-             binding="#{objectBean.tabView}">
-    <c:forEach items="#{objectBean.tabs}" var="tab" >
+             activeIndex="#{objectBean.editTabSelector}">
+    <p:ajax event="tabChange" process="@this" update="@none" />
+    <c:forEach items="#{objectBean.editTabs}" var="tab" >
       <p:tab title="#{tab.label}"
-             disabled="#{objectBean.isDisabledTab(tab)}">
-        <ui:include src="#{tab.url}">
-        </ui:include>
+             disabled="#{objectBean.isDisabledEditTab(tab)}">
+        <ui:include src="#{tab.viewId}" />
       </p:tab>
     </c:forEach>
   </p:tabView>
 
+  <c:forEach items="#{objectBean.dialogViewIds}" var="dialogViewId" >
+    <ui:include src="#{dialogViewId}" />    
+  </c:forEach>
+  
   <div class="tab_footer text-right pt-3">
     <p:commandButton action="#{objectBean.store}"
                      value="#{objectBundle.store}"

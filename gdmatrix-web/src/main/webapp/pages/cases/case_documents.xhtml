@@ -1,6 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
@@ -9,12 +10,12 @@
   <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                 var="caseBundle" />
 
-  <h:panelGroup>      
+  <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
     <p:dataTable id="case_documents_table" value="#{caseDocumentsTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" 
+                 resizableColumns="false" showGridlines="true" rows="5"
                  size="small" paginatorPosition="bottom" 
                  rowIndexVar="firstRow" first="#{caseDocumentsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -22,13 +23,12 @@
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex flex-row-reverse w-12">        
+        <div class="flex justify-content-end w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{caseDocumentsTabBean.create}" 
                            process="@this"
-                           update="@parent:@parent:@parent:case_documents_dialog"
+                           update=":mainform:search_tabs:case_documents_dialog"
                            resetValues="true"
-                           actionListener="#{caseObjectBean.updateCurrentTab}"
                            oncomplete="PF('caseDocumentsDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
@@ -39,29 +39,32 @@
         <h:outputText value="#{row.document.docId}" />
       </p:column> 
 
-      <p:column headerText="Title" styleClass="w-3"
+      <p:column headerText="Title" styleClass="w-7"
                 exportHeaderValue="Title">
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
-      <p:column headerText="Type" styleClass="w-3"
+      <p:column headerText="Type" styleClass="w-2"
                 exportHeaderValue="Type">
         <h:outputText value="#{row.document.docTypeId}"/>
       </p:column>
 
-      <p:column styleClass="w-1">
+      <p:column styleClass="w-2 text-right">
+        <p:commandButton icon="pi pi-external-link" 
+                         styleClass="rounded-button ui-button-flat" 
+                         ajax="false"
+                         action="#{navigatorBean.show('Document', row.document.docId)}" />
         <p:commandButton icon="pi pi-pencil" 
                          styleClass="rounded-button ui-button-flat" 
                          action="#{caseDocumentsTabBean.edit(row)}" 
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:case_documents_dialog"
+                         update=":mainform:search_tabs:case_documents_dialog"
                          resetValues="true"
-                         actionListener="#{caseObjectBean.updateCurrentTab}"
                          oncomplete="PF('caseDocumentsDialog').show()"
                          />
         <p:commandButton action="#{caseDocumentsTabBean.remove(row)}"
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:case_documents_dialog case_documents_table :mainform:growl"
+                         update=":mainform:search_tabs:case_documents_dialog case_documents_table :mainform:growl"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
@@ -69,91 +72,9 @@
           <p:confirm header="Desvincular document #{row.document.docId}" 
                      message="Segur que vols desvincular aquest document de l'expedient?" icon="pi pi-info-circle" />
         </p:commandButton>
-        <p:commandButton icon="pi pi-external-link" 
-                         styleClass="rounded-button ui-button-flat" 
-                         ajax="false"
-                         action="#{navigatorBean.show('Document', row.document.docId)}" />
       </p:column>
     </p:dataTable>
 
-  </h:panelGroup>
-
-  <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="case_documents_dialog" widgetVar="caseDocumentsDialog" 
-            styleClass="edit_data_dialog" style="max-width:800px" 
-            modal="true" responsive="true" closable="false"
-            appendTo="@(form)" position="center center" resizable="false">
-
-    <f:facet name="header">
-      <p:outputPanel>
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
-        <h:outputText value="#{caseObjectBean.description}" />
-        <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{caseObjectBean.getCurrentTab().getLabel()}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{caseDocumentsTabBean.editing.caseDocId}" />
-      </p:outputPanel>
-    </f:facet>
-
-    <p:panel styleClass="mt-2" id="panel"
-             rendered="#{caseDocumentsTabBean.editing != null}">
-
-      <div class="ui-fluid formgrid grid" >
-
-        <div class="field col-12">  
-          <p:outputLabel for="@next"
-                         value="Document"
-                         styleClass="w-full" />
-          <emcomp:objectReference value="#{caseDocumentsTabBean.docId}"
-                                  process="@(.savable)"
-                                  type="Document"
-                                  styleClass="w-full"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  required="true"
-                                  minQueryLength="3">
-          </emcomp:objectReference>
-        </div>              
-
-        <!-- Volume -->
-
-        <div class="field col-12">
-          <p:outputLabel for="@next"
-                         value="Volume" />
-          <p:inputText styleClass="savable"
-                       value="#{caseDocumentsTabBean.editing.volume}" />
-        </div>
-
-        <!-- Comments -->
-        <div class="field col-12">
-          <p:outputLabel for="@next"
-                         value="Comments" />
-          <p:inputTextarea 
-            styleClass="savable"
-            value="#{caseDocumentsTabBean.editing.comments}" />
-        </div>
-
-      </div>
-
-    </p:panel>     
-
-    <f:facet name="footer">
-
-      <div class="field col-12 text-right">
-        <p:commandButton action="#{caseDocumentsTabBean.store}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                         process="case_documents_dialog"
-                         update="case_documents_table panel"
-                         oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').hide()"
-                         />
-        <p:commandButton action="#{caseDocumentsTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
-                         process="@this"
-                         update="case_documents_dialog :mainform:growl" global="false" 
-                         oncomplete="PF('caseDocumentsDialog').hide()"/>
-      </div>      
-    </f:facet>
-
-  </p:dialog>    
+  </f:subview>
 
 </ui:composition>

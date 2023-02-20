@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+  <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                var="caseBundle" />
+
+  <p:dialog id="case_interventions_dialog" widgetVar="interventionDataDialog" 
+            styleClass="edit_data_dialog" style="max-width:800px" 
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <p:autoUpdate />        
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <h:outputText value="#{caseObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />   
+        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{caseInterventionsTabBean.editing.getIntId()}" />
+      </p:outputPanel>
+    </f:facet>  
+
+    <h:panelGroup id="case_interventions_panel"
+                  styleClass="mt-2"
+                  rendered="#{caseInterventionsTabBean.editing != null}">
+
+      <div class="ui-fluid formgrid grid" >        
+
+        <p:outputPanel styleClass="field col-12">  
+          <p:outputLabel for="@next"  
+                         value="#{caseBundle.caseInterventions_type}"
+                         styleClass="w-full" />
+          <emcomp:typeReference value="#{caseInterventionsTabBean.intTypeId}"
+                                process="@(.savable)"
+                                type="#{caseInterventionsTabBean.baseIntTypeId != null ? caseInterventionsTabBean.baseIntTypeId : 'Intervention'}"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3">   
+            <p:ajax event="itemSelect" listener="#{caseInterventionsTabBean.onTypeSelect}" 
+                    process="@this" update="@parent:@parent:@parent:int_dyn_form" />
+          </emcomp:typeReference>
+        </p:outputPanel>    
+
+
+
+        <!-- Dates -->
+        <p:outputPanel styleClass="field col-12 md:col-3">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.caseInterventions_startDate}"/>
+          <p:datePicker id="start_date" value="#{caseInterventionsTabBean.startDateTime}"     
+                        styleClass="savable"
+                        autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
+                        locale="es" showOnFocus="false" touchUI="true" 
+                        converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
+                        showIcon="true" showTime="true"/>
+        </p:outputPanel>
+
+        <p:outputPanel class="field col-12 md:col-3">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.caseInterventions_endDate}"/>
+          <p:datePicker id="end_date" value="#{caseInterventionsTabBean.endDateTime}"
+                        styleClass="savable"
+                        autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
+                        locale="es" showOnFocus="false" touchUI="true" 
+                        converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
+                        showIcon="true" showTime="true"/>
+        </p:outputPanel> 
+
+        <!-- Person -->
+        <p:outputPanel styleClass="field col-12 md:col-6">  
+          <p:outputLabel for="@next"  
+                         value="#{caseBundle.caseInterventions_person}"
+                         styleClass="w-full" />
+
+          <emcomp:objectReference value="#{caseInterventionsTabBean.personId}"
+                                  type="Person"
+                                  process="@this @parent:@parent:@parent:case_interventions_dialog"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3">
+            <p:ajax event="clear" listener="#{caseInterventionsTabBean.onPersonClear}" 
+                    update="@this" />
+          </emcomp:objectReference>  
+        </p:outputPanel>            
+
+        <!-- Comments -->
+        <p:outputPanel class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseInterventions_comments}" />
+          <p:inputTextarea id="comments" value="#{caseInterventionsTabBean.editing.comments}" 
+                           styleClass="savable"/>
+        </p:outputPanel>
+
+      </div>
+
+    </h:panelGroup>    
+
+    <!-- Dynamic form -->
+    <h:panelGroup id="int_dyn_form" 
+                  styleClass="ui-fluid formgrid grid"
+                  layout="block" 
+                  rendered="#{caseInterventionsTabBean.editing != null}">
+      <f:event type="postAddToView" listener="#{caseInterventionsTabBean.loadDynamicComponents}" />
+    </h:panelGroup>
+    
+    <div class="field col-12 text-right">
+      <p:commandButton action="#{caseInterventionsTabBean.store}" 
+                       styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                       process="case_interventions_dialog"
+                       update="#{caseInterventionsTabBean.getAbsoluteId('case_interventions_table')} case_interventions_panel int_dyn_form"
+                       oncomplete="if (!isFacesError()) PF('interventionDataDialog').hide()"/>
+      <p:commandButton action="#{caseInterventionsTabBean.cancel}" 
+                       styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                       update="case_interventions_dialog :mainform:growl" global="false" 
+                       immediate="true"
+                       oncomplete="PF('interventionDataDialog').hide()"/>
+    </div>      
+
+  </p:dialog>  
+
+</ui:composition>
+
+
+
+
+ 

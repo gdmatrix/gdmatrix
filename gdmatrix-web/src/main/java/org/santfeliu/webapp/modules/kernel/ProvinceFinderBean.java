@@ -100,7 +100,7 @@ public class ProvinceFinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = provinceTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -111,7 +111,7 @@ public class ProvinceFinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     smartFilter = provinceTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -183,12 +183,12 @@ public class ProvinceFinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getProvinceId());
-            provinceObjectBean.setSearchSelector(
-              provinceObjectBean.getEditionSelector());
+            provinceObjectBean.setSearchTabSelector(
+              provinceObjectBean.getEditModeSelector());
           }
           else
           {
-            provinceObjectBean.setSearchSelector(0);
+            provinceObjectBean.setSearchTabSelector(0);
           }
         }
       }

@@ -39,7 +39,7 @@ import org.matrix.agenda.Theme;
 import org.matrix.dic.DictionaryConstants;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.Tab;
+import org.santfeliu.webapp.setup.EditTab;
 
 /**
  *
@@ -56,7 +56,7 @@ public class ThemeObjectBean extends ObjectBean
 
   @Inject
   ThemeFinderBean themeFinderBean;
-  
+
   @Override
   public String getRootTypeId()
   {
@@ -103,12 +103,6 @@ public class ThemeObjectBean extends ObjectBean
   }
 
   @Override
-  public String show()
-  {
-    return "/pages/agenda/theme.xhtml";
-  }
-
-  @Override
   public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
@@ -116,18 +110,6 @@ public class ThemeObjectBean extends ObjectBean
       theme = AgendaModuleBean.getClient(false).loadThemeFromCache(objectId);
     }
     else theme = new Theme();
-  }
-
-  @Override
-  public void loadTabs()
-  {
-    super.loadTabs();
-
-    if (tabs.isEmpty())
-    {
-      tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Principal", "/pages/agenda/theme_main.xhtml"));
-    }
   }
 
   @Override

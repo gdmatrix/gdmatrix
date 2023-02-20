@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,8 @@ import org.matrix.kernel.Room;
 import org.matrix.kernel.RoomFilter;
 import org.matrix.kernel.RoomView;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.kernel.KernelModuleBean.getPort;
 
 /**
@@ -62,12 +65,6 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
     return room.getRoomId();
   }
 
-  @Override
-  public String getViewId()
-  {
-    return "/pages/kernel/room.xhtml";
-  }  
-  
   @Override
   public String describe(Room room)
   {
@@ -100,6 +97,25 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
     {
       return null;
     }
+  }
+
+  @Override
+  public String getTypeId(Room room)
+  {
+    return room.getRoomTypeId();
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/kernel/room.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Principal", "/pages/kernel/room_main.xhtml"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
   }
 
   @Override

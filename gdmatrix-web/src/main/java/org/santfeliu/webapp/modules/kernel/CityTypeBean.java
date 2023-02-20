@@ -42,6 +42,7 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.City;
 import org.matrix.kernel.CityFilter;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.ObjectSetup;
 
 /**
  *
@@ -93,15 +94,30 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
   }
 
   @Override
+  public String getTypeId(City city)
+  {
+    return DictionaryConstants.CITY_TYPE;
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/kernel/city.xhtml");
+
+    return objectSetup;
+  }
+
+  @Override
   public CityFilter queryToFilter(String query, String typeId)
   {
     if (query == null)
       query = "";
-    
+
     CityFilter filter = new CityFilter();
       if (!query.startsWith("%")) query = "%" + query;
-      if (!query.endsWith("%")) query += "%"; 
-      
+      if (!query.endsWith("%")) query += "%";
+
     filter.setCityName(query);
 
     return filter;
@@ -110,11 +126,11 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
   @Override
   public String filterToQuery(CityFilter filter)
   {
-    String query = filter != null && filter.getCityName() != null 
+    String query = filter != null && filter.getCityName() != null
       ? filter.getCityName() : "";
-    
+
     if (query.startsWith("%")) query = query.substring(1);
-    if (query.endsWith("%")) query = query.substring(0, query.length() - 1);  
+    if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
 
     return query;
   }
@@ -135,7 +151,7 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
 
   public List<SelectItem> getCitySelectItems(String provinceId)
   {
-    List<SelectItem> selectItems = new ArrayList<>();    
+    List<SelectItem> selectItems = new ArrayList<>();
     CityFilter filter = new CityFilter();
 
     if (!StringUtils.isBlank(provinceId))
@@ -145,18 +161,13 @@ public class CityTypeBean extends TypeBean<City, CityFilter>
 
       for (City c : cities)
       {
-        SelectItem item = 
+        SelectItem item =
           new SelectItem(c.getCityId(), c.getName());
         selectItems.add(item);
-      }     
-    } 
-    
+      }
+    }
+
     return selectItems;
   }
-  
-  @Override
-  public String getViewId()
-  {
-    return "/pages/kernel/city.xhtml";
-  }  
+
 }

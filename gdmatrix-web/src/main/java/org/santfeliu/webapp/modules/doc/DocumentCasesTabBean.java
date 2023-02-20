@@ -121,13 +121,13 @@ public class DocumentCasesTabBean extends TabBean
   @Override
   public void load()
   {
-    System.out.println("load caseDocuments:" + objectId);
-    if (!NEW_OBJECT_ID.equals(objectId))
+    System.out.println("load caseDocuments:" + getObjectId());
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
       {
         CaseDocumentFilter filter = new CaseDocumentFilter();
-        filter.setDocId(objectId);
+        filter.setDocId(getObjectId());
         rows =
           CasesModuleBean.getPort(false).findCaseDocumentViews(filter);
       }
@@ -144,7 +144,7 @@ public class DocumentCasesTabBean extends TabBean
   {
     try
     {
-      editing.setDocId(objectId);
+      editing.setDocId(getObjectId());
       if (editing.getCaseDocTypeId() == null)
       {
         editing.setCaseDocTypeId("CaseDocument");

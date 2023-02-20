@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.agenda;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -39,6 +40,8 @@ import org.matrix.agenda.Theme;
 import org.matrix.agenda.ThemeFilter;
 import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.agenda.AgendaModuleBean.getClient;
 
 /**
@@ -60,12 +63,6 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
   {
     return theme.getThemeId();
   }
-  
-  @Override
-  public String getViewId()
-  {
-    return "/pages/agenda/theme.xhtml";
-  }  
 
   @Override
   public String describe(Theme theme)
@@ -84,6 +81,25 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
     {
       return null;
     }
+  }
+
+  @Override
+  public String getTypeId(Theme theme)
+  {
+    return DictionaryConstants.THEME_TYPE;
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/agenda/theme.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Principal", "/pages/agenda/theme_main.xhtml"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
   }
 
   @Override

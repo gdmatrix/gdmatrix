@@ -91,7 +91,7 @@ public class HistoryBean implements Serializable
   public String show(Leap leap)
   {
     return navigatorBean.show(leap.getBaseTypeId(),
-      leap.getObjectId(), leap.getDetailSelector());
+      leap.getObjectId(), leap.getEditTabSelector());
   }
 
   public String getIcon(Leap leap)

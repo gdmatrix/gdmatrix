@@ -46,6 +46,8 @@ import org.matrix.dic.TypeFilter;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.NavigatorBean;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.util.WebUtils;
 
 
@@ -58,7 +60,7 @@ import org.santfeliu.webapp.util.WebUtils;
 public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 {
   private List<SelectItem> rootTypeIdSelectItems;
-  
+
   @PostConstruct
   public void init()
   {
@@ -73,16 +75,14 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       selectItem.setLabel(typeId);
       selectItem.setValue(typeId);
       rootTypeIdSelectItems.add(selectItem);
-    }    
+    }
   }
 
   public List<SelectItem> getRootTypeIdSelectItems()
   {
     return rootTypeIdSelectItems;
   }
-  
-  
-  
+
   @Override
   public String getRootTypeId()
   {
@@ -108,11 +108,30 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   }
 
   @Override
+  public String getTypeId(Type type)
+  {
+    return DictionaryConstants.TYPE_TYPE;
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/dic/type.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Main", "/pages/dic/type_main.xhtml"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
+  }
+
+  @Override
   public TypeFilter queryToFilter(String query, String typeId)
   {
     TypeFilter filter = new TypeFilter();
     String typePath = null;
-    
+
     if (!StringUtils.isBlank(typeId))
     {
       typePath = TYPE_PATH_SEPARATOR + typeId + TYPE_PATH_SEPARATOR + "%";
@@ -127,13 +146,13 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     if (query != null && query.contains(":"))
     {
       query = query.substring(query.indexOf(":") + 1) + "%";
-      typePath = (typePath != null ? typePath : "") + "%" + 
+      typePath = (typePath != null ? typePath : "") + "%" +
         TYPE_PATH_SEPARATOR + query + TYPE_PATH_SEPARATOR + "%";
     }
     else
       filter.setDescription(query);
 
-    filter.setTypePath(typePath);      
+    filter.setTypePath(typePath);
 
     return filter;
   }
@@ -162,7 +181,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       if (typeId != null)
       {
         types = Collections.singletonList(
-          TypeCache.getInstance().getType(filter.getTypeId()));       
+          TypeCache.getInstance().getType(filter.getTypeId()));
       }
       else
       {
@@ -180,12 +199,6 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     }
     return types;
   }
-  
-  @Override
-  public String getViewId()
-  {
-    return "/pages/dic/type.xhtml";
-  }  
 
   @Override
   protected void addNavigatorItems(List<SelectItem> items, String typeId)

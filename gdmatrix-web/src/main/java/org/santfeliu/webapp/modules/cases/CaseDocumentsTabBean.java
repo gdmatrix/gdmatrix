@@ -32,7 +32,9 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -43,6 +45,7 @@ import org.matrix.cases.CaseDocumentView;
 import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 
 /**
@@ -53,9 +56,15 @@ import org.santfeliu.webapp.TabBean;
 @ViewScoped
 public class CaseDocumentsTabBean extends TabBean
 {
-  private List<CaseDocumentView> rows;
-  private int firstRow;
-  private CaseDocument editing;
+  Map<String, TabInstance> tabInstances = new HashMap<>();
+  CaseDocument editing;
+
+  public class TabInstance
+  {
+    String objectId = NEW_OBJECT_ID;
+    List<CaseDocumentView> rows;
+    int firstRow = 0;
+  }
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -72,14 +81,44 @@ public class CaseDocumentsTabBean extends TabBean
     return caseObjectBean;
   }
 
+  public TabInstance getCurrentTabInstance()
+  {
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    TabInstance tabInstance = tabInstances.get(editTab.getSubviewId());
+    if (tabInstance == null)
+    {
+      tabInstance = new TabInstance();
+      tabInstances.put(editTab.getSubviewId(), tabInstance);
+    }
+    return tabInstance;
+  }
+
+  @Override
+  public String getObjectId()
+  {
+    return getCurrentTabInstance().objectId;
+  }
+
+  @Override
+  public void setObjectId(String objectId)
+  {
+    getCurrentTabInstance().objectId = objectId;
+  }
+
+  @Override
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
+  }
+
   public List<CaseDocumentView> getRows()
   {
-    return rows;
+    return getCurrentTabInstance().rows;
   }
 
   public void setRows(List<CaseDocumentView> caseDocumentViews)
   {
-    this.rows = caseDocumentViews;
+    getCurrentTabInstance().rows = caseDocumentViews;
   }
 
   public CaseDocument getEditing()
@@ -89,7 +128,7 @@ public class CaseDocumentsTabBean extends TabBean
 
   public void setEditing(CaseDocument caseDocument)
   {
-    this.editing = caseDocument;
+    editing = caseDocument;
   }
 
   public String getDocId()
@@ -108,25 +147,28 @@ public class CaseDocumentsTabBean extends TabBean
 
   public int getFirstRow()
   {
-    return firstRow;
+    return getCurrentTabInstance().firstRow;
   }
 
   public void setFirstRow(int firstRow)
   {
-    this.firstRow = firstRow;
+     getCurrentTabInstance().firstRow = firstRow;
   }
 
   @Override
   public void load()
   {
-    System.out.println("load caseDocuments:" + objectId);
+    String objectId = getObjectId();
     if (!NEW_OBJECT_ID.equals(objectId))
     {
       try
       {
         CaseDocumentFilter filter = new CaseDocumentFilter();
+        EditTab tab = caseObjectBean.getActiveEditTab();
+        String volume = tab.getProperties().getString("volume");
+        filter.setVolume(volume);
         filter.setCaseId(objectId);
-        rows =
+        getCurrentTabInstance().rows =
           CasesModuleBean.getPort(false).findCaseDocumentViews(filter);
       }
       catch (Exception ex)
@@ -134,7 +176,13 @@ public class CaseDocumentsTabBean extends TabBean
         error(ex);
       }
     }
-    else rows = Collections.EMPTY_LIST;
+    else
+    {
+      TabInstance tabInstance = getCurrentTabInstance();
+      tabInstance.objectId = NEW_OBJECT_ID;
+      tabInstance.rows = Collections.EMPTY_LIST;
+      tabInstance.firstRow = 0;
+    }
   }
 
   @Override
@@ -142,7 +190,7 @@ public class CaseDocumentsTabBean extends TabBean
   {
     try
     {
-      editing.setCaseId(objectId);
+      editing.setCaseId(getObjectId());
       if (editing.getCaseDocTypeId() == null)
       {
         editing.setCaseDocTypeId("CaseDocument");
@@ -239,6 +287,5 @@ public class CaseDocumentsTabBean extends TabBean
       error(ex);
     }
   }
-
 
 }

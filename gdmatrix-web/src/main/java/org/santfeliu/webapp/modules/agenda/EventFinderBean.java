@@ -339,7 +339,7 @@ public class EventFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
     setFromDate(new Date());
@@ -353,7 +353,7 @@ public class EventFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     smartFilter = eventTypeBean.filterToQuery(filter);
     filter.getEventTypeId().clear();
     if (!StringUtils.isBlank(searchEventTypeId))
@@ -404,7 +404,7 @@ public class EventFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterSelector(), filter, firstRow,
+    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
       searchEventTypeId, searchEventThemeId, getObjectPosition(),
       scheduleInitialDate, scheduleView };
   }
@@ -416,7 +416,7 @@ public class EventFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setFilterSelector((Integer)stateArray[1]);
+      setFilterTabSelector((Integer)stateArray[1]);
       filter = (EventFilter)stateArray[2];
 
       doFind(false);
@@ -487,15 +487,14 @@ public class EventFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getEventId());
-            eventObjectBean.setSearchSelector(eventObjectBean.
-              getEditionSelector());
+            eventObjectBean.setSearchTabSelector(eventObjectBean.getEditModeSelector());
           }
           else
           {
-            if (eventObjectBean.getSearchSelector() ==
-              eventObjectBean.getEditionSelector())
+            if (eventObjectBean.getSearchTabSelector() ==
+              eventObjectBean.getEditModeSelector())
             {
-              eventObjectBean.setSearchSelector(0);
+              eventObjectBean.setSearchTabSelector(0);
             }
           }
         }

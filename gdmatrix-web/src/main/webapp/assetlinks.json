@@ -1,0 +1,35 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "cat.santfeliu.larosa",
+      "sha256_cert_fingerprints": [
+        "C9:3F:0E:58:DA:A8:D1:BC:36:39:67:81:B6:C3:60:D6:36:B5:A1:32:40:FA:F4:B0:51:D4:F7:D4:B3:9E:5F:8E",
+        "92:E9:71:C9:F2:E3:D3:65:78:3B:2A:C5:06:1B:D4:13:25:8C:BA:C9:C5:89:02:FC:88:9C:A8:F1:D3:A8:82:2E"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "cat.santfeliu.larosa_sandbox",
+      "sha256_cert_fingerprints": [
+        "C9:3F:0E:58:DA:A8:D1:BC:36:39:67:81:B6:C3:60:D6:36:B5:A1:32:40:FA:F4:B0:51:D4:F7:D4:B3:9E:5F:8E",
+        "92:E9:71:C9:F2:E3:D3:65:78:3B:2A:C5:06:1B:D4:13:25:8C:BA:C9:C5:89:02:FC:88:9C:A8:F1:D3:A8:82:2E"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "cat.santfeliu.larosa_pre",
+      "sha256_cert_fingerprints": [
+        "C9:3F:0E:58:DA:A8:D1:BC:36:39:67:81:B6:C3:60:D6:36:B5:A1:32:40:FA:F4:B0:51:D4:F7:D4:B3:9E:5F:8E",
+        "92:E9:71:C9:F2:E3:D3:65:78:3B:2A:C5:06:1B:D4:13:25:8C:BA:C9:C5:89:02:FC:88:9C:A8:F1:D3:A8:82:2E"
+      ]
+    }
+  }
+]

@@ -9,7 +9,7 @@
   <ui:define name="filter">
     <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector"
-                 activeIndex="#{typeFinderBean.filterSelector}">
+                 activeIndex="#{typeFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
           <f:facet name="title">
@@ -85,7 +85,7 @@
           </div>   
 
           <div class="text-right">
-            <p:commandButton value="Clear"
+            <p:commandButton value="#{objectBundle.clear}"
                              action="#{typeFinderBean.clear}"
                              process=":mainform:find_selector"
                              styleClass="ui-button-raised m-1"
@@ -128,7 +128,7 @@
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
-               binding="#{typeObjectBean.searchTabView}"
+               activeIndex="#{typeObjectBean.searchTabSelector}"
                touchable="false"
                onTabShow="onTabShow()">
 

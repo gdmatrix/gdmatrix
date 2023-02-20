@@ -16,13 +16,20 @@
     <p:column headerText="#{kernelBundle.person_id}" styleClass="w-1">
       <h:outputText value="#{row.personId}" />
     </p:column>                
-    <p:column headerText="#{kernelBundle.person_name}" styleClass="w-8">
+    <p:column headerText="#{kernelBundle.person_name}" styleClass="w-7">
       <h:outputText value="#{row.fullName}" />
     </p:column> 
     <p:column headerText="#{kernelBundle.person_nif}" styleClass="w-2">
       <h:outputText value="#{row.nif}" />
     </p:column>     
-    <p:column styleClass="w-1">
+    <p:column styleClass="w-2 text-right">
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select(row.personId)}"
+                       rendered="#{navigatorBean.selectable}"
+                       ajax="false"
+                       title="Select" alt="Select"
+                       />
       <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
                        action="#{personFinderBean.view(rowIndex)}"
                        resetValues="true"

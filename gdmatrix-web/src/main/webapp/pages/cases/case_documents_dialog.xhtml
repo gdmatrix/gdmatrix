@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                var="caseBundle" />
+
+  <p:dialog id="case_documents_dialog" widgetVar="caseDocumentsDialog" 
+            styleClass="edit_data_dialog" style="max-width:800px" 
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <h:outputText value="#{caseObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />   
+        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{caseDocumentsTabBean.editing.caseDocId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="case_documents_panel"
+                  layout="block"
+                  rendered="#{caseDocumentsTabBean.editing != null}">
+
+      <div class="ui-fluid formgrid grid" >
+
+        <div class="field col-12">  
+          <p:outputLabel for="@next"
+                         value="Document"
+                         styleClass="w-full" />
+          <emcomp:objectReference value="#{caseDocumentsTabBean.docId}"
+                                  process="@(.savable)"
+                                  type="Document"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  required="true"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>              
+
+        <!-- Volume -->
+
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="Volume" />
+          <p:inputText styleClass="savable"
+                       value="#{caseDocumentsTabBean.editing.volume}" />
+        </div>
+
+        <!-- Comments -->
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="Comments" />
+          <p:inputTextarea 
+            styleClass="savable"
+            value="#{caseDocumentsTabBean.editing.comments}" />
+        </div>
+
+      </div>
+      
+    </h:panelGroup>     
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{caseDocumentsTabBean.store}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         process="case_documents_dialog"
+                         update="#{caseDocumentsTabBean.getAbsoluteId('case_documents_table')} case_documents_panel"
+                         oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').hide()"
+                         />
+        <p:commandButton action="#{caseDocumentsTabBean.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="case_documents_dialog :mainform:growl" global="false" 
+                         oncomplete="PF('caseDocumentsDialog').hide()"/>
+      </div>      
+    </f:facet>
+
+  </p:dialog>    
+
+</ui:composition>

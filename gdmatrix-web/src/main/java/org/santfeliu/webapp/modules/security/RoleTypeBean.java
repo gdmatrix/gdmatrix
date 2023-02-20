@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.security;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -39,6 +40,8 @@ import org.matrix.security.Role;
 import org.matrix.security.RoleFilter;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
 
 /**
@@ -59,12 +62,6 @@ public class RoleTypeBean extends TypeBean<Role, RoleFilter>
   public String getObjectId(Role role)
   {
     return role.getRoleId();
-  }
-
-  @Override
-  public String getViewId()
-  {
-    return "/pages/security/role.xhtml";
   }
 
   @Override
@@ -98,6 +95,25 @@ public class RoleTypeBean extends TypeBean<Role, RoleFilter>
     {
       return null;
     }
+  }
+
+  @Override
+  public String getTypeId(Role role)
+  {
+    return role.getRoleTypeId();
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/security/role.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Main", "/pages/security/role_main.xhtml"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
   }
 
   @Override

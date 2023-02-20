@@ -46,6 +46,7 @@ import org.matrix.kernel.Street;
 import org.matrix.kernel.StreetFilter;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.kernel.StreetObjectBean.DEFAULT_CITY_NAME;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -102,15 +103,30 @@ public class StreetTypeBean extends TypeBean<Street, StreetFilter>
   }
 
   @Override
+  public String getTypeId(Street street)
+  {
+    return DictionaryConstants.STREET_TYPE;
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/kernel/street.xhtml");
+
+    return objectSetup;
+  }
+
+  @Override
   public StreetFilter queryToFilter(String query, String typeId)
   {
     if (query == null)
       query = "";
-    
+
     StreetFilter filter = new StreetFilter();
       if (!query.startsWith("%")) query = "%" + query;
-      if (!query.endsWith("%")) query += "%"; 
-      
+      if (!query.endsWith("%")) query += "%";
+
     filter.setStreetName(query);
 
     return filter;
@@ -119,12 +135,12 @@ public class StreetTypeBean extends TypeBean<Street, StreetFilter>
   @Override
   public String filterToQuery(StreetFilter filter)
   {
-    String query = filter != null && filter.getStreetName() != null ? 
+    String query = filter != null && filter.getStreetName() != null ?
       filter.getStreetName() : "";
-    
+
     if (query.startsWith("%")) query = query.substring(1);
-    if (query.endsWith("%")) query = query.substring(0, query.length() - 1); 
-    
+    if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
+
     return query;
   }
 
@@ -236,10 +252,4 @@ public class StreetTypeBean extends TypeBean<Street, StreetFilter>
     return items;
   }
 
-  @Override
-  public String getViewId()
-  {
-    return "/pages/kernel/street.xhtml";
-  }  
-  
 }

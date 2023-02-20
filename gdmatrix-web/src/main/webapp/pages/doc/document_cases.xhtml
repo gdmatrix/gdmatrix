@@ -22,13 +22,12 @@
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex flex-row-reverse w-12">        
+        <div class="flex justify-content-end w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{documentCasesTabBean.create}" 
                            process="@this"
                            update="@parent:@parent:@parent:document_cases_dialog"
                            resetValues="true"
-                           actionListener="#{documentObjectBean.updateCurrentTab}"
                            oncomplete="PF('documentCasesDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
@@ -56,7 +55,6 @@
                          process="@this" 
                          update="@parent:@parent:@parent:@parent:document_cases_dialog"
                          resetValues="true"
-                         actionListener="#{documentObjectBean.updateCurrentTab}"
                          oncomplete="PF('documentCasesDialog').show()"
                          />
         <p:commandButton action="#{documentCasesTabBean.remove(row)}"
@@ -89,13 +87,13 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
         <h:outputText value="#{documentObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{documentObjectBean.getCurrentTab().getLabel()}" />   
+        <h:outputText value="#{documentObjectBean.activeEditTab.label}" />   
         <i class="pi pi-angle-right mx-2"></i> 
         <h:outputText value="#{documentCasesTabBean.editing.caseDocId}" />
       </p:outputPanel>
     </f:facet>
 
-    <p:panel styleClass="mt-2" id="panel"
+    <h:panelGroup styleClass="mt-2" id="panel" layout="block"
              rendered="#{documentCasesTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
@@ -135,7 +133,7 @@
 
       </div>
 
-    </p:panel>     
+    </h:panelGroup>     
 
     <f:facet name="footer">
 

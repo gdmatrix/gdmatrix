@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.modules.security;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -40,7 +39,6 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.security.Role;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.Tab;
 import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
 
 /**
@@ -119,25 +117,13 @@ public class RoleObjectBean extends ObjectBean
   }
 
   @Override
-  public void loadTabs()
-  {
-    super.loadTabs();
-
-    if (tabs.isEmpty())
-    {
-      tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Main", "/pages/security/role_main.xhtml"));
-    }
-  }
-
-  @Override
   public void storeObject() throws Exception
   {
     role = getPort(false).storeRole(role);
     setObjectId(role.getRoleId());
     roleFinderBean.outdate();
   }
-  
+
   @Override
   public Serializable saveState()
   {

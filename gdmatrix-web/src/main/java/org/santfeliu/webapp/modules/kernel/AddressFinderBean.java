@@ -141,7 +141,7 @@ public class AddressFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = addressTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -152,7 +152,7 @@ public class AddressFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     smartFilter = addressTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -184,7 +184,7 @@ public class AddressFinderBean extends FinderBean
   {
     return new Object[]
     {
-      finding, getFilterSelector(), filter, firstRow, getObjectPosition()
+      finding, getFilterTabSelector(), filter, firstRow, getObjectPosition()
     };
   }
 
@@ -195,7 +195,7 @@ public class AddressFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[]) state;
       finding = (Boolean) stateArray[0];
-      setFilterSelector((Integer) stateArray[1]);
+      setFilterTabSelector((Integer) stateArray[1]);
       filter = (AddressFilter) stateArray[2];
 
       doFind(false);
@@ -260,11 +260,11 @@ public class AddressFinderBean extends FinderBean
           {
             AddressView addressView = (AddressView) rows.get(0);
             navigatorBean.view(addressView.getAddressId());
-            addressObjectBean.setSearchSelector(1);
+            addressObjectBean.setSearchTabSelector(1);
           }
           else
           {
-            addressObjectBean.setSearchSelector(0);
+            addressObjectBean.setSearchTabSelector(0);
           }
         }
       }

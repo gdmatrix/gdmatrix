@@ -30,7 +30,6 @@
                              process="@this"
                              update="@root:@id(event_places_dialog)"
                              resetValues="true"
-                             actionListener="#{eventObjectBean.updateCurrentTab}"
                              oncomplete="PF('eventPlacesDialog').show()"
                              alt="#{objectBundle.add}" title="#{objectBundle.add}" />
           </div>
@@ -73,7 +72,6 @@
                          process="@this"
                          update="@root:@id(event_places_dialog)"
                          resetValues="true"
-                         actionListener="#{eventObjectBean.updateCurrentTab}"
                          oncomplete="PF('eventPlacesDialog').show()" />
         <p:commandButton icon="pi pi-external-link"
                          action="#{navigatorBean.show('Room', row.roomView.roomId)}"
@@ -110,14 +108,14 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{eventObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventObjectBean.getCurrentTab().getLabel()}" />
+        <h:outputText value="#{eventObjectBean.activeEditTab.label}" />
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{eventPlacesTabBean.pageObjectDescription}" />
       </p:outputPanel>
     </f:facet>
 
-    <p:outputPanel styleClass="mt-2" id="event_places_panel"
-                   rendered="#{eventPlacesTabBean.editing != null}">
+    <h:panelGroup styleClass="mt-2" id="event_places_panel" layout="block"
+                  rendered="#{eventPlacesTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
 
@@ -170,7 +168,7 @@
 
       </div>
 
-    </p:outputPanel>
+    </h:panelGroup>
 
     <f:facet name="footer">
 

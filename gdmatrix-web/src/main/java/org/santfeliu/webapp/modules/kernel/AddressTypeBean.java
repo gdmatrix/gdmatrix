@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -43,6 +44,8 @@ import org.matrix.kernel.AddressFilter;
 import org.matrix.kernel.KernelList;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 
 /**
  *
@@ -103,6 +106,26 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
     {
       return null;
     }
+  }
+
+  @Override
+  public String getTypeId(Address address)
+  {
+    return address.getAddressTypeId();
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/kernel/address.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Main", "/pages/kernel/address_main.xhtml"));
+    editTabs.add(new EditTab("Persons", "/pages/kernel/address_persons.xhtml", "addressPersonsTabBean"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
   }
 
   @Override
@@ -196,12 +219,6 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
       return Collections.EMPTY_LIST;
     }
   }
-  
-  @Override
-  public String getViewId()
-  {
-    return "/pages/kernel/address.xhtml";
-  }  
 
   private List<SelectItem> getStreetTypeSelectItems()
   {

@@ -113,7 +113,7 @@ public class StreetFinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = streetTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -124,7 +124,7 @@ public class StreetFinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter.setStreetTypeId(baseTypeId);
     smartFilter = streetTypeBean.filterToQuery(filter);
@@ -192,12 +192,12 @@ public class StreetFinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getStreetId());
-            streetObjectBean.setSearchSelector(
-              streetObjectBean.getEditionSelector());
+            streetObjectBean.setSearchTabSelector(
+              streetObjectBean.getEditModeSelector());
           }
           else
           {
-            streetObjectBean.setSearchSelector(0);
+            streetObjectBean.setSearchTabSelector(0);
           }
         }
       }

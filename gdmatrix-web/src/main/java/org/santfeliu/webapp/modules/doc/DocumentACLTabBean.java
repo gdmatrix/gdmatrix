@@ -200,7 +200,7 @@ public class DocumentACLTabBean extends TabBean
     try
     {
       PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('documentRolesDialog').show();");
+      current.executeScript("PF('documentACLDialog').show();");
     }
     catch (Exception ex)
     {

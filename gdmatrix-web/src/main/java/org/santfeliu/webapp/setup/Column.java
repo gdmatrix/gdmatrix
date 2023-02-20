@@ -28,45 +28,45 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp;
-
-import java.io.Serializable;
+package org.santfeliu.webapp.setup;
 
 /**
  *
  * @author realor
  */
-public class Tab implements Serializable
+public class Column
 {
-  private final String label;
-  private final String url;
-  private final String beanName;
-
-  public Tab(String label, String url)
-  {
-    this(label, url, null);
-  }
-
-
-  public Tab(String label, String url, String beanName)
-  {
-    this.label = label;
-    this.url = url;
-    this.beanName = beanName;
-  }
+  private String label;
+  private String name;
+  private String styleClass;
 
   public String getLabel()
   {
     return label;
   }
 
-  public String getUrl()
+  public void setLabel(String label)
   {
-    return url;
+    this.label = label;
   }
 
-  public String getBeanName()
+  public String getName()
   {
-    return beanName;
+    return name;
+  }
+
+  public void setName(String name)
+  {
+    this.name = name;
+  }
+
+  public String getStyleClass()
+  {
+    return styleClass;
+  }
+
+  public void setStyleClass(String styleClass)
+  {
+    this.styleClass = styleClass;
   }
 }

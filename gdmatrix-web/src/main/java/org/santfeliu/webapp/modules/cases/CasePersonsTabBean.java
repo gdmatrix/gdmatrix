@@ -91,13 +91,13 @@ public class CasePersonsTabBean extends TabBean
   @Override
   public void load()
   {
-    System.out.println("load casePersons:" + objectId);
-    if (!NEW_OBJECT_ID.equals(objectId))
+    System.out.println("load casePersons:" + getObjectId());
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
       {
         CasePersonFilter filter = new CasePersonFilter();
-        filter.setCaseId(objectId);
+        filter.setCaseId(getObjectId());
         casePersonViews =
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
       }

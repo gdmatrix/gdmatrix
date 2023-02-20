@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -41,7 +40,6 @@ import org.matrix.kernel.KernelConstants;
 import org.matrix.kernel.Room;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.Tab;
 
 /**
  *
@@ -110,12 +108,6 @@ public class RoomObjectBean extends ObjectBean
   }
 
   @Override
-  public String show()
-  {
-    return "/pages/kernel/room.xhtml";
-  }
-
-  @Override
   public void loadObject() throws Exception
   {
     if (!NEW_OBJECT_ID.equals(objectId))
@@ -132,18 +124,6 @@ public class RoomObjectBean extends ObjectBean
     else
     {
       room = new Room();
-    }
-  }
-
-  @Override
-  public void loadTabs()
-  {
-    super.loadTabs();
-
-    if (tabs.isEmpty())
-    {
-      tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Principal", "/pages/kernel/room_main.xhtml"));
     }
   }
 

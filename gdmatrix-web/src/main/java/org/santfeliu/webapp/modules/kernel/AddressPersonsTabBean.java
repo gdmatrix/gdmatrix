@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.kernel;
@@ -55,10 +55,10 @@ public class AddressPersonsTabBean extends TabBean
   private List<PersonAddressView> rows;
   private PersonAddress editing;
   private int firstRow;
-  
+
   @Inject
   AddressObjectBean addressObjectBean;
-  
+
   @Override
   public ObjectBean getObjectBean()
   {
@@ -94,13 +94,13 @@ public class AddressPersonsTabBean extends TabBean
   {
     this.firstRow = firstRow;
   }
-  
+
   @Override
   public void load() throws Exception
   {
-    System.out.println("load addressPersons:" + objectId);    
-    if (!NEW_OBJECT_ID.equals(objectId))
-    {    
+    System.out.println("load addressPersons:" + getObjectId());
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
+    {
       try
       {
         PersonAddressFilter filter = new PersonAddressFilter();
@@ -116,17 +116,17 @@ public class AddressPersonsTabBean extends TabBean
     else
       rows = Collections.emptyList();
   }
-  
+
   public void create()
   {
     editing = new PersonAddress();
   }
-  
+
   public void onPersonClear()
   {
     editing.setPersonId(null);
-  }    
-  
+  }
+
   @Override
   public void store() throws Exception
   {
@@ -145,8 +145,8 @@ public class AddressPersonsTabBean extends TabBean
     editing = null;
     info("CANCEL_OBJECT");
     return null;
-  } 
-  
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -167,8 +167,8 @@ public class AddressPersonsTabBean extends TabBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private void storePerson()
   {
     try
@@ -218,8 +218,8 @@ public class AddressPersonsTabBean extends TabBean
       error(ex);
     }
     return null;
-  }  
-  
+  }
+
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
@@ -230,6 +230,6 @@ public class AddressPersonsTabBean extends TabBean
   {
     PrimeFaces current = PrimeFaces.current();
     current.executeScript("PF('addressPersonsDialog').hide();");
-  }  
+  }
 
 }

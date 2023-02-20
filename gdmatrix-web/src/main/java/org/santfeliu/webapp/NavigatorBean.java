@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp;
 
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class NavigatorBean extends WebBean implements Serializable
   private final Map<String, BaseTypeInfo> baseTypeInfoMap = new HashMap<>();
   private final History history = new History();
   private String lastBaseTypeId;
-  private int contextSelector;
+  private int contextTabSelector;
   private int updateCount;
   private Leap inProgressLeap;
 
@@ -150,13 +151,13 @@ public class NavigatorBean extends WebBean implements Serializable
     return show(objectTypeId, objectId, 0, null);
   }
 
-  public String show(String objectTypeId, String objectId, int detailSelector)
+  public String show(String objectTypeId, String objectId, int editTabSelector)
   {
-    return show(objectTypeId, objectId, detailSelector, null);
+    return show(objectTypeId, objectId, editTabSelector, null);
   }
 
   public String show(String objectTypeId, String objectId,
-    int detailSelector, String selectExpression)
+    int editTabSelector, String selectExpression)
   {
     BaseTypeInfo baseTypeInfo = objectTypeId == null ?
       getBaseTypeInfo() : getBaseTypeInfo(objectTypeId);
@@ -166,8 +167,8 @@ public class NavigatorBean extends WebBean implements Serializable
     Leap leap = new Leap(baseTypeInfo.getBaseTypeId());
     leap.setObjectId(objectId == null ?
       baseTypeInfo.getObjectId() : objectId);
-    leap.setSearchSelector(selectExpression == null ? -1 : 0);
-    leap.setDetailSelector(detailSelector);
+    leap.setSearchTabSelector(selectExpression == null ? -1 : 0);
+    leap.setEditTabSelector(editTabSelector);
 
     return execute(leap, true, selectExpression);
   }
@@ -213,7 +214,7 @@ public class NavigatorBean extends WebBean implements Serializable
     view(objectId, 0);
   }
 
-  public void view(String objectId, int detailSelector)
+  public void view(String objectId, int editTabSelector)
   {
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
     if (baseTypeInfo == null) return;
@@ -230,8 +231,8 @@ public class NavigatorBean extends WebBean implements Serializable
     }
 
     objectBean.setObjectId(objectId);
-    objectBean.setSearchSelector(objectBean.getEditionSelector());
-    objectBean.setDetailSelector(detailSelector);
+    objectBean.setSearchTabSelector(objectBean.getEditModeSelector());
+    objectBean.setEditTabSelector(editTabSelector);
     objectBean.load();
 
     baseTypeInfo.visit(objectId);
@@ -292,7 +293,7 @@ public class NavigatorBean extends WebBean implements Serializable
       if (selectExpression != null)
       {
         lastBaseTypeInfo.saveBeanState(lastObjectBean);
-        lastBaseTypeInfo.saveTabBeansState(lastObjectBean.getTabs());
+        lastBaseTypeInfo.saveTabBeansState(lastObjectBean.getEditTabs());
 
         selectLeap =
           new SelectLeap(lastBaseTypeInfo.getBaseTypeId(), selectExpression);
@@ -347,14 +348,14 @@ public class NavigatorBean extends WebBean implements Serializable
     return history;
   }
 
-  public int getContextSelector()
+  public int getContextTabSelector()
   {
-    return contextSelector;
+    return contextTabSelector;
   }
 
-  public void setContextSelector(int contextSelector)
+  public void setContextTabSelector(int selector)
   {
-    this.contextSelector = contextSelector;
+    this.contextTabSelector = selector;
   }
 
   private String findBaseTypeMid(String objectTypeId)
@@ -560,13 +561,13 @@ public class NavigatorBean extends WebBean implements Serializable
       }
     }
 
-    void saveTabBeansState(List<Tab> tabs)
+    void saveTabBeansState(List<EditTab> tabs)
     {
       String baseTypeId = getBaseTypeId();
       BeanManager beanManager = CDI.current().getBeanManager();
       Context context = beanManager.getContext(ViewScoped.class);
 
-      for (Tab tab : tabs)
+      for (EditTab tab : tabs)
       {
         String beanName = tab.getBeanName();
         if (beanName == null) continue;
@@ -593,12 +594,12 @@ public class NavigatorBean extends WebBean implements Serializable
       }
     }
 
-    void restoreTabBeansState(List<Tab> tabs)
+    void restoreTabBeansState(List<EditTab> tabs)
     {
       String baseTypeId = getBaseTypeId();
       String objectId = getObjectId();
 
-      for (Tab tab : tabs)
+      for (EditTab tab : tabs)
       {
         String beanName = tab.getBeanName();
         if (beanName == null) continue;
@@ -671,8 +672,8 @@ public class NavigatorBean extends WebBean implements Serializable
   {
     final String baseTypeId;
     String objectId = NEW_OBJECT_ID;
-    int searchSelector = 0;
-    int detailSelector = 0;
+    int searchTabSelector = 0;
+    int editTabSelector = 0;
 
     public Leap(String baseTypeId)
     {
@@ -682,8 +683,8 @@ public class NavigatorBean extends WebBean implements Serializable
     public void setup(ObjectBean objectBean)
     {
       objectId = objectBean.getObjectId();
-      searchSelector = objectBean.getSearchSelector();
-      detailSelector = objectBean.getDetailSelector();
+      searchTabSelector = objectBean.getSearchTabSelector();
+      editTabSelector = objectBean.getEditTabSelector();
     }
 
     public String getBaseTypeId()
@@ -701,32 +702,32 @@ public class NavigatorBean extends WebBean implements Serializable
       this.objectId = objectId;
     }
 
-    public int getSearchSelector()
+    public int getSearchTabSelector()
     {
-      return searchSelector;
+      return searchTabSelector;
     }
 
-    public void setSearchSelector(int searchSelector)
+    public void setSearchTabSelector(int selector)
     {
-      this.searchSelector = searchSelector;
+      this.searchTabSelector = selector;
     }
 
-    public int getDetailSelector()
+    public int getEditTabSelector()
     {
-      return detailSelector;
+      return editTabSelector;
     }
 
-    public void setDetailSelector(int detailSelector)
+    public void setEditTabSelector(int selector)
     {
-      this.detailSelector = detailSelector;
+      this.editTabSelector = selector;
     }
 
     public void construct(ObjectBean objectBean)
     {
       objectBean.setObjectId(objectId);
-      objectBean.setSearchSelector(searchSelector == -1 ?
-        objectBean.getEditionSelector() : searchSelector);
-      objectBean.setDetailSelector(detailSelector);
+      objectBean.setSearchTabSelector(searchTabSelector == -1 ?
+        objectBean.getEditModeSelector() : searchTabSelector);
+      objectBean.setEditTabSelector(editTabSelector);
 
       NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
       BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
@@ -769,15 +770,21 @@ public class NavigatorBean extends WebBean implements Serializable
       System.out.println(">> construct " + objectBean);
 
       objectBean.setObjectId(objectId);
-      objectBean.setSearchSelector(searchSelector == -1 ?
-        objectBean.getEditionSelector() : searchSelector);
-      objectBean.setDetailSelector(detailSelector);
+      objectBean.setSearchTabSelector(searchTabSelector == -1 ?
+        objectBean.getEditModeSelector() : searchTabSelector);
+      objectBean.setEditTabSelector(editTabSelector);
 
       NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
       BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
       baseTypeInfo.restoreBeanState(objectBean);
-      objectBean.loadTabs();
-      baseTypeInfo.restoreTabBeansState(objectBean.getTabs());
+      try
+      {
+        objectBean.loadObjectSetup();
+      }
+      catch (Exception ex)
+      {
+      }
+      baseTypeInfo.restoreTabBeansState(objectBean.getEditTabs());
       baseTypeInfo.restoreBeanState(objectBean.getFinderBean());
       baseTypeInfo.clearBeansState();
 

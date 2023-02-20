@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -41,7 +40,6 @@ import org.matrix.kernel.Address;
 import org.santfeliu.webapp.FinderBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.Tab;
 
 /**
  *
@@ -127,19 +125,6 @@ public class AddressObjectBean extends ObjectBean
     address = KernelModuleBean.getPort(false).storeAddress(address);
     setObjectId(address.getAddressId());
     addressFinderBean.outdate();
-  }
-
-  @Override
-  public void loadTabs()
-  {
-    super.loadTabs();
-
-    if (tabs.isEmpty())
-    {
-      tabs = new ArrayList<>(); // empty list may be read only
-      tabs.add(new Tab("Main", "/pages/kernel/address_main.xhtml"));
-      tabs.add(new Tab("Persons", "/pages/kernel/address_persons.xhtml", "addressPersonsTabBean"));
-    }
   }
 
   @Override

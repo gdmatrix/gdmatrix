@@ -26,13 +26,12 @@
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex flex-row-reverse w-12">    
+        <div class="flex justify-content-end w-12">    
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
                            action="#{personAddressesTabBean.create}"   
                            process="@this"
                            update="@parent:@parent:@parent:person_addresses_dialog"
                            resetValues="true"
-                           actionListener="#{personObjectBean.updateCurrentTab}"                           
                            oncomplete="PF('personAddressesDialog').show()"                                  
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
         </div>
@@ -80,15 +79,16 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-3xl mx-2 my-1"/>       
         <h:outputText value="#{personObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{personObjectBean.getCurrentTab().getLabel()}" />   
+        <h:outputText value="#{personObjectBean.activeEditTab.label}" />   
         <i class="pi pi-angle-right mx-2"></i> 
         <h:outputText value="#{personAddressesTabBean.pageObjectDescription}" />
       </p:outputPanel>
     </f:facet>
 
-    <p:panel id="person_addresses_panel" 
-             rendered="#{personAddressesTabBean.editing != null}"
-             styleClass="mt-2">
+    <h:panelGroup id="person_addresses_panel" 
+                  layout="block"
+                  rendered="#{personAddressesTabBean.editing != null}"
+                  styleClass="mt-2">
 
       <div class="ui-fluid formgrid grid" >
       
@@ -108,7 +108,7 @@
 
       </div>
 
-    </p:panel>  
+    </h:panelGroup>  
 
     <f:facet name="footer">
       <div class="field col-12 text-right">

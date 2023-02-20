@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.webapp.modules.cases;
@@ -53,6 +53,7 @@ import org.primefaces.PrimeFaces;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 
 /**
@@ -64,23 +65,60 @@ import org.santfeliu.webapp.TabBean;
 public class CaseCasesTabBean extends TabBean
 {
   private static final String TYPEID_SEPARATOR = ";";
-  
-  private List<CaseCaseView> rows;
+
+  Map<String, TabInstance> tabInstances = new HashMap<>();
+
+  public class TabInstance
+  {
+    String objectId = NEW_OBJECT_ID;
+    List<CaseCaseView> rows;
+    int firstRow = 0;
+    boolean groupedView = true;
+  }
+
   private CaseCase editing;
-  private int firstRow;
-  private boolean groupedView = true;
 
   @Inject
   CaseObjectBean caseObjectBean;
 
+  public TabInstance getCurrentTabInstance()
+  {
+    EditTab tab = caseObjectBean.getActiveEditTab();
+    TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+    if (tabInstance == null)
+    {
+      tabInstance = new TabInstance();
+      tabInstances.put(tab.getSubviewId(), tabInstance);
+    }
+    return tabInstance;
+  }
+
+  @Override
+  public String getObjectId()
+  {
+    return getCurrentTabInstance().objectId;
+  }
+
+  @Override
+  public void setObjectId(String objectId)
+  {
+    getCurrentTabInstance().objectId = objectId;
+  }
+
+  @Override
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
+  }
+
   public List<CaseCaseView> getRows()
   {
-    return rows;
+    return getCurrentTabInstance().rows;
   }
 
   public void setRows(List<CaseCaseView> rows)
   {
-    this.rows = rows;
+    getCurrentTabInstance().rows = rows;
   }
 
   public CaseCase getEditing()
@@ -95,45 +133,45 @@ public class CaseCasesTabBean extends TabBean
 
   public int getFirstRow()
   {
-    return firstRow;
+    return getCurrentTabInstance().firstRow;
   }
 
   public void setFirstRow(int firstRow)
   {
-    this.firstRow = firstRow;
+    getCurrentTabInstance().firstRow = firstRow;
   }
 
   public boolean isGroupedView()
   {
-    return groupedView;
+    return getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
   {
-    this.groupedView = groupedView;
+    getCurrentTabInstance().groupedView = groupedView;
   }
-  
+
   public void setCaseCaseTypeId(String caseCaseTypeId)
   {
     if (editing != null)
       editing.setCaseCaseTypeId(caseCaseTypeId);
-    
+
     showDialog();
   }
-  
+
   public String getCaseCaseTypeId()
   {
     return editing == null ? NEW_OBJECT_ID : editing.getCaseCaseTypeId();
   }
-  
+
   public void setRelCaseId(String caseId)
   {
     if (editing != null)
       editing.setRelCaseId(caseId);
-    
-    showDialog();    
+
+    showDialog();
   }
-  
+
   public String getRelCaseId()
   {
     return editing == null ? NEW_OBJECT_ID : editing.getRelCaseId();
@@ -148,50 +186,51 @@ public class CaseCasesTabBean extends TabBean
   public void create()
   {
     editing = new CaseCase();
-    editing.setCaseId(objectId);
+    editing.setCaseId(getObjectId());
     String baseTypeId = getTabBaseTypeId();
     if (baseTypeId != null && !baseTypeId.contains(TYPEID_SEPARATOR))
       editing.setCaseCaseTypeId(baseTypeId);
   }
-  
+
   public void switchView()
   {
-    groupedView = !groupedView;
+    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
   }
-  
-  //TODO: get property from JSON  
+
+  //TODO: get property from JSON
   private String getTabBaseTypeId()
   {
     String typeId;
-        
-    String tabPrefix = String.valueOf(caseObjectBean.getDetailSelector());
+
+    String tabPrefix = String.valueOf(caseObjectBean.getEditTabSelector());
     typeId = getProperty("tabs::" + tabPrefix + "::typeId");
     if (typeId == null)
-      typeId = DictionaryConstants.CASE_CASE_TYPE; 
-    
+      typeId = DictionaryConstants.CASE_CASE_TYPE;
+
     return typeId;
   }
-  
+
 
   @Override
   public void load() throws Exception
   {
-    if (!NEW_OBJECT_ID.equals(objectId))
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
       try
       {
         String typeId = getTabBaseTypeId();
-        
+
         String[] params = typeId.split(TYPEID_SEPARATOR);
         if (params != null && params.length == 2)
         {
           String cpTypeId1 = params[0];
           String cpTypeId2 = params[1];
-          rows = getResultsByPersons(cpTypeId1, cpTypeId2);
+          getCurrentTabInstance().rows =
+            getResultsByPersons(cpTypeId1, cpTypeId2);
         }
         else
         {
-          rows = getResultsByDefault(typeId);
+          getCurrentTabInstance().rows = getResultsByDefault(typeId);
         }
       }
       catch (Exception ex)
@@ -201,16 +240,21 @@ public class CaseCasesTabBean extends TabBean
     }
     else
     {
-      rows = Collections.emptyList();
+      TabInstance tabInstance = getCurrentTabInstance();
+      tabInstance.objectId = NEW_OBJECT_ID;
+      tabInstance.rows = Collections.EMPTY_LIST;
+      tabInstance.firstRow = 0;
     }
   }
-  
+
   public boolean isReverseRelation(CaseCaseView caseCase)
   {
-    return caseCase != null 
+    String objectId = getObjectId();
+
+    return caseCase != null
       && objectId.equals(caseCase.getRelCase().getCaseId())
       && !objectId.equals(caseCase.getMainCase().getCaseId());
-  }     
+  }
 
   public void edit(CaseCaseView caseCaseView)
   {
@@ -240,26 +284,27 @@ public class CaseCasesTabBean extends TabBean
   @Override
   public void store() throws Exception
   {
+    String objectId = getObjectId();
     if (editing != null)
     {
       if (editing.getRelCaseId() == null || editing.getRelCaseId().isEmpty())
-        throw new Exception("CASE_MUST_BE_SELECTED"); 
-      
+        throw new Exception("CASE_MUST_BE_SELECTED");
+
       if (!editing.getCaseId().equals(objectId))
         throw new Exception("CAN_NOT_STORE_REVERSE_RELATION");
-      
+
       CasesModuleBean.getPort(false).storeCaseCase(editing);
       load();
       editing = null;
     }
   }
-  
+
   public void cancel()
   {
     info("CANCEL_OBJECT");
     editing = null;
   }
-  
+
   public void remove(CaseCaseView row)
   {
     try
@@ -275,12 +320,12 @@ public class CaseCasesTabBean extends TabBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing, groupedView };
+    return new Object[]{ editing };
   }
 
   @Override
@@ -290,7 +335,6 @@ public class CaseCasesTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (CaseCase)stateArray[0];
-      groupedView = (boolean)stateArray[1];
 
       load();
     }
@@ -298,21 +342,21 @@ public class CaseCasesTabBean extends TabBean
     {
       error(ex);
     }
-  }  
-  
+  }
+
   private void showDialog()
   {
     try
     {
       PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('caseCasesDialog" + 
-        caseObjectBean.getDetailSelector() + "').show();");
+      current.executeScript("PF('caseCasesDialog" +
+        caseObjectBean.getEditTabSelector() + "').show();");
     }
     catch (Exception ex)
     {
       error(ex);
     }
-  }  
+  }
 
   private List<CaseCaseView> getResultsByDefault(String caseCaseTypeId)
     throws Exception

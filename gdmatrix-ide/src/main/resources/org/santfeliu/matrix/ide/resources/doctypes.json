@@ -82,6 +82,15 @@
     "properties" : { "technology" : "template" }
   },
   {
+    "displayName" : "Object setup",
+    "extension" : "ost",
+    "className" : "org.santfeliu.matrix.ide.ObjectSetupPanel",
+    "propertyName" : "setupName",
+    "mimeType" : "application/json",
+    "icon" : "object_setup.gif",
+    "docTypeId" : "ObjectSetup"
+  },
+  {
     "displayName" : "Upload setup",
     "extension" : "upl",
     "className" : "org.santfeliu.matrix.ide.DocumentUploaderPanel",

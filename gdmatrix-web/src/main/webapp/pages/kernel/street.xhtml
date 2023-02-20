@@ -12,7 +12,7 @@
     <p:outputPanel id="filter_panel">
 
       <p:tabView id="find_selector"
-                 activeIndex="#{streetFinderBean.filterSelector}">
+                 activeIndex="#{streetFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
           <f:facet name="title">
@@ -117,7 +117,7 @@
                      update=":mainform:search_tabs:result_list" />      
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
-               activeIndex="#{streetObjectBean.searchSelector}"
+               activeIndex="#{streetObjectBean.searchTabSelector}"
                touchable="false">
 
       <p:tab>

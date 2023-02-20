@@ -151,7 +151,7 @@ public class RoleFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = roleTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
@@ -162,7 +162,7 @@ public class RoleFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter.setRoleTypeId(baseTypeId);
     smartFilter = roleTypeBean.filterToQuery(filter);
@@ -194,7 +194,7 @@ public class RoleFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterSelector(),
+    return new Object[]{ finding, getFilterTabSelector(),
       filter, firstRow, getObjectPosition() };
   }
 
@@ -203,7 +203,7 @@ public class RoleFinderBean extends FinderBean
   {
     Object[] stateArray = (Object[])state;
     finding = (Boolean)stateArray[0];
-    setFilterSelector((Integer)stateArray[1]);
+    setFilterTabSelector((Integer)stateArray[1]);
     filter = (RoleFilter)stateArray[2];
     smartFilter = roleTypeBean.filterToQuery(filter);
 
@@ -263,12 +263,12 @@ public class RoleFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getRoleId());
-            roleObjectBean.setSearchSelector(
-              roleObjectBean.getEditionSelector());
+            roleObjectBean.setSearchTabSelector(
+              roleObjectBean.getEditModeSelector());
           }
           else
           {
-            roleObjectBean.setSearchSelector(0);
+            roleObjectBean.setSearchTabSelector(0);
           }
         }
       }

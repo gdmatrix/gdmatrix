@@ -142,7 +142,7 @@ public class TypeFinderBean extends FinderBean
   public void smartFind()
   {
     finding = true;
-    setFilterSelector(0);
+    setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     if (typeTypeBean.getRootTypeId().equals(baseTypeId))
       baseTypeId = null;
@@ -155,7 +155,7 @@ public class TypeFinderBean extends FinderBean
   public void find()
   {
     finding = true;
-    setFilterSelector(1);
+    setFilterTabSelector(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     if (typeTypeBean.getRootTypeId().equals(baseTypeId))
       baseTypeId = null;
@@ -196,7 +196,7 @@ public class TypeFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterSelector(), filter, firstRow,
+    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
       getObjectPosition(), rootTypeId };
   }
 
@@ -207,7 +207,7 @@ public class TypeFinderBean extends FinderBean
     {
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
-      setFilterSelector((Integer)stateArray[1]);
+      setFilterTabSelector((Integer)stateArray[1]);
       filter = (TypeFilter)stateArray[2];
       smartFilter = typeTypeBean.filterToQuery(filter);
 
@@ -273,12 +273,12 @@ public class TypeFinderBean extends FinderBean
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getTypeId());
-            typeObjectBean.setSearchSelector(
-              typeObjectBean.getEditionSelector());
+            typeObjectBean.setSearchTabSelector(
+              typeObjectBean.getEditModeSelector());
           }
           else
           {
-            typeObjectBean.setSearchSelector(0);
+            typeObjectBean.setSearchTabSelector(0);
           }
         }
       }

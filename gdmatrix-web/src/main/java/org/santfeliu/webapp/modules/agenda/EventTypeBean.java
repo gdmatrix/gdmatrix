@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.agenda;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,8 @@ import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
 import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.agenda.AgendaModuleBean.getClient;
 
 /**
@@ -61,12 +64,6 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
   {
     return event.getEventId();
   }
-  
-  @Override
-  public String getViewId()
-  {
-    return "/pages/agenda/event.xhtml";
-  }  
 
   @Override
   public String describe(Event event)
@@ -85,6 +82,31 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     {
       return null;
     }
+  }
+
+  @Override
+  public String getTypeId(Event event)
+  {
+    return event.getEventTypeId();
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/agenda/event.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Principal", "/pages/agenda/event_main.xhtml"));
+    editTabs.add(new EditTab("Assistents", "/pages/agenda/event_persons.xhtml",
+      "eventPersonsTabBean"));
+    editTabs.add(new EditTab("Llocs", "/pages/agenda/event_places.xhtml",
+      "eventPlacesTabBean"));
+    editTabs.add(new EditTab("Temes", "/pages/agenda/event_themes.xhtml",
+      "eventThemesTabBean"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
   }
 
   @Override

@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.kernel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -39,6 +40,8 @@ import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Person;
 import org.matrix.kernel.PersonFilter;
 import org.santfeliu.webapp.TypeBean;
+import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.kernel.KernelModuleBean.getPort;
 
 /**
@@ -60,12 +63,6 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
   {
     return person.getPersonId();
   }
-  
-  @Override
-  public String getViewId()
-  {
-    return "/pages/kernel/person.xhtml";
-  }  
 
   @Override
   public String describe(Person person)
@@ -96,6 +93,31 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
     {
       return null;
     }
+  }
+
+  @Override
+  public String getTypeId(Person person)
+  {
+    return person.getPersonTypeId();
+  }
+
+  @Override
+  public ObjectSetup createObjectSetup()
+  {
+    ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setViewId("/pages/kernel/person.xhtml");
+
+    List<EditTab> editTabs = new ArrayList<>();
+    editTabs.add(new EditTab("Main", "/pages/kernel/person_main.xhtml"));
+    editTabs.add(new EditTab("Addresses", "/pages/kernel/person_addresses.xhtml",
+      "personAddressesTabBean"));
+    editTabs.add(new EditTab("Contacts", "/pages/kernel/person_contacts.xhtml",
+      "personContactsTabBean"));
+    editTabs.add(new EditTab("Cases", "/pages/kernel/person_cases.xhtml",
+      "personCasesTabBean"));
+    objectSetup.setEditTabs(editTabs);
+
+    return objectSetup;
   }
 
   @Override
