@@ -48,14 +48,11 @@ public class BasicAuthorization
     {
       String basic = autho.substring(6);
       String userPassString = new String(Base64.getMimeDecoder().decode(basic));
-      String[] userPass = userPassString.split(":");
-      if (userPass.length > 0)
+      int index = userPassString.indexOf(":");
+      if (index > 0)
       {
-        this.userId = userPass[0].trim();
-        if (userPass.length > 1)
-        {
-          this.password = userPass[1];
-        }
+        this.userId = userPassString.substring(0, index);
+        this.password = userPassString.substring(index + 1);
       }
     }
   }
