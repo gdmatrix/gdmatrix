@@ -201,11 +201,16 @@ public class NavigatorBean extends WebBean implements Serializable
     return execute(selectLeap);
   }
 
+  public boolean isSelectionPending()
+  {
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    return baseTypeInfo != null && baseTypeInfo.selectLeap != null;
+  }
+
   public boolean isSelectable()
   {
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
-    return baseTypeInfo != null
-      && baseTypeInfo.selectLeap != null
+    return baseTypeInfo != null && baseTypeInfo.selectLeap != null
       && !NEW_OBJECT_ID.equals(baseTypeInfo.getObjectId());
   }
 

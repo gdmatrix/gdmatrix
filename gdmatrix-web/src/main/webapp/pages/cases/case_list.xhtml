@@ -26,8 +26,9 @@
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.caseId)}"
-                       rendered="#{navigatorBean.selectable}"
+                       rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
+                       immediate="true"
                        title="Select" alt="Select"
                        />
       <p:commandButton icon="pi pi-external-link" 

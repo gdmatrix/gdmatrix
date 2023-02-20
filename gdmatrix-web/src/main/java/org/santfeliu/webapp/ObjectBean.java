@@ -41,12 +41,8 @@ import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import org.matrix.dic.PropertyDefinition;
-import org.primefaces.component.tabview.TabView;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
@@ -54,6 +50,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
 import org.santfeliu.webapp.setup.SearchTab;
+import org.santfeliu.webapp.util.ComponentUtils;
 
 /**
  *
@@ -106,6 +103,7 @@ public abstract class ObjectBean extends BaseBean
   public void setSearchTabSelector(int selector)
   {
     this.searchTabSelector = selector;
+    ComponentUtils.resetTabView(":mainform:search_tabs");
   }
 
   public int getEditTabSelector()
@@ -328,31 +326,7 @@ public abstract class ObjectBean extends BaseBean
 
   public void selectTabWithErrors()
   {
-    FacesContext context = FacesContext.getCurrentInstance();
-    if (context.isValidationFailed())
-    {
-      UIViewRoot viewRoot = context.getViewRoot();
-      Iterator<String> iter = context.getClientIdsWithMessages();
-      if (iter.hasNext())
-      {
-        String id = iter.next();
-        UIComponent component = viewRoot.findComponent(id);
-
-        while (component != null && component != viewRoot)
-        {
-          if (component instanceof org.primefaces.component.tabview.Tab)
-          {
-            TabView currentTabView = (TabView)component.getParent();
-            int index = currentTabView.getChildren().indexOf(component);
-            if (index >= 0)
-            {
-              currentTabView.setActiveIndex(index);
-            }
-          }
-          component = component.getParent();
-        }
-      }
-    }
+    ComponentUtils.selectTabWithErrors();
   }
 
   private void clear()

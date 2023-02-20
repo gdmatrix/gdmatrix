@@ -30,7 +30,9 @@
  */
 package org.santfeliu.webapp.util;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
@@ -43,6 +45,7 @@ import org.mozilla.javascript.Callable;
 import org.primefaces.component.datepicker.DatePicker;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.outputlabel.OutputLabel;
+import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.toggleswitch.ToggleSwitch;
 import org.santfeliu.form.Field;
 import org.santfeliu.form.Form;
@@ -156,4 +159,55 @@ public class ComponentUtils
       client.execute(callable, parent, scriptName);
     }
   }
+
+  public static void resetTabView(String id)
+  {
+    UIComponent component = ComponentUtils.findComponent(id);
+    if (component instanceof TabView)
+    {
+      // resetActiveIndex is not public, call by reflection
+      TabView tabView = (TabView)component;
+      try
+      {
+        Class<? extends TabView> cls = tabView.getClass();
+        Method method = cls.getDeclaredMethod("resetActiveIndex");
+        method.setAccessible(true);
+        method.invoke(tabView);
+      }
+      catch (Exception ex)
+      {
+        throw new RuntimeException(ex);
+      }
+    }
+  }
+
+  public static void selectTabWithErrors()
+  {
+    FacesContext context = FacesContext.getCurrentInstance();
+    if (context.isValidationFailed())
+    {
+      UIViewRoot viewRoot = context.getViewRoot();
+      Iterator<String> iter = context.getClientIdsWithMessages();
+      if (iter.hasNext())
+      {
+        String id = iter.next();
+        UIComponent component = viewRoot.findComponent(id);
+
+        while (component != null && component != viewRoot)
+        {
+          if (component instanceof org.primefaces.component.tabview.Tab)
+          {
+            TabView currentTabView = (TabView)component.getParent();
+            int index = currentTabView.getChildren().indexOf(component);
+            if (index >= 0)
+            {
+              currentTabView.setActiveIndex(index);
+            }
+          }
+          component = component.getParent();
+        }
+      }
+    }
+  }
+  
 }
