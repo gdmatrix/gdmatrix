@@ -144,6 +144,8 @@ public class RoleTypeBean extends TypeBean<Role, RoleFilter>
     String query = filter.getRoleId().isEmpty() ?
       filter.getName() : filter.getRoleId().get(0);
 
+    if (query == null) query = "";
+
     if (query.startsWith("%")) query = query.substring(1);
     if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
 

@@ -562,7 +562,14 @@ public class NavigatorBean extends WebBean implements Serializable
       Serializable state = beanStateMap.get(beanName);
       if (state != null)
       {
-        baseBean.restoreState(state);
+        try
+        {
+          baseBean.restoreState(state);
+        }
+        catch (Exception ex)
+        {
+          error(ex);
+        }
       }
     }
 

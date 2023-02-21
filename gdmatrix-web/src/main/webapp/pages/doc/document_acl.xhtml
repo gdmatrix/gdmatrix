@@ -52,6 +52,11 @@
       </p:column>
       
       <p:column styleClass="w-2">
+        <p:commandButton icon="pi pi-external-link" 
+                         styleClass="rounded-button ui-button-flat" 
+                         ajax="false"
+                         rendered="#{documentACLTabBean.isPersistentRole(row.roleId)}"
+                         action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
                          styleClass="rounded-button ui-button-flat" 
                          action="#{documentACLTabBean.edit(row)}" 
@@ -70,10 +75,6 @@
           <p:confirm header="Esborrar rol #{row.action}/#{row.roleId}" 
                      message="Segur que vols esorrar rol?" icon="pi pi-info-circle" />
         </p:commandButton>
-        <p:commandButton icon="pi pi-external-link" 
-                         styleClass="rounded-button ui-button-flat" 
-                         ajax="false"
-                         action="#{navigatorBean.show('Role', row.roleId)}" />
       </p:column>
     </p:dataTable>
 

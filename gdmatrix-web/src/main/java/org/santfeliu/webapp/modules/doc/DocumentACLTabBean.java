@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.security.AccessControl;
+import org.matrix.security.SecurityConstants;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.web.DictionaryConfigBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -172,6 +173,11 @@ public class DocumentACLTabBean extends TabBean
   public void remove(AccessControl accessControl)
   {
     getRows().remove(accessControl);
+  }
+
+  public boolean isPersistentRole(String roleId)
+  {
+    return !roleId.startsWith(SecurityConstants.SELF_ROLE_PREFIX);
   }
 
   @Override
