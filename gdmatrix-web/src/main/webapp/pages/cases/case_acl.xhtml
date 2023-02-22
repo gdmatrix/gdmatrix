@@ -13,21 +13,13 @@
   
   
   <h:panelGroup>      
-
-    <div class="w-full m-0 flex justify-content-end">
-      <p:commandLink value="#{documentObjectBean.versionLabel}" 
-                     process="@this"
-                     action="#{documentObjectBean.loadVersions}"
-                     update=":mainform:versions_panel"
-                     oncomplete="PF('versionsPanel').show()"/>
-    </div>    
     
     <!-- Results table -->
-    <p:dataTable id="document_acl_table" value="#{documentACLTabBean.rows}" 
+    <p:dataTable id="case_acl_table" value="#{caseACLTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="10" 
                  size="small" paginatorPosition="bottom" styleClass="mt-3"
-                 rowIndexVar="rowIndex" first="#{documentACLTabBean.firstRow}"
+                 rowIndexVar="rowIndex" first="#{caseACLTabBean.firstRow}"
                  rowStyleClass="#{row.modified ? (empty row.actions ? 'removed' : 'modified') : ''}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
@@ -36,11 +28,11 @@
       <f:facet name="header">
         <div class="flex justify-content-end w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
-                           action="#{documentACLTabBean.create}"
+                           action="#{caseACLTabBean.create}"
                            process="@this"
-                           update="@parent:@parent:@parent:document_acl_dialog"
+                           update="@parent:@parent:@parent:case_acl_dialog"
                            resetValues="true"
-                           oncomplete="PF('documentACLDialog').show()"                                 
+                           oncomplete="PF('caseACLDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
       </f:facet>      
@@ -59,19 +51,19 @@
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
-                         rendered="#{documentACLTabBean.isPersistentRole(row.roleId)}"
+                         rendered="#{caseACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
                          styleClass="rounded-button ui-button-flat" 
-                         action="#{documentACLTabBean.edit(row)}" 
+                         action="#{caseACLTabBean.edit(row)}" 
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:document_acl_dialog"
+                         update="@parent:@parent:@parent:@parent:case_acl_dialog"
                          resetValues="true"
-                         oncomplete="PF('documentACLDialog').show()"
+                         oncomplete="PF('caseACLDialog').show()"
                          />
-        <p:commandButton action="#{documentACLTabBean.remove(row)}"
+        <p:commandButton action="#{caseACLTabBean.remove(row)}"
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:document_acl_dialog document_acl_table :mainform:growl"
+                         update="@parent:@parent:@parent:@parent:case_acl_dialog case_acl_table :mainform:growl"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
@@ -85,7 +77,7 @@
   </h:panelGroup>
 
   <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="document_acl_dialog" widgetVar="documentACLDialog" 
+  <p:dialog id="case_acl_dialog" widgetVar="caseACLDialog" 
             styleClass="edit_data_dialog" style="max-width:600px" 
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
@@ -93,16 +85,16 @@
     <f:facet name="header">
       <p:outputPanel>
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
-        <h:outputText value="#{documentObjectBean.description}" />
+        <h:outputText value="#{caseObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{documentObjectBean.activeEditTab.label}" />   
+        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />   
         <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{documentACLTabBean.editing.roleId}" />
+        <h:outputText value="#{caseACLTabBean.editing.roleId}" />
       </p:outputPanel>
     </f:facet>
 
     <h:panelGroup styleClass="mt-2" id="panel" layout="block"
-                  rendered="#{documentACLTabBean.editing != null}">
+                  rendered="#{caseACLTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
 
@@ -110,7 +102,7 @@
           <p:outputLabel for="@next"
                          value="Role"
                          styleClass="w-full" />
-          <emcomp:objectReference value="#{documentACLTabBean.roleId}"
+          <emcomp:objectReference value="#{caseACLTabBean.roleId}"
                                   process="@(.savable)"
                                   type="Role"
                                   styleClass="w-full"
@@ -125,10 +117,10 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="Action" />
-          <p:selectManyCheckbox value="#{documentACLTabBean.editing.actions}" 
+          <p:selectManyCheckbox value="#{caseACLTabBean.editing.actions}" 
                                  layout="responsive" columns="3"
                                  styleClass="savable">
-            <f:selectItems value="#{documentACLTabBean.actionSelectItems}" />
+            <f:selectItems value="#{caseACLTabBean.actionSelectItems}" />
           </p:selectManyCheckbox>
         </div>
                 
@@ -139,17 +131,17 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{documentACLTabBean.accept}" 
+        <p:commandButton action="#{caseACLTabBean.accept}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
-                         process="document_acl_dialog"
-                         update="document_acl_table panel"
-                         oncomplete="if (!isFacesError()) PF('documentACLDialog').hide()"
+                         process="case_acl_dialog"
+                         update="case_acl_table panel"
+                         oncomplete="if (!isFacesError()) PF('caseACLDialog').hide()"
                          />
-        <p:commandButton action="#{documentACLTabBean.cancel}" 
+        <p:commandButton action="#{caseACLTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="document_acl_dialog :mainform:growl" global="false" 
-                         oncomplete="PF('documentACLDialog').hide()"/>
+                         update="case_acl_dialog :mainform:growl" global="false" 
+                         oncomplete="PF('caseACLDialog').hide()"/>
       </div>      
     </f:facet>
 

@@ -100,6 +100,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     editTabs.add(new EditTab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", "/pages/cases/case_documents_dialog.xhtml"));
     editTabs.add(new EditTab("Actuacions", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", "act1", "/pages/cases/case_interventions_dialog.xhtml"));
     editTabs.add(new EditTab("Cases", "/pages/cases/case_cases.xhtml", "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml"));
+    editTabs.add(new EditTab("ACL", "/pages/cases/case_acl.xhtml", "caseACLTabBean"));
+
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

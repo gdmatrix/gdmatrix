@@ -33,7 +33,6 @@ package org.santfeliu.webapp.modules.doc;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -68,7 +67,6 @@ import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.HttpUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 
 /**

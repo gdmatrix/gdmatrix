@@ -28,7 +28,7 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.doc;
+package org.santfeliu.webapp.modules.cases;
 
 import java.util.List;
 import javax.faces.view.ViewScoped;
@@ -44,27 +44,27 @@ import org.santfeliu.webapp.modules.security.ACLTabBean;
  */
 @Named
 @ViewScoped
-public class DocumentACLTabBean extends ACLTabBean
+public class CaseACLTabBean extends ACLTabBean
 {
   @Inject
-  DocumentObjectBean documentObjectBean;
+  CaseObjectBean caseObjectBean;
 
   @Override
   public List<AccessControl> getAccessControlList()
   {
-    return documentObjectBean.getDocument().getAccessControl();
+    return caseObjectBean.getCase().getAccessControl();
   }
 
   @Override
   protected String getDialogWidgetVar()
   {
-    return "documentACLDialog";
+    return "caseACLDialog";
   }
 
   @Override
   public ObjectBean getObjectBean()
   {
-    return documentObjectBean;
+    return caseObjectBean;
   }
 
 }

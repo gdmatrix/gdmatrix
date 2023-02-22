@@ -33,12 +33,12 @@
         </div>
       </f:facet>      
 
-      <p:column headerText="caseId" styleClass="w-1"
+      <p:column headerText="caseId" styleClass="w-2"
                 exportHeaderValue="caseId">
         <h:outputText value="#{row.caseObject.caseId}" />
       </p:column> 
 
-      <p:column headerText="Title" styleClass="w-3"
+      <p:column headerText="Title" styleClass="w-5"
                 exportHeaderValue="Title">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>
@@ -48,7 +48,7 @@
         <h:outputText value="#{row.caseObject.caseTypeId}"/>
       </p:column>
 
-      <p:column styleClass="w-1">
+      <p:column styleClass="w-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
