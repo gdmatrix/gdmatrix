@@ -103,7 +103,6 @@ public abstract class ObjectBean extends BaseBean
   public void setSearchTabSelector(int selector)
   {
     this.searchTabSelector = selector;
-    ComponentUtils.resetTabView(":mainform:search_tabs");
   }
 
   public int getEditTabSelector()
@@ -326,7 +325,7 @@ public abstract class ObjectBean extends BaseBean
 
   public void selectTabWithErrors()
   {
-    ComponentUtils.selectTabWithErrors();
+    ComponentUtils.selectTabWithErrors("mainform:search_tabs:tabs");
   }
 
   private void clear()

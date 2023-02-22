@@ -160,28 +160,7 @@ public class ComponentUtils
     }
   }
 
-  public static void resetTabView(String id)
-  {
-    UIComponent component = ComponentUtils.findComponent(id);
-    if (component instanceof TabView)
-    {
-      // resetActiveIndex is not public, call by reflection
-      TabView tabView = (TabView)component;
-      try
-      {
-        Class<? extends TabView> cls = tabView.getClass();
-        Method method = cls.getDeclaredMethod("resetActiveIndex");
-        method.setAccessible(true);
-        method.invoke(tabView);
-      }
-      catch (Exception ex)
-      {
-        throw new RuntimeException(ex);
-      }
-    }
-  }
-
-  public static void selectTabWithErrors()
+  public static void selectTabWithErrors(String tabViewClientId)
   {
     FacesContext context = FacesContext.getCurrentInstance();
     if (context.isValidationFailed())
@@ -202,6 +181,8 @@ public class ComponentUtils
             if (index >= 0)
             {
               currentTabView.setActiveIndex(index);
+              if (currentTabView.getClientId().equals(tabViewClientId))
+                return;
             }
           }
           component = component.getParent();
@@ -209,5 +190,5 @@ public class ComponentUtils
       }
     }
   }
-  
+
 }
