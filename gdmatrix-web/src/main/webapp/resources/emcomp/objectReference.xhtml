@@ -22,6 +22,8 @@
       <composite:attribute name="update" required="false" default="@none" />
       <composite:attribute name="required" required="false" default="false" />
       <composite:attribute name="widgetVar" required="false" />
+      <composite:attribute name="renderShowButton" required="false" default="true" />
+      <composite:attribute name="autoUpdate" required="false" default="true" />
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
       <composite:clientBehavior name="query" targets="autocomplete" event="query" />
@@ -45,13 +47,15 @@
                         onclick="this.setSelectionRange(0, this.value.length)"
                         required="#{cc.attrs.required}"
                         widgetVar="#{cc.attrs.widgetVar}">
-          
-          <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}" 
-                  process="@this" update="@none"/>
 
-          <p:ajax event="clear" listener="#{objectReferenceBean.onClear}" 
-                  process="@this" update="@none"/>
-          
+          <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
+                  process="@this" update="@none"
+                  rendered="#{cc.attrs.autoUpdate or cc.attrs.renderShowButton}"/>
+
+          <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
+                  process="@this" update="@none"
+                  rendered="#{cc.attrs.autoUpdate or cc.attrs.renderShowButton}"/>
+
           <p:column>
             <h:outputText value="#{item.label}" />
           </p:column>
@@ -62,6 +66,7 @@
                          ajax="false"
                          immediate="true"
                          action="#{objectReferenceBean.show}"
+                         rendered="#{cc.attrs.renderShowButton}"
                          />
         <h:commandButton style="display: none"
                          action="#{objectReferenceBean.find}"
