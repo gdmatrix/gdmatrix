@@ -30,11 +30,15 @@
  */
 package org.santfeliu.webapp.modules.doc;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.matrix.doc.Document;
 import org.matrix.security.AccessControl;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.modules.security.ACLTabBean;
 
@@ -65,6 +69,20 @@ public class DocumentACLTabBean extends ACLTabBean
   public ObjectBean getObjectBean()
   {
     return documentObjectBean;
+  }
+
+  public List<AccessControlEdit> getTypeRows()
+  {
+    List<AccessControlEdit> edits = new ArrayList<>();
+    if (!documentObjectBean.isNew())
+    {
+      Document document = documentObjectBean.getDocument();
+      String typeId = document.getDocTypeId();
+      TypeCache typeCache = TypeCache.getInstance();
+      Type type = typeCache.getType(typeId);
+      createAccessControlEdits(type.getAccessControl(), edits);
+    }
+    return edits;
   }
 
 }

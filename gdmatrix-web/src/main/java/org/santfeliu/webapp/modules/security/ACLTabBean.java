@@ -122,21 +122,7 @@ public abstract class ACLTabBean extends TabBean
   @Override
   public void load()
   {
-    List<AccessControl> accessControlList = getAccessControlList();
-    accessControlList.sort((a, b) -> a.getRoleId().compareTo(b.getRoleId()));
-
-    rows.clear();
-    AccessControlEdit edit = null;
-    for (AccessControl accessControl : accessControlList)
-    {
-      if (edit == null || !edit.getRoleId().equals(accessControl.getRoleId()))
-      {
-        edit = new AccessControlEdit();
-        edit.setRoleId(accessControl.getRoleId());
-        rows.add(edit);
-      }
-      edit.actions.add(accessControl.getAction());
-    }
+    createAccessControlEdits(getAccessControlList(), rows);
   }
 
   @Override
@@ -264,6 +250,25 @@ public abstract class ACLTabBean extends TabBean
     catch (Exception ex)
     {
       error(ex);
+    }
+  }
+
+  protected void createAccessControlEdits(List<AccessControl> accessControlList,
+    List<AccessControlEdit> edits)
+  {
+    edits.clear();
+    accessControlList.sort((a, b) -> a.getRoleId().compareTo(b.getRoleId()));
+
+    AccessControlEdit edit = null;
+    for (AccessControl accessControl : accessControlList)
+    {
+      if (edit == null || !edit.getRoleId().equals(accessControl.getRoleId()))
+      {
+        edit = new AccessControlEdit();
+        edit.setRoleId(accessControl.getRoleId());
+        edits.add(edit);
+      }
+      edit.actions.add(accessControl.getAction());
     }
   }
 

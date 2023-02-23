@@ -10,8 +10,8 @@
     .modified { font-style: italic; }
     .removed { text-decoration: line-through; }
   </style>
-  
-  
+
+
   <h:panelGroup>      
 
     <div class="w-full m-0 flex justify-content-end">
@@ -21,12 +21,40 @@
                      update=":mainform:versions_panel"
                      oncomplete="PF('versionsPanel').show()"/>
     </div>    
-    
-    <!-- Results table -->
-    <p:dataTable id="document_acl_table" value="#{documentACLTabBean.rows}" 
+
+    <p:dataTable id="document_type_acl_table" value="#{documentACLTabBean.typeRows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="10" 
                  size="small" paginatorPosition="bottom" styleClass="mt-3"
+                 rowIndexVar="rowIndex"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <p:column headerText="RoleId" styleClass="w-5"
+                exportHeaderValue="RoleId">
+        <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
+      </p:column>      
+
+      <p:column headerText="Actions" styleClass="w-5"
+                exportHeaderValue="Actions">
+        <h:outputText value="#{row.actionsString}"/>
+      </p:column>
+
+      <p:column styleClass="w-2 text-right">
+        <p:commandButton icon="pi pi-external-link" 
+                         styleClass="rounded-button ui-button-flat" 
+                         ajax="false"
+                         rendered="#{documentACLTabBean.isPersistentRole(row.roleId)}"
+                         action="#{navigatorBean.show('Role', row.roleId)}" />
+      </p:column>
+
+    </p:dataTable>
+
+    <p:dataTable id="document_acl_table" value="#{documentACLTabBean.rows}" 
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="10" 
+                 size="small" paginatorPosition="bottom"
                  rowIndexVar="rowIndex" first="#{documentACLTabBean.firstRow}"
                  rowStyleClass="#{row.modified ? (empty row.actions ? 'removed' : 'modified') : ''}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -44,17 +72,17 @@
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
       </f:facet>      
-            
+
       <p:column headerText="RoleId" styleClass="w-5"
                 exportHeaderValue="RoleId">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
-      
+
       <p:column headerText="Actions" styleClass="w-5"
                 exportHeaderValue="Actions">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
-      
+
       <p:column styleClass="w-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
@@ -121,17 +149,17 @@
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>              
-        
+
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="Action" />
           <p:selectManyCheckbox value="#{documentACLTabBean.editing.actions}" 
-                                 layout="responsive" columns="3"
-                                 styleClass="savable">
+                                layout="responsive" columns="3"
+                                styleClass="savable">
             <f:selectItems value="#{documentACLTabBean.actionSelectItems}" />
           </p:selectManyCheckbox>
         </div>
-                
+
       </div>
 
     </h:panelGroup>     
