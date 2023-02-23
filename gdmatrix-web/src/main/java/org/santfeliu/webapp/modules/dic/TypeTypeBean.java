@@ -121,6 +121,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab("Main", "/pages/dic/type_main.xhtml"));
+    editTabs.add(new EditTab("ACL", "/pages/dic/type_acl.xhtml", "typeACLTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

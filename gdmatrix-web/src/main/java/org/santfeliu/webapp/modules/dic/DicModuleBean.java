@@ -30,11 +30,14 @@
  */
 package org.santfeliu.webapp.modules.dic;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -83,31 +86,48 @@ public class DicModuleBean
   public List<SelectItem> getActionSelectItems(String typeId)
   {
     ArrayList<SelectItem> items = new ArrayList();
+
     org.santfeliu.dic.TypeCache typeCache =
       org.santfeliu.dic.TypeCache.getInstance();
 
     FacesContext context = FacesContext.getCurrentInstance();
     Locale locale = context.getViewRoot().getLocale();
     String bundleName = context.getApplication().getMessageBundle();
+    final ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale);
+
+    Set<String> allActions = new HashSet<>();
+    allActions.addAll(DictionaryConstants.standardActions);
+    allActions.addAll(typeCache.getType(typeId).getActions());
+
+    for (String action : allActions)
+    {
+      SelectItem item = new SelectItem();
+      item.setValue(action);
+      item.setLabel(getLocalizedAction(action, bundle));
+      items.add(item);
+    }
+
+    Collections.sort(items,
+      (a, b) -> ((SelectItem)a).getLabel().compareTo(((SelectItem)b).getLabel()));
+
+    return items;
+  }
+
+  public String getLocalizedActions(List<String> actions)
+  {
+    FacesContext context = FacesContext.getCurrentInstance();
+    Locale locale = context.getViewRoot().getLocale();
+    String bundleName = context.getApplication().getMessageBundle();
     ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale);
 
-    // standard actions
-    for (String action : DictionaryConstants.standardActions)
+    List<String> actionLabels = new ArrayList<>(actions.size());
+    for (String action : actions)
     {
-      SelectItem item = new SelectItem();
-      item.setValue(action);
-      item.setLabel(getLocalizedAction(action, bundle));
-      items.add(item);
+      actionLabels.add(getLocalizedAction(action, bundle));
     }
-    // specific actions
-    for (String action : typeCache.getType(typeId).getActions())
-    {
-      SelectItem item = new SelectItem();
-      item.setValue(action);
-      item.setLabel(getLocalizedAction(action, bundle));
-      items.add(item);
-    }
-    return items;
+    Collections.sort(actionLabels);
+
+    return String.join(", ", actionLabels);
   }
 
   private String getLocalizedAction(String action, ResourceBundle bundle)

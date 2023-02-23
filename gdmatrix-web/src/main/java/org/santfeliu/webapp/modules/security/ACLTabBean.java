@@ -33,11 +33,7 @@ package org.santfeliu.webapp.modules.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import org.matrix.security.AccessControl;
@@ -320,26 +316,7 @@ public abstract class ACLTabBean extends TabBean
 
     public String getActionsString()
     {
-      FacesContext context = FacesContext.getCurrentInstance();
-      Locale locale = context.getViewRoot().getLocale();
-      String bundleName = context.getApplication().getMessageBundle();
-      ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale);
-
-      List<String> actionLabels = new ArrayList<>(actions.size());
-      for (String action : actions)
-      {
-        String value;
-        try
-        {
-          value = bundle.getString(action);
-        }
-        catch (MissingResourceException ex)
-        {
-          value = action;
-        }
-        actionLabels.add(value);
-      }
-      return String.join(", ", actionLabels);
+      return dicModuleBean.getLocalizedActions(actions);
     }
   }
 }

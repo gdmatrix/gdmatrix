@@ -1,0 +1,150 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <style>
+    .modified { font-style: italic; }
+    .removed { text-decoration: line-through; }
+  </style>
+  
+  
+  <h:panelGroup>      
+    
+    <!-- Results table -->
+    <p:dataTable id="type_acl_table" value="#{typeACLTabBean.rows}" 
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="10" 
+                 size="small" paginatorPosition="bottom" styleClass="mt-3"
+                 rowIndexVar="rowIndex" first="#{typeACLTabBean.firstRow}"
+                 rowStyleClass="#{row.modified ? (empty row.actions ? 'removed' : 'modified') : ''}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">        
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
+                           action="#{typeACLTabBean.create}"
+                           process="@this"
+                           update="@parent:@parent:@parent:type_acl_dialog"
+                           resetValues="true"
+                           oncomplete="PF('typeACLDialog').show()"                                 
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+        </div>
+      </f:facet>      
+            
+      <p:column headerText="RoleId" styleClass="w-5"
+                exportHeaderValue="RoleId">
+        <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
+      </p:column>      
+      
+      <p:column headerText="Actions" styleClass="w-5"
+                exportHeaderValue="Actions">
+        <h:outputText value="#{row.actionsString}"/>
+      </p:column>
+      
+      <p:column styleClass="w-2 text-right">
+        <p:commandButton icon="pi pi-external-link" 
+                         styleClass="rounded-button ui-button-flat" 
+                         ajax="false"
+                         rendered="#{typeACLTabBean.isPersistentRole(row.roleId)}"
+                         action="#{navigatorBean.show('Role', row.roleId)}" />
+        <p:commandButton icon="pi pi-pencil" 
+                         styleClass="rounded-button ui-button-flat" 
+                         action="#{typeACLTabBean.edit(row)}" 
+                         process="@this" 
+                         update="@parent:@parent:@parent:@parent:type_acl_dialog"
+                         resetValues="true"
+                         oncomplete="PF('typeACLDialog').show()"
+                         />
+        <p:commandButton action="#{typeACLTabBean.remove(row)}"
+                         process="@this" 
+                         update="@parent:@parent:@parent:@parent:type_acl_dialog type_acl_table :mainform:growl"
+                         resetValues="true"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat">            
+          <p:confirm header="Esborrar rol #{row.roleId}" 
+                     message="Segur que vols esorrar el rol?" icon="pi pi-info-circle" />
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+
+  </h:panelGroup>
+
+  <!-- Only works appendTo="@(form)" with one single form -->    
+  <p:dialog id="type_acl_dialog" widgetVar="typeACLDialog" 
+            styleClass="edit_data_dialog" style="max-width:600px" 
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <h:outputText value="#{typeObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{typeObjectBean.activeEditTab.label}" />   
+        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{typeACLTabBean.editing.roleId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="panel" layout="block"
+                  rendered="#{typeACLTabBean.editing != null}">
+
+      <div class="ui-fluid formgrid grid" >
+
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="Role"
+                         styleClass="w-full" />
+          <emcomp:objectReference value="#{typeACLTabBean.roleId}"
+                                  process="@(.savable)"
+                                  type="Role"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  required="true"
+                                  renderShowButton="false"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>              
+        
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="Action" />
+          <p:selectManyCheckbox value="#{typeACLTabBean.editing.actions}" 
+                                 layout="responsive" columns="3"
+                                 styleClass="savable">
+            <f:selectItems value="#{typeACLTabBean.actionSelectItems}" />
+          </p:selectManyCheckbox>
+        </div>
+                
+      </div>
+
+    </h:panelGroup>     
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{typeACLTabBean.accept}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
+                         process="type_acl_dialog"
+                         update="type_acl_table panel"
+                         oncomplete="if (!isFacesError()) PF('typeACLDialog').hide()"
+                         />
+        <p:commandButton action="#{typeACLTabBean.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="type_acl_dialog :mainform:growl" global="false" 
+                         oncomplete="PF('typeACLDialog').hide()"/>
+      </div>      
+    </f:facet>
+
+  </p:dialog>  
+
+</ui:composition>

@@ -110,6 +110,12 @@ public class TypeObjectBean extends ObjectBean
       type = new Type();
   }
 
+  @Override
+  public void storeObject() throws Exception
+  {
+    type = DicModuleBean.getPort(false).storeType(type);
+  }
+
   //Person selection
   public SelectItem getSuperTypeSelectItem()
   {
