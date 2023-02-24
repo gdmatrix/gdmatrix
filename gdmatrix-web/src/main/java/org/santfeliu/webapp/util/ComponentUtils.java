@@ -30,7 +30,6 @@
  */
 package org.santfeliu.webapp.util;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -91,10 +90,14 @@ public class ComponentUtils
       String fieldType = field.getType();
       View view = form.getView(reference);
 
-      Object styleClassValue = view.getProperty("class");
-      String styleClass = styleClassValue instanceof String ?
-        (String) styleClassValue : null;
-
+      String styleClass = null;
+      if (view != null)
+      {
+        Object styleClassValue = view.getProperty("class");
+        styleClass = styleClassValue instanceof String ?
+          (String) styleClassValue : null;
+      }
+      
       HtmlPanelGroup group = new HtmlPanelGroup();
       group.setStyleClass(styleClass == null ?
         "field col-12 md:col-6" : styleClass);

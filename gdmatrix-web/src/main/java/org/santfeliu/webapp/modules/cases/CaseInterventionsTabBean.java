@@ -46,14 +46,18 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
-import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.santfeliu.form.FormDescriptor;
+import org.santfeliu.form.FormFactory;
+import org.santfeliu.form.builder.TypeFormBuilder;
+import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.helpers.ColumnsHelper;
 import org.santfeliu.webapp.setup.PropertyMap;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.util.ComponentUtils;
@@ -66,7 +70,13 @@ import org.santfeliu.webapp.util.ComponentUtils;
 @ViewScoped
 public class CaseInterventionsTabBean extends TabBean
 {
+  @Inject
+  InterventionTypeBean interventionTypeBean;
+  
+  private ColumnsHelper columnsHelper;
+  
   Map<String, TabInstance> tabInstances = new HashMap<>();
+  
 
   public class TabInstance
   {
@@ -93,6 +103,32 @@ public class CaseInterventionsTabBean extends TabBean
         return editing != null ? editing.getProperty() :
           Collections.emptyList();
       }
+    };
+    
+    columnsHelper = new ColumnsHelper<InterventionView>(interventionTypeBean)
+    {
+      @Override
+      public List<InterventionView> getRows()
+      {
+        TabInstance tabInstance = getCurrentTabInstance();
+        return tabInstance.rows;
+      }
+
+      @Override
+      public InterventionView getRowData(InterventionView row)
+      {
+        try
+        {
+          Intervention intervention = 
+            CasesModuleBean.getPort(false).loadIntervention(row.getIntId());
+          row.getProperty().addAll(intervention.getProperty());
+          return row;
+        }
+        catch (Exception ex)
+        {
+          return null;
+        }        
+      }  
     };
   }
 
@@ -189,6 +225,16 @@ public class CaseInterventionsTabBean extends TabBean
   public void setFirstRow(int firstRow)
   {
     getCurrentTabInstance().firstRow = firstRow;
+  }
+
+  public ColumnsHelper getColumnsHelper()
+  {
+    return columnsHelper;
+  }
+
+  public void setColumnsHelper(ColumnsHelper columnsHelper)
+  {
+    this.columnsHelper = columnsHelper;
   }
 
   public String getStartDateTime()
@@ -292,7 +338,7 @@ public class CaseInterventionsTabBean extends TabBean
   }
 
   private String getTabBaseTypeId()
-  {
+  {    
     EditTab editTab = caseObjectBean.getActiveEditTab();
     return editTab.getProperties().getString("typeId");
   }
@@ -314,6 +360,13 @@ public class CaseInterventionsTabBean extends TabBean
 
         getCurrentTabInstance().rows =
           CasesModuleBean.getPort(false).findInterventionViews(filter);
+        
+        
+        EditTab editTab = caseObjectBean.getActiveEditTab();
+        if (editTab != null)
+        {
+          columnsHelper.setColumns(editTab.getColumns());
+        }
       }
       catch (Exception ex)
       {
@@ -399,7 +452,7 @@ public class CaseInterventionsTabBean extends TabBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing };
+    return new Object[]{ editing, columnsHelper };
   }
 
   @Override
@@ -409,6 +462,7 @@ public class CaseInterventionsTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (Intervention)stateArray[0];
+      columnsHelper = (ColumnsHelper)stateArray[1];
 
       load();
     }
@@ -472,6 +526,8 @@ public class CaseInterventionsTabBean extends TabBean
     // load dynamic fields
     PropertyMap properties = caseObjectBean.getActiveEditTab().getProperties();
     String formName = properties.getString("formName");
+    if (formName == null && editing != null)
+      formName = findForm(editing.getIntTypeId());
 
     if (!StringUtils.isBlank(formName))
     {
@@ -488,4 +544,29 @@ public class CaseInterventionsTabBean extends TabBean
       }
     }
   }
+
+  private String findForm(String typeId)
+  {
+    String selector = null;
+    
+    if (typeId != null)
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      String selectorBase
+        = TypeFormBuilder.PREFIX + ":" + typeId
+        + TypeFormBuilder.USERID + userSessionBean.getUserId()
+        + TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
+      FormFactory formFactory = FormFactory.getInstance();
+      List<FormDescriptor> descriptors = formFactory.findForms(selectorBase);
+      for (FormDescriptor descriptor : descriptors)
+      {
+        //TODO: List of selectors
+        selector = descriptor.getSelector();
+      }
+    }
+
+    return selector;
+  }
+  
+
 }

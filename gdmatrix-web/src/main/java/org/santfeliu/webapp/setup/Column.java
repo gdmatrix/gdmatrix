@@ -30,11 +30,14 @@
  */
 package org.santfeliu.webapp.setup;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 /**
  *
  * @author realor
  */
-public class Column
+public class Column implements Serializable, Comparable<Column> 
 {
   private String label;
   private String name;
@@ -69,4 +72,30 @@ public class Column
   {
     this.styleClass = styleClass;
   }
+  
+    @Override
+    public int compareTo(Column o)
+    {
+      return getName().compareTo(o.getName()); 
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+      if (o == null)
+        return false;
+      
+      if (this.getClass() != o.getClass())
+        return false;
+      
+      return getName().equals(((Column)o).getName());
+    }
+
+    @Override
+    public int hashCode()
+    {
+      int hash = 3;
+      hash = 97 * hash + Objects.hashCode(getName());
+      return hash;
+    }  
 }

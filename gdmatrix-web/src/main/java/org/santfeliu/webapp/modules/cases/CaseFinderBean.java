@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.cases;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,6 +44,8 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.helpers.ColumnsHelper;
+import org.santfeliu.webapp.setup.SearchTab;
 
 /**
  *
@@ -58,7 +61,8 @@ public class CaseFinderBean extends FinderBean
   private int firstRow;
   private boolean finding;
   private boolean outdated;
-
+  private ColumnsHelper columnsHelper;
+ 
   @Inject
   NavigatorBean navigatorBean;
 
@@ -67,6 +71,32 @@ public class CaseFinderBean extends FinderBean
 
   @Inject
   CaseObjectBean caseObjectBean;
+  
+  @PostConstruct
+  public void init()
+  {
+    columnsHelper = new ColumnsHelper<Case>(caseTypeBean) 
+    {
+      @Override
+      public List<Case> getRows()
+      {
+        return rows != null ? rows : Collections.emptyList();
+      }
+      
+      @Override
+      public Case getRowData(Case row)
+      {
+        try
+        {
+          return CasesModuleBean.getPort(false).loadCase(row.getCaseId());
+        }
+        catch (Exception ex)
+        {
+          return null;
+        }
+      }
+    };
+  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -140,6 +170,16 @@ public class CaseFinderBean extends FinderBean
     this.firstRow = firstRow;
   }
 
+  public ColumnsHelper getColumnsHelper()
+  {
+    return columnsHelper;
+  }
+
+  public void setColumnsHelper(ColumnsHelper columnsHelper)
+  {
+    this.columnsHelper = columnsHelper;
+  }
+
   @Override
   public void smartFind()
   {
@@ -187,7 +227,7 @@ public class CaseFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
+    return new Object[]{ finding, getFilterTabSelector(), columnsHelper, filter, firstRow,
       getObjectPosition() };
   }
 
@@ -199,13 +239,15 @@ public class CaseFinderBean extends FinderBean
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
       setFilterTabSelector((Integer)stateArray[1]);
-      filter = (CaseFilter)stateArray[2];
+      columnsHelper = (ColumnsHelper)stateArray[2];
+      filter = (CaseFilter)stateArray[3];
       smartFilter = caseTypeBean.filterToQuery(filter);
 
       doFind(false);
 
-      firstRow = (Integer)stateArray[3];
-      setObjectPosition((Integer)stateArray[4]);
+      firstRow = (Integer)stateArray[4];
+      setObjectPosition((Integer)stateArray[5]);
+      
     }
     catch (Exception ex)
     {
@@ -222,7 +264,7 @@ public class CaseFinderBean extends FinderBean
         rows = Collections.EMPTY_LIST;
       }
       else
-      {
+      {        
         rows = new BigList(20, 10)
         {
           @Override
@@ -270,6 +312,12 @@ public class CaseFinderBean extends FinderBean
           {
             caseObjectBean.setSearchTabSelector(0);
           }
+        }
+        
+        SearchTab searchTab = caseObjectBean.getActiveSearchTab();
+        if (searchTab != null)
+        {
+          columnsHelper.setColumns(searchTab.getColumns());
         }
       }
     }

@@ -125,6 +125,14 @@ public abstract class ObjectBean extends BaseBean
     return objectSetup == null ?
       Collections.EMPTY_LIST : objectSetup.getSearchTabs();
   }
+  
+  public SearchTab getActiveSearchTab()
+  {
+    int selector = getSearchTabSelector();
+    if (selector >= getSearchTabs().size()) return null;
+
+    return getSearchTabs().get(selector);    
+  }
 
   public List<EditTab> getEditTabs()
   {
