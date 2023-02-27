@@ -273,9 +273,7 @@ public class CaseFinderBean extends FinderBean
           {
             try
             {
-              int count = CasesModuleBean.getPort(false).countCases(filter);
-              System.out.println("count ****************** " + count);
-              return count;
+              return CasesModuleBean.getPort(false).countCases(filter);
             }
             catch (Exception ex)
             {
@@ -291,9 +289,7 @@ public class CaseFinderBean extends FinderBean
             {         
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);       
-              List elements = CasesModuleBean.getPort(false).findCases(filter);
-              System.out.println("find ****************** " + elements);                   
-              return elements;
+              return CasesModuleBean.getPort(false).findCases(filter);
             }
             catch (Exception ex)
             {
