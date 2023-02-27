@@ -162,7 +162,7 @@ public abstract class ColumnsHelper<T extends Serializable>
     public class Row extends HashMap<String, Object>
     {
       private static final String PROPERTY_FIELD_NAME = "property";
-      private Object object;
+      private transient Object object;
       private boolean dataLoaded = false;
       
       public Row(Object object)
@@ -178,7 +178,7 @@ public abstract class ColumnsHelper<T extends Serializable>
         Object obj = super.get(key);
         if (obj == null)
         {
-          //Load dynamic data
+          //Look for dynamic data
           if (!dataLoaded)
           {
             object = getRowData((T) object);

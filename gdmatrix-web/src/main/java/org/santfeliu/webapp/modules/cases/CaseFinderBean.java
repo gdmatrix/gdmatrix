@@ -45,6 +45,7 @@ import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.ColumnsHelper;
+import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.SearchTab;
 
 /**
@@ -227,8 +228,8 @@ public class CaseFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), columnsHelper, filter, firstRow,
-      getObjectPosition() };
+    return new Object[]{ finding, getFilterTabSelector(), 
+      columnsHelper.getColumns(), filter, firstRow, getObjectPosition() };
   }
 
   @Override
@@ -239,7 +240,7 @@ public class CaseFinderBean extends FinderBean
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
       setFilterTabSelector((Integer)stateArray[1]);
-      columnsHelper = (ColumnsHelper)stateArray[2];
+      columnsHelper.setColumns((List<Column>)stateArray[2]);
       filter = (CaseFilter)stateArray[3];
       smartFilter = caseTypeBean.filterToQuery(filter);
 
@@ -272,7 +273,9 @@ public class CaseFinderBean extends FinderBean
           {
             try
             {
-              return CasesModuleBean.getPort(false).countCases(filter);
+              int count = CasesModuleBean.getPort(false).countCases(filter);
+              System.out.println("count ****************** " + count);
+              return count;
             }
             catch (Exception ex)
             {
@@ -285,10 +288,12 @@ public class CaseFinderBean extends FinderBean
           public List getElements(int firstResult, int maxResults)
           {
             try
-            {
+            {         
               filter.setFirstResult(firstResult);
-              filter.setMaxResults(maxResults);
-              return CasesModuleBean.getPort(false).findCases(filter);
+              filter.setMaxResults(maxResults);       
+              List elements = CasesModuleBean.getPort(false).findCases(filter);
+              System.out.println("find ****************** " + elements);                   
+              return elements;
             }
             catch (Exception ex)
             {
