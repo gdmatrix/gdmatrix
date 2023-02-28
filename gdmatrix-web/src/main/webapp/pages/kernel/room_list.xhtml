@@ -3,7 +3,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
-  
+
   <p:dataTable value="#{roomFinderBean.rows}" var="row"
                stripedRows="true" paginator="true" pageLinks="5" 
                paginatorPosition="bottom" size="small"
@@ -21,6 +21,13 @@
       <h:outputText value="#{roomFinderBean.getRoomTypeDescription(row)}" />
     </p:column>         
     <p:column styleClass="w-1">
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select(row.roomId)}"
+                       rendered="#{navigatorBean.selectionPending}"
+                       ajax="false"
+                       immediate="true"
+                       title="Select" alt="Select" />      
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat" 
                        action="#{roomFinderBean.view(rowIndex)}"
