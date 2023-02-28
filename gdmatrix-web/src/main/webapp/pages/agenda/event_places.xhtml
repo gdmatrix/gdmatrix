@@ -12,42 +12,24 @@
   <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="event_places_table" value="#{eventPlacesTabBean.resultListHelper.rows}"
+    <p:dataTable id="event_places_table" value="#{eventPlacesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{eventPlacesTabBean.firstRow}"
-                 rows="#{eventPlacesTabBean.resultListHelper.pageSize}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex align-items-center">
-          <div class="w-9">
-            <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
-                             action="#{eventPlacesTabBean.create}"
-                             process="@this"
-                             update="@root:@id(event_places_dialog)"
-                             resetValues="true"
-                             oncomplete="PF('eventPlacesDialog').show()"
-                             alt="#{objectBundle.add}" title="#{objectBundle.add}" />
-          </div>
-          <div class="flex flex-row-reverse w-3">
-            <div class="m-1">
-              <p:menuButton icon="pi pi-file-excel text-xl" styleClass="ui-menu-button ui-button-flat"
-                            rendered="#{eventPlacesTabBean.resultListHelper.rowCount > 0}" >
-                <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf text-xl" styleClass="m-1 ui-button-flat" ajax="false"
-                            rendered="#{eventPlacesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="pdf" target="event_places_table" fileName="results" pageOnly="true"/>
-                </p:menuitem>
-                <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel text-xl" styleClass="m-1 ui-button-flat" ajax="false"
-                            rendered="#{eventPlacesTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="csv" target="event_places_table" fileName="results" pageOnly="true" />
-                </p:menuitem>
-              </p:menuButton>
-            </div>
-          </div>
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{eventPlacesTabBean.create}"
+                           process="@this"
+                           update="@root:@id(event_places_dialog)"
+                           resetValues="true"
+                           oncomplete="PF('eventPlacesDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
 
@@ -65,14 +47,6 @@
       </p:column>
 
       <p:column styleClass="w-2" exportable="false">
-        <p:commandButton action="#{eventPlacesTabBean.edit(row)}"
-                         icon="pi pi-pencil"
-                         styleClass="rounded-button ui-button-flat"
-                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                         process="@this"
-                         update="@root:@id(event_places_dialog)"
-                         resetValues="true"
-                         oncomplete="PF('eventPlacesDialog').show()" />
         <p:commandButton icon="pi pi-external-link"
                          action="#{navigatorBean.show('Room', row.roomView.roomId)}"
                          ajax="false"
@@ -85,7 +59,16 @@
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          rendered="#{row.roomView == null}"
                          styleClass="rounded-button ui-button-flat" />
+        <p:commandButton action="#{eventPlacesTabBean.edit(row)}"
+                         icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                         process="@this"
+                         update="@root:@id(event_places_dialog)"
+                         resetValues="true"
+                         oncomplete="PF('eventPlacesDialog').show()" />
         <p:commandButton action="#{eventPlacesTabBean.remove(row)}"
+                         process="@this"
                          update="event_places_table :mainform:growl"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
@@ -175,6 +158,7 @@
       <div class="field col-12 text-right">
         <p:commandButton action="#{eventPlacesTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_places_dialog"
                          update="event_places_table event_places_panel"
@@ -188,6 +172,6 @@
 
     </f:facet>
 
-  </p:dialog>
-
+  </p:dialog>  
+  
 </ui:composition>

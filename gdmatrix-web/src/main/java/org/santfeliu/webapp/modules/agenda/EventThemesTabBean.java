@@ -44,7 +44,6 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ResultListHelper;
 
 /**
  *
@@ -54,23 +53,21 @@ import org.santfeliu.webapp.helpers.ResultListHelper;
 @ViewScoped
 public class EventThemesTabBean extends TabBean
 {
+  private List<EventThemeView> rows;
+
+  private int firstRow;
+  private EventTheme editing;
+
   @Inject
   EventObjectBean eventObjectBean;
 
   @Inject
   ThemeObjectBean themeObjectBean;
 
-  //Helpers
-  private ResultListHelper<EventThemeView> resultListHelper;
-
-  private int firstRow;
-  private EventTheme editing;
-
   @PostConstruct
   public void init()
   {
     System.out.println("Creating " + this);
-    resultListHelper = new EventThemeResultListHelper();
   }
 
   @Override
@@ -89,9 +86,14 @@ public class EventThemesTabBean extends TabBean
     this.editing = editing;
   }
 
-  public ResultListHelper<EventThemeView> getResultListHelper()
+  public List<EventThemeView> getRows()
   {
-    return resultListHelper;
+    return rows;
+  }
+
+  public void setRows(List<EventThemeView> rows)
+  {
+    this.rows = rows;
   }
 
   public int getFirstRow()
@@ -128,7 +130,17 @@ public class EventThemesTabBean extends TabBean
   @Override
   public void load()
   {
-    resultListHelper.find();
+    try
+    {
+      EventThemeFilter filter = new EventThemeFilter();
+      filter.setEventId(eventObjectBean.getObjectId());
+      rows = AgendaModuleBean.getClient(false).
+        findEventThemeViewsFromCache(filter);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public void create()
@@ -140,26 +152,21 @@ public class EventThemesTabBean extends TabBean
   public void store()
   {
     storeTheme();
-    resultListHelper.find();
+    load();
+    editing = null;
+    info("STORE_OBJECT");
   }
 
   public void remove(EventThemeView row)
   {
     removeTheme(row);
-    resultListHelper.find();
+    load();
   }
 
   public String cancel()
   {
     editing = null;
-    info("CANCEL_OBJECT");
     return null;
-  }
-
-  public void reset()
-  {
-    cancel();
-    resultListHelper.clear();
   }
 
   @Override
@@ -176,7 +183,7 @@ public class EventThemesTabBean extends TabBean
       Object[] stateArray = (Object[])state;
       editing = (EventTheme)stateArray[0];
 
-      resultListHelper.find();
+      if (!isNew()) load();
     }
     catch (Exception ex)
     {
@@ -252,29 +259,6 @@ public class EventThemesTabBean extends TabBean
   {
     PrimeFaces current = PrimeFaces.current();
     current.executeScript("PF('eventThemesDialog').hide();");
-  }
-
-  private class EventThemeResultListHelper extends
-    ResultListHelper<EventThemeView>
-  {
-    @Override
-    public List<EventThemeView> getResults(int firstResult, int maxResults)
-    {
-      try
-      {
-        EventThemeFilter filter = new EventThemeFilter();
-        filter.setEventId(eventObjectBean.getObjectId());
-        filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);
-        return AgendaModuleBean.getClient(false).
-          findEventThemeViewsFromCache(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return null;
-    }
   }
 
 }

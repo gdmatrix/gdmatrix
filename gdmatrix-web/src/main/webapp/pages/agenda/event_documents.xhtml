@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
+                var="agendaBundle" />
+
+  <f:subview id="#{tab.subviewId}">
+
+    <!-- Results table -->
+    <p:dataTable id="event_documents_table" value="#{eventDocumentsTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="5"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{eventDocumentsTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{eventDocumentsTabBean.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{eventDocumentsTabBean.switchView}"
+                           process="@this"
+                           update="event_documents_table"
+                           resetValues="true"
+                           alt="" title=""
+                           rendered="#{eventDocumentsTabBean.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{eventDocumentsTabBean.create}"
+                           process="@this"
+                           update=":mainform:search_tabs:event_documents_dialog"
+                           resetValues="true"
+                           oncomplete="PF('eventDocumentsDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>
+
+      <p:headerRow field="eventDocTypeId" expandable="true"
+                   expanded="true" rendered="#{eventDocumentsTabBean.groupedView}">
+        <p:column colspan="6" >
+          <h:outputText styleClass="ml-2" value="#{eventDocumentsTabBean.eventDocumentTypeDescription}"/>
+        </p:column>
+      </p:headerRow>
+
+      <p:column headerText="docId" styleClass="w-1"
+                exportHeaderValue="docId">
+        <h:outputText value="#{row.document.docId}" />
+      </p:column>
+
+      <p:column headerText="Title" styleClass="w-7"
+                exportHeaderValue="Title">
+        <h:outputText value="#{row.document.title}"/>
+      </p:column>
+
+      <p:column headerText="Type" styleClass="w-2"
+                exportHeaderValue="Type"
+                rendered="#{!eventDocumentsTabBean.groupedView}">
+        <h:outputText value="#{eventDocumentsTabBean.eventDocumentTypeDescription}"/>
+      </p:column>
+
+      <p:column styleClass="w-2 text-right">
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
+                         ajax="false"
+                         action="#{navigatorBean.show('Document', row.document.docId)}"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{eventDocumentsTabBean.edit(row)}"
+                         process="@this"
+                         update=":mainform:search_tabs:event_documents_dialog"
+                         resetValues="true"
+                         oncomplete="PF('eventDocumentsDialog').show()" />
+        <p:commandButton action="#{eventDocumentsTabBean.remove(row)}"
+                         process="@this"
+                         update=":mainform:search_tabs:tabs :mainform:growl"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat"
+                         onclick="return confirm('#{objectBundle.confirm_remove}');">
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+
+  </f:subview>
+
+</ui:composition>

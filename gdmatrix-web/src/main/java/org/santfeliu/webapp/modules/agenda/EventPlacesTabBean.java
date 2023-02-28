@@ -44,7 +44,6 @@ import org.matrix.kernel.Room;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ResultListHelper;
 import org.santfeliu.webapp.modules.kernel.AddressObjectBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.modules.kernel.RoomObjectBean;
@@ -57,6 +56,11 @@ import org.santfeliu.webapp.modules.kernel.RoomObjectBean;
 @ViewScoped
 public class EventPlacesTabBean extends TabBean
 {
+  private List<EventPlaceView> rows;
+
+  private int firstRow;
+  private EventPlace editing;
+
   @Inject
   EventObjectBean eventObjectBean;
 
@@ -66,17 +70,10 @@ public class EventPlacesTabBean extends TabBean
   @Inject
   RoomObjectBean roomObjectBean;
 
-  //Helpers
-  private ResultListHelper<EventPlaceView> resultListHelper;
-
-  private int firstRow;
-  private EventPlace editing;
-
   @PostConstruct
   public void init()
   {
     System.out.println("Creating " + this);
-    resultListHelper = new EventPlaceResultListHelper();
   }
 
   @Override
@@ -95,9 +92,14 @@ public class EventPlacesTabBean extends TabBean
     this.editing = editing;
   }
 
-  public ResultListHelper<EventPlaceView> getResultListHelper()
+  public List<EventPlaceView> getRows()
   {
-    return resultListHelper;
+    return rows;
+  }
+
+  public void setRows(List<EventPlaceView> rows)
+  {
+    this.rows = rows;
   }
 
   public void setAddressId(String addressId)
@@ -174,7 +176,16 @@ public class EventPlacesTabBean extends TabBean
   @Override
   public void load()
   {
-    resultListHelper.find();
+    try
+    {
+      EventPlaceFilter filter = new EventPlaceFilter();
+      filter.setEventId(eventObjectBean.getObjectId());
+      rows = AgendaModuleBean.getClient(false).findEventPlaceViews(filter);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public void create()
@@ -186,26 +197,21 @@ public class EventPlacesTabBean extends TabBean
   public void store()
   {
     storePlace();
-    resultListHelper.find();
+    load();
+    editing = null;
+    info("STORE_OBJECT");
   }
 
   public void remove(EventPlaceView row)
   {
     removePlace(row);
-    resultListHelper.find();
+    load();
   }
 
   public String cancel()
   {
     editing = null;
-    info("CANCEL_OBJECT");
     return null;
-  }
-
-  public void reset()
-  {
-    cancel();
-    resultListHelper.clear();
   }
 
   @Override
@@ -222,7 +228,7 @@ public class EventPlacesTabBean extends TabBean
       Object[] stateArray = (Object[])state;
       editing = (EventPlace)stateArray[0];
 
-      if (!isNew()) resultListHelper.find();
+      if (!isNew()) load();
     }
     catch (Exception ex)
     {
@@ -241,8 +247,8 @@ public class EventPlacesTabBean extends TabBean
     {
       if (eventPlaceId != null && !isEditing(eventPlaceId))
       {
-        editing = 
-          AgendaModuleBean.getClient(false).loadEventPlace(eventPlaceId);
+        editing = AgendaModuleBean.getClient(false).
+          loadEventPlace(eventPlaceId);
       }
       else if (eventPlaceId == null)
       {
@@ -293,7 +299,7 @@ public class EventPlacesTabBean extends TabBean
 
       String rowEventPlaceId = row.getEventPlaceId();
 
-      if (editing != null && 
+      if (editing != null &&
         rowEventPlaceId.equals(editing.getEventPlaceId()))
       {
         editing = null;
@@ -330,28 +336,6 @@ public class EventPlacesTabBean extends TabBean
 
     String eventPlaceId = editing.getEventPlaceId();
     return eventPlaceId != null && eventPlaceId.equals(pageObjectId);
-  }
-
-  private class EventPlaceResultListHelper
-    extends ResultListHelper<EventPlaceView>
-  {
-    @Override
-    public List<EventPlaceView> getResults(int firstResult, int maxResults)
-    {
-      try
-      {
-        EventPlaceFilter filter = new EventPlaceFilter();
-        filter.setEventId(eventObjectBean.getObjectId());
-        filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);
-        return AgendaModuleBean.getClient(false).findEventPlaceViews(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return null;
-    }
   }
 
 }

@@ -9,50 +9,45 @@
   <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                 var="agendaBundle" />
 
-  <h:panelGroup>
+  <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="event_persons_table" value="#{eventPersonsTabBean.resultListHelper.rows}"
+    <p:dataTable id="event_persons_table" value="#{eventPersonsTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{eventPersonsTabBean.firstRow}"
-                 rows="#{eventPersonsTabBean.resultListHelper.pageSize}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
 
-        <div class="flex align-items-center">
-          <div class="w-9">
-            <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
-                             action="#{eventPersonsTabBean.create}"
-                             process="@this"
-                             update="@root:@id(event_persons_dialog)"
-                             resetValues="true"
-                             oncomplete="PF('eventPersonsDialog').show()"
-                             alt="#{objectBundle.add}" title="#{objectBundle.add}" />
-
-          </div>
-          <div class="flex flex-row-reverse w-3">
-            <div class="m-1">
-              <p:menuButton icon="pi pi-file-excel text-xl" styleClass="ui-menu-button ui-button-flat"
-                            rendered="#{eventPersonsTabBean.resultListHelper.rowCount > 0}" >
-                <p:menuitem title="PDF" value="PDF" icon="pi pi-file-pdf text-xl" styleClass="m-1 ui-button-flat" ajax="false"
-                            rendered="#{eventPersonsTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="pdf" target="event_persons_table" fileName="results" pageOnly="true"/>
-                </p:menuitem>
-                <p:menuitem title="CSV" value="CSV" icon="pi pi-file-excel text-xl" styleClass="m-1 ui-button-flat" ajax="false"
-                            rendered="#{eventPersonsTabBean.resultListHelper.rowCount > 0}">
-                  <p:dataExporter type="csv" target="event_persons_table" fileName="results" pageOnly="true" />
-                </p:menuitem>
-              </p:menuButton>
-            </div>
-          </div>
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{eventPersonsTabBean.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{eventPersonsTabBean.switchView}"
+                           process="@this"
+                           update="event_persons_table"
+                           resetValues="true"
+                           alt="" title=""
+                           rendered="#{eventPersonsTabBean.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{eventPersonsTabBean.create}"
+                           process="@this"
+                           update=":mainform:search_tabs:event_persons_dialog"
+                           resetValues="true"
+                           oncomplete="PF('eventPersonsDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
 
       </f:facet>
+
+      <p:headerRow field="attendantTypeId" expandable="true"
+                   expanded="true" rendered="#{eventPersonsTabBean.groupedView}">
+        <p:column colspan="6" >
+          <h:outputText styleClass="ml-2" value="#{eventPersonsTabBean.attendantTypeDescription}"/>
+        </p:column>
+      </p:headerRow>
 
       <p:column headerText="#{agendaBundle.attendants_id}" styleClass="w-1"
                 exportHeaderValue="#{agendaBundle.attendants_id}">
@@ -65,7 +60,8 @@
       </p:column>
 
       <p:column headerText="#{agendaBundle.attendants_type}" styleClass="w-4"
-                exportHeaderValue="#{agendaBundle.attendants_type}">
+                exportHeaderValue="#{agendaBundle.attendants_type}"
+                rendered="#{!eventPersonsTabBean.groupedView}">
         <h:outputText value="#{eventPersonsTabBean.attendantTypeDescription}"/>
       </p:column>
 
@@ -75,21 +71,22 @@
       </p:column>
 
       <p:column styleClass="w-2" exportable="false">
-        <p:commandButton action="#{eventPersonsTabBean.edit(row)}"
-                         icon="pi pi-pencil"
-                         styleClass="rounded-button ui-button-flat"
-                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                         process="@this"
-                         update="@root:@id(event_persons_dialog)"
-                         resetValues="true"
-                         oncomplete="PF('eventPersonsDialog').show()" />
         <p:commandButton icon="pi pi-external-link"
                          action="#{navigatorBean.show('Person', row.personId)}"
                          ajax="false"
                          styleClass="rounded-button ui-button-flat"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"/>
+        <p:commandButton action="#{eventPersonsTabBean.edit(row)}"
+                         icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                         process="@this"
+                         update=":mainform:search_tabs:event_persons_dialog"
+                         resetValues="true"
+                         oncomplete="PF('eventPersonsDialog').show()" />
         <p:commandButton action="#{eventPersonsTabBean.remove(row)}"
-                         update="event_persons_table :mainform:growl"
+                         process="@this"
+                         update=":mainform:search_tabs:tabs :mainform:growl"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
@@ -98,125 +95,6 @@
 
     </p:dataTable>
 
-  </h:panelGroup>
-
-  <!-- Only works appendTo="@(form)" with one single form -->
-  <p:dialog id="event_persons_dialog" widgetVar="eventPersonsDialog"
-            styleClass="edit_data_dialog" style="max-width:800px"
-            modal="true" responsive="true" closable="false"
-            appendTo="@(form)" position="center center" resizable="false">
-
-    <f:facet name="header">
-
-      <p:outputPanel>
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
-        <h:outputText value="#{eventObjectBean.description}" />
-        <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventObjectBean.activeEditTab.label}" />
-        <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventPersonsTabBean.pageObjectDescription}" />
-      </p:outputPanel>
-
-    </f:facet>
-
-    <h:panelGroup styleClass="mt-2" id="event_persons_panel" layout="block"
-                  rendered="#{eventPersonsTabBean.editing != null}">
-
-      <div class="ui-fluid formgrid grid" >
-
-        <!-- Type -->
-        <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next"
-                         value="#{agendaBundle.attendants_type}" />
-          <p:selectOneMenu value="#{eventPersonsTabBean.editing.attendantTypeId}"
-                           styleClass="inputfield w-full savable"
-                           filter="true"
-                           filterMatchMode="contains"
-                           required="true">
-            <f:selectItem itemLabel="" itemValue="" />
-            <f:selectItems value="#{typeTypeBean.getSelectItems('Attendant')}"
-                           var="item" />
-            <p:column>
-              <h:outputText value="#{item.label}" />
-            </p:column>
-          </p:selectOneMenu>
-        </div>
-
-        <!-- Person -->
-        <div class="field col-12">
-          <p:outputLabel for="@next"
-                         value="#{agendaBundle.attendants_person}"
-                         styleClass="w-full" indicateRequired="true" />
-          <emcomp:objectReference value="#{eventPersonsTabBean.personId}"
-                                  type="Person"
-                                  process="@(.savable)"
-                                  update="@root:@id(event_persons_panel)"
-                                  styleClass="w-full"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  minQueryLength="3"
-                                  required="true">
-          </emcomp:objectReference>
-        </div>
-
-        <!-- Hidden -->
-        <p:outputPanel styleClass="field-checkbox col-12"
-                       rendered="#{eventPersonsTabBean.editing.personId != null}">
-          <p:selectBooleanCheckbox value="#{eventPersonsTabBean.hidden}"
-                                   itemLabel="#{agendaBundle.attendants_hidden}"
-                                   disabled="#{!eventObjectBean.editable}"
-                                   styleClass="savable"/>
-        </p:outputPanel>
-
-        <!-- Attended -->
-        <div class="field col-12 md:col-6">
-          <p:outputLabel for="attended"
-                         value="#{agendaBundle.attendants_attended}" />
-          <p:selectOneMenu id="attended"
-                           value="#{eventPersonsTabBean.editing.attended}"
-                           disabled="#{!eventObjectBean.editable}" autoWidth="false"
-                           styleClass="savable">
-            <f:selectItem itemLabel=" " itemValue="" />
-            <f:selectItem itemLabel="NO" itemValue="N" />
-            <f:selectItem itemLabel="SI" itemValue="S" />
-            <f:selectItem itemLabel="FJ" itemValue="J" />
-          </p:selectOneMenu>
-        </div>
-
-        <!-- Comments -->
-        <p:outputPanel styleClass="field col-12"
-                       rendered="#{eventPersonsTabBean.editing.personId != null}">
-          <p:outputLabel for="comments"
-                         value="#{agendaBundle.attendants_comments}"/>
-          <p:inputTextarea id="comments" value="#{eventPersonsTabBean.editing.comments}"
-                           autoResize="false"
-                           onkeypress="checkMaxLength(this, #{attendantsBean.propertySize.comments})"
-                           readonly="#{not eventObjectBean.editable}"
-                           styleClass="savable" />
-        </p:outputPanel>
-
-      </div>
-
-    </h:panelGroup>
-
-    <f:facet name="footer">
-
-      <div class="field col-12 text-right">
-        <p:commandButton action="#{eventPersonsTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                         disabled="#{!eventObjectBean.editable}"
-                         process="event_persons_dialog"
-                         update="event_persons_table event_persons_panel"
-                         oncomplete="if (!isFacesError()) PF('eventPersonsDialog').hide()" />
-        <p:commandButton action="#{eventPersonsTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
-                         process="@this"
-                         update="event_persons_dialog :mainform:growl" global="false"
-                         oncomplete="PF('eventPersonsDialog').hide()" />
-      </div>
-
-    </f:facet>
-
-  </p:dialog>
+  </f:subview>
 
 </ui:composition>

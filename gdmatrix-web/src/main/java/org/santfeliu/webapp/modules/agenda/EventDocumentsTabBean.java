@@ -40,18 +40,16 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.agenda.Attendant;
-import org.matrix.agenda.AttendantFilter;
-import org.matrix.agenda.AttendantView;
-import org.matrix.dic.DictionaryConstants;
+import org.matrix.agenda.EventDocument;
+import org.matrix.agenda.EventDocumentFilter;
+import org.matrix.agenda.EventDocumentView;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.modules.kernel.PersonObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.TabBean;
 
 /**
  *
@@ -59,35 +57,35 @@ import org.santfeliu.webapp.setup.EditTab;
  */
 @Named
 @ViewScoped
-public class EventPersonsTabBean extends TabBean
+public class EventDocumentsTabBean extends TabBean
 {
-  private Attendant editing;
   Map<String, TabInstance> tabInstances = new HashMap<>();
+  EventDocument editing;
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     String typeId = getTabBaseTypeId();
-    List<AttendantView> rows;
+    List<EventDocumentView> rows;
     int firstRow = 0;
     boolean groupedView = isGroupedViewEnabled();
 
     private void loadTabRows()
     {
-      AttendantFilter filter = new AttendantFilter();
+      EventDocumentFilter filter = new EventDocumentFilter();
       filter.setEventId(eventObjectBean.getObjectId());
-      List<AttendantView> auxList = AgendaModuleBean.getClient(false).
-        findAttendantViewsFromCache(filter);
+      List<EventDocumentView> auxList = AgendaModuleBean.getClient(false).
+        findEventDocumentViewsFromCache(filter);
       if (typeId == null)
       {
         rows = auxList;
       }
       else
       {
-        List<AttendantView> result = new ArrayList();
-        for (AttendantView item : auxList)
+        List<EventDocumentView> result = new ArrayList();
+        for (EventDocumentView item : auxList)
         {
-          if (typeId.equals(item.getAttendantTypeId()))
+          if (typeId.equals(item.getEventDocTypeId()))
           {
             result.add(item);
           }
@@ -100,23 +98,26 @@ public class EventPersonsTabBean extends TabBean
   @Inject
   EventObjectBean eventObjectBean;
 
-  @Inject
-  PersonObjectBean personObjectBean;
-
   @PostConstruct
   public void init()
   {
     System.out.println("Creating " + this);
   }
 
+  @Override
+  public ObjectBean getObjectBean()
+  {
+    return eventObjectBean;
+  }
+
   public TabInstance getCurrentTabInstance()
   {
-    EditTab tab = eventObjectBean.getActiveEditTab();
-    TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+    EditTab editTab = eventObjectBean.getActiveEditTab();
+    TabInstance tabInstance = tabInstances.get(editTab.getSubviewId());
     if (tabInstance == null)
     {
       tabInstance = new TabInstance();
-      tabInstances.put(tab.getSubviewId(), tabInstance);
+      tabInstances.put(editTab.getSubviewId(), tabInstance);
     }
     return tabInstance;
   }
@@ -139,36 +140,38 @@ public class EventPersonsTabBean extends TabBean
     return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
   }
 
-  @Override
-  public ObjectBean getObjectBean()
-  {
-    return eventObjectBean;
-  }
-
-  //TODO Move to superclass
-  public String getRootTypeId()
-  {
-    return DictionaryConstants.ATTENDANT_TYPE;
-  }
-
-  public Attendant getEditing()
-  {
-    return editing;
-  }
-
-  public void setEditing(Attendant editing)
-  {
-    this.editing = editing;
-  }
-
-  public List<AttendantView> getRows()
+  public List<EventDocumentView> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<AttendantView> rows)
+  public void setRows(List<EventDocumentView> eventDocumentViews)
   {
-    this.getCurrentTabInstance().rows = rows;
+    getCurrentTabInstance().rows = eventDocumentViews;
+  }
+
+  public EventDocument getEditing()
+  {
+    return editing;
+  }
+
+  public void setEditing(EventDocument editing)
+  {
+    this.editing = editing;
+  }
+
+  public String getDocId()
+  {
+    return editing == null ? NEW_OBJECT_ID : editing.getDocId();
+  }
+
+  public void setDocId(String docId)
+  {
+    if (editing != null)
+    {
+      editing.setDocId(docId);
+      showDialog();
+    }
   }
 
   public int getFirstRow()
@@ -178,7 +181,7 @@ public class EventPersonsTabBean extends TabBean
 
   public void setFirstRow(int firstRow)
   {
-    getCurrentTabInstance().firstRow = firstRow;
+     getCurrentTabInstance().firstRow = firstRow;
   }
 
   public boolean isGroupedView()
@@ -197,23 +200,14 @@ public class EventPersonsTabBean extends TabBean
       getProperties().getString("groupedViewEnabled"));
   }
 
-  public String getPageObjectDescription()
-  {
-    if (editing != null && !isNew(editing))
-    {
-      return personObjectBean.getDescription(editing.getPersonId());
-    }
-    return null;
-  }
-
   //TODO Use ObjectDescriptor
-  public String getAttendantTypeDescription()
+  public String getEventDocumentTypeDescription()
   {
     String typeId = null;
-    AttendantView row = (AttendantView)getValue("#{row}");
+    EventDocumentView row = (EventDocumentView)getValue("#{row}");
     if (row != null)
     {
-      typeId = row.getAttendantTypeId();
+      typeId = row.getEventDocTypeId();
       if (typeId != null)
       {
         Type type = TypeCache.getInstance().getType(typeId);
@@ -223,65 +217,43 @@ public class EventPersonsTabBean extends TabBean
     return typeId;
   }
 
-  public String getAttendedLabel()
-  {
-    String attended = (String)getValue("#{row.attended}");
-    if (attended == null) return "";
-    else switch (attended)
-    {
-      case "S":
-        return "SI";
-      case "N":
-        return "NO";
-      case "J":
-        return "FJ";
-      default:
-        return "";
-    }
-  }
-
-  public boolean isHidden()
-  {
-    if (editing != null && editing.isHidden() != null)
-      return editing.isHidden();
-    else
-      return false;
-  }
-
-  public void setHidden(boolean hidden)
-  {
-    editing.setHidden(hidden);
-  }
-
-  public void setPersonId(String personId)
-  {
-    editing.setPersonId(personId);
-    showDialog();
-  }
-
-  public String getPersonId()
-  {
-    return editing.getPersonId();
-  }
-
-  public String edit(AttendantView row)
-  {
-    String attendantId = null;
-    if (row != null)
-      attendantId = row.getAttendantId();
-
-    return editPerson(attendantId);
-  }
-
   @Override
   public void load()
   {
     load(false);
   }
 
+  @Override
+  public void store()
+  {
+    try
+    {
+      editing.setEventId(getObjectId());
+      if (editing.getEventDocTypeId() == null)
+      {
+        editing.setEventDocTypeId("EventDocument");
+      }
+      AgendaModuleBean.getClient(false).storeEventDocument(editing);
+      load(true);
+      editing = null;
+      info("STORE_OBJECT");
+      hideDialog();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+      showDialog();
+    }
+  }
+
+  public void cancel()
+  {
+    editing = null;
+  }
+
   public void create()
   {
-    editing = new Attendant();
+    editing = new EventDocument();
   }
 
   public void switchView()
@@ -289,25 +261,42 @@ public class EventPersonsTabBean extends TabBean
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
   }
 
-  @Override
-  public void store()
+  public void edit(EventDocumentView eventDocView)
   {
-    storePerson();
-    load(true);
-    editing = null;
-    info("STORE_OBJECT");
+    if (eventDocView != null)
+    {
+      try
+      {
+        editing = AgendaModuleBean.getClient(false).
+          loadEventDocumentFromCache(eventDocView.getEventDocId());
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+    else
+    {
+      create();
+    }
   }
 
-  public void remove(AttendantView row)
+  public void remove(EventDocumentView eventDocView)
   {
-    removePerson(row);
-    load(true);
-  }
-
-  public String cancel()
-  {
-    editing = null;
-    return null;
+    if (eventDocView != null)
+    {
+      try
+      {
+        AgendaModuleBean.getClient(false).
+          removeEventDocument(eventDocView.getEventDocId());
+        load(true);
+        info("REMOVE_OBJECT");
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
   }
 
   @Override
@@ -322,7 +311,7 @@ public class EventPersonsTabBean extends TabBean
     try
     {
       Object[] stateArray = (Object[])state;
-      editing = (Attendant)stateArray[0];
+      editing = (EventDocument)stateArray[0];
       load();
     }
     catch (Exception ex)
@@ -333,7 +322,8 @@ public class EventPersonsTabBean extends TabBean
 
   private void load(boolean updateSameTypeTabs)
   {
-    if (!NEW_OBJECT_ID.equals(getObjectId()))
+    String objectId = getObjectId();
+    if (!NEW_OBJECT_ID.equals(objectId))
     {
       try
       {
@@ -363,106 +353,30 @@ public class EventPersonsTabBean extends TabBean
     }
   }
 
-  private boolean isNew(Attendant attendant)
-  {
-    return (attendant != null && attendant.getAttendantId() == null);
-  }
-
-  private String editPerson(String attendantId)
-  {
-    try
-    {
-      if (attendantId != null && !isEditing(attendantId))
-      {
-        editing =
-          AgendaModuleBean.getClient(false).loadAttendantFromCache(attendantId);
-      }
-      else if (attendantId == null)
-      {
-        editing = new Attendant();
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return null;
-  }
-
-  private void storePerson()
-  {
-    try
-    {
-      if (editing != null)
-      {
-        //Person must be selected
-        if (editing.getPersonId() == null || editing.getPersonId().isEmpty())
-        {
-          throw new Exception("PERSON_MUST_BE_SELECTED");
-        }
-
-        String eventId = eventObjectBean.getObjectId();
-        editing.setEventId(eventId);
-        AgendaModuleBean.getClient(false).storeAttendant(editing);
-        editing = null;
-        info("STORE_OBJECT");
-        hideDialog();
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-      showDialog();
-    }
-  }
-
-  private String removePerson(AttendantView row)
-  {
-    try
-    {
-      if (row == null)
-        throw new Exception("PERSON_MUST_BE_SELECTED");
-
-      String rowAttendantId = row.getAttendantId();
-
-      if (editing != null &&
-        rowAttendantId.equals(editing.getAttendantId()))
-      {
-        editing = null;
-      }
-
-      AgendaModuleBean.getClient(false).removeAttendant(rowAttendantId);
-
-      info("REMOVE_OBJECT");
-      return null;
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return null;
-  }
-
   private void showDialog()
   {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventPersonsDialog').show();");
+    try
+    {
+      PrimeFaces current = PrimeFaces.current();
+      current.executeScript("PF('eventDocumentsDialog').show();");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   private void hideDialog()
   {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventPersonsDialog').hide();");
-  }
-
-  private boolean isEditing(String pageObjectId)
-  {
-    if (editing == null)
-      return false;
-
-    String attendantId = editing.getAttendantId();
-    return attendantId != null
-      && attendantId.equals(pageObjectId);
+    try
+    {
+      PrimeFaces current = PrimeFaces.current();
+      current.executeScript("PF('eventDocumentsDialog').hide();");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   private String getTabBaseTypeId()

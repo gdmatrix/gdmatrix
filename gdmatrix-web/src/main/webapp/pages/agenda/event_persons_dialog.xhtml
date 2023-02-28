@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
+                var="agendaBundle" />
+
+  <p:dialog id="event_persons_dialog" widgetVar="eventPersonsDialog"
+            styleClass="edit_data_dialog" style="max-width:800px"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{eventObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{eventObjectBean.activeEditTab.label}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{eventPersonsTabBean.pageObjectDescription}" />
+      </p:outputPanel>
+
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="event_persons_panel" layout="block"
+                  rendered="#{eventPersonsTabBean.editing != null}">
+
+      <div class="ui-fluid formgrid grid" >
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{agendaBundle.attendants_type}" />
+          <p:selectOneMenu value="#{eventPersonsTabBean.editing.attendantTypeId}"
+                           styleClass="inputfield w-full savable"
+                           filter="true"
+                           filterMatchMode="contains"
+                           required="true">
+            <f:selectItem itemLabel="" itemValue="" />
+            <f:selectItems value="#{typeTypeBean.getSelectItems('Attendant')}"
+                           var="item" />
+            <p:column>
+              <h:outputText value="#{item.label}" />
+            </p:column>
+          </p:selectOneMenu>
+        </div>
+
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{agendaBundle.attendants_person}"
+                         styleClass="w-full" indicateRequired="true" />
+          <emcomp:objectReference value="#{eventPersonsTabBean.personId}"
+                                  type="Person"
+                                  process="@(.savable)"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3"
+                                  required="true">
+          </emcomp:objectReference>
+        </div>
+
+        <p:outputPanel styleClass="field-checkbox col-12"
+                       rendered="#{eventPersonsTabBean.editing.personId != null}">
+          <p:selectBooleanCheckbox value="#{eventPersonsTabBean.hidden}"
+                                   itemLabel="#{agendaBundle.attendants_hidden}"
+                                   disabled="#{!eventObjectBean.editable}"
+                                   styleClass="savable"/>
+        </p:outputPanel>
+
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="attended"
+                         value="#{agendaBundle.attendants_attended}" />
+          <p:selectOneMenu id="attended"
+                           value="#{eventPersonsTabBean.editing.attended}"
+                           disabled="#{!eventObjectBean.editable}" autoWidth="false"
+                           styleClass="savable">
+            <f:selectItem itemLabel=" " itemValue="" />
+            <f:selectItem itemLabel="NO" itemValue="N" />
+            <f:selectItem itemLabel="SI" itemValue="S" />
+            <f:selectItem itemLabel="FJ" itemValue="J" />
+          </p:selectOneMenu>
+        </div>
+
+        <p:outputPanel styleClass="field col-12"
+                       rendered="#{eventPersonsTabBean.editing.personId != null}">
+          <p:outputLabel for="comments"
+                         value="#{agendaBundle.attendants_comments}"/>
+          <p:inputTextarea id="comments" value="#{eventPersonsTabBean.editing.comments}"
+                           autoResize="false"
+                           onkeypress="checkMaxLength(this, #{attendantsBean.propertySize.comments})"
+                           readonly="#{not eventObjectBean.editable}"
+                           styleClass="savable" />
+        </p:outputPanel>
+
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{eventPersonsTabBean.store}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         icon="pi pi-save"
+                         disabled="#{!eventObjectBean.editable}"
+                         process="event_persons_dialog"
+                         update=":mainform:search_tabs:tabs event_persons_panel"
+                         oncomplete="if (!isFacesError()) PF('eventPersonsDialog').hide()" />
+        <p:commandButton action="#{eventPersonsTabBean.cancel}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="event_persons_dialog :mainform:growl" global="false"
+                         oncomplete="PF('eventPersonsDialog').hide()" />
+      </div>
+
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>
