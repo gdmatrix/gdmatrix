@@ -10,7 +10,7 @@
   <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                 var="agendaBundle" />
 
-  <p:dialog id="event_documents_dialog" widgetVar="eventDocumentsDialog"
+  <p:dialog id="case_events_dialog" widgetVar="caseEventsDialog"
             styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
@@ -18,29 +18,29 @@
     <f:facet name="header">
       <p:outputPanel>
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
-        <h:outputText value="#{eventObjectBean.description}" />
+        <h:outputText value="#{caseObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventObjectBean.activeEditTab.label}" />
+        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventDocumentsTabBean.documentDescription}" />
+        <h:outputText value="#{caseEventsTabBean.eventDescription}" />
       </p:outputPanel>
     </f:facet>
 
-    <h:panelGroup styleClass="mt-2" id="event_documents_panel"
+    <h:panelGroup styleClass="mt-2" id="case_events_panel"
                   layout="block"
-                  rendered="#{eventDocumentsTabBean.editing != null}">
+                  rendered="#{caseEventsTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
 
-        <!-- Document -->
+        <!-- Event -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Document"
+                         value="Event"
                          styleClass="w-full"
                          indicateRequired="true" />
-          <emcomp:objectReference value="#{eventDocumentsTabBean.docId}"
+          <emcomp:objectReference value="#{caseEventsTabBean.eventId}"
                                   process="@(.savable)"
-                                  type="Document"
+                                  type="Event"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
@@ -53,13 +53,13 @@
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="Tipus" />
-          <p:selectOneMenu value="#{eventDocumentsTabBean.editing.eventDocTypeId}"
+          <p:selectOneMenu value="#{caseEventsTabBean.editing.caseEventTypeId}"
                            styleClass="inputfield w-full savable"
                            filter="true"
                            filterMatchMode="contains"
                            required="true">
             <f:selectItem itemLabel="" itemValue="" />
-            <f:selectItems value="#{typeTypeBean.getSelectItems('EventDocument')}"
+            <f:selectItems value="#{typeTypeBean.getSelectItems('CaseEvent')}"
                            var="item" />
             <p:column>
               <h:outputText value="#{item.label}" />
@@ -73,7 +73,7 @@
                          value="Comments" />
           <p:inputTextarea
             styleClass="savable"
-            value="#{eventDocumentsTabBean.editing.comments}" />
+            value="#{caseEventsTabBean.editing.comments}" />
         </div>
 
       </div>
@@ -83,17 +83,17 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{eventDocumentsTabBean.store}"
+        <p:commandButton action="#{caseEventsTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                         process="event_documents_dialog"
-                         update=":mainform:search_tabs:tabs event_documents_panel"
-                         oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').hide()"
+                         process="case_events_dialog"
+                         update=":mainform:search_tabs:tabs case_events_panel"
+                         oncomplete="if (!isFacesError()) PF('caseEventsDialog').hide()"
                          />
-        <p:commandButton action="#{eventDocumentsTabBean.cancel}"
+        <p:commandButton action="#{caseEventsTabBean.cancel}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="event_documents_dialog :mainform:growl" global="false"
-                         oncomplete="PF('eventDocumentsDialog').hide()"/>
+                         update="case_events_dialog :mainform:growl" global="false"
+                         oncomplete="PF('caseEventsDialog').hide()"/>
       </div>
     </f:facet>
 

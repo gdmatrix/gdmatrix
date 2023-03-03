@@ -13,71 +13,71 @@
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="event_documents_table" value="#{eventDocumentsTabBean.rows}"
+    <p:dataTable id="event_cases_table" value="#{eventCasesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="5"
                  size="small" paginatorPosition="bottom"
-                 rowIndexVar="firstRow" first="#{eventDocumentsTabBean.firstRow}"
+                 rowIndexVar="firstRow" first="#{eventCasesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
-          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{eventDocumentsTabBean.groupedView ? 'ui-button-flat' : ''}"
-                           action="#{eventDocumentsTabBean.switchView}"
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{eventCasesTabBean.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{eventCasesTabBean.switchView}"
                            process="@this"
-                           update="event_documents_table"
+                           update="event_cases_table"
                            resetValues="true"
                            alt="" title=""
-                           rendered="#{eventDocumentsTabBean.groupedViewEnabled}" />
+                           rendered="#{eventCasesTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
-                           action="#{eventDocumentsTabBean.create}"
+                           action="#{eventCasesTabBean.create}"
                            process=":mainform:search_tabs:tabs"
-                           update=":mainform:search_tabs:event_documents_dialog"
+                           update=":mainform:search_tabs:event_cases_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').show()"
+                           oncomplete="if (!isFacesError()) PF('eventCasesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
 
-      <p:headerRow field="eventDocTypeId" expandable="true"
-                   expanded="true" rendered="#{eventDocumentsTabBean.groupedView}">
+      <p:headerRow field="caseEventTypeId" expandable="true"
+                   expanded="true" rendered="#{eventCasesTabBean.groupedView}">
         <p:column colspan="6" >
-          <h:outputText styleClass="ml-2" value="#{eventDocumentsTabBean.eventDocumentTypeDescription}"/>
+          <h:outputText styleClass="ml-2" value="#{eventCasesTabBean.caseEventTypeDescription}"/>
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="docId" styleClass="w-1"
-                exportHeaderValue="docId">
-        <h:outputText value="#{row.document.docId}" />
+      <p:column headerText="caseId" styleClass="w-1"
+                exportHeaderValue="caseId">
+        <h:outputText value="#{row.caseObject.caseId}" />
       </p:column>
 
       <p:column headerText="Title" styleClass="w-7"
                 exportHeaderValue="Title">
-        <h:outputText value="#{row.document.title}"/>
+        <h:outputText value="#{row.caseObject.title}"/>
       </p:column>
 
       <p:column headerText="Type" styleClass="w-2"
                 exportHeaderValue="Type"
-                rendered="#{!eventDocumentsTabBean.groupedView}">
-        <h:outputText value="#{eventDocumentsTabBean.eventDocumentTypeDescription}"/>
+                rendered="#{!eventCasesTabBean.groupedView}">
+        <h:outputText value="#{eventCasesTabBean.caseEventTypeDescription}"/>
       </p:column>
 
       <p:column styleClass="w-2 text-right">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
                          ajax="false"
-                         action="#{navigatorBean.show('Document', row.document.docId)}"
+                         action="#{navigatorBean.show('Case', row.caseObject.caseId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
-                         action="#{eventDocumentsTabBean.edit(row)}"
+                         action="#{eventCasesTabBean.edit(row)}"
                          process=":mainform:search_tabs:tabs"
-                         update=":mainform:search_tabs:event_documents_dialog"
+                         update=":mainform:search_tabs:event_cases_dialog"
                          resetValues="true"
-                         oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').show()" />
-        <p:commandButton action="#{eventDocumentsTabBean.remove(row)}"
+                         oncomplete="if (!isFacesError()) PF('eventCasesDialog').show()" />
+        <p:commandButton action="#{eventCasesTabBean.remove(row)}"
                          process="@this"
                          update=":mainform:search_tabs:tabs :mainform:growl"
                          icon="pi pi-trash"

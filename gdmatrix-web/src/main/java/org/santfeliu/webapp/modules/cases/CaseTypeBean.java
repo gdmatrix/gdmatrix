@@ -96,12 +96,22 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
 
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab("Main", "/pages/cases/case_main.xhtml"));
-    editTabs.add(new EditTab("Persons", "/pages/cases/case_persons.xhtml", "casePersonsTabBean"));
-    editTabs.add(new EditTab("Documents", "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", "/pages/cases/case_documents_dialog.xhtml"));
-    editTabs.add(new EditTab("Actuacions", "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", "act1", "/pages/cases/case_interventions_dialog.xhtml"));
-    editTabs.add(new EditTab("Cases", "/pages/cases/case_cases.xhtml", "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml"));
-    editTabs.add(new EditTab("ACL", "/pages/cases/case_acl.xhtml", "caseACLTabBean"));
-
+    editTabs.add(new EditTab("Persons", "/pages/cases/case_persons.xhtml", 
+      "casePersonsTabBean"));
+    editTabs.add(new EditTab("Documents", "/pages/cases/case_documents.xhtml", 
+      "caseDocumentsTabBean", "docs1", 
+      "/pages/cases/case_documents_dialog.xhtml"));
+    editTabs.add(new EditTab("Actuacions", 
+      "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", 
+      "act1", "/pages/cases/case_interventions_dialog.xhtml"));
+    editTabs.add(new EditTab("Cases", "/pages/cases/case_cases.xhtml", 
+      "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml"));
+    editTabs.add(new EditTab("ACL", "/pages/cases/case_acl.xhtml", 
+      "caseACLTabBean"));
+    editTabs.add(new EditTab("Events", "/pages/cases/case_events.xhtml", 
+      "caseEventsTabBean", "events1", 
+      "/pages/cases/case_events_dialog.xhtml"));
+    
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

@@ -10,7 +10,7 @@
   <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
                 var="agendaBundle" />
 
-  <p:dialog id="event_documents_dialog" widgetVar="eventDocumentsDialog"
+  <p:dialog id="event_cases_dialog" widgetVar="eventCasesDialog"
             styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
@@ -22,25 +22,25 @@
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{eventObjectBean.activeEditTab.label}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventDocumentsTabBean.documentDescription}" />
+        <h:outputText value="#{eventCasesTabBean.caseDescription}" />
       </p:outputPanel>
     </f:facet>
 
-    <h:panelGroup styleClass="mt-2" id="event_documents_panel"
+    <h:panelGroup styleClass="mt-2" id="event_cases_panel"
                   layout="block"
-                  rendered="#{eventDocumentsTabBean.editing != null}">
+                  rendered="#{eventCasesTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
 
-        <!-- Document -->
+        <!-- Case -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Document"
+                         value="Case"
                          styleClass="w-full"
                          indicateRequired="true" />
-          <emcomp:objectReference value="#{eventDocumentsTabBean.docId}"
+          <emcomp:objectReference value="#{eventCasesTabBean.caseId}"
                                   process="@(.savable)"
-                                  type="Document"
+                                  type="Case"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
@@ -53,13 +53,13 @@
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="Tipus" />
-          <p:selectOneMenu value="#{eventDocumentsTabBean.editing.eventDocTypeId}"
+          <p:selectOneMenu value="#{eventCasesTabBean.editing.caseEventTypeId}"
                            styleClass="inputfield w-full savable"
                            filter="true"
                            filterMatchMode="contains"
                            required="true">
             <f:selectItem itemLabel="" itemValue="" />
-            <f:selectItems value="#{typeTypeBean.getSelectItems('EventDocument')}"
+            <f:selectItems value="#{typeTypeBean.getSelectItems('CaseEvent')}"
                            var="item" />
             <p:column>
               <h:outputText value="#{item.label}" />
@@ -73,7 +73,7 @@
                          value="Comments" />
           <p:inputTextarea
             styleClass="savable"
-            value="#{eventDocumentsTabBean.editing.comments}" />
+            value="#{eventCasesTabBean.editing.comments}" />
         </div>
 
       </div>
@@ -83,17 +83,17 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{eventDocumentsTabBean.store}"
+        <p:commandButton action="#{eventCasesTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                         process="event_documents_dialog"
-                         update=":mainform:search_tabs:tabs event_documents_panel"
-                         oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').hide()"
+                         process="event_cases_dialog"
+                         update=":mainform:search_tabs:tabs event_cases_panel"
+                         oncomplete="if (!isFacesError()) PF('eventCasesDialog').hide()"
                          />
-        <p:commandButton action="#{eventDocumentsTabBean.cancel}"
+        <p:commandButton action="#{eventCasesTabBean.cancel}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="event_documents_dialog :mainform:growl" global="false"
-                         oncomplete="PF('eventDocumentsDialog').hide()"/>
+                         update="event_cases_dialog :mainform:growl" global="false"
+                         oncomplete="PF('eventCasesDialog').hide()"/>
       </div>
     </f:facet>
 

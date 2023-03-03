@@ -99,15 +99,18 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab("Principal", "/pages/agenda/event_main.xhtml"));
     editTabs.add(new EditTab("Assistents", "/pages/agenda/event_persons.xhtml",
-      "eventPersonsTabBean", "persons",
+      "eventPersonsTabBean", "persons1",
       "/pages/agenda/event_persons_dialog.xhtml"));
     editTabs.add(new EditTab("Llocs", "/pages/agenda/event_places.xhtml",
       "eventPlacesTabBean"));
     editTabs.add(new EditTab("Temes", "/pages/agenda/event_themes.xhtml",
       "eventThemesTabBean"));
     editTabs.add(new EditTab("Documents", "/pages/agenda/event_documents.xhtml",
-      "eventDocumentsTabBean", "docs",
+      "eventDocumentsTabBean", "docs1",
       "/pages/agenda/event_documents_dialog.xhtml"));
+    editTabs.add(new EditTab("Expedients", "/pages/agenda/event_cases.xhtml",
+      "eventCasesTabBean", "cases1",
+      "/pages/agenda/event_cases_dialog.xhtml"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

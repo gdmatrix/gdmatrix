@@ -28,10 +28,9 @@
  * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.santfeliu.webapp.modules.agenda;
+package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,15 +39,15 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.matrix.agenda.EventDocument;
-import org.matrix.agenda.EventDocumentFilter;
-import org.matrix.agenda.EventDocumentView;
+import org.matrix.cases.CaseEvent;
+import org.matrix.cases.CaseEventFilter;
+import org.matrix.cases.CaseEventView;
 import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.modules.agenda.EventTypeBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
-import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 
 /**
@@ -57,25 +56,25 @@ import org.santfeliu.webapp.setup.EditTab;
  */
 @Named
 @ViewScoped
-public class EventDocumentsTabBean extends TabBean
+public class CaseEventsTabBean extends TabBean
 {
-  private EventDocument editing;
-  Map<String, TabInstance> tabInstances = new HashMap<>();
+  private CaseEvent editing;
+  Map<String, TabInstance> tabInstances = new HashMap();
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     String typeId = getTabBaseTypeId();
-    List<EventDocumentView> rows;
+    List<CaseEventView> rows;
     int firstRow = 0;
     boolean groupedView = isGroupedViewEnabled();
   }
 
   @Inject
-  EventObjectBean eventObjectBean;
+  CaseObjectBean caseObjectBean;
 
   @Inject
-  DocumentTypeBean documentTypeBean;
+  EventTypeBean eventTypeBean;
 
   @Inject
   TypeTypeBean typeTypeBean;
@@ -88,7 +87,7 @@ public class EventDocumentsTabBean extends TabBean
 
   public TabInstance getCurrentTabInstance()
   {
-    EditTab tab = eventObjectBean.getActiveEditTab();
+    EditTab tab = caseObjectBean.getActiveEditTab();
     TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
     if (tabInstance == null)
     {
@@ -119,35 +118,36 @@ public class EventDocumentsTabBean extends TabBean
   @Override
   public ObjectBean getObjectBean()
   {
-    return eventObjectBean;
+    return caseObjectBean;
   }
-  public EventDocument getEditing()
+
+  public CaseEvent getEditing()
   {
     return editing;
   }
 
-  public void setEditing(EventDocument editing)
+  public void setEditing(CaseEvent editing)
   {
     this.editing = editing;
   }
 
-  public void setDocId(String docId)
+  public void setEventId(String eventId)
   {
-    editing.setDocId(docId);
+    editing.setEventId(eventId);
     showDialog();
   }
 
-  public String getDocId()
+  public String getEventId()
   {
-    return editing.getDocId();
+    return editing.getEventId();
   }
 
-  public List<EventDocumentView> getRows()
+  public List<CaseEventView> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<EventDocumentView> rows)
+  public void setRows(List<CaseEventView> rows)
   {
     getCurrentTabInstance().rows = rows;
   }
@@ -159,7 +159,7 @@ public class EventDocumentsTabBean extends TabBean
 
   public void setFirstRow(int firstRow)
   {
-     getCurrentTabInstance().firstRow = firstRow;
+    getCurrentTabInstance().firstRow = firstRow;
   }
 
   public boolean isGroupedView()
@@ -174,26 +174,26 @@ public class EventDocumentsTabBean extends TabBean
 
   public boolean isGroupedViewEnabled()
   {
-    return Boolean.parseBoolean(eventObjectBean.getActiveEditTab().
+    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
       getProperties().getString("groupedViewEnabled"));
   }
 
-  public String getDocumentDescription()
+  public String getEventDescription()
   {
     if (editing != null && !isNew(editing))
     {
-      return documentTypeBean.getDescription(editing.getDocId());
+      return eventTypeBean.getDescription(editing.getEventId());
     }
     return "";
   }
 
-  public String getEventDocumentTypeDescription()
+  public String getCaseEventTypeDescription()
   {
     String typeId = null;
-    EventDocumentView row = (EventDocumentView)getValue("#{row}");
+    CaseEventView row = (CaseEventView)getValue("#{row}");
     if (row != null)
     {
-      typeId = row.getEventDocTypeId();
+      typeId = row.getCaseEventTypeId();
       if (typeId != null)
       {
         return typeTypeBean.getDescription(typeId);
@@ -202,14 +202,14 @@ public class EventDocumentsTabBean extends TabBean
     return typeId;
   }
 
-  public void edit(EventDocumentView row)
+  public void edit(CaseEventView row)
   {
     if (row != null)
     {
       try
       {
-        editing = AgendaModuleBean.getClient(false).
-          loadEventDocumentFromCache(row.getEventDocId());
+        editing = CasesModuleBean.getPort(false).
+          loadCaseEvent(row.getCaseEventId());
       }
       catch (Exception ex)
       {
@@ -229,27 +229,13 @@ public class EventDocumentsTabBean extends TabBean
     {
       try
       {
-        EventDocumentFilter filter = new EventDocumentFilter();
-        filter.setEventId(eventObjectBean.getObjectId());
-        List<EventDocumentView> auxList = AgendaModuleBean.getClient(false).
-          findEventDocumentViewsFromCache(filter);
         String typeId = getCurrentTabInstance().typeId;
-        if (typeId == null)
-        {
-          getCurrentTabInstance().rows = auxList;
-        }
-        else
-        {
-          List<EventDocumentView> result = new ArrayList();
-          for (EventDocumentView item : auxList)
-          {
-            if (typeId.equals(item.getEventDocTypeId()))
-            {
-              result.add(item);
-            }
-          }
-          getCurrentTabInstance().rows = result;
-        }
+        CaseEventFilter filter = new CaseEventFilter();
+        filter.setCaseId(caseObjectBean.getObjectId());
+        filter.setCaseEventTypeId(typeId);
+        filter.setExcludeMetadata(false);
+        getCurrentTabInstance().rows =
+          CasesModuleBean.getPort(false).findCaseEventViews(filter);
       }
       catch (Exception ex)
       {
@@ -267,7 +253,7 @@ public class EventDocumentsTabBean extends TabBean
 
   public void create()
   {
-    editing = new EventDocument();
+    editing = new CaseEvent();
   }
 
   public void switchView()
@@ -282,9 +268,9 @@ public class EventDocumentsTabBean extends TabBean
     {
       if (editing != null)
       {
-        String eventId = eventObjectBean.getObjectId();
-        editing.setEventId(eventId);
-        AgendaModuleBean.getClient(false).storeEventDocument(editing);
+        String caseId = caseObjectBean.getObjectId();
+        editing.setCaseId(caseId);
+        CasesModuleBean.getPort(false).storeCaseEvent(editing);
         refreshHiddenTabInstances();
         load();
         editing = null;
@@ -299,14 +285,13 @@ public class EventDocumentsTabBean extends TabBean
     }
   }
 
-  public void remove(EventDocumentView row)
+  public void remove(CaseEventView row)
   {
     if (row != null)
     {
       try
       {
-        AgendaModuleBean.getClient(false).removeEventDocument(
-          row.getEventDocId());
+        CasesModuleBean.getPort(false).removeCaseEvent(row.getCaseEventId());
         refreshHiddenTabInstances();
         load();
         info("REMOVE_OBJECT");
@@ -335,7 +320,7 @@ public class EventDocumentsTabBean extends TabBean
     try
     {
       Object[] stateArray = (Object[])state;
-      editing = (EventDocument)stateArray[0];
+      editing = (CaseEvent)stateArray[0];
       load();
     }
     catch (Exception ex)
@@ -344,26 +329,26 @@ public class EventDocumentsTabBean extends TabBean
     }
   }
 
-  private boolean isNew(EventDocument eventDocument)
+  private boolean isNew(CaseEvent attendant)
   {
-    return (eventDocument != null && eventDocument.getEventDocId() == null);
+    return (attendant != null && attendant.getCaseEventId() == null);
   }
 
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventDocumentsDialog').show();");
+    current.executeScript("PF('caseEventsDialog').show();");
   }
 
   private void hideDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('eventDocumentsDialog').hide();");
+    current.executeScript("PF('caseEventsDialog').hide();");
   }
 
   private String getTabBaseTypeId()
   {
-    EditTab editTab = eventObjectBean.getActiveEditTab();
+    EditTab editTab = caseObjectBean.getActiveEditTab();
     return editTab.getProperties().getString("typeId");
   }
 
