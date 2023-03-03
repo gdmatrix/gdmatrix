@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+  <h:head>
+    <title>Dynamic properties component</title>
+  </h:head>
+  <h:body>
+    <composite:interface>
+      <composite:attribute name="typeId" required="true" />
+      <composite:attribute name="formSelector" required="true" />
+      <composite:attribute name="properties" required="true" />
+    </composite:interface>
+    <composite:implementation>
+      <div class="ui-fluid formgrid grid">   
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="Formularis:" />
+          <p:selectOneMenu value="#{cc.attrs.formSelector}">
+            <p:ajax event="itemSelect" listener="#{dynamicPropertiesBean.onItemSelect}"
+                    process="@this dyn_form" update="dyn_form" />
+            <f:selectItems value="#{dynamicPropertiesBean.selectItems}" />
+          </p:selectOneMenu>
+        </div>
+      </div>
+      <h:panelGroup id="dyn_form" 
+                    styleClass="ui-fluid formgrid grid" layout="block">
+        <f:event type="postAddToView"
+                 listener="#{dynamicPropertiesBean.loadDynamicComponents}" />
+      </h:panelGroup>
+      <h:inputHidden id="form_selector" />
+    </composite:implementation>
+  </h:body>
+</html>

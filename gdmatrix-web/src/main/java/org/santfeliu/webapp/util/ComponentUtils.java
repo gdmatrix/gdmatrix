@@ -97,10 +97,14 @@ public class ComponentUtils
         styleClass = styleClassValue instanceof String ?
           (String) styleClassValue : null;
       }
-      
+
       HtmlPanelGroup group = new HtmlPanelGroup();
-      group.setStyleClass(styleClass == null ?
-        "field col-12 md:col-6" : styleClass);
+      if (styleClass == null || !styleClass.contains("col-"))
+      {
+        styleClass = "field col-12 md:col-6";
+      }
+
+      group.setStyleClass(styleClass);
       group.setLayout("block");
       parent.getChildren().add(group);
 
@@ -139,7 +143,7 @@ public class ComponentUtils
 
       if (component instanceof ValueHolder)
       {
-        String expression = "#{" + propertyPath + "." + reference + "}";
+        String expression = "#{" + propertyPath + "[\"" + reference + "\"]}";
 
         ValueExpression valueExpression
           = WebUtils.createValueExpression(expression, Object.class);

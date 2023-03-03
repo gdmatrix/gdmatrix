@@ -66,7 +66,7 @@
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{documentACLTabBean.create}"
                            process="@this"
-                           update="@parent:@parent:@parent:document_acl_dialog"
+                           update=":mainform:search_tabs:tabs @parent:@parent:@parent:document_acl_dialog"
                            resetValues="true"
                            oncomplete="PF('documentACLDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
@@ -92,7 +92,7 @@
         <p:commandButton icon="pi pi-pencil" 
                          styleClass="rounded-button ui-button-flat" 
                          action="#{documentACLTabBean.edit(row)}" 
-                         process="@this" 
+                         process=":mainform:search_tabs:tabs" 
                          update="@parent:@parent:@parent:@parent:document_acl_dialog"
                          resetValues="true"
                          oncomplete="PF('documentACLDialog').show()"

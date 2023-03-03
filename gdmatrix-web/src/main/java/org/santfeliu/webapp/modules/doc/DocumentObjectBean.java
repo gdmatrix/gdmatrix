@@ -46,7 +46,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
@@ -67,7 +66,6 @@ import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.HttpUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.PropertyHelper;
 
 /**
  *
@@ -79,7 +77,7 @@ public class DocumentObjectBean extends ObjectBean
 {
   private Document document = new Document();
   private transient List<Document> versions;
-  private PropertyHelper propertyHelper;
+  private String formSelector;
 
   /* new content */
   private File fileToStore;
@@ -97,15 +95,6 @@ public class DocumentObjectBean extends ObjectBean
   public void init()
   {
     System.out.println("Creating " + this);
-
-    propertyHelper = new PropertyHelper()
-    {
-      @Override
-      public List<Property> getProperties()
-      {
-        return document.getProperty();
-      }
-    };
   }
 
   @Override
@@ -132,9 +121,14 @@ public class DocumentObjectBean extends ObjectBean
     return documentFinderBean;
   }
 
-  public PropertyHelper getPropertyHelper()
+  public String getFormSelector()
   {
-    return propertyHelper;
+    return formSelector;
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    this.formSelector = formSelector;
   }
 
   public File getFileToStore()
@@ -475,13 +469,15 @@ public class DocumentObjectBean extends ObjectBean
   @Override
   public Serializable saveState()
   {
-    return document;
+    return new Object[] { document, formSelector };
   }
 
   @Override
   public void restoreState(Serializable state)
   {
-    this.document = (Document) state;
+    Object[] array = (Object[])state;
+    this.document = (Document) array[0];
+    this.formSelector = (String)array[1];
   }
 
 }
