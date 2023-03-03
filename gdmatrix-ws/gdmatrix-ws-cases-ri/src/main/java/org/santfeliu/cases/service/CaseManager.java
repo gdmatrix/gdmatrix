@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -110,6 +111,7 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.service.DBType;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.dic.util.WSTypeValidator;
+import org.santfeliu.jpa.JPAQuery;
 import org.santfeliu.jpa.JPAUtils;
 import org.santfeliu.security.User;
 import org.santfeliu.security.UserCache;
@@ -430,12 +432,110 @@ public class CaseManager implements CaseManagerPort
     queryBuilder.setCounterQuery(false);
     Query query = queryBuilder.getQuery(em);
     List<DBCase> dbCaseList = query.getResultList();
-
-    List<Case> caseList = new ArrayList<Case>();
-    JPAUtils.copyList(dbCaseList, caseList, Case.class);    
+        
+    List<Case> caseList = new ArrayList<>();
+    JPAUtils.copyList(dbCaseList, caseList, Case.class); 
+    
+    //Merge outputProperties if needed
+    if (!caseList.isEmpty() 
+      && !filter.getOutputProperty().isEmpty())
+    {
+      mergeOutputProperties(caseList, filter.getOutputProperty());
+    }    
 
     return caseList;
   }
+  
+  private void mergeOutputProperties(List<Case> caseList, 
+    List<String> outputProperties) throws Exception
+  {
+    Map<String, Case> caseMap = new LinkedHashMap();
+    for (Case cas : caseList)
+    {
+      caseMap.put(cas.getCaseId(), cas);
+    }
+
+    //Add output properties
+    if (outputProperties != null && !outputProperties.isEmpty())
+    {
+      List<Object[]> dbProperties =
+        findCaseProperties(em, caseMap.keySet());
+      if (dbProperties != null)
+        setOutputProperties(caseMap, dbProperties, outputProperties);
+    }    
+  }
+  
+  private List<Object[]> findCaseProperties(EntityManager em,
+    Set<String> caseIds) throws Exception
+  {
+    List<Object[]> dbProperties = null;
+
+    if (caseIds != null && !caseIds.isEmpty())
+    {
+      StringBuilder sb = new StringBuilder(
+        "SELECT p.id, p.name, p.value " +
+        "FROM CaseProperty p ");
+
+      for (int i = 0; i < caseIds.size(); i++)
+      {
+        if (i == 0)
+          sb.append(" WHERE ");
+        else
+          sb.append(" OR ");
+        
+        sb.append(" (p.id = :caseId").append(i).append(") ");
+      }
+      sb.append(" ORDER BY p.id, p.name, p.index ");
+
+      Query query = em.createQuery(sb.toString());
+      JPAQuery jpaQuery = new JPAQuery(query);
+      
+      Iterator it = caseIds.iterator();
+      int i = 0;
+      while(it.hasNext())
+      {
+        jpaQuery.setParameter("caseId" + i, it.next());
+        i++;
+      }
+      dbProperties = jpaQuery.getResultList();
+    }
+
+    return dbProperties;
+  }
+  
+  private void setOutputProperties(
+    Map<String, Case> caseMap, List<Object[]> caseProps,
+    List<String> outputProperties)
+  {
+    for (Object[] caseProp : caseProps)
+    {
+      String caseId = (String)caseProp[0];
+      String propname = (String)caseProp[1];
+      String value = (String)caseProp[2];
+      
+      if (propname != null)
+      {
+        if (outputProperties.contains(propname))
+        {
+          Case cas = caseMap.get(caseId);
+          
+          if ("classId".equals(propname))
+            cas.getClassId().add(value);
+          else
+          {
+            Property property = DictionaryUtils.getProperty(cas, propname);
+            if (property == null)
+            {
+              property = new Property();
+              property.setName(propname);
+              cas.getProperty().add(property);
+            } 
+            property.getValue().add(value);
+          }
+        }
+      }
+    }    
+  }    
   
   @Override
   public int countCases(CaseFilter filter)

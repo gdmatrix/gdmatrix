@@ -294,6 +294,9 @@
       </property>
       <property name="personFlag" type="xs:string" minOccurs="0">
       </property> 
+      <property name="outputProperty" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" nillable="true">
+      </property>      
     </struct>
 
     <struct name="CasePersonFilter">
