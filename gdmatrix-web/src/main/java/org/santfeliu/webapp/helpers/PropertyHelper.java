@@ -30,7 +30,10 @@
  */
 package org.santfeliu.webapp.helpers;
 
+import java.lang.reflect.Array;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -111,11 +114,10 @@ public abstract class PropertyHelper
     }
   };
 
-  Map<String, List<? extends Object>> values =
-    new AbstractMap<String, List<? extends Object>>()
+  Map<String, Object> values = new AbstractMap<String, Object>()
   {
     @Override
-    public List<? extends Object> get(Object key)
+    public Object get(Object key)
     {
       List<Property> properties = getProperties();
       String name = String.valueOf(key);
@@ -126,13 +128,30 @@ public abstract class PropertyHelper
     }
 
     @Override
-    public List<? extends Object> put(String name,
-      List<? extends Object> values)
+    public Object put(String name, Object values)
     {
+      List valueList = Collections.EMPTY_LIST;
+      if (values instanceof List)
+      {
+        valueList = (List)values;
+      }
+      else if (values != null && values.getClass().isArray())
+      {
+        valueList = new ArrayList<>();
+        int length = Array.getLength(values);
+        for (int i = 0; i < length; i++)
+        {
+          Object value = Array.get(values, i);
+          valueList.add(value);
+        }
+      }
+
       List<Property> properties = getProperties();
       Property property = DictionaryUtils.getPropertyByName(properties, name);
-      if (values == null || values.isEmpty())
+
+      if (valueList.isEmpty())
       {
+        // remove property if it has no values
         if (property != null)
         {
           properties.remove(property);
@@ -150,7 +169,7 @@ public abstract class PropertyHelper
         {
           property.getValue().clear();
         }
-        for (Object value : values)
+        for (Object value : valueList)
         {
           if (value != null && !isEmptyString(value))
           {
@@ -168,7 +187,7 @@ public abstract class PropertyHelper
     }
 
     @Override
-    public Set<Map.Entry<String, List<? extends Object>>> entrySet()
+    public Set<Map.Entry<String, Object>> entrySet()
     {
       throw new UnsupportedOperationException();
     }
@@ -179,7 +198,7 @@ public abstract class PropertyHelper
     return value;
   }
 
-  public Map<String, List<? extends Object>> getValues()
+  public Map<String, Object> getValues()
   {
     return values;
   }

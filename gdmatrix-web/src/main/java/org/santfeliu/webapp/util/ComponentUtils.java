@@ -32,10 +32,12 @@ package org.santfeliu.webapp.util;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UISelectItem;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.ValueHolder;
 import javax.faces.component.html.HtmlPanelGroup;
@@ -44,6 +46,8 @@ import org.mozilla.javascript.Callable;
 import org.primefaces.component.datepicker.DatePicker;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.outputlabel.OutputLabel;
+import org.primefaces.component.selectcheckboxmenu.SelectCheckboxMenu;
+import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.toggleswitch.ToggleSwitch;
 import org.santfeliu.form.Field;
@@ -51,6 +55,7 @@ import org.santfeliu.form.Form;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.View;
 import org.santfeliu.util.script.ScriptClient;
+import org.santfeliu.form.type.html.HtmlSelectView;
 
 /**
  *
@@ -114,6 +119,7 @@ public class ComponentUtils
       group.getChildren().add(label);
 
       UIComponent component;
+      boolean isMultiple = false;
 
       if (Field.DATE.equals(fieldType) || Field.DATETIME.equals(fieldType))
       {
@@ -132,18 +138,59 @@ public class ComponentUtils
       {
         ToggleSwitch toogleSwitch =
           (ToggleSwitch) application.createComponent(ToggleSwitch.COMPONENT_TYPE);
+        toogleSwitch.setStyleClass("block");
         component = toogleSwitch;
       }
       else
       {
-        InputText inputText
-          = (InputText) application.createComponent(InputText.COMPONENT_TYPE);
-        component = inputText;
+        if (view instanceof HtmlSelectView)
+        {
+          String multipleValue = String.valueOf(view.getProperty("multiple"));
+          isMultiple = "true".equals(multipleValue);
+
+          if (isMultiple)
+          {
+            component =
+              application.createComponent(SelectCheckboxMenu.COMPONENT_TYPE);
+            ((SelectCheckboxMenu)component).setMultiple(true);
+          }
+          else
+          {
+            component =
+              application.createComponent(SelectOneMenu.COMPONENT_TYPE);
+          }
+
+          List<View> children = view.getChildren();
+
+          for (View child : children)
+          {
+            if (View.ITEM.equals(child.getViewType()))
+            {
+              String itemValue = (String)child.getProperty("value");
+              if (!child.getChildren().isEmpty())
+              {
+                String itemLabel =
+                  (String)child.getChildren().get(0).getProperty("text");
+                UISelectItem selectItem = new UISelectItem();
+                selectItem.setItemValue(itemValue);
+                selectItem.setItemLabel(itemLabel);
+                component.getChildren().add(selectItem);
+              }
+            }
+          }
+        }
+        else
+        {
+          InputText inputText
+            = (InputText) application.createComponent(InputText.COMPONENT_TYPE);
+          component = inputText;
+        }
       }
 
       if (component instanceof ValueHolder)
       {
-        String expression = "#{" + propertyPath + "[\"" + reference + "\"]}";
+        String expression = "#{" + propertyPath + (isMultiple ? "s" : "") +
+          "[\"" + reference + "\"]}";
 
         ValueExpression valueExpression
           = WebUtils.createValueExpression(expression, Object.class);
