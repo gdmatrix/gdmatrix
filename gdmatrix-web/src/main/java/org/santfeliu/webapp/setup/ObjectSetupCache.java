@@ -34,6 +34,7 @@ import com.sun.istack.logging.Logger;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,7 +75,7 @@ public class ObjectSetupCache
     if (objectSetup == null)
     {
       File file = getConfigFile(setupName);
-      try (FileReader reader = new FileReader(file))
+      try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8))
       {
         objectSetup = ObjectSetup.read(reader);
         cache.put(setupName, objectSetup);
