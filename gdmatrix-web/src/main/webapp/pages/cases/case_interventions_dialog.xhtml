@@ -107,9 +107,9 @@
     <!-- Dynamic form -->
 
     <emcomp:dynamicProperties typeId="#{caseInterventionsTabBean.editing.intTypeId}"
-                              formSelector="#{caseObjectBean.formSelector}"
+                              formSelector="#{caseInterventionsTabBean.formSelector}"
                               properties="#{caseInterventionsTabBean.editing.property}" />  
-  
+
     <div class="field col-12 text-right">
       <p:commandButton action="#{caseInterventionsTabBean.store}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
