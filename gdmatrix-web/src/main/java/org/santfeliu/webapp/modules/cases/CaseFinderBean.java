@@ -31,9 +31,10 @@
 package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
+import java.util.ResourceBundle;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,9 +45,9 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.ColumnsHelper;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.SearchTab;
+import org.santfeliu.webapp.util.DataTableRow;
 
 /**
  *
@@ -58,11 +59,11 @@ public class CaseFinderBean extends FinderBean
 {
   private String smartFilter;
   private CaseFilter filter = new CaseFilter();
-  private List<Case> rows;
+  private List<DataTableRow> rows;
   private int firstRow;
   private boolean finding;
   private boolean outdated;
-  private ColumnsHelper columnsHelper;
+  private List<Column> columns;
  
   @Inject
   NavigatorBean navigatorBean;
@@ -73,32 +74,6 @@ public class CaseFinderBean extends FinderBean
   @Inject
   CaseObjectBean caseObjectBean;
   
-  @PostConstruct
-  public void init()
-  {
-    columnsHelper = new ColumnsHelper<Case>(caseTypeBean) 
-    {
-      @Override
-      public List<Case> getRows()
-      {
-        return rows != null ? rows : Collections.emptyList();
-      }
-      
-      @Override
-      public Case getRowData(Case row)
-      {
-        try
-        {
-          return CasesModuleBean.getPort(false).loadCase(row.getCaseId());
-        }
-        catch (Exception ex)
-        {
-          return null;
-        }
-      }
-    };
-  }
-
   @Override
   public ObjectBean getObjectBean()
   {
@@ -128,7 +103,7 @@ public class CaseFinderBean extends FinderBean
   @Override
   public String getObjectId(int position)
   {
-    return rows == null ? NEW_OBJECT_ID : rows.get(position).getCaseId();
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getRowId();
   }
 
   @Override
@@ -151,14 +126,24 @@ public class CaseFinderBean extends FinderBean
     }
   }
 
-  public List<Case> getRows()
+  public List getRows()
   {
     return rows;
   }
 
-  public void setRows(List<Case> rows)
+  public void setRows(List rows)
   {
     this.rows = rows;
+  }
+
+  public List<Column> getColumns()
+  {    
+    return columns;
+  }
+
+  public void setColumns(List<Column> columns)
+  {
+    this.columns = columns;
   }
 
   public int getFirstRow()
@@ -169,16 +154,6 @@ public class CaseFinderBean extends FinderBean
   public void setFirstRow(int firstRow)
   {
     this.firstRow = firstRow;
-  }
-
-  public ColumnsHelper getColumnsHelper()
-  {
-    return columnsHelper;
-  }
-
-  public void setColumnsHelper(ColumnsHelper columnsHelper)
-  {
-    this.columnsHelper = columnsHelper;
   }
 
   @Override
@@ -229,7 +204,7 @@ public class CaseFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ finding, getFilterTabSelector(), 
-      columnsHelper.getColumns(), filter, firstRow, getObjectPosition() };
+      columns, filter, firstRow, getObjectPosition() };
   }
 
   @Override
@@ -240,7 +215,7 @@ public class CaseFinderBean extends FinderBean
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
       setFilterTabSelector((Integer)stateArray[1]);
-      columnsHelper.setColumns((List<Column>)stateArray[2]);
+      columns = ((List<Column>)stateArray[2]);
       filter = (CaseFilter)stateArray[3];
       smartFilter = caseTypeBean.filterToQuery(filter);
 
@@ -259,13 +234,13 @@ public class CaseFinderBean extends FinderBean
   private void doFind(boolean autoLoad)
   {
     try
-    {
+    {        
       if (!finding)
       {
         rows = Collections.EMPTY_LIST;
       }
       else
-      {        
+      {     
         rows = new BigList(20, 10)
         {
           @Override
@@ -286,10 +261,17 @@ public class CaseFinderBean extends FinderBean
           public List getElements(int firstResult, int maxResults)
           {
             try
-            {         
+            {               
               filter.setFirstResult(firstResult);
-              filter.setMaxResults(maxResults);       
-              return CasesModuleBean.getPort(false).findCases(filter);
+              filter.setMaxResults(maxResults);      
+              for (Column column : columns)
+              {
+                filter.getOutputProperty().add(column.getName());
+              }
+              List<Case> cases = 
+                CasesModuleBean.getPort(false).findCases(filter);
+              
+              return toObjectArrayList(cases);     
             }
             catch (Exception ex)
             {
@@ -305,7 +287,7 @@ public class CaseFinderBean extends FinderBean
         {
           if (rows.size() == 1)
           {
-            navigatorBean.view(rows.get(0).getCaseId());
+            navigatorBean.view(rows.get(0).getRowId());
             caseObjectBean.setSearchTabSelector(
               caseObjectBean.getEditModeSelector());
           }
@@ -315,11 +297,16 @@ public class CaseFinderBean extends FinderBean
           }
         }
         
-        SearchTab searchTab = caseObjectBean.getActiveSearchTab();
-        if (searchTab != null)
+        List<SearchTab> searchTabs = caseObjectBean.getSearchTabs();
+        if (!searchTabs.isEmpty())
         {
-          columnsHelper.setColumns(searchTab.getColumns());
+          SearchTab searchTab = searchTabs.get(0);
+          columns = searchTab != null ? searchTab.getColumns() : 
+            getDefaultColumns();  
         }
+        
+        if (columns == null)
+          columns = getDefaultColumns();
       }
     }
     catch (Exception ex)
@@ -327,5 +314,44 @@ public class CaseFinderBean extends FinderBean
       error(ex);
     }
   }
+  
 
+  private List<Column> getDefaultColumns()
+  {
+    List<Column> defaultColumns = new ArrayList();
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.cases.web.resources.CaseBundle", getLocale());
+
+    Column col1 = new Column();
+    col1.setName("caseId");
+    col1.setLabel(bundle.getString("case_caseId"));
+    defaultColumns.add(col1);
+
+    Column col2 = new Column();
+    col2.setName("caseTypeId");
+    col2.setLabel(bundle.getString("case_type"));
+    defaultColumns.add(col2);
+
+    Column col3 = new Column();
+    col3.setName("title");
+    col3.setLabel(bundle.getString("case_title"));
+    defaultColumns.add(col3);
+
+    return defaultColumns;         
+  }  
+  
+  private List<DataTableRow> toObjectArrayList(List<Case> cases) 
+    throws Exception
+  {
+    List<DataTableRow> convertedRows = new ArrayList();
+    for (Case row : cases)
+    {
+      DataTableRow dataTableRow = 
+        new DataTableRow(row.getCaseId(), row.getCaseTypeId());
+      dataTableRow.setValues(row, columns);
+      convertedRows.add(dataTableRow);
+    }
+    return convertedRows;       
+  }
+  
 }

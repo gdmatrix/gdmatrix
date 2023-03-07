@@ -44,8 +44,8 @@
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3">   
-            <p:ajax event="itemSelect" listener="#{caseInterventionsTabBean.onTypeSelect}" 
-                    process="@this" update="@parent:@parent:@parent:int_dyn_form" />
+          <p:ajax event="itemSelect" 
+                  process="@this" update="@parent:@parent:@parent:case_interventions_dialog" />
           </emcomp:typeReference>
         </p:outputPanel>    
 
@@ -105,18 +105,16 @@
     </h:panelGroup>    
 
     <!-- Dynamic form -->
-    <h:panelGroup id="int_dyn_form" 
-                  styleClass="ui-fluid formgrid grid"
-                  layout="block" 
-                  rendered="#{caseInterventionsTabBean.editing != null}">
-      <f:event type="postAddToView" listener="#{caseInterventionsTabBean.loadDynamicComponents}" />
-    </h:panelGroup>
-    
+
+    <emcomp:dynamicProperties typeId="#{caseInterventionsTabBean.editing.intTypeId}"
+                              formSelector="#{caseObjectBean.formSelector}"
+                              properties="#{caseInterventionsTabBean.editing.property}" />  
+  
     <div class="field col-12 text-right">
       <p:commandButton action="#{caseInterventionsTabBean.store}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                        process="case_interventions_dialog"
-                       update="#{caseInterventionsTabBean.getAbsoluteId('case_interventions_table')} case_interventions_panel int_dyn_form"
+                       update="#{caseInterventionsTabBean.getAbsoluteId('case_interventions_table')} case_interventions_panel"
                        oncomplete="if (!isFacesError()) PF('interventionDataDialog').hide()"/>
       <p:commandButton action="#{caseInterventionsTabBean.cancel}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
@@ -124,6 +122,8 @@
                        immediate="true"
                        oncomplete="PF('interventionDataDialog').hide()"/>
     </div>      
+    
+  
 
   </p:dialog>  
 

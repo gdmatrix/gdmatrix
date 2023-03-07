@@ -41,44 +41,29 @@
         </div>              
       </f:facet> 
 
-      <p:headerRow field="caseCaseTypeId" expandable="true"
+      <p:headerRow groupBy="#{row.typeId}" expandable="true"
                    expanded="true" rendered="#{caseCasesTabBean.groupedView}">
         <p:column colspan="7" >
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.caseCaseTypeId)}"/>
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
         </p:column>
-      </p:headerRow>         
-
+      </p:headerRow> 
+      
       <p:column styleClass="w-2rem">
-        <i class="pi pi-#{caseCasesTabBean.isReverseRelation(row) ? 'arrow-left' : 'arrow-right'} text-xl" 
-           style="#{caseCasesTabBean.isReverseRelation(row) ? 'color:red' : 'color:green'}"></i>
+        <i class="pi pi-#{row.reverseRelation ? 'arrow-left' : 'arrow-right'} text-xl" 
+           style="#{row.reverseRelation ? 'color:red' : 'color:green'}"></i>
       </p:column>         
-
-      <p:column headerText="#{caseBundle.caseCases_id}" styleClass="col-1">
-        <h:outputText value="#{caseCasesTabBean.isReverseRelation(row) ? row.mainCase.caseId : row.relCase.caseId}" />
-      </p:column> 
-
-      <p:column headerText="#{caseBundle.caseCases_type}" styleClass="col-3"
-                rendered="#{!caseCasesTabBean.groupedView}">
-        <h:outputText value="#{typeTypeBean.getDescription(row.caseCaseTypeId)}"/>
-      </p:column>        
-
-      <p:column headerText="#{caseBundle.caseCases_title}" styleClass="#{caseCasesTabBean.groupedView ? 'col-7' : 'col-4'}">
-        <h:outputText value="#{caseCasesTabBean.isReverseRelation(row) ? row.mainCase.title : row.relCase.title}" />
-      </p:column>         
-
-      <p:column headerText="#{caseBundle.caseCases_startDate}" styleClass="col-1 text-center">
-        <h:outputText value="#{row.startDate}" converter="dateConverter" />
-      </p:column>  
-
-      <p:column headerText="#{caseBundle.caseCases_endDate}" styleClass="col-1 text-center">
-        <h:outputText value="#{row.endDate}" converter="dateConverter" />
-      </p:column>   
+      
+      <p:columns value="#{caseCasesTabBean.columns}" var="column" columnIndexVar="i"
+                 filterable="false" sortable="false" resizable="false" 
+                 headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}">
+        <h:outputText value="#{row.values[i]}" />
+      </p:columns>      
 
       <p:column styleClass="col-2 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton action="#{caseCasesTabBean.edit(row)}"
                            icon="pi pi-pencil"
-                           rendered="#{row.caseCaseId != null and not caseCasesTabBean.isReverseRelation(row)}"
+                           rendered="#{row.rowId != null and not row.reverseRelation}"
                            styleClass="rounded-button ui-button-flat"                               
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            process="@this" 
@@ -91,7 +76,7 @@
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           rendered="#{row.caseCaseId != null}"
+                           rendered="#{row.rowId != null}"
                            styleClass="rounded-button ui-button-flat">            
             <p:confirm header="#{objectBundle.confirm_remove_header}" 
                        message="#{objectBundle.confirm_remove_message}" 

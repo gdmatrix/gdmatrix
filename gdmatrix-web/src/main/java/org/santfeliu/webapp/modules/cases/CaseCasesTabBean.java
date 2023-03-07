@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.faces.view.ViewScoped;
@@ -55,6 +56,8 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.util.DataTableRow;
 
 /**
  *
@@ -71,15 +74,20 @@ public class CaseCasesTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    List<CaseCaseView> rows;
+    List<CaseCasesDataTableRow> rows;
     int firstRow = 0;
     boolean groupedView = true;
+    List<Column> columns;    
   }
 
   private CaseCase editing;
+  private String formSelector;
 
   @Inject
   CaseObjectBean caseObjectBean;
+  
+  @Inject
+  CaseTypeBean caseTypeBean;
 
   public TabInstance getCurrentTabInstance()
   {
@@ -111,14 +119,24 @@ public class CaseCasesTabBean extends TabBean
     return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
   }
 
-  public List<CaseCaseView> getRows()
+  public List<CaseCasesDataTableRow> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<CaseCaseView> rows)
+  public void setRows(List<CaseCasesDataTableRow> rows)
   {
     getCurrentTabInstance().rows = rows;
+  }
+  
+  public List<Column> getColumns()
+  {
+    return getCurrentTabInstance().columns;
+  }
+  
+  public void setColumns(List<Column> columns)
+  {
+    getCurrentTabInstance().columns = columns;
   }
 
   public CaseCase getEditing()
@@ -129,6 +147,16 @@ public class CaseCasesTabBean extends TabBean
   public void setEditing(CaseCase editing)
   {
     this.editing = editing;
+  }
+
+  public String getFormSelector()
+  {
+    return formSelector;
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    this.formSelector = formSelector;
   }
 
   public int getFirstRow()
@@ -219,6 +247,15 @@ public class CaseCasesTabBean extends TabBean
       try
       {
         String typeId = getTabBaseTypeId();
+        
+        getCurrentTabInstance().columns = getDefaultColumns();
+        EditTab editTab = caseObjectBean.getActiveEditTab();
+        if (editTab != null)
+        {
+          List<Column> columns = editTab.getColumns();
+          if (columns != null && !columns.isEmpty())
+            getCurrentTabInstance().columns = editTab.getColumns();    
+        }
 
         String[] params = typeId.split(TYPEID_SEPARATOR);
         if (params != null && params.length == 2)
@@ -226,7 +263,7 @@ public class CaseCasesTabBean extends TabBean
           String cpTypeId1 = params[0];
           String cpTypeId2 = params[1];
           getCurrentTabInstance().rows =
-            getResultsByPersons(cpTypeId1, cpTypeId2);
+            getResultsByPersons(cpTypeId1, cpTypeId2);          
         }
         else
         {
@@ -247,22 +284,11 @@ public class CaseCasesTabBean extends TabBean
     }
   }
 
-  public boolean isReverseRelation(CaseCaseView caseCase)
-  {
-    String objectId = getObjectId();
-
-    return caseCase != null
-      && objectId.equals(caseCase.getRelCase().getCaseId())
-      && !objectId.equals(caseCase.getMainCase().getCaseId());
-  }
-
-  public void edit(CaseCaseView caseCaseView)
+  public void edit(DataTableRow row)
   {
     String caseCaseId = null;
-    if (caseCaseView != null)
-    {
-      caseCaseId = caseCaseView.getCaseCaseId();
-    }
+    if (row != null)
+      caseCaseId = row.getRowId();
 
     try
     {
@@ -305,13 +331,13 @@ public class CaseCasesTabBean extends TabBean
     editing = null;
   }
 
-  public void remove(CaseCaseView row)
+  public void remove(DataTableRow row)
   {
     try
     {
       if (row != null)
       {
-        String caseCaseId = row.getCaseCaseId();
+        String caseCaseId = row.getRowId();
         CasesModuleBean.getPort(false).removeCaseCase(caseCaseId);
         load();
       }
@@ -325,7 +351,7 @@ public class CaseCasesTabBean extends TabBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing };
+    return new Object[]{ editing, formSelector };
   }
 
   @Override
@@ -335,6 +361,7 @@ public class CaseCasesTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (CaseCase)stateArray[0];
+      formSelector = (String)stateArray[1];
 
       load();
     }
@@ -358,7 +385,7 @@ public class CaseCasesTabBean extends TabBean
     }
   }
 
-  private List<CaseCaseView> getResultsByDefault(String caseCaseTypeId)
+  private List<CaseCasesDataTableRow> getResultsByDefault(String caseCaseTypeId)
     throws Exception
   {
     CaseCaseFilter filter = new CaseCaseFilter();
@@ -385,11 +412,11 @@ public class CaseCasesTabBean extends TabBean
       }
     }
 
-    return results;
+    return toDataTableRows(results);
   }
 
-  private List<CaseCaseView> getResultsByPersons(String typeId1, String typeId2)
-    throws Exception
+  private List<CaseCasesDataTableRow> getResultsByPersons(String typeId1, 
+    String typeId2) throws Exception
   {
     CasePersonFilter filter = new CasePersonFilter();
     filter.setCaseId(getObjectId());
@@ -409,7 +436,71 @@ public class CaseCasesTabBean extends TabBean
       matcher.addIfMatch(casePersons);
     }
 
-    return matcher.getResults();
+    return toDataTableRows(matcher.getResults());
+  }
+  
+  private List<Column> getDefaultColumns()
+  {
+    List<Column> defaultColumns = new ArrayList();
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.cases.web.resources.CaseBundle", getLocale());
+
+    Column col1 = new Column();
+    col1.setName("caseCaseId");
+    col1.setLabel(bundle.getString("caseCases_id"));
+    defaultColumns.add(col1);
+
+    Column col2 = new Column();
+    col2.setName("caseCaseTypeId");
+    col2.setLabel(bundle.getString("caseCases_type"));
+    defaultColumns.add(col2);
+
+    Column col3 = new Column();
+    col3.setName("startDate");
+    col3.setLabel(bundle.getString("caseCases_startDate"));
+    defaultColumns.add(col3);
+    
+    Column col4 = new Column();
+    col4.setName("endDate");
+    col4.setLabel(bundle.getString("caseCases_endDate"));
+    defaultColumns.add(col4);    
+
+    return defaultColumns;         
+  }  
+  
+  private List<CaseCasesDataTableRow> toDataTableRows(List<CaseCaseView> 
+    caseCaseViews) throws Exception
+  {
+    List<CaseCasesDataTableRow> convertedRows = new ArrayList<>();
+    for (CaseCaseView row : caseCaseViews)
+    {
+      CaseCasesDataTableRow dataTableRow = 
+        new CaseCasesDataTableRow(row.getCaseCaseId(), row.getCaseCaseTypeId(),
+        row.getMainCase().getCaseId(), row.getRelCase().getCaseId());
+      dataTableRow.setValues(row, getCurrentTabInstance().columns);
+      convertedRows.add(dataTableRow);
+    }    
+    return convertedRows;
+  }  
+  
+  public class CaseCasesDataTableRow extends DataTableRow
+  {
+    private boolean reverseRelation;
+
+    public CaseCasesDataTableRow(String rowId, String typeId,
+      String mainCaseId, String relCaseId)
+    {
+      super(rowId, typeId);
+      String objectId = getObjectId();
+      reverseRelation = 
+        objectId.equals(relCaseId) && !objectId.equals(mainCaseId);      
+    }
+
+    public boolean isReverseRelation()
+    {
+      return reverseRelation;
+    }
+    
   }
 
   private class CaseMatcher

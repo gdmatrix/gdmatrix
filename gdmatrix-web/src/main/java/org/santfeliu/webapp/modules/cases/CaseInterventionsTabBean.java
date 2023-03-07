@@ -31,36 +31,27 @@
 package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import java.util.ResourceBundle;
 import javax.faces.component.UIComponent;
-import javax.faces.event.ComponentSystemEvent;
-import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
 import org.matrix.cases.InterventionView;
-import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
-import org.santfeliu.form.FormDescriptor;
-import org.santfeliu.form.FormFactory;
-import org.santfeliu.form.builder.TypeFormBuilder;
-import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ColumnsHelper;
-import org.santfeliu.webapp.setup.PropertyMap;
-import org.santfeliu.webapp.helpers.PropertyHelper;
+import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.ComponentUtils;
+import org.santfeliu.webapp.util.DataTableRow;
 
 /**
  *
@@ -73,64 +64,22 @@ public class CaseInterventionsTabBean extends TabBean
   @Inject
   InterventionTypeBean interventionTypeBean;
   
-  private ColumnsHelper columnsHelper;
-  
   Map<String, TabInstance> tabInstances = new HashMap<>();
   
-
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    List<InterventionView> rows;
+    List<DataTableRow> rows;
     int firstRow = 0;
     boolean groupedView = true;
+    List<Column> columns;   
   }
 
   private Intervention editing;
-  private PropertyHelper propertyHelper;
+  private String formSelector;
 
   @Inject
   CaseObjectBean caseObjectBean;
-
-  @PostConstruct
-  public void init()
-  {
-    propertyHelper = new PropertyHelper()
-    {
-      @Override
-      public List<Property> getProperties()
-      {
-        return editing != null ? editing.getProperty() :
-          Collections.emptyList();
-      }
-    };
-    
-    columnsHelper = new ColumnsHelper<InterventionView>(interventionTypeBean)
-    {
-      @Override
-      public List<InterventionView> getRows()
-      {
-        TabInstance tabInstance = getCurrentTabInstance();
-        return tabInstance.rows;
-      }
-
-      @Override
-      public InterventionView getRowData(InterventionView row)
-      {
-        try
-        {
-          Intervention intervention = 
-            CasesModuleBean.getPort(false).loadIntervention(row.getIntId());
-          row.getProperty().addAll(intervention.getProperty());
-          return row;
-        }
-        catch (Exception ex)
-        {
-          return null;
-        }        
-      }  
-    };
-  }
 
   @Override
   public ObjectBean getObjectBean()
@@ -178,6 +127,16 @@ public class CaseInterventionsTabBean extends TabBean
     this.editing = editing;
   }
 
+  public String getFormSelector()
+  {
+    return formSelector;
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    this.formSelector = formSelector;
+  }
+
   public boolean isGroupedView()
   {
     return getCurrentTabInstance().groupedView;
@@ -187,7 +146,7 @@ public class CaseInterventionsTabBean extends TabBean
   {
     getCurrentTabInstance().groupedView = groupedView;
   }
-
+  
   public String getPersonId()
   {
     return editing != null ? editing.getPersonId() : null;
@@ -202,19 +161,24 @@ public class CaseInterventionsTabBean extends TabBean
     showDialog();
   }
 
-  public PropertyHelper getPropertyHelper()
-  {
-    return propertyHelper;
-  }
-
-  public List<InterventionView> getRows()
+  public List<DataTableRow> getRows()
   {
     return getCurrentTabInstance().rows;
   }
 
-  public void setRows(List<InterventionView> rows)
+  public void setRows(List<DataTableRow> rows)
   {
     this.getCurrentTabInstance().rows = rows;
+  }
+  
+  public List<Column> getColumns()
+  {
+    return getCurrentTabInstance().columns;
+  }
+  
+  public void setColumns(List<Column> columns)
+  {
+    getCurrentTabInstance().columns = columns;
   }
 
   public int getFirstRow()
@@ -225,16 +189,6 @@ public class CaseInterventionsTabBean extends TabBean
   public void setFirstRow(int firstRow)
   {
     getCurrentTabInstance().firstRow = firstRow;
-  }
-
-  public ColumnsHelper getColumnsHelper()
-  {
-    return columnsHelper;
-  }
-
-  public void setColumnsHelper(ColumnsHelper columnsHelper)
-  {
-    this.columnsHelper = columnsHelper;
   }
 
   public String getStartDateTime()
@@ -357,16 +311,20 @@ public class CaseInterventionsTabBean extends TabBean
         String typeId = getTabBaseTypeId();
         if (typeId != null)
           filter.setIntTypeId(typeId);
-
-        getCurrentTabInstance().rows =
-          CasesModuleBean.getPort(false).findInterventionViews(filter);
         
-        
+        getCurrentTabInstance().columns = getDefaultColumns();
         EditTab editTab = caseObjectBean.getActiveEditTab();
         if (editTab != null)
         {
-          columnsHelper.setColumns(editTab.getColumns());
+          List<Column> columns = editTab.getColumns();
+          if (columns != null && !columns.isEmpty())
+            getCurrentTabInstance().columns = editTab.getColumns();    
         }
+        
+        List<InterventionView> interventions = 
+          CasesModuleBean.getPort(false).findInterventionViews(filter);
+
+        setRows(toDataTableRows(interventions));
       }
       catch (Exception ex)
       {
@@ -382,13 +340,11 @@ public class CaseInterventionsTabBean extends TabBean
     }
   }
 
-  public void edit(InterventionView intView)
+  public void edit(DataTableRow row)
   {
     String intId = null;
-    if (intView != null)
-    {
-      intId = intView.getIntId();
-    }
+    if (row != null)
+      intId = row.getRowId();
 
     try
     {
@@ -401,9 +357,7 @@ public class CaseInterventionsTabBean extends TabBean
         if (panel != null)
         {
           panel.getChildren().clear();
-          includeDynamicComponents(panel);
         }
-
       }
       else
       {
@@ -432,13 +386,13 @@ public class CaseInterventionsTabBean extends TabBean
     editing = null;
   }
 
-  public void remove(InterventionView row)
+  public void remove(DataTableRow row)
   {
     try
     {
       if (row != null)
       {
-        String intId = row.getIntId();
+        String intId = row.getRowId();
         CasesModuleBean.getPort(false).removeIntervention(intId);
         load();
       }
@@ -452,7 +406,7 @@ public class CaseInterventionsTabBean extends TabBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing, columnsHelper };
+    return new Object[]{ editing, formSelector };
   }
 
   @Override
@@ -462,45 +416,9 @@ public class CaseInterventionsTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (Intervention)stateArray[0];
-      columnsHelper = (ColumnsHelper)stateArray[1];
+      formSelector = (String)stateArray[1];
 
       load();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public void onTypeSelect(SelectEvent<SelectItem> event)
-  {
-    changeForm();
-  }
-
-  public void changeForm()
-  {
-    try
-    {
-      UIComponent panel =
-        ComponentUtils.findComponent(":mainform:search_tabs:int_dyn_form");
-      panel.getChildren().clear();
-      includeDynamicComponents(panel);
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  public void loadDynamicComponents(ComponentSystemEvent event)
-  {
-    try
-    {
-      UIComponent panel = event.getComponent();
-      if (panel.getChildCount() == 0)
-      {
-        includeDynamicComponents(panel);
-      }
     }
     catch (Exception ex)
     {
@@ -520,53 +438,48 @@ public class CaseInterventionsTabBean extends TabBean
       error(ex);
     }
   }
-
-  private void includeDynamicComponents(UIComponent parent) throws Exception
-  {
-    // load dynamic fields
-    PropertyMap properties = caseObjectBean.getActiveEditTab().getProperties();
-    String formName = properties.getString("formName");
-    if (formName == null && editing != null)
-      formName = findForm(editing.getIntTypeId());
-
-    if (!StringUtils.isBlank(formName))
-    {
-      ComponentUtils.includeFormComponents(parent, formName,
-        "caseInterventionsTabBean.propertyHelper.value",
-        Collections.emptyMap()); // TODO: take map from intervention
-    }
-    else
-    {
-      String scriptName = properties.getString("scriptName");
-      if (!StringUtils.isBlank(scriptName))
-      {
-        ComponentUtils.includeScriptComponents(parent, scriptName);
-      }
-    }
-  }
-
-  private String findForm(String typeId)
-  {
-    String selector = null;
-    
-    if (typeId != null)
-    {
-      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-      String selectorBase
-        = TypeFormBuilder.PREFIX + ":" + typeId
-        + TypeFormBuilder.USERID + userSessionBean.getUserId()
-        + TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
-      FormFactory formFactory = FormFactory.getInstance();
-      List<FormDescriptor> descriptors = formFactory.findForms(selectorBase);
-      for (FormDescriptor descriptor : descriptors)
-      {
-        //TODO: List of selectors
-        selector = descriptor.getSelector();
-      }
-    }
-
-    return selector;
-  }
   
+  private List<Column> getDefaultColumns()
+  {
+    List<Column> defaultColumns = new ArrayList();
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.cases.web.resources.CaseBundle", getLocale());
+
+    Column col1 = new Column();
+    col1.setName("intId");
+    col1.setLabel(bundle.getString("caseInterventions_id"));
+    defaultColumns.add(col1);
+
+    Column col2 = new Column();
+    col2.setName("intTypeId");
+    col2.setLabel(bundle.getString("caseInterventions_type"));
+    defaultColumns.add(col2);
+
+    Column col3 = new Column();
+    col3.setName("startDate");
+    col3.setLabel(bundle.getString("caseInterventions_startDate"));
+    defaultColumns.add(col3);
+    
+    Column col4 = new Column();
+    col4.setName("endDate");
+    col4.setLabel(bundle.getString("caseInterventions_endDate"));
+    defaultColumns.add(col4);    
+
+    return defaultColumns;         
+  }    
+  
+  private List<DataTableRow> toDataTableRows(List<InterventionView> interventions) 
+    throws Exception
+  {
+    List<DataTableRow> convertedRows = new ArrayList<>();
+    for (InterventionView row : interventions)
+    {
+      DataTableRow dataTableRow = 
+        new DataTableRow(row.getIntId(), row.getIntTypeId());
+      dataTableRow.setValues(row, getCurrentTabInstance().columns);
+      convertedRows.add(dataTableRow);
+    }    
+    return convertedRows;
+  }
 
 }

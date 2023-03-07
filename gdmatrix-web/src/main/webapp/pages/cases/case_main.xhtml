@@ -21,10 +21,12 @@
         <p:outputLabel for="@next" value="#{caseObjectBean.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />
         <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
                               type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
-                              styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3" />
+                              minQueryLength="3">
+          <p:ajax event="itemSelect" 
+                  process="@this" update=":mainform:search_tabs:tabs" />
+        </emcomp:typeReference>
       </p:outputPanel>
 
       <div class="field col-12 md:col-12">
@@ -79,8 +81,8 @@
       
     </div>
 
-    <h:panelGroup id="dyn_form" styleClass="ui-fluid formgrid grid" layout="block">
-      <f:event type="postAddToView" listener="#{caseObjectBean.loadDynamicComponents}" />
-    </h:panelGroup>
-    
+    <emcomp:dynamicProperties typeId="#{caseObjectBean.case.caseTypeId}"
+                              formSelector="#{caseObjectBean.formSelector}"
+                              properties="#{caseObjectBean.case.property}" />
+  
 </ui:composition>

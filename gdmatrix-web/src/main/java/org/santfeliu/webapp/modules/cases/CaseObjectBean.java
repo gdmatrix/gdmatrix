@@ -31,27 +31,17 @@
 package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.component.UIComponent;
-import javax.faces.event.ComponentSystemEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.dic.Property;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.setup.PropertyMap;
-import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.helpers.TypedHelper;
-import org.santfeliu.webapp.util.ComponentUtils;
 
 /**
  *
@@ -62,8 +52,8 @@ import org.santfeliu.webapp.util.ComponentUtils;
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
-  private PropertyHelper propertyHelper;
   private TypedHelper typedHelper;
+  private String formSelector;
 
   @Inject
   CaseTypeBean caseTypeBean;
@@ -75,15 +65,6 @@ public class CaseObjectBean extends ObjectBean
   public void init()
   {
     System.out.println("Creating " + this);
-
-    propertyHelper = new PropertyHelper()
-    {
-      @Override
-      public List<Property> getProperties()
-      {
-        return cas.getProperty();
-      }
-    };
 
     typedHelper = new TypedHelper()
     {
@@ -114,14 +95,19 @@ public class CaseObjectBean extends ObjectBean
     return caseFinderBean;
   }
 
-  public PropertyHelper getPropertyHelper()
-  {
-    return propertyHelper;
-  }
-
   public TypedHelper getTypedHelper()
   {
     return typedHelper;
+  }
+
+  public String getFormSelector()
+  {
+    return formSelector;
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    this.formSelector = formSelector;
   }
 
   @Override
@@ -204,15 +190,9 @@ public class CaseObjectBean extends ObjectBean
     if (!NEW_OBJECT_ID.equals(objectId))
       cas = CasesModuleBean.getPort(false).loadCase(objectId);
     else
-      cas = new Case();
-
-    if (PrimeFaces.current().isAjaxRequest())
     {
-      UIComponent panel
-        = ComponentUtils.findComponent(":mainform:search_tabs:tabs:dyn_form");
-
-      panel.getChildren().clear();
-      includeDynamicComponents(panel);
+      cas = new Case();
+      cas.setCaseTypeId(getBaseTypeInfo().getBaseTypeId());
     }
   }
 
@@ -228,51 +208,15 @@ public class CaseObjectBean extends ObjectBean
   @Override
   public Serializable saveState()
   {
-    return cas;
+    return new Object[] { cas, formSelector };
   }
 
   @Override
   public void restoreState(Serializable state)
   {
-    this.cas = (Case) state;
-  }
-
-  public void loadDynamicComponents(ComponentSystemEvent event)
-  {
-    try
-    {
-      UIComponent panel = event.getComponent();
-      if (panel.getChildCount() == 0)
-      {
-        includeDynamicComponents(panel);
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
-
-  private void includeDynamicComponents(UIComponent parent) throws Exception
-  {
-    // load dynamic fields
-    PropertyMap properties = this.getObjectSetup().getProperties();
-
-    String formName = properties.getString("formName");
-    if (!StringUtils.isBlank(formName))
-    {
-      ComponentUtils.includeFormComponents(parent, formName,
-        "caseObjectBean.propertyHelper.value",
-        Collections.emptyMap()); // TODO: take map from cas
-    }
-    else
-    {
-      String scriptName = properties.getString("scriptName");
-      if (!StringUtils.isBlank(scriptName))
-      {
-        ComponentUtils.includeScriptComponents(parent, scriptName);
-      }
-    }
+    Object[] array = (Object[])state;
+    this.cas = (Case) array[0];
+    this.formSelector = (String)array[1];
   }
 
 }

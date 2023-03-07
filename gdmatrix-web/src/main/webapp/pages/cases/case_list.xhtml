@@ -2,36 +2,28 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"      
-  xmlns:p="http://primefaces.org/ui">
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:f="http://xmlns.jcp.org/jsf/core">
   
-  <p:dataTable value="#{caseFinderBean.columnsHelper.resultList}" 
+  <p:dataTable value="#{caseFinderBean.rows}" 
                var="row" stripedRows="true" 
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{caseFinderBean.firstRow}"
-               rowStyleClass="#{row.caseId == caseObjectBean.objectId ? 'current' : ''}"
+               rowStyleClass="#{row.rowId == caseObjectBean.objectId ? 'current' : ''}"
                rows="10"
                rowIndexVar="rowIndex">
-    
-    <p:columns value="#{caseFinderBean.columnsHelper.columns}" var="column" 
-               headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}"
-               filterable="false" sortable="false" resizable="false"
-               rendered="#{not empty caseFinderBean.columnsHelper.columns}">
+
+    <p:columns value="#{caseFinderBean.columns}" var="column"  columnIndexVar="i"
+               filterable="false" sortable="false" resizable="false" 
+               headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}">
+      <h:outputText value="#{row.values[i]}" />
     </p:columns>    
 
-    <p:column headerText="#{caseBundle.case_caseId}" styleClass="w-1" rendered="#{empty caseFinderBean.columnsHelper.columns}">
-      <h:outputText value="#{row.caseId}" />
-    </p:column>   
-    <p:column headerText="#{caseBundle.case_caseTypeId}" styleClass="w-2" rendered="#{empty caseFinderBean.columnsHelper.columns}">
-      <h:outputText value="#{row.caseTypeId}" />
-    </p:column>         
-    <p:column headerText="#{caseBundle.case_title}" styleClass="w-7" rendered="#{empty caseFinderBean.columnsHelper.columns}">
-      <h:outputText value="#{row.title}" />
-    </p:column>
-    <p:column styleClass="w-2 text-right">
+    <p:column styleClass="col-1 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
-                       action="#{navigatorBean.select(row.caseId)}"
+                       action="#{navigatorBean.select(row.objectId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"

@@ -13,7 +13,7 @@
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="case_interventions_table" value="#{caseInterventionsTabBean.columnsHelper.rows}" 
+    <p:dataTable id="case_interventions_table" value="#{caseInterventionsTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" 
                  size="small" paginatorPosition="bottom"
@@ -39,52 +39,24 @@
         </div>              
       </f:facet>      
 
-      <p:headerRow field="intTypeId" expandable="true"
+      <p:headerRow expandable="true" groupBy="#{row.typeId}"
                    expanded="true" rendered="#{caseInterventionsTabBean.groupedView}">
         <p:column colspan="6" >
-          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.intTypeId)}"/>
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
         </p:column>
       </p:headerRow>  
-
-      <p:columns value="#{caseInterventionsTabBean.columnsHelper.columns}" var="column" 
-                 headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}"
-                 filterable="false" sortable="false" resizable="false"
-                 rendered="#{not empty caseInterventionsTabBean.columnsHelper.columns}">
-      </p:columns>        
-
-      <p:column headerText="#{caseBundle.caseInterventions_id}" styleClass="col-1"
-                rendered="#{empty caseInterventionsTabBean.columnsHelper.columns}">
-        <h:outputText value="#{row.intId}"/>
-      </p:column> 
-
-      <p:column headerText="#{caseBundle.caseInterventions_type}" 
-                styleClass="w-4"
-                rendered="#{!caseInterventionsTabBean.groupedView and empty caseInterventionsTabBean.columnsHelper.columns}">
-        <h:outputText value="#{typeTypeBean.getDescription(row.intTypeId)}"/>
-      </p:column>        
-
-      <p:column headerText="#{caseBundle.caseInterventions_person}" 
-                styleClass="#{!caseInterventionsTabBean.groupedView} ? 'col-4' : 'col-8'"
-                rendered="#{empty caseInterventionsTabBean.columnsHelper.columns}"
-                >
-        <h:outputText value="#{row.personView.fullName}"/>
-      </p:column>
-
-      <p:column headerText="#{caseBundle.caseInterventions_startDate}" styleClass="col-1 text-center"
-                rendered="#{empty caseInterventionsTabBean.columnsHelper.columns}">
-        <h:outputText value="#{row.startDate}" converter="dateConverter"/>
-      </p:column>  
-
-      <p:column headerText="#{caseBundle.caseInterventions_endDate}" styleClass="col-1 text-center"
-                rendered="#{empty caseInterventionsTabBean.columnsHelper.columns}">
-        <h:outputText value="#{row.endDate}" converter="dateConverter"/>
-      </p:column>   
-
+    
+      <p:columns value="#{caseInterventionsTabBean.columns}" var="column" columnIndexVar="i"
+                 filterable="false" sortable="false" resizable="false" 
+                 headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}">
+        <h:outputText value="#{row.values[i]}" />
+      </p:columns> 
+      
       <p:column styleClass="col-1 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton action="#{caseInterventionsTabBean.edit(row)}"
                            icon="pi pi-pencil"
-                           rendered="#{row.intId != null}"
+                           rendered="#{row.values[0] != null}"
                            styleClass="rounded-button ui-button-flat"                               
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            process="@this" 
@@ -97,7 +69,7 @@
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                           rendered="#{row.intId != null}"
+                           rendered="#{row.values[0] != null}"
                            styleClass="rounded-button ui-button-flat">            
             <p:confirm header="#{objectBundle.confirm_remove_header}" 
                        message="#{objectBundle.confirm_remove_message}" 

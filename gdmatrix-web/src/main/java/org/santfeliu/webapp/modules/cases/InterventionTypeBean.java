@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Intervention;
 import org.matrix.cases.InterventionFilter;
+import org.matrix.cases.InterventionView;
 import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -89,6 +90,11 @@ public class InterventionTypeBean
   public String getTypeId(Intervention intervention)
   {
     return intervention.getIntTypeId();
+  }
+  
+  public String getTypeId(InterventionView interventionView)
+  {
+    return interventionView.getIntTypeId();
   }
 
   @Override
