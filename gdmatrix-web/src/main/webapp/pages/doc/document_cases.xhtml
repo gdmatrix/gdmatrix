@@ -25,10 +25,10 @@
         <div class="flex justify-content-end w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{documentCasesTabBean.create}" 
-                           process="@this"
-                           update=":mainform:search_tabs:tabs @parent:@parent:@parent:document_cases_dialog"
+                           process=":mainform:search_tabs:tabs"
+                           update="@parent:@parent:@parent:document_cases_dialog"
                            resetValues="true"
-                           oncomplete="PF('documentCasesDialog').show()"                                 
+                           oncomplete="if (!isFacesError()) PF('documentCasesDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
       </f:facet>      
@@ -59,7 +59,7 @@
                          process=":mainform:search_tabs:tabs" 
                          update="@parent:@parent:@parent:@parent:document_cases_dialog"
                          resetValues="true"
-                         oncomplete="PF('documentCasesDialog').show()"
+                         oncomplete="if (!isFacesError()) PF('documentCasesDialog').show()"
                          />
         <p:commandButton action="#{documentCasesTabBean.remove(row)}"
                          process="@this" 

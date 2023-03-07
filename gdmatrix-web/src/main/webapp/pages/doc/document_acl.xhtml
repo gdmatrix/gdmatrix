@@ -65,10 +65,10 @@
         <div class="flex justify-content-end w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{documentACLTabBean.create}"
-                           process="@this"
-                           update=":mainform:search_tabs:tabs @parent:@parent:@parent:document_acl_dialog"
+                           process=":mainform:search_tabs:tabs"
+                           update="@parent:@parent:@parent:document_acl_dialog"
                            resetValues="true"
-                           oncomplete="PF('documentACLDialog').show()"                                 
+                           oncomplete="if (!isFacesError()) PF('documentACLDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
       </f:facet>      
@@ -95,7 +95,7 @@
                          process=":mainform:search_tabs:tabs" 
                          update="@parent:@parent:@parent:@parent:document_acl_dialog"
                          resetValues="true"
-                         oncomplete="PF('documentACLDialog').show()"
+                         oncomplete="if (!isFacesError()) PF('documentACLDialog').show()"
                          />
         <p:commandButton action="#{documentACLTabBean.remove(row)}"
                          process="@this" 

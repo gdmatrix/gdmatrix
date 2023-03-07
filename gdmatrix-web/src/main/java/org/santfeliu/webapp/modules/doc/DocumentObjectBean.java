@@ -305,7 +305,8 @@ public class DocumentObjectBean extends ObjectBean
     {
       document = DocModuleBean.getPort(false).loadDocument(
         objectId, 0, ContentInfo.METADATA);
-    } else
+    }
+    else
     {
       document = new Document();
     }
@@ -362,7 +363,8 @@ public class DocumentObjectBean extends ObjectBean
       document = port.loadDocument(document.getDocId(), document.getVersion(),
         ContentInfo.METADATA);
       info("Document locked by " + document.getLockUserId());
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       error(ex);
     }
@@ -377,7 +379,8 @@ public class DocumentObjectBean extends ObjectBean
       document = port.loadDocument(document.getDocId(), document.getVersion(),
         ContentInfo.METADATA);
       info("Document unlocked.");
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       error(ex);
     }
@@ -395,7 +398,8 @@ public class DocumentObjectBean extends ObjectBean
         IOUtils.writeToFile(is, fileToStore);
       }
       uploadedFile.delete();
-    } catch (Exception ex)
+    }
+    catch (Exception ex)
     {
       error(ex);
     }
@@ -417,7 +421,8 @@ public class DocumentObjectBean extends ObjectBean
         if (isNew())
         {
           versions = Collections.EMPTY_LIST;
-        } else
+        }
+        else
         {
           DocumentFilter filter = new DocumentFilter();
           filter.getDocId().add(document.getDocId());
@@ -459,7 +464,8 @@ public class DocumentObjectBean extends ObjectBean
       {
         document = DocModuleBean.getPort(false).loadDocument(
           objectId, version, ContentInfo.METADATA);
-      } catch (Exception ex)
+      }
+      catch (Exception ex)
       {
         error(ex);
       }

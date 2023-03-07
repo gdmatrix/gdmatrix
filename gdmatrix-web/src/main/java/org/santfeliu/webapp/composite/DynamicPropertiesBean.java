@@ -39,6 +39,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlOutputText;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
 import javax.faces.model.SelectItem;
@@ -155,13 +156,14 @@ public class DynamicPropertiesBean implements Serializable
         setFormSelector(formSelector);
       }
 
-      EditableValueHolder hidden =
-        (EditableValueHolder)panel.findComponent("form_selector");
-      String actualFormSelector = (String)hidden.getValue();
+      // save formSelector in styleClass property of outputText component
+      HtmlOutputText hidden =
+        (HtmlOutputText)panel.findComponent("form_selector");
+      String actualFormSelector = (String)hidden.getStyleClass();
 
       if (!formSelector.equals(actualFormSelector))
       {
-        ((EditableValueHolder)hidden).setValue(formSelector);
+        hidden.setStyleClass(formSelector);
 
         panel.getChildren().clear();
 
