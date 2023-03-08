@@ -30,17 +30,24 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.matrix.cases.CasePerson;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
+import org.matrix.dic.DictionaryConstants;
+import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.setup.EditTab;
 
 /**
  *
@@ -50,8 +57,17 @@ import org.santfeliu.webapp.TabBean;
 @ViewScoped
 public class CasePersonsTabBean extends TabBean
 {
-  private List<CasePersonView> casePersonViews;
-  private int firstRow;
+  private Map<String, TabInstance> tabInstances = new HashMap<>();
+  private CasePerson editing;
+  private boolean importAddresses;
+
+  public class TabInstance
+  {
+    String objectId = NEW_OBJECT_ID;
+    List<CasePersonView> rows;
+    int firstRow = 0;
+    boolean groupedView = false;    
+  }
 
   @Inject
   CaseObjectBean caseObjectBean;
@@ -67,25 +83,98 @@ public class CasePersonsTabBean extends TabBean
   {
     return caseObjectBean;
   }
-
-  public List<CasePersonView> getCasePersonViews()
+  
+  public TabInstance getCurrentTabInstance()
   {
-    return casePersonViews;
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    TabInstance tabInstance = tabInstances.get(editTab.getSubviewId());
+    if (tabInstance == null)
+    {
+      tabInstance = new TabInstance();
+      tabInstances.put(editTab.getSubviewId(), tabInstance);
+    }
+    return tabInstance;
+  }  
+
+  public List<CasePersonView> getRows()
+  {
+    return getCurrentTabInstance().rows;
   }
 
-  public void setCasePersonViews(List<CasePersonView> casePersonViews)
+  public void setRows(List<CasePersonView> casePersonViews)
   {
-    this.casePersonViews = casePersonViews;
+    getCurrentTabInstance().rows = casePersonViews;
   }
 
   public int getFirstRow()
   {
-    return firstRow;
+    return getCurrentTabInstance().firstRow;
   }
 
   public void setFirstRow(int firstRow)
   {
-    this.firstRow = firstRow;
+    getCurrentTabInstance().firstRow = firstRow;
+  }
+  
+  public boolean isGroupedView()
+  {
+    return getCurrentTabInstance().groupedView;
+  }
+
+  public void setGroupedView(boolean groupedView)
+  {
+    getCurrentTabInstance().groupedView = groupedView;
+  }  
+  
+  @Override
+  public String getObjectId()
+  {
+    return getCurrentTabInstance().objectId;
+  }
+
+  @Override
+  public void setObjectId(String objectId)
+  {
+    getCurrentTabInstance().objectId = objectId;
+  }
+
+  @Override
+  public boolean isNew()
+  {
+    return NEW_OBJECT_ID.equals(getCurrentTabInstance().objectId);
+  }  
+  
+  public CasePerson getEditing()
+  {
+    return editing;
+  }
+
+  public void setEditing(CasePerson casePerson)
+  {
+    editing = casePerson;
+  }  
+  
+  public boolean isImportAddresses()
+  {
+    return importAddresses;
+  }
+
+  public void setImportAddresses(boolean importAddresses)
+  {
+    this.importAddresses = importAddresses;
+  }  
+  
+  public void switchView()
+  {
+    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
+  }  
+  
+  public void create()
+  {
+    editing = new CasePerson();
+    String typeId = getTabBaseTypeId();
+    if (typeId != null)
+      editing.setCasePersonTypeId(typeId);
   }
 
   @Override
@@ -98,7 +187,12 @@ public class CasePersonsTabBean extends TabBean
       {
         CasePersonFilter filter = new CasePersonFilter();
         filter.setCaseId(getObjectId());
-        casePersonViews =
+        
+        String typeId = getTabBaseTypeId();
+        if (typeId != null)
+          filter.setCasePersonTypeId(typeId);        
+        
+        getCurrentTabInstance().rows = 
           CasesModuleBean.getPort(false).findCasePersonViews(filter);
       }
       catch (Exception ex)
@@ -106,19 +200,116 @@ public class CasePersonsTabBean extends TabBean
         error(ex);
       }
     }
-    else casePersonViews = Collections.EMPTY_LIST;
+    else 
+    {
+      TabInstance tabInstance = getCurrentTabInstance();
+      tabInstance.objectId = NEW_OBJECT_ID;
+      tabInstance.rows = Collections.EMPTY_LIST;
+      tabInstance.firstRow = 0;      
+    }
   }
-
-  @Override
-  public boolean isModified()
+  
+  public void edit(CasePersonView casePersonView)
   {
-    // Test
-    return true;
-  }
+    if (casePersonView != null)
+    {
+      try
+      {
+        editing = CasesModuleBean.getPort(false)
+          .loadCasePerson(casePersonView.getCasePersonId());
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+    else
+    {
+      create();
+    }
+  }   
 
   @Override
   public void store()
   {
-    System.out.println("Store documentPersonsBean");
+    try
+    { 
+      editing.setCaseId(getObjectId());
+      
+      if (editing.getCasePersonTypeId() == null)
+        editing.setCasePersonTypeId(DictionaryConstants.CASE_PERSON_TYPE);
+  
+      CasesModuleBean.getPort(false).storeCasePerson(editing);
+      load();
+      editing = null;
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
+
+  public void cancel()
+  {
+    info("CANCEL_OBJECT");
+    editing = null;
+  }
+
+  public void remove(CasePersonView row)
+  {
+    try
+    {
+      if (row != null)
+      {
+        String casePersonId = row.getCasePersonId();
+        CasesModuleBean.getPort(false).removeCasePerson(casePersonId);
+        load();
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ editing };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[])state;
+      editing = (CasePerson)stateArray[0];
+
+      load();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  private void showDialog()
+  {
+    try
+    {
+      PrimeFaces current = PrimeFaces.current();
+      current.executeScript("PF('casePersonsDialog').show();");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
+  
+  private String getTabBaseTypeId()
+  {    
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    return editTab.getProperties().getString("typeId");
+  }  
 }

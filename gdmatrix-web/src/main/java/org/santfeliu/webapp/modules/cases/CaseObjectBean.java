@@ -177,6 +177,18 @@ public class CaseObjectBean extends ObjectBean
       cas.setEndTime(TextUtils.formatDate(date, "HHmmss"));
     }
   }
+  
+  //TODO Move to superclass
+  public String getLanguage()
+  {
+    return getLocale().getLanguage();
+  }
+
+  //TODO get from user roles
+  public boolean isEditable()
+  {
+    return true;
+  }
 
   private Date getDate(String date, String time)
   {

@@ -1,0 +1,215 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
+                var="caseBundle" />
+
+  <p:dialog id="case_persons_dialog" widgetVar="casePersonsDialog" 
+            styleClass="edit_data_dialog" style="max-width:800px" 
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <h:outputText value="#{caseObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />   
+        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{casePersonsTabBean.editing.casePersonId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="case_persons_panel"
+                  layout="block"
+                  rendered="#{casePersonsTabBean.editing != null}">
+
+      <div class="ui-fluid formgrid grid" >
+
+        <div class="field col-12">  
+          <p:outputLabel for="@next"
+                         value="Person"
+                         styleClass="w-full" />
+          <emcomp:objectReference value="#{casePersonsTabBean.editing.personId}"
+                                  process="@(.savable)"
+                                  type="Person"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  required="true"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>              
+
+        <!-- Type -->
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.casePersons_type}" />
+          <emcomp:typeReference value="#{casePersonsTabBean.editing.casePersonTypeId}"
+                                process="@(.savable)"
+                                type="CasePerson"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3">   
+            <p:ajax event="itemSelect" 
+                    process="@this" update="@parent:@parent:@parent:case_persons_dialog" />            
+          </emcomp:typeReference>
+        </div>
+
+        <!-- Dates -->
+        <p:outputPanel styleClass="field col-12 md:col-2">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.casePersons_startDate}" />
+          <p:datePicker id="start_date" value="#{casePersonsTabBean.editing.startDate}" 
+                        locale="#{caseObjectBean.language}" converter="datePickerConverter"
+                        showIcon="true"
+                        monthNavigator="true" yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
+        </p:outputPanel>
+
+        <p:outputPanel class="field col-12 md:col-2">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.casePersons_endDate}"/>
+          <p:datePicker id="end_date" value="#{casePersonsTabBean.editing.endDate}" 
+                        locale="#{caseObjectBean.language}" 
+                        showIcon="true"
+                        monthNavigator="true" yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
+        </p:outputPanel>
+
+        <!-- Address -->
+        <p:outputPanel styleClass="field col-12 md:col-8" 
+                       rendered="#{casePersonsTabBean.editing.personId != null}">
+          <emcomp:objectReference value="#{casePersonsTabBean.editing.addressId}"
+                                  process="@(.savable)"
+                                  type="Address"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  required="true"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </p:outputPanel> 
+      </div>
+
+      <!-- Contacts -->  
+<!--      
+      <h:panelGroup id="contacts_panel" styleClass="grid sm:surface-ground">
+        <p:outputLabel value="#{caseBundle.casePersons_personContacts}" styleClass="col-12"/>   
+        <div class="col-12 md:col-6">
+          <p:outputPanel rendered="#{casePersonsTabBean.editing != null and
+                                     casePersonsTabBean.editing.personId != null}">
+
+            <p:dataTable id="contacts_table" var="contact" value="#{casePersonsTabBean.selectedContacts}" 
+                         widgetVar="contactsTable" size="small"
+                         styleClass="invisible_header_table">   
+              <p:column styleClass="w-11">
+                <span class="pi pi-#{casePersonsTabBean.getContactIcon(contact)} pr-2" />
+                <h:outputText value="#{contact.value}"/>
+              </p:column> 
+              <p:column styleClass="w-1 text-center">
+                <p:commandButton icon="pi pi-minus-circle" styleClass="rounded-button ui-button-flat"
+                                 action="#{casePersonsTabBean.removeContact(contact.contactId)}"
+                                 update="contacts_table" process="@this"/>
+              </p:column>
+            </p:dataTable> 
+          </p:outputPanel>
+        </div>
+
+        <div class="col-12 md:col-6 md:border-left-1 surface-border">
+          <div class="ui-fluid formgrid grid">
+
+            <p:outputPanel id="contact_select_panel" styleClass="field col-12" >
+              <p:outputLabel for="@next" value="#{caseBundle.casePersons_addContact}" />
+
+              <emcomp:objectReference value="#{casePersonsTabBean.editing.contactId}"
+                                      process="@(.savable)"
+                                      type="Contact"
+                                      styleClass="w-full"
+                                      scrollHeight="200"
+                                      queryDelay="1000"
+                                      required="true"
+                                      minQueryLength="3">
+              </emcomp:objectReference>              
+
+            </p:outputPanel>
+
+            <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}" styleClass="col-12"/> 
+
+            <p:outputPanel styleClass="field col-6" >
+              <p:selectOneMenu id="contact_type_selector" 
+                               value="#{casePersonsTabBean.contactTypeId}"
+                               autoWidth="false">
+                <f:selectItems value="#{casePersonsTabBean.contactTypeSelectItems}" 
+                               var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
+              </p:selectOneMenu>
+
+            </p:outputPanel>
+
+            <p:outputPanel styleClass="field col-6" >              
+              <div class="ui-inputgroup">
+                <p:inputText value="#{casePersonsTabBean.contactValue}" />  
+
+                <p:commandButton icon="pi pi-plus-circle" 
+                                 styleClass="ui-button-raised"
+                                 action="#{casePersonsTabBean.addNewContact}"
+                                 ajax="true" process="@this contacts_panel" update="contacts_panel"/> 
+              </div>   
+            </p:outputPanel>
+          </div>
+        </div>
+      </h:panelGroup>
+-->
+
+      <!-- Other data panel -->
+      <p:panel id="edit_other_form" rendered="#{casePersonsTabBean.editing != null}"
+               header="#{caseBundle.casePersons_otherData}"
+               styleClass="mt-2">
+        <div class="ui-fluid formgrid grid">   
+          
+          <!-- Comments -->
+          <p:outputPanel styleClass="field col-12" 
+                         rendered="#{casePersonsTabBean.editing.personId != null}">
+            <p:outputLabel for="@next" 
+                           value="#{caseBundle.casePersons_comments}"/>
+            <p:inputTextarea id="comments" value="#{casePersonsTabBean.editing.comments}"
+                             autoResize="false" />
+          </p:outputPanel> 
+
+          <!-- Import addresses -->
+          <p:outputPanel styleClass="field-checkbox col-12"
+                         rendered="#{casePersonsTabBean.editing.personId != null}">            
+            <p:selectBooleanCheckbox value="#{casePersonsTabBean.importAddresses}" 
+                                     itemLabel="#{caseBundle.casePersons_importAddresses}"/>
+          </p:outputPanel>
+        </div>
+      </p:panel>   
+
+
+    </h:panelGroup>     
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{casePersonsTabBean.store}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         process="case_persons_dialog"
+                         update="#{casePersonsTabBean.getAbsoluteId('case_persons_table')} case_persons_panel"
+                         oncomplete="if (!isFacesError()) PF('casePersonsDialog').hide()"
+                         />
+        <p:commandButton action="#{casePersonsTabBean.cancel}" 
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="case_persons_dialog :mainform:growl" global="false" 
+                         oncomplete="PF('casePersonsDialog').hide()"/>
+      </div>  
+
+    </f:facet>
+
+  </p:dialog>    
+
+</ui:composition>
