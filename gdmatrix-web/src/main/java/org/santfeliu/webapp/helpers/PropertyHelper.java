@@ -34,6 +34,7 @@ import java.lang.reflect.Array;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -110,7 +111,14 @@ public abstract class PropertyHelper
     @Override
     public Set<Map.Entry<String, Object>> entrySet()
     {
-      throw new UnsupportedOperationException();
+      // TODO: return an editable Set
+      Map<String, Object> map = new HashMap<>();
+      List<Property> properties = getProperties();
+      for (Property property : properties)
+      {
+        map.put(property.getName(), property.getValue().get(0));
+      }
+      return map.entrySet();
     }
   };
 
@@ -189,7 +197,14 @@ public abstract class PropertyHelper
     @Override
     public Set<Map.Entry<String, Object>> entrySet()
     {
-      throw new UnsupportedOperationException();
+      // TODO: return an editable Set
+      Map<String, Object> map = new HashMap<>();
+      List<Property> properties = getProperties();
+      for (Property property : properties)
+      {
+        map.put(property.getName(), property.getValue());
+      }
+      return map.entrySet();
     }
   };
 

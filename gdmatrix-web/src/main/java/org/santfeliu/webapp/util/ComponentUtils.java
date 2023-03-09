@@ -45,6 +45,7 @@ import javax.faces.context.FacesContext;
 import org.mozilla.javascript.Callable;
 import org.primefaces.component.datepicker.DatePicker;
 import org.primefaces.component.inputtext.InputText;
+import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.selectcheckboxmenu.SelectCheckboxMenu;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
@@ -95,36 +96,18 @@ public class ComponentUtils
       String fieldType = field.getType();
       View view = form.getView(reference);
 
-      String styleClass = null;
-      if (view != null)
-      {
-        Object styleClassValue = view.getProperty("class");
-        styleClass = styleClassValue instanceof String ?
-          (String) styleClassValue : null;
-      }
-
-      HtmlPanelGroup group = new HtmlPanelGroup();
-      if (styleClass == null || !styleClass.contains("col-"))
-      {
-        styleClass = "field col-12 md:col-6";
-      }
-
-      group.setStyleClass(styleClass);
-      group.setLayout("block");
-      parent.getChildren().add(group);
-
-      OutputLabel label = new OutputLabel();
-      label.setValue(labelText);
-      label.setFor("@next");
-      group.getChildren().add(label);
-
       UIComponent component;
       boolean isMultiple = false;
 
-      if (Field.DATE.equals(fieldType) || Field.DATETIME.equals(fieldType))
+      if (field.isReadOnly() && view == null)
       {
-        DatePicker datePicker
-          = (DatePicker) application.createComponent(DatePicker.COMPONENT_TYPE);
+        // ignore
+        component = null;
+      }
+      else if (Field.DATE.equals(fieldType) || Field.DATETIME.equals(fieldType))
+      {
+        DatePicker datePicker =
+          (DatePicker)application.createComponent(DatePicker.COMPONENT_TYPE);
         datePicker.setLocale(facesContext.getViewRoot().getLocale());
         datePicker.setConverter(
           application.createConverter("datePickerConverter"));
@@ -137,7 +120,7 @@ public class ComponentUtils
       else if (Field.BOOLEAN.equals(fieldType))
       {
         ToggleSwitch toogleSwitch =
-          (ToggleSwitch) application.createComponent(ToggleSwitch.COMPONENT_TYPE);
+          (ToggleSwitch)application.createComponent(ToggleSwitch.COMPONENT_TYPE);
         toogleSwitch.setStyleClass("block");
         component = toogleSwitch;
       }
@@ -150,14 +133,18 @@ public class ComponentUtils
 
           if (isMultiple)
           {
-            component =
-              application.createComponent(SelectCheckboxMenu.COMPONENT_TYPE);
-            ((SelectCheckboxMenu)component).setMultiple(true);
+            SelectCheckboxMenu select =
+              (SelectCheckboxMenu)application.createComponent(SelectCheckboxMenu.COMPONENT_TYPE);
+            select.setMultiple(true);
+            select.setReadonly(field.isReadOnly());
+            component = select;
           }
           else
           {
-            component =
-              application.createComponent(SelectOneMenu.COMPONENT_TYPE);
+            SelectOneMenu select =
+              (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
+            select.setReadonly(field.isReadOnly());
+            component = select;
           }
 
           List<View> children = view.getChildren();
@@ -181,14 +168,49 @@ public class ComponentUtils
         }
         else
         {
-          InputText inputText
-            = (InputText) application.createComponent(InputText.COMPONENT_TYPE);
-          component = inputText;
+          if (view != null && "textarea".equalsIgnoreCase(view.getNativeViewType()))
+          {
+            InputTextarea inputTextarea =
+              (InputTextarea)application.createComponent(InputTextarea.COMPONENT_TYPE);
+            inputTextarea.setReadonly(field.isReadOnly());
+            component = inputTextarea;
+          }
+          else
+          {
+            InputText inputText =
+             (InputText)application.createComponent(InputText.COMPONENT_TYPE);
+            inputText.setReadonly(field.isReadOnly());
+            component = inputText;
+          }
         }
       }
 
+      // add component to panel
       if (component instanceof ValueHolder)
       {
+        String styleClass = null;
+        if (view != null)
+        {
+          Object styleClassValue = view.getProperty("class");
+          styleClass = styleClassValue instanceof String ?
+            (String)styleClassValue : null;
+        }
+
+        HtmlPanelGroup group = new HtmlPanelGroup();
+        if (styleClass == null || !styleClass.contains("col-"))
+        {
+          styleClass = "col-12 md:col-6";
+        }
+
+        group.setStyleClass("field " + styleClass);
+        group.setLayout("block");
+        parent.getChildren().add(group);
+
+        OutputLabel label = new OutputLabel();
+        label.setValue(labelText);
+        label.setFor("@next");
+        group.getChildren().add(label);
+
         String expression = "#{" + propertyPath + (isMultiple ? "s" : "") +
           "[\"" + reference + "\"]}";
 

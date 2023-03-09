@@ -32,12 +32,10 @@ package org.santfeliu.webapp.composite;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.event.ComponentSystemEvent;
@@ -173,7 +171,7 @@ public class DynamicPropertiesBean implements Serializable
 
           ComponentUtils.includeFormComponents(panel, formSelector,
              "dynamicPropertiesBean.propertyHelper.value",
-            Collections.emptyMap());
+            propertyHelper.getValue());
         }
       }
     }
