@@ -376,8 +376,7 @@ public class CaseCasesTabBean extends TabBean
     try
     {
       PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('caseCasesDialog" +
-        caseObjectBean.getEditTabSelector() + "').show();");
+      current.executeScript("PF('caseCasesDialog').show();");
     }
     catch (Exception ex)
     {
@@ -454,17 +453,17 @@ public class CaseCasesTabBean extends TabBean
     col2.setName("caseCaseTypeId");
     col2.setLabel(bundle.getString("caseCases_type"));
     defaultColumns.add(col2);
-
+    
     Column col3 = new Column();
     col3.setName("startDate");
     col3.setLabel(bundle.getString("caseCases_startDate"));
-    defaultColumns.add(col3);
-    
+    defaultColumns.add(col3);    
+
     Column col4 = new Column();
     col4.setName("endDate");
     col4.setLabel(bundle.getString("caseCases_endDate"));
-    defaultColumns.add(col4);    
-
+    defaultColumns.add(col4);
+    
     return defaultColumns;         
   }  
   
@@ -476,7 +475,7 @@ public class CaseCasesTabBean extends TabBean
     {
       CaseCasesDataTableRow dataTableRow = 
         new CaseCasesDataTableRow(row.getCaseCaseId(), row.getCaseCaseTypeId(),
-        row.getMainCase().getCaseId(), row.getRelCase().getCaseId());
+        row.getMainCase(), row.getRelCase());
       dataTableRow.setValues(row, getCurrentTabInstance().columns);
       convertedRows.add(dataTableRow);
     }    
@@ -486,11 +485,20 @@ public class CaseCasesTabBean extends TabBean
   public class CaseCasesDataTableRow extends DataTableRow
   {
     private boolean reverseRelation;
+    private String mainTypeId;
+    private String mainCaseId;
+    private String relTypeId;
+    private String relCaseId;
 
     public CaseCasesDataTableRow(String rowId, String typeId,
-      String mainCaseId, String relCaseId)
+      Case mainCase, Case relCase)
     {
       super(rowId, typeId);
+      mainCaseId = mainCase.getCaseId();
+      mainTypeId = mainCase.getCaseTypeId();
+      relCaseId = relCase.getCaseId();
+      relTypeId = relCase.getCaseTypeId();
+      
       String objectId = getObjectId();
       reverseRelation = 
         objectId.equals(relCaseId) && !objectId.equals(mainCaseId);      
@@ -499,6 +507,26 @@ public class CaseCasesTabBean extends TabBean
     public boolean isReverseRelation()
     {
       return reverseRelation;
+    }
+
+    public String getMainTypeId()
+    {
+      return mainTypeId;
+    }
+
+    public String getMainCaseId()
+    {
+      return mainCaseId;
+    }
+
+    public String getRelTypeId()
+    {
+      return relTypeId;
+    }
+
+    public String getRelCaseId()
+    {
+      return relCaseId;
     }
     
   }

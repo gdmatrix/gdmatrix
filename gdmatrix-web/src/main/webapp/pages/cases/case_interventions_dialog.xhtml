@@ -10,7 +10,7 @@
   <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                 var="caseBundle" />
 
-  <p:dialog id="case_interventions_dialog" widgetVar="interventionDataDialog" 
+  <p:dialog id="case_interventions_dialog" widgetVar="caseInterventionsDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
@@ -39,7 +39,7 @@
                          styleClass="w-full" />
           <emcomp:typeReference value="#{caseInterventionsTabBean.intTypeId}"
                                 process="@(.savable)"
-                                type="#{caseInterventionsTabBean.baseIntTypeId != null ? caseInterventionsTabBean.baseIntTypeId : 'Intervention'}"
+                                type="#{caseInterventionsTabBean.tabBaseTypeId != null ? caseInterventionsTabBean.tabBaseTypeId : 'Intervention'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
@@ -115,12 +115,12 @@
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                        process="case_interventions_dialog"
                        update="#{caseInterventionsTabBean.getAbsoluteId('case_interventions_table')} case_interventions_panel"
-                       oncomplete="if (!isFacesError()) PF('interventionDataDialog').hide()"/>
+                       oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').hide()"/>
       <p:commandButton action="#{caseInterventionsTabBean.cancel}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                        update="case_interventions_dialog :mainform:growl" global="false" 
                        immediate="true"
-                       oncomplete="PF('interventionDataDialog').hide()"/>
+                       oncomplete="PF('caseInterventionsDialog').hide()"/>
     </div>      
     
   

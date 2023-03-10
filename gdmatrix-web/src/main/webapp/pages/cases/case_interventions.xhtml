@@ -34,7 +34,7 @@
                            process="@this"
                            update=":mainform:search_tabs:case_interventions_dialog"
                            resetValues="true"
-                           oncomplete="PF('interventionDataDialog').show()"                                 
+                           oncomplete="PF('caseInterventionsDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>              
       </f:facet>      
@@ -62,7 +62,7 @@
                            process="@this" 
                            update=":mainform:search_tabs:case_interventions_dialog"
                            resetValues="true"
-                           oncomplete="PF('interventionDataDialog').show()" />
+                           oncomplete="PF('caseInterventionsDialog').show()" />
           <p:commandButton action="#{caseInterventionsTabBean.remove(row)}"
                            process="@this" 
                            update=":mainform:search_tabs:case_interventions_dialog case_interventions_table :mainform:growl"

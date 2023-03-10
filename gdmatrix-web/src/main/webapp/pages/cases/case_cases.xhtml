@@ -86,8 +86,8 @@
                            styleClass="rounded-button ui-button-flat" 
                            ajax="false"
                            action="#{navigatorBean.show(
-                                     (caseCasesTabBean.isReverseRelation(row) ?  row.mainCase.caseTypeId : row.relCase.caseTypeId), 
-                                     (caseCasesTabBean.isReverseRelation(row) ?  row.mainCase.caseId : row.relCase.caseId))}" />          
+                                     (row.isReverseRelation() ?  row.mainTypeId : row.relTypeId), 
+                                     (row.isReverseRelation() ?  row.mainCaseId : row.relCaseId))}" />          
         </h:panelGroup>
       </p:column>          
 

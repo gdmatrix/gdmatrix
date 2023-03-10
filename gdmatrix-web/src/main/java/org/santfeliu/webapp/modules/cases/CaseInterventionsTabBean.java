@@ -265,12 +265,12 @@ public class CaseInterventionsTabBean extends TabBean
   {
     return editing == null ? NEW_OBJECT_ID : editing.getIntTypeId();
   }
-
-  public String getBaseIntTypeId()
-  {
-    //TODO: Get from JSON tabs
-    return getProperty("intTypeId");
-  }
+  
+  public String getTabBaseTypeId()
+  {    
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    return editTab.getProperties().getString("typeId");
+  }  
 
   public void onPersonClear()
   {
@@ -291,11 +291,7 @@ public class CaseInterventionsTabBean extends TabBean
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
   }
 
-  private String getTabBaseTypeId()
-  {    
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
-  }
+
 
   @Override
   public void load() throws Exception
@@ -431,7 +427,7 @@ public class CaseInterventionsTabBean extends TabBean
     try
     {
       PrimeFaces current = PrimeFaces.current();
-      current.executeScript("PF('interventionDataDialog').show();");
+      current.executeScript("PF('caseInterventionsDialog').show();");
     }
     catch (Exception ex)
     {
