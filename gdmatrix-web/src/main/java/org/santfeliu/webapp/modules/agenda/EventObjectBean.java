@@ -67,6 +67,7 @@ public class EventObjectBean extends ObjectBean
   private Event event = new Event();
   private boolean autoAttendant;
   private PropertyHelper propertyHelper;
+  private String formSelector;
 
   @Inject
   EventTypeBean eventTypeBean;
@@ -128,6 +129,16 @@ public class EventObjectBean extends ObjectBean
   public PropertyHelper getPropertyHelper()
   {
     return propertyHelper;
+  }
+
+  public String getFormSelector()
+  {
+    return formSelector;
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    this.formSelector = formSelector;
   }
 
   public Event getEvent()
@@ -306,13 +317,15 @@ public class EventObjectBean extends ObjectBean
   @Override
   public Serializable saveState()
   {
-    return event;
+    return new Object[] { event, formSelector };
   }
 
   @Override
   public void restoreState(Serializable state)
   {
-    this.event = (Event)state;
+    Object[] array = (Object[])state;
+    this.event = (Event)array[0];
+    this.formSelector = (String)array[1];
   }
 
   private Date getDate(String dateTime)

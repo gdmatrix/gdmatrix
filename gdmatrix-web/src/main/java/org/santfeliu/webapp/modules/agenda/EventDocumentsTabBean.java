@@ -142,6 +142,19 @@ public class EventDocumentsTabBean extends TabBean
     return editing.getDocId();
   }
 
+  public void setEventDocTypeId(String eventDocTypeId)
+  {
+    if (editing != null)
+      editing.setEventDocTypeId(eventDocTypeId);
+
+    showDialog();
+  }
+
+  public String getEventDocTypeId()
+  {
+    return editing == null ? NEW_OBJECT_ID : editing.getEventDocTypeId();
+  }
+
   public List<EventDocumentView> getRows()
   {
     return getCurrentTabInstance().rows;

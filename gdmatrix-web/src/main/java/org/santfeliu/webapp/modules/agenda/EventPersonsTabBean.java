@@ -145,6 +145,19 @@ public class EventPersonsTabBean extends TabBean
     return editing.getPersonId();
   }
 
+  public void setAttendantTypeId(String attendantTypeId)
+  {
+    if (editing != null)
+      editing.setAttendantTypeId(attendantTypeId);
+
+    showDialog();
+  }
+
+  public String getAttendantTypeId()
+  {
+    return editing == null ? NEW_OBJECT_ID : editing.getAttendantTypeId();
+  }
+
   public List<AttendantView> getRows()
   {
     return getCurrentTabInstance().rows;

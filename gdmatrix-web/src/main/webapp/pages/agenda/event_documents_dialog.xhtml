@@ -52,19 +52,17 @@
         <!-- Type -->
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
-                         value="Tipus" />
-          <p:selectOneMenu value="#{eventDocumentsTabBean.editing.eventDocTypeId}"
-                           styleClass="inputfield w-full savable"
-                           filter="true"
-                           filterMatchMode="contains"
-                           required="true">
-            <f:selectItem itemLabel="" itemValue="" />
-            <f:selectItems value="#{typeTypeBean.getSelectItems('EventDocument')}"
-                           var="item" />
-            <p:column>
-              <h:outputText value="#{item.label}" />
-            </p:column>
-          </p:selectOneMenu>
+                         value="Tipus"
+                         indicateRequired="true" />
+          <emcomp:typeReference value="#{eventDocumentsTabBean.eventDocTypeId}"
+                                process="@(.savable)"
+                                type="EventDocument"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="true">
+          </emcomp:typeReference>
         </div>
 
         <!-- Comments -->

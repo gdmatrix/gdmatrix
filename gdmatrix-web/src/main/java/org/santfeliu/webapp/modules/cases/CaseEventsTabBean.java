@@ -60,6 +60,7 @@ public class CaseEventsTabBean extends TabBean
 {
   private CaseEvent editing;
   Map<String, TabInstance> tabInstances = new HashMap();
+  private String formSelector;
 
   public class TabInstance
   {
@@ -142,6 +143,19 @@ public class CaseEventsTabBean extends TabBean
     return editing.getEventId();
   }
 
+  public void setCaseEventTypeId(String caseEventTypeId)
+  {
+    if (editing != null)
+      editing.setCaseEventTypeId(caseEventTypeId);
+
+    showDialog();
+  }
+
+  public String getCaseEventTypeId()
+  {
+    return editing == null ? NEW_OBJECT_ID : editing.getCaseEventTypeId();
+  }
+
   public List<CaseEventView> getRows()
   {
     return getCurrentTabInstance().rows;
@@ -160,6 +174,16 @@ public class CaseEventsTabBean extends TabBean
   public void setFirstRow(int firstRow)
   {
     getCurrentTabInstance().firstRow = firstRow;
+  }
+
+  public String getFormSelector()
+  {
+    return formSelector;
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    this.formSelector = formSelector;
   }
 
   public boolean isGroupedView()
@@ -311,7 +335,7 @@ public class CaseEventsTabBean extends TabBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing };
+    return new Object[]{ editing, formSelector };
   }
 
   @Override
@@ -321,6 +345,7 @@ public class CaseEventsTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (CaseEvent)stateArray[0];
+      formSelector = (String)stateArray[1];
       load();
     }
     catch (Exception ex)

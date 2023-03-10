@@ -52,19 +52,21 @@
         <!-- Type -->
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
-                         value="Tipus" />
-          <p:selectOneMenu value="#{eventCasesTabBean.editing.caseEventTypeId}"
-                           styleClass="inputfield w-full savable"
-                           filter="true"
-                           filterMatchMode="contains"
-                           required="true">
-            <f:selectItem itemLabel="" itemValue="" />
-            <f:selectItems value="#{typeTypeBean.getSelectItems('CaseEvent')}"
-                           var="item" />
-            <p:column>
-              <h:outputText value="#{item.label}" />
-            </p:column>
-          </p:selectOneMenu>
+                         value="Tipus"
+                         styleClass="w-full"
+                         indicateRequired="true" />
+          <emcomp:typeReference value="#{eventCasesTabBean.caseEventTypeId}"
+                                process="@(.savable)"
+                                type="CaseEvent"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="true">
+            <p:ajax event="itemSelect"
+                    process="@this"
+                    update="@parent:@parent:@parent:event_cases_dialog" />
+          </emcomp:typeReference>
         </div>
 
         <!-- Comments -->
@@ -79,6 +81,10 @@
       </div>
 
     </h:panelGroup>
+
+    <emcomp:dynamicProperties typeId="#{eventCasesTabBean.editing.caseEventTypeId}"
+                              formSelector="#{eventCasesTabBean.formSelector}"
+                              properties="#{eventCasesTabBean.editing.property}" />
 
     <f:facet name="footer">
 

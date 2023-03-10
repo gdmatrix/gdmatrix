@@ -34,19 +34,17 @@
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
-                         value="#{agendaBundle.attendants_type}" />
-          <p:selectOneMenu value="#{eventPersonsTabBean.editing.attendantTypeId}"
-                           styleClass="inputfield w-full savable"
-                           filter="true"
-                           filterMatchMode="contains"
-                           required="true">
-            <f:selectItem itemLabel="" itemValue="" />
-            <f:selectItems value="#{typeTypeBean.getSelectItems('Attendant')}"
-                           var="item" />
-            <p:column>
-              <h:outputText value="#{item.label}" />
-            </p:column>
-          </p:selectOneMenu>
+                         value="#{agendaBundle.attendants_type}"
+                         indicateRequired="true" />
+          <emcomp:typeReference value="#{eventPersonsTabBean.attendantTypeId}"
+                                process="@(.savable)"
+                                type="Attendant"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="true">
+          </emcomp:typeReference>
         </div>
 
         <div class="field col-12">
