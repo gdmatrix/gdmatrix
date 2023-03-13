@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import javax.faces.component.UIComponent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -50,6 +49,7 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.util.ComponentUtils;
 import org.santfeliu.webapp.util.DataTableRow;
 
@@ -62,7 +62,7 @@ import org.santfeliu.webapp.util.DataTableRow;
 public class CaseInterventionsTabBean extends TabBean
 {
   @Inject
-  InterventionTypeBean interventionTypeBean;
+  CaseTypeBean caseTypeBean;  
   
   Map<String, TabInstance> tabInstances = new HashMap<>();
   
@@ -71,8 +71,7 @@ public class CaseInterventionsTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<DataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true;
-    List<Column> columns;   
+    boolean groupedView = true; 
   }
 
   private Intervention editing;
@@ -173,14 +172,17 @@ public class CaseInterventionsTabBean extends TabBean
   
   public List<Column> getColumns()
   {
-    return getCurrentTabInstance().columns;
+    List<Column> columns =
+      caseObjectBean.getActiveEditTab().getColumns();
+    if (columns == null || columns.isEmpty())
+    {
+      //Get default objectSetup columns congfiguration
+      ObjectSetup objectSetup = caseTypeBean.getObjectSetup();
+      columns = objectSetup.getEditTabs().get(3).getColumns();
+    }
+    return columns;
   }
   
-  public void setColumns(List<Column> columns)
-  {
-    getCurrentTabInstance().columns = columns;
-  }
-
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -307,16 +309,7 @@ public class CaseInterventionsTabBean extends TabBean
         String typeId = getTabBaseTypeId();
         if (typeId != null)
           filter.setIntTypeId(typeId);
-        
-        getCurrentTabInstance().columns = getDefaultColumns();
-        EditTab editTab = caseObjectBean.getActiveEditTab();
-        if (editTab != null)
-        {
-          List<Column> columns = editTab.getColumns();
-          if (columns != null && !columns.isEmpty())
-            getCurrentTabInstance().columns = editTab.getColumns();    
-        }
-        
+                
         List<InterventionView> interventions = 
           CasesModuleBean.getPort(false).findInterventionViews(filter);
 
@@ -434,45 +427,16 @@ public class CaseInterventionsTabBean extends TabBean
       error(ex);
     }
   }
-  
-  private List<Column> getDefaultColumns()
-  {
-    List<Column> defaultColumns = new ArrayList();
-    ResourceBundle bundle = ResourceBundle.getBundle(
-      "org.santfeliu.cases.web.resources.CaseBundle", getLocale());
-
-    Column col1 = new Column();
-    col1.setName("intId");
-    col1.setLabel(bundle.getString("caseInterventions_id"));
-    defaultColumns.add(col1);
-
-    Column col2 = new Column();
-    col2.setName("intTypeId");
-    col2.setLabel(bundle.getString("caseInterventions_type"));
-    defaultColumns.add(col2);
-
-    Column col3 = new Column();
-    col3.setName("startDate");
-    col3.setLabel(bundle.getString("caseInterventions_startDate"));
-    defaultColumns.add(col3);
     
-    Column col4 = new Column();
-    col4.setName("endDate");
-    col4.setLabel(bundle.getString("caseInterventions_endDate"));
-    defaultColumns.add(col4);    
-
-    return defaultColumns;         
-  }    
-  
-  private List<DataTableRow> toDataTableRows(List<InterventionView> interventions) 
-    throws Exception
+  private List<DataTableRow> toDataTableRows(List<InterventionView> 
+    interventions) throws Exception
   {
     List<DataTableRow> convertedRows = new ArrayList<>();
     for (InterventionView row : interventions)
     {
       DataTableRow dataTableRow = 
         new DataTableRow(row.getIntId(), row.getIntTypeId());
-      dataTableRow.setValues(row, getCurrentTabInstance().columns);
+      dataTableRow.setValues(row, getColumns());
       convertedRows.add(dataTableRow);
     }    
     return convertedRows;

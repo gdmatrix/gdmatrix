@@ -37,7 +37,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.faces.view.ViewScoped;
@@ -57,6 +56,7 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -76,8 +76,7 @@ public class CaseCasesTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseCasesDataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true;
-    List<Column> columns;    
+    boolean groupedView = true; 
   }
 
   private CaseCase editing;
@@ -131,12 +130,15 @@ public class CaseCasesTabBean extends TabBean
   
   public List<Column> getColumns()
   {
-    return getCurrentTabInstance().columns;
-  }
-  
-  public void setColumns(List<Column> columns)
-  {
-    getCurrentTabInstance().columns = columns;
+    List<Column> columns =
+      caseObjectBean.getActiveEditTab().getColumns();
+    if (columns == null || columns.isEmpty())
+    {
+      //Get default objectSetup columns congfiguration
+      ObjectSetup objectSetup = caseTypeBean.getObjectSetup();
+      columns = objectSetup.getEditTabs().get(3).getColumns();
+    }
+    return columns;
   }
 
   public CaseCase getEditing()
@@ -248,15 +250,6 @@ public class CaseCasesTabBean extends TabBean
       {
         String typeId = getTabBaseTypeId();
         
-        getCurrentTabInstance().columns = getDefaultColumns();
-        EditTab editTab = caseObjectBean.getActiveEditTab();
-        if (editTab != null)
-        {
-          List<Column> columns = editTab.getColumns();
-          if (columns != null && !columns.isEmpty())
-            getCurrentTabInstance().columns = editTab.getColumns();    
-        }
-
         String[] params = typeId.split(TYPEID_SEPARATOR);
         if (params != null && params.length == 2)
         {
@@ -437,36 +430,7 @@ public class CaseCasesTabBean extends TabBean
 
     return toDataTableRows(matcher.getResults());
   }
-  
-  private List<Column> getDefaultColumns()
-  {
-    List<Column> defaultColumns = new ArrayList();
-    ResourceBundle bundle = ResourceBundle.getBundle(
-      "org.santfeliu.cases.web.resources.CaseBundle", getLocale());
-
-    Column col1 = new Column();
-    col1.setName("caseCaseId");
-    col1.setLabel(bundle.getString("caseCases_id"));
-    defaultColumns.add(col1);
-
-    Column col2 = new Column();
-    col2.setName("caseCaseTypeId");
-    col2.setLabel(bundle.getString("caseCases_type"));
-    defaultColumns.add(col2);
     
-    Column col3 = new Column();
-    col3.setName("startDate");
-    col3.setLabel(bundle.getString("caseCases_startDate"));
-    defaultColumns.add(col3);    
-
-    Column col4 = new Column();
-    col4.setName("endDate");
-    col4.setLabel(bundle.getString("caseCases_endDate"));
-    defaultColumns.add(col4);
-    
-    return defaultColumns;         
-  }  
-  
   private List<CaseCasesDataTableRow> toDataTableRows(List<CaseCaseView> 
     caseCaseViews) throws Exception
   {
@@ -476,7 +440,7 @@ public class CaseCasesTabBean extends TabBean
       CaseCasesDataTableRow dataTableRow = 
         new CaseCasesDataTableRow(row.getCaseCaseId(), row.getCaseCaseTypeId(),
         row.getMainCase(), row.getRelCase());
-      dataTableRow.setValues(row, getCurrentTabInstance().columns);
+      dataTableRow.setValues(row, getColumns());
       convertedRows.add(dataTableRow);
     }    
     return convertedRows;

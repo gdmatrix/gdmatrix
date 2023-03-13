@@ -33,6 +33,8 @@ package org.santfeliu.webapp.modules.cases;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import org.matrix.cases.Case;
@@ -42,6 +44,8 @@ import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.cases.CasesModuleBean.getPort;
+import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.SearchTab;
 
 /**
  *
@@ -93,6 +97,22 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
   {
     ObjectSetup objectSetup = new ObjectSetup();
     objectSetup.setViewId("/pages/cases/case.xhtml");
+    
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.cases.web.resources.CaseBundle", Locale.getDefault()); 
+    
+    List<SearchTab> searchTabs = new ArrayList();
+    SearchTab searchTab = 
+      new SearchTab("Llistat", "/pages/cases/case_list.xhtml");
+    searchTab.getColumns().add(new Column("caseId", 
+      bundle.getString("case_caseId")));
+    searchTab.getColumns().add(new Column("caseTypeId", 
+       bundle.getString("case_type")));   
+    searchTab.getColumns().add(new Column("title", 
+       bundle.getString("case_title")));  
+    searchTabs.add(searchTab);
+    
+    objectSetup.setSearchTabs(searchTabs);
 
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab("Main", "/pages/cases/case_main.xhtml"));
@@ -101,11 +121,32 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     editTabs.add(new EditTab("Documents", "/pages/cases/case_documents.xhtml", 
       "caseDocumentsTabBean", "docs1", 
       "/pages/cases/case_documents_dialog.xhtml"));
-    editTabs.add(new EditTab("Actuacions", 
+    
+    EditTab intEditTab = new EditTab("Actuacions", 
       "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", 
-      "act1", "/pages/cases/case_interventions_dialog.xhtml"));
-    editTabs.add(new EditTab("Cases", "/pages/cases/case_cases.xhtml", 
-      "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml"));
+      "act1", "/pages/cases/case_interventions_dialog.xhtml");
+    intEditTab.getColumns().add(new Column("intId", 
+      bundle.getString("caseInterventions_id")));
+    intEditTab.getColumns().add(new Column("intTypeId", 
+      bundle.getString("caseInterventions_type")));
+    intEditTab.getColumns().add(new Column("startDate", 
+      bundle.getString("caseInterventions_startDate"))); 
+    intEditTab.getColumns().add(new Column("endDate", 
+      bundle.getString("caseInterventions_endDate")));  
+    editTabs.add(intEditTab);
+    
+    EditTab casesEditTab = new EditTab("Cases", "/pages/cases/case_cases.xhtml", 
+      "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml");   
+    casesEditTab.getColumns().add(new Column("caseCaseId", 
+      bundle.getString("caseCases_id")));
+    casesEditTab.getColumns().add(new Column("caseCaseTypeId", 
+      bundle.getString("caseCases_type")));
+    casesEditTab.getColumns().add(new Column("startDate", 
+      bundle.getString("caseCases_startDate")));    
+    casesEditTab.getColumns().add(new Column("endDate", 
+      bundle.getString("caseCases_endDate")));      
+    editTabs.add(casesEditTab);
+    
     editTabs.add(new EditTab("ACL", "/pages/cases/case_acl.xhtml", 
       "caseACLTabBean"));
     editTabs.add(new EditTab("Events", "/pages/cases/case_events.xhtml", 
@@ -113,7 +154,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       "/pages/cases/case_events_dialog.xhtml"));
     
     objectSetup.setEditTabs(editTabs);
-
+    
     return objectSetup;
   }
 

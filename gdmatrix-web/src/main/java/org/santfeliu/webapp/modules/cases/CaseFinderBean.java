@@ -34,19 +34,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import org.matrix.dic.PropertyDefinition;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.Column;
-import org.santfeliu.webapp.setup.SearchTab;
+import org.santfeliu.webapp.setup.ObjectSetup;
+import org.santfeliu.webapp.setup.ObjectSetupCache;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -63,7 +66,7 @@ public class CaseFinderBean extends FinderBean
   private int firstRow;
   private boolean finding;
   private boolean outdated;
-  private List<Column> columns;
+  private transient ObjectSetup objectSetup;
  
   @Inject
   NavigatorBean navigatorBean;
@@ -135,15 +138,26 @@ public class CaseFinderBean extends FinderBean
   {
     this.rows = rows;
   }
-
+  
   public List<Column> getColumns()
-  {    
-    return columns;
-  }
-
-  public void setColumns(List<Column> columns)
   {
-    this.columns = columns;
+    try
+    {
+      if (objectSetup == null)
+        loadObjectSetup();
+      List<Column> columns = objectSetup.getSearchTabs().get(0).getColumns();
+      if (columns == null || columns.isEmpty())
+      {
+        //Get default objectSetup columns congfiguration        
+        columns = 
+          caseTypeBean.getObjectSetup().getSearchTabs().get(0).getColumns();
+      }
+      return columns;
+    }
+    catch (Exception ex)
+    {
+      return Collections.emptyList();
+    }
   }
 
   public int getFirstRow()
@@ -203,8 +217,8 @@ public class CaseFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), 
-      columns, filter, firstRow, getObjectPosition() };
+    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow, 
+      getObjectPosition() };
   }
 
   @Override
@@ -215,14 +229,13 @@ public class CaseFinderBean extends FinderBean
       Object[] stateArray = (Object[])state;
       finding = (Boolean)stateArray[0];
       setFilterTabSelector((Integer)stateArray[1]);
-      columns = ((List<Column>)stateArray[2]);
-      filter = (CaseFilter)stateArray[3];
+      filter = (CaseFilter)stateArray[2];
       smartFilter = caseTypeBean.filterToQuery(filter);
 
       doFind(false);
 
-      firstRow = (Integer)stateArray[4];
-      setObjectPosition((Integer)stateArray[5]);
+      firstRow = (Integer)stateArray[3];
+      setObjectPosition((Integer)stateArray[4]);
       
     }
     catch (Exception ex)
@@ -240,7 +253,9 @@ public class CaseFinderBean extends FinderBean
         rows = Collections.EMPTY_LIST;
       }
       else
-      {     
+      {    
+//        loadObjectSetup();
+        
         rows = new BigList(20, 10)
         {
           @Override
@@ -263,7 +278,8 @@ public class CaseFinderBean extends FinderBean
             try
             {               
               filter.setFirstResult(firstResult);
-              filter.setMaxResults(maxResults);      
+              filter.setMaxResults(maxResults);
+              List<Column> columns = getColumns();
               for (Column column : columns)
               {
                 filter.getOutputProperty().add(column.getName());
@@ -295,18 +311,7 @@ public class CaseFinderBean extends FinderBean
           {
             caseObjectBean.setSearchTabSelector(0);
           }
-        }
-        
-        List<SearchTab> searchTabs = caseObjectBean.getSearchTabs();
-        if (!searchTabs.isEmpty())
-        {
-          SearchTab searchTab = searchTabs.get(0);
-          columns = searchTab != null ? searchTab.getColumns() : 
-            getDefaultColumns();  
-        }
-        
-        if (columns == null)
-          columns = getDefaultColumns();
+        }        
       }
     }
     catch (Exception ex)
@@ -315,31 +320,30 @@ public class CaseFinderBean extends FinderBean
     }
   }
   
-
-  private List<Column> getDefaultColumns()
+  public void loadObjectSetup() throws Exception
   {
-    List<Column> defaultColumns = new ArrayList();
-    ResourceBundle bundle = ResourceBundle.getBundle(
-      "org.santfeliu.cases.web.resources.CaseBundle", getLocale());
+    String setupName = getProperty("objectSetup");
+    if (setupName == null)
+    {
+      String typeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      Type type = TypeCache.getInstance().getType(typeId);
+      PropertyDefinition propdef = type.getPropertyDefinition("objectSetup");
+      if (propdef != null && !propdef.getValue().isEmpty())
+      {
+        setupName = propdef.getValue().get(0);
+      }
+    }
 
-    Column col1 = new Column();
-    col1.setName("caseId");
-    col1.setLabel(bundle.getString("case_caseId"));
-    defaultColumns.add(col1);
-
-    Column col2 = new Column();
-    col2.setName("caseTypeId");
-    col2.setLabel(bundle.getString("case_type"));
-    defaultColumns.add(col2);
-
-    Column col3 = new Column();
-    col3.setName("title");
-    col3.setLabel(bundle.getString("case_title"));
-    defaultColumns.add(col3);
-
-    return defaultColumns;         
+    if (setupName != null)
+    {
+      objectSetup = ObjectSetupCache.getConfig(setupName);
+    }
+    else
+    {
+      objectSetup = caseTypeBean.getObjectSetup();
+    }
   }  
-  
+    
   private List<DataTableRow> toObjectArrayList(List<Case> cases) 
     throws Exception
   {
@@ -348,7 +352,7 @@ public class CaseFinderBean extends FinderBean
     {
       DataTableRow dataTableRow = 
         new DataTableRow(row.getCaseId(), row.getCaseTypeId());
-      dataTableRow.setValues(row, columns);
+      dataTableRow.setValues(row, getColumns());
       convertedRows.add(dataTableRow);
     }
     return convertedRows;       

@@ -55,7 +55,7 @@
         <p:outputPanel styleClass="field col-12 md:col-3">
           <p:outputLabel for="@next" 
                          value="#{caseBundle.caseInterventions_startDate}"/>
-          <p:datePicker id="start_date" value="#{caseInterventionsTabBean.startDateTime}"     
+          <p:datePicker value="#{caseInterventionsTabBean.startDateTime}"     
                         styleClass="savable"
                         autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
                         locale="es" showOnFocus="false" touchUI="true" 
@@ -66,7 +66,7 @@
         <p:outputPanel class="field col-12 md:col-3">
           <p:outputLabel for="@next" 
                          value="#{caseBundle.caseInterventions_endDate}"/>
-          <p:datePicker id="end_date" value="#{caseInterventionsTabBean.endDateTime}"
+          <p:datePicker value="#{caseInterventionsTabBean.endDateTime}"
                         styleClass="savable"
                         autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
                         locale="es" showOnFocus="false" touchUI="true" 
@@ -96,7 +96,7 @@
         <p:outputPanel class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_comments}" />
-          <p:inputTextarea id="comments" value="#{caseInterventionsTabBean.editing.comments}" 
+          <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}" 
                            styleClass="savable"/>
         </p:outputPanel>
 

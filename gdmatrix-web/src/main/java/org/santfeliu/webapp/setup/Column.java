@@ -42,6 +42,22 @@ public class Column implements Serializable, Comparable<Column>
   private String label;
   private String name;
   private String styleClass;
+  
+  public Column()
+  {
+  }
+  
+  public Column(String name, String label)
+  {
+    this.name = name;        
+    this.label = label;
+  }
+  
+  public Column(String name, String label, String styleClass)
+  {
+    this(label, name);
+    this.styleClass = styleClass;
+  }
 
   public String getLabel()
   {
