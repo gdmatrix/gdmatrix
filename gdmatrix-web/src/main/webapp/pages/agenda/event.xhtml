@@ -8,6 +8,9 @@
                 template="/pages/obj/object_3col.xhtml"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
+  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
+                var="agendaBundle" />  
+  
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
@@ -23,7 +26,7 @@
           <p:defaultCommand target="smart_search_button" scope="smart_search" />    
 
           <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="Valor" />
+            <p:outputLabel for="@next" value="#{objectBundle.value}" />
             <p:inputText id="smartFilter" value="#{eventFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
           </p:outputPanel>
@@ -55,9 +58,6 @@
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
 
-          <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                        var="agendaBundle" />
-
           <!-- EventId -->
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="#{agendaBundle.event_id}" />
@@ -80,7 +80,7 @@
                              styleClass="inputfield w-full" filter="true"
                              filterMatchMode="contains"
                              style="min-width:inherit !important">
-              <f:selectItem itemValue="" itemLabel="Tots" />
+              <f:selectItem itemValue="" itemLabel="#{agendaBundle.eventSearch_all}" />
               <f:selectItems value="#{eventObjectBean.selectItems}"
                              var="item"/>
               <p:column>
@@ -104,7 +104,7 @@
               </p:outputPanel>
 
               <div class="field col-12 md:col-6">
-                <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from} " />
+                <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from}" />
                 <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}"
                               locale="#{eventFinderBean.language}" inputStyleClass="w-12"
                               styleClass="inputfield w-full" showIcon="false"
@@ -112,7 +112,7 @@
                               monthNavigator="true" yearNavigator="true" />
               </div>
               <div class="field col-12 md:col-6">
-                <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to} " />
+                <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to}" />
                 <p:datePicker id="end_date" value="#{eventFinderBean.toDate}"
                               locale="#{eventFinderBean.language}" inputStyleClass="w-12"
                               styleClass="inputfield w-full" showIcon="false"
@@ -124,20 +124,20 @@
 
           <!-- ThemeId -->
           <div class="field">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}:" />
+            <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}" />
             <p:selectOneMenu value="#{eventFinderBean.searchEventThemeId}"
                              styleClass="inputfield w-full"
                              style="min-width:inherit !important"
                              filter="true"
                              filterMatchMode="contains">
-              <f:selectItem itemValue="" itemLabel="Tots" />
+              <f:selectItem itemValue="" itemLabel="#{agendaBundle.eventSearch_all}" />
               <f:selectItems value="#{themeTypeBean.selectItems}" />
             </p:selectOneMenu>
           </div>
 
           <!-- PersonId -->
           <p:outputPanel styleClass="field" rendered="true">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_personId}:" />
+            <p:outputLabel for="@next" value="#{agendaBundle.event_personId}" />
             <emcomp:objectReference value="#{eventFinderBean.filter.personId}"
                                     type="Person"
                                     process=":mainform:filter_panel"
@@ -150,7 +150,7 @@
 
           <!-- Room -->
           <p:outputPanel styleClass="field" rendered="true">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_place}:" />
+            <p:outputLabel for="@next" value="#{agendaBundle.event_place}" />
             <emcomp:objectReference value="#{eventFinderBean.filter.roomId}"
                                     type="Room"
                                     process=":mainform:filter_panel"
@@ -225,7 +225,7 @@
       <p:tab id="event_schedule_tab">
         <f:facet name="title">
           <i class="pi pi-calendar mr-2"></i>
-          <h:outputText value="Calendari"/>
+          <h:outputText value="#{agendaBundle.scheduleView}"/>
         </f:facet>
         <h:panelGroup id="result_schedule">
           <ui:include src="event_schedule.xhtml" />

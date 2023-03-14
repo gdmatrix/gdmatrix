@@ -6,9 +6,6 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />
-
   <p:dialog id="event_persons_dialog" widgetVar="eventPersonsDialog"
             styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
@@ -78,9 +75,7 @@
                            disabled="#{!eventObjectBean.editable}" autoWidth="false"
                            styleClass="savable">
             <f:selectItem itemLabel=" " itemValue="" />
-            <f:selectItem itemLabel="NO" itemValue="N" />
-            <f:selectItem itemLabel="SI" itemValue="S" />
-            <f:selectItem itemLabel="FJ" itemValue="J" />
+            <f:selectItems value="#{eventPersonsTabBean.attendedSelectItems}" />
           </p:selectOneMenu>
         </div>
 

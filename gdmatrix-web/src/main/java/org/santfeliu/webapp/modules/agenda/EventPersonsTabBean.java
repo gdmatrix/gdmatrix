@@ -36,7 +36,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,8 +46,6 @@ import org.matrix.agenda.Attendant;
 import org.matrix.agenda.AttendantFilter;
 import org.matrix.agenda.AttendantView;
 import org.primefaces.PrimeFaces;
-import org.santfeliu.dic.Type;
-import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -218,18 +218,31 @@ public class EventPersonsTabBean extends TabBean
     return typeId;
   }
 
+  public List<SelectItem> getAttendedSelectItems()
+  {
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.agenda.web.resources.AgendaBundle", getLocale());
+    List<SelectItem> result = new ArrayList();
+    result.add(new SelectItem("S", bundle.getString("attendants_yes")));
+    result.add(new SelectItem("N", bundle.getString("attendants_no")));
+    result.add(new SelectItem("J", bundle.getString("attendants_ea")));
+    return result;
+  }
+
   public String getAttendedLabel()
   {
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.agenda.web.resources.AgendaBundle", getLocale());
     String attended = (String)getValue("#{row.attended}");
     if (attended == null) return "";
     else switch (attended)
     {
       case "S":
-        return "SI";
+        return bundle.getString("attendants_yes");
       case "N":
-        return "NO";
+        return bundle.getString("attendants_no");
       case "J":
-        return "FJ";
+        return bundle.getString("attendants_ea");
       default:
         return "";
     }

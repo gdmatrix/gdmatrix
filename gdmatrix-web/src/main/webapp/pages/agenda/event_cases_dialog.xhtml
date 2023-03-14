@@ -7,9 +7,6 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />
-
   <p:dialog id="event_cases_dialog" widgetVar="eventCasesDialog"
             styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
@@ -35,7 +32,7 @@
         <!-- Case -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Case"
+                         value="#{agendaBundle.eventCases_case}"
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{eventCasesTabBean.caseId}"
@@ -52,7 +49,7 @@
         <!-- Type -->
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
-                         value="Tipus"
+                         value="#{agendaBundle.eventCases_type}"
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventCasesTabBean.caseEventTypeId}"
@@ -72,7 +69,7 @@
         <!-- Comments -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Comments" />
+                         value="#{agendaBundle.eventCases_comments}" />
           <p:inputTextarea
             styleClass="savable"
             value="#{eventCasesTabBean.editing.comments}" />

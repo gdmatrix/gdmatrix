@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlOutputText;
@@ -116,7 +117,11 @@ public class DynamicPropertiesBean implements Serializable
       }
       if (selectItems.isEmpty())
       {
-        selectItems.add(new SelectItem("", "No form"));
+        ResourceBundle bundle = ResourceBundle.getBundle(
+          "org.santfeliu.web.obj.resources.ObjectBundle", 
+          UserSessionBean.getCurrentInstance().getViewLocale());
+        selectItems.add(
+          new SelectItem("", bundle.getString("type_without_form")));
       }
       selectItemMap.put(typeId, selectItems);
     }

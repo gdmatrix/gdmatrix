@@ -7,15 +7,12 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />
-
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
     <p:dataTable id="event_cases_table" value="#{eventCasesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" rows="5"
+                 resizableColumns="false" showGridlines="true" rows="10"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{eventCasesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -29,7 +26,8 @@
                            process="@this"
                            update="event_cases_table"
                            resetValues="true"
-                           alt="" title=""
+                           alt="#{eventCasesTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}" 
+                           title="#{eventCasesTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            rendered="#{eventCasesTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventCasesTabBean.create}"
@@ -48,18 +46,18 @@
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="caseId" styleClass="w-1"
-                exportHeaderValue="caseId">
+      <p:column headerText="#{agendaBundle.eventCases_id}" styleClass="w-1"
+                exportHeaderValue="#{agendaBundle.eventCases_id}">
         <h:outputText value="#{row.caseObject.caseId}" />
       </p:column>
 
-      <p:column headerText="Title" styleClass="w-7"
-                exportHeaderValue="Title">
+      <p:column headerText="#{agendaBundle.eventCases_case}" styleClass="w-7"
+                exportHeaderValue="#{agendaBundle.eventCases_case}">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>
 
-      <p:column headerText="Type" styleClass="w-2"
-                exportHeaderValue="Type"
+      <p:column headerText="#{agendaBundle.eventCases_type}" styleClass="w-2"
+                exportHeaderValue="#{agendaBundle.eventCases_type}"
                 rendered="#{!eventCasesTabBean.groupedView}">
         <h:outputText value="#{eventCasesTabBean.caseEventTypeDescription}"/>
       </p:column>
@@ -75,6 +73,7 @@
                          action="#{eventCasesTabBean.edit(row)}"
                          process=":mainform:search_tabs:tabs"
                          update=":mainform:search_tabs:event_cases_dialog"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          resetValues="true"
                          oncomplete="if (!isFacesError()) PF('eventCasesDialog').show()" />
         <p:commandButton action="#{eventCasesTabBean.remove(row)}"

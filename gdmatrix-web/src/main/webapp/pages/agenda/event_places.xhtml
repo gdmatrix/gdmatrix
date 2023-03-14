@@ -6,9 +6,6 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />
-
   <h:panelGroup>
 
     <!-- Results table -->
@@ -19,7 +16,7 @@
                  rowIndexVar="firstRow" first="#{eventPlacesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50">
+                 rowsPerPageTemplate="5,10,25,50" rows="10">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">

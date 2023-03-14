@@ -16,7 +16,7 @@
                          update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasPrevious()}"
-                         title="Previous" alt="Previous"
+                         title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
                          />
         <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}"
                       styleClass="align-self-center" />
@@ -27,7 +27,7 @@
                          update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
                          resetValues="true"
                          disabled="#{not objectBean.finderBean.hasNext()}"
-                         title="Next" alt="Next"
+                         title="#{objectBundle.next}" alt="#{objectBundle.next}"
                          />
     </p:outputPanel>
     <div class="flex flex-grow-1 justify-content-start align-self-center">
@@ -40,7 +40,7 @@
                          action="#{navigatorBean.select}"
                          rendered="#{navigatorBean.selectable}"
                          ajax="false"
-                         title="Select" alt="Select"
+                         title="#{objectBundle.select}" alt="#{objectBundle.select}"
                          />
         <p:commandButton icon="ui-icon pi pi-plus-circle"
                          styleClass="rounded-button ui-button-flat"
@@ -57,7 +57,7 @@
                          process="@this"
                          partialSubmit="true"
                          update="object_header :mainform:context_panel"
-                         title="Mark" alt="Mark"
+                         title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
                          />
         <p:commandButton icon="ui-icon pi pi-star-fill"
                          styleClass="rounded-button ui-button-flat"
@@ -66,7 +66,7 @@
                          process="@this"
                          partialSubmit="true"
                          update="object_header :mainform:context_panel"
-                         title="Unmark" alt="Unmark"
+                         title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
                          />
         <p:commandButton icon="ui-icon pi pi-trash"
                          styleClass="rounded-button ui-button-flat"
@@ -84,13 +84,13 @@
                          styleClass="rounded-button ui-button-flat"
                          update=":mainform:search_tabs:tabs"
                          process="@this"
-                         title="Actions" alt="Actions"/>
+                         title="#{objectBundle.actions}" alt="#{objectBundle.actions}"/>
         <p:commandButton icon="ui-icon pi pi-times"
                          action="#{navigatorBean.close}"
                          ajax="false"
                          immediate="true"
                          styleClass="rounded-button ui-button-flat"
-                         title="Close" alt="Close" />
+                         title="#{objectBundle.close}" alt="#{objectBundle.close}" />
     </div>
   </p:outputPanel>
 

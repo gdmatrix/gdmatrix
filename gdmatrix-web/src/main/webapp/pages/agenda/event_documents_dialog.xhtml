@@ -7,9 +7,6 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />
-
   <p:dialog id="event_documents_dialog" widgetVar="eventDocumentsDialog"
             styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
@@ -35,7 +32,7 @@
         <!-- Document -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Document"
+                         value="#{agendaBundle.eventDocuments_document}"
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{eventDocumentsTabBean.docId}"
@@ -52,7 +49,7 @@
         <!-- Type -->
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
-                         value="Tipus"
+                         value="#{agendaBundle.eventDocuments_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventDocumentsTabBean.eventDocTypeId}"
                                 process="@(.savable)"
@@ -68,7 +65,7 @@
         <!-- Comments -->
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Comments" />
+                         value="#{agendaBundle.eventDocuments_comments}" />
           <p:inputTextarea
             styleClass="savable"
             value="#{eventDocumentsTabBean.editing.comments}" />

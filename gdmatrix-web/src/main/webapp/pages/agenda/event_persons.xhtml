@@ -6,9 +6,6 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />
-
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
@@ -19,7 +16,7 @@
                  rowIndexVar="firstRow" first="#{eventPersonsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50">
+                 rowsPerPageTemplate="5,10,25,50" rows="10">
 
       <f:facet name="header">
 
@@ -29,7 +26,8 @@
                            process="@this"
                            update="event_persons_table"
                            resetValues="true"
-                           alt="" title=""
+                           alt="#{eventPersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}" 
+                           title="#{eventPersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            rendered="#{eventPersonsTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventPersonsTabBean.create}"

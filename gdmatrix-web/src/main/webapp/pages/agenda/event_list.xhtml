@@ -33,7 +33,7 @@
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
-                       title="Select" alt="Select" />
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}" />
       <p:commandButton icon="pi pi-external-link"
                        styleClass="rounded-button ui-button-flat"
                        action="#{eventFinderBean.view(rowIndex)}"
@@ -41,7 +41,8 @@
                        resetValues="true"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel" />
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       title="#{objectBundle.show}" alt="#{objectBundle.show}" />
     </p:column>
   </p:dataTable>
 

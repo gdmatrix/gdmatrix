@@ -7,15 +7,12 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />
-
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
     <p:dataTable id="event_documents_table" value="#{eventDocumentsTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" rows="5"
+                 resizableColumns="false" showGridlines="true" rows="10"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{eventDocumentsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -29,7 +26,8 @@
                            process="@this"
                            update="event_documents_table"
                            resetValues="true"
-                           alt="" title=""
+                           alt="#{eventDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}" 
+                           title="#{eventDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            rendered="#{eventDocumentsTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventDocumentsTabBean.create}"
@@ -48,18 +46,18 @@
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="docId" styleClass="w-1"
-                exportHeaderValue="docId">
+      <p:column headerText="#{agendaBundle.eventDocuments_id}" styleClass="w-1"
+                exportHeaderValue="#{agendaBundle.eventDocuments_id}">
         <h:outputText value="#{row.document.docId}" />
       </p:column>
 
-      <p:column headerText="Title" styleClass="w-7"
-                exportHeaderValue="Title">
+      <p:column headerText="#{agendaBundle.eventDocuments_title}" styleClass="w-7"
+                exportHeaderValue="#{agendaBundle.eventDocuments_title}">
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
-      <p:column headerText="Type" styleClass="w-2"
-                exportHeaderValue="Type"
+      <p:column headerText="#{agendaBundle.eventDocuments_type}" styleClass="w-2"
+                exportHeaderValue="#{agendaBundle.eventDocuments_type}"
                 rendered="#{!eventDocumentsTabBean.groupedView}">
         <h:outputText value="#{eventDocumentsTabBean.eventDocumentTypeDescription}"/>
       </p:column>
@@ -75,6 +73,7 @@
                          action="#{eventDocumentsTabBean.edit(row)}"
                          process=":mainform:search_tabs:tabs"
                          update=":mainform:search_tabs:event_documents_dialog"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          resetValues="true"
                          oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').show()" />
         <p:commandButton action="#{eventDocumentsTabBean.remove(row)}"

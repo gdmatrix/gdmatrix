@@ -10,16 +10,16 @@
   <h:body>
     <composite:interface>
       <composite:attribute name="creationDateTime" required="false" />
-      <composite:attribute name="creationDateTimeLabel" required="false" default="Creació" />
+      <composite:attribute name="creationDateTimeLabel" required="false" default="#{objectBundle.creationDateTime}" />
       <composite:attribute name="creationDateTimeStyleClass" required="false" default="field col-12 md:col-3" />
       <composite:attribute name="creationUserId" required="false" />
-      <composite:attribute name="creationUserIdLabel" required="false" default="Usuari creador" />
+      <composite:attribute name="creationUserIdLabel" required="false" default="#{objectBundle.createdBy}" />
       <composite:attribute name="creationUserIdStyleClass" required="false" default="field col-12 md:col-3" />
       <composite:attribute name="changeDateTime" required="false" />
-      <composite:attribute name="changeDateTimeLabel" required="false" default="Darrera modificació" />
+      <composite:attribute name="changeDateTimeLabel" required="false" default="#{objectBundle.changeDateTime}" />
       <composite:attribute name="changeDateTimeStyleClass" required="false" default="field col-12 md:col-3" />
       <composite:attribute name="changeUserId" required="false" />
-      <composite:attribute name="changeUserIdLabel" required="false" default="Usuari modificador" />
+      <composite:attribute name="changeUserIdLabel" required="false" default="#{objectBundle.changedBy}" />
       <composite:attribute name="changeUserIdStyleClass" required="false" default="field col-12 md:col-3" />
       <composite:attribute name="dateShowTime" required="false" default="true" />
       <composite:attribute name="dateShowIcon" required="false" default="false" />

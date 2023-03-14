@@ -10,6 +10,9 @@
 
   <ui:define name="filter">
 
+    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
+              var="kernelBundle" /> 
+
     <p:outputPanel id="filter_panel">
 
       <p:tabView id="find_selector"
@@ -23,7 +26,7 @@
           <p:defaultCommand target="smart_search_button" scope="smart_search" />    
 
           <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="Valor" />
+            <p:outputLabel for="@next" value="#{objectBundle.value}" />
             <p:inputText id="smartFilter" value="#{roomFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
           </p:outputPanel>
@@ -54,8 +57,6 @@
             <h:outputText value="#{objectBundle.advanced}" /> 
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
-          <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                        var="agendaBundle" />
 
           <!-- RoomId -->
           <div class="field">
@@ -75,23 +76,20 @@
           <!-- TypeId -->    
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
-            <p:selectOneMenu value="#{roomFinderBean.filter.roomTypeId}"  
-                             styleClass="inputfield w-full" 
-                             style="min-width:inherit !important"
-                             filter="true" 
-                             filterMatchMode="contains">
-              <f:selectItem itemValue="" itemLabel="#{kernelBundle.room_allTypes}" />
-              <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" 
-                             var="item" />
-              <p:column>
-                <h:outputText value="#{item.value != '' ? item.label : kernelBundle.room_allTypes}" />
-              </p:column>            
-            </p:selectOneMenu>
+            <emcomp:typeReference value="#{roomFinderBean.filter.roomTypeId}"
+                                  type="Room"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3">
+              <p:ajax event="itemSelect"
+                      process="@this" update=":mainform:search_tabs:tabs" />
+            </emcomp:typeReference>
           </div>                         
 
           <!-- AddressId -->
           <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_address}:" />
+            <p:outputLabel for="@next" value="#{kernelBundle.room_address}" />
             <emcomp:objectReference value="#{roomFinderBean.filter.addressId}"
                                     type="Address"
                                     process=":mainform:filter_panel"
@@ -104,21 +102,21 @@
 
           <!-- Capacity -->          
           <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}:" />
+            <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
             <p:inputText id="roomCapacity" value="#{roomFinderBean.filter.capacity}" 
                          class="inputfield w-full" />            
           </div>
 
           <!-- SpaceId -->          
           <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}:" />
+            <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
             <p:inputText id="roomSpaceId" value="#{roomFinderBean.filter.spaceId}" 
                          class="inputfield w-full" />            
           </div>          
 
           <!-- Comments -->          
           <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_comments}:" />
+            <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
             <p:inputText id="roomComments" value="#{roomFinderBean.filter.comments}" 
                          class="inputfield w-full" />            
           </div>          

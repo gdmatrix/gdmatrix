@@ -3,44 +3,40 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:pe="http://primefaces.org/ui/extensions"                
+                xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
-                var="kernelBundle" />
-
-  <div class="ui-fluid formgrid grid">   
+  <div class="ui-fluid formgrid grid">
 
     <div class="field col-12 md:col-3">
-      <p:outputLabel for="@next" value="RoomId" />
+      <p:outputLabel for="@next" value="#{kernelBundle.room_id}" />
       <p:inputText value="#{roomObjectBean.objectId}" readonly="true" />
     </div>
 
     <!--TODO: isRenderType -->
     <div class="field col-12 md:col-9">
-      <p:outputLabel for="@next" value="#{kernelBundle.room_type}" /> 
-      <p:selectOneMenu value="#{roomObjectBean.room.roomTypeId}"  
-                       styleClass="inputfield w-full" 
-                       filter="true"
-                       filterMatchMode="contains">
-        <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" 
-                       var="item" />
-        <p:column>
-          <h:outputText value="#{item.label}" />
-        </p:column>            
-      </p:selectOneMenu>
-    </div>          
+      <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
+      <emcomp:typeReference value="#{roomObjectBean.room.roomTypeId}"
+                            type="Room"
+                            styleClass="w-full"
+                            scrollHeight="200"
+                            queryDelay="1000"
+                            minQueryLength="3">
+        <p:ajax event="itemSelect"
+                process="@this" update=":mainform:search_tabs:tabs" />
+      </emcomp:typeReference>
+    </div>
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
-      <p:inputText id="name" value="#{roomObjectBean.room.name}" 
+      <p:inputText id="name" value="#{roomObjectBean.room.name}"
                    styleClass="inputfield w-full" required="true"/>
     </div>
 
-    <div class="field col-12">  
-      <p:outputLabel for="@next"  
+    <div class="field col-12">
+      <p:outputLabel for="@next"
                      value="#{kernelBundle.room_address}"
                      styleClass="w-full"/>
       <emcomp:objectReference value="#{roomObjectBean.room.addressId}"
@@ -54,51 +50,51 @@
 
     <div class="field col-12 md:col-4">
       <p:outputLabel for="@next" value="#{kernelBundle.room_phone}" />
-      <p:inputText id="phone" value="#{roomObjectBean.room.phone}" 
+      <p:inputText id="phone" value="#{roomObjectBean.room.phone}"
                    styleClass="inputfield w-full"/>
-    </div>  
+    </div>
 
     <div class="field col-12 md:col-4">
       <p:outputLabel for="@next" value="#{kernelBundle.room_fax}" />
-      <p:inputText id="fax" value="#{roomObjectBean.room.fax}" 
+      <p:inputText id="fax" value="#{roomObjectBean.room.fax}"
                    styleClass="inputfield w-full"/>
-    </div>  
+    </div>
 
     <div class="field col-12 md:col-4">
       <p:outputLabel for="@next" value="#{kernelBundle.room_email}" />
-      <p:inputText id="email" value="#{roomObjectBean.room.email}" 
+      <p:inputText id="email" value="#{roomObjectBean.room.email}"
                    styleClass="inputfield w-full"/>
-    </div>  
+    </div>
 
     <div class="field col-12 md:col-2">
       <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
-      <p:inputText id="capacity" value="#{roomObjectBean.room.capacity}" 
+      <p:inputText id="capacity" value="#{roomObjectBean.room.capacity}"
                    styleClass="inputfield w-full"/>
-    </div>  
+    </div>
 
     <div class="field col-12 md:col-2">
       <p:outputLabel for="@next" value="#{kernelBundle.room_area}" />
-      <p:inputText id="area" value="#{roomObjectBean.room.area}" 
+      <p:inputText id="area" value="#{roomObjectBean.room.area}"
                    styleClass="inputfield w-full"/>
-    </div>          
+    </div>
 
     <div class="field col-12 md:col-6">
       <p:outputLabel for="@next" value="#{kernelBundle.room_schedule}" />
-      <p:inputText id="schedule" value="#{roomObjectBean.room.schedule}" 
+      <p:inputText id="schedule" value="#{roomObjectBean.room.schedule}"
                    styleClass="inputfield w-full"/>
-    </div>  
+    </div>
 
     <div class="field col-12 md:col-2">
       <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
-      <p:inputText id="spaceId" value="#{roomObjectBean.room.spaceId}" 
+      <p:inputText id="spaceId" value="#{roomObjectBean.room.spaceId}"
                    styleClass="inputfield w-full"/>
-    </div>  
+    </div>
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
-      <p:inputText id="comments" value="#{roomObjectBean.room.comments}" 
+      <p:inputText id="comments" value="#{roomObjectBean.room.comments}"
                    styleClass="inputfield w-full"/>
-    </div> 
+    </div>
 
   </div>
 

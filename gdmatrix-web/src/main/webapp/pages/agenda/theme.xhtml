@@ -6,8 +6,11 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://java.sun.com/jsf/core"
                 template="/pages/obj/object_3col.xhtml">
-
+  
   <ui:define name="filter">
+
+    <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
+              var="agendaBundle" />  
 
     <p:outputPanel id="filter_panel">
 
@@ -22,7 +25,7 @@
           <p:defaultCommand target="smart_search_button" scope="smart_search" />    
 
           <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="Valor" />
+            <p:outputLabel for="@next" value="#{objectBundle.value}" />
             <p:inputText id="smartFilter" value="#{themeFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
           </p:outputPanel>
@@ -53,9 +56,6 @@
             <h:outputText value="#{objectBundle.advanced}" /> 
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
-
-          <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                        var="agendaBundle" />
           
           <!-- ThemeId -->
           <p:outputPanel styleClass="field">
