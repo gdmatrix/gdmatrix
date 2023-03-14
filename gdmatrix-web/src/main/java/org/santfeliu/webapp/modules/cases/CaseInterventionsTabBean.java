@@ -172,13 +172,15 @@ public class CaseInterventionsTabBean extends TabBean
   
   public List<Column> getColumns()
   {
-    List<Column> columns =
-      caseObjectBean.getActiveEditTab().getColumns();
+    EditTab activeEditTab = caseObjectBean.getActiveEditTab();
+    List<Column> columns = activeEditTab.getColumns();
     if (columns == null || columns.isEmpty())
     {
-      //Get default objectSetup columns congfiguration
-      ObjectSetup objectSetup = caseTypeBean.getObjectSetup();
-      columns = objectSetup.getEditTabs().get(3).getColumns();
+      //Get default objectSetup columns configuration
+      ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
+      EditTab defaultEditTab = 
+        defaultSetup.findEditTabByViewId(activeEditTab.getViewId());
+      columns = defaultEditTab.getColumns();
     }
     return columns;
   }

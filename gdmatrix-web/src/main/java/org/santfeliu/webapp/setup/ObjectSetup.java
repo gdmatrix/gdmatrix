@@ -117,5 +117,33 @@ public class ObjectSetup
     Gson gson = new Gson();
     return gson.fromJson(reader, ObjectSetup.class);
   }
+  
+  public EditTab findEditTabByViewId(String viewId)
+  {
+    if (viewId != null)
+    {    
+      for (EditTab editTab : editTabs)
+      {
+        if (viewId.equals(editTab.getViewId()))
+          return editTab;
+      }
+    }
+    
+    return null;
+  }
+  
+  public SearchTab findSearchTabByViewId(String viewId)
+  {
+    if (viewId != null)
+    {    
+      for (SearchTab searchTab : searchTabs)
+      {
+        if (viewId.equals(searchTab.getViewId()))
+          return searchTab;
+      }
+    }
+    
+    return null;    
+  }
 
 }

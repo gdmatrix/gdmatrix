@@ -50,6 +50,7 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
+import org.santfeliu.webapp.setup.SearchTab;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -148,9 +149,11 @@ public class CaseFinderBean extends FinderBean
       List<Column> columns = objectSetup.getSearchTabs().get(0).getColumns();
       if (columns == null || columns.isEmpty())
       {
-        //Get default objectSetup columns congfiguration        
-        columns = 
-          caseTypeBean.getObjectSetup().getSearchTabs().get(0).getColumns();
+        //Get default objectSetup columns configuration 
+        ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
+        SearchTab defaultSearchTab = 
+          defaultSetup.findSearchTabByViewId(objectSetup.getViewId());
+        columns = defaultSearchTab.getColumns();
       }
       return columns;
     }
@@ -253,9 +256,7 @@ public class CaseFinderBean extends FinderBean
         rows = Collections.EMPTY_LIST;
       }
       else
-      {    
-//        loadObjectSetup();
-        
+      {            
         rows = new BigList(20, 10)
         {
           @Override
