@@ -31,22 +31,34 @@
 package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
+import org.matrix.cases.CaseAddress;
+import org.matrix.cases.CaseAddressFilter;
+import org.matrix.cases.CaseAddressView;
 import org.matrix.cases.CasePerson;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.kernel.Contact;
+import org.matrix.kernel.ContactFilter;
+import org.matrix.kernel.ContactView;
+import org.matrix.kernel.PersonAddressFilter;
+import org.matrix.kernel.PersonAddressView;
 import org.primefaces.PrimeFaces;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.setup.EditTab;
 
 /**
@@ -60,6 +72,13 @@ public class CasePersonsTabBean extends TabBean
   private Map<String, TabInstance> tabInstances = new HashMap<>();
   private CasePerson editing;
   private boolean importAddresses;
+  private Map<String, ContactView> personContacts = new HashMap();
+  private Map<String, ContactView> representantContacts = new HashMap();
+  private String contactValue;
+  private String contactTypeId;
+  private String representantContactValue;
+  private String representantContactTypeId; 
+  private int tabIndex;
 
   public class TabInstance
   {
@@ -153,7 +172,57 @@ public class CasePersonsTabBean extends TabBean
   {
     editing = casePerson;
   }  
-  
+    
+  public String getContactValue()
+  {
+    return contactValue;
+  }
+
+  public void setContactValue(String contactValue)
+  {
+    this.contactValue = contactValue;
+  }
+
+  public String getContactTypeId()
+  {
+    return contactTypeId;
+  }
+
+  public void setContactTypeId(String contactTypeId)
+  {
+    this.contactTypeId = contactTypeId;
+  }
+
+  public String getRepresentantContactValue()
+  {
+    return representantContactValue;
+  }
+
+  public void setRepresentantContactValue(String representantContactValue)
+  {
+    this.representantContactValue = representantContactValue;
+  }
+
+  public String getRepresentantContactTypeId()
+  {
+    return representantContactTypeId;
+  }
+
+  public void setRepresentantContactTypeId(String representantContactTypeId)
+  {
+    this.representantContactTypeId = representantContactTypeId;
+  }
+
+  public int getTabIndex()
+  {
+    return tabIndex;
+  }
+
+  public void setTabIndex(int tabIndex)
+  {
+    this.tabIndex = tabIndex;
+  }
+   
   public boolean isImportAddresses()
   {
     return importAddresses;
@@ -162,12 +231,195 @@ public class CasePersonsTabBean extends TabBean
   public void setImportAddresses(boolean importAddresses)
   {
     this.importAddresses = importAddresses;
+  }    
+  
+  public String getPersonId()
+  {
+    return editing.getPersonId();
   }  
   
+  public void setPersonId(String personId)
+  {
+    editing.setPersonId(personId);
+    showDialog();
+  }
+    
+  public String getRepresentantPersonId()
+  {
+    return editing.getRepresentantPersonId();
+  }
+  
+  public void setRepresentantPersonId(String personId)
+  {
+    editing.setRepresentantPersonId(personId);
+    showDialog();
+  }  
+  
+  public void onPersonSelect() 
+  {
+    try    
+    {
+      personContacts = getPersonContacts(editing.getPersonId());
+      editing.getContactId().clear();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public void onRepresentantSelect()
+  {
+    try
+    {
+      representantContacts =
+        getPersonContacts(editing.getRepresentantPersonId());
+      editing.getRepresentantContactId().clear();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  public String getAddressId()
+  {
+    return editing.getAddressId();
+  }
+  
+  public void setAddressId(String personId)
+  {
+    editing.setAddressId(personId);
+    showDialog();
+  }  
+  
+  public String getRepresentantAddressId()
+  {
+    return editing.getRepresentantAddressId();
+  }
+  
+  public void setRepresentantAddressId(String personId)
+  {
+    editing.setRepresentantAddressId(personId);
+    showDialog();
+  }    
+
+  public List<ContactView> getPersonContacts()
+  {
+    if (editing == null)
+      return Collections.emptyList();
+    
+    List<ContactView> results = new ArrayList<>();
+    for (String contactId : personContacts.keySet())
+    {
+      if (!editing.getContactId().contains(contactId))
+        results.add(personContacts.get(contactId));
+    }
+    return results;
+  }
+
+  public List<ContactView> getRepresentantContacts()
+  {
+    if (editing == null)
+      return Collections.emptyList();
+    
+    List<ContactView> results = new ArrayList<>();
+    for (String contactId : representantContacts.keySet())
+    {
+      if (!editing.getRepresentantContactId().contains(contactId))
+        results.add(representantContacts.get(contactId));
+    }
+    return results;
+  }
+  
+  public List<ContactView> getSelectedContacts()
+  {
+    if (editing == null)
+      return Collections.emptyList();
+    
+    List<ContactView> results = new ArrayList<>();
+    for (String contactId : editing.getContactId())
+    {
+      ContactView contactView = personContacts.get(contactId);
+      if (contactView != null)
+        results.add(contactView);
+    }
+    
+    return results;
+  }
+  
+  public List<ContactView> getSelectedRepresentantContacts()
+  {
+    if (editing == null)
+      return Collections.emptyList();
+    
+    List<ContactView> results = new ArrayList<>();
+    for (String contactId : editing.getRepresentantContactId())
+    {
+      ContactView contactView = representantContacts.get(contactId);
+      if (contactView != null)
+        results.add(contactView);
+    }
+    
+    return results;
+  }  
+    
+  public void selectContact(ContactView contact)
+  {
+    if (editing.getContactId().size() < 3)
+      editing.getContactId().add(contact.getContactId());
+  }
+  
+  public void unselectContact(ContactView contact)
+  {
+    if (!editing.getContactId().isEmpty())
+      editing.getContactId().remove(contact.getContactId());
+  }
+  
+  public void selectRepresentantContact(ContactView contact)
+  {
+    if (editing.getRepresentantContactId().size() < 3)
+      editing.getRepresentantContactId().add(contact.getContactId());
+  }
+  
+  public void unselectRepresentantContact(ContactView contact)
+  {
+    if (!editing.getRepresentantContactId().isEmpty())
+      editing.getRepresentantContactId().remove(contact.getContactId());
+  }  
+  
+  public void moveContactDown(Integer index)
+  {
+    moveContactDown(editing.getContactId(), index);
+  }
+  
+  public void moveRepresentantContactDown(Integer index)
+  {
+    moveContactDown(editing.getRepresentantContactId(), index);
+  }  
+  
+  private void moveContactDown(List<String> contacts, Integer index)
+  {
+    if (index >= 0 && index <= 2)
+    {
+      int index2 = (index + 1) % contacts.size();
+      String contactId = contacts.get(index);
+      String contactId2 = contacts.get(index2);      
+      contacts.set(index2, contactId);
+      contacts.set(index, contactId2);          
+    }    
+  }
+
   public void switchView()
   {
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
   }  
+  
+  public String getTabBaseTypeId()
+  {    
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    return editTab.getProperties().getString("typeId");
+  }   
   
   public void create()
   {
@@ -217,6 +469,10 @@ public class CasePersonsTabBean extends TabBean
       {
         editing = CasesModuleBean.getPort(false)
           .loadCasePerson(casePersonView.getCasePersonId());
+        personContacts = 
+          getPersonContacts(editing.getPersonId());
+        representantContacts = 
+          getPersonContacts(editing.getRepresentantPersonId());
       }
       catch (Exception ex)
       {
@@ -240,6 +496,12 @@ public class CasePersonsTabBean extends TabBean
         editing.setCasePersonTypeId(DictionaryConstants.CASE_PERSON_TYPE);
   
       CasesModuleBean.getPort(false).storeCasePerson(editing);
+      if (importAddresses)
+      {
+        importAddressesFromEditingPerson();
+        importAddresses = false;
+      }      
+      
       load();
       editing = null;
     }
@@ -271,11 +533,79 @@ public class CasePersonsTabBean extends TabBean
       error(ex);
     }
   }
+  
+  public void addNewContact()
+  {
+    if (!StringUtils.isBlank(contactTypeId) 
+      && !StringUtils.isBlank(contactValue)
+      && editing.getContactId().size() < 3)
+    {      
+      Contact newContact = new Contact();
+      newContact.setPersonId(editing.getPersonId());
+      newContact.setContactTypeId(contactTypeId);
+      newContact.setValue(contactValue);
+      
+      try
+      {
+        newContact = storeNewContact(newContact);
+        personContacts = getPersonContacts(editing.getPersonId());
+        editing.getContactId().add(newContact.getContactId());
+
+        contactTypeId = null;
+        contactValue = null;        
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+  
+  public void addNewRepresentantContact()
+  {
+    if (!StringUtils.isBlank(representantContactTypeId) 
+      && !StringUtils.isBlank(representantContactValue)
+      && editing.getRepresentantContactId().size() < 3)
+    {      
+      Contact newContact = new Contact();
+      newContact.setPersonId(editing.getRepresentantPersonId());
+      newContact.setContactTypeId(representantContactTypeId);
+      newContact.setValue(representantContactValue);
+      
+      try
+      {
+        newContact = storeNewContact(newContact);
+        representantContacts = 
+          getPersonContacts(editing.getRepresentantPersonId());
+        editing.getRepresentantContactId().add(newContact.getContactId());
+
+        representantContactTypeId = null;
+        representantContactValue = null;        
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }    
+  }
+  
+  private Contact storeNewContact(Contact contact) 
+    throws Exception
+  {
+    Contact newContact = 
+      KernelModuleBean.getPort(true).storeContact(contact);
+    
+    contact.setContactTypeId(null);
+    contact.setPersonId(null);
+    contact.setValue(null);
+  
+    return newContact;
+  }   
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ editing };
+    return new Object[]{ editing, tabIndex };
   }
 
   @Override
@@ -285,8 +615,17 @@ public class CasePersonsTabBean extends TabBean
     {
       Object[] stateArray = (Object[])state;
       editing = (CasePerson)stateArray[0];
+      tabIndex = (int)stateArray[1];
 
       load();
+      
+      if (editing != null)
+      {
+        personContacts = 
+          getPersonContacts(editing.getPersonId());
+        representantContacts = 
+          getPersonContacts(editing.getRepresentantPersonId());        
+      }
     }
     catch (Exception ex)
     {
@@ -307,9 +646,76 @@ public class CasePersonsTabBean extends TabBean
     }
   }  
   
-  private String getTabBaseTypeId()
-  {    
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
+  private Map<String, ContactView> getPersonContacts(String personId) throws Exception
+  {
+    if (personId == null)
+      return Collections.emptyMap();  
+
+    ContactFilter filter = new ContactFilter();
+    filter.setPersonId(personId);
+
+    List<ContactView> contacts = 
+      KernelModuleBean.getPort(true).findContactViews(filter);
+    
+    Map<String, ContactView> results = new TreeMap();
+    for (ContactView contact : contacts)
+    {
+      results.put(contact.getContactId(), contact);
+    }
+    
+    return results;
   }  
+  
+  private void importAddressesFromEditingPerson() throws Exception
+  {
+    if (editing != null)
+    {
+      String personId = editing.getPersonId();
+      if (personId != null)
+      {         
+        String caseId = editing.getCaseId();
+        List<String> currentAddressIds = getCurrentAddresses(caseId);
+        List<PersonAddressView> personAddresses = 
+          getPersonAddresses(personId);
+        for (PersonAddressView personAddressView : personAddresses)
+        {
+          String addressId = personAddressView.getAddress().getAddressId();
+          if (!currentAddressIds.contains(addressId))
+          {
+            CaseAddress caseAddress = new CaseAddress();
+            caseAddress.setCaseId(caseId);
+            caseAddress.setAddressId(addressId);
+            CasesModuleBean.getPort(false).storeCaseAddress(caseAddress);
+          }
+        }
+      }
+    }
+  }  
+  
+  private List<PersonAddressView> getPersonAddresses(String personId)
+    throws Exception
+  {
+    PersonAddressFilter filter = new PersonAddressFilter();
+    filter.setPersonId(personId);
+    return KernelModuleBean.getPort(true).findPersonAddressViews(filter);
+  }  
+  
+  private List<String> getCurrentAddresses(String caseId)
+    throws Exception
+  {
+    List<String> results = new ArrayList();
+    
+    CaseAddressFilter filter = new CaseAddressFilter();
+    filter.setCaseId(caseId);
+    List<CaseAddressView> caseAddresses = 
+      CasesModuleBean.getPort(true).findCaseAddressViews(filter);
+    
+    for(CaseAddressView caseAddressView : caseAddresses)
+    {
+      results.add(caseAddressView.getAddressView().getAddressId());
+    }    
+    
+    return results;
+  }  
+ 
 }
