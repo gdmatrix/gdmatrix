@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+    <f:loadBundle basename="org.santfeliu.security.web.resources.SecurityBundle"
+                  var="securityBundle" />    
+    
+    <div class="ui-fluid formgrid grid">
+            
+      <div class="field col-12 md:col-4">
+        <p:outputLabel for="@next" value="userId" />
+        <p:inputText value="#{userObjectBean.user.userId}" required="true" 
+                     readonly="#{not userObjectBean.isNew()}" />
+      </div>
+            
+      <div class="field col-12 md:col-8">
+        <p:outputLabel for="@next" value="#{securityBundle.user_displayName}" />
+        <p:inputText value="#{userObjectBean.user.displayName}" 
+                     required="true" maxlength="20"
+                     styleClass="inputfield w-full"/>
+      </div>
+
+      <div class="field col-12">
+        <p:outputLabel for="@next" value="#{securityBundle.user_person}" />
+        <emcomp:objectReference type="Person" 
+                                value="#{userObjectBean.user.personId}" />
+      </div>
+
+      <div class="field col-12 md:col-4">
+        <p:outputLabel for="@next" value="#{securityBundle.user_password}" />
+        <p:password value="#{userObjectBean.user.password}" 
+                    styleClass="w-full"
+                    toggleMask="true" />
+      </div>
+
+      <div class="field col-12 md:col-8">
+        <p:outputLabel for="@next" value="#{securityBundle.user_locked}" />
+        <p:toggleSwitch value="#{userObjectBean.locked}" styleClass="block" />
+      </div>
+      
+      <emcomp:auditData creationUserId="#{userObjectBean.user.creationUserId}" 
+                        creationDateTime="#{userObjectBean.user.creationDateTime}" 
+                        changeUserId="#{userObjectBean.user.changeUserId}" 
+                        changeDateTime="#{userObjectBean.user.changeDateTime}" />
+      
+    </div>
+    
+</ui:composition>

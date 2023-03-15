@@ -9,12 +9,12 @@
 
   <f:loadBundle basename="org.santfeliu.security.web.resources.SecurityBundle"
                 var="securityBundle" />
-  
+
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector" 
-                 activeIndex="#{roleFinderBean.filterTabSelector}">
+                 activeIndex="#{userFinderBean.filterTabSelector}">
  
         <p:tab id="smart_search">
           <f:facet name="title">
@@ -25,13 +25,13 @@
 
           <div class="field">
             <p:outputLabel for="@next" value="Valor" />
-            <p:inputText id="smartFilter" value="#{roleFinderBean.smartFilter}"
+            <p:inputText id="smartFilter" value="#{userFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
           </div>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
-                             action="#{roleFinderBean.clear}"
+                             action="#{userFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
@@ -39,7 +39,7 @@
                              />      
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
-                             action="#{roleFinderBean.smartFind}"
+                             action="#{userFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              resetValues="true"                             
@@ -57,23 +57,21 @@
           <f:loadBundle basename="org.santfeliu.security.web.resources.SecurityBundle" 
                         var="securityBundle" />
 
-          <!-- roleId -->
           <div class="field">
-            <p:outputLabel for="@next" value="RoleId" />
-            <p:chips value="#{roleFinderBean.roleIdList}"
+            <p:outputLabel for="@next" value="UserId" />
+            <p:chips value="#{userFinderBean.userIdList}"
                      class="inputfield w-full" />
           </div>          
           
-          <!-- Title -->
           <div class="field">
-            <p:outputLabel for="@next" value="Name" />        
-            <p:inputText value="#{roleFinderBean.filter.name}" 
+            <p:outputLabel for="@next" value="Display name" />        
+            <p:inputText value="#{userFinderBean.filter.displayName}" 
                          class="inputfield w-full" />
           </div>  
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
-                             action="#{roleFinderBean.clear}"
+                             action="#{userFinderBean.clear}"
                              process=":mainform:find_selector"
                              styleClass="ui-button-raised m-1"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
@@ -81,7 +79,7 @@
                              />
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
-                             action="#{roleFinderBean.find}"
+                             action="#{userFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              resetValues="true"                             
@@ -108,13 +106,13 @@
       }
     </script>
     <p:remoteCommand name="updateResults" 
-                     action="#{roleFinderBean.update}"
+                     action="#{userFinderBean.update}"
                      process="@this" 
                      update=":mainform:search_tabs:result_list" />
 
     <p:tabView id="search_tabs" 
                widgetVar="searchTabs" 
-               activeIndex="#{roleObjectBean.searchTabSelector}"
+               activeIndex="#{userObjectBean.searchTabSelector}"
                touchable="false"                
                onTabShow="onTabShow()">
       
@@ -124,7 +122,7 @@
           <h:outputText value="#{objectBundle.list}"/>
         </f:facet>
         <h:panelGroup id="result_list">
-          <ui:include src="role_list.xhtml" />
+          <ui:include src="user_list.xhtml" />
         </h:panelGroup>
       </p:tab>
 
@@ -134,7 +132,7 @@
           <h:outputText value="#{objectBundle.edition}"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">
-          <ui:param name="objectBean" value="#{roleObjectBean}" />
+          <ui:param name="objectBean" value="#{userObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
         </h:panelGroup>        
       </p:tab>

@@ -36,9 +36,9 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.security.Role;
-import org.matrix.security.RoleFilter;
 import org.matrix.security.SecurityConstants;
+import org.matrix.security.UserFilter;
+import org.matrix.security.User;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -50,46 +50,33 @@ import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
  */
 @Named
 @ApplicationScoped
-public class RoleTypeBean extends TypeBean<Role, RoleFilter>
+public class UserTypeBean extends TypeBean<User, UserFilter>
 {
   @Override
   public String getRootTypeId()
   {
-    return DictionaryConstants.ROLE_TYPE;
+    return DictionaryConstants.USER_TYPE;
   }
 
   @Override
-  public String getObjectId(Role role)
+  public String getObjectId(User user)
   {
-    return role.getRoleId();
+    return user.getUserId();
   }
 
   @Override
-  public String describe(Role role)
+  public String describe(User user)
   {
-    String roleId = role.getRoleId().trim();
-    if (roleId.startsWith(SecurityConstants.SELF_ROLE_PREFIX) &&
-        roleId.endsWith(SecurityConstants.SELF_ROLE_SUFFIX))
-    {
-      return roleId;
-    }
-    return role.getRoleId() + " (" + role.getName() + ")";
+    String userId = user.getUserId();
+    return userId + " (" + user.getDisplayName() + ")";
   }
 
   @Override
-  public Role loadObject(String objectId)
+  public User loadObject(String objectId)
   {
     try
     {
-      String roleId = objectId;
-      if (roleId.startsWith(SecurityConstants.SELF_ROLE_PREFIX) &&
-        roleId.endsWith(SecurityConstants.SELF_ROLE_SUFFIX))
-      {
-        Role nominalRole = new Role();
-        nominalRole.setRoleId(roleId);
-        return nominalRole;
-      }
-      return getPort(true).loadRole(objectId);
+      return getPort(true).loadUser(objectId);
     }
     catch (Exception ex)
     {
@@ -98,41 +85,41 @@ public class RoleTypeBean extends TypeBean<Role, RoleFilter>
   }
 
   @Override
-  public String getTypeId(Role role)
+  public String getTypeId(User user)
   {
-    return role.getRoleTypeId();
+    return DictionaryConstants.USER_TYPE;
   }
 
   @Override
   public ObjectSetup createObjectSetup()
   {
     ObjectSetup objectSetup = new ObjectSetup();
-    objectSetup.setViewId("/pages/security/role.xhtml");
+    objectSetup.setViewId("/pages/security/user.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Main", "/pages/security/role_main.xhtml"));
-    editTabs.add(new EditTab("Roles", "/pages/security/role_roles.xhtml", "roleRolesTabBean"));
-    editTabs.add(new EditTab("Users", "/pages/security/role_users.xhtml", "roleUsersTabBean"));
+    editTabs.add(new EditTab("Main", "/pages/security/user_main.xhtml"));
+    editTabs.add(new EditTab("Roles", "/pages/security/user_roles.xhtml", "userRolesTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;
   }
 
   @Override
-  public RoleFilter queryToFilter(String query, String typeId)
+  public UserFilter queryToFilter(String query, String typeId)
   {
-    RoleFilter filter = new RoleFilter();
+    UserFilter filter = new UserFilter();
 
     if (query != null)
     {
       if (query.length() > 0 &&
-          query.charAt(0) >= 'A' && query.charAt(0) <= 'Z')
+          ((query.charAt(0) >= 'a' && query.charAt(0) <= 'z') ||
+           query.startsWith(SecurityConstants.AUTH_USER_PREFIX)))
       {
-        filter.getRoleId().add("%" + query + "%");
+        filter.getUserId().add("%" + query + "%");
       }
       else
       {
-        filter.setName(query);
+        filter.setDisplayName(query);
       }
     }
     filter.setMaxResults(10);
@@ -141,10 +128,10 @@ public class RoleTypeBean extends TypeBean<Role, RoleFilter>
   }
 
   @Override
-  public String filterToQuery(RoleFilter filter)
+  public String filterToQuery(UserFilter filter)
   {
-    String query = filter.getRoleId().isEmpty() ?
-      filter.getName() : filter.getRoleId().get(0);
+    String query = filter.getUserId().isEmpty() ?
+      filter.getDisplayName() : filter.getUserId().get(0);
 
     if (query == null) query = "";
 
@@ -155,11 +142,11 @@ public class RoleTypeBean extends TypeBean<Role, RoleFilter>
   }
 
   @Override
-  public List<Role> find(RoleFilter filter)
+  public List<User> find(UserFilter filter)
   {
     try
     {
-      return getPort(true).findRoles(filter);
+      return getPort(true).findUsers(filter);
     }
     catch (Exception ex)
     {

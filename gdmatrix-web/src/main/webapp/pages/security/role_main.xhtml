@@ -12,14 +12,14 @@
     
     <div class="ui-fluid formgrid grid">
             
-      <div class="field col-12 md:col-3">
+      <div class="field col-12 md:col-4">
         <p:outputLabel for="@next" value="RoleId" />
-        <p:inputText value="#{roleObjectBean.objectId}" 
+        <p:inputText value="#{roleObjectBean.role.roleId}" required="true"
                      readonly="#{not roleObjectBean.isNew()}" />
       </div>
 
-      <div class="field col-12 md:col-9">
-        <p:outputLabel for="@next" value="RoleTypeId" />
+      <div class="field col-12 md:col-8">
+        <p:outputLabel for="@next" value="#{securityBundle.role_type}" />
         <p:selectOneMenu value="#{roleObjectBean.role.roleTypeId}"
                          styleClass="inputfield w-full"
                          filter="true">
@@ -32,14 +32,14 @@
       </div>
             
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="Name" />
+        <p:outputLabel for="@next" value="#{securityBundle.role_name}" />
         <p:inputText value="#{roleObjectBean.role.name}" 
                      required="true"
                      styleClass="inputfield w-full"/>
       </div>
 
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="Description" />
+        <p:outputLabel for="@next" value="#{securityBundle.role_description}" />
         <p:inputTextarea value="#{roleObjectBean.role.description}" 
                          styleClass="inputfield w-full"/>
       </div>

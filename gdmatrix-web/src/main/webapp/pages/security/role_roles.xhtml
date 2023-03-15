@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <h:panelGroup>
+
+    <!-- Results table -->
+    <p:dataTable id="role_roles_table" value="#{roleRolesTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="10"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{roleRolesTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{roleRolesTabBean.create}"
+                           process=":mainform:search_tabs:tabs"
+                           update="@parent:@parent:@parent:role_roles_dialog"
+                           resetValues="true"
+                           oncomplete="if (!isFacesError()) PF('roleRolesDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>
+
+      <p:column headerText="roleId" styleClass="w-3"
+                exportHeaderValue="roleId">
+        <h:outputText value="#{row.includedRole.roleId}" />
+      </p:column>
+
+      <p:column headerText="#{securityBundle.role_name}" styleClass="w-7"
+                exportHeaderValue="#{securityBundle.role_name}">
+        <h:outputText value="#{row.includedRole.name}" />
+      </p:column>
+
+      <p:column styleClass="w-2 text-right">
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
+                         ajax="false"
+                         action="#{navigatorBean.show('Role', row.includedRole.roleId)}" />
+        <p:commandButton action="#{roleRolesTabBean.remove(row)}"
+                         process="@this"
+                         update="@parent:@parent:@parent:@parent:role_roles_dialog role_roles_table :mainform:growl"
+                         resetValues="true"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat">
+          <p:confirm header="Esborrar rol #{row.includedRole.roleId}"
+                     message="Segur que vols esborrar aquest rol?" icon="pi pi-info-circle" />
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+
+  </h:panelGroup>
+
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="role_roles_dialog" widgetVar="roleRolesDialog"
+            styleClass="edit_data_dialog" style="max-width:600px"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{roleObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{roleObjectBean.activeEditTab.label}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{roleRolesTabBean.editing.containerRoleId}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="panel" layout="block"
+             rendered="#{roleRolesTabBean.editing != null}">
+
+      <div class="ui-fluid formgrid grid" >
+
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{securityBundle.role_role}"
+                         styleClass="w-full" />
+          <emcomp:objectReference value="#{roleRolesTabBean.includedRoleId}"
+                                  process="@(.savable)"
+                                  type="Role"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  renderShowButton="false"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>
+
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{roleRolesTabBean.store}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         process="role_roles_dialog"
+                         update="role_roles_table panel"
+                         oncomplete="if (!isFacesError()) PF('roleRolesDialog').hide()"
+                         />
+        <p:commandButton action="#{roleRolesTabBean.cancel}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="role_roles_dialog :mainform:growl" global="false"
+                         oncomplete="PF('roleRolesDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>

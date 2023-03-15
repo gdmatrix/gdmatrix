@@ -4,28 +4,25 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"      
   xmlns:p="http://primefaces.org/ui">
     
-  <p:dataTable value="#{roleFinderBean.rows}" 
+  <p:dataTable value="#{userFinderBean.rows}" 
                var="row" stripedRows="true" 
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
-               first="#{roleFinderBean.firstRow}"
-               rowStyleClass="#{row.roleId == roleObjectBean.objectId ? 'current' : ''}"
+               first="#{userFinderBean.firstRow}"
+               rowStyleClass="#{row.userId == userObjectBean.objectId ? 'current' : ''}"
                rows="10"
                rowIndexVar="rowIndex">
 
-    <p:column headerText="roleId" styleClass="w-1" style="white-space: nowrap">
-      <h:outputText value="#{row.roleId}" />
+    <p:column headerText="userId" styleClass="w-3" style="white-space: nowrap">
+      <h:outputText value="#{row.userId}" />
     </p:column>   
-    <p:column headerText="#{securityBundle.role_type}" styleClass="w-3">
-      <h:outputText value="#{row.roleTypeId}" />
-    </p:column>         
-    <p:column headerText="#{securityBundle.role_name}" styleClass="w-6">
-      <h:outputText value="#{row.name}" />
+    <p:column headerText="#{securityBundle.user_displayName}" styleClass="w-7">
+      <h:outputText value="#{row.displayName}" />
     </p:column>
     <p:column styleClass="w-2 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
-                       action="#{navigatorBean.select(row.roleId)}"
+                       action="#{navigatorBean.select(row.userId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
@@ -33,7 +30,7 @@
                        />
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat"  
-                       action="#{roleFinderBean.view(rowIndex)}"
+                       action="#{userFinderBean.view(rowIndex)}"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
