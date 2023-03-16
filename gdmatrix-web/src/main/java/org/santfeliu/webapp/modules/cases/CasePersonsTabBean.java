@@ -251,6 +251,11 @@ public class CasePersonsTabBean extends TabBean
   
   public void setPersonId(String personId)
   {
+    if (!StringUtils.defaultString(personId).equals(
+      StringUtils.defaultString(editing.getPersonId())))
+    {
+      onPersonSelect(personId);
+    }    
     editing.setPersonId(personId);
     showDialog();
   }
@@ -275,36 +280,24 @@ public class CasePersonsTabBean extends TabBean
   
   public void setRepresentantPersonId(String personId)
   {
+    if (!StringUtils.defaultString(personId).equals(
+      StringUtils.defaultString(editing.getRepresentantPersonId())))
+    {
+      onRepresentantSelect(personId);
+    }    
     editing.setRepresentantPersonId(personId);
     showDialog();
   }  
   
-  public void onPersonSelect() 
+  public void onPersonSelect()
   {
-    try    
-    {
-      personContacts = getPersonContacts(editing.getPersonId());
-      editing.getContactId().clear();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    onPersonSelect(editing.getPersonId());
   }
   
   public void onRepresentantSelect()
   {
-    try
-    {
-      representantContacts =
-        getPersonContacts(editing.getRepresentantPersonId());
-      editing.getRepresentantContactId().clear();
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-  }
+    onRepresentantSelect(editing.getRepresentantPersonId());
+  }  
   
   public String getAddressId()
   {
@@ -678,6 +671,32 @@ public class CasePersonsTabBean extends TabBean
     {
       PrimeFaces current = PrimeFaces.current();
       current.executeScript("PF('casePersonsDialog').show();");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
+  
+  private void onPersonSelect(String personId) 
+  {
+    try    
+    {
+      personContacts = getPersonContacts(personId);
+      editing.getContactId().clear();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+  
+  private void onRepresentantSelect(String personId)
+  {
+    try
+    {
+      representantContacts = getPersonContacts(personId);
+      editing.getRepresentantContactId().clear();
     }
     catch (Exception ex)
     {

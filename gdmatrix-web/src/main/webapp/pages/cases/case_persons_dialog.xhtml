@@ -30,7 +30,7 @@
                   layout="block"
                   rendered="#{casePersonsTabBean.editing != null}">
 
-      <p:tabView activeIndex="#{casePersonsTabBean.tabIndex}" styleClass="savable">
+      <p:tabView activeIndex="#{casePersonsTabBean.tabIndex}">
         <p:tab title="#{caseBundle.casePersons_personData}">
           <h:panelGroup id="person_data_panel">
             <div class="ui-fluid formgrid grid" >
@@ -50,7 +50,7 @@
                                         required="true"
                                         minQueryLength="3">
                   <p:ajax event="itemSelect" listener="#{casePersonsTabBean.onPersonSelect}" 
-                          process="@this" update="@root:@id(person_data_panel)" />
+                          process="@this" update="@parent:@parent:@parent:@id(person_data_panel)" />
                 </emcomp:objectReference>
               </div>              
 
@@ -198,7 +198,7 @@
                                         queryDelay="1000"
                                         minQueryLength="3">
                   <p:ajax event="itemSelect" listener="#{casePersonsTabBean.onRepresentantSelect}" 
-                          process="@this" update="@root:@id(representant_data_panel)" />                
+                          process="@this" update="@parent:@parent:@parent:representant_data_panel" />                
                 </emcomp:objectReference>
               </div> 
 
