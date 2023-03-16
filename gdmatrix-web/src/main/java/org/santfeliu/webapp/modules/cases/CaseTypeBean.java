@@ -117,7 +117,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab("Main", "/pages/cases/case_main.xhtml"));
     editTabs.add(new EditTab("Persons", "/pages/cases/case_persons.xhtml", 
-      "casePersonsTabBean"));
+      "casePersonsTabBean", "persons1", 
+      "/pages/cases/case_persons_dialog.xhtml"));
     editTabs.add(new EditTab("Documents", "/pages/cases/case_documents.xhtml", 
       "caseDocumentsTabBean", "docs1", 
       "/pages/cases/case_documents_dialog.xhtml"));

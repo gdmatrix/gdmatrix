@@ -18,12 +18,14 @@
       </div>
 
       <p:outputPanel class="field col-12 md:col-9" rendered="#{not caseObjectBean.typedHelper.isPropertyHidden('caseTypeId')}">
-        <p:outputLabel for="@next" value="#{caseObjectBean.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" />
+        <p:outputLabel for="@next" value="#{caseObjectBean.typedHelper.getPropertyLabel('caseTypeId', caseBundle.case_type)}" 
+                       indicateRequired="true"/>
         <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
                               type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3">
+                              minQueryLength="3" required="true"
+                              process="@(.savable)">
           <p:ajax event="itemSelect" 
                   process="@this" update=":mainform:search_tabs:tabs" />
         </emcomp:typeReference>
@@ -34,7 +36,7 @@
                        value="#{caseObjectBean.typedHelper.getPropertyLabel('title', caseBundle.case_title)}" />
         <p:inputTextarea value="#{caseObjectBean.case.title}"
                          required="true"
-                         class="inputfield w-full"/>
+                         class="inputfield w-full savable"/>
       </div>
 
       <div class="field col-12 md:col-3">
@@ -46,7 +48,8 @@
                       locale="es"
                       showOnFocus="false"
                       showIcon="true" showTime="true"
-                      monthNavigator="true" yearNavigator="true" />
+                      monthNavigator="true" yearNavigator="true"
+                      styleClass="savable" />
       </div>
 
       <div class="field col-12 md:col-3">
@@ -58,25 +61,26 @@
                       locale="es"
                       showOnFocus="false"
                       showIcon="true" showTime="true"
-                      monthNavigator="true" yearNavigator="true" />
+                      monthNavigator="true" yearNavigator="true" 
+                      styleClass="savable" />
       </div>
 
       <p:outputPanel class="field col-12 md:col-6" rendered="#{not caseObjectBean.typedHelper.isPropertyHidden('state')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_state}" />
         <p:inputText value="#{caseObjectBean.case.state}"
-                     class="inputfield w-full"/>
+                     class="inputfield w-full savable"/>
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.typedHelper.isPropertyHidden('description')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
         <p:inputTextarea value="#{caseObjectBean.case.description}"
-                         styleClass="inputfield w-full" />
+                         styleClass="inputfield w-full savable" />
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.typedHelper.isPropertyHidden('comments')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_comments}" />
         <p:inputTextarea value="#{caseObjectBean.case.comments}"
-                         styleClass="inputfield w-full" />
+                         styleClass="inputfield w-full savable" />
       </p:outputPanel>
       
     </div>

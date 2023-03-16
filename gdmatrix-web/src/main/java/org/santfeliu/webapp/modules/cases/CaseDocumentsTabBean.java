@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,8 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
+import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
 
 /**
  *
@@ -62,12 +65,20 @@ public class CaseDocumentsTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
+    String typeId = getTabBaseTypeId();
     List<CaseDocumentView> rows;
     int firstRow = 0;
+    boolean groupedView = isGroupedViewEnabled();
   }
 
   @Inject
   CaseObjectBean caseObjectBean;
+
+  @Inject
+  DocumentTypeBean documentTypeBean;
+  
+  @Inject
+  TypeTypeBean typeTypeBean;  
 
   @PostConstruct
   public void init()
@@ -145,6 +156,19 @@ public class CaseDocumentsTabBean extends TabBean
     }
   }
 
+  public void setCaseDocTypeId(String caseDocTypeId)
+  {
+    if (editing != null)
+      editing.setCaseDocTypeId(caseDocTypeId);
+
+    showDialog();
+  }
+
+  public String getCaseDocTypeId()
+  {
+    return editing == null ? NEW_OBJECT_ID : editing.getCaseDocTypeId();
+  }
+
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -155,6 +179,46 @@ public class CaseDocumentsTabBean extends TabBean
      getCurrentTabInstance().firstRow = firstRow;
   }
 
+  public boolean isGroupedView()
+  {
+    return getCurrentTabInstance().groupedView;
+  }
+
+  public void setGroupedView(boolean groupedView)
+  {
+    getCurrentTabInstance().groupedView = groupedView;
+  }
+
+  public boolean isGroupedViewEnabled()
+  {
+    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
+      getProperties().getString("groupedViewEnabled"));
+  }
+
+  public String getDocumentDescription()
+  {
+    if (editing != null && !isNew(editing))
+    {
+      return documentTypeBean.getDescription(editing.getDocId());
+    }
+    return "";
+  }
+
+  public String getCaseDocumentTypeDescription()
+  {
+    String typeId = null;
+    CaseDocumentView row = (CaseDocumentView)getValue("#{row}");
+    if (row != null)
+    {
+      typeId = row.getCaseDocTypeId();
+      if (typeId != null)
+      {
+        return typeTypeBean.getDescription(typeId);
+      }
+    }
+    return typeId;
+  }  
+  
   @Override
   public void load()
   {
@@ -168,8 +232,25 @@ public class CaseDocumentsTabBean extends TabBean
         String volume = tab.getProperties().getString("volume");
         filter.setVolume(volume);
         filter.setCaseId(objectId);
-        getCurrentTabInstance().rows =
+        List<CaseDocumentView> auxList =
           CasesModuleBean.getPort(false).findCaseDocumentViews(filter);
+        String typeId = getCurrentTabInstance().typeId;
+        if (typeId == null)
+        {
+          getCurrentTabInstance().rows = auxList;
+        }
+        else
+        {
+          List<CaseDocumentView> result = new ArrayList();
+          for (CaseDocumentView item : auxList)
+          {
+            if (typeId.equals(item.getCaseDocTypeId()))
+            {
+              result.add(item);
+            }
+          }
+          getCurrentTabInstance().rows = result;
+        }
       }
       catch (Exception ex)
       {
@@ -196,6 +277,7 @@ public class CaseDocumentsTabBean extends TabBean
         editing.setCaseDocTypeId("CaseDocument");
       }
       CasesModuleBean.getPort(false).storeCaseDocument(editing);
+      refreshHiddenTabInstances();
       load();
       editing = null;
     }
@@ -207,13 +289,21 @@ public class CaseDocumentsTabBean extends TabBean
 
   public void cancel()
   {
-    info("CANCEL_OBJECT");
     editing = null;
   }
 
   public void create()
   {
     editing = new CaseDocument();
+
+    String typeId = getTabBaseTypeId();
+    if (typeId != null)
+      editing.setCaseDocTypeId(typeId);
+  }
+
+  public void switchView()
+  {
+    getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
   }
 
   public void edit(CaseDocumentView caseDocView)
@@ -244,6 +334,7 @@ public class CaseDocumentsTabBean extends TabBean
       {
         CasesModuleBean.getPort(false)
           .removeCaseDocument(caseDocView.getCaseDocId());
+        refreshHiddenTabInstances();
         load();
       }
       catch (Exception ex)
@@ -251,6 +342,12 @@ public class CaseDocumentsTabBean extends TabBean
         error(ex);
       }
     }
+  }
+
+  public String getTabBaseTypeId()
+  {
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    return editTab.getProperties().getString("typeId");
   }
 
   @Override
@@ -287,5 +384,22 @@ public class CaseDocumentsTabBean extends TabBean
       error(ex);
     }
   }
+
+  private boolean isNew(CaseDocument caseDocument)
+  {
+    return (caseDocument != null && caseDocument.getCaseDocId() == null);
+  }
+
+  private void refreshHiddenTabInstances()
+  {
+    for (TabInstance tabInstance : tabInstances.values())
+    {
+      if (tabInstance != getCurrentTabInstance())
+      {
+        tabInstance.objectId = NEW_OBJECT_ID;
+      }
+    }
+  }
+
 
 }

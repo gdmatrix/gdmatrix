@@ -13,9 +13,9 @@
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="case_cases_table" value="#{caseCasesTabBean.rows}" 
+    <p:dataTable id="case_cases_table" value="#{caseCasesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" 
+                 resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{caseCasesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -30,66 +30,69 @@
                            process="@this"
                            update="case_cases_table"
                            resetValues="true"
-                           alt="" title="" />          
-          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
-                           action="#{caseCasesTabBean.create}" 
-                           process="@this"
+                           alt="#{caseCasesTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{caseCasesTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{caseCasesTabBean.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
+                           action="#{caseCasesTabBean.create}"
+                           process=":mainform:search_tabs:tabs"
                            update=":mainform:search_tabs:case_cases_dialog"
                            resetValues="true"
-                           oncomplete="PF('caseCasesDialog').show()"                                 
+                           oncomplete="if (!isFacesError()) PF('caseCasesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
-        </div>              
-      </f:facet> 
+        </div>
+      </f:facet>
 
       <p:headerRow groupBy="#{row.typeId}" expandable="true"
                    expanded="true" rendered="#{caseCasesTabBean.groupedView}">
         <p:column colspan="7" >
           <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
         </p:column>
-      </p:headerRow> 
-      
+      </p:headerRow>
+
       <p:column styleClass="w-2rem">
-        <i class="pi pi-#{row.reverseRelation ? 'arrow-left' : 'arrow-right'} text-xl" 
+        <i class="pi pi-#{row.reverseRelation ? 'arrow-left' : 'arrow-right'} text-xl"
            style="#{row.reverseRelation ? 'color:red' : 'color:green'}"></i>
-      </p:column>         
-      
+      </p:column>
+
       <p:columns value="#{caseCasesTabBean.columns}" var="column" columnIndexVar="i"
-                 filterable="false" sortable="false" resizable="false" 
+                 filterable="false" sortable="false" resizable="false"
                  headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}">
         <h:outputText value="#{row.values[i]}" />
-      </p:columns>      
+      </p:columns>
 
       <p:column styleClass="col-2 text-right" exportable="false">
         <h:panelGroup>
+          <p:commandButton icon="pi pi-external-link"
+                           alt="#{objectBundle.show}" title="#{objectBundle.show}"
+                           styleClass="rounded-button ui-button-flat"
+                           ajax="false"
+                           action="#{navigatorBean.show(
+                                     (row.isReverseRelation() ?  row.mainTypeId : row.relTypeId),
+                                     (row.isReverseRelation() ?  row.mainCaseId : row.relCaseId))}" />
           <p:commandButton action="#{caseCasesTabBean.edit(row)}"
                            icon="pi pi-pencil"
                            rendered="#{row.rowId != null and not row.reverseRelation}"
-                           styleClass="rounded-button ui-button-flat"                               
+                           styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           process="@this" 
+                           process=":mainform:search_tabs:tabs"
                            update=":mainform:search_tabs:case_cases_dialog"
                            resetValues="true"
-                           oncomplete="PF('caseCasesDialog').show()" />
+                           oncomplete="if (!isFacesError()) PF('caseCasesDialog').show()" />
           <p:commandButton action="#{caseCasesTabBean.remove(row)}"
-                           process="@this" 
-                           update=":mainform:search_tabs:case_cases_dialog case_cases_table :mainform:growl"
+                           process="@this"
+                           update=":mainform:search_tabs:tabs :mainform:growl"
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.rowId != null}"
-                           styleClass="rounded-button ui-button-flat">            
-            <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                       message="#{objectBundle.confirm_remove_message}" 
+                           styleClass="rounded-button ui-button-flat">
+            <p:confirm header="#{objectBundle.confirm_remove_header}"
+                       message="#{objectBundle.confirm_remove_message}"
                        icon="pi pi-info-circle" />
           </p:commandButton>
-          <p:commandButton icon="pi pi-external-link" 
-                           styleClass="rounded-button ui-button-flat" 
-                           ajax="false"
-                           action="#{navigatorBean.show(
-                                     (row.isReverseRelation() ?  row.mainTypeId : row.relTypeId), 
-                                     (row.isReverseRelation() ?  row.mainCaseId : row.relCaseId))}" />          
         </h:panelGroup>
-      </p:column>          
+      </p:column>
 
     </p:dataTable>
 

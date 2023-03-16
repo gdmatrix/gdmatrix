@@ -8,17 +8,17 @@
   <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                 var="caseBundle" />
 
-  <f:subview id="#{tab.subviewId != null ? tab.subviewId : 'pers'}">    
+  <f:subview id="#{tab.subviewId != null ? tab.subviewId : 'pers'}">
 
     <!-- Results table -->
-    <p:dataTable id="case_persons_table" value="#{casePersonsTabBean.rows}" 
+    <p:dataTable id="case_persons_table" value="#{casePersonsTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" 
-                 size="small" paginatorPosition="bottom" 
+                 resizableColumns="false" showGridlines="true"
+                 size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{casePersonsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50">
+                 rows="10" rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
@@ -28,66 +28,70 @@
                            process="@this"
                            update="case_persons_table"
                            resetValues="true"
-                           alt="" title="" />          
-          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
-                           action="#{casePersonsTabBean.create}" 
-                           process="@this"
+                           alt="#{casePersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{casePersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{casePersonsTabBean.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
+                           action="#{casePersonsTabBean.create}"
+                           process=":mainform:search_tabs:tabs"
                            update=":mainform:search_tabs:case_persons_dialog"
                            resetValues="true"
-                           oncomplete="PF('casePersonsDialog').show()"                                 
+                           oncomplete="if (!isFacesError()) PF('casePersonsDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
-        </div>              
-      </f:facet> 
-      
+        </div>
+      </f:facet>
+
       <p:headerRow field="casePersonTypeId" expandable="true"
                    expanded="true" rendered="#{casePersonsTabBean.groupedView}">
         <p:column colspan="7" >
           <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.casePersonTypeId)}"/>
         </p:column>
-      </p:headerRow>       
+      </p:headerRow>
 
       <p:column headerText="#{caseBundle.casePersons_id}" styleClass="col-1"
-                >
+                exportHeaderValue="#{caseBundle.casePersons_id}">
         <h:outputText value="#{row.personView.personId}" />
-      </p:column> 
-      
+      </p:column>
+
       <p:column headerText="#{caseBundle.casePersons_type}" styleClass="col-3"
+                exportHeaderValue="#{caseBundle.casePersons_type}"
                 rendered="#{!casePersonsTabBean.groupedView}">
         <h:outputText value="#{typeTypeBean.getDescription(row.casePersonTypeId)}"/>
-      </p:column>      
+      </p:column>
 
       <p:column headerText="#{caseBundle.casePersons_person}" styleClass="col-6"
-                >
+                exportHeaderValue="#{caseBundle.casePersons_person}">
         <h:outputText value="#{row.personView.fullName}"/>
       </p:column>
 
       <p:column styleClass="col-2 text-right">
-        <p:commandButton icon="pi pi-external-link" 
-                         styleClass="rounded-button ui-button-flat" 
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
                          ajax="false"
-                         action="#{navigatorBean.show('Person', row.personView.personId)}" />
-        <p:commandButton icon="pi pi-pencil" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{casePersonsTabBean.edit(row)}" 
-                         process="@this" 
+                         action="#{navigatorBean.show('Person', row.personView.personId)}"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{casePersonsTabBean.edit(row)}"
+                         process=":mainform:search_tabs:tabs"
                          update=":mainform:search_tabs:case_persons_dialog"
                          resetValues="true"
-                         oncomplete="PF('casePersonsDialog').show()"
-                         />
+                         oncomplete="if (!isFacesError()) PF('casePersonsDialog').show()"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
         <p:commandButton action="#{casePersonsTabBean.remove(row)}"
-                         process="@this" 
-                         update=":mainform:search_tabs:case_persons_dialog case_persons_table :mainform:growl"
+                         process="@this"
+                         update=":mainform:search_tabs:tabs :mainform:growl"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">            
-            <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                       message="#{objectBundle.confirm_remove_message}" 
+                         styleClass="rounded-button ui-button-flat">
+            <p:confirm header="#{objectBundle.confirm_remove_header}"
+                       message="#{objectBundle.confirm_remove_message}"
                        icon="pi pi-info-circle" />
         </p:commandButton>
-      </p:column>      
+      </p:column>
     </p:dataTable>
 
-    </f:subview>  
+    </f:subview>
 
 </ui:composition>

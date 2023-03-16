@@ -23,6 +23,14 @@
       <h:outputText value="#{row.superTypeId}" />
     </p:column>    
     <p:column styleClass="w-1">
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select(row.typeId)}"
+                       rendered="#{navigatorBean.selectionPending}"
+                       ajax="false"
+                       immediate="true"
+                       title="Select" alt="Select"
+                       />      
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat" 
                        action="#{typeFinderBean.view(rowIndex)}"

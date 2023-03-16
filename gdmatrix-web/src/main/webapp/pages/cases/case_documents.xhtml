@@ -13,63 +13,80 @@
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="case_documents_table" value="#{caseDocumentsTabBean.rows}" 
+    <p:dataTable id="case_documents_table" value="#{caseDocumentsTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="5"
-                 size="small" paginatorPosition="bottom" 
+                 size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{caseDocumentsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">        
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
-                           action="#{caseDocumentsTabBean.create}" 
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseDocumentsTabBean.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{caseDocumentsTabBean.switchView}"
                            process="@this"
+                           update="case_documents_table"
+                           resetValues="true"
+                           alt="#{caseDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{caseDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{caseDocumentsTabBean.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{caseDocumentsTabBean.create}"
+                           process=":mainform:search_tabs:tabs"
                            update=":mainform:search_tabs:case_documents_dialog"
                            resetValues="true"
-                           oncomplete="PF('caseDocumentsDialog').show()"                                 
+                           oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
-      </f:facet>      
+      </f:facet>
 
-      <p:column headerText="docId" styleClass="w-1"
-                exportHeaderValue="docId">
+      <p:headerRow field="caseDocTypeId" expandable="true"
+                   expanded="true" rendered="#{caseDocumentsTabBean.groupedView}">
+        <p:column colspan="7" >
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.caseDocTypeId)}"/>
+        </p:column>
+      </p:headerRow>
+
+      <p:column headerText="#{caseBundle.caseDocuments_id}" styleClass="w-1"
+                exportHeaderValue="#{caseBundle.caseDocuments_id}">
         <h:outputText value="#{row.document.docId}" />
-      </p:column> 
+      </p:column>
 
-      <p:column headerText="Title" styleClass="w-7"
-                exportHeaderValue="Title">
+      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="w-7"
+                exportHeaderValue="#{caseBundle.caseDocuments_title}">
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
-      <p:column headerText="Type" styleClass="w-2"
-                exportHeaderValue="Type">
-        <h:outputText value="#{row.document.docTypeId}"/>
+      <p:column headerText="#{caseBundle.caseDocuments_type}" styleClass="w-2"
+                exportHeaderValue="#{caseBundle.caseDocuments_type}"
+                rendered="#{!caseDocumentsTabBean.groupedView}">
+        <h:outputText value="#{caseDocumentsTabBean.caseDocumentTypeDescription}"/>
       </p:column>
 
       <p:column styleClass="w-2 text-right">
-        <p:commandButton icon="pi pi-external-link" 
-                         styleClass="rounded-button ui-button-flat" 
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
                          ajax="false"
-                         action="#{navigatorBean.show('Document', row.document.docId)}" />
-        <p:commandButton icon="pi pi-pencil" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{caseDocumentsTabBean.edit(row)}" 
-                         process="@this" 
+                         action="#{navigatorBean.show('Document', row.document.docId)}"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{caseDocumentsTabBean.edit(row)}"
+                         process=":mainform:search_tabs:tabs"
                          update=":mainform:search_tabs:case_documents_dialog"
                          resetValues="true"
-                         oncomplete="PF('caseDocumentsDialog').show()"
-                         />
+                         oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').show()"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
         <p:commandButton action="#{caseDocumentsTabBean.remove(row)}"
-                         process="@this" 
-                         update=":mainform:search_tabs:case_documents_dialog case_documents_table :mainform:growl"
+                         process="@this"
+                         update=":mainform:search_tabs:tabs :mainform:growl"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">            
-          <p:confirm header="Desvincular document #{row.document.docId}" 
+                         styleClass="rounded-button ui-button-flat">
+          <p:confirm header="Desvincular document #{row.document.docId}"
                      message="Segur que vols desvincular aquest document de l'expedient?" icon="pi pi-info-circle" />
         </p:commandButton>
       </p:column>

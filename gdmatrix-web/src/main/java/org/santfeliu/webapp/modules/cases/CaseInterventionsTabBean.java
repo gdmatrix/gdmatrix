@@ -62,16 +62,17 @@ import org.santfeliu.webapp.util.DataTableRow;
 public class CaseInterventionsTabBean extends TabBean
 {
   @Inject
-  CaseTypeBean caseTypeBean;  
-  
+  CaseTypeBean caseTypeBean;
+
   Map<String, TabInstance> tabInstances = new HashMap<>();
-  
+
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
+    String typeId = getTabBaseTypeId();
     List<DataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true; 
+    boolean groupedView = isGroupedViewEnabled();
   }
 
   private Intervention editing;
@@ -145,7 +146,13 @@ public class CaseInterventionsTabBean extends TabBean
   {
     getCurrentTabInstance().groupedView = groupedView;
   }
-  
+
+  public boolean isGroupedViewEnabled()
+  {
+    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
+      getProperties().getString("groupedViewEnabled"));
+  }
+
   public String getPersonId()
   {
     return editing != null ? editing.getPersonId() : null;
@@ -169,7 +176,7 @@ public class CaseInterventionsTabBean extends TabBean
   {
     this.getCurrentTabInstance().rows = rows;
   }
-  
+
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -178,13 +185,13 @@ public class CaseInterventionsTabBean extends TabBean
     {
       //Get default objectSetup columns configuration
       ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
-      EditTab defaultEditTab = 
+      EditTab defaultEditTab =
         defaultSetup.findEditTabByViewId(activeEditTab.getViewId());
       columns = defaultEditTab.getColumns();
     }
     return columns;
   }
-  
+
   public int getFirstRow()
   {
     return getCurrentTabInstance().firstRow;
@@ -269,12 +276,12 @@ public class CaseInterventionsTabBean extends TabBean
   {
     return editing == null ? NEW_OBJECT_ID : editing.getIntTypeId();
   }
-  
+
   public String getTabBaseTypeId()
-  {    
+  {
     EditTab editTab = caseObjectBean.getActiveEditTab();
     return editTab.getProperties().getString("typeId");
-  }  
+  }
 
   public void onPersonClear()
   {
@@ -308,11 +315,11 @@ public class CaseInterventionsTabBean extends TabBean
         InterventionFilter filter = new InterventionFilter();
         filter.setCaseId(getObjectId());
 
-        String typeId = getTabBaseTypeId();
+        String typeId = getCurrentTabInstance().typeId;
         if (typeId != null)
           filter.setIntTypeId(typeId);
-                
-        List<InterventionView> interventions = 
+
+        List<InterventionView> interventions =
           CasesModuleBean.getPort(false).findInterventionViews(filter);
 
         setRows(toDataTableRows(interventions));
@@ -367,13 +374,13 @@ public class CaseInterventionsTabBean extends TabBean
     String caseId = getObjectId();
     editing.setCaseId(caseId);
     CasesModuleBean.getPort(false).storeIntervention(editing);
+    refreshHiddenTabInstances();
     load();
     editing = null;
   }
 
   public void cancel()
   {
-    info("CANCEL_OBJECT");
     editing = null;
   }
 
@@ -385,6 +392,7 @@ public class CaseInterventionsTabBean extends TabBean
       {
         String intId = row.getRowId();
         CasesModuleBean.getPort(false).removeIntervention(intId);
+        refreshHiddenTabInstances();
         load();
       }
     }
@@ -429,19 +437,30 @@ public class CaseInterventionsTabBean extends TabBean
       error(ex);
     }
   }
-    
-  private List<DataTableRow> toDataTableRows(List<InterventionView> 
+
+  private List<DataTableRow> toDataTableRows(List<InterventionView>
     interventions) throws Exception
   {
     List<DataTableRow> convertedRows = new ArrayList<>();
     for (InterventionView row : interventions)
     {
-      DataTableRow dataTableRow = 
+      DataTableRow dataTableRow =
         new DataTableRow(row.getIntId(), row.getIntTypeId());
       dataTableRow.setValues(row, getColumns());
       convertedRows.add(dataTableRow);
-    }    
+    }
     return convertedRows;
+  }
+
+  private void refreshHiddenTabInstances()
+  {
+    for (TabInstance tabInstance : tabInstances.values())
+    {
+      if (tabInstance != getCurrentTabInstance())
+      {
+        tabInstance.objectId = NEW_OBJECT_ID;
+      }
+    }
   }
 
 }

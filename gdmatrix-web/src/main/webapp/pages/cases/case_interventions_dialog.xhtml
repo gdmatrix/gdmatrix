@@ -10,73 +10,73 @@
   <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
                 var="caseBundle" />
 
-  <p:dialog id="case_interventions_dialog" widgetVar="caseInterventionsDialog" 
-            styleClass="edit_data_dialog" style="max-width:800px" 
+  <p:dialog id="case_interventions_dialog" widgetVar="caseInterventionsDialog"
+            styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
       <p:outputPanel>
-        <p:autoUpdate />        
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <p:autoUpdate />
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{caseObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />
+        <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{caseInterventionsTabBean.editing.getIntId()}" />
       </p:outputPanel>
-    </f:facet>  
+    </f:facet>
 
     <h:panelGroup id="case_interventions_panel"
                   styleClass="mt-2"
                   rendered="#{caseInterventionsTabBean.editing != null}">
 
-      <div class="ui-fluid formgrid grid" >        
+      <div class="ui-fluid formgrid grid" >
 
-        <p:outputPanel styleClass="field col-12">  
-          <p:outputLabel for="@next"  
+        <p:outputPanel styleClass="field col-12">
+          <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_type}"
-                         styleClass="w-full" />
+                         styleClass="w-full" indicateRequired="true" />
           <emcomp:typeReference value="#{caseInterventionsTabBean.intTypeId}"
                                 process="@(.savable)"
                                 type="#{caseInterventionsTabBean.tabBaseTypeId != null ? caseInterventionsTabBean.tabBaseTypeId : 'Intervention'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
-                                minQueryLength="3">   
-          <p:ajax event="itemSelect" 
+                                minQueryLength="3" required="true">
+          <p:ajax event="itemSelect"
                   process="@this" update="@parent:@parent:@parent:case_interventions_dialog" />
           </emcomp:typeReference>
-        </p:outputPanel>    
+        </p:outputPanel>
 
 
 
         <!-- Dates -->
         <p:outputPanel styleClass="field col-12 md:col-3">
-          <p:outputLabel for="@next" 
+          <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_startDate}"/>
-          <p:datePicker value="#{caseInterventionsTabBean.startDateTime}"     
+          <p:datePicker value="#{caseInterventionsTabBean.startDateTime}"
                         styleClass="savable"
-                        autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
-                        locale="es" showOnFocus="false" touchUI="true" 
-                        converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
+                        autocomplete="off" placeholder="dd/MM/aaaa HH:mm"
+                        locale="es" showOnFocus="false" touchUI="true"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm"
                         showIcon="true" showTime="true"/>
         </p:outputPanel>
 
         <p:outputPanel class="field col-12 md:col-3">
-          <p:outputLabel for="@next" 
+          <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_endDate}"/>
           <p:datePicker value="#{caseInterventionsTabBean.endDateTime}"
                         styleClass="savable"
-                        autocomplete="off" placeholder="dd/MM/aaaa HH:mm" 
-                        locale="es" showOnFocus="false" touchUI="true" 
-                        converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm" 
+                        autocomplete="off" placeholder="dd/MM/aaaa HH:mm"
+                        locale="es" showOnFocus="false" touchUI="true"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm"
                         showIcon="true" showTime="true"/>
-        </p:outputPanel> 
+        </p:outputPanel>
 
         <!-- Person -->
-        <p:outputPanel styleClass="field col-12 md:col-6">  
-          <p:outputLabel for="@next"  
+        <p:outputPanel styleClass="field col-12 md:col-6">
+          <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_person}"
                          styleClass="w-full" />
 
@@ -87,49 +87,48 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3">
-            <p:ajax event="clear" listener="#{caseInterventionsTabBean.onPersonClear}" 
+            <p:ajax event="clear" listener="#{caseInterventionsTabBean.onPersonClear}"
                     update="@this" />
-          </emcomp:objectReference>  
-        </p:outputPanel>            
+          </emcomp:objectReference>
+        </p:outputPanel>
 
         <!-- Comments -->
         <p:outputPanel class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_comments}" />
-          <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}" 
+          <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}"
                            styleClass="savable"/>
         </p:outputPanel>
 
       </div>
 
-    </h:panelGroup>    
+    </h:panelGroup>
 
     <!-- Dynamic form -->
 
     <emcomp:dynamicProperties typeId="#{caseInterventionsTabBean.editing.intTypeId}"
                               formSelector="#{caseInterventionsTabBean.formSelector}"
-                              properties="#{caseInterventionsTabBean.editing.property}" />  
+                              properties="#{caseInterventionsTabBean.editing.property}" />
 
     <div class="field col-12 text-right">
-      <p:commandButton action="#{caseInterventionsTabBean.store}" 
+      <p:commandButton action="#{caseInterventionsTabBean.store}"
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                        process="case_interventions_dialog"
-                       update="#{caseInterventionsTabBean.getAbsoluteId('case_interventions_table')} case_interventions_panel"
+                       update=":mainform:search_tabs:tabs case_interventions_panel"
                        oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').hide()"/>
-      <p:commandButton action="#{caseInterventionsTabBean.cancel}" 
-                       styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                       update="case_interventions_dialog :mainform:growl" global="false" 
+      <p:commandButton action="#{caseInterventionsTabBean.cancel}"
+                       styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                       update="case_interventions_dialog :mainform:growl" global="false"
                        immediate="true"
                        oncomplete="PF('caseInterventionsDialog').hide()"/>
-    </div>      
-    
-  
+    </div>
 
-  </p:dialog>  
+
+
+  </p:dialog>
 
 </ui:composition>
 
 
 
 
- 

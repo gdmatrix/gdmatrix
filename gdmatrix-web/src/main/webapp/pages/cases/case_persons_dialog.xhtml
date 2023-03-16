@@ -22,7 +22,7 @@
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{caseObjectBean.activeEditTab.label}" />   
         <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{casePersonsTabBean.editing.casePersonId}" />
+        <h:outputText value="#{casePersonsTabBean.personDescription}" />
       </p:outputPanel>
     </f:facet>
 
@@ -35,10 +35,12 @@
           <h:panelGroup id="person_data_panel">
             <div class="ui-fluid formgrid grid" >
 
+              <!-- Person -->              
               <div class="field col-12">  
                 <p:outputLabel for="@next"
                                value="#{caseBundle.casePersons_person}"
-                               styleClass="w-full" />
+                               styleClass="w-full" 
+                               indicateRequired="true" />
                 <emcomp:objectReference value="#{casePersonsTabBean.personId}"
                                         process="@(.savable)"
                                         type="Person"
@@ -55,14 +57,14 @@
               <!-- Type -->
               <div class="field col-12 md:col-6">
                 <p:outputLabel for="@next" 
-                               value="#{caseBundle.casePersons_type}" />
-                <emcomp:typeReference value="#{casePersonsTabBean.editing.casePersonTypeId}"
+                               value="#{caseBundle.casePersons_type}"
+                               indicateRequired="true" />
+                <emcomp:typeReference value="#{casePersonsTabBean.casePersonTypeId}"
                                       process="@(.savable)"
                                       type="#{casePersonsTabBean.tabBaseTypeId != null ? casePersonsTabBean.tabBaseTypeId : 'CasePerson'}"
                                       scrollHeight="200"
                                       queryDelay="1000"
-                                      minQueryLength="3" required="true"
-                                      styleClass="savable">            
+                                      minQueryLength="3" required="true">            
                 </emcomp:typeReference>
               </div>
 
@@ -105,7 +107,7 @@
 
               <div class="field col-12"> 
 
-                <p:outputLabel for="@next" value="Contactes de la persona"/>
+                <p:outputLabel for="@next" value="#{caseBundle.casePersons_personContacts}"/>
 
                 <p:dataTable id="selected_contacts_table" 
                              var="sc" value="#{casePersonsTabBean.selectedContacts}" 
@@ -117,10 +119,12 @@
                   <p:column styleClass="col-2 text-center">
                     <p:commandButton icon="pi pi-minus-circle" styleClass="rounded-button ui-button-flat"
                                      action="#{casePersonsTabBean.unselectContact(sc)}"
-                                     update="@parent:@parent:@parent:contacts_panel" process="@this"/>
+                                     update="@parent:@parent:@parent:contacts_panel" process="@this"
+                                     alt="#{objectBundle.remove}" title="#{objectBundle.remove}" />
                     <p:commandButton icon="pi pi-arrow-circle-down" styleClass="rounded-button ui-button-flat"
                                      action="#{casePersonsTabBean.moveContactDown(i)}"
-                                     update="@parent:@parent:@parent:contacts_panel" process="@this"/>              
+                                     update="@parent:@parent:@parent:contacts_panel" process="@this"
+                                     alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}" />              
                   </p:column>
 
                 </p:dataTable> 
@@ -167,7 +171,8 @@
                                    styleClass="ui-button-raised"
                                    action="#{casePersonsTabBean.addNewContact}"
                                    process="@this new_contact_type_id new_contact_value" 
-                                   update="@parent:@parent:@parent:contacts_panel"/> 
+                                   update="@parent:@parent:@parent:contacts_panel"
+                                   alt="#{objectBundle.add}" title="#{objectBundle.add}" /> 
                 </div>   
               </p:outputPanel>
 
@@ -293,7 +298,7 @@
           </h:panelGroup>
         </p:tab>
 
-        <p:tab title="Altres dades">
+        <p:tab title="#{caseBundle.casePersons_otherData}">
           <div class="ui-fluid formgrid grid">
             <!-- Comments -->
             <p:outputPanel styleClass="field col-12" >
@@ -321,7 +326,7 @@
         <p:commandButton action="#{casePersonsTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="case_persons_dialog"
-                         update="#{casePersonsTabBean.getAbsoluteId('case_persons_table')} case_persons_panel"
+                         update=":mainform:search_tabs:tabs case_persons_panel"
                          oncomplete="if (!isFacesError()) PF('casePersonsDialog').hide()"
                          />
         <p:commandButton action="#{casePersonsTabBean.cancel}" 

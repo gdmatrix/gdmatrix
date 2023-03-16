@@ -29,21 +29,6 @@
 
       <div class="ui-fluid formgrid grid" >
 
-        <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next"
-                         value="#{agendaBundle.attendants_type}"
-                         indicateRequired="true" />
-          <emcomp:typeReference value="#{eventPersonsTabBean.attendantTypeId}"
-                                process="@(.savable)"
-                                type="Attendant"
-                                styleClass="w-full"
-                                scrollHeight="200"
-                                queryDelay="1000"
-                                minQueryLength="3"
-                                required="true">
-          </emcomp:typeReference>
-        </div>
-
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{agendaBundle.attendants_person}"
@@ -57,6 +42,21 @@
                                   minQueryLength="3"
                                   required="true">
           </emcomp:objectReference>
+        </div>        
+        
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{agendaBundle.attendants_type}"
+                         indicateRequired="true" />
+          <emcomp:typeReference value="#{eventPersonsTabBean.attendantTypeId}"
+                                process="@(.savable)"
+                                type="#{eventPersonsTabBean.tabBaseTypeId != null ? eventPersonsTabBean.tabBaseTypeId : 'Attendant'}"
+                                styleClass="w-full"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="true">
+          </emcomp:typeReference>
         </div>
 
         <p:outputPanel styleClass="field-checkbox col-12"

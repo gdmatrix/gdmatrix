@@ -53,7 +53,7 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventDocumentsTabBean.eventDocTypeId}"
                                 process="@(.savable)"
-                                type="EventDocument"
+                                type="#{eventDocumentsTabBean.tabBaseTypeId != null ? eventDocumentsTabBean.tabBaseTypeId : 'EventDocument'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"

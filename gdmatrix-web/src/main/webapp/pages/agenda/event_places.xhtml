@@ -22,10 +22,10 @@
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
                            action="#{eventPlacesTabBean.create}"
-                           process="@this"
+                           process=":mainform:search_tabs:tabs"
                            update="@root:@id(event_places_dialog)"
                            resetValues="true"
-                           oncomplete="PF('eventPlacesDialog').show()"
+                           oncomplete="if (!isFacesError()) PF('eventPlacesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
@@ -37,10 +37,13 @@
 
       <p:column headerText="#{agendaBundle.eventPlaces_place}" styleClass="w-9"
                 exportHeaderValue="#{agendaBundle.eventPlaces_place}">
-        <div>
-          <div><h:outputText value="#{row.roomView != null ? row.roomView.description : ''}" /></div>
-          <div><h:outputText value="#{row.addressView != null ? row.addressView.description : ''}" /></div>
-        </div>
+        <p:outputPanel rendered="#{row.roomView != null}">
+          <div>#{row.roomView.description}</div>
+          <p:outputPanel rendered="#{row.roomView.addressView != null}">#{row.roomView.addressView.description}</p:outputPanel>
+        </p:outputPanel>
+        <p:outputPanel rendered="#{row.addressView != null}">
+          #{row.addressView.description} 
+        </p:outputPanel>
       </p:column>
 
       <p:column styleClass="w-2" exportable="false">
@@ -60,10 +63,10 @@
                          icon="pi pi-pencil"
                          styleClass="rounded-button ui-button-flat"
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                         process="@this"
+                         process=":mainform:search_tabs:tabs"
                          update="@root:@id(event_places_dialog)"
                          resetValues="true"
-                         oncomplete="PF('eventPlacesDialog').show()" />
+                         oncomplete="if (!isFacesError()) PF('eventPlacesDialog').show()" />
         <p:commandButton action="#{eventPlacesTabBean.remove(row)}"
                          process="@this"
                          update="event_places_table :mainform:growl"

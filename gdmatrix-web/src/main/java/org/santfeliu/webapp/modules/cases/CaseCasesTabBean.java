@@ -74,9 +74,10 @@ public class CaseCasesTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
+    String typeId = getTabBaseTypeId();
     List<CaseCasesDataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = true; 
+    boolean groupedView = isGroupedViewEnabled();
   }
 
   private CaseCase editing;
@@ -84,7 +85,7 @@ public class CaseCasesTabBean extends TabBean
 
   @Inject
   CaseObjectBean caseObjectBean;
-  
+
   @Inject
   CaseTypeBean caseTypeBean;
 
@@ -127,7 +128,7 @@ public class CaseCasesTabBean extends TabBean
   {
     getCurrentTabInstance().rows = rows;
   }
-  
+
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
@@ -136,7 +137,7 @@ public class CaseCasesTabBean extends TabBean
     {
       //Get default objectSetup columns configuration
       ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
-      EditTab defaultEditTab = 
+      EditTab defaultEditTab =
         defaultSetup.findEditTabByViewId(activeEditTab.getViewId());
       columns = defaultEditTab.getColumns();
     }
@@ -181,6 +182,12 @@ public class CaseCasesTabBean extends TabBean
   public void setGroupedView(boolean groupedView)
   {
     getCurrentTabInstance().groupedView = groupedView;
+  }
+
+  public boolean isGroupedViewEnabled()
+  {
+    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
+      getProperties().getString("groupedViewEnabled"));
   }
 
   public void setCaseCaseTypeId(String caseCaseTypeId)
@@ -229,19 +236,40 @@ public class CaseCasesTabBean extends TabBean
     getCurrentTabInstance().groupedView = !getCurrentTabInstance().groupedView;
   }
 
+  public String getCaseDescription()
+  {
+    if (editing != null && !isNew(editing))
+    {
+      if (editing.getCaseId().equals(getObjectId())) //direct
+      {
+        return caseTypeBean.getDescription(editing.getRelCaseId());
+      }
+      else //reverse
+      {
+        return caseTypeBean.getDescription(editing.getCaseId());
+      }
+    }
+    return "";
+  }
+
   //TODO: get property from JSON
-  private String getTabBaseTypeId()
+  public String getTabBaseTypeId()
   {
     String typeId;
 
     String tabPrefix = String.valueOf(caseObjectBean.getEditTabSelector());
     typeId = getProperty("tabs::" + tabPrefix + "::typeId");
     if (typeId == null)
-      typeId = DictionaryConstants.CASE_CASE_TYPE;
-
+    {
+      EditTab editTab = caseObjectBean.getActiveEditTab();
+      typeId = editTab.getProperties().getString("typeId");
+      if (typeId == null)
+      {
+        typeId = DictionaryConstants.CASE_CASE_TYPE;
+      }
+    }
     return typeId;
   }
-
 
   @Override
   public void load() throws Exception
@@ -250,15 +278,15 @@ public class CaseCasesTabBean extends TabBean
     {
       try
       {
-        String typeId = getTabBaseTypeId();
-        
+        String typeId = getCurrentTabInstance().typeId;
+
         String[] params = typeId.split(TYPEID_SEPARATOR);
         if (params != null && params.length == 2)
         {
           String cpTypeId1 = params[0];
           String cpTypeId2 = params[1];
           getCurrentTabInstance().rows =
-            getResultsByPersons(cpTypeId1, cpTypeId2);          
+            getResultsByPersons(cpTypeId1, cpTypeId2);
         }
         else
         {
@@ -315,6 +343,7 @@ public class CaseCasesTabBean extends TabBean
         throw new Exception("CAN_NOT_STORE_REVERSE_RELATION");
 
       CasesModuleBean.getPort(false).storeCaseCase(editing);
+      refreshHiddenTabInstances();
       load();
       editing = null;
     }
@@ -322,7 +351,6 @@ public class CaseCasesTabBean extends TabBean
 
   public void cancel()
   {
-    info("CANCEL_OBJECT");
     editing = null;
   }
 
@@ -334,6 +362,7 @@ public class CaseCasesTabBean extends TabBean
       {
         String caseCaseId = row.getRowId();
         CasesModuleBean.getPort(false).removeCaseCase(caseCaseId);
+        refreshHiddenTabInstances();
         load();
       }
     }
@@ -379,6 +408,11 @@ public class CaseCasesTabBean extends TabBean
     }
   }
 
+  private boolean isNew(CaseCase caseCase)
+  {
+    return (caseCase != null && caseCase.getCaseCaseId() == null);
+  }
+
   private List<CaseCasesDataTableRow> getResultsByDefault(String caseCaseTypeId)
     throws Exception
   {
@@ -409,7 +443,7 @@ public class CaseCasesTabBean extends TabBean
     return toDataTableRows(results);
   }
 
-  private List<CaseCasesDataTableRow> getResultsByPersons(String typeId1, 
+  private List<CaseCasesDataTableRow> getResultsByPersons(String typeId1,
     String typeId2) throws Exception
   {
     CasePersonFilter filter = new CasePersonFilter();
@@ -432,22 +466,33 @@ public class CaseCasesTabBean extends TabBean
 
     return toDataTableRows(matcher.getResults());
   }
-    
-  private List<CaseCasesDataTableRow> toDataTableRows(List<CaseCaseView> 
+
+  private List<CaseCasesDataTableRow> toDataTableRows(List<CaseCaseView>
     caseCaseViews) throws Exception
   {
     List<CaseCasesDataTableRow> convertedRows = new ArrayList<>();
     for (CaseCaseView row : caseCaseViews)
     {
-      CaseCasesDataTableRow dataTableRow = 
+      CaseCasesDataTableRow dataTableRow =
         new CaseCasesDataTableRow(row.getCaseCaseId(), row.getCaseCaseTypeId(),
         row.getMainCase(), row.getRelCase());
       dataTableRow.setValues(row, getColumns());
       convertedRows.add(dataTableRow);
-    }    
+    }
     return convertedRows;
-  }  
-  
+  }
+
+  private void refreshHiddenTabInstances()
+  {
+    for (TabInstance tabInstance : tabInstances.values())
+    {
+      if (tabInstance != getCurrentTabInstance())
+      {
+        tabInstance.objectId = NEW_OBJECT_ID;
+      }
+    }
+  }
+
   public class CaseCasesDataTableRow extends DataTableRow
   {
     private boolean reverseRelation;
@@ -464,10 +509,10 @@ public class CaseCasesTabBean extends TabBean
       mainTypeId = mainCase.getCaseTypeId();
       relCaseId = relCase.getCaseId();
       relTypeId = relCase.getCaseTypeId();
-      
+
       String objectId = getObjectId();
-      reverseRelation = 
-        objectId.equals(relCaseId) && !objectId.equals(mainCaseId);      
+      reverseRelation =
+        objectId.equals(relCaseId) && !objectId.equals(mainCaseId);
     }
 
     public boolean isReverseRelation()
@@ -494,7 +539,7 @@ public class CaseCasesTabBean extends TabBean
     {
       return relCaseId;
     }
-    
+
   }
 
   private class CaseMatcher

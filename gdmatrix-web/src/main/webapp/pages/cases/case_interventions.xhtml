@@ -13,73 +13,75 @@
   <f:subview id="#{tab.subviewId}">
 
     <!-- Results table -->
-    <p:dataTable id="case_interventions_table" value="#{caseInterventionsTabBean.rows}" 
+    <p:dataTable id="case_interventions_table" value="#{caseInterventionsTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
-                 resizableColumns="false" showGridlines="true" 
+                 resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{caseInterventionsTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rows="10" rowsPerPageTemplate="5,10,25,50">
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">        
+        <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseInterventionsTabBean.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseInterventionsTabBean.switchView}"
                            process="@this"
                            update="case_interventions_table"
                            resetValues="true"
-                           alt="" title="" />                  
-          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
-                           action="#{caseInterventionsTabBean.create}" 
-                           process="@this"
+                           alt="#{caseInterventionsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           title="#{caseInterventionsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{caseInterventionsTabBean.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
+                           action="#{caseInterventionsTabBean.create}"
+                           process=":mainform:search_tabs:tabs"
                            update=":mainform:search_tabs:case_interventions_dialog"
                            resetValues="true"
-                           oncomplete="PF('caseInterventionsDialog').show()"                                 
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
-        </div>              
-      </f:facet>      
+                           oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>
 
       <p:headerRow expandable="true" groupBy="#{row.typeId}"
                    expanded="true" rendered="#{caseInterventionsTabBean.groupedView}">
         <p:column colspan="6" >
           <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
         </p:column>
-      </p:headerRow>  
-    
+      </p:headerRow>
+
       <p:columns value="#{caseInterventionsTabBean.columns}" var="column" columnIndexVar="i"
-                 filterable="false" sortable="false" resizable="false" 
+                 filterable="false" sortable="false" resizable="false"
                  headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}">
         <h:outputText value="#{row.values[i]}" />
-      </p:columns> 
-      
+      </p:columns>
+
       <p:column styleClass="col-1 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton action="#{caseInterventionsTabBean.edit(row)}"
                            icon="pi pi-pencil"
                            rendered="#{row.values[0] != null}"
-                           styleClass="rounded-button ui-button-flat"                               
+                           styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           process="@this" 
+                           process=":mainform:search_tabs:tabs"
                            update=":mainform:search_tabs:case_interventions_dialog"
                            resetValues="true"
-                           oncomplete="PF('caseInterventionsDialog').show()" />
+                           oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').show()" />
           <p:commandButton action="#{caseInterventionsTabBean.remove(row)}"
-                           process="@this" 
-                           update=":mainform:search_tabs:case_interventions_dialog case_interventions_table :mainform:growl"
+                           process="@this"
+                           update=":mainform:search_tabs:tabs :mainform:growl"
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.values[0] != null}"
-                           styleClass="rounded-button ui-button-flat">            
-            <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                       message="#{objectBundle.confirm_remove_message}" 
+                           styleClass="rounded-button ui-button-flat">
+            <p:confirm header="#{objectBundle.confirm_remove_header}"
+                       message="#{objectBundle.confirm_remove_message}"
                        icon="pi pi-info-circle" />
           </p:commandButton>
         </h:panelGroup>
-      </p:column>          
+      </p:column>
 
     </p:dataTable>
 
-  </f:subview>  
+  </f:subview>
 
 </ui:composition>

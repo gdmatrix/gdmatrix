@@ -19,13 +19,16 @@
       </div>
 
       <div class="field col-12 md:col-9">
-        <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
+        <p:outputLabel for="@next" value="#{agendaBundle.event_type}" 
+                       indicateRequired="true" />
         <emcomp:typeReference value="#{eventObjectBean.event.eventTypeId}"
                               type="Event"
                               styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3">
+                              minQueryLength="3" 
+                              required="true"
+                              process="@(.savable)">
           <p:ajax event="itemSelect"
                   process="@this" update=":mainform:search_tabs:tabs" />
         </emcomp:typeReference>
@@ -36,7 +39,7 @@
         <p:outputLabel for="title" value="#{agendaBundle.event_title}" />
         <p:inputText id="title" value="#{eventObjectBean.event.summary}"
                      required="true"
-                     styleClass="inputfield w-full"/>
+                     styleClass="inputfield w-full savable"/>
       </div>
 
       <div class="field col-12 md:col-3">
@@ -46,7 +49,8 @@
                       locale="#{eventObjectBean.language}"
                       showIcon="true" showTime="true"
                       autocomplete="off"
-                      monthNavigator="true" yearNavigator="true" />
+                      monthNavigator="true" yearNavigator="true" 
+                      styleClass="savable" />
       </div>
 
       <div class="field col-12 md:col-3">
@@ -56,7 +60,8 @@
                       locale="#{eventObjectBean.language}"
                       showIcon="true" showTime="true"
                       autocomplete="off"
-                      monthNavigator="true" yearNavigator="true" />
+                      monthNavigator="true" yearNavigator="true"
+                      styleClass="savable" />
       </div>
 
       <div class="field col-12 md:col-6"></div>
@@ -70,7 +75,7 @@
       <div class="field col-12">
         <p:outputLabel for="description" value="#{agendaBundle.event_description}"  />
         <p:inputTextarea id="description" value="#{eventObjectBean.event.description}"
-                         styleClass="inputfield w-full" />
+                         styleClass="inputfield w-full savable" />
       </div>
 
       <div class="field col-12">
@@ -88,17 +93,17 @@
       <div class="field col-12">
         <p:outputLabel for="comments" value="#{agendaBundle.event_hiddenComments}"  />
         <p:inputTextarea id="comments" value="#{eventObjectBean.event.comments}"
-                         styleClass="inputfield w-full" />
+                         styleClass="inputfield w-full savable" />
       </div>
 
       <div class="field col-12">
-        <p:selectBooleanCheckbox id="onlyAttendants" value="#{eventObjectBean.onlyAttendants}" styleClass="mr-2" />
+        <p:selectBooleanCheckbox id="onlyAttendants" value="#{eventObjectBean.onlyAttendants}" styleClass="mr-2 savable" />
         <p:outputLabel for="onlyAttendants" value="#{agendaBundle.event_onlyAttendants}" />
       </div>
 
       <p:outputPanel styleClass="field col-12"
                      rendered="#{eventObjectBean.new}">
-        <p:selectBooleanCheckbox id="autoAttendant" value="#{eventObjectBean.autoAttendant}"  styleClass="mr-2" />
+        <p:selectBooleanCheckbox id="autoAttendant" value="#{eventObjectBean.autoAttendant}" styleClass="mr-2 savable" />
         <p:outputLabel for="autoAttendant" value="#{agendaBundle.event_autoAttendant}" />
       </p:outputPanel>
 

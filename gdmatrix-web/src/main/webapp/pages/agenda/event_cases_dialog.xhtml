@@ -54,7 +54,7 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventCasesTabBean.caseEventTypeId}"
                                 process="@(.savable)"
-                                type="CaseEvent"
+                                type="#{eventCasesTabBean.tabBaseTypeId != null ? eventCasesTabBean.tabBaseTypeId : 'CaseEvent'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"

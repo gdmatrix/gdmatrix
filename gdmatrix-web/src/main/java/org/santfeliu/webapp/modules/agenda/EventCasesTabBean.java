@@ -279,6 +279,10 @@ public class EventCasesTabBean extends TabBean
   public void create()
   {
     editing = new CaseEvent();
+
+    String typeId = getTabBaseTypeId();
+    if (typeId != null)
+      editing.setCaseEventTypeId(typeId);
   }
 
   public void switchView()
@@ -333,6 +337,12 @@ public class EventCasesTabBean extends TabBean
     editing = null;
   }
 
+  public String getTabBaseTypeId()
+  {
+    EditTab editTab = eventObjectBean.getActiveEditTab();
+    return editTab.getProperties().getString("typeId");
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -370,12 +380,6 @@ public class EventCasesTabBean extends TabBean
   {
     PrimeFaces current = PrimeFaces.current();
     current.executeScript("PF('eventCasesDialog').hide();");
-  }
-
-  private String getTabBaseTypeId()
-  {
-    EditTab editTab = eventObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
   }
 
   private void refreshHiddenTabInstances()
