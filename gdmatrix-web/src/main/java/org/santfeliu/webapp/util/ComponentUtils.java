@@ -86,7 +86,7 @@ public class ComponentUtils
 
     FormFactory formFactory = FormFactory.getInstance();
     formFactory.clearForm(selector);
-    Form form = formFactory.getForm(selector, context, true);
+    Form form = formFactory.getForm(selector, context, false);
 
     Collection<Field> fields = form.getFields();
     for (Field field : fields)
@@ -196,7 +196,8 @@ public class ComponentUtils
             (String)styleClassValue : null;
         }
 
-        HtmlPanelGroup group = new HtmlPanelGroup();
+        HtmlPanelGroup group =
+          (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
         if (styleClass == null || !styleClass.contains("col-"))
         {
           styleClass = "col-12 md:col-6";
@@ -206,7 +207,9 @@ public class ComponentUtils
         group.setLayout("block");
         parent.getChildren().add(group);
 
-        OutputLabel label = new OutputLabel();
+        OutputLabel label =
+          (OutputLabel)application.createComponent(OutputLabel.COMPONENT_TYPE);
+
         label.setValue(labelText);
         label.setFor("@next");
         group.getChildren().add(label);

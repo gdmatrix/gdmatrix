@@ -293,6 +293,7 @@ public class DocumentObjectBean extends ObjectBean
   public void loadObject() throws Exception
   {
     versions = null;
+    formSelector = null;
 
     if (fileToStore != null)
     {

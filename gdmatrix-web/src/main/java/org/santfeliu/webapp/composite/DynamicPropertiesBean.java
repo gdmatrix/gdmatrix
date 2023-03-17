@@ -30,6 +30,8 @@
  */
 package org.santfeliu.webapp.composite;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +39,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
+import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
 import javax.faces.model.SelectItem;
@@ -46,6 +51,11 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
+import org.primefaces.component.inputtextarea.InputTextarea;
+import org.primefaces.component.outputlabel.OutputLabel;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
+import org.santfeliu.dic.util.PropertyConverter;
 import org.santfeliu.form.FormDescriptor;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
@@ -62,6 +72,8 @@ import org.santfeliu.webapp.util.WebUtils;
 @ViewScoped
 public class DynamicPropertiesBean implements Serializable
 {
+  static final String PROPERTY_EDITOR_SELECTOR = "editor";
+
   private final Map<String, List<SelectItem>> selectItemMap = new HashMap<>();
   private PropertyHelper propertyHelper;
 
@@ -88,6 +100,40 @@ public class DynamicPropertiesBean implements Serializable
     this.propertyHelper = propertyHelper;
   }
 
+  public String getPropertyJson()
+  {
+    List<Property> properties = propertyHelper.getProperties();
+    if (properties == null) return null;
+
+    String typeId = getTypeId();
+    if (typeId == null) return null;
+
+    Type type = TypeCache.getInstance().getType(typeId);
+
+    PropertyConverter converter = new PropertyConverter(type);
+    Map map = converter.toPropertyMap(properties);
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    return gson.toJson(map);
+  }
+
+  public void setPropertyJson(String json)
+  {
+    String typeId = getTypeId();
+    if (typeId == null) return;
+
+    Type type = TypeCache.getInstance().getType(typeId);
+
+    Gson gson = new Gson();
+    Map map = gson.fromJson(json, Map.class);
+    System.out.println(map);
+
+    PropertyConverter converter = new PropertyConverter(type);
+    List<Property> properties = converter.toPropertyList(map);
+    propertyHelper.getProperties().clear();
+    propertyHelper.getProperties().addAll(properties);
+  }
+
   public List<SelectItem> getSelectItems()
   {
     String typeId = getTypeId();
@@ -95,11 +141,11 @@ public class DynamicPropertiesBean implements Serializable
     List<SelectItem> selectItems = selectItemMap.get(typeId);
     if (selectItems == null)
     {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+
       selectItems = new ArrayList<>();
       if (!StringUtils.isBlank(typeId))
       {
-        UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-
         String selectorBase =
           TypeFormBuilder.PREFIX + ":" + typeId +
           TypeFormBuilder.USERID + userSessionBean.getUserId() +
@@ -115,11 +161,18 @@ public class DynamicPropertiesBean implements Serializable
           selectItems.add(new SelectItem(selector, label));
         }
       }
+      ResourceBundle bundle = ResourceBundle.getBundle(
+        "org.santfeliu.web.obj.resources.ObjectBundle",
+        userSessionBean.getViewLocale());
+
+      if (userSessionBean.isUserInRole("DOC_ADMIN"))
+      {
+        selectItems.add(new SelectItem(PROPERTY_EDITOR_SELECTOR,
+          bundle.getString("property_editor")));
+      }
+
       if (selectItems.isEmpty())
       {
-        ResourceBundle bundle = ResourceBundle.getBundle(
-          "org.santfeliu.web.obj.resources.ObjectBundle", 
-          UserSessionBean.getCurrentInstance().getViewLocale());
         selectItems.add(
           new SelectItem("", bundle.getString("type_without_form")));
       }
@@ -170,7 +223,34 @@ public class DynamicPropertiesBean implements Serializable
 
         panel.getChildren().clear();
 
-        if (!StringUtils.isBlank(formSelector))
+        if (PROPERTY_EDITOR_SELECTOR.equals(formSelector))
+        {
+          System.out.println(">>>> property_editor");
+          Application application = FacesContext.getCurrentInstance().getApplication();
+
+          HtmlPanelGroup group =
+            (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+
+          group.setStyleClass("field col-12");
+          group.setLayout("block");
+          panel.getChildren().add(group);
+
+           OutputLabel label =
+            (OutputLabel)application.createComponent(OutputLabel.COMPONENT_TYPE);
+
+          label.setValue("JSON");
+          label.setFor("@next");
+          group.getChildren().add(label);
+
+          InputTextarea textArea =
+            (InputTextarea)application.createComponent(InputTextarea.COMPONENT_TYPE);
+          textArea.setStyleClass("field col-12");
+          textArea.setStyle("font-family:monospace");
+          textArea.setValueExpression("value",
+            WebUtils.createValueExpression("#{dynamicPropertiesBean.propertyJson}", String.class));
+          group.getChildren().add(textArea);
+        }
+        else if (!StringUtils.isBlank(formSelector))
         {
           System.out.println(">>>> importing form: " + formSelector);
 
@@ -201,9 +281,16 @@ public class DynamicPropertiesBean implements Serializable
     return WebUtils.getValue("#{cc.attrs.typeId}");
   }
 
+  public boolean isPropertyEditorRendered()
+  {
+    return PROPERTY_EDITOR_SELECTOR.equals(getFormSelector());
+  }
+
   private boolean isValidFormSelector(String formSelector,
     List<SelectItem> selectItems)
   {
+    if (PROPERTY_EDITOR_SELECTOR.equals(formSelector)) return true;
+
     for (SelectItem selectItem : selectItems)
     {
       if (formSelector.equals(selectItem.getValue())) return true;
