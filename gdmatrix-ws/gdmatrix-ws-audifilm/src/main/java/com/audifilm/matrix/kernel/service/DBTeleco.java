@@ -14,6 +14,7 @@ public class DBTeleco extends DBEntityBase
   private String value;
   private String comments;
   private String valdata;
+  private String baixasw;
 
   public DBTeleco()
   {
@@ -83,6 +84,16 @@ public class DBTeleco extends DBEntityBase
   public String getValdata()
   {
     return valdata;
+  }
+
+  public String getBaixasw()
+  {
+    return baixasw;
+  }
+
+  public void setBaixasw(String baixasw)
+  {
+    this.baixasw = baixasw;
   }
   
   public void copyFrom(WSEndpoint endpoint, Contact contact)

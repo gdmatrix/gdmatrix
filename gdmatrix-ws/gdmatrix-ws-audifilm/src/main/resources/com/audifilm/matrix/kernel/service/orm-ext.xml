@@ -138,6 +138,7 @@
         WHERE
           (i.listId = 'TCON') AND
           (t.contactTypeId = substring(i.itemId, 0, 4)) AND
+          (t.baixasw is NULL OR t.baixasw &lt;&gt; '1') AND
           (:personId IS NULL OR t.personId = :personId) AND
           (:contactTypeId IS NULL OR t.contactTypeId = :contactTypeId) AND
           (:value IS NULL OR t.value like :value)
@@ -152,6 +153,7 @@
         WHERE
           (i.listId = 'TCON') AND
           (t.contactTypeId = substring(i.itemId, 0, 4)) AND
+          (t.baixasw is NULL OR t.baixasw &lt;&gt; '1') AND      
           (:personId IS NULL OR t.personId = :personId) AND
           (:contactTypeId IS NULL OR t.contactTypeId = :contactTypeId) AND
           (:value IS NULL OR t.value like :value)
@@ -1243,6 +1245,9 @@
       <basic name="valdata">
         <column name="VALDATA" />
       </basic>
+      <basic name="baixasw">
+        <column name="BAIXASW" />
+      </basic>      
     </attributes>
   </entity>
 
