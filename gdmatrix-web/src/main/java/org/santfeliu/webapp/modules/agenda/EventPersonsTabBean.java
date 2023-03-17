@@ -46,6 +46,8 @@ import org.matrix.agenda.Attendant;
 import org.matrix.agenda.AttendantFilter;
 import org.matrix.agenda.AttendantView;
 import org.primefaces.PrimeFaces;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -302,7 +304,9 @@ public class EventPersonsTabBean extends TabBean
           List<AttendantView> result = new ArrayList();
           for (AttendantView item : auxList)
           {
-            if (typeId.equals(item.getAttendantTypeId()))
+            Type attendantType =
+              TypeCache.getInstance().getType(item.getAttendantTypeId());
+            if (attendantType.isDerivedFrom(typeId))
             {
               result.add(item);
             }

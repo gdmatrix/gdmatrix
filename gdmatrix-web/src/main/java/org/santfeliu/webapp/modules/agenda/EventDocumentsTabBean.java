@@ -44,6 +44,8 @@ import org.matrix.agenda.EventDocument;
 import org.matrix.agenda.EventDocumentFilter;
 import org.matrix.agenda.EventDocumentView;
 import org.primefaces.PrimeFaces;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -256,7 +258,9 @@ public class EventDocumentsTabBean extends TabBean
           List<EventDocumentView> result = new ArrayList();
           for (EventDocumentView item : auxList)
           {
-            if (typeId.equals(item.getEventDocTypeId()))
+            Type eventDocType =
+              TypeCache.getInstance().getType(item.getEventDocTypeId());
+            if (eventDocType.isDerivedFrom(typeId))
             {
               result.add(item);
             }

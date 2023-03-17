@@ -44,6 +44,8 @@ import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
 import org.primefaces.PrimeFaces;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
@@ -244,7 +246,9 @@ public class CaseDocumentsTabBean extends TabBean
           List<CaseDocumentView> result = new ArrayList();
           for (CaseDocumentView item : auxList)
           {
-            if (typeId.equals(item.getCaseDocTypeId()))
+            Type caseDocType =
+              TypeCache.getInstance().getType(item.getCaseDocTypeId());
+            if (caseDocType.isDerivedFrom(typeId))
             {
               result.add(item);
             }
