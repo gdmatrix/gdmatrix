@@ -123,6 +123,7 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab("Main", "/pages/kernel/address_main.xhtml"));
     editTabs.add(new EditTab("Persons", "/pages/kernel/address_persons.xhtml", "addressPersonsTabBean"));
+    editTabs.add(new EditTab("Cases", "/pages/kernel/address_cases.xhtml", "addressCasesTabBean"));    
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;
