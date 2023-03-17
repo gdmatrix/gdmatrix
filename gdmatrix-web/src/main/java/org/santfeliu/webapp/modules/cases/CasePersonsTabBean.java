@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +62,7 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.kernel.KernelModuleBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -167,6 +169,11 @@ public class CasePersonsTabBean extends TabBean
   {
     getCurrentTabInstance().objectId = objectId;
   }
+  
+  public Map<String, TabInstance> getTabInstances()
+  {
+    return tabInstances;
+  }  
 
   @Override
   public boolean isNew()
@@ -525,6 +532,7 @@ public class CasePersonsTabBean extends TabBean
       if (importAddresses)
       {
         importAddressesFromEditingPerson();
+        refreshCaseAddressesTabInstances();
         importAddresses = false;
       }      
       
@@ -743,6 +751,8 @@ public class CasePersonsTabBean extends TabBean
             CaseAddress caseAddress = new CaseAddress();
             caseAddress.setCaseId(caseId);
             caseAddress.setAddressId(addressId);
+            caseAddress.setCaseAddressTypeId(
+              DictionaryConstants.CASE_PERSON_TYPE);            
             CasesModuleBean.getPort(false).storeCaseAddress(caseAddress);
           }
         }
@@ -786,5 +796,17 @@ public class CasePersonsTabBean extends TabBean
       }
     }
   }  
+  
+  private void refreshCaseAddressesTabInstances()
+  {
+    CaseAddressesTabBean caseAddressesTabBean = 
+      WebUtils.getBean("caseAddressesTabBean");
+    Collection<CaseAddressesTabBean.TabInstance> caTabInstances = 
+      caseAddressesTabBean.getTabInstances().values();
+    for (CaseAddressesTabBean.TabInstance tabInstance : caTabInstances)
+    {
+      tabInstance.objectId = NEW_OBJECT_ID;
+    }
+  }    
   
 }

@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <p:dialog id="case_addresses_dialog" widgetVar="caseAddressesDialog"
+            styleClass="edit_data_dialog" style="max-width:800px"
+            modal="true" responsive="true" closable="false"
+            appendTo="@(form)" position="center center" resizable="false">
+
+    <f:facet name="header">
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
+        <h:outputText value="#{caseObjectBean.description}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />
+        <i class="pi pi-angle-right mx-2"></i>
+        <h:outputText value="#{caseAddressesTabBean.addressDescription}" />
+      </p:outputPanel>
+    </f:facet>
+
+    <h:panelGroup styleClass="mt-2" id="case_addresses_panel"
+                  layout="block"
+                  rendered="#{caseAddressesTabBean.editing != null}">
+
+      <div class="ui-fluid formgrid grid" >
+
+        <!-- Address -->
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseAddresses_address}"
+                         indicateRequired="true" />
+          <emcomp:objectReference value="#{caseAddressesTabBean.addressId}"
+                                  process="@(.savable)"
+                                  type="Address"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  required="true"
+                                  minQueryLength="3">
+          </emcomp:objectReference>
+        </div>
+
+        <!-- Type -->
+        <div class="field col-12 md:col-6">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseAddresses_type}"
+                         indicateRequired="true" />
+          <emcomp:typeReference value="#{caseAddressesTabBean.caseAddressTypeId}"
+                                process="@(.savable)"
+                                type="CaseAddress"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3"
+                                required="true">
+            <p:ajax event="itemSelect"
+                    process="@this"
+                    update="@parent:@parent:@parent:case_addresses_dialog" />
+          </emcomp:typeReference>
+        </div>
+        
+        <!-- Dates -->
+        <p:outputPanel styleClass="field col-12 md:col-3">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.caseAddresses_startDate}" />
+          <p:datePicker value="#{caseAddressesTabBean.editing.startDate}" 
+                        locale="#{caseObjectBean.language}" converter="datePickerConverter"
+                        showIcon="true" styleClass="savable"
+                        monthNavigator="true" yearNavigator="true"  />
+        </p:outputPanel>
+
+        <p:outputPanel class="field col-12 md:col-3">
+          <p:outputLabel for="@next" 
+                         value="#{caseBundle.caseAddresses_endDate}"/>
+          <p:datePicker value="#{caseAddressesTabBean.editing.endDate}" 
+                        locale="#{caseObjectBean.language}" converter="datePickerConverter" 
+                        showIcon="true" styleClass="savable"
+                        monthNavigator="true" yearNavigator="true"  />
+        </p:outputPanel>        
+
+        <!-- Comments -->
+        <div class="field col-12">
+          <p:outputLabel for="@next"
+                         value="#{caseBundle.caseAddresses_comments}" />
+          <p:inputTextarea
+            styleClass="savable"
+            value="#{caseAddressesTabBean.editing.comments}" />
+        </div>
+        
+        <!-- Import persons -->
+        <p:outputPanel styleClass="field-checkbox col-12">
+            <p:selectBooleanCheckbox value="#{caseAddressesTabBean.importPersons}" 
+                                     itemLabel="#{caseBundle.caseAddresses_importPersons}"
+                                     styleClass="savable" />
+        </p:outputPanel>         
+
+      </div>
+
+    </h:panelGroup>
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton action="#{caseAddressesTabBean.store}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         process="case_addresses_dialog"
+                         update=":mainform:search_tabs:tabs case_addresses_panel"
+                         oncomplete="if (!isFacesError()) PF('caseAddressesDialog').hide()"
+                         />
+        <p:commandButton action="#{caseAddressesTabBean.cancel}"
+                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         process="@this"
+                         update="case_addresses_dialog :mainform:growl" global="false"
+                         oncomplete="PF('caseAddressesDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+
+</ui:composition>

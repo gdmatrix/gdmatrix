@@ -40,6 +40,12 @@ import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.matrix.dic.DictionaryConstants;
+import static org.matrix.dic.DictionaryConstants.CASE_ADDRESS_TYPE;
+import static org.matrix.dic.DictionaryConstants.CASE_CASE_TYPE;
+import static org.matrix.dic.DictionaryConstants.CASE_DOCUMENT_TYPE;
+import static org.matrix.dic.DictionaryConstants.CASE_EVENT_TYPE;
+import static org.matrix.dic.DictionaryConstants.CASE_PERSON_TYPE;
+import static org.matrix.dic.DictionaryConstants.INTERVENTION_TYPE;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -116,12 +122,24 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
 
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab("Main", "/pages/cases/case_main.xhtml"));
-    editTabs.add(new EditTab("Persons", "/pages/cases/case_persons.xhtml", 
-      "casePersonsTabBean", "persons1", 
-      "/pages/cases/case_persons_dialog.xhtml"));
-    editTabs.add(new EditTab("Documents", "/pages/cases/case_documents.xhtml", 
-      "caseDocumentsTabBean", "docs1", 
-      "/pages/cases/case_documents_dialog.xhtml"));
+    
+    EditTab personsTab = new EditTab("Persons", 
+      "/pages/cases/case_persons.xhtml", "casePersonsTabBean", "persons1", 
+      "/pages/cases/case_persons_dialog.xhtml");
+    personsTab.getProperties().put("typeId", CASE_PERSON_TYPE);
+    editTabs.add(personsTab);
+    
+    EditTab addressesTab = new EditTab("Addresses", 
+      "/pages/cases/case_addresses.xhtml", "caseAddressesTabBean", "addresses1",
+      "/pages/cases/case_addresses_dialog.xhtml");
+    addressesTab.getProperties().put("typeId", CASE_ADDRESS_TYPE);    
+    editTabs.add(addressesTab);
+    
+    EditTab documentsTab = new EditTab("Documents", 
+      "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
+      "/pages/cases/case_documents_dialog.xhtml");
+    documentsTab.getProperties().put("typeId", CASE_DOCUMENT_TYPE);
+    editTabs.add(documentsTab);
     
     EditTab intEditTab = new EditTab("Actuacions", 
       "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", 
@@ -133,7 +151,8 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     intEditTab.getColumns().add(new Column("startDate", 
       bundle.getString("caseInterventions_startDate"))); 
     intEditTab.getColumns().add(new Column("endDate", 
-      bundle.getString("caseInterventions_endDate")));  
+      bundle.getString("caseInterventions_endDate"))); 
+    intEditTab.getProperties().put("typeId", INTERVENTION_TYPE);
     editTabs.add(intEditTab);
     
     EditTab casesEditTab = new EditTab("Cases", "/pages/cases/case_cases.xhtml", 
@@ -145,14 +164,18 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     casesEditTab.getColumns().add(new Column("startDate", 
       bundle.getString("caseCases_startDate")));    
     casesEditTab.getColumns().add(new Column("endDate", 
-      bundle.getString("caseCases_endDate")));      
+      bundle.getString("caseCases_endDate")));
+    casesEditTab.getProperties().put("typeId", CASE_CASE_TYPE);
     editTabs.add(casesEditTab);
     
     editTabs.add(new EditTab("ACL", "/pages/cases/case_acl.xhtml", 
       "caseACLTabBean"));
-    editTabs.add(new EditTab("Events", "/pages/cases/case_events.xhtml", 
-      "caseEventsTabBean", "events1", 
-      "/pages/cases/case_events_dialog.xhtml"));
+    
+    EditTab eventsEditTab = new EditTab("Events", 
+      "/pages/cases/case_events.xhtml", "caseEventsTabBean", "events1", 
+      "/pages/cases/case_events_dialog.xhtml");
+    eventsEditTab.getProperties().put("typeId", CASE_EVENT_TYPE);
+    editTabs.add(eventsEditTab);
     
     objectSetup.setEditTabs(editTabs);
     

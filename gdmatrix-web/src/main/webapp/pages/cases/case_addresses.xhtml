@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+  <f:subview id="#{tab.subviewId}">
+
+    <!-- Results table -->
+    <p:dataTable id="case_addresses_table" value="#{caseAddressesTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true" rows="10"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{caseAddressesTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseAddressesTabBean.groupedView ? 'ui-button-flat' : ''}"
+                           action="#{caseAddressesTabBean.switchView}"
+                           process="@this"
+                           update="case_addresses_table"
+                           resetValues="true"
+                           alt="#{caseAddressesTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}" 
+                           title="#{caseAddressesTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
+                           rendered="#{caseAddressesTabBean.groupedViewEnabled}" />
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{caseAddressesTabBean.create}"
+                           process=":mainform:search_tabs:tabs"
+                           update=":mainform:search_tabs:case_addresses_dialog"
+                           resetValues="true"
+                           oncomplete="if (!isFacesError()) PF('caseAddressesDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>
+
+      <p:headerRow field="caseAddressTypeId" expandable="true"
+                   expanded="true" rendered="#{caseAddressesTabBean.groupedView}">
+        <p:column colspan="6" >
+          <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.caseAddressTypeId)}"/>
+        </p:column>
+      </p:headerRow>
+
+      <p:column headerText="#{caseBundle.caseAddresses_id}" 
+                exportHeaderValue="#{caseBundle.caseAddresses_id}"
+                styleClass="col-1">
+        <h:outputText value="#{row.addressView.addressId}" />
+      </p:column>
+
+      <p:column headerText="#{caseBundle.caseAddresses_address}" 
+                exportHeaderValue="#{caseBundle.caseAddresses_address}"
+                styleClass="col-5">
+        <h:outputText value="#{row.addressView.description} (#{row.addressView.city})"/>
+      </p:column>
+      
+      <p:column headerText="#{caseBundle.caseAddresses_comments}"
+                exportHeaderValue="#{caseBundle.caseAddresses_comments}"
+                styleClass="col-2">
+        <h:outputText value="#{row.comments}"/>
+      </p:column>         
+      
+      <p:column headerText="#{caseBundle.caseAddresses_startDate}" 
+                exportHeaderValue="#{caseBundle.caseAddresses_startDate}"
+                styleClass="col-1 text-center">
+        <h:outputText value="#{row.startDate}" converter="dateConverter"/>
+      </p:column>
+
+      <p:column headerText="#{caseBundle.caseAddresses_endDate}" 
+                exportHeaderValue="#{caseBundle.caseAddresses_endDate}"
+                styleClass="col-1 text-center">
+        <h:outputText value="#{row.endDate}" converter="dateConverter"/>
+      </p:column>
+      
+      <p:column styleClass="col-2 text-right">
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
+                         ajax="false"
+                         action="#{navigatorBean.show('Address', row.addressView.addressId)}"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{caseAddressesTabBean.edit(row)}"
+                         process=":mainform:search_tabs:tabs"
+                         update=":mainform:search_tabs:case_addresses_dialog"
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                         resetValues="true"
+                         oncomplete="if (!isFacesError()) PF('caseAddressesDialog').show()" />
+        <p:commandButton action="#{caseAddressesTabBean.remove(row)}"
+                         process="@this"
+                         update=":mainform:search_tabs:tabs :mainform:growl"
+                         icon="pi pi-trash"
+                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                         styleClass="rounded-button ui-button-flat"
+                         onclick="return confirm('#{objectBundle.confirm_remove}');">
+        </p:commandButton>
+      </p:column>
+    </p:dataTable>
+
+  </f:subview>
+
+</ui:composition>
