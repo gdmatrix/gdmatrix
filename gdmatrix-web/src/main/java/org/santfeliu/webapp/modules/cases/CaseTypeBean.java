@@ -41,6 +41,8 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.matrix.dic.DictionaryConstants;
 import static org.matrix.dic.DictionaryConstants.CASE_ADDRESS_TYPE;
+import static org.matrix.dic.DictionaryConstants.CASE_CASE_TYPE;
+import static org.matrix.dic.DictionaryConstants.CASE_DOCUMENT_TYPE;
 import static org.matrix.dic.DictionaryConstants.CASE_PERSON_TYPE;
 import static org.matrix.dic.DictionaryConstants.INTERVENTION_TYPE;
 import org.santfeliu.webapp.TypeBean;
@@ -135,6 +137,7 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     EditTab documentsTab = new EditTab("Documents", 
       "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
       "/pages/cases/case_documents_dialog.xhtml");
+    documentsTab.getProperties().put("typeId", CASE_DOCUMENT_TYPE);
     editTabs.add(documentsTab);
     
     EditTab intEditTab = new EditTab("Actuacions", 
@@ -153,14 +156,17 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     
     EditTab casesEditTab = new EditTab("Cases", "/pages/cases/case_cases.xhtml", 
       "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml");   
-    casesEditTab.getColumns().add(new Column("caseCaseId", 
-      bundle.getString("caseCases_id")));
+    casesEditTab.getColumns().add(new Column("caseId", 
+      bundle.getString("caseCases_id"), "col-1"));
+    casesEditTab.getColumns().add(new Column("caseTitle", 
+      bundle.getString("caseCases_title"), "col-4"));    
     casesEditTab.getColumns().add(new Column("caseCaseTypeId", 
-      bundle.getString("caseCases_type")));
+      bundle.getString("caseCases_type"), "col-3"));    
     casesEditTab.getColumns().add(new Column("startDate", 
-      bundle.getString("caseCases_startDate")));    
+      bundle.getString("caseCases_startDate"), "col-1"));    
     casesEditTab.getColumns().add(new Column("endDate", 
-      bundle.getString("caseCases_endDate")));
+      bundle.getString("caseCases_endDate"), "col-1"));
+    casesEditTab.getProperties().put("typeId", CASE_CASE_TYPE);
     editTabs.add(casesEditTab);
     
     editTabs.add(new EditTab("ACL", "/pages/cases/case_acl.xhtml", 

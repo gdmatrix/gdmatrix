@@ -49,7 +49,9 @@ import org.matrix.cases.CaseCaseView;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
+import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -88,7 +90,7 @@ public class CaseCasesTabBean extends TabBean
 
   @Inject
   CaseTypeBean caseTypeBean;
-
+  
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
@@ -493,13 +495,16 @@ public class CaseCasesTabBean extends TabBean
     }
   }
 
+  //TODO: Replace by expressions in Columns
   public class CaseCasesDataTableRow extends DataTableRow
   {
     private boolean reverseRelation;
     private String mainTypeId;
     private String mainCaseId;
+    private String mainTitle;
     private String relTypeId;
     private String relCaseId;
+    private String relTitle;
 
     public CaseCasesDataTableRow(String rowId, String typeId,
       Case mainCase, Case relCase)
@@ -507,8 +512,10 @@ public class CaseCasesTabBean extends TabBean
       super(rowId, typeId);
       mainCaseId = mainCase.getCaseId();
       mainTypeId = mainCase.getCaseTypeId();
+      mainTitle = mainCase.getTitle();
       relCaseId = relCase.getCaseId();
       relTypeId = relCase.getCaseTypeId();
+      relTitle = relCase.getTitle();
 
       String objectId = getObjectId();
       reverseRelation =
@@ -530,6 +537,16 @@ public class CaseCasesTabBean extends TabBean
       return mainCaseId;
     }
 
+    public String getMainTitle()
+    {
+      return mainTitle;
+    }
+
+    public void setMainTitle(String mainTitle)
+    {
+      this.mainTitle = mainTitle;
+    }
+
     public String getRelTypeId()
     {
       return relTypeId;
@@ -539,6 +556,53 @@ public class CaseCasesTabBean extends TabBean
     {
       return relCaseId;
     }
+
+    public String getRelTitle()
+    {
+      return relTitle;
+    }
+
+    public void setRelTitle(String relTitle)
+    {
+      this.relTitle = relTitle;
+    }
+    
+    public String getCaseId()
+    {
+      return isReverseRelation() ? getMainCaseId() : getRelCaseId();
+    }
+    
+    public String getCaseTitle()
+    {
+      String caseTitle = 
+        isReverseRelation() ? getMainTitle() : getRelTitle();
+      return caseTitle;
+    }
+    
+    @Override
+    public void setValues(Object row, List<Column> columns) 
+      throws Exception
+    {
+      values = new Object[columns.size()];
+      for (int i = 0; i < columns.size(); i++)
+      {
+        Column column = columns.get(i);
+        if ("caseId".equals(column.getName()))
+          values[i] = getCaseId();
+        else if ("caseTitle".equals(column.getName()))
+          values[i] = getCaseTitle();
+        else
+        {
+          Property property = DictionaryUtils.getProperty(row, column.getName());        
+          if (property != null)
+          {
+            String columnName = column.getName();
+            List<String> value = property.getValue();
+            values[i] = formatValue(typeId, columnName, value);            
+          }
+        }
+      } 
+    }      
 
   }
 

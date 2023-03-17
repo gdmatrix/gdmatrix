@@ -51,9 +51,9 @@ import org.santfeliu.webapp.setup.Column;
  */
 public class DataTableRow implements Serializable
 {
-  private String rowId;
-  private String typeId;
-  private Object[] values;
+  protected String rowId;
+  protected String typeId;
+  protected Object[] values;
   
   public DataTableRow(String rowId, String typeId)
   {
@@ -108,7 +108,7 @@ public class DataTableRow implements Serializable
     } 
   }  
   
-  private Object formatValue(String rowTypeId, Object key, 
+  protected Object formatValue(String rowTypeId, Object key, 
     List<String> values) throws Exception
   {
     Object fValue = "";  

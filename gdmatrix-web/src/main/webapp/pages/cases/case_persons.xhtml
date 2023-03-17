@@ -53,15 +53,15 @@
         <h:outputText value="#{row.personView.personId}" />
       </p:column>
 
+      <p:column headerText="#{caseBundle.casePersons_person}" styleClass="col-6"
+                exportHeaderValue="#{caseBundle.casePersons_person}">
+        <h:outputText value="#{row.personView.fullName}"/>
+      </p:column>      
+      
       <p:column headerText="#{caseBundle.casePersons_type}" styleClass="col-3"
                 exportHeaderValue="#{caseBundle.casePersons_type}"
                 rendered="#{!casePersonsTabBean.groupedView}">
         <h:outputText value="#{typeTypeBean.getDescription(row.casePersonTypeId)}"/>
-      </p:column>
-
-      <p:column headerText="#{caseBundle.casePersons_person}" styleClass="col-6"
-                exportHeaderValue="#{caseBundle.casePersons_person}">
-        <h:outputText value="#{row.personView.fullName}"/>
       </p:column>
 
       <p:column styleClass="col-2 text-right">

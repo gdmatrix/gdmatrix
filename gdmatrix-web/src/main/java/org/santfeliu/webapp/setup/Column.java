@@ -55,7 +55,7 @@ public class Column implements Serializable, Comparable<Column>
   
   public Column(String name, String label, String styleClass)
   {
-    this(label, name);
+    this(name, label);
     this.styleClass = styleClass;
   }
 
