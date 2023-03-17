@@ -13,13 +13,13 @@
   <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="person_addresses_table" value="#{personAddressesTabBean.resultListHelper.rows}" 
+    <p:dataTable id="person_addresses_table" value="#{personAddressesTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom" 
                  rowIndexVar="firstRow"
                  first="#{personAddressesTabBean.firstRow}"
-                 rows="#{personAddressesTabBean.resultListHelper.pageSize}"
+                 rows="10"
                  multiViewState="true"                   
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
@@ -94,20 +94,21 @@
       
         <p:outputPanel styleClass="field col-12">  
           <p:outputLabel for="@next"  
-                         value="#{kernelBundle.personAddresses_address}"/>
-
-          <emcomp:objectReference value="#{personAddressesTabBean.editing.addressId}"
+                         value="#{kernelBundle.personAddresses_address}"
+                         indicateRequired="true"/>
+          <emcomp:objectReference value="#{personAddressesTabBean.addressId}"
                                   type="Address"
-                                  process="@(.savable)"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  required="false"
+                                  process="@(.savable)">
           </emcomp:objectReference>                        
         </p:outputPanel>      
 
       </div>
-
+      
     </h:panelGroup>  
 
     <f:facet name="footer">

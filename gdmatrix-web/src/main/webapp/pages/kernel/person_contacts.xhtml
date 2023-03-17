@@ -13,13 +13,13 @@
   <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="contact_results_table" value="#{personContactsTabBean.resultListHelper.rows}" 
+    <p:dataTable id="contact_results_table" value="#{personContactsTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"
                  size="small" paginatorPosition="bottom" 
                  rowIndexVar="firstRow"
                  first="#{personContactsTabBean.firstRow}"
-                 rows="#{personContactsTabBean.resultListHelper.pageSize}"
+                 rows="10"
                  multiViewState="true"                   
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
@@ -29,8 +29,8 @@
         <div class="flex justify-content-end w-12">     
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
                            action="#{personContactsTabBean.create}" 
-                           update=":mainform:search_tabs:tabs:contact_data_dialog"
-                           oncomplete="PF('contactDataDialog').show()"                                 
+                           update=":mainform:search_tabs:tabs:person_contacts_dialog"
+                           oncomplete="PF('personContactsDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>              
       </f:facet>      
@@ -53,9 +53,9 @@
                            rendered="#{row.contactId != null}"
                            styleClass="rounded-button ui-button-flat"                               
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
-                           ajax="true" update=":mainform:search_tabs:tabs:contact_data_dialog"
+                           ajax="true" update=":mainform:search_tabs:tabs:person_contacts_dialog"
                            resetValues="true"
-                           oncomplete="PF('contactDataDialog').show()" />
+                           oncomplete="PF('personContactsDialog').show()" />
           <p:commandButton action="#{personContactsTabBean.remove(row)}"
                            ajax="true" update="contact_results_table :mainform:growl"
                            icon="pi pi-trash"
@@ -73,7 +73,7 @@
 
 
   <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="contact_data_dialog" widgetVar="contactDataDialog" 
+  <p:dialog id="person_contacts_dialog" widgetVar="personContactsDialog" 
             styleClass="edit_data_dialog" style="max-width:800px" 
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
@@ -85,7 +85,7 @@
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{personObjectBean.activeEditTab.label}" />   
         <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{personContactsTabBean.editing.contactId}" />
+        <h:outputText value="#{personContactsTabBean.editing.value}" />
       </p:outputPanel>
     </f:facet>
     
@@ -97,14 +97,16 @@
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" 
-                         value="#{kernelBundle.personContacts_type}" />          
-          <emcomp:typeReference value="#{personContactsTabBean.editing.contactTypeId}"
+                         value="#{kernelBundle.personContacts_type}" 
+                         indicateRequired="true"/>          
+          <emcomp:typeReference value="#{personContactsTabBean.contactTypeId}"
                                 type="Contact"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true"/>
+                                required="true"
+                                process="@(.savable)"/>
         </div>
 
         <div class="field col-12 md:col-6">
@@ -118,7 +120,7 @@
           <p:outputLabel for="@next" 
                          value="#{kernelBundle.personContacts_comments}"/>
           <p:inputTextarea id="comments" value="#{personContactsTabBean.editing.comments}"
-                           />
+                           styleClass="savable"/>
         </div> 
 
       </div>
@@ -128,11 +130,11 @@
       <p:commandButton action="#{personContactsTabBean.store}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                        update="contact_results_table contact_edit_panels :mainform:growl"
-                       oncomplete="if (args &amp;&amp; !args.validationFailed) PF('contactDataDialog').hide()" />
+                       oncomplete="if (args &amp;&amp; !args.validationFailed) PF('personContactsDialog').hide()" />
       <p:commandButton action="#{personContactsTabBean.cancel}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
                        immediate="true" update="contact_edit_panels :mainform:growl" global="false" 
-                       oncomplete="PF('contactDataDialog').hide()" />
+                       oncomplete="PF('personContactsDialog').hide()" />
     </div>         
 
   </p:dialog>  

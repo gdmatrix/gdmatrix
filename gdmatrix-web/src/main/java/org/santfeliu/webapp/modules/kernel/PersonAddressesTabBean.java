@@ -31,8 +31,8 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,9 +40,9 @@ import org.matrix.kernel.PersonAddress;
 import org.matrix.kernel.PersonAddressFilter;
 import org.matrix.kernel.PersonAddressView;
 import org.primefaces.PrimeFaces;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ResultListHelper;
 
 /**
  *
@@ -58,20 +58,12 @@ public class PersonAddressesTabBean extends TabBean
   @Inject
   private AddressObjectBean addressObjectBean;
 
-  //Helpers
-  private ResultListHelper<PersonAddressView> resultListHelper;
-
+  private List<PersonAddressView> rows;
   private int firstRow;
   private PersonAddress editing;
 
   public PersonAddressesTabBean()
   {
-  }
-
-  @PostConstruct
-  public void init()
-  {
-    resultListHelper = new PersonAddressResultListHelper();
   }
 
   @Override
@@ -90,9 +82,14 @@ public class PersonAddressesTabBean extends TabBean
     this.editing = personAddress;
   }
 
-  public ResultListHelper<PersonAddressView> getResultListHelper()
+  public List<PersonAddressView> getRows()
   {
-    return resultListHelper;
+    return rows;
+  }
+
+  public void setRows(List<PersonAddressView> rows)
+  {
+    this.rows = rows;
   }
 
   public int getFirstRow()
@@ -104,7 +101,7 @@ public class PersonAddressesTabBean extends TabBean
   {
     this.firstRow = firstRow;
   }
-
+  
   public String getPageObjectDescription()
   {
     if (editing != null && !isNew(editing))
@@ -116,8 +113,11 @@ public class PersonAddressesTabBean extends TabBean
 
   public void setAddressId(String addressId)
   {
-    editing.setAddressId(addressId);
-    showDialog();
+    if (editing != null)
+    {
+      editing.setAddressId(addressId);
+      showDialog();
+    }
   }
 
   public String getAddressId()
@@ -133,7 +133,21 @@ public class PersonAddressesTabBean extends TabBean
   @Override
   public void load()
   {
-    resultListHelper.find();
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
+    {     
+      try
+      {
+        PersonAddressFilter filter = new PersonAddressFilter();
+        filter.setPersonId(getObjectId());
+        rows = KernelModuleBean.getPort(false).findPersonAddressViews(filter);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }    
+    }
+    else
+      rows = Collections.emptyList();        
   }
 
   public void create()
@@ -145,13 +159,13 @@ public class PersonAddressesTabBean extends TabBean
   public void store()
   {
     storeAddress();
-    resultListHelper.find();
+    load();
   }
 
   public void remove(PersonAddressView row)
   {
     removeAddress(row);
-    resultListHelper.find();
+    load();
   }
 
   public String cancel()
@@ -159,12 +173,6 @@ public class PersonAddressesTabBean extends TabBean
     editing = null;
     info("CANCEL_OBJECT");
     return null;
-  }
-
-  public void reset()
-  {
-    cancel();
-    resultListHelper.clear();
   }
 
   @Override
@@ -181,7 +189,7 @@ public class PersonAddressesTabBean extends TabBean
       Object[] stateArray = (Object[])state;
       editing = (PersonAddress)stateArray[0];
 
-      if (!isNew()) resultListHelper.find();
+      if (!isNew()) load();
     }
     catch (Exception ex)
     {
@@ -207,12 +215,10 @@ public class PersonAddressesTabBean extends TabBean
           throw new Exception("ADDRESS_MUST_BE_SELECTED");
         }
 
-        String personId = personObjectBean.getObjectId();
-        editing.setPersonId(personId);
+        editing.setPersonId(getObjectId());
         KernelModuleBean.getPort(false).storePersonAddress(editing);
         editing = null;
         info("STORE_OBJECT");
-        hideDialog();
       }
     }
     catch (Exception ex)
@@ -250,35 +256,7 @@ public class PersonAddressesTabBean extends TabBean
   private void showDialog()
   {
     PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('addressDataDialog').show();");
-  }
-
-  private void hideDialog()
-  {
-    PrimeFaces current = PrimeFaces.current();
-    current.executeScript("PF('addressDataDialog').hide();");
-  }
-
-  private class PersonAddressResultListHelper extends
-    ResultListHelper<PersonAddressView>
-  {
-    @Override
-    public List<PersonAddressView> getResults(int firstResult, int maxResults)
-    {
-      try
-      {
-        PersonAddressFilter filter = new PersonAddressFilter();
-        filter.setPersonId(personObjectBean.getObjectId());
-        filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);
-        return KernelModuleBean.getPort(false).findPersonAddressViews(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return null;
-    }
+    current.executeScript("PF('personAddressesDialog').show();");
   }
 
 }

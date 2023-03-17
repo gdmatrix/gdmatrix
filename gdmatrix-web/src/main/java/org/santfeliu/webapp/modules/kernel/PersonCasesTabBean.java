@@ -31,16 +31,16 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ResultListHelper;
 import org.santfeliu.webapp.modules.cases.CaseObjectBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 
@@ -58,19 +58,13 @@ public class PersonCasesTabBean extends TabBean
   @Inject
   private CaseObjectBean caseObjectBean;
 
-  //Helpers
-  private ResultListHelper<CasePersonView> resultListHelper;
+
+  private List<CasePersonView> rows;
 
   private int firstRow;
 
   public PersonCasesTabBean()
   {
-  }
-
-  @PostConstruct
-  public void init()
-  {
-    resultListHelper = new CasePersonResultListHelper();
   }
 
   @Override
@@ -79,9 +73,14 @@ public class PersonCasesTabBean extends TabBean
     return personObjectBean;
   }
 
-  public ResultListHelper<CasePersonView> getResultListHelper()
+  public List<CasePersonView> getRows()
   {
-    return resultListHelper;
+    return rows;
+  }
+
+  public void setRows(List<CasePersonView> rows)
+  {
+    this.rows = rows;
   }
 
   public int getFirstRow()
@@ -97,7 +96,21 @@ public class PersonCasesTabBean extends TabBean
   @Override
   public void load()
   {
-    resultListHelper.find();
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
+    {       
+      try
+      {
+        CasePersonFilter filter = new CasePersonFilter();
+        filter.setPersonId(personObjectBean.getObjectId());
+        rows = CasesModuleBean.getPort(false).findCasePersonViews(filter);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+    else
+      rows = Collections.emptyList();         
   }
 
   @Override
@@ -111,33 +124,11 @@ public class PersonCasesTabBean extends TabBean
   {
     try
     {
-      if (!isNew()) resultListHelper.find();
+      if (!isNew()) load();
     }
     catch (Exception ex)
     {
       error(ex);
-    }
-  }
-
-  private class CasePersonResultListHelper extends
-    ResultListHelper<CasePersonView>
-  {
-    @Override
-    public List<CasePersonView> getResults(int firstResult, int maxResults)
-    {
-      try
-      {
-        CasePersonFilter filter = new CasePersonFilter();
-        filter.setPersonId(personObjectBean.getObjectId());
-        filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);
-        return CasesModuleBean.getPort(false).findCasePersonViews(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return null;
     }
   }
 

@@ -31,17 +31,18 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.kernel.Contact;
 import org.matrix.kernel.ContactFilter;
 import org.matrix.kernel.ContactView;
+import org.primefaces.PrimeFaces;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
-import org.santfeliu.webapp.helpers.ResultListHelper;
 
 /**
  *
@@ -56,19 +57,12 @@ public class PersonContactsTabBean extends TabBean
   private PersonObjectBean personObjectBean;
 
   //Helpers
-  private ResultListHelper<ContactView> resultListHelper;
-
+  private List<ContactView> rows;
   private int firstRow;
   private Contact editing;
 
   public PersonContactsTabBean()
   {
-  }
-
-  @PostConstruct
-  public void init()
-  {
-    resultListHelper = new ContactResultListHelper();
   }
 
   @Override
@@ -77,9 +71,14 @@ public class PersonContactsTabBean extends TabBean
     return personObjectBean;
   }
 
-  public ResultListHelper<ContactView> getResultListHelper()
+  public List<ContactView> getRows()
   {
-    return resultListHelper;
+    return rows;
+  }
+
+  public void setRows(List<ContactView> rows)
+  {
+    this.rows = rows;
   }
 
   public int getFirstRow()
@@ -101,11 +100,39 @@ public class PersonContactsTabBean extends TabBean
   {
     this.editing = contact;
   }
+  
+  public String getContactTypeId()
+  {
+    return editing.getContactTypeId();
+  }
+  
+  public void setContactTypeId(String contactTypeId)
+  {
+    if (editing != null)
+    {
+      editing.setContactTypeId(contactTypeId);
+      showDialog();
+    }
+  }
 
   @Override
   public void load()
   {
-    resultListHelper.find();
+    if (!NEW_OBJECT_ID.equals(getObjectId()))
+    {    
+      try
+      {    
+        ContactFilter filter = new ContactFilter();
+        filter.setPersonId(getObjectId());
+        rows = KernelModuleBean.getPort(false).findContactViews(filter);
+      }
+      catch(Exception ex)
+      {
+        error(ex);
+      }
+    }
+    else
+      rows = Collections.emptyList();        
   }
 
   public void create()
@@ -142,12 +169,22 @@ public class PersonContactsTabBean extends TabBean
   @Override
   public void store() throws Exception
   {
-    if (editing != null)
+    try
     {
-      KernelModuleBean.getPort(false).storeContact(editing);
-      editing = null;
+      if (editing != null)
+      {
+        editing.setPersonId(getObjectId());
+        KernelModuleBean.getPort(false).storeContact(editing);
+        editing = null;
+        info("STORE_OBJECT");        
+      }
+      load();
     }
-    resultListHelper.find();
+    catch(Exception ex)
+    {
+      error(ex);
+      showDialog();
+    }
   }
 
   public void cancel()
@@ -164,7 +201,7 @@ public class PersonContactsTabBean extends TabBean
         String contactId = contact.getContactId();
         KernelModuleBean.getPort(false).removeContact(contactId);
       }
-      resultListHelper.find();
+      load();
     }
     catch (Exception ex)
     {
@@ -175,9 +212,7 @@ public class PersonContactsTabBean extends TabBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]
-    {
-    };
+    return new Object[] { editing };
   }
 
   @Override
@@ -187,7 +222,9 @@ public class PersonContactsTabBean extends TabBean
     {
       if (!isNew())
       {
-        resultListHelper.find();
+        Object[] stateArray = (Object[])state;
+        editing = (Contact)stateArray[0];
+        load();
       }
     }
     catch (Exception ex)
@@ -195,28 +232,11 @@ public class PersonContactsTabBean extends TabBean
       error(ex);
     }
   }
-
-  private class ContactResultListHelper extends
-    ResultListHelper<ContactView>
+  
+  private void showDialog()
   {
-
-    @Override
-    public List<ContactView> getResults(int firstResult, int maxResults)
-    {
-      try
-      {
-        ContactFilter filter = new ContactFilter();
-        filter.setPersonId(personObjectBean.getObjectId());
-        filter.setFirstResult(firstResult);
-        filter.setMaxResults(maxResults);
-        return KernelModuleBean.getPort(false).findContactViews(filter);
-      }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
-      return null;
-    }
+    PrimeFaces current = PrimeFaces.current();
+    current.executeScript("PF('personContactsDialog').show();");
   }
 
 }
