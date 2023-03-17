@@ -41,9 +41,6 @@ import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.matrix.dic.DictionaryConstants;
 import static org.matrix.dic.DictionaryConstants.CASE_ADDRESS_TYPE;
-import static org.matrix.dic.DictionaryConstants.CASE_CASE_TYPE;
-import static org.matrix.dic.DictionaryConstants.CASE_DOCUMENT_TYPE;
-import static org.matrix.dic.DictionaryConstants.CASE_EVENT_TYPE;
 import static org.matrix.dic.DictionaryConstants.CASE_PERSON_TYPE;
 import static org.matrix.dic.DictionaryConstants.INTERVENTION_TYPE;
 import org.santfeliu.webapp.TypeBean;
@@ -138,7 +135,6 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     EditTab documentsTab = new EditTab("Documents", 
       "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
       "/pages/cases/case_documents_dialog.xhtml");
-    documentsTab.getProperties().put("typeId", CASE_DOCUMENT_TYPE);
     editTabs.add(documentsTab);
     
     EditTab intEditTab = new EditTab("Actuacions", 
@@ -165,7 +161,6 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
       bundle.getString("caseCases_startDate")));    
     casesEditTab.getColumns().add(new Column("endDate", 
       bundle.getString("caseCases_endDate")));
-    casesEditTab.getProperties().put("typeId", CASE_CASE_TYPE);
     editTabs.add(casesEditTab);
     
     editTabs.add(new EditTab("ACL", "/pages/cases/case_acl.xhtml", 
@@ -174,7 +169,6 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     EditTab eventsEditTab = new EditTab("Events", 
       "/pages/cases/case_events.xhtml", "caseEventsTabBean", "events1", 
       "/pages/cases/case_events_dialog.xhtml");
-    eventsEditTab.getProperties().put("typeId", CASE_EVENT_TYPE);
     editTabs.add(eventsEditTab);
     
     objectSetup.setEditTabs(editTabs);
