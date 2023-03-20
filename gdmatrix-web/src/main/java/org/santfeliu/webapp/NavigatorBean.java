@@ -164,7 +164,7 @@ public class NavigatorBean extends WebBean implements Serializable
 
     if (baseTypeInfo == null) return null;
 
-    Leap leap = new Leap(baseTypeInfo.getBaseTypeId());
+    DirectLeap leap = new DirectLeap(baseTypeInfo.getBaseTypeId());
     leap.setObjectId(objectId == null ?
       baseTypeInfo.getObjectId() : objectId);
     leap.setSearchTabSelector(selectExpression == null ? -1 : 0);
@@ -230,7 +230,7 @@ public class NavigatorBean extends WebBean implements Serializable
     if (!objectBean.isNew())
     {
       // save previous object in history
-      Leap historyLeap = new Leap(baseTypeId);
+      DirectLeap historyLeap = new DirectLeap(baseTypeId);
       historyLeap.setup(objectBean);
       history.push(historyLeap);
     }
@@ -287,7 +287,7 @@ public class NavigatorBean extends WebBean implements Serializable
       if (saveHistory && !lastObjectBean.isNew())
       {
         // save previous object in history
-        Leap historyLeap = new Leap(lastBaseTypeId);
+        DirectLeap historyLeap = new DirectLeap(lastBaseTypeId);
         historyLeap.setup(lastObjectBean);
         history.push(historyLeap);
       }
@@ -639,9 +639,9 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public class History implements Serializable
   {
-    LinkedList<Leap> stack = new LinkedList<>();
+    LinkedList<DirectLeap> stack = new LinkedList<>();
 
-    public Collection<Leap> getEntries()
+    public Collection<DirectLeap> getEntries()
     {
       return stack;
     }
@@ -651,24 +651,24 @@ public class NavigatorBean extends WebBean implements Serializable
       return stack.peek();
     }
 
-    void push(Leap leap)
+    void push(DirectLeap leap)
     {
       remove(leap.getBaseTypeId(), leap.getObjectId());
       stack.push(leap);
       if (stack.size() > DEFAULT_HISTORY_SIZE) stack.removeLast();
     }
 
-    Leap pop()
+    DirectLeap pop()
     {
       return stack.isEmpty() ? null : stack.pop();
     }
 
-    Leap remove(String baseTypeId, String objectId)
+    DirectLeap remove(String baseTypeId, String objectId)
     {
-      Iterator<Leap> iter = stack.iterator();
+      Iterator<DirectLeap> iter = stack.iterator();
       while (iter.hasNext())
       {
-        Leap next = iter.next();
+        DirectLeap next = iter.next();
         if (next.getBaseTypeId().equals(baseTypeId) &&
           next.objectId.equals(objectId))
         {
@@ -680,16 +680,32 @@ public class NavigatorBean extends WebBean implements Serializable
     }
   }
 
-  public static class Leap implements Serializable
+  public static abstract class Leap implements Serializable
   {
     final String baseTypeId;
-    String objectId = NEW_OBJECT_ID;
-    int searchTabSelector = 0;
-    int editTabSelector = 0;
 
     public Leap(String baseTypeId)
     {
       this.baseTypeId = baseTypeId;
+    }
+
+    public String getBaseTypeId()
+    {
+      return baseTypeId;
+    }
+
+    public abstract void construct(ObjectBean objectBean);
+  }
+
+  public static class DirectLeap extends Leap
+  {
+    String objectId = NEW_OBJECT_ID;
+    int searchTabSelector = 0;
+    int editTabSelector = 0;
+
+    public DirectLeap(String baseTypeId)
+    {
+      super(baseTypeId);
     }
 
     public void setup(ObjectBean objectBean)
@@ -697,11 +713,6 @@ public class NavigatorBean extends WebBean implements Serializable
       objectId = objectBean.getObjectId();
       searchTabSelector = objectBean.getSearchTabSelector();
       editTabSelector = objectBean.getEditTabSelector();
-    }
-
-    public String getBaseTypeId()
-    {
-      return baseTypeId;
     }
 
     public String getObjectId()
@@ -734,6 +745,7 @@ public class NavigatorBean extends WebBean implements Serializable
       this.editTabSelector = selector;
     }
 
+    @Override
     public void construct(ObjectBean objectBean)
     {
       objectBean.setObjectId(objectId);
@@ -755,7 +767,7 @@ public class NavigatorBean extends WebBean implements Serializable
     }
   }
 
-  public static class SelectLeap extends Leap
+  public static class SelectLeap extends DirectLeap
   {
     String selectExpression;
     String selectedObjectId;

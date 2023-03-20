@@ -13,6 +13,7 @@
       <composite:attribute name="value" required="true" />
       <composite:attribute name="type" required="true" />
       <composite:attribute name="minQueryLength" required="false" default="2" />
+      <composite:attribute name="maxResults" required="false" default="20" />
       <composite:attribute name="queryDelay" required="false" default="1000" />
       <composite:attribute name="style" required="false" default="" />
       <composite:attribute name="styleClass" required="false" default="" />
@@ -34,7 +35,8 @@
       <div class="ui-inputgroup">
         <p:autoComplete id="autocomplete"
                         value="#{typeReferenceBean.selectItem}"
-                        maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
+                        maxResults="#{cc.attrs.maxResults}" 
+                        dropdown="true" dropdownMode="blank" cache="true"
                         completeMethod="#{typeReferenceBean.complete}"
                         converter="selectItemConverter"
                         var="item" itemValue="#{item}" itemLabel="#{item.label}"

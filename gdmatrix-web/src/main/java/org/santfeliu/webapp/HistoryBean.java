@@ -36,7 +36,7 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.santfeliu.webapp.NavigatorBean.Leap;
+import org.santfeliu.webapp.NavigatorBean.DirectLeap;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -49,10 +49,10 @@ public class HistoryBean implements Serializable
 {
   @Inject
   NavigatorBean navigatorBean;
-  List<Leap> entries;
+  List<DirectLeap> entries;
   private int updateCount = -1;
 
-  public List<Leap> getEntries()
+  public List<DirectLeap> getEntries()
   {
     if (WebUtils.isRenderResponsePhase() &&
         navigatorBean.getUpdateCount() != updateCount)
@@ -69,7 +69,7 @@ public class HistoryBean implements Serializable
     return entries;
   }
 
-  public String getDescription(Leap leap)
+  public String getDescription(DirectLeap leap)
   {
     String baseTypeId = leap.getBaseTypeId();
     TypeBean typeBean = TypeBean.getInstance(baseTypeId);
@@ -77,24 +77,24 @@ public class HistoryBean implements Serializable
     return typeBean.getDescription(leap.getObjectId());
   }
 
-  public boolean isCurrentBaseType(Leap leap)
+  public boolean isCurrentBaseType(DirectLeap leap)
   {
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     return leap.getBaseTypeId().equals(baseTypeId);
   }
 
-  public void view(Leap leap)
+  public void view(DirectLeap leap)
   {
     navigatorBean.view(leap.getObjectId());
   }
 
-  public String show(Leap leap)
+  public String show(DirectLeap leap)
   {
     return navigatorBean.show(leap.getBaseTypeId(),
       leap.getObjectId(), leap.getEditTabSelector());
   }
 
-  public String getIcon(Leap leap)
+  public String getIcon(DirectLeap leap)
   {
     String baseTypeId = leap.getBaseTypeId();
     NavigatorBean.BaseTypeInfo baseTypeInfo =

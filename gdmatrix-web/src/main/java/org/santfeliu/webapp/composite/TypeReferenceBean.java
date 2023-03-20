@@ -36,11 +36,14 @@ import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
-import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
 import org.santfeliu.webapp.NavigatorBean;
-import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.NavigatorBean.Leap;
+import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.modules.dic.TypeFinderBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.util.WebUtils;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
 
 /**
  *
@@ -59,7 +62,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
     String typeId = getTypeId();
     System.out.println("TypeId: " + getTypeId());
 
-    return typeTypeBean.getSelectItems(query, typeId, false, true);
+    return typeTypeBean.getSelectItems(query, typeId, true, true);
   }
 
   @Override
@@ -89,10 +92,33 @@ public class TypeReferenceBean extends ObjectReferenceBean
   @Override
   public String find()
   {
-    // TODO: preset typeId in typeFinderBean
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
-    return navigatorBean.find(TYPE_TYPE,
+    return navigatorBean.execute(new SelectTypeLeap(getTypeId()), true,
       getValueExpression().getExpressionString());
   }
 
+  public class SelectTypeLeap extends Leap
+  {
+    String typeId;
+
+    public SelectTypeLeap(String typeId)
+    {
+      super(TYPE_TYPE);
+      this.typeId = typeId;
+    }
+
+    @Override
+    public void construct(ObjectBean objectBean)
+    {
+      TypeFinderBean typeFinderBean = (TypeFinderBean)objectBean.getFinderBean();
+      typeFinderBean.getFilter().setSuperTypeId(typeId);
+      typeFinderBean.setFilterTabSelector(1);
+
+      objectBean.setObjectId(NEW_OBJECT_ID);
+      objectBean.setSearchTabSelector(0);
+      objectBean.setEditTabSelector(0);
+      objectBean.load();
+    }
+
+  }
 }
