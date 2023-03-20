@@ -67,7 +67,7 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{eventObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{eventObjectBean.activeEditTab.label}" />
+        <h:outputText value="#{applicationBean.translate(eventObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{eventThemesTabBean.pageObjectDescription}" />
       </p:outputPanel>

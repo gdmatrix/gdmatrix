@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 import java.io.Writer;
 import java.net.InetAddress;
@@ -61,6 +63,7 @@ import org.matrix.util.WSDirectory;
 import org.santfeliu.cms.CMSCache;
 import org.santfeliu.cms.CNode;
 import org.santfeliu.cms.CWorkspace;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.matrix.MatrixInfo;
 import org.santfeliu.translation.StreamTranslator;
@@ -76,7 +79,7 @@ import org.santfeliu.util.MatrixConfig;
 public class ApplicationBean
 {
   private static final Logger LOGGER = Logger.getLogger("ApplicationBean");
-  
+
   private static final String BEAN_NAME = "applicationBean";
   private static final String PARAM_RESOURCES_VERSION = "resourcesVersion";
 
@@ -183,7 +186,7 @@ public class ApplicationBean
       String nodeId = getDefaultNodeId(cWorkspace);
       CNode node = cWorkspace.getNode(nodeId);
       resVersion = node.getSinglePropertyValue(PARAM_RESOURCES_VERSION);
-      if (resVersion == null) resVersion = "0";      
+      if (resVersion == null) resVersion = "0";
     }
     catch (Exception ex)
     {
@@ -249,7 +252,7 @@ public class ApplicationBean
 
   public String getDefaultWorkspaceId()
   {
-    return MatrixConfig.getProperty("org.santfeliu.web.defaultWorkspaceId");    
+    return MatrixConfig.getProperty("org.santfeliu.web.defaultWorkspaceId");
   }
 
   public CMSCache getCmsCache()
@@ -261,7 +264,7 @@ public class ApplicationBean
   {
     return MatrixInfo.getFullVersion();
   }
-  
+
   public String getServerName()
   {
     try
@@ -291,6 +294,31 @@ public class ApplicationBean
   public org.santfeliu.faces.Translator getTranslator()
   {
     return translator;
+  }
+
+  public String translate(String text)
+  {
+    return translate(text, null);
+  }
+
+  public String translate(String text, String group)
+  {
+    try
+    {
+      if (text != null && !text.trim().isEmpty())
+      {
+        String language = FacesUtils.getViewLanguage();
+        StringWriter sw = new StringWriter();
+        getTranslator().translate(
+          new StringReader(text), sw, "text/plain", language, group);
+        return sw.toString();
+      }
+      else return "";
+    }
+    catch (IOException ex)
+    {
+      return text;
+    }
   }
 
   public String evalExpression(String expression)
@@ -346,7 +374,7 @@ public class ApplicationBean
     }
     return nodeId;
   }
-  
+
   private void initCMS()
   {
     CMSManagerPort port = cmsCache.getPort();
@@ -354,7 +382,7 @@ public class ApplicationBean
     int workspaceCount = port.countWorkspaces(filter);
     if (workspaceCount == 0) //No workspaces found
     {
-      //Create main workspace    
+      //Create main workspace
       Workspace workspace = new Workspace();
       workspace.setName("Main workspace");
       workspace = port.storeWorkspace(workspace);
@@ -369,9 +397,9 @@ public class ApplicationBean
       property = new Property();
       property.setName("action");
       property.getValue().add("blank");
-      node.getProperty().add(property);    
+      node.getProperty().add(property);
       port.storeNode(node);
-    }    
+    }
   }
 
   public class WebTranslator
