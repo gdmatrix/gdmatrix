@@ -41,7 +41,6 @@ import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.helpers.TypedHelper;
 
 /**
  *
@@ -52,7 +51,6 @@ import org.santfeliu.webapp.helpers.TypedHelper;
 public class CaseObjectBean extends ObjectBean
 {
   private Case cas = new Case();
-  private TypedHelper typedHelper;
   private String formSelector;
 
   @Inject
@@ -65,16 +63,6 @@ public class CaseObjectBean extends ObjectBean
   public void init()
   {
     System.out.println("Creating " + this);
-
-    typedHelper = new TypedHelper()
-    {
-      @Override
-      public String getTypeId()
-      {
-        return isNew() ? getBaseTypeInfo().getBaseTypeId() :
-          cas.getCaseTypeId();
-      }
-    };
   }
 
   @Override
@@ -93,11 +81,6 @@ public class CaseObjectBean extends ObjectBean
   public CaseFinderBean getFinderBean()
   {
     return caseFinderBean;
-  }
-
-  public TypedHelper getTypedHelper()
-  {
-    return typedHelper;
   }
 
   public String getFormSelector()
@@ -188,6 +171,16 @@ public class CaseObjectBean extends ObjectBean
   public boolean isEditable()
   {
     return true;
+  }
+  
+  public String getPropertyLabel(String propName, String altName)
+  {
+    return caseTypeBean.getPropertyLabel(cas, propName, altName);
+  }
+  
+  public boolean isPropertyHidden(String propName)
+  {
+    return caseTypeBean.isPropertyHidden(cas, propName);
   }
 
   private Date getDate(String date, String time)

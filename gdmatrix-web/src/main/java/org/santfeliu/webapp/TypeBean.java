@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp;
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,8 +40,11 @@ import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 import javax.faces.model.SelectItem;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.web.ApplicationBean;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.util.WebUtils;
@@ -202,6 +206,36 @@ public abstract class TypeBean<T, F> extends WebBean
 
     return items;
   }
+  
+  public String getPropertyLabel(T object, String propName, String altName)
+  {
+    String label = altName;
+    
+    String typeId = getTypeId(object);
+    PropertyDefinition pd = getPropertyDefinition(typeId, propName);
+    if (pd != null)
+    {
+      String group = UserSessionBean.getCurrentInstance().getTranslationGroup();
+      ApplicationBean applicationBean = ApplicationBean.getCurrentInstance();
+      label = applicationBean.translate(pd.getDescription(), group);
+    }
+    return label;    
+  }   
+  
+  public boolean isPropertyHidden(T object, String propName)
+  {
+    String typeId = getTypeId(object);    
+    PropertyDefinition pd = getPropertyDefinition(typeId, propName);     
+    if (pd == null)
+      return true;
+        
+    propName = "render" + StringUtils.capitalize(propName);
+    String value = WebUtils.getMenuItemProperty(propName);
+    if (value != null)
+      return !Boolean.parseBoolean(value);
+
+    return pd.isHidden(); 
+  }   
 
   protected void addNavigatorItems(List<SelectItem> items, String typeId)
   {
@@ -239,5 +273,28 @@ public abstract class TypeBean<T, F> extends WebBean
         return -1;
     });
   }
+    
+  protected PropertyDefinition getPropertyDefinition(String typeId,
+    String propName)
+  {
+    Type type = TypeCache.getInstance().getType(typeId);
+    if (type != null)
+    {
+      List<PropertyDefinition> pds = type.getPropertyDefinition();
+      for (PropertyDefinition pd : pds)
+      {
+        if (pd.getName().equals(propName))
+        {
+          return pd;
+        }
+      }
+      String superTypeId = type.getSuperTypeId();
+      if (superTypeId != null)
+      {
+        return getPropertyDefinition(superTypeId, propName);
+      }
+    }
+    return null;
+  }  
 
 }
