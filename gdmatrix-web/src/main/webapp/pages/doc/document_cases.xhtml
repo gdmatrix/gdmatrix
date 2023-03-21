@@ -101,9 +101,10 @@
         <div class="field col-12">  
           <p:outputLabel for="@next"
                          value="Expedient"
+                         indicateRequired="true"
                          styleClass="w-full" />
           <emcomp:objectReference value="#{documentCasesTabBean.caseId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:tabs:document_cases_dialog"
                                   type="Case"
                                   styleClass="w-full"
                                   scrollHeight="200"
@@ -118,8 +119,7 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="Volume" />
-          <p:inputText styleClass="savable"
-                       value="#{documentCasesTabBean.editing.volume}" />
+          <p:inputText value="#{documentCasesTabBean.editing.volume}" />
         </div>
 
         <!-- Comments -->
@@ -127,7 +127,6 @@
           <p:outputLabel for="@next"
                          value="Comments" />
           <p:inputTextarea 
-            styleClass="savable"
             value="#{documentCasesTabBean.editing.comments}" />
         </div>
 
@@ -148,7 +147,7 @@
         <p:commandButton action="#{documentCasesTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="document_cases_dialog :mainform:growl" global="false" 
+                         update="document_cases_dialog" global="false" 
                          oncomplete="PF('documentCasesDialog').hide()"/>
       </div>      
     </f:facet>

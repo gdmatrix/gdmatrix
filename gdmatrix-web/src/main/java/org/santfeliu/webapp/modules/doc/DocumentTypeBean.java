@@ -99,6 +99,7 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     editTabs.add(new EditTab("Main", "/pages/doc/document_main.xhtml"));
     editTabs.add(new EditTab("Content", "/pages/doc/document_content.xhtml"));
     editTabs.add(new EditTab("Cases", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
+    editTabs.add(new EditTab("Documents", "/pages/doc/document_documents.xhtml", "documentDocumentsTabBean"));
     editTabs.add(new EditTab("ACL", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
     objectSetup.setEditTabs(editTabs);
 
