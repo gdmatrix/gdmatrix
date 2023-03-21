@@ -23,17 +23,15 @@
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
 
-      <p:column headerText="RoleId" styleClass="w-5"
-                exportHeaderValue="RoleId">
+      <p:column headerText="RoleId" styleClass="col-5">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
 
-      <p:column headerText="Actions" styleClass="w-5"
-                exportHeaderValue="Actions">
+      <p:column headerText="Actions" styleClass="col-5">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
 
-      <p:column styleClass="w-2 text-right">
+      <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
@@ -65,17 +63,17 @@
         </div>
       </f:facet>      
 
-      <p:column headerText="RoleId" styleClass="w-5"
+      <p:column headerText="RoleId" styleClass="col-5"
                 exportHeaderValue="RoleId">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
 
-      <p:column headerText="Actions" styleClass="w-5"
+      <p:column headerText="Actions" styleClass="col-5"
                 exportHeaderValue="Actions">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
 
-      <p:column styleClass="w-2 text-right">
+      <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
@@ -121,22 +119,23 @@
       </p:outputPanel>
     </f:facet>
 
-    <h:panelGroup styleClass="mt-2" id="panel" layout="block"
+    <h:panelGroup styleClass="mt-2" id="case_acl_panel" layout="block"
                   rendered="#{caseACLTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
 
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Role"
+                         value="#{caseBundle.caseACL_roleId}"
+                         indicateRequired="true"
                          styleClass="w-full" />
           <emcomp:objectReference value="#{caseACLTabBean.roleId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:tabs:case_acl_dialog"
                                   type="Role"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:tabs:case_acl_store']}"
                                   renderShowButton="false"
                                   minQueryLength="3">
           </emcomp:objectReference>
@@ -144,10 +143,9 @@
 
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Action" />
+                         value="Actions:" />
           <p:selectManyCheckbox value="#{caseACLTabBean.editing.actions}" 
-                                layout="responsive" columns="3"
-                                styleClass="savable">
+                                layout="responsive" columns="3">
             <f:selectItems value="#{caseACLTabBean.actionSelectItems}" />
           </p:selectManyCheckbox>
         </div>
@@ -159,16 +157,17 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{caseACLTabBean.accept}" 
+        <p:commandButton id="case_acl_store"
+                         action="#{caseACLTabBean.accept}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
                          process="case_acl_dialog"
-                         update="case_acl_table panel"
+                         update="case_acl_table case_acl_panel"
                          oncomplete="if (!isFacesError()) PF('caseACLDialog').hide()"
                          />
         <p:commandButton action="#{caseACLTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="case_acl_dialog :mainform:growl" global="false" 
+                         update="case_acl_dialog" global="false" 
                          oncomplete="PF('caseACLDialog').hide()"/>
       </div>      
     </f:facet>

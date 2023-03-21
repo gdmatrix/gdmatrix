@@ -85,7 +85,7 @@
       </p:outputPanel>
     </f:facet>
 
-    <h:panelGroup styleClass="mt-2" id="panel" layout="block"
+    <h:panelGroup styleClass="mt-2" id="role_users_panel" layout="block"
              rendered="#{roleUsersTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
@@ -93,14 +93,14 @@
         <div class="field col-12">  
           <p:outputLabel for="@next"
                          value="#{securityBundle.user_user}"
-                         styleClass="w-full" />
+                         styleClass="w-full" indicateRequired="true" />
           <emcomp:objectReference value="#{roleUsersTabBean.userId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:tabs:role_users_dialog"
                                   type="User"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:tabs:role_users_store']}"
                                   renderShowButton="false"
                                   minQueryLength="3">
           </emcomp:objectReference>
@@ -110,9 +110,8 @@
           <p:outputLabel for="@next" 
                          value="#{securityBundle.userRoles_startDate}"/>
           <p:datePicker value="#{roleUsersTabBean.editing.startDate}"
-                        styleClass="savable"
                         autocomplete="off" placeholder="dd/MM/aaaa" 
-                        locale="es" showOnFocus="false" 
+                        locale="es" showOnFocus="false"
                         converter="datePickerConverter" pattern="dd/MM/yyyy" 
                         showIcon="true" showTime="false" />
         </div>
@@ -121,7 +120,6 @@
           <p:outputLabel for="@next" 
                          value="#{securityBundle.userRoles_endDate}"/>
           <p:datePicker value="#{roleUsersTabBean.editing.endDate}"
-                        styleClass="savable"
                         autocomplete="off" placeholder="dd/MM/aaaa" 
                         locale="es" showOnFocus="false" 
                         converter="datePickerConverter" pattern="dd/MM/yyyy" 
@@ -132,7 +130,6 @@
           <p:outputLabel for="@next"
                          value="#{securityBundle.userRoles_comments}" />
           <p:inputTextarea 
-            styleClass="savable"
             value="#{roleUsersTabBean.editing.comments}" />
         </div>
 
@@ -143,16 +140,17 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{roleUsersTabBean.store}" 
+        <p:commandButton id="role_users_store"
+                         action="#{roleUsersTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="role_users_dialog"
-                         update="role_users_table panel"
+                         update="role_users_table role_users_panel"
                          oncomplete="if (!isFacesError()) PF('roleUsersDialog').hide()"
                          />
         <p:commandButton action="#{roleUsersTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="role_users_dialog :mainform:growl" global="false" 
+                         update="role_users_dialog" global="false" 
                          oncomplete="PF('roleUsersDialog').hide()"/>
       </div>      
     </f:facet>

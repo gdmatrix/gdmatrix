@@ -97,6 +97,12 @@ public class TypeReferenceBean extends ObjectReferenceBean
       getValueExpression().getExpressionString());
   }
 
+  @Override
+  public void onClear()
+  {
+    WebUtils.setValue("#{cc.attrs.value}", String.class, getTypeId());
+  }
+
   public class SelectTypeLeap extends Leap
   {
     String typeId;

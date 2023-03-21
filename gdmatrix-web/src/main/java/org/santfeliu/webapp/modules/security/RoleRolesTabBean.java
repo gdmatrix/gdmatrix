@@ -153,6 +153,7 @@ public class RoleRolesTabBean extends TabBean
       }
       load();
       editing = null;
+      info("STORE_OBJECT");
     }
     catch (Exception ex)
     {
@@ -162,7 +163,6 @@ public class RoleRolesTabBean extends TabBean
 
   public void cancel()
   {
-    info("CANCEL_OBJECT");
     editing = null;
   }
 

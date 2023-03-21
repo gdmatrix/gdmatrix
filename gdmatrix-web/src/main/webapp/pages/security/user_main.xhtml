@@ -14,21 +14,19 @@
             
       <div class="field col-12 md:col-4">
         <p:outputLabel for="@next" value="userId" />
-        <p:inputText value="#{userObjectBean.user.userId}" required="true" 
+        <p:inputText value="#{userObjectBean.user.userId}" 
+                     required="#{not empty param['mainform:search_tabs:store']}" 
+                     requiredMessage="UserId is mandatory"
                      readonly="#{not userObjectBean.isNew()}" />
       </div>
             
       <div class="field col-12 md:col-8">
         <p:outputLabel for="@next" value="#{securityBundle.user_displayName}" />
         <p:inputText value="#{userObjectBean.user.displayName}" 
-                     required="true" maxlength="20"
+                     required="#{not empty param['mainform:search_tabs:store']}"
+                     requiredMessage="Display name is mandatory"
+                     maxlength="20"
                      styleClass="inputfield w-full"/>
-      </div>
-
-      <div class="field col-12">
-        <p:outputLabel for="@next" value="#{securityBundle.user_person}" />
-        <emcomp:objectReference type="Person" 
-                                value="#{userObjectBean.user.personId}" />
       </div>
 
       <div class="field col-12 md:col-4">
@@ -36,9 +34,16 @@
         <p:password value="#{userObjectBean.user.password}" 
                     styleClass="w-full"
                     toggleMask="true" />
+      </div>      
+      
+      <div class="field col-12 md:col-8">
+        <p:outputLabel for="@next" value="#{securityBundle.user_person}" />
+        <emcomp:objectReference type="Person" 
+                                process=":mainform:search_tabs:tabs"
+                                value="#{userObjectBean.user.personId}" />
       </div>
 
-      <div class="field col-12 md:col-8">
+      <div class="field col-12">
         <p:outputLabel for="@next" value="#{securityBundle.user_locked}" />
         <p:toggleSwitch value="#{userObjectBean.locked}" styleClass="block" />
       </div>

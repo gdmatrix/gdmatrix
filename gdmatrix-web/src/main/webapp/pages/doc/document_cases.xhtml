@@ -78,7 +78,7 @@
 
   <!-- Only works appendTo="@(form)" with one single form -->    
   <p:dialog id="document_cases_dialog" widgetVar="documentCasesDialog" 
-            styleClass="edit_data_dialog" style="max-width:800px" 
+            styleClass="edit_data_dialog" style="max-width:600px" 
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
@@ -93,7 +93,7 @@
       </p:outputPanel>
     </f:facet>
 
-    <h:panelGroup styleClass="mt-2" id="panel" layout="block"
+    <h:panelGroup styleClass="mt-2" id="document_cases_panel" layout="block"
              rendered="#{documentCasesTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
@@ -108,7 +108,7 @@
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:tabs:document_cases_store']}"
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>              
@@ -138,10 +138,11 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{documentCasesTabBean.store}" 
+        <p:commandButton id="document_cases_store"
+                         action="#{documentCasesTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="document_cases_dialog"
-                         update="document_cases_table panel"
+                         update="document_cases_table document_cases_panel"
                          oncomplete="if (!isFacesError()) PF('documentCasesDialog').hide()"
                          />
         <p:commandButton action="#{documentCasesTabBean.cancel}" 

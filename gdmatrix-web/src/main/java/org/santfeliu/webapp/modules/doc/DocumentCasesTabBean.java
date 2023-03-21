@@ -152,6 +152,7 @@ public class DocumentCasesTabBean extends TabBean
       CasesModuleBean.getPort(false).storeCaseDocument(editing);
       load();
       editing = null;
+      info("STORE_OBJECT");
     }
     catch (Exception ex)
     {
@@ -161,7 +162,6 @@ public class DocumentCasesTabBean extends TabBean
 
   public void cancel()
   {
-    info("CANCEL_OBJECT");
     editing = null;
   }
 

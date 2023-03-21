@@ -31,17 +31,15 @@
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
 
-      <p:column headerText="RoleId" styleClass="w-5"
-                exportHeaderValue="RoleId">
+      <p:column headerText="RoleId" styleClass="col-5">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
 
-      <p:column headerText="Actions" styleClass="w-5"
-                exportHeaderValue="Actions">
+      <p:column headerText="Actions" styleClass="col-5">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
 
-      <p:column styleClass="w-2 text-right">
+      <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
@@ -73,17 +71,16 @@
         </div>
       </f:facet>      
 
-      <p:column headerText="RoleId" styleClass="w-5"
+      <p:column headerText="RoleId" styleClass="col-5"
                 exportHeaderValue="RoleId">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
 
-      <p:column headerText="Actions" styleClass="w-5"
-                exportHeaderValue="Actions">
+      <p:column headerText="Actions" styleClass="col-5">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
 
-      <p:column styleClass="w-2 text-right">
+      <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
@@ -129,22 +126,23 @@
       </p:outputPanel>
     </f:facet>
 
-    <h:panelGroup styleClass="mt-2" id="panel" layout="block"
+    <h:panelGroup styleClass="mt-2" id="document_acl_panel" layout="block"
                   rendered="#{documentACLTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
 
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Role"
+                         value="#{documentBundle.documentACL_roleId}"
+                         indicateRequired="true"
                          styleClass="w-full" />
           <emcomp:objectReference value="#{documentACLTabBean.roleId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:tabs:document_acl_dialog"
                                   type="Role"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:tabs:document_acl_store']}"
                                   renderShowButton="false"
                                   minQueryLength="3">
           </emcomp:objectReference>
@@ -152,10 +150,9 @@
 
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Action" />
+                         value="Actions:" />
           <p:selectManyCheckbox value="#{documentACLTabBean.editing.actions}" 
-                                layout="responsive" columns="3"
-                                styleClass="savable">
+                                layout="responsive" columns="3">
             <f:selectItems value="#{documentACLTabBean.actionSelectItems}" />
           </p:selectManyCheckbox>
         </div>
@@ -167,16 +164,17 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{documentACLTabBean.accept}" 
+        <p:commandButton id="document_acl_store"
+                         action="#{documentACLTabBean.accept}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
                          process="document_acl_dialog"
-                         update="document_acl_table panel"
+                         update="document_acl_table document_acl_panel"
                          oncomplete="if (!isFacesError()) PF('documentACLDialog').hide()"
                          />
         <p:commandButton action="#{documentACLTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="document_acl_dialog :mainform:growl" global="false" 
+                         update="document_acl_dialog" global="false" 
                          oncomplete="PF('documentACLDialog').hide()"/>
       </div>      
     </f:facet>

@@ -26,22 +26,27 @@
       </div>
 
       <div class="field col-12 md:col-9">
-        <p:outputLabel for="@next" value="Type" />
+        <p:outputLabel for="@next" value="Type" indicateRequired="true" />
         <emcomp:typeReference value="#{documentObjectBean.document.docTypeId}"
                               type="Document"
                               styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3">
+                              minQueryLength="3"                               
+                              required="#{not empty param['mainform:search_tabs:store']}"
+                              process=":mainform:search_tabs:tabs">
           <p:ajax event="itemSelect" 
+                  process="@this" update=":mainform:search_tabs:tabs" />
+          <p:ajax event="clear" 
                   process="@this" update=":mainform:search_tabs:tabs" />
         </emcomp:typeReference>
       </div>
             
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="Title" />
+        <p:outputLabel for="@next" value="Title" indicateRequired="true" />
         <p:inputTextarea value="#{documentObjectBean.document.title}" 
-                         required="true"
+                         required="#{not empty param['mainform:search_tabs:store']}" 
+                         requiredMessage="Title is mandatory"
                          styleClass="inputfield w-full"/>
       </div>       
       
@@ -111,5 +116,4 @@
     <emcomp:dynamicProperties typeId="#{documentObjectBean.document.docTypeId}"
                               formSelector="#{documentObjectBean.formSelector}"
                               properties="#{documentObjectBean.document.property}" />
-    
 </ui:composition>

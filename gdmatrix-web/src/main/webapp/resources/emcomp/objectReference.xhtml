@@ -3,7 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:composite="http://xmlns.jcp.org/jsf/composite"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core">
 
   <h:head>
     <title>Object reference component</title>
@@ -22,6 +24,7 @@
       <composite:attribute name="process" required="false" default="@form" />
       <composite:attribute name="update" required="false" default="@none" />
       <composite:attribute name="required" required="false" default="false" />
+      <composite:attribute name="requiredMessage" required="false" />
       <composite:attribute name="widgetVar" required="false" />
       <composite:attribute name="renderShowButton" required="false" default="true" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
@@ -50,6 +53,10 @@
                         required="#{cc.attrs.required}"
                         widgetVar="#{cc.attrs.widgetVar}">
 
+          <c:if test="#{not empty cc.attrs.requiredMessage}">
+            <f:attribute name="requiredMessage" value="#{cc.attrs.requiredMessage}" />
+          </c:if>                    
+          
           <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
                   process="@this" update="@none"
                   rendered="#{cc.attrs.autoUpdate or cc.attrs.renderShowButton}"/>

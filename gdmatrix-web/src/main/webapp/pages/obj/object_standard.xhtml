@@ -122,7 +122,8 @@
   </c:forEach>
   
   <div class="tab_footer text-right pt-3">
-    <p:commandButton action="#{objectBean.store}"
+    <p:commandButton id="store"
+                     action="#{objectBean.store}"
                      value="#{objectBundle.store}"
                      icon="pi pi-save"
                      process=":mainform:search_tabs:obj_tabs"

@@ -37,17 +37,17 @@
         </div>
       </f:facet>      
             
-      <p:column headerText="RoleId" styleClass="w-5"
+      <p:column headerText="RoleId" styleClass="col-5"
                 exportHeaderValue="RoleId">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
       
-      <p:column headerText="Actions" styleClass="w-5"
+      <p:column headerText="Actions" styleClass="col-5"
                 exportHeaderValue="Actions">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
       
-      <p:column styleClass="w-2 text-right">
+      <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
@@ -93,7 +93,7 @@
       </p:outputPanel>
     </f:facet>
 
-    <h:panelGroup styleClass="mt-2" id="panel" layout="block"
+    <h:panelGroup styleClass="mt-2" id="type_acl_panel" layout="block"
                   rendered="#{typeACLTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
@@ -103,12 +103,12 @@
                          value="Role"
                          styleClass="w-full" />
           <emcomp:objectReference value="#{typeACLTabBean.roleId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:tabs:type_acl_dialog"
                                   type="Role"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:tabs:type_acl_store']}"
                                   renderShowButton="false"
                                   minQueryLength="3">
           </emcomp:objectReference>
@@ -116,7 +116,7 @@
         
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Action" />
+                         value="Actions:" />
           <p:selectManyCheckbox value="#{typeACLTabBean.editing.actions}" 
                                  layout="responsive" columns="3"
                                  styleClass="savable">
@@ -131,16 +131,17 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{typeACLTabBean.accept}" 
+        <p:commandButton id="type_acl_store"
+                         action="#{typeACLTabBean.accept}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
                          process="type_acl_dialog"
-                         update="type_acl_table panel"
+                         update="type_acl_table type_acl_panel"
                          oncomplete="if (!isFacesError()) PF('typeACLDialog').hide()"
                          />
         <p:commandButton action="#{typeACLTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="type_acl_dialog :mainform:growl" global="false" 
+                         update="type_acl_dialog" global="false" 
                          oncomplete="PF('typeACLDialog').hide()"/>
       </div>      
     </f:facet>

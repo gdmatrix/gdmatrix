@@ -35,6 +35,7 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Document;
 import org.matrix.security.AccessControl;
 import org.santfeliu.dic.Type;
@@ -78,9 +79,12 @@ public class DocumentACLTabBean extends ACLTabBean
     {
       Document document = documentObjectBean.getDocument();
       String typeId = document.getDocTypeId();
-      TypeCache typeCache = TypeCache.getInstance();
-      Type type = typeCache.getType(typeId);
-      createAccessControlEdits(type.getAccessControl(), edits);
+      if (!StringUtils.isBlank(typeId))
+      {
+        TypeCache typeCache = TypeCache.getInstance();
+        Type type = typeCache.getType(typeId);
+        createAccessControlEdits(type.getAccessControl(), edits);
+      }
     }
     return edits;
   }
