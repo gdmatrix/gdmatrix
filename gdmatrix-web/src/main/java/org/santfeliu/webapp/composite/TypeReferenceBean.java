@@ -60,9 +60,9 @@ public class TypeReferenceBean extends ObjectReferenceBean
   public List<SelectItem> complete(String query)
   {
     String typeId = getTypeId();
-    System.out.println("TypeId: " + getTypeId());
+    boolean showNavigatorItems = isShowNavigatorItems();
 
-    return typeTypeBean.getSelectItems(query, typeId, true, true);
+    return typeTypeBean.getSelectItems(query, typeId, showNavigatorItems, true);
   }
 
   @Override

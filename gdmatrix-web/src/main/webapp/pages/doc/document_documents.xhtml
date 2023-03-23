@@ -111,8 +111,10 @@
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
-                         value="#{documentBundle.name}" />
-          <p:inputText value="#{documentDocumentsTabBean.editing.relatedDocument.name}" required="true" />
+                         value="#{documentBundle.name}" 
+                         indicateRequired="true" />
+          <p:inputText value="#{documentDocumentsTabBean.editing.relatedDocument.name}" 
+                       required="#{not empty param['mainform:search_tabs:tabs:document_documents_store']}" />
         </div>
 
         <div class="field col-12">

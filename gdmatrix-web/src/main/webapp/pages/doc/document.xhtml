@@ -5,6 +5,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/obj/object_3col.xhtml">
 
   <ui:define name="filter">
@@ -68,6 +69,19 @@
                          class="inputfield w-full" />
           </div>  
 
+          <div class="field">
+            <p:outputLabel for="@next" value="Type" />
+            <emcomp:typeReference value="#{documentFinderBean.filter.docTypeId}"
+                                  type="Document"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3"
+                                  renderShowButton="false"
+                                  process="@this">
+            </emcomp:typeReference>
+          </div>
+          
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{documentFinderBean.clear}"

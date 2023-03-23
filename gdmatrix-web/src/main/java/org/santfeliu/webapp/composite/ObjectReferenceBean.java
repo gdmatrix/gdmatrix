@@ -55,11 +55,12 @@ public class ObjectReferenceBean
   public List<SelectItem> complete(String query)
   {
     String typeId = getTypeId();
-    System.out.println("TypeId: " + getTypeId());
+    boolean showNavigatorItems = isShowNavigatorItems();
+
     TypeBean typeBean = TypeBean.getInstance(typeId);
     if (typeBean == null) return Collections.EMPTY_LIST;
 
-    return typeBean.getSelectItems(query, typeId, true, true);
+    return typeBean.getSelectItems(query, typeId, showNavigatorItems, true);
   }
 
   public SelectItem getSelectItem()
@@ -123,6 +124,13 @@ public class ObjectReferenceBean
   public String getTypeId()
   {
     return WebUtils.getValue("#{cc.attrs.type}");
+  }
+
+  public boolean isShowNavigatorItems()
+  {
+    Object value = WebUtils.getValue("#{cc.attrs.showNavigatorItems}");
+    if (value instanceof Boolean) return ((Boolean)value);
+    return "true".equals(value);
   }
 
   public ValueExpression getValueExpression()

@@ -37,6 +37,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.santfeliu.util.BigList;
@@ -163,8 +164,11 @@ public class DocumentFinderBean extends FinderBean
   {
     finding = true;
     setFilterTabSelector(1);
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter.setDocTypeId(baseTypeId);
+    if (StringUtils.isBlank(filter.getDocTypeId()))
+    {
+      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      filter.setDocTypeId(baseTypeId);
+    }
     smartFilter = documentTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;

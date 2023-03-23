@@ -210,20 +210,24 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 
     if (baseTypeInfo != null)
     {
-      List<String> ids = new ArrayList();
-      ids.addAll(baseTypeInfo.getRecentObjectIdList());
+      List<String> ids = new ArrayList(baseTypeInfo.getRecentObjectIdList());
       List<String> favIds = baseTypeInfo.getFavoriteObjectIdList();
       if (!favIds.isEmpty())
       {
-        // TODO: only add descendant Types from typeId
         favIds.stream().filter(id -> !ids.contains(id))
           .forEach(id -> ids.add(id));
       }
-      if (!ids.isEmpty())
+
+      for (String id : ids)
       {
-        // TODO: only add descendant Types from typeId
-        ids.stream().filter(id -> !StringUtils.isBlank(id))
-          .forEach(id -> items.add(new SelectItem(id, getDescription(id))));
+        if (!StringUtils.isBlank(id))
+        {
+          org.santfeliu.dic.Type type = TypeCache.getInstance().getType(id);
+          if (type.isDerivedFrom(typeId) || id.equals(typeId))
+          {
+            items.add(new SelectItem(id, getDescription(id)));
+          }
+        }
       }
     }
   }
