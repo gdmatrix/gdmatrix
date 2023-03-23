@@ -47,6 +47,8 @@ public class EditTab implements Serializable
   private String dialogViewId;
   private List<Column> columns = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
+  private List<String> readRoles = new ArrayList();
+  private List<String> writeRoles = new ArrayList();  
 
   public EditTab(String label, String viewId)
   {
@@ -141,6 +143,26 @@ public class EditTab implements Serializable
   public PropertyMap getProperties()
   {
     return properties;
+  }
+
+  public List<String> getReadRoles()
+  {
+    return readRoles;
+  }
+
+  public void setReadRoles(List<String> readRoles)
+  {
+    this.readRoles = readRoles;
+  }
+
+  public List<String> getWriteRoles()
+  {
+    return writeRoles;
+  }
+
+  public void setWriteRoles(List<String> writeRoles)
+  {
+    this.writeRoles = writeRoles;
   }
 
   public static String createSubviewId(String viewId)

@@ -42,6 +42,7 @@ public class Column implements Serializable, Comparable<Column>
   private String label;
   private String name;
   private String styleClass;
+  private String expression;
   
   public Column()
   {
@@ -58,6 +59,12 @@ public class Column implements Serializable, Comparable<Column>
     this(name, label);
     this.styleClass = styleClass;
   }
+  
+  public Column(String name, String label, String styleClass, String expression)
+  {
+    this(name, label, styleClass);
+    this.expression = expression;
+  }  
 
   public String getLabel()
   {
@@ -88,30 +95,40 @@ public class Column implements Serializable, Comparable<Column>
   {
     this.styleClass = styleClass;
   }
-  
-    @Override
-    public int compareTo(Column o)
-    {
-      return getName().compareTo(o.getName()); 
-    }
 
-    @Override
-    public boolean equals(Object o)
-    {
-      if (o == null)
-        return false;
-      
-      if (this.getClass() != o.getClass())
-        return false;
-      
-      return getName().equals(((Column)o).getName());
-    }
+  public String getExpression()
+  {
+    return expression;
+  }
 
-    @Override
-    public int hashCode()
-    {
-      int hash = 3;
-      hash = 97 * hash + Objects.hashCode(getName());
-      return hash;
-    }  
+  public void setExpression(String expression)
+  {
+    this.expression = expression;
+  }
+
+  @Override
+  public int compareTo(Column o)
+  {
+    return getName().compareTo(o.getName()); 
+  }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (o == null)
+      return false;
+
+    if (this.getClass() != o.getClass())
+      return false;
+
+    return getName().equals(((Column)o).getName());
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 3;
+    hash = 97 * hash + Objects.hashCode(getName());
+    return hash;
+  }  
 }

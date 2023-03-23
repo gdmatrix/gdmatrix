@@ -50,7 +50,6 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
-import org.santfeliu.webapp.setup.SearchTab;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -146,16 +145,8 @@ public class CaseFinderBean extends FinderBean
     {
       if (objectSetup == null)
         loadObjectSetup();
-      List<Column> columns = objectSetup.getSearchTabs().get(0).getColumns();
-      if (columns == null || columns.isEmpty())
-      {
-        //Get default objectSetup columns configuration 
-        ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
-        SearchTab defaultSearchTab = 
-          defaultSetup.findSearchTabByViewId(objectSetup.getViewId());
-        columns = defaultSearchTab.getColumns();
-      }
-      return columns;
+      
+      return objectSetup.getSearchTabs().get(0).getColumns();
     }
     catch (Exception ex)
     {
@@ -288,7 +279,7 @@ public class CaseFinderBean extends FinderBean
               List<Case> cases = 
                 CasesModuleBean.getPort(false).findCases(filter);
               
-              return toObjectArrayList(cases);     
+              return toDataTableRows(cases);     
             }
             catch (Exception ex)
             {
@@ -335,17 +326,19 @@ public class CaseFinderBean extends FinderBean
       }
     }
 
+    ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
     if (setupName != null)
     {
       objectSetup = ObjectSetupCache.getConfig(setupName);
+      objectSetup.merge(defaultSetup);
     }
     else
     {
-      objectSetup = caseTypeBean.getObjectSetup();
+      objectSetup = defaultSetup;
     }
   }  
     
-  private List<DataTableRow> toObjectArrayList(List<Case> cases) 
+  private List<DataTableRow> toDataTableRows(List<Case> cases) 
     throws Exception
   {
     List<DataTableRow> convertedRows = new ArrayList();
@@ -353,9 +346,10 @@ public class CaseFinderBean extends FinderBean
     {
       DataTableRow dataTableRow = 
         new DataTableRow(row.getCaseId(), row.getCaseTypeId());
-      dataTableRow.setValues(row, getColumns());
+      dataTableRow.setValues(this, row, getColumns());
       convertedRows.add(dataTableRow);
     }
+    
     return convertedRows;       
   }
   

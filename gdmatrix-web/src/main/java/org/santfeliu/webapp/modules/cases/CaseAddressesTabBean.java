@@ -266,8 +266,12 @@ public class CaseAddressesTabBean extends TabBean
           List<CaseAddressView> result = new ArrayList();
           for (CaseAddressView item : getCurrentTabInstance().rows)
           {
+            String caseAddressTypeId = item.getCaseAddressTypeId();
+            if (caseAddressTypeId == null)
+              caseAddressTypeId = DictionaryConstants.CASE_ADDRESS_TYPE;
+              
             Type caseAddressType = 
-              TypeCache.getInstance().getType(item.getCaseAddressTypeId());
+              TypeCache.getInstance().getType(caseAddressTypeId);
             if (caseAddressType.isDerivedFrom(typeId))
             {
               result.add(item);

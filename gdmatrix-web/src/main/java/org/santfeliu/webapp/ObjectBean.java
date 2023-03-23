@@ -45,6 +45,7 @@ import javax.faces.view.ViewScoped;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -224,16 +225,18 @@ public abstract class ObjectBean extends BaseBean
       }
     }
 
+    ObjectSetup defaultSetup = getTypeBean().getObjectSetup();    
     if (setupName != null)
     {
       objectSetup = ObjectSetupCache.getConfig(setupName);
+      objectSetup.merge(defaultSetup);
     }
     else
     {
-      objectSetup = getTypeBean().getObjectSetup();
+      objectSetup = defaultSetup;
     }
   }
-
+    
   public void loadActiveEditTab() throws Exception
   {
     EditTab tab = getActiveEditTab();
@@ -258,6 +261,22 @@ public abstract class ObjectBean extends BaseBean
   public boolean isDisabledEditTab(EditTab tab)
   {
     return tab.getBeanName() != null && NEW_OBJECT_ID.equals(objectId);
+  }
+  
+  public boolean isRenderedEditTab(EditTab tab)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    List<String> readRoles = tab.getReadRoles();
+    return readRoles == null || readRoles.isEmpty()
+      || userSessionBean.isUserInRole(readRoles);
+  }
+  
+  public boolean isEditable()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    List<String> writeRoles = getActiveEditTab().getWriteRoles();
+    return writeRoles == null || writeRoles.isEmpty()
+      || userSessionBean.isUserInRole(writeRoles);    
   }
 
   public void store()

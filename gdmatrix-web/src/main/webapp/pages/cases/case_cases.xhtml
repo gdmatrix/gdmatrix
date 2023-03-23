@@ -55,7 +55,8 @@
 
       <p:columns value="#{caseCasesTabBean.columns}" var="column" columnIndexVar="i"
                  filterable="false" sortable="false" resizable="false"
-                 headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}">
+                 headerText="#{applicationBean.translate(column.label)}" 
+                 field="#{column.name}" styleClass="#{column.styleClass}">
         <h:outputText value="#{row.values[i]}" />
       </p:columns>
 
@@ -65,9 +66,7 @@
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"
                            styleClass="rounded-button ui-button-flat"
                            ajax="false"
-                           action="#{navigatorBean.show(
-                                     (row.isReverseRelation() ?  row.mainTypeId : row.relTypeId),
-                                     (row.isReverseRelation() ?  row.mainCaseId : row.relCaseId))}" />
+                           action="#{navigatorBean.show(row.caseTypeId, row.caseId)}" />
           <p:commandButton action="#{caseCasesTabBean.edit(row)}"
                            icon="pi pi-pencil"
                            rendered="#{row.rowId != null and not row.reverseRelation}"

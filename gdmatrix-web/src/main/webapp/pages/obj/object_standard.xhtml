@@ -111,7 +111,8 @@
     <p:ajax event="tabChange" process="@this" update="@none" />
     <c:forEach items="#{objectBean.editTabs}" var="tab" >
       <p:tab title="#{applicationBean.translate(tab.label, userSessionBean.translationGroup)}"
-             disabled="#{objectBean.isDisabledEditTab(tab)}">
+             disabled="#{objectBean.isDisabledEditTab(tab)}"
+             rendered="#{objectBean.isRenderedEditTab(tab)}">
         <ui:include src="#{tab.viewId}" />
       </p:tab>
     </c:forEach>

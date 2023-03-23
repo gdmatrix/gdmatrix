@@ -166,13 +166,7 @@ public class CaseObjectBean extends ObjectBean
   {
     return getLocale().getLanguage();
   }
-
-  //TODO get from user roles
-  public boolean isEditable()
-  {
-    return true;
-  }
-  
+    
   public String getPropertyLabel(String propName, String altName)
   {
     return caseTypeBean.getPropertyLabel(cas, propName, altName);

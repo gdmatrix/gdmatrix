@@ -49,7 +49,6 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.setup.Column;
-import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.util.ComponentUtils;
 import org.santfeliu.webapp.util.DataTableRow;
 
@@ -180,16 +179,7 @@ public class CaseInterventionsTabBean extends TabBean
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
-    List<Column> columns = activeEditTab.getColumns();
-    if (columns == null || columns.isEmpty())
-    {
-      //Get default objectSetup columns configuration
-      ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
-      EditTab defaultEditTab =
-        defaultSetup.findEditTabByViewId(activeEditTab.getViewId());
-      columns = defaultEditTab.getColumns();
-    }
-    return columns;
+    return activeEditTab.getColumns();
   }
 
   public int getFirstRow()
@@ -446,7 +436,7 @@ public class CaseInterventionsTabBean extends TabBean
     {
       DataTableRow dataTableRow =
         new DataTableRow(row.getIntId(), row.getIntTypeId());
-      dataTableRow.setValues(row, getColumns());
+      dataTableRow.setValues(this, row, getColumns());
       convertedRows.add(dataTableRow);
     }
     return convertedRows;

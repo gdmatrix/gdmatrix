@@ -49,16 +49,13 @@ import org.matrix.cases.CaseCaseView;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.dic.Property;
 import org.primefaces.PrimeFaces;
-import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.setup.Column;
-import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -134,16 +131,7 @@ public class CaseCasesTabBean extends TabBean
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
-    List<Column> columns = activeEditTab.getColumns();
-    if (columns == null || columns.isEmpty())
-    {
-      //Get default objectSetup columns configuration
-      ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
-      EditTab defaultEditTab =
-        defaultSetup.findEditTabByViewId(activeEditTab.getViewId());
-      columns = defaultEditTab.getColumns();
-    }
-    return columns;
+    return activeEditTab.getColumns();
   }
 
   public CaseCase getEditing()
@@ -475,10 +463,8 @@ public class CaseCasesTabBean extends TabBean
     List<CaseCasesDataTableRow> convertedRows = new ArrayList<>();
     for (CaseCaseView row : caseCaseViews)
     {
-      CaseCasesDataTableRow dataTableRow =
-        new CaseCasesDataTableRow(row.getCaseCaseId(), row.getCaseCaseTypeId(),
-        row.getMainCase(), row.getRelCase());
-      dataTableRow.setValues(row, getColumns());
+      CaseCasesDataTableRow dataTableRow = new CaseCasesDataTableRow(row);
+      dataTableRow.setValues(this, row, getColumns());
       convertedRows.add(dataTableRow);
     }
     return convertedRows;
@@ -495,31 +481,28 @@ public class CaseCasesTabBean extends TabBean
     }
   }
 
-  //TODO: Replace by expressions in Columns
   public class CaseCasesDataTableRow extends DataTableRow
   {
     private boolean reverseRelation;
-    private String mainTypeId;
-    private String mainCaseId;
-    private String mainTitle;
-    private String relTypeId;
-    private String relCaseId;
-    private String relTitle;
+    private String caseId; 
+    private String caseTypeId;    
+    private String title;    
 
-    public CaseCasesDataTableRow(String rowId, String typeId,
-      Case mainCase, Case relCase)
+    public CaseCasesDataTableRow(CaseCaseView row)
     {
-      super(rowId, typeId);
-      mainCaseId = mainCase.getCaseId();
-      mainTypeId = mainCase.getCaseTypeId();
-      mainTitle = mainCase.getTitle();
-      relCaseId = relCase.getCaseId();
-      relTypeId = relCase.getCaseTypeId();
-      relTitle = relCase.getTitle();
+      super(row.getCaseCaseId(), row.getCaseCaseTypeId());
+      
+      Case mainCase = row.getMainCase();
+      Case relCase = row.getRelCase();
 
       String objectId = getObjectId();
-      reverseRelation =
-        objectId.equals(relCaseId) && !objectId.equals(mainCaseId);
+      reverseRelation = objectId.equals(relCase.getCaseId()) 
+        && !objectId.equals(mainCase.getCaseId());
+      
+      caseId = reverseRelation ? mainCase.getCaseId() : relCase.getCaseId();
+      caseTypeId = reverseRelation ? mainCase.getCaseTypeId() : 
+        relCase.getCaseTypeId();
+      title = reverseRelation ? mainCase.getTitle() : relCase.getTitle();
     }
 
     public boolean isReverseRelation()
@@ -527,88 +510,59 @@ public class CaseCasesTabBean extends TabBean
       return reverseRelation;
     }
 
-    public String getMainTypeId()
+    public String getCaseTypeId()
     {
-      return mainTypeId;
+      return caseTypeId;
     }
 
-    public String getMainCaseId()
+    public void setCaseTypeId(String caseTypeId)
     {
-      return mainCaseId;
+      this.caseTypeId = caseTypeId;
     }
 
-    public String getMainTitle()
+    public String getTitle()
     {
-      return mainTitle;
+      return title;
     }
 
-    public void setMainTitle(String mainTitle)
+    public void setTitle(String title)
     {
-      this.mainTitle = mainTitle;
+      this.title = title;
     }
 
-    public String getRelTypeId()
-    {
-      return relTypeId;
-    }
-
-    public String getRelCaseId()
-    {
-      return relCaseId;
-    }
-
-    public String getRelTitle()
-    {
-      return relTitle;
-    }
-
-    public void setRelTitle(String relTitle)
-    {
-      this.relTitle = relTitle;
-    }
-    
     public String getCaseId()
     {
-      return isReverseRelation() ? getMainCaseId() : getRelCaseId();
+      return caseId;
     }
-    
-    public String getCaseTitle()
+
+    public void setCaseId(String caseId)
     {
-      String caseTitle = 
-        isReverseRelation() ? getMainTitle() : getRelTitle();
-      return caseTitle;
+      this.caseId = caseId;
     }
     
     @Override
-    public void setValues(Object row, List<Column> columns) 
-      throws Exception
+    protected Object getDefaultValue(String columnName)
     {
-      values = new Object[columns.size()];
-      for (int i = 0; i < columns.size(); i++)
+      if (columnName != null)
       {
-        Column column = columns.get(i);
-        if ("caseId".equals(column.getName()))
-          values[i] = getCaseId();
-        else if ("caseTitle".equals(column.getName()))
-          values[i] = getCaseTitle();
-        else
+        switch (columnName)
         {
-          Property property = DictionaryUtils.getProperty(row, column.getName());        
-          if (property != null)
-          {
-            String columnName = column.getName();
-            List<String> value = property.getValue();
-            values[i] = formatValue(typeId, columnName, value);            
-          }
-        }
-      } 
-    }      
-
+          case "caseId":
+            return getCaseId();
+          case "caseTitle":      
+            return getTitle();
+          case "caseTypeId":
+            return getCaseTypeId();
+          default:
+            break;
+        }    
+      }
+      return super.getDefaultValue(columnName);
+    }
   }
 
   private class CaseMatcher
   {
-
     private Case mainCase;
     private final Map<String, List<Period>> map = new HashMap<>();
 

@@ -47,7 +47,8 @@
 
       <p:columns value="#{caseInterventionsTabBean.columns}" var="column" columnIndexVar="i"
                  filterable="false" sortable="false" resizable="false"
-                 headerText="#{column.label}" field="#{column.name}" styleClass="#{column.styleClass}">
+                 headerText="#{applicationBean.translate(column.label)}" 
+                 field="#{column.name}" styleClass="#{column.styleClass}">
         <h:outputText value="#{row.values[i]}" />
       </p:columns>
 

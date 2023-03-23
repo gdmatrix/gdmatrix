@@ -36,6 +36,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -145,5 +146,104 @@ public class ObjectSetup
     
     return null;    
   }
+  
+  public void merge(ObjectSetup defaultSetup) throws Exception
+  {    
+    mergeProperties(defaultSetup.getProperties(), getProperties());
+    
+    for (SearchTab searchTab : searchTabs)
+    {
+      SearchTab defaultSearchTab = 
+        defaultSetup.findSearchTabByViewId(searchTab.getViewId());
+      if (defaultSearchTab != null)
+        mergeSearchTab(searchTab, defaultSearchTab);
+    }
+    
+    for (EditTab editTab : editTabs)
+    {
+      EditTab defaultEditTab =
+        defaultSetup.findEditTabByViewId(editTab.getViewId());
+      if (defaultEditTab != null)
+        mergeEditTab(defaultEditTab, editTab);
+    }
+  }
+  
+  private void mergeSearchTab(SearchTab defaultSearchTab, 
+    SearchTab searchTab)
+  {
+    //Properties
+    PropertyMap defaultPropertyMap = defaultSearchTab.getProperties();
+    PropertyMap propertyMap = searchTab.getProperties();
+    mergeProperties(defaultPropertyMap, propertyMap);
+      
+    //Columns
+    List<Column> defaultColumns = defaultSearchTab.getColumns();
+    List<Column> columns = searchTab.getColumns();
+    mergeColumns(defaultColumns, columns);
+  }  
+  
+  private void mergeEditTab(EditTab defaultEditTab, EditTab editTab)
+  {
+    //Properties
+    PropertyMap defaultPropertyMap = defaultEditTab.getProperties();
+    PropertyMap propertyMap = editTab.getProperties();
+    mergeProperties(defaultPropertyMap, propertyMap);
+      
+    //Columns
+    List<Column> defaultColumns = defaultEditTab.getColumns();
+    List<Column> columns = editTab.getColumns();
+    mergeColumns(defaultColumns, columns);
+    
+    //Roles
+    List<String> defaultReadRoles = defaultEditTab.getReadRoles();
+    List<String> readRoles = editTab.getReadRoles();
+    mergeRoles(defaultReadRoles, readRoles);
+    
+    List<String> defaultWriteRoles = defaultEditTab.getWriteRoles();
+    List<String> writeRoles = editTab.getWriteRoles();
+    mergeRoles(defaultWriteRoles, writeRoles);    
+  }    
+  
+  private void mergeProperties(PropertyMap defaultPropertyMap, 
+    PropertyMap propertyMap)
+  {
+    if (defaultPropertyMap != null)
+    {
+      if (propertyMap == null)
+      {
+        propertyMap = new PropertyMap();
+        propertyMap.putAll(defaultPropertyMap);
+      }
+
+      Set<String> propertyNames = defaultPropertyMap.keySet();
+      for (String propertyName : propertyNames)
+      {
+        Object property = propertyMap.get(propertyName);
+        if (property == null)
+        {
+          propertyMap.put(propertyName, property);
+        }
+      }    
+    }
+  }
+  
+  private void mergeColumns(List<Column> defaultColumns, 
+    List<Column> columns)
+  {
+    if (defaultColumns != null && !defaultColumns.isEmpty() 
+      && columns != null && columns.isEmpty())
+    {
+      columns.addAll(defaultColumns);
+    }
+  }  
+  
+  private void mergeRoles(List<String> defaultRoles, List<String> roles)
+  {
+    if (defaultRoles != null && !defaultRoles.isEmpty() 
+      && roles != null && roles.isEmpty())
+    {
+      roles.addAll(defaultRoles);
+    }
+  }    
 
 }

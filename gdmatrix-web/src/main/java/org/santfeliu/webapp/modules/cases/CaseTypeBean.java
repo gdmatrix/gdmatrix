@@ -33,8 +33,6 @@ package org.santfeliu.webapp.modules.cases;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import org.matrix.cases.Case;
@@ -60,6 +58,9 @@ import org.santfeliu.webapp.setup.SearchTab;
 @ApplicationScoped
 public class CaseTypeBean extends TypeBean<Case, CaseFilter>
 {
+  private static final String BUNDLE_PREFIX = 
+    "$$org.santfeliu.cases.web.resources.CaseBundle:";  
+  
   @Override
   public String getRootTypeId()
   {
@@ -100,81 +101,98 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
   @Override
   public ObjectSetup createObjectSetup()
   {
+
     ObjectSetup objectSetup = new ObjectSetup();
     objectSetup.setViewId("/pages/cases/case.xhtml");
-    
-    ResourceBundle bundle = ResourceBundle.getBundle(
-      "org.santfeliu.cases.web.resources.CaseBundle", Locale.getDefault()); 
-    
+        
     List<SearchTab> searchTabs = new ArrayList();
     SearchTab searchTab = 
       new SearchTab("Llistat", "/pages/cases/case_list.xhtml");
     searchTab.getColumns().add(new Column("caseId", 
-      bundle.getString("case_caseId")));
+      BUNDLE_PREFIX + "case_caseId", "col-1"));
     searchTab.getColumns().add(new Column("caseTypeId", 
-       bundle.getString("case_type")));   
+      BUNDLE_PREFIX + "case_type", "col-3"));   
     searchTab.getColumns().add(new Column("title", 
-       bundle.getString("case_title")));  
+      BUNDLE_PREFIX + "case_title", "col-6"));  
     searchTabs.add(searchTab);
     
     objectSetup.setSearchTabs(searchTabs);
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Main", "/pages/cases/case_main.xhtml"));
+    
+    EditTab mainTab = new EditTab("Main", "/pages/cases/case_main.xhtml");
+    mainTab.getReadRoles().add("EVERYONE");
+    mainTab.getWriteRoles().add("EVERYONE");
+    editTabs.add(mainTab);
     
     EditTab personsTab = new EditTab("Persons", 
       "/pages/cases/case_persons.xhtml", "casePersonsTabBean", "persons1", 
       "/pages/cases/case_persons_dialog.xhtml");
     personsTab.getProperties().put("typeId", CASE_PERSON_TYPE);
+    personsTab.getReadRoles().add("EVERYONE");
+    personsTab.getWriteRoles().add("EVERYONE");    
     editTabs.add(personsTab);
     
     EditTab addressesTab = new EditTab("Addresses", 
       "/pages/cases/case_addresses.xhtml", "caseAddressesTabBean", "addresses1",
       "/pages/cases/case_addresses_dialog.xhtml");
-    addressesTab.getProperties().put("typeId", CASE_ADDRESS_TYPE);    
+    addressesTab.getProperties().put("typeId", CASE_ADDRESS_TYPE);
+    addressesTab.getReadRoles().add("EVERYONE");
+    addressesTab.getWriteRoles().add("EVERYONE");      
     editTabs.add(addressesTab);
     
     EditTab documentsTab = new EditTab("Documents", 
       "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
       "/pages/cases/case_documents_dialog.xhtml");
     documentsTab.getProperties().put("typeId", CASE_DOCUMENT_TYPE);
+    documentsTab.getReadRoles().add("EVERYONE");
+    documentsTab.getWriteRoles().add("EVERYONE");      
     editTabs.add(documentsTab);
     
     EditTab intEditTab = new EditTab("Actuacions", 
       "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", 
       "act1", "/pages/cases/case_interventions_dialog.xhtml");
     intEditTab.getColumns().add(new Column("intId", 
-      bundle.getString("caseInterventions_id")));
+      BUNDLE_PREFIX + "caseInterventions_id", "col-1")); 
     intEditTab.getColumns().add(new Column("intTypeId", 
-      bundle.getString("caseInterventions_type")));
+      BUNDLE_PREFIX + "caseInterventions_type", "col-7"));
     intEditTab.getColumns().add(new Column("startDate", 
-      bundle.getString("caseInterventions_startDate"))); 
+      BUNDLE_PREFIX + "caseInterventions_startDate", "col-1 text-center"));
     intEditTab.getColumns().add(new Column("endDate", 
-      bundle.getString("caseInterventions_endDate"))); 
+      BUNDLE_PREFIX + "caseInterventions_endDate", "col-1 text-center" ));
     intEditTab.getProperties().put("typeId", INTERVENTION_TYPE);
+    intEditTab.getReadRoles().add("EVERYONE");
+    intEditTab.getWriteRoles().add("EVERYONE");       
     editTabs.add(intEditTab);
     
     EditTab casesEditTab = new EditTab("Cases", "/pages/cases/case_cases.xhtml", 
       "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml");   
     casesEditTab.getColumns().add(new Column("caseId", 
-      bundle.getString("caseCases_id"), "col-1"));
+      BUNDLE_PREFIX + "caseCases_id", "col-1"));
     casesEditTab.getColumns().add(new Column("caseTitle", 
-      bundle.getString("caseCases_title"), "col-4"));    
+      BUNDLE_PREFIX + "caseCases_title", "col-4"));    
     casesEditTab.getColumns().add(new Column("caseCaseTypeId", 
-      bundle.getString("caseCases_type"), "col-3"));    
+      BUNDLE_PREFIX + "caseCases_type", "col-3"));    
     casesEditTab.getColumns().add(new Column("startDate", 
-      bundle.getString("caseCases_startDate"), "col-1"));    
+      BUNDLE_PREFIX + "caseCases_startDate", "col-1 text-center"));    
     casesEditTab.getColumns().add(new Column("endDate", 
-      bundle.getString("caseCases_endDate"), "col-1"));
+      BUNDLE_PREFIX + "caseCases_endDate", "col-1 text-center"));
     casesEditTab.getProperties().put("typeId", CASE_CASE_TYPE);
+    casesEditTab.getReadRoles().add("EVERYONE");
+    casesEditTab.getWriteRoles().add("EVERYONE");     
     editTabs.add(casesEditTab);
     
-    editTabs.add(new EditTab("ACL", "/pages/cases/case_acl.xhtml", 
-      "caseACLTabBean"));
+    EditTab aclTab = new EditTab("ACL", "/pages/cases/case_acl.xhtml", 
+      "caseACLTabBean");
+    aclTab.getReadRoles().add("EVERYONE");
+    aclTab.getWriteRoles().add("EVERYONE");      
+    editTabs.add(aclTab);
     
     EditTab eventsEditTab = new EditTab("Events", 
       "/pages/cases/case_events.xhtml", "caseEventsTabBean", "events1", 
       "/pages/cases/case_events_dialog.xhtml");
+    eventsEditTab.getReadRoles().add("EVERYONE");
+    eventsEditTab.getWriteRoles().add("EVERYONE");      
     editTabs.add(eventsEditTab);
     
     objectSetup.setEditTabs(editTabs);

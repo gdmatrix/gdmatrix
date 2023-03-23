@@ -32,7 +32,7 @@
         <p:outputLabel for="@next" 
                        value="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}" />
         <p:inputTextarea value="#{caseObjectBean.case.title}"
-                         required="true"
+                         required="true" readonly="#{!caseObjectBean.editable}" 
                          class="inputfield w-full savable"/>
       </div>
 
@@ -46,7 +46,8 @@
                       showOnFocus="false"
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true"
-                      styleClass="savable" />
+                      styleClass="savable"
+                      readonly="#{!caseObjectBean.editable}" />
       </div>
 
       <div class="field col-12 md:col-3">
@@ -59,25 +60,29 @@
                       showOnFocus="false"
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true" 
-                      styleClass="savable" />
+                      styleClass="savable" 
+                      readonly="#{!caseObjectBean.editable}" />
       </div>
 
       <p:outputPanel class="field col-12 md:col-6" rendered="#{not caseObjectBean.isPropertyHidden('state')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_state}" />
         <p:inputText value="#{caseObjectBean.case.state}"
-                     class="inputfield w-full savable"/>
+                     class="inputfield w-full savable"
+                     readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.isPropertyHidden('description')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
         <p:inputTextarea value="#{caseObjectBean.case.description}"
-                         styleClass="inputfield w-full savable" />
+                         styleClass="inputfield w-full savable" 
+                         readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.isPropertyHidden('comments')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_comments}" />
         <p:inputTextarea value="#{caseObjectBean.case.comments}"
-                         styleClass="inputfield w-full savable" />
+                         styleClass="inputfield w-full savable" 
+                         readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
       
     </div>

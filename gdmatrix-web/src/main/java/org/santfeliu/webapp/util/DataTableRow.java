@@ -43,6 +43,10 @@ import org.santfeliu.util.Table;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.util.data.DataProvider;
 import org.santfeliu.util.data.DataProviderFactory;
+import org.santfeliu.util.script.ScriptClient;
+import org.santfeliu.web.ApplicationBean;
+import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.setup.Column;
 
 /**
@@ -60,7 +64,7 @@ public class DataTableRow implements Serializable
     this.rowId = rowId;
     this.typeId = typeId;
   }
-  
+ 
   public String getRowId()
   {
     return rowId;
@@ -85,28 +89,54 @@ public class DataTableRow implements Serializable
   {
     return values;
   }
-
+  
   public void setValues(Object[] values)
   {
     this.values = values;
   }
   
-  public void setValues(Object row, List<Column> columns) 
+  public void setValues(BaseBean baseBean, Object row, List<Column> columns) 
     throws Exception
-  {
+  {   
     values = new Object[columns.size()];
     for (int i = 0; i < columns.size(); i++)
     {
       Column column = columns.get(i);
-      Property property = DictionaryUtils.getProperty(row, column.getName());        
-      if (property != null)
+      if (column.getExpression() != null)
       {
-        String columnName = column.getName();
-        List<String> value = property.getValue();
-        values[i] = formatValue(typeId, columnName, value);            
+        ScriptClient scriptClient = new ScriptClient();
+        scriptClient.put("row", row);
+        scriptClient.put("baseBean", baseBean);    
+        scriptClient.put("userSessionBean", 
+          UserSessionBean.getCurrentInstance());
+        scriptClient.put("applicationBean", 
+          ApplicationBean.getCurrentInstance());
+        scriptClient.put("WebUtils", 
+          WebUtils.class.getConstructor().newInstance());   
+        scriptClient.put("DictionaryUtils", 
+          DictionaryUtils.class.getConstructor().newInstance());         
+       
+        values[i] = scriptClient.execute(column.getExpression());
       }
-    } 
+      else
+      {
+        Property property = DictionaryUtils.getProperty(row, column.getName());
+        if (property != null)
+        {
+          String columnName = column.getName();
+          List<String> value = property.getValue();
+          values[i] = formatValue(typeId, columnName, value);            
+        }
+        else
+          values[i] = getDefaultValue(column.getName());
+      }
+    }
   }  
+    
+  protected Object getDefaultValue(String columnName)
+  {
+    return "";
+  }
   
   protected Object formatValue(String rowTypeId, Object key, 
     List<String> values) throws Exception
