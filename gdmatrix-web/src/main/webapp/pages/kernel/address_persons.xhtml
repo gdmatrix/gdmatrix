@@ -20,7 +20,7 @@
         <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                          action="#{addressPersonsTabBean.create}" 
                          process="@this"
-                         update="@parent:@parent:@parent:address_persons_dialog"
+                         update=":mainform:search_tabs:tabs:address_persons_dialog"
                          resetValues="true"
                          oncomplete="PF('addressPersonsDialog').show()"                                 
                          alt="#{objectBundle.add}" title="#{objectBundle.add}" />                     
@@ -85,15 +85,18 @@
         
         <div class="field col-12">    
           <p:outputLabel for="@next"  
-                         value="#{kernelBundle.person}" />
+                         value="#{kernelBundle.person}"
+                         indicateRequired="true"/>
           
-          <emcomp:objectReference value="#{addressPersonsTabBean.editing.personId}"
+          <emcomp:objectReference value="#{addressPersonsTabBean.personId}"
                                   type="Person"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:tabs:address_persons_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  minQueryLength="3">
+                                  minQueryLength="3"
+                                  required="#{not empty param['mainform:search_tabs:tabs:address_persons_store']}"
+                                  requiredMessage="Person is mandatory">
           </emcomp:objectReference>                        
         </div>         
       </div>
@@ -101,7 +104,7 @@
 
     <f:facet name="footer">
       <div class="field col-12 text-right">
-        <p:commandButton action="#{addressPersonsTabBean.store}" 
+        <p:commandButton id="address_persons_store" action="#{addressPersonsTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
                          update="address_persons_table address_persons_panel"

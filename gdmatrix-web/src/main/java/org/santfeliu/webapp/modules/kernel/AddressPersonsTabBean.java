@@ -94,7 +94,19 @@ public class AddressPersonsTabBean extends TabBean
   {
     this.firstRow = firstRow;
   }
-
+  
+  public void setPersonId(String personId)
+  {
+    if (editing != null)
+      editing.setPersonId(personId);
+    showDialog();
+  }
+  
+  public String getPersonId()
+  {
+    return editing.getPersonId();
+  }
+    
   @Override
   public void load() throws Exception
   {

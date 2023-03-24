@@ -35,11 +35,12 @@
                          value="#{caseBundle.caseAddresses_address}"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseAddressesTabBean.addressId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:case_addresses_dialog"
                                   type="Address"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:case_addresses_store']}"
+                                  requiredMessage="Address is mandatory"
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
@@ -50,15 +51,16 @@
                          value="#{caseBundle.caseAddresses_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseAddressesTabBean.caseAddressTypeId}"
-                                process="@(.savable)"
+                                process=":mainform:search_tabs:case_addresses_dialog"
                                 type="CaseAddress"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true">
+                                required="#{not empty param['mainform:search_tabs:case_addresses_store']}"
+                                requiredMessage="Type is mandatory">
             <p:ajax event="itemSelect"
                     process="@this"
-                    update="@parent:@parent:@parent:case_addresses_dialog" />
+                    update="mainform:search_tabs:case_addresses_dialog" />
           </emcomp:typeReference>
         </div>
         
@@ -68,7 +70,7 @@
                          value="#{caseBundle.caseAddresses_startDate}" />
           <p:datePicker value="#{caseAddressesTabBean.editing.startDate}" 
                         locale="#{caseObjectBean.language}" converter="datePickerConverter"
-                        showIcon="true" styleClass="savable"
+                        showIcon="true" 
                         monthNavigator="true" yearNavigator="true"  />
         </p:outputPanel>
 
@@ -77,7 +79,7 @@
                          value="#{caseBundle.caseAddresses_endDate}"/>
           <p:datePicker value="#{caseAddressesTabBean.editing.endDate}" 
                         locale="#{caseObjectBean.language}" converter="datePickerConverter" 
-                        showIcon="true" styleClass="savable"
+                        showIcon="true" 
                         monthNavigator="true" yearNavigator="true"  />
         </p:outputPanel>        
 
@@ -85,17 +87,14 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseAddresses_comments}" />
-          <p:inputTextarea
-            styleClass="savable"
-            value="#{caseAddressesTabBean.editing.comments}" />
+          <p:inputTextarea value="#{caseAddressesTabBean.editing.comments}" />
         </div>
         
         <!-- Import persons -->
-        <p:outputPanel styleClass="field-checkbox col-12">
-            <p:selectBooleanCheckbox value="#{caseAddressesTabBean.importPersons}" 
-                                     itemLabel="#{caseBundle.caseAddresses_importPersons}"
-                                     styleClass="savable" />
-        </p:outputPanel>         
+        <div class="field-checkbox col-12">
+          <p:selectBooleanCheckbox value="#{caseAddressesTabBean.importPersons}" 
+                                   itemLabel="#{caseBundle.caseAddresses_importPersons}" />
+        </div>         
 
       </div>
 
@@ -104,7 +103,7 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{caseAddressesTabBean.store}"
+        <p:commandButton id="case_addresses_store" action="#{caseAddressesTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="case_addresses_dialog"
                          update=":mainform:search_tabs:tabs case_addresses_panel"

@@ -102,15 +102,18 @@
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true"
-                                process="@(.savable)"/>
+                                required="#{not empty param['mainform:search_tabs:tabs:person_contacts_store']}"
+                                requiredMessage="Type is mandatory"
+                                process=":mainform:search_tabs:tabs:person_contacts_dialog"/>
         </div>
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next" 
-                         value="#{kernelBundle.personContacts_contact}"/>
+                         value="#{kernelBundle.personContacts_contact}"
+                         indicateRequired="true"/>
           <p:inputText value="#{personContactsTabBean.editing.value}"
-                       required="true"/>
+                       required="#{not empty param['mainform:search_tabs:tabs:person_contacts_store']}"
+                       requiredMessage="Contact is mandatory"/>
         </div>
 
         <div class="field col-12">
@@ -124,7 +127,7 @@
     </h:panelGroup>
 
     <div class="field col-12 text-right">
-      <p:commandButton action="#{personContactsTabBean.store}" 
+      <p:commandButton id="person_contacts_store" action="#{personContactsTabBean.store}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                        update="contact_results_table contact_edit_panels :mainform:growl"
                        oncomplete="if (args &amp;&amp; !args.validationFailed) PF('personContactsDialog').hide()" />

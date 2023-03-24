@@ -36,12 +36,13 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseDocumentsTabBean.docId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:case_documents_dialog"
                                   type="Document"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:case_documents_store']}"
+                                  requiredMessage="Document is mandatory"
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
@@ -52,14 +53,15 @@
                          value="#{caseBundle.caseDocuments_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseDocumentsTabBean.caseDocTypeId}"
-                                process="@(.savable)"
+                                process=":mainform:search_tabs:case_documents_dialog"
                                 type="#{caseDocumentsTabBean.tabBaseTypeId != null ? caseDocumentsTabBean.tabBaseTypeId : 'CaseDocument'}"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true">
+                                required="#{not empty param['mainform:search_tabs:case_documents_store']}"
+                                requiredMessage="Type is mandatory">
             <p:ajax event="itemSelect"
-                    process="@this" update="@parent:@parent:@parent:case_documents_dialog" />
+                    process="@this" update=":mainform:search_tabs:case_documents_dialog" />
           </emcomp:typeReference>
         </div>
 
@@ -68,17 +70,14 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_volume}" />
-          <p:inputText styleClass="savable"
-                       value="#{caseDocumentsTabBean.editing.volume}" />
+          <p:inputText value="#{caseDocumentsTabBean.editing.volume}" />
         </div>
 
         <!-- Comments -->
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_comments}" />
-          <p:inputTextarea
-            styleClass="savable"
-            value="#{caseDocumentsTabBean.editing.comments}" />
+          <p:inputTextarea value="#{caseDocumentsTabBean.editing.comments}" />
         </div>
 
       </div>
@@ -88,7 +87,8 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{caseDocumentsTabBean.store}"
+        <p:commandButton id="case_documents_store"
+                         action="#{caseDocumentsTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="case_documents_dialog"
                          update=":mainform:search_tabs:tabs case_documents_panel"

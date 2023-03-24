@@ -6,7 +6,7 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
+  
     <div class="ui-fluid formgrid grid">
 
       <div class="field col-12 md:col-3">
@@ -21,8 +21,10 @@
                               type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3" required="true"
-                              process="@(.savable)">
+                              minQueryLength="3" 
+                              required="#{not empty param['mainform:search_tabs:store']}"
+                              requiredMessage="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)} is mandatory"
+                              process=":mainform:search_tabs:tabs">
           <p:ajax event="itemSelect" 
                   process="@this" update=":mainform:search_tabs:tabs" />
         </emcomp:typeReference>
@@ -30,10 +32,13 @@
 
       <div class="field col-12 md:col-12">
         <p:outputLabel for="@next" 
-                       value="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}" />
+                       value="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}"
+                       indicateRequired="true"/>
         <p:inputTextarea value="#{caseObjectBean.case.title}"
-                         required="true" readonly="#{!caseObjectBean.editable}" 
-                         class="inputfield w-full savable"/>
+                         required="#{not empty param['mainform:search_tabs:store']}"
+                         requiredMessage="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)} is mandatory"
+                         readonly="#{!caseObjectBean.editable}" 
+                         class="inputfield w-full"/>
       </div>
 
       <div class="field col-12 md:col-3">
@@ -46,7 +51,6 @@
                       showOnFocus="false"
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true"
-                      styleClass="savable"
                       readonly="#{!caseObjectBean.editable}" />
       </div>
 
@@ -60,28 +64,27 @@
                       showOnFocus="false"
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true" 
-                      styleClass="savable" 
                       readonly="#{!caseObjectBean.editable}" />
       </div>
 
       <p:outputPanel class="field col-12 md:col-6" rendered="#{not caseObjectBean.isPropertyHidden('state')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_state}" />
         <p:inputText value="#{caseObjectBean.case.state}"
-                     class="inputfield w-full savable"
+                     class="inputfield w-full"
                      readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.isPropertyHidden('description')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
         <p:inputTextarea value="#{caseObjectBean.case.description}"
-                         styleClass="inputfield w-full savable" 
+                         styleClass="inputfield w-full" 
                          readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.isPropertyHidden('comments')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_comments}" />
         <p:inputTextarea value="#{caseObjectBean.case.comments}"
-                         styleClass="inputfield w-full savable" 
+                         styleClass="inputfield w-full" 
                          readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
       

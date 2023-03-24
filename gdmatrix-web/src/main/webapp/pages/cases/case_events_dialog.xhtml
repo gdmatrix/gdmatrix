@@ -36,12 +36,13 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseEventsTabBean.eventId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:case_events_dialog"
                                   type="Event"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:case_events_store']}"
+                                  requiredMessage="Event is mandatory"
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
@@ -52,16 +53,17 @@
                          value="#{caseBundle.caseEvents_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseEventsTabBean.caseEventTypeId}"
-                                process="@(.savable)"
+                                process=":mainform:search_tabs:case_events_dialog"
                                 type="#{caseEventsTabBean.tabBaseTypeId != null ? caseEventsTabBean.tabBaseTypeId : 'CaseEvent'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true">
+                                required="#{not empty param['mainform:search_tabs:case_events_store']}"
+                                requiredMessage="Type is mandatory">
             <p:ajax event="itemSelect"
                     process="@this"
-                    update="@parent:@parent:@parent:case_events_dialog" />
+                    update=":mainform:search_tabs:case_events_dialog" />
           </emcomp:typeReference>
         </div>
 
@@ -69,9 +71,7 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseEvents_comments}" />
-          <p:inputTextarea
-            styleClass="savable"
-            value="#{caseEventsTabBean.editing.comments}" />
+          <p:inputTextarea value="#{caseEventsTabBean.editing.comments}" />
         </div>
 
       </div>
@@ -85,7 +85,7 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{caseEventsTabBean.store}"
+        <p:commandButton id="case_events_store" action="#{caseEventsTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="case_events_dialog"
                          update=":mainform:search_tabs:tabs case_events_panel"

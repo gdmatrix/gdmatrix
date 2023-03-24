@@ -28,7 +28,7 @@
                   rendered="#{casePersonsTabBean.editing != null}">
 
       <p:tabView activeIndex="#{casePersonsTabBean.tabIndex}">
-        <p:tab title="#{caseBundle.casePersons_personData}">
+        <p:tab title="#{caseBundle.casePersons_person}">
           <h:panelGroup id="person_data_panel">
             <div class="ui-fluid formgrid grid" >
 
@@ -39,12 +39,13 @@
                                styleClass="w-full" 
                                indicateRequired="true" />
                 <emcomp:objectReference value="#{casePersonsTabBean.personId}"
-                                        process="@(.savable)"
+                                        process=":mainform:search_tabs:case_persons_dialog"
                                         type="Person"
                                         styleClass="w-full"
                                         scrollHeight="200"
                                         queryDelay="1000"
-                                        required="true"
+                                        required="#{not empty param['mainform:search_tabs:case_persons_store']}"
+                                        requiredMessage="Person is mandatory"
                                         minQueryLength="3">
                   <p:ajax event="itemSelect" listener="#{casePersonsTabBean.onPersonSelect}" 
                           process="@this" update="@parent:@parent:@parent:@id(person_data_panel)" />
@@ -57,11 +58,13 @@
                                value="#{caseBundle.casePersons_type}"
                                indicateRequired="true" />
                 <emcomp:typeReference value="#{casePersonsTabBean.casePersonTypeId}"
-                                      process="@(.savable)"
+                                      process=":mainform:search_tabs:case_persons_dialog"
                                       type="#{casePersonsTabBean.tabBaseTypeId != null ? casePersonsTabBean.tabBaseTypeId : 'CasePerson'}"
                                       scrollHeight="200"
                                       queryDelay="1000"
-                                      minQueryLength="3" required="true">            
+                                      minQueryLength="3" 
+                                      required="#{not empty param['mainform:search_tabs:case_persons_store']}"
+                                      requiredMessage="Type is mandatory">            
                 </emcomp:typeReference>
               </div>
 
@@ -71,8 +74,8 @@
                                value="#{caseBundle.casePersons_startDate}" />
                 <p:datePicker value="#{casePersonsTabBean.editing.startDate}" 
                               locale="#{caseObjectBean.language}" converter="datePickerConverter"
-                              showIcon="true" styleClass="savable"
-                              monthNavigator="true" yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
+                              showIcon="true" monthNavigator="true" 
+                              yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
               </p:outputPanel>
 
               <p:outputPanel class="field col-12 md:col-3">
@@ -80,7 +83,7 @@
                                value="#{caseBundle.casePersons_endDate}"/>
                 <p:datePicker value="#{casePersonsTabBean.editing.endDate}" 
                               locale="#{caseObjectBean.language}" converter="datePickerConverter" 
-                              showIcon="true" styleClass="savable"
+                              showIcon="true" 
                               monthNavigator="true" yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
               </p:outputPanel>
 
@@ -89,7 +92,7 @@
                              rendered="#{casePersonsTabBean.editing.personId != null}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
                 <emcomp:objectReference value="#{casePersonsTabBean.addressId}"
-                                        process="@(.savable)"
+                                        process=":mainform:search_tabs:case_persons_dialog"
                                         type="Address"
                                         styleClass="w-full"
                                         scrollHeight="200"
@@ -150,7 +153,7 @@
                              rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
                 <p:selectOneMenu id="new_contact_type_id" value="#{casePersonsTabBean.contactTypeId}"
-                                 autoWidth="false" styleClass="savable">
+                                 autoWidth="false" >
                   <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}" 
                                  var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
                 </p:selectOneMenu>
@@ -161,8 +164,7 @@
                              rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">   
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_contact}" />            
                 <div class="ui-inputgroup">
-                  <p:inputText id="new_contact_value" value="#{casePersonsTabBean.contactValue}"
-                               styleClass="savable"/>  
+                  <p:inputText id="new_contact_value" value="#{casePersonsTabBean.contactValue}" />  
 
                   <p:commandButton icon="pi pi-plus-circle" 
                                    styleClass="ui-button-raised"
@@ -179,7 +181,7 @@
         </p:tab>
 
         <!-- Representant -->
-        <p:tab title="#{caseBundle.casePersons_representantData}">
+        <p:tab title="#{caseBundle.casePersons_representantPerson}">
 
           <h:panelGroup id="representant_data_panel">
             <div class="ui-fluid formgrid grid mt-2">      
@@ -188,7 +190,7 @@
                                value="#{caseBundle.casePersons_representantPerson}"
                                styleClass="w-full" />
                 <emcomp:objectReference value="#{casePersonsTabBean.representantPersonId}"
-                                        process="@(.savable)"
+                                        process=":mainform:search_tabs:case_persons_dialog"
                                         type="Person"
                                         styleClass="w-full"
                                         scrollHeight="200"
@@ -202,7 +204,7 @@
               <p:outputPanel id="representant_address" styleClass="field col-12" rendered="#{casePersonsTabBean.editing.representantPersonId != null}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
                 <emcomp:objectReference value="#{casePersonsTabBean.representantAddressId}"
-                                        process="@(.savable)"
+                                        process=":mainform:search_tabs:case_persons_dialog"
                                         type="Address"
                                         styleClass="w-full"
                                         scrollHeight="200"
@@ -268,7 +270,7 @@
                              rendered="#{casePersonsTabBean.selectedRepresentantContacts.size() &lt; 3}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
                 <p:selectOneMenu id="new_representant_contact_type_id" value="#{casePersonsTabBean.representantContactTypeId}"
-                                 autoWidth="false" styleClass="savable">
+                                 autoWidth="false">
                   <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}" 
                                  var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
                 </p:selectOneMenu>
@@ -279,8 +281,7 @@
                              rendered="#{casePersonsTabBean.selectedRepresentantContacts.size() &lt; 3}">   
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_contact}" />            
                 <div class="ui-inputgroup">
-                  <p:inputText id="new_representant_contact_value" value="#{casePersonsTabBean.representantContactValue}" 
-                               styleClass="savable"/>  
+                  <p:inputText id="new_representant_contact_value" value="#{casePersonsTabBean.representantContactValue}" />  
 
                   <p:commandButton icon="pi pi-plus-circle" 
                                    styleClass="ui-button-raised"
@@ -302,14 +303,13 @@
               <p:outputLabel for="@next" 
                              value="#{caseBundle.casePersons_comments}"/>
               <p:inputTextarea value="#{casePersonsTabBean.editing.comments}"
-                               autoResize="false" styleClass="savable"/>
+                               autoResize="false" />
             </p:outputPanel> 
 
             <!-- Import addresses -->
             <p:outputPanel styleClass="field-checkbox col-12">            
               <p:selectBooleanCheckbox value="#{casePersonsTabBean.importAddresses}" 
-                                       itemLabel="#{caseBundle.casePersons_importAddresses}"
-                                       styleClass="savable" />
+                                       itemLabel="#{caseBundle.casePersons_importAddresses}" />
             </p:outputPanel>       
           </div>
         </p:tab>
@@ -320,7 +320,7 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{casePersonsTabBean.store}" 
+        <p:commandButton id="case_persons_store" action="#{casePersonsTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="case_persons_dialog"
                          update=":mainform:search_tabs:tabs case_persons_panel"

@@ -35,14 +35,16 @@
                          value="#{caseBundle.caseInterventions_type}"
                          styleClass="w-full" indicateRequired="true" />
           <emcomp:typeReference value="#{caseInterventionsTabBean.intTypeId}"
-                                process="@(.savable)"
+                                process=":mainform:search_tabs:case_interventions_dialog"
                                 type="#{caseInterventionsTabBean.tabBaseTypeId != null ? caseInterventionsTabBean.tabBaseTypeId : 'Intervention'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
-                                minQueryLength="3" required="true">
+                                minQueryLength="3" 
+                                required="#{not empty param['mainform:search_tabs:case_interventions_store']}"
+                                requiredMessage="Type is mandatory">
           <p:ajax event="itemSelect"
-                  process="@this" update="@parent:@parent:@parent:case_interventions_dialog" />
+                  process="@this" update=":mainform:search_tabs:case_interventions_dialog" />
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -53,7 +55,6 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_startDate}"/>
           <p:datePicker value="#{caseInterventionsTabBean.startDateTime}"
-                        styleClass="savable"
                         autocomplete="off" placeholder="dd/MM/aaaa HH:mm"
                         locale="es" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm"
@@ -64,7 +65,6 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_endDate}"/>
           <p:datePicker value="#{caseInterventionsTabBean.endDateTime}"
-                        styleClass="savable"
                         autocomplete="off" placeholder="dd/MM/aaaa HH:mm"
                         locale="es" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm"
@@ -93,8 +93,7 @@
         <p:outputPanel class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseInterventions_comments}" />
-          <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}"
-                           styleClass="savable"/>
+          <p:inputTextarea value="#{caseInterventionsTabBean.editing.comments}"/>
         </p:outputPanel>
 
       </div>
@@ -108,7 +107,7 @@
                               properties="#{caseInterventionsTabBean.editing.property}" />
 
     <div class="field col-12 text-right">
-      <p:commandButton action="#{caseInterventionsTabBean.store}"
+      <p:commandButton id="case_interventions_store" action="#{caseInterventionsTabBean.store}"
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                        process="case_interventions_dialog"
                        update=":mainform:search_tabs:tabs case_interventions_panel"

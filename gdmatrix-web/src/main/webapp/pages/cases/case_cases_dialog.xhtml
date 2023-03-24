@@ -38,12 +38,13 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseCasesTabBean.relCaseId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:case_cases_dialog"
                                   type="Case"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
-                                  required="true">
+                                  required="#{not empty param['mainform:search_tabs:case_cases_store']}"
+                                  requiredMessage="Case is mandatory">
           </emcomp:objectReference>
         </p:outputPanel>
 
@@ -54,14 +55,15 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseCasesTabBean.caseCaseTypeId}"
-                                process="@(.savable)"
+                                process=":mainform:search_tabs:case_cases_dialog"
                                 type="#{caseCasesTabBean.tabBaseTypeId != null ? caseCasesTabBean.tabBaseTypeId : 'CaseCase'}"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true">
+                                required="#{not empty param['mainform:search_tabs:case_cases_store']}"
+                                requiredMessage="Type is mandatory">
           <p:ajax event="itemSelect"
-                  process="@this" update="@parent:@parent:@parent:case_cases_dialog" />
+                  process="@this" update=":mainform:search_tabs:case_cases_dialog" />
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -70,7 +72,6 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_startDate}"/>
           <p:datePicker value="#{caseCasesTabBean.editing.startDate}"
-                        styleClass="savable"
                         autocomplete="off" placeholder="dd/mm/aaaa"
                         locale="es" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
@@ -81,7 +82,6 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_endDate}"/>
           <p:datePicker value="#{caseCasesTabBean.editing.endDate}"
-                        styleClass="savable"
                         autocomplete="off" placeholder="dd/mm/aaaa"
                         locale="es" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
@@ -92,8 +92,7 @@
         <p:outputPanel class="field col-12">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_comments}" />
-          <p:inputTextarea value="#{caseCasesTabBean.editing.comments}"
-                           styleClass="savable"/>
+          <p:inputTextarea value="#{caseCasesTabBean.editing.comments}" />
         </p:outputPanel>
 
       </div>
@@ -105,7 +104,7 @@
                               properties="#{caseCasesTabBean.editing.property}" />
 
     <div class="field col-12 text-right">
-      <p:commandButton action="#{caseCasesTabBean.store}"
+      <p:commandButton id="case_cases_store" action="#{caseCasesTabBean.store}"
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                        process="case_cases_dialog"
                        update=":mainform:search_tabs:tabs case_cases_panel"

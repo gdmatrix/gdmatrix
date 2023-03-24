@@ -27,7 +27,7 @@
           <p:commandButton icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat" 
                            action="#{personAddressesTabBean.create}"   
                            process="@this"
-                           update="@parent:@parent:@parent:person_addresses_dialog"
+                           update=":mainform:search_tabs:tabs:person_addresses_dialog"
                            resetValues="true"
                            oncomplete="PF('personAddressesDialog').show()"                                  
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
@@ -99,8 +99,9 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
-                                  required="false"
-                                  process="@(.savable)">
+                                  required="#{not empty param['mainform:search_tabs:tabs:person_addresses_store']}"
+                                  requiredMessage="Address is mandatory"
+                                  process=":mainform:search_tabs:tabs:person_addresses_dialog">
           </emcomp:objectReference>                        
         </p:outputPanel>      
 
@@ -110,7 +111,7 @@
 
     <f:facet name="footer">
       <div class="field col-12 text-right">
-        <p:commandButton action="#{personAddressesTabBean.store}" 
+        <p:commandButton id="person_addresses_store" action="#{personAddressesTabBean.store}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
                          update="person_addresses_table person_addresses_panel" 

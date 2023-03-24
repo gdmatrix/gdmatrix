@@ -25,8 +25,9 @@
                             scrollHeight="200"
                             queryDelay="1000"
                             minQueryLength="3" 
-                            required="true"
-                            process="@(.savable)">
+                            required="#{not empty param['mainform:search_tabs:store']}"
+                            requiredMessage="Type is mandatory"
+                            process=":mainform:search_tabs:tabs">
         <p:ajax event="itemSelect"
                 process="@this" update=":mainform:search_tabs:tabs" />
       </emcomp:typeReference>
@@ -35,7 +36,9 @@
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
       <p:inputText id="name" value="#{roomObjectBean.room.name}"
-                   styleClass="inputfield w-full savable" required="true"/>
+                   styleClass="inputfield w-full" 
+                   required="#{not empty param['mainform:search_tabs:store']}"
+                   requiredMessage="Name is mandatory"/>
     </div>
 
     <div class="field col-12">
@@ -49,57 +52,58 @@
                               scrollHeight="200"
                               queryDelay="1000"
                               minQueryLength="3" 
-                              required="true"
-                              process="@(.savable)">
+                              required="#{not empty param['mainform:search_tabs:store']}"
+                              requiredMessage="Address is mandatory"
+                              process=":mainform:search_tabs:tabs">
       </emcomp:objectReference>
     </div>
 
     <div class="field col-12 md:col-4">
       <p:outputLabel for="@next" value="#{kernelBundle.room_phone}" />
       <p:inputText id="phone" value="#{roomObjectBean.room.phone}"
-                   styleClass="inputfield w-full savable"/>
+                   styleClass="inputfield w-full"/>
     </div>
 
     <div class="field col-12 md:col-4">
       <p:outputLabel for="@next" value="#{kernelBundle.room_fax}" />
       <p:inputText id="fax" value="#{roomObjectBean.room.fax}"
-                   styleClass="inputfield w-full savable"/>
+                   styleClass="inputfield w-full"/>
     </div>
 
     <div class="field col-12 md:col-4">
       <p:outputLabel for="@next" value="#{kernelBundle.room_email}" />
       <p:inputText id="email" value="#{roomObjectBean.room.email}"
-                   styleClass="inputfield w-full savable"/>
+                   styleClass="inputfield w-full"/>
     </div>
 
     <div class="field col-12 md:col-2">
       <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
       <p:inputText id="capacity" value="#{roomObjectBean.room.capacity}"
-                   styleClass="inputfield w-full savable"/>
+                   styleClass="inputfield w-full"/>
     </div>
 
     <div class="field col-12 md:col-2">
       <p:outputLabel for="@next" value="#{kernelBundle.room_area}" />
       <p:inputText id="area" value="#{roomObjectBean.room.area}"
-                   styleClass="inputfield w-full savable"/>
+                   styleClass="inputfield w-full"/>
     </div>
 
     <div class="field col-12 md:col-6">
       <p:outputLabel for="@next" value="#{kernelBundle.room_schedule}" />
       <p:inputText id="schedule" value="#{roomObjectBean.room.schedule}"
-                   styleClass="inputfield w-full savable"/>
+                   styleClass="inputfield w-full"/>
     </div>
 
     <div class="field col-12 md:col-2">
       <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
       <p:inputText id="spaceId" value="#{roomObjectBean.room.spaceId}"
-                   styleClass="inputfield w-full savable"/>
+                   styleClass="inputfield w-full"/>
     </div>
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
       <p:inputText id="comments" value="#{roomObjectBean.room.comments}"
-                   styleClass="inputfield w-full savable"/>
+                   styleClass="inputfield w-full"/>
     </div>
 
   </div>
