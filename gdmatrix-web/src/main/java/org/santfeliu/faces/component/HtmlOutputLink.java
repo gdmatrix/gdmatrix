@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.component;
@@ -40,7 +40,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.faces.FacesUtils;
-import org.santfeliu.faces.HtmlRenderUtils;
 import org.santfeliu.faces.Translator;
 
 /**
@@ -48,15 +47,15 @@ import org.santfeliu.faces.Translator;
  * @author blanquepa
  */
 @FacesComponent(value = "HtmlOutputLink")
-public class HtmlOutputLink 
+public class HtmlOutputLink
   extends javax.faces.component.html.HtmlOutputLink
 {
   private Translator _translator;
-  private String _translationGroup; 
+  private String _translationGroup;
   private String _ariaLabel;
   private Boolean _ariaHidden;
-  private String _role;  
-  
+  private String _role;
+
   public void setTranslator(Translator translator)
   {
     this._translator = translator;
@@ -87,7 +86,7 @@ public class HtmlOutputLink
   {
     this._ariaLabel = _ariaLabel;
   }
-  
+
   public String getAriaLabel()
   {
     if (_ariaLabel != null)
@@ -95,7 +94,7 @@ public class HtmlOutputLink
     ValueExpression ve = getValueExpression("ariaLabel");
     return ve != null? (String) ve.getValue(getFacesContext().getELContext()): null;
   }
-  
+
   public void setAriaHidden(Boolean ariaHidden)
   {
     this._ariaHidden = ariaHidden;
@@ -105,7 +104,7 @@ public class HtmlOutputLink
   {
     if (_ariaHidden != null) return _ariaHidden;
     ValueExpression ve = getValueExpression("ariaHidden");
-    return (ve != null ? (Boolean)ve.getValue(getFacesContext().getELContext()) : 
+    return (ve != null ? (Boolean)ve.getValue(getFacesContext().getELContext()) :
       Boolean.FALSE);
   }
 
@@ -121,25 +120,24 @@ public class HtmlOutputLink
   {
     this._role = role;
   }
-  
+
+  @Override
   public void encodeBegin(FacesContext context) throws IOException
   {
     if (context == null)
       throw new NullPointerException();
-   
-    if (!isRendered()) 
+
+    if (!isRendered())
       return;
 
     ResponseWriter writer = context.getResponseWriter();
-    
-    HtmlRenderUtils.renderOverlay(writer);
 
     writer.startElement("a", this);
 
     Object value = getValue();
     writer.writeAttribute("href", (value != null ? value : ""), null);
 
-    if (getId() != null && !getId().startsWith(UIViewRoot.UNIQUE_ID_PREFIX))    
+    if (getId() != null && !getId().startsWith(UIViewRoot.UNIQUE_ID_PREFIX))
     {
       writer.writeAttribute("id", getId(), null);
     }
@@ -155,7 +153,7 @@ public class HtmlOutputLink
     if (ariaLabel != null)
     {
       writer.writeAttribute("aria-label", translate(ariaLabel), null);
-    }    
+    }
     if (getAriaHidden())
     {
       writer.writeAttribute("aria-hidden", "true", null);
@@ -164,7 +162,7 @@ public class HtmlOutputLink
     if (role != null)
     {
       writer.writeAttribute("role", role, null);
-    }    
+    }
     if (getAccesskey() != null)
     {
       writer.writeAttribute("accesskey", getAccesskey(), null);
@@ -172,7 +170,7 @@ public class HtmlOutputLink
     if (getTabindex()!= null)
     {
       writer.writeAttribute("tabindex", getTabindex(), null);
-    }    
+    }
     if (!StringUtils.isBlank(getTarget()))
     {
       writer.writeAttribute("target", getTarget(), null);
@@ -184,21 +182,21 @@ public class HtmlOutputLink
     if (getOnfocus() != null)
     {
       writer.writeAttribute("onfocus", getOnclick(), null);
-    } 
+    }
     if (getTitle() != null)
     {
       writer.writeAttribute("title", translate(getTitle()), null);
-    }   
-   
-  } 
- 
+    }
+
+  }
+
   @Override
   public void encodeEnd(FacesContext context) throws IOException
   {
-    if (!isRendered()) return;    
+    if (!isRendered()) return;
     ResponseWriter writer = context.getResponseWriter();
     writer.endElement("a");
-  }  
+  }
 
   @Override
   public Object saveState(FacesContext context)
@@ -206,8 +204,8 @@ public class HtmlOutputLink
     Object values[] = new Object[5];
     values[0] = super.saveState(context);
     values[1] = _translationGroup;
-    values[2] = _ariaLabel; 
-    values[3] = _ariaHidden;   
+    values[2] = _ariaLabel;
+    values[3] = _ariaHidden;
     values[4] = _role;
     return values;
   }
@@ -221,8 +219,8 @@ public class HtmlOutputLink
     _ariaLabel = (String)values[2];
     _ariaHidden = (Boolean)values[3];
     _role = (String)values[4];
-  } 
-  
+  }
+
   private String translate(String text) throws IOException
   {
     Translator translator = getTranslator();
@@ -235,6 +233,6 @@ public class HtmlOutputLink
       text = sw.toString();
     }
     return text;
-  }  
+  }
 
 }

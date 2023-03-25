@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.faces.langselector;
@@ -46,7 +46,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.apache.myfaces.shared_tomahawk.renderkit.html.HtmlRendererUtils;
 import org.santfeliu.faces.FacesUtils;
-import org.santfeliu.faces.HtmlRenderUtils;
 import org.santfeliu.web.UserSessionBean;
 
 /**
@@ -63,7 +62,7 @@ public class LanguageSelector extends UIComponentBase
   public LanguageSelector()
   {
   }
-  
+
   public String getFamily()
   {
     return "LanguageSelector";
@@ -117,7 +116,7 @@ public class LanguageSelector extends UIComponentBase
     {
       String language = (String)parameterMap.get(clientId + ":lang");
       //Locale locale = new Locale(language);
-      //context.getViewRoot().setLocale(locale);      
+      //context.getViewRoot().setLocale(locale);
       UserSessionBean.getCurrentInstance().setViewLanguage(language);
       context.renderResponse();
     }
@@ -132,21 +131,19 @@ public class LanguageSelector extends UIComponentBase
       String clientId = getClientId(context);
       ResponseWriter writer = context.getResponseWriter();
 
-      HtmlRenderUtils.renderOverlay(writer);
-
       writer.startElement("input", this);
       writer.writeAttribute("type", "hidden", null);
       writer.writeAttribute("name", clientId + ":act", null);
       writer.writeAttribute("value", "n", null);
       writer.endElement("input");
-    
-      writer.startElement("select", this);   
-      HtmlRendererUtils.writeIdIfNecessary(writer, this, context);      
+
+      writer.startElement("select", this);
+      HtmlRendererUtils.writeIdIfNecessary(writer, this, context);
       writer.writeAttribute("name", clientId + ":lang", null);
       String formId = FacesUtils.getParentFormId(this, context);
       writer.writeAttribute("onchange",
         "showOverlay(); document.forms['" + formId + "']['" + clientId +
-        ":act'].value='y'; document.forms['" + formId + "'].submit(); return false;"    
+        ":act'].value='y'; document.forms['" + formId + "'].submit(); return false;"
          , null);
 
       String style = getStyle();
@@ -212,7 +209,7 @@ public class LanguageSelector extends UIComponentBase
     values[2] = _styleClass;
     return values;
   }
-  
+
   @Override
   public void restoreState(FacesContext context, Object state)
   {

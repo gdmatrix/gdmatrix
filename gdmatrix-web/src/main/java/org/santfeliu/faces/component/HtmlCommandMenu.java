@@ -30,7 +30,6 @@
  */
 package org.santfeliu.faces.component;
 
-import org.santfeliu.faces.HtmlRenderUtils;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -222,8 +221,6 @@ public class HtmlCommandMenu extends UICommand
     Map requestMap = context.getExternalContext().getRequestMap();
     if (!requestMap.containsKey(COMMAND_MENU_RENDERED))
     {
-      HtmlRenderUtils.renderOverlay(writer);
-
       writer.startElement("script", this);
       writer.writeAttribute("type", "text/javascript", null);
       writer.writeText("function fireCommandMenu(formId,clientId){" +
