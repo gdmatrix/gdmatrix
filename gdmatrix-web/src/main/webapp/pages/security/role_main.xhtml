@@ -19,7 +19,8 @@
       </div>
 
       <div class="field col-12 md:col-8">
-        <p:outputLabel for="@next" value="#{securityBundle.role_type}" />
+        <p:outputLabel for="@next" value="#{securityBundle.role_type}" 
+                       indicateRequired="true" />
         <p:selectOneMenu value="#{roleObjectBean.role.roleTypeId}"
                          styleClass="inputfield w-full"
                          filter="true">

@@ -8,12 +8,15 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/obj/object_3col.xhtml">
 
+  <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                var="documentBundle" />    
+  
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector" 
                  activeIndex="#{documentFinderBean.filterTabSelector}">
- 
+        
         <p:tab id="smart_search">
           <f:facet name="title">
             <span class="pi pi-bolt mr-2"/> 
@@ -64,13 +67,13 @@
           
           <!-- Title -->
           <div class="field">
-            <p:outputLabel for="@next" value="Title" />        
+            <p:outputLabel for="@next" value="#{documentBundle.outputTitle}" />
             <p:inputText id="title" value="#{documentFinderBean.filter.title}" 
                          class="inputfield w-full" />
           </div>  
 
           <div class="field">
-            <p:outputLabel for="@next" value="Type" />
+            <p:outputLabel for="@next" value="#{documentBundle.outputType}" />
             <emcomp:typeReference value="#{documentFinderBean.filter.docTypeId}"
                                   type="Document"
                                   styleClass="w-full"
@@ -78,9 +81,17 @@
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   renderShowButton="false"
-                                  process="@this">
+                                  formSelector="#{documentFinderBean.formSelector}"
+                                  process=":mainform:find_selector"
+                                  update=":mainform:find_selector">
             </emcomp:typeReference>
           </div>
+          
+          <emcomp:dynamicProperties typeId="#{documentFinderBean.filter.docTypeId}"
+                                    formSelector="#{documentFinderBean.formSelector}"
+                                    formBuilderPrefix="searchtype"
+                                    options="#{dynamicPropertiesBean.filterOptions}"
+                                    properties="#{documentFinderBean.filter.property}" />
           
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"

@@ -32,6 +32,7 @@ package org.santfeliu.webapp.composite;
 
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.el.CompositeComponentExpressionHolder;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,8 +43,9 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.modules.dic.TypeFinderBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.util.WebUtils;
-import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
+import org.primefaces.event.SelectEvent;
+import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
  *
@@ -92,15 +94,35 @@ public class TypeReferenceBean extends ObjectReferenceBean
   @Override
   public String find()
   {
+    resetFormSelector();
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
     return navigatorBean.execute(new SelectTypeLeap(getTypeId()), true,
       getValueExpression().getExpressionString());
   }
 
   @Override
+  public void onItemSelect(SelectEvent event)
+  {
+    super.onItemSelect(event);
+    resetFormSelector();
+  }
+
+  @Override
   public void onClear()
   {
     WebUtils.setValue("#{cc.attrs.value}", String.class, getTypeId());
+    resetFormSelector();
+  }
+
+  protected void resetFormSelector()
+  {
+    CompositeComponentExpressionHolder exprHolder =
+      (CompositeComponentExpressionHolder)WebUtils.getValue("#{cc.attrs}");
+
+    if (exprHolder.getExpression("formSelector") != null)
+    {
+      WebUtils.setValue("#{cc.attrs.formSelector}", String.class, null);
+    }
   }
 
   public class SelectTypeLeap extends Leap

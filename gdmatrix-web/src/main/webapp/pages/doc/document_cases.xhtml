@@ -33,19 +33,19 @@
         </div>
       </f:facet>      
 
-      <p:column headerText="caseId" styleClass="col-2"
-                exportHeaderValue="caseId">
+      <p:column headerText="caseId" 
+                styleClass="col-2">
         <h:outputText value="#{row.caseObject.caseId}" />
       </p:column> 
 
-      <p:column headerText="Title" styleClass="col-5"
-                exportHeaderValue="Title">
+      <p:column headerText="#{documentBundle.title}" 
+                styleClass="col-5">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>
 
-      <p:column headerText="Type" styleClass="col-3"
-                exportHeaderValue="Type">
-        <h:outputText value="#{row.caseObject.caseTypeId}"/>
+      <p:column headerText="Type" 
+                styleClass="col-3">
+        <h:outputText value="#{caseTypeBean.getDescription(row.caseObject.caseTypeId)}"/>
       </p:column>
 
       <p:column styleClass="col-2 text-right">

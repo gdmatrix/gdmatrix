@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.util;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -81,6 +82,14 @@ public class ComponentUtils
   public static void includeFormComponents(UIComponent parent, String selector,
     String propertyPath, Map context) throws Exception
   {
+    includeFormComponents(parent, selector, propertyPath, context, null);
+  }
+
+  public static void includeFormComponents(UIComponent parent, String selector,
+    String propertyPath, Map context, Map<String, Object> options) throws Exception
+  {
+    if (options == null) options = Collections.emptyMap();
+
     FacesContext facesContext = FacesContext.getCurrentInstance();
     Application application = facesContext.getApplication();
 
@@ -198,11 +207,17 @@ public class ComponentUtils
 
         HtmlPanelGroup group =
           (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-        if (styleClass == null || !styleClass.contains("col-"))
+        if ("true".equals(options.get("stacked")))
         {
-          styleClass = "col-12 md:col-6";
+          styleClass = "col-12";
         }
-
+        else
+        {
+          if (styleClass == null || !styleClass.contains("col-"))
+          {
+            styleClass = "col-12 md:col-6";
+          }
+        }
         group.setStyleClass("field " + styleClass);
         group.setLayout("block");
         parent.getChildren().add(group);

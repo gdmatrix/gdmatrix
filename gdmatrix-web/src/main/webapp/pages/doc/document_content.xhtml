@@ -27,42 +27,42 @@
       <h:panelGroup rendered="#{documentObjectBean.content != null and documentObjectBean.fileToStore == null}">
 
         <div class="field col-12 md:col-12 xl:col-6">
-          <p:outputLabel for="@next" value="ContentId" />
+          <p:outputLabel for="@next" value="#{documentBundle.documentContent_contentId}" />
           <p:inputText value="#{documentObjectBean.content.contentId}" 
                        readonly="true"
                        class="inputfield w-full"/>
         </div> 
 
         <div class="field col-12 md:col-6 xl:col-3" >
-          <p:outputLabel for="@next" value="Storage type" />
+          <p:outputLabel for="@next" value="#{documentBundle.documentContent_storageType}" />
           <p:inputText value="#{documentObjectBean.contentStorageType}" 
                        readonly="true"
                        class="inputfield w-full"/>
         </div>
 
         <div class="field col-12 md:col-6 xl:col-3">
-          <p:outputLabel for="@next" value="Content size" />
+          <p:outputLabel for="@next" value="#{documentBundle.documentContent_size}" />
           <p:inputText value="#{documentObjectBean.contentSize}" 
                        readonly="true"
                        class="inputfield w-full"/>
         </div>
         
         <div class="field col-12 md:col-12 xl:col-6">
-          <p:outputLabel for="@next" value="Format description" />
+          <p:outputLabel for="@next" value="#{documentBundle.documentContent_format} - #{documentBundle.documentContent_puid}" />
           <p:inputText value="#{documentObjectBean.content.formatDescription} - #{documentObjectBean.content.formatId}" 
                        readonly="true"
                        class="inputfield w-full"/>
         </div>
 
         <div class="field col-12 md:col-6 xl:col-3">
-          <p:outputLabel for="@next" value="ContentType" />
+          <p:outputLabel for="@next" value="#{documentBundle.documentContent_contentType}" />
           <p:inputText value="#{documentObjectBean.content.contentType}" 
                        readonly="true"                     
                        class="inputfield w-full"/>
         </div>        
         
         <div class="field col-12 md:col-6 xl:col-3">
-          <p:outputLabel for="@next" value="Content language" />
+          <p:outputLabel for="@next" value="#{documentBundle.documentContent_language}" />
           <p:inputText value="#{documentObjectBean.contentLanguage}" 
                        readonly="true"
                        class="inputfield w-full"/>
@@ -110,7 +110,7 @@
       
       <p:tabView id="new_content" 
                  styleClass="w-full">
-        <p:tab title="File">
+        <p:tab title="#{documentBundle.documentContent_file}">
           <p:fileUpload id="file_upload"
                         listener="#{documentObjectBean.handleFileUpload}"
                         mode="simple"

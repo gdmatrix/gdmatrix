@@ -59,6 +59,7 @@ public class DocumentFinderBean extends FinderBean
   private int firstRow;
   private boolean finding;
   private boolean outdated;
+  private String formSelector;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -100,6 +101,16 @@ public class DocumentFinderBean extends FinderBean
   public void setFilter(DocumentFilter filter)
   {
     this.filter = filter;
+  }
+
+  public String getFormSelector()
+  {
+    return formSelector;
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    this.formSelector = formSelector;
   }
 
   @Override
@@ -193,13 +204,14 @@ public class DocumentFinderBean extends FinderBean
     smartFilter = null;
     rows = null;
     finding = false;
+    formSelector = null;
   }
 
   @Override
   public Serializable saveState()
   {
     return new Object[]{ finding, getFilterTabSelector(),
-      filter, firstRow, getObjectPosition() };
+      filter, firstRow, getObjectPosition(), formSelector };
   }
 
   @Override
@@ -210,6 +222,7 @@ public class DocumentFinderBean extends FinderBean
     setFilterTabSelector((Integer)stateArray[1]);
     filter = (DocumentFilter)stateArray[2];
     smartFilter = documentTypeBean.filterToQuery(filter);
+    formSelector = (String)stateArray[5];
 
     doFind(false);
 

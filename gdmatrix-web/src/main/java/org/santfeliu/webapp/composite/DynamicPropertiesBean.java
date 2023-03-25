@@ -73,6 +73,11 @@ import org.santfeliu.webapp.util.WebUtils;
 public class DynamicPropertiesBean implements Serializable
 {
   static final String PROPERTY_EDITOR_SELECTOR = "editor";
+  static final Map<String, Object> FILTER_OPTIONS = new HashMap();
+  static
+  {
+    FILTER_OPTIONS.put("stacked", "true");
+  }
 
   private final Map<String, List<SelectItem>> selectItemMap = new HashMap<>();
   private PropertyHelper propertyHelper;
@@ -119,6 +124,8 @@ public class DynamicPropertiesBean implements Serializable
 
   public void setPropertyJson(String json)
   {
+    if (StringUtils.isBlank(json)) return;
+
     String typeId = getTypeId();
     if (typeId == null) return;
 
@@ -126,7 +133,6 @@ public class DynamicPropertiesBean implements Serializable
 
     Gson gson = new Gson();
     Map map = gson.fromJson(json, Map.class);
-    System.out.println(map);
 
     PropertyConverter converter = new PropertyConverter(type);
     List<Property> properties = converter.toPropertyList(map);
@@ -147,7 +153,7 @@ public class DynamicPropertiesBean implements Serializable
       if (!StringUtils.isBlank(typeId))
       {
         String selectorBase =
-          TypeFormBuilder.PREFIX + ":" + typeId +
+          getFormBuilderPrefix() + ":" + typeId +
           TypeFormBuilder.USERID + userSessionBean.getUserId() +
           TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
 
@@ -195,6 +201,11 @@ public class DynamicPropertiesBean implements Serializable
   {
     UIComponent panel = event.getComponent();
     updateComponents(panel);
+  }
+
+  public Map<String, Object> getFilterOptions()
+  {
+    return FILTER_OPTIONS;
   }
 
   private void updateComponents(UIComponent panel)
@@ -256,7 +267,7 @@ public class DynamicPropertiesBean implements Serializable
 
           ComponentUtils.includeFormComponents(panel, formSelector,
              "dynamicPropertiesBean.propertyHelper.value",
-            propertyHelper.getValue());
+            propertyHelper.getValue(), getOptions());
         }
       }
     }
@@ -279,6 +290,16 @@ public class DynamicPropertiesBean implements Serializable
   public String getTypeId()
   {
     return WebUtils.getValue("#{cc.attrs.typeId}");
+  }
+
+  public String getFormBuilderPrefix()
+  {
+    return WebUtils.getValue("#{cc.attrs.formBuilderPrefix}");
+  }
+
+  public Map<String, Object> getOptions()
+  {
+    return WebUtils.getValue("#{cc.attrs.options}");
   }
 
   public boolean isPropertyEditorRendered()

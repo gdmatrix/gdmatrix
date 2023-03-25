@@ -6,9 +6,6 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
-    <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
-                  var="documentBundle" />    
     
     <div class="ui-fluid formgrid grid">   
       
@@ -26,24 +23,25 @@
       </div>
 
       <div class="field col-12 md:col-9">
-        <p:outputLabel for="@next" value="Type" indicateRequired="true" />
+        <p:outputLabel for="@next" 
+                       value="#{documentBundle.document_docType}" 
+                       indicateRequired="true" />
         <emcomp:typeReference value="#{documentObjectBean.document.docTypeId}"
                               type="Document"
                               styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3"                               
+                              minQueryLength="3"
                               required="#{not empty param['mainform:search_tabs:store']}"
-                              process=":mainform:search_tabs:tabs">
-          <p:ajax event="itemSelect" 
-                  process="@this" update=":mainform:search_tabs:tabs" />
-          <p:ajax event="clear" 
-                  process="@this" update=":mainform:search_tabs:tabs" />
+                              formSelector="#{documentObjectBean.formSelector}"
+                              process=":mainform:search_tabs:tabs"
+                              update=":mainform:search_tabs:tabs">
         </emcomp:typeReference>
       </div>
-            
+
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="Title" indicateRequired="true" />
+        <p:outputLabel for="@next" value="#{documentBundle.document_title}" 
+                       indicateRequired="true" />
         <p:inputTextarea value="#{documentObjectBean.document.title}" 
                          required="#{not empty param['mainform:search_tabs:store']}" 
                          requiredMessage="Title is mandatory"
@@ -51,8 +49,8 @@
       </div>       
       
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="language" value="Idioma" />
-        <p:selectOneMenu id="language"
+        <p:outputLabel for="@next" value="#{documentBundle.document_language}" />
+        <p:selectOneMenu
           value="#{documentObjectBean.document.language}"
           required="true">
           <f:selectItem itemValue="%%" itemLabel="universal"/>
@@ -66,7 +64,8 @@
       </div> 
 
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="creation_date" value="Creation date" />
+        <p:outputLabel for="creation_date" 
+                       value="#{documentBundle.document_creationDate}" />
         <!-- TODO: disable if not editable -->
         <p:datePicker id="creation_date" 
                       value="#{documentObjectBean.document.creationDate}" 
@@ -80,7 +79,7 @@
       </div>         
 
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="state" value="Estat" />
+        <p:outputLabel for="state" value="#{documentBundle.document_state}" />
         <p:selectOneMenu id="state" 
                          value="#{documentObjectBean.document.state}"
                          required="true">
@@ -91,7 +90,7 @@
       </div> 
       
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="@next" value="Bloquejat per"  />        
+        <p:outputLabel for="@next" value="#{documentBundle.document_lockUser}"  />        
         <p:outputPanel class="ui-inputgroup">
           <p:inputText value="#{documentObjectBean.document.lockUserId}"
                        disabled="true"

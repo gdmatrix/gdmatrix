@@ -29,6 +29,7 @@
       <composite:attribute name="widgetVar" required="false" />
       <composite:attribute name="renderShowButton" required="false" default="true" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
+      <composite:attribute name="formSelector" required="false" />      
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
       <composite:clientBehavior name="query" targets="autocomplete" event="query" />
@@ -39,7 +40,8 @@
       <div class="ui-inputgroup">
         <p:autoComplete id="autocomplete"
                         value="#{typeReferenceBean.selectItem}"
-                        maxResults="#{cc.attrs.maxResults}" 
+                        maxResults="#{cc.attrs.maxResults}"
+                        forceSelection="true"
                         dropdown="true" dropdownMode="blank" cache="true"
                         completeMethod="#{typeReferenceBean.complete}"
                         converter="selectItemConverter"
@@ -56,15 +58,15 @@
 
           <c:if test="#{not empty cc.attrs.requiredMessage}">
             <f:attribute name="requiredMessage" value="#{cc.attrs.requiredMessage}" />
-          </c:if>          
-          
-          <p:ajax event="itemSelect" listener="#{typeReferenceBean.onItemSelect}"
-                  process="@this" update="@none"
-                  rendered="#{cc.attrs.autoUpdate or cc.attrs.renderShowButton}"/>
+          </c:if>
 
-          <p:ajax event="clear" listener="#{typeReferenceBean.onClear}"
-                  process="@this" update="@none"
-                  rendered="#{cc.attrs.autoUpdate or cc.attrs.renderShowButton}"/>
+          <c:if test="#{cc.attrs.autoUpdate}">
+            <p:ajax event="itemSelect" listener="#{typeReferenceBean.onItemSelect}"
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
+
+            <p:ajax event="clear" listener="#{typeReferenceBean.onClear}"
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
+          </c:if>
 
           <p:column>
             <h:outputText value="#{item.label}" />

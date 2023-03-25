@@ -21,7 +21,8 @@
       </div>
             
       <div class="field col-12 md:col-8">
-        <p:outputLabel for="@next" value="#{securityBundle.user_displayName}" />
+        <p:outputLabel for="@next" value="#{securityBundle.user_displayName}"
+                       indicateRequired="true" />
         <p:inputText value="#{userObjectBean.user.displayName}" 
                      required="#{not empty param['mainform:search_tabs:store']}"
                      requiredMessage="Display name is mandatory"

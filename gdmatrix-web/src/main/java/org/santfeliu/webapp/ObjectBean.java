@@ -126,13 +126,13 @@ public abstract class ObjectBean extends BaseBean
     return objectSetup == null ?
       Collections.EMPTY_LIST : objectSetup.getSearchTabs();
   }
-  
+
   public SearchTab getActiveSearchTab()
   {
     int selector = getSearchTabSelector();
     if (selector >= getSearchTabs().size()) return null;
 
-    return getSearchTabs().get(selector);    
+    return getSearchTabs().get(selector);
   }
 
   public List<EditTab> getEditTabs()
@@ -225,7 +225,7 @@ public abstract class ObjectBean extends BaseBean
       }
     }
 
-    ObjectSetup defaultSetup = getTypeBean().getObjectSetup();    
+    ObjectSetup defaultSetup = getTypeBean().getObjectSetup();
     if (setupName != null)
     {
       objectSetup = ObjectSetupCache.getConfig(setupName);
@@ -236,7 +236,7 @@ public abstract class ObjectBean extends BaseBean
       objectSetup = defaultSetup;
     }
   }
-    
+
   public void loadActiveEditTab() throws Exception
   {
     EditTab tab = getActiveEditTab();
@@ -262,7 +262,7 @@ public abstract class ObjectBean extends BaseBean
   {
     return tab.getBeanName() != null && NEW_OBJECT_ID.equals(objectId);
   }
-  
+
   public boolean isRenderedEditTab(EditTab tab)
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -270,13 +270,13 @@ public abstract class ObjectBean extends BaseBean
     return readRoles == null || readRoles.isEmpty()
       || userSessionBean.isUserInRole(readRoles);
   }
-  
+
   public boolean isEditable()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     List<String> writeRoles = getActiveEditTab().getWriteRoles();
     return writeRoles == null || writeRoles.isEmpty()
-      || userSessionBean.isUserInRole(writeRoles);    
+      || userSessionBean.isUserInRole(writeRoles);
   }
 
   public void store()

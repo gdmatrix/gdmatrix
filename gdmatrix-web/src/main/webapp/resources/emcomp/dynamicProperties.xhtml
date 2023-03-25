@@ -11,11 +11,13 @@
   <h:body>
     <composite:interface>
       <composite:attribute name="typeId" required="true" />
-      <composite:attribute name="formSelector" required="true" />
       <composite:attribute name="properties" required="true" />
+      <composite:attribute name="formSelector" required="true" />
+      <composite:attribute name="formBuilderPrefix" required="false" default="type" />
+      <composite:attribute name="options" required="false" type="java.util.Map" />
     </composite:interface>
     <composite:implementation>
-      <div class="ui-fluid formgrid grid">   
+      <div class="ui-fluid formgrid grid">
         <div class="field col-12">
           <p:outputLabel for="@next" value="#{objectBundle.forms}:" />
           <p:selectOneMenu value="#{cc.attrs.formSelector}">

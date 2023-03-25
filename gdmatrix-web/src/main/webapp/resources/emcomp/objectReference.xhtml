@@ -25,6 +25,7 @@
       <composite:attribute name="update" required="false" default="@none" />
       <composite:attribute name="required" required="false" default="false" />
       <composite:attribute name="requiredMessage" required="false" />
+      <composite:attribute name="forceSelection" required="false" default="true" />
       <composite:attribute name="showNavigatorItems" required="false" default="true" />
       <composite:attribute name="widgetVar" required="false" />
       <composite:attribute name="renderShowButton" required="false" default="true" />
@@ -40,6 +41,7 @@
         <p:autoComplete id="autocomplete"
                         value="#{objectReferenceBean.selectItem}"
                         maxResults="#{cc.attrs.maxResults}" 
+                        forceSelection="#{cc.attrs.forceSelection}"
                         dropdown="true" dropdownMode="blank" cache="true"
                         completeMethod="#{objectReferenceBean.complete}"
                         converter="selectItemConverter"
@@ -56,15 +58,15 @@
 
           <c:if test="#{not empty cc.attrs.requiredMessage}">
             <f:attribute name="requiredMessage" value="#{cc.attrs.requiredMessage}" />
-          </c:if>                    
+          </c:if>
           
-          <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
-                  process="@this" update="@none"
-                  rendered="#{cc.attrs.autoUpdate or cc.attrs.renderShowButton}"/>
+          <c:if test="#{cc.attrs.autoUpdate}">
+            <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
 
-          <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
-                  process="@this" update="@none"
-                  rendered="#{cc.attrs.autoUpdate or cc.attrs.renderShowButton}"/>
+            <p:ajax event="clear" listener="#{objectReferenceBean.onClear}"
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
+          </c:if>
 
           <p:column>
             <h:outputText value="#{item.label}" />
