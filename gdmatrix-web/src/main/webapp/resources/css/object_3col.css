@@ -35,10 +35,10 @@ tr.current { font-weight: bold; }
 {
   .side_panel
   {
-    position:fixed;
+    position:absolute;
     top:0;
     bottom: 0;
-    z-index: 150000 !important;
+    z-index: 10 !important;
     background: white;
     overflow:auto;
     width: 400px !important;
