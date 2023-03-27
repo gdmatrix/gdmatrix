@@ -246,8 +246,19 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public String close()
   {
-    Leap leap = history.pop();
-    return leap == null ? null : execute(leap, false);
+    if (history.isEmpty())
+    {
+      BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+      if (baseTypeInfo == null) return null;
+      DirectLeap leap = new DirectLeap(baseTypeInfo.getBaseTypeId());
+      leap.setSearchTabSelector(-1); // edit tab
+      return execute(leap, false);
+    }
+    else
+    {
+      DirectLeap leap = history.pop();
+      return execute(leap, false);
+    }
   }
 
   public String execute(Leap leap)
@@ -646,7 +657,12 @@ public class NavigatorBean extends WebBean implements Serializable
       return stack;
     }
 
-    Leap peek()
+    boolean isEmpty()
+    {
+      return stack.isEmpty();
+    }
+
+    DirectLeap peek()
     {
       return stack.peek();
     }
