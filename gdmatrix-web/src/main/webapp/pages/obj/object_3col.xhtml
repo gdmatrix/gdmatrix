@@ -89,7 +89,8 @@
                     <p:commandLink action="#{navigatorBean.show(node.parent.data.baseTypeId, data.objectId)}" 
                                    rendered="#{not recentObjectsBean.isCurrentBaseType(node)}"
                                    immediate="true"
-                                   ajax="false">
+                                   ajax="false"
+                                   onclick="showOverlay()">
                       <h:outputText value="#{data.description}" />
                     </p:commandLink>
                     <p:commandLink action="#{navigatorBean.view(data.objectId)}" 
@@ -112,7 +113,8 @@
                                      process="@this" 
                                      rendered="#{not historyBean.isCurrentBaseType(leap)}"
                                      immediate="true"
-                                     ajax="false">
+                                     ajax="false"
+                                     onclick="showOverlay()">
                         <span class="#{historyBean.getIcon(leap)}" />
                         <h:outputText value="#{historyBean.getDescription(leap)}" /> 
                       </p:commandLink>

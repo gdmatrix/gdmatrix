@@ -42,6 +42,8 @@
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
+                         immediate="true"
+                         onclick="showOverlay()"
                          rendered="#{documentACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
       </p:column>
@@ -83,6 +85,8 @@
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
+                         immediate="true"
+                         onclick="showOverlay()"
                          rendered="#{documentACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 

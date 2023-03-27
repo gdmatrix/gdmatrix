@@ -71,15 +71,7 @@
       </div>      
     </div>
 
-    <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" delay="1000" />
-
-    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" 
-              closable="false" resizable="false" showHeader="false"
-              styleClass="loading-icon-container">
-      <div class="p-text-center">
-        <i class="pi pi-spin pi-spinner loading-icon" aria-hidden="true"></i>
-      </div>
-    </p:dialog>
+    <p:ajaxStatus onstart="showOverlay()" onsuccess="hideOverlay()" delay="1000" />
     
     <p:dialog id="component_tree" 
               widgetVar="componentTree" modal="true" closable="true" 

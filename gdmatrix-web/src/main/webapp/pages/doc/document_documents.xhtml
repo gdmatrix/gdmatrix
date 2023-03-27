@@ -52,6 +52,8 @@
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
+                         immediate="true"
+                         onclick="showOverlay()"
                          action="#{navigatorBean.show('Document', row.relatedDocument.docId)}" />
         <p:commandButton icon="pi pi-pencil" 
                          styleClass="rounded-button ui-button-flat" 

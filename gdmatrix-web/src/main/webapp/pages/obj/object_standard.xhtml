@@ -41,6 +41,7 @@
                          rendered="#{navigatorBean.selectable}"
                          ajax="false"
                          immediate="true"
+                         onclick="showOverlay()"
                          title="#{objectBundle.select}" alt="#{objectBundle.select}"
                          />
         <p:commandButton icon="ui-icon pi pi-plus-circle"
@@ -90,6 +91,7 @@
                          action="#{navigatorBean.close}"
                          ajax="false"
                          immediate="true"
+                         onclick="showOverlay()"
                          styleClass="rounded-button ui-button-flat"
                          title="#{objectBundle.close}" alt="#{objectBundle.close}" />
     </div>
