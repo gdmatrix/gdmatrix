@@ -34,6 +34,11 @@
    <supported-locale>bg</supported-locale>
   </locale-config>
   <message-bundle>org.santfeliu.web.resources.MessageBundle</message-bundle>
+
+   <system-event-listener>
+    <system-event-listener-class>org.santfeliu.webapp.util.PreDestroyViewMapListener</system-event-listener-class>
+    <system-event-class>javax.faces.event.PreDestroyViewMapEvent</system-event-class>
+   </system-event-listener>
  </application>  
   
  <managed-bean>

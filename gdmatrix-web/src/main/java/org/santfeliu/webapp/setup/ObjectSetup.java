@@ -33,6 +33,7 @@ package org.santfeliu.webapp.setup;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ import java.util.Set;
  *
  * @author realor
  */
-public class ObjectSetup
+public class ObjectSetup implements Serializable
 {
   private String viewId;
   private String label;
@@ -118,47 +119,47 @@ public class ObjectSetup
     Gson gson = new Gson();
     return gson.fromJson(reader, ObjectSetup.class);
   }
-  
+
   public EditTab findEditTabByViewId(String viewId)
   {
     if (viewId != null)
-    {    
+    {
       for (EditTab editTab : editTabs)
       {
         if (viewId.equals(editTab.getViewId()))
           return editTab;
       }
     }
-    
+
     return null;
   }
-  
+
   public SearchTab findSearchTabByViewId(String viewId)
   {
     if (viewId != null)
-    {    
+    {
       for (SearchTab searchTab : searchTabs)
       {
         if (viewId.equals(searchTab.getViewId()))
           return searchTab;
       }
     }
-    
-    return null;    
+
+    return null;
   }
-  
+
   public void merge(ObjectSetup defaultSetup) throws Exception
-  {    
+  {
     mergeProperties(defaultSetup.getProperties(), getProperties());
-    
+
     for (SearchTab searchTab : searchTabs)
     {
-      SearchTab defaultSearchTab = 
+      SearchTab defaultSearchTab =
         defaultSetup.findSearchTabByViewId(searchTab.getViewId());
       if (defaultSearchTab != null)
         mergeSearchTab(searchTab, defaultSearchTab);
     }
-    
+
     for (EditTab editTab : editTabs)
     {
       EditTab defaultEditTab =
@@ -167,8 +168,8 @@ public class ObjectSetup
         mergeEditTab(defaultEditTab, editTab);
     }
   }
-  
-  private void mergeSearchTab(SearchTab defaultSearchTab, 
+
+  private void mergeSearchTab(SearchTab defaultSearchTab,
     SearchTab searchTab)
   {
     //Properties
@@ -178,9 +179,9 @@ public class ObjectSetup
     {
       propertyMap = new PropertyMap();
       searchTab.setProperties(propertyMap);
-    }    
+    }
     mergeProperties(defaultPropertyMap, propertyMap);
-      
+
     //Columns
     List<Column> defaultColumns = defaultSearchTab.getColumns();
     List<Column> columns = searchTab.getColumns();
@@ -188,10 +189,10 @@ public class ObjectSetup
     {
       columns = new ArrayList();
       searchTab.setColumns(columns);
-    }    
+    }
     mergeColumns(defaultColumns, columns);
-  }  
-  
+  }
+
   private void mergeEditTab(EditTab defaultEditTab, EditTab editTab)
   {
     //Properties
@@ -203,7 +204,7 @@ public class ObjectSetup
       editTab.setProperties(propertyMap);
     }
     mergeProperties(defaultPropertyMap, propertyMap);
-      
+
     //Columns
     List<Column> defaultColumns = defaultEditTab.getColumns();
     List<Column> columns = editTab.getColumns();
@@ -213,7 +214,7 @@ public class ObjectSetup
       editTab.setColumns(columns);
     }
     mergeColumns(defaultColumns, columns);
-    
+
     //Roles
     List<String> defaultReadRoles = defaultEditTab.getReadRoles();
     List<String> readRoles = editTab.getReadRoles();
@@ -223,18 +224,18 @@ public class ObjectSetup
       editTab.setReadRoles(readRoles);
     }
     mergeRoles(defaultReadRoles, readRoles);
-    
+
     List<String> defaultWriteRoles = defaultEditTab.getWriteRoles();
     List<String> writeRoles = editTab.getWriteRoles();
     if (writeRoles == null)
     {
       writeRoles = new ArrayList();
       editTab.setWriteRoles(writeRoles);
-    }    
-    mergeRoles(defaultWriteRoles, writeRoles);    
-  }    
-  
-  private void mergeProperties(PropertyMap defaultPropertyMap, 
+    }
+    mergeRoles(defaultWriteRoles, writeRoles);
+  }
+
+  private void mergeProperties(PropertyMap defaultPropertyMap,
     PropertyMap propertyMap)
   {
     if (defaultPropertyMap != null)
@@ -247,27 +248,27 @@ public class ObjectSetup
         {
           propertyMap.put(propertyName, property);
         }
-      }    
+      }
     }
   }
-  
-  private void mergeColumns(List<Column> defaultColumns, 
+
+  private void mergeColumns(List<Column> defaultColumns,
     List<Column> columns)
   {
-    if (defaultColumns != null && !defaultColumns.isEmpty() 
+    if (defaultColumns != null && !defaultColumns.isEmpty()
       && columns != null && columns.isEmpty())
     {
       columns.addAll(defaultColumns);
     }
-  }  
-  
+  }
+
   private void mergeRoles(List<String> defaultRoles, List<String> roles)
   {
-    if (defaultRoles != null && !defaultRoles.isEmpty() 
+    if (defaultRoles != null && !defaultRoles.isEmpty()
       && roles != null && roles.isEmpty())
     {
       roles.addAll(defaultRoles);
     }
-  }    
+  }
 
 }
