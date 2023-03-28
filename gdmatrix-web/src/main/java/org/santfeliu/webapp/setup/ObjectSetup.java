@@ -174,11 +174,21 @@ public class ObjectSetup
     //Properties
     PropertyMap defaultPropertyMap = defaultSearchTab.getProperties();
     PropertyMap propertyMap = searchTab.getProperties();
+    if (propertyMap == null)
+    {
+      propertyMap = new PropertyMap();
+      searchTab.setProperties(propertyMap);
+    }    
     mergeProperties(defaultPropertyMap, propertyMap);
       
     //Columns
     List<Column> defaultColumns = defaultSearchTab.getColumns();
     List<Column> columns = searchTab.getColumns();
+    if (columns == null)
+    {
+      columns = new ArrayList();
+      searchTab.setColumns(columns);
+    }    
     mergeColumns(defaultColumns, columns);
   }  
   
@@ -187,20 +197,40 @@ public class ObjectSetup
     //Properties
     PropertyMap defaultPropertyMap = defaultEditTab.getProperties();
     PropertyMap propertyMap = editTab.getProperties();
+    if (propertyMap == null)
+    {
+      propertyMap = new PropertyMap();
+      editTab.setProperties(propertyMap);
+    }
     mergeProperties(defaultPropertyMap, propertyMap);
       
     //Columns
     List<Column> defaultColumns = defaultEditTab.getColumns();
     List<Column> columns = editTab.getColumns();
+    if (columns == null)
+    {
+      columns = new ArrayList();
+      editTab.setColumns(columns);
+    }
     mergeColumns(defaultColumns, columns);
     
     //Roles
     List<String> defaultReadRoles = defaultEditTab.getReadRoles();
     List<String> readRoles = editTab.getReadRoles();
+    if (readRoles == null)
+    {
+      readRoles = new ArrayList();
+      editTab.setReadRoles(readRoles);
+    }
     mergeRoles(defaultReadRoles, readRoles);
     
     List<String> defaultWriteRoles = defaultEditTab.getWriteRoles();
     List<String> writeRoles = editTab.getWriteRoles();
+    if (writeRoles == null)
+    {
+      writeRoles = new ArrayList();
+      editTab.setWriteRoles(writeRoles);
+    }    
     mergeRoles(defaultWriteRoles, writeRoles);    
   }    
   
@@ -209,12 +239,6 @@ public class ObjectSetup
   {
     if (defaultPropertyMap != null)
     {
-      if (propertyMap == null)
-      {
-        propertyMap = new PropertyMap();
-        propertyMap.putAll(defaultPropertyMap);
-      }
-
       Set<String> propertyNames = defaultPropertyMap.keySet();
       for (String propertyName : propertyNames)
       {

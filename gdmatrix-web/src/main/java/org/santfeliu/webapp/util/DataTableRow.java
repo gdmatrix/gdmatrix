@@ -151,31 +151,36 @@ public class DataTableRow implements Serializable
     if (rowTypeId != null)
     {
       Type type = TypeCache.getInstance().getType(rowTypeId);
-      PropertyDefinition pd = type.getPropertyDefinition((String) key);
-      if (pd != null)
-      {    
-        if (pd.getMaxOccurs() > 1)
-        {
-          fValue = values.toString();
+      if (type != null)
+      {
+        PropertyDefinition pd = type.getPropertyDefinition((String) key);
+        if (pd != null)
+        {    
+          if (pd.getMaxOccurs() > 1)
+          {
+            fValue = values.toString();
+          }
+          else
+          {
+            fValue = values.get(0);
+            PropertyType propType = pd.getType();
+            if (propType.equals(PropertyType.DATE))
+              fValue = formatDate(fValue);
+            else if (pd.getEnumTypeId() != null)
+              fValue = formatEnumType(pd.getEnumTypeId(), fValue);
+            else if (skey.endsWith("TypeId"))
+            {
+              String svalue = String.valueOf(fValue);
+              Type keyType = TypeCache.getInstance().getType(svalue); 
+              if (keyType != null)                
+                fValue = keyType.getDescription();            
+            }
+
+            return fValue;
+          }
         }
         else
-        {
           fValue = values.get(0);
-          PropertyType propType = pd.getType();
-          if (propType.equals(PropertyType.DATE))
-            fValue = formatDate(fValue);
-          else if (pd.getEnumTypeId() != null)
-            fValue = formatEnumType(pd.getEnumTypeId(), fValue);
-          else if (skey.endsWith("TypeId"))
-          {
-            String svalue = String.valueOf(fValue);
-            Type keyType = TypeCache.getInstance().getType(svalue); 
-            if (keyType != null)                
-              fValue = keyType.getDescription();            
-          }
-          
-          return fValue;
-        }
       }
       else
         fValue = values.get(0);
