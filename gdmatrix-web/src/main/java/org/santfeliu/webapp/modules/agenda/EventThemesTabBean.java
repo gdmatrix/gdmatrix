@@ -212,7 +212,6 @@ public class EventThemesTabBean extends TabBean
         editing.setEventId(eventId);
         AgendaModuleBean.getClient(false).storeEventTheme(editing);
         editing = null;
-        info("STORE_OBJECT");
         hideDialog();
       }
     }

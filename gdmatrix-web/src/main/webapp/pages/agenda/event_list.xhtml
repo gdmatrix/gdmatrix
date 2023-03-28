@@ -11,28 +11,29 @@
                rowStyleClass="#{row.eventId == eventObjectBean.objectId ? 'current' : ''}"
                rowIndexVar="rowIndex"
                rendered="true">
-    <p:column headerText="#{agendaBundle.event_id}" styleClass="w-1">
+    <p:column headerText="#{agendaBundle.event_id}" styleClass="col-1">
       <h:outputText value="#{row.eventId}" />
     </p:column>
-    <p:column headerText="#{agendaBundle.event_type}" styleClass="w-2">
+    <p:column headerText="#{agendaBundle.event_type}" styleClass="col-2">
       <h:outputText value="#{row.eventTypeId}" />
     </p:column>
-    <p:column headerText="#{agendaBundle.event_startDate}" styleClass="w-2">
+    <p:column headerText="#{agendaBundle.event_startDate}" styleClass="col-2">
       <h:outputText value="#{row.startDateTime}" converter="DateTimeConverter" />
     </p:column>
-    <p:column headerText="#{agendaBundle.event_endDate}" styleClass="w-2">
+    <p:column headerText="#{agendaBundle.event_endDate}" styleClass="col-2">
       <h:outputText value="#{row.endDateTime}" converter="DateTimeConverter" />
     </p:column>
-    <p:column headerText="#{agendaBundle.event_summary}" styleClass="w-8">
+    <p:column headerText="#{agendaBundle.event_summary}" styleClass="col-4">
       <h:outputText value="#{row.summary}" />
     </p:column>
-    <p:column styleClass="w-1">
+    <p:column styleClass="col-1 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.eventId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
+                       onclick="showOverlay()"                                              
                        title="#{objectBundle.select}" alt="#{objectBundle.select}" />
       <p:commandButton icon="pi pi-external-link"
                        styleClass="rounded-button ui-button-flat"

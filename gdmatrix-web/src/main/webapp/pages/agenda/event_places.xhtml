@@ -30,13 +30,11 @@
         </div>
       </f:facet>
 
-      <p:column headerText="#{agendaBundle.eventPlaces_id}" styleClass="w-1"
-                exportHeaderValue="#{agendaBundle.eventPlaces_id}">
+      <p:column headerText="#{agendaBundle.eventPlaces_id}" styleClass="col-1">
         <h:outputText value="#{row.eventPlaceId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.eventPlaces_place}" styleClass="w-9"
-                exportHeaderValue="#{agendaBundle.eventPlaces_place}">
+      <p:column headerText="#{agendaBundle.eventPlaces_place}" styleClass="col-9">
         <p:outputPanel rendered="#{row.roomView != null}">
           <div>#{row.roomView.description}</div>
           <p:outputPanel rendered="#{row.roomView.addressView != null}">#{row.roomView.addressView.description}</p:outputPanel>
@@ -46,16 +44,20 @@
         </p:outputPanel>
       </p:column>
 
-      <p:column styleClass="w-2" exportable="false">
+      <p:column styleClass="col-2 text-right" exportable="false">
         <p:commandButton icon="pi pi-external-link"
                          action="#{navigatorBean.show('Room', row.roomView.roomId)}"
                          ajax="false"
+                         immediate="true"
+                         onclick="showOverlay()"                                                
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          rendered="#{row.roomView != null}"
                          styleClass="rounded-button ui-button-flat" />
         <p:commandButton icon="pi pi-external-link"
                          action="#{navigatorBean.show('Address', row.addressView.addressId)}"
                          ajax="false"
+                         immediate="true"
+                         onclick="showOverlay()"                                                
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          rendered="#{row.roomView == null}"
                          styleClass="rounded-button ui-button-flat" />
@@ -69,7 +71,7 @@
                          oncomplete="if (!isFacesError()) PF('eventPlacesDialog').show()" />
         <p:commandButton action="#{eventPlacesTabBean.remove(row)}"
                          process="@this"
-                         update="event_places_table :mainform:growl"
+                         update="event_places_table"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
@@ -166,7 +168,7 @@
         <p:commandButton action="#{eventPlacesTabBean.cancel}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="event_places_dialog :mainform:growl" global="false"
+                         update="event_places_dialog" global="false"
                          oncomplete="PF('eventPlacesDialog').hide()" />
       </div>
 

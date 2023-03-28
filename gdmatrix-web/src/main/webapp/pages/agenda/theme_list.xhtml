@@ -11,19 +11,20 @@
                rowStyleClass="#{row.themeId == themeObjectBean.objectId ? 'current' : ''}"
                rowIndexVar="rowIndex"
                rendered="true">
-    <p:column headerText="#{agendaBundle.theme_id}" styleClass="w-1">
+    <p:column headerText="#{agendaBundle.theme_id}" styleClass="col-1">
       <h:outputText value="#{row.themeId}" />
     </p:column>   
-    <p:column headerText="#{agendaBundle.theme_description}" styleClass="w-8">
+    <p:column headerText="#{agendaBundle.theme_description}" styleClass="col-10">
       <h:outputText value="#{row.description}" />
     </p:column>
-    <p:column styleClass="w-1">
+    <p:column styleClass="col-1 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.themeId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
+                       onclick="showOverlay()"                                              
                        title="#{objectBundle.select}" alt="#{objectBundle.select}" />
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat" 

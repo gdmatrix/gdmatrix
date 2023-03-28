@@ -42,36 +42,34 @@
 
       <p:headerRow field="attendantTypeId" expandable="true"
                    expanded="true" rendered="#{eventPersonsTabBean.groupedView}">
-        <p:column colspan="6" >
+        <p:column colspan="6">
           <h:outputText styleClass="ml-2" value="#{eventPersonsTabBean.attendantTypeDescription}"/>
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="#{agendaBundle.attendants_id}" styleClass="w-1"
-                exportHeaderValue="#{agendaBundle.attendants_id}">
+      <p:column headerText="#{agendaBundle.attendants_id}" styleClass="col-1">
         <h:outputText value="#{row.personView.personId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.attendants_person}" styleClass="w-4"
-                exportHeaderValue="#{agendaBundle.attendants_person}">
+      <p:column headerText="#{agendaBundle.attendants_person}" styleClass="col-4">
         <h:outputText value="#{row.personView.fullName}"/>
       </p:column>
 
-      <p:column headerText="#{agendaBundle.attendants_type}" styleClass="w-4"
-                exportHeaderValue="#{agendaBundle.attendants_type}"
+      <p:column headerText="#{agendaBundle.attendants_type}" styleClass="col-4"
                 rendered="#{!eventPersonsTabBean.groupedView}">
         <h:outputText value="#{eventPersonsTabBean.attendantTypeDescription}"/>
       </p:column>
 
-      <p:column headerText="#{agendaBundle.attendants_attended}" styleClass="w-1"
-                exportHeaderValue="#{agendaBundle.attendants_attended}">
+      <p:column headerText="#{agendaBundle.attendants_attended}" styleClass="col-1">
         <h:outputText value="#{eventPersonsTabBean.attendedLabel}"/>
       </p:column>
 
-      <p:column styleClass="w-2" exportable="false">
+      <p:column styleClass="col-2 text-right" exportable="false">
         <p:commandButton icon="pi pi-external-link"
                          action="#{navigatorBean.show('Person', row.personId)}"
                          ajax="false"
+                         immediate="true"
+                         onclick="showOverlay()"                                                
                          styleClass="rounded-button ui-button-flat"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"/>
         <p:commandButton action="#{eventPersonsTabBean.edit(row)}"
@@ -84,7 +82,7 @@
                          oncomplete="if (!isFacesError()) PF('eventPersonsDialog').show()" />
         <p:commandButton action="#{eventPersonsTabBean.remove(row)}"
                          process="@this"
-                         update=":mainform:search_tabs:tabs :mainform:growl"
+                         update=":mainform:search_tabs:tabs"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"

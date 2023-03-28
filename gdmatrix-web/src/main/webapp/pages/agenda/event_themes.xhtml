@@ -31,20 +31,18 @@
 
       </f:facet>
 
-      <p:column headerText="#{agendaBundle.eventThemes_themeId}" styleClass="w-1"
-                exportHeaderValue="#{agendaBundle.eventThemes_themeId}">
+      <p:column headerText="#{agendaBundle.eventThemes_themeId}" styleClass="col-1">
         <h:outputText value="#{row.themeId}" />
       </p:column>
 
-      <p:column headerText="#{agendaBundle.eventThemes_theme}" styleClass="w-10"
-                exportHeaderValue="#{agendaBundle.eventThemes_theme}">
+      <p:column headerText="#{agendaBundle.eventThemes_theme}" styleClass="col-10">
         <h:outputText value="#{row.description}"/>
       </p:column>
 
-      <p:column styleClass="w-1" exportable="false">
+      <p:column styleClass="col-1 text-right" exportable="false">
         <p:commandButton action="#{eventThemesTabBean.remove(row)}"
                          process="@this"
-                         update="event_themes_table :mainform:growl"
+                         update="event_themes_table"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
@@ -106,7 +104,7 @@
         <p:commandButton action="#{eventThemesTabBean.cancel}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="event_themes_dialog :mainform:growl" global="false"
+                         update="event_themes_dialog" global="false"
                          oncomplete="PF('eventThemesDialog').hide()" />
       </div>
 

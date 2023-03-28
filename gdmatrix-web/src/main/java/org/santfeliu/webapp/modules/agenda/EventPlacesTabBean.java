@@ -279,7 +279,6 @@ public class EventPlacesTabBean extends TabBean
         editing.setEventId(eventId);
         AgendaModuleBean.getClient(false).storeEventPlace(editing);
         editing = null;
-        info("STORE_OBJECT");
         hideDialog();
       }
     }

@@ -11,22 +11,23 @@
                rowStyleClass="#{row.roomId == roomObjectBean.objectId ? 'current' : ''}"
                rowIndexVar="rowIndex"               
                rendered="true">
-    <p:column headerText="#{kernelBundle.room_id}" styleClass="w-1">
+    <p:column headerText="#{kernelBundle.room_id}" styleClass="col-1">
       <h:outputText value="#{row.roomId}" />
     </p:column>
-    <p:column headerText="#{kernelBundle.room_name}" styleClass="w-8">
+    <p:column headerText="#{kernelBundle.room_name}" styleClass="col-8">
       <h:outputText value="#{row.description}" />
     </p:column>    
-    <p:column headerText="#{kernelBundle.room_type}" styleClass="w-2">
+    <p:column headerText="#{kernelBundle.room_type}" styleClass="col-2">
       <h:outputText value="#{roomFinderBean.getRoomTypeDescription(row)}" />
     </p:column>         
-    <p:column styleClass="w-1">
+    <p:column styleClass="col-1 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.roomId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
+                       onclick="showOverlay()"                       
                        title="#{objectBundle.select}" alt="#{objectBundle.select}" />      
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat" 
