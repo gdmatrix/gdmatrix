@@ -173,7 +173,7 @@
           <p:outputPanel id="rightPanel" styleClass="rightPanel">
 
             <p:tabView activeIndex="#{nodeEditBean.activeTabIndex}">        
-              <p:ajax event="tabChange" listener="#{nodeEditBean.onTabChange}" update="@this :mainform:tree :mainform:rightPanel" />            
+              <p:ajax event="tabChange" update="@this :mainform:tree :mainform:rightPanel" />
 
               <p:tab id="propertiesTab" title="#{cmsBundle.propertiesTab}">
                 <ui:include src="./panels/properties.xhtml" />  
@@ -190,11 +190,11 @@
               <p:tab id="searchTab" title="#{cmsBundle.searchTab}">
                 <ui:include src="./panels/search.xhtml" />                
               </p:tab>
-              
+<!--              
               <p:tab id="formTab" title="#{cmsBundle.formTab}">
                 <ui:include src="./panels/forms.xhtml" />  
               </p:tab>              
-
+-->
               <p:tab id="jsonTab" title="#{cmsBundle.JSONTab}">
                 <ui:include src="./panels/json.xhtml" />                
               </p:tab>

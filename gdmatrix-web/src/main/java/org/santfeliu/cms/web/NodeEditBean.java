@@ -69,7 +69,6 @@ import org.matrix.util.WSEndpoint;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
@@ -110,8 +109,8 @@ public class NodeEditBean extends FacesBean implements Serializable
   private static final Integer CSS_TAB_INDEX = 1;
   private static final Integer SYNC_TAB_INDEX = 2;
   private static final Integer SEARCH_TAB_INDEX = 3;
-  private static final Integer FORMS_TAB_INDEX = 4;
-  private static final Integer JSON_TAB_INDEX = 5;
+  //private static final Integer FORMS_TAB_INDEX = 4;
+  private static final Integer JSON_TAB_INDEX = 4;
 
   //Tree edit & selection
   private String currentWorkspaceId;
@@ -1949,27 +1948,6 @@ public class NodeEditBean extends FacesBean implements Serializable
     return getPropertyTip() != null;
   }
 
-  public void onTabChange(TabChangeEvent event)
-  {
-    String tabId = event.getTab().getId();
-    if (tabId.contains("propertiesTab"))
-    {
-      setActiveTabIndex(PROPERTIES_TAB_INDEX);
-    }
-    else if (tabId.contains("cssTab"))
-    {
-      setActiveTabIndex(CSS_TAB_INDEX);
-    }
-    else if (tabId.contains("syncTab"))
-    {
-      setActiveTabIndex(SYNC_TAB_INDEX);
-    }
-    else if (tabId.contains("searchTab"))
-    {
-      setActiveTabIndex(SEARCH_TAB_INDEX);
-    }
-  }
-
   public String getNodeLabel(Node node)
   {
     String label = node.getNodeId();
@@ -2013,10 +1991,12 @@ public class NodeEditBean extends FacesBean implements Serializable
     return SEARCH_TAB_INDEX.equals(getActiveTabIndex());
   }
 
+  /*
   public boolean isFormsTabSelected()
   {
     return FORMS_TAB_INDEX.equals(getActiveTabIndex());
   }
+  */
 
   public boolean isJsonTabSelected()
   {
