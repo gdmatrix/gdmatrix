@@ -1,0 +1,145 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+  <h:outputText value="#{objectBundle.no_results_found}"
+                rendered="#{eventCopyTabBean.rows != null and eventCopyTabBean.rowCount == 0}" />
+
+  <p:dataTable id="event_copy_preview_table"
+               styleClass="eventCopyPreviewTable"
+               value="#{eventCopyTabBean.rows}"
+               rendered="#{eventCopyTabBean.rows != null and eventCopyTabBean.rowCount > 0}"
+               var="row" stripedRows="true" paginator="true" pageLinks="5"
+               resizableColumns="false" showGridlines="true"
+               size="small" paginatorPosition="bottom"
+               rowIndexVar="firstRow" first="#{eventCopyTabBean.firstRowIndex}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+               rowsPerPageTemplate="5,10,25,50" rows="10">
+
+    <p:column headerText="#{agendaBundle.event_startDate}" styleClass="col-2">
+      <h:outputText value="#{row.startDateTime}"
+                    rendered="#{eventCopyTabBean.editingRow != row}">
+        <f:convertDateTime pattern="EE dd/MM/yyyy HH:mm" />
+      </h:outputText>
+      <p:datePicker value="#{eventCopyTabBean.editingRow.startDateTime}"
+                    locale="#{eventObjectBean.language}"
+                    showIcon="true" showTime="true"
+                    autocomplete="off"
+                    monthNavigator="true" yearNavigator="true"
+                    rendered="#{eventCopyTabBean.editingRow == row}"
+                    styleClass="inputDateLong" />
+    </p:column>
+
+    <p:column headerText="#{agendaBundle.event_endDate}" styleClass="col-2">
+      <h:outputText value="#{row.endDateTime}"
+                    rendered="#{eventCopyTabBean.editingRow != row}">
+        <f:convertDateTime pattern="EE dd/MM/yyyy HH:mm" />
+      </h:outputText>
+      <p:datePicker value="#{eventCopyTabBean.editingRow.endDateTime}"
+                    locale="#{eventObjectBean.language}"
+                    showIcon="true" showTime="true"
+                    autocomplete="off"
+                    monthNavigator="true" yearNavigator="true"
+                    rendered="#{eventCopyTabBean.editingRow == row}"
+                    styleClass="inputDateLong" />
+    </p:column>
+
+    <p:column headerText="#{agendaBundle.event_title}" styleClass="col-4">
+      <h:outputText value="#{row.event.summary}"
+                    rendered="#{eventCopyTabBean.editingRow != row}"/>
+      <p:inputText value="#{eventCopyTabBean.editingRow.event.summary}"
+                   rendered="#{eventCopyTabBean.editingRow == row}" />
+    </p:column>
+
+    <p:column headerText="#{agendaBundle.eventCopy_attendantsAvailable}"
+              styleClass="col-1 centerElems"
+              rendered="#{eventCopyTabBean.checkAttendantsAvailability}">
+      <p:graphicImage value="/common/agenda/images/warn.png"
+                      rendered="#{not row.attendantAvailable}" alt="" />
+      <p:tooltip for="@previous" autoHide="false" styleClass="tooltip">
+        <p:dataList value="#{row.overlappingAttendants}" var="oa" itemType="none">
+          <h:outputText value="#{oa}" />
+        </p:dataList>
+      </p:tooltip>
+    </p:column>
+
+    <p:column headerText="#{agendaBundle.eventCopy_roomAvailable}"
+              styleClass="col-1 centerElems">
+      <p:graphicImage value="/common/agenda/images/accept.png"
+                      rendered="#{row.roomAvailable}"
+                      alt=""/>
+      <p:graphicImage value="/common/agenda/images/cross.png"
+                      rendered="#{not row.roomAvailable}"
+                      alt=""/>
+      <p:tooltip for="@previous" autoHide="false" styleClass="tooltip">
+        <p:dataList value="#{row.overlappingEvents}" var="oe" itemType="none">
+          <div>
+            <div>
+              <h:outputText value="#{oe.summary}" />
+            </div>
+            <div>
+              <h:outputText value="#{row.overlappingEventStartDateTime}">
+                <f:convertDateTime pattern="EE dd/MM/yyyy HH:mm:ss" />
+              </h:outputText>
+            </div>
+            <div>
+              <h:outputText value="#{row.overlappingEventEndDateTime}">
+                <f:convertDateTime pattern="EE dd/MM/yyyy HH:mm:ss" />
+              </h:outputText>
+            </div>
+          </div>
+        </p:dataList>
+      </p:tooltip>
+    </p:column>
+
+    <p:column styleClass="col-1" exportable="false">
+      <p:commandButton icon="pi pi-pencil"
+                       alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{eventCopyTabBean.editEvent}"
+                       rendered="#{eventCopyTabBean.editingRow != row}"
+                       process="@this"
+                       update="event_copy_preview_table" />
+      <p:commandButton icon="pi pi-trash"
+                       alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{eventCopyTabBean.removeEvent}"
+                       rendered="#{eventCopyTabBean.editingRow != row}"
+                       process="@this"
+                       update="event_copy_preview_table" />
+      <p:commandButton icon="pi pi-check"
+                       alt="#{objectBundle.store}" title="#{objectBundle.store}"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{eventCopyTabBean.storeEvent}"
+                       rendered="#{eventCopyTabBean.editingRow == row}"
+                       process="event_copy_preview_table"
+                       update="event_copy_preview_table" />
+      <p:commandButton icon="pi pi-times"
+                       alt="#{objectBundle.cancel}" title="#{objectBundle.cancel}"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{eventCopyTabBean.cancelEvent}"
+                       rendered="#{eventCopyTabBean.editingRow == row}"
+                       process="@this"
+                       update="event_copy_preview_table" />
+    </p:column>
+
+  </p:dataTable>
+
+  <p:outputPanel styleClass="actionBar">
+    <p:commandButton action="#{eventRecurrencesTabBean.copyRecurrences}"
+                     value="#{agendaBundle.eventRecurrences_copyRecurrences}"
+                     rendered="#{eventCopyTabBean.rows != null and eventCopyTabBean.rowCount > 0}"
+                     icon="pi pi-save"
+                     styleClass="ui-button-raised m-1"
+                     process="@this event_copy_preview_table"
+                     update="event_recurrences_panel" />
+    <p:commandButton action="#{eventCopyTabBean.reset}"
+                     styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                     process="@this"
+                     update="event_copy_dialog" global="false"
+                     oncomplete="PF('eventCopyDialog').hide()" />
+  </p:outputPanel>
+
+</html>

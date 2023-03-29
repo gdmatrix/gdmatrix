@@ -1,0 +1,118 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+  <div class="containerTitle">
+    <h:outputLabel value="#{agendaBundle.eventCopy_range}" />
+  </div>
+
+  <div class="rangeContainer flex">
+    <div class="leftBlock">
+      <div class="subTitle">
+        <h:outputLabel value="#{agendaBundle.eventCopy_start}:" />
+      </div>
+      <div>
+        <h:outputText value="#{agendaBundle.eventCopy_startsOn}" />
+        <p:datePicker value="#{eventCopyTabBean.rangeStartDateTime}"
+                      locale="#{eventObjectBean.language}" converter="datePickerConverter"
+                      showIcon="true" showTime="false"
+                      autocomplete="off"
+                      monthNavigator="true" yearNavigator="true"
+                      styleClass="inputDate" />
+      </div>
+    </div>
+    <div class="rightBlock">
+      <div class="subTitle">
+        <h:outputLabel value="#{agendaBundle.eventCopy_end}:" />
+      </div>
+      <p:selectOneRadio id="endRangeMode" value="#{eventCopyTabBean.endRangeMode}"
+                        layout="custom" converter="#{Integer}">
+        <f:selectItem itemValue="0" />
+        <f:selectItem itemValue="1" />
+        <f:facet name="custom">
+          <span class="field-radiobutton" role="radio">
+            <p:radioButton for="endRangeMode" itemIndex="0"/>
+            <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_endsOn}" />
+            <p:datePicker value="#{eventCopyTabBean.rangeEndDateTime}"
+                          locale="#{eventObjectBean.language}" converter="datePickerConverter"
+                          showIcon="true" showTime="false"
+                          autocomplete="off"
+                          monthNavigator="true" yearNavigator="true"
+                          styleClass="inputDate" />
+          </span>
+          <span class="field-radiobutton" role="radio">
+            <p:radioButton for="endRangeMode" itemIndex="1"/>
+            <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_endsAfter}" />
+            <p:inputText id="numberOfIterations"
+                         value="#{eventCopyTabBean.numberOfIterations}" converter="#{Integer}"
+                         styleClass="inputBox">
+              <f:validateLongRange minimum="0"/>
+            </p:inputText>
+            <h:outputLabel value="#{agendaBundle.eventCopy_iterations} (#{agendaBundle.eventCopy_maxIterations} #{eventCopyTabBean.maxRecurrencesCount})" />
+          </span>
+        </f:facet>
+      </p:selectOneRadio>
+    </div>
+  </div>
+
+  <div class="containerTitle">
+    <h:outputLabel value="#{agendaBundle.eventCopy_hourPattern}" />
+  </div>
+
+  <div class="rangeContainer">
+    <div class="hourPatternRow">
+      <h:outputLabel value="#{agendaBundle.eventCopy_startHour} " />
+      <p:inputText value="#{eventCopyTabBean.startHour}" styleClass="inputBoxLong">
+        <f:validateRegex pattern="([0?1]?[0-9]|2[0-3])(:[0-5][0-9])?" />
+      </p:inputText>
+      <h:outputLabel value=" #{agendaBundle.eventCopy_endHour} " />
+      <p:inputText value="#{eventCopyTabBean.endHour}" styleClass="inputBoxLong">
+        <f:validateRegex pattern="([0?1]?[0-9]|2[0-3])(:[0-5][0-9])?" />
+      </p:inputText>
+      <h:outputLabel value="#{agendaBundle.eventCopy_hoursOfProgrammedDays}." />
+    </div>
+    <div class="hourPatternRow">
+      <h:outputLabel value="#{agendaBundle.eventCopy_duration}: " />
+      <p:inputText value="#{eventCopyTabBean.duration}"  styleClass="inputBox">
+        <f:validateLongRange minimum="1" />
+      </p:inputText>
+      <p:selectOneMenu value="#{eventCopyTabBean.durationSelector}"
+                       styleClass="inputSelect">
+        <f:selectItem itemValue="m" itemLabel="minuts" />
+        <f:selectItem itemValue="h" itemLabel="hores" />
+        <f:selectItem itemValue="d" itemLabel="dies" />
+      </p:selectOneMenu>
+    </div>
+    <div class="hourPatternRow">
+      <h:outputLabel value="#{agendaBundle.eventCopy_gap}: " />
+      <p:inputText value="#{eventCopyTabBean.gap}" styleClass="inputBox">
+        <f:validateLongRange minimum="0"/>
+      </p:inputText>
+      <p:selectOneMenu value="#{eventCopyTabBean.gapSelector}"
+                       styleClass="inputSelect">
+        <f:selectItem itemValue="m" itemLabel="minuts" />
+        <f:selectItem itemValue="h" itemLabel="hores" />
+        <f:selectItem itemValue="d" itemLabel="dies" />
+      </p:selectOneMenu>
+    </div>
+  </div>
+
+  <div class="checkAttendantsAvailabilityPanel">
+    <p:selectBooleanCheckbox value="#{eventCopyTabBean.checkAttendantsAvailability}"
+                             disabled="#{not eventObjectBean.editable}"/>
+    <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_checkAttendantsAvailability}" styleClass="textBox" />
+  </div>
+
+  <p:outputPanel class="actionBar settings">
+    <p:commandButton action="#{eventCopyTabBean.show}"
+                     value="#{agendaBundle.eventCopy_preview}"
+                     styleClass="showButton"
+                     update="event_copy_preview" />
+    <p:commandButton action="#{eventCopyTabBean.reset}"
+                     value="#{agendaBundle.eventCopy_reset}"
+                     styleClass="cancelButton"
+                     update="event_copy_settings event_copy_preview" />
+  </p:outputPanel>
+
+</html>

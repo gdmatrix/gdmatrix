@@ -1,0 +1,214 @@
+/***** AGENDA MODULE CSS *****/
+
+.eventRecurrences.dialog
+{
+  max-width: 800px;
+}
+
+.eventRecurrences .flex
+{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.eventRecurrences .field-radiobutton
+{
+  flex-wrap: wrap;
+}
+
+.eventRecurrences .collapsiblePanel
+{
+  background-color: #eeeeee;
+  padding:5px;
+}
+
+.eventRecurrences .collapsiblePanel .title
+{
+  width:100%;
+  font-weight:bold;
+}
+
+.eventRecurrences .actionBar
+{
+  width:100%;
+  text-align:right;
+  margin-top: 5px;
+}
+
+.eventRecurrences .actionBar button
+{
+  margin-left: 8px;
+}
+
+.eventRecurrences .actionBar.settings
+{
+  text-align: left;
+}
+
+.eventRecurrences .actionsContainer
+{
+  background-color:#ffffff;
+  text-align:left;
+  padding:4px;
+  width:100%;
+}
+
+.eventRecurrences .selected
+{
+  color: gray;
+}
+
+.eventRecurrences .inputDate input
+{
+  max-width: 100px;
+}
+
+.eventRecurrences .inputDateLong input
+{
+  max-width: 120px;
+}
+
+.eventRecurrences .containerTitle
+{
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.eventRecurrences .ui-selectoneradio label
+{
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.eventRecurrences .ui-radiobutton
+{
+  margin-right: 8px;
+}
+
+.eventRecurrences .ui-chkbox
+{
+  margin-right: 4px;
+}
+
+.eventRecurrences .inputBox
+{
+  margin: 0px 8px 0px 8px;
+  width: 40px;
+  text-align:center
+}
+
+.eventRecurrences .inputBoxLong
+{
+  margin: 0px 8px 0px 8px;
+  width: 60px;
+  text-align:center
+}
+
+.eventRecurrences .inputSelect,
+.eventRecurrences .inputDate
+{
+  margin: 0px 8px 0px 8px;
+}
+
+.eventRecurrences .eventCopySettings
+{
+}
+
+.eventRecurrences .eventCopyPreview
+{
+  margin-top: 10px;
+}
+
+.eventRecurrences .centerElems
+{
+  text-align: center;
+}
+
+.eventRecurrencesTable
+{
+}
+
+.eventRecurrencesTable .eventId
+{
+}
+
+.eventRecurrencesTable .eventSummary
+{
+  font-size: 12px;
+}
+
+.eventRecurrencesTable .eventActions
+{
+}
+
+.eventRecurrencesTable .actionBar
+{
+  text-align: right;
+}
+
+.eventRecurrences .eventCopyTabView
+{
+}
+
+.eventRecurrences .eventCopyTabView .ui-tabs-panel
+{
+  padding: 0 !important;
+}
+
+.eventRecurrences .patternContainer
+{
+  width:100%;
+  background-color:#ffffff;
+  text-align:left;
+  padding:4px
+}
+
+.eventRecurrences .rangeContainer
+{
+  background-color:#ffffff;
+  text-align:left;
+  padding:4px
+}
+
+.eventRecurrences .rangeContainer .leftBlock,
+.eventRecurrences .rangeContainer .rightBlock
+{
+  margin-top: 8px;
+}
+
+.eventRecurrences .rangeContainer .subTitle
+{
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.eventRecurrences .rangeContainer .hourPatternRow
+{
+  margin-bottom: 4px;
+}
+
+.eventRecurrences .checkAttendantsAvailabilityPanel
+{
+  margin-top: 10px;
+}
+
+.eventCopyPreviewTable .ui-inputtext
+{
+  width: 100%;
+}
+
+.eventCopyPreviewTable .tooltip
+{
+}
+
+.eventCopyPreviewTable .tooltip .ui-tooltip-text
+{
+  padding: 0;
+}
+
+.eventCopyPreviewTable .tooltip ul
+{
+  margin: 0;
+  padding: 0;
+}

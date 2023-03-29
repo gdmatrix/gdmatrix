@@ -1,0 +1,128 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+  <h:outputStylesheet library="css" name="agenda.css" />
+
+  <p:outputPanel styleClass="eventRecurrences" id="event_recurrences_panel">
+
+    <p:dataTable id="event_recurrences_table" styleClass="eventRecurrencesTable"
+                 value="#{eventRecurrencesTabBean.rows}"
+                 var="row" stripedRows="true" paginator="true" pageLinks="5"
+                 resizableColumns="false" showGridlines="true"
+                 size="small" paginatorPosition="bottom"
+                 rowIndexVar="firstRow" first="#{eventRecurrencesTabBean.firstRow}"
+                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+                 rowsPerPageTemplate="5,10,25,50" rows="10">
+
+      <f:facet name="header">
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           rendered="#{!eventObjectBean.isNew() and eventObjectBean.editable}"
+                           action="#{eventCopyTabBean.reset}"
+                           process=":mainform:search_tabs:tabs"
+                           update="@parent:@parent:@parent:@parent:event_copy_dialog"
+                           resetValues="true"
+                           oncomplete="if (!isFacesError()) PF('eventCopyDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+        </div>
+      </f:facet>
+
+      <p:column headerText="#{agendaBundle.event_id}" styleClass="col-1 eventId"
+                rendered="#{row.eventId != eventObjectBean.objectId}">
+        <h:outputText value="#{row.eventId}" />
+      </p:column>
+
+      <p:column headerText="#{agendaBundle.event_summary}" styleClass="col-10 eventSummary"
+                rendered="#{row.eventId != eventObjectBean.objectId}">
+        <div>
+          <h:outputText value="#{eventRecurrencesTabBean.startDateTime}"
+                        styleClass="#{row.eventId == eventObjectBean.objectId ? 'selected' : ''}">
+            <f:convertDateTime pattern="dd/MM/yyyy (HH:mm)"/>
+          </h:outputText>
+          <h:outputLabel value=" - " />
+          <h:outputText value="#{eventRecurrencesTabBean.endDateTime}"
+                        styleClass="#{row.eventId == eventObjectBean.objectId ? 'selected' : ''}">
+            <f:convertDateTime pattern="dd/MM/yyyy (HH:mm)"/>
+          </h:outputText>
+        </div>
+        <div>
+          <h:outputText value="#{row.summary}" />
+        </div>
+      </p:column>
+
+      <p:column styleClass="col-1 eventActions" exportable="false"
+                rendered="#{row.eventId != eventObjectBean.objectId}">
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{navigatorBean.view(row.eventId)}"
+                         onclick="PF('objectTabs').select(0);"
+                         resetValues="true"
+                         process="@this"
+                         oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
+                         update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                         title="#{objectBundle.show}" alt="#{objectBundle.show}" />
+      </p:column>
+
+    </p:dataTable>
+
+    <p:outputPanel id="delete_recurrences_panel"
+                   rendered="#{!empty eventRecurrencesTabBean.rows}"
+                   styleClass="eventRecurrencesDeletePanel">
+      <div class="containerTitle">
+        <p:outputLabel value="#{agendaBundle.eventRecurrences_deleteTitle}"/>
+      </div>
+      <p:outputPanel id="customPanel" styleClass="actionsContainer">
+        <p:selectOneRadio id="deleteRecurrencesRadio" value="#{eventRecurrencesTabBean.deleteMode}"
+                          layout="custom" converter="#{Integer}">
+          <f:selectItem itemValue="0" />
+          <f:selectItem itemValue="1" />
+          <f:facet name="custom">
+            <span class="field-radiobutton flex" role="radio">
+              <p:radioButton for="deleteRecurrencesRadio" itemIndex="0"/>
+              <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}:" />
+              <p:datePicker value="#{eventRecurrencesTabBean.deleteDateTime}"
+                            locale="#{eventObjectBean.language}" converter="datePickerConverter"
+                            showIcon="true" showTime="false"
+                            autocomplete="off"
+                            monthNavigator="true" yearNavigator="true" styleClass="inputDate" />
+            </span>
+            <span class="field-radiobutton" role="radio">
+              <p:radioButton for="deleteRecurrencesRadio" itemIndex="1"/>
+              <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteAllRecurrences}" />
+            </span>
+          </f:facet>
+        </p:selectOneRadio>
+      </p:outputPanel>
+      <p:outputPanel>
+        <p:commandButton action="#{eventRecurrencesTabBean.deleteRecurrences}"
+                         alt="#{agendaBundle.eventRecurrences_deleteRecurrences}"
+                         title="#{agendaBundle.eventRecurrences_deleteRecurrences}"
+                         value="#{agendaBundle.eventRecurrences_deleteRecurrences}"
+                         disabled="#{!eventObjectBean.editable}"
+                         styleClass="removeButton"
+                         process="delete_recurrences_panel"
+                         update="event_recurrences_table delete_recurrences_panel"
+                         onclick="return confirm('#{agendaBundle.eventRecurrences_confirmDeleteRecurrences}');" />
+      </p:outputPanel>
+    </p:outputPanel>
+
+    <p:dialog id="event_copy_dialog" widgetVar="eventCopyDialog"
+              styleClass="eventRecurrences dialog" 
+              modal="true" responsive="true" closable="false"
+              appendTo="@(form)" position="center center" resizable="false">
+
+      <f:facet name="header">
+        <h:outputText value="#{agendaBundle.eventRecurrences_newRecurrences}" />
+      </f:facet>
+
+      <ui:include src="/pages/agenda/event_copy.xhtml"/>
+
+    </p:dialog>
+
+  </p:outputPanel>
+
+</ui:composition>
