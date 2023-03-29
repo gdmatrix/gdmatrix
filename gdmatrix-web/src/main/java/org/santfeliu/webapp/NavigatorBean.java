@@ -244,6 +244,21 @@ public class NavigatorBean extends WebBean implements Serializable
     history.remove(baseTypeId, objectId);
   }
 
+  public void remove()
+  {
+    BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
+    if (baseTypeInfo == null) return;
+
+    baseTypeInfo.getRecentObjectIdList().remove(baseTypeInfo.getObjectId());
+    baseTypeInfo.unmarkAsFavorite();
+
+    updateCount++;
+
+    ObjectBean objectBean = baseTypeInfo.getObjectBean();
+    objectBean.setObjectId(NEW_OBJECT_ID);
+    objectBean.load();
+  }
+
   public String close()
   {
     if (history.isEmpty())

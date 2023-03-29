@@ -64,11 +64,9 @@
       </div> 
 
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="creation_date" 
+        <p:outputLabel for="@next" 
                        value="#{documentBundle.document_creationDate}" />
-        <!-- TODO: disable if not editable -->
-        <p:datePicker id="creation_date" 
-                      value="#{documentObjectBean.document.creationDate}" 
+        <p:datePicker value="#{documentObjectBean.document.creationDate}" 
                       autocomplete="off"
                       placeholder="dd/MM/yyyy"
                       locale="es" 
@@ -79,9 +77,8 @@
       </div>         
 
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="state" value="#{documentBundle.document_state}" />
-        <p:selectOneMenu id="state" 
-                         value="#{documentObjectBean.document.state}"
+        <p:outputLabel for="@next" value="#{documentBundle.document_state}" />
+        <p:selectOneMenu value="#{documentObjectBean.document.state}"
                          required="true">
           <f:selectItems value="#{documentObjectBean.documentStateSelectItems}" />
           <f:converter converterId="EnumConverter" />

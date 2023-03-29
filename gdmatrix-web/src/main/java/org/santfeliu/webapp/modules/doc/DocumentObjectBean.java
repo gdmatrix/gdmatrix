@@ -64,8 +64,10 @@ import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.HttpUtils;
+import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -193,7 +195,8 @@ public class DocumentObjectBean extends ObjectBean
     if (content.getUrl() != null)
     {
       return "EXTERNAL";
-    } else
+    }
+    else
     {
       return "INTERNAL";
     }
@@ -353,6 +356,25 @@ public class DocumentObjectBean extends ObjectBean
       fileToStore = null;
     }
     versions = null;
+  }
+
+  @Override
+  public void remove()
+  {
+    try
+    {
+      DocumentManagerPort port = DocModuleBean.getPort(false);
+      port.removeDocument(document.getDocId(), DocumentConstants.DELETE_ALL_VERSIONS);
+
+      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+      navigatorBean.remove();
+
+      info("REMOVE_OBJECT");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public void lock()

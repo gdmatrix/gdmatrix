@@ -58,20 +58,72 @@
           <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle" 
                         var="docBundle" />
 
-          <!-- docId -->
           <div class="field">
             <p:outputLabel for="@next" value="DocId" />
-            <p:chips id="doc_id" value="#{documentFinderBean.docIdList}"
+            <p:chips value="#{documentFinderBean.docIdList}"
                      class="inputfield w-full" />
           </div>          
           
-          <!-- Title -->
           <div class="field">
             <p:outputLabel for="@next" value="#{documentBundle.outputTitle}" />
-            <p:inputText id="title" value="#{documentFinderBean.filter.title}" 
+            <p:inputText value="#{documentFinderBean.filter.title}" 
                          class="inputfield w-full" />
           </div>  
 
+          <div class="field">
+            <p:outputLabel for="@next" value="#{documentBundle.outputContents}" />
+            <p:inputText value="#{documentFinderBean.filter.contentSearchExpression}" 
+                         class="inputfield w-full" />
+          </div>
+                    
+          <p:fieldset legend="#{documentBundle.documentSearch_date}"
+                      toggleable="true" collapsed="true" styleClass="mb-2">
+            <div class="ui-fluid formgrid grid">
+
+              <div class="field col-12">
+                <p:selectOneMenu id="dateComparator" 
+                                 value="#{documentFinderBean.filter.dateComparator}"
+                                 styleClass="inputfield w-full" style="vertical-align:middle">
+                  <f:selectItem itemLabel="#{documentBundle.documentSearch_changeDateTime}" itemValue="1" />
+                  <f:selectItem itemLabel="#{documentBundle.documentSearch_captureDateTime}" itemValue="2" />
+                  <f:selectItem itemLabel="#{documentBundle.documentSearch_creationDate}" itemValue="3" />
+                </p:selectOneMenu>
+              </div>
+
+              <div class="field col-12">
+                <p:outputLabel for="@next" value="#{documentBundle.outputStartDate}" />
+                <p:datePicker value="#{documentFinderBean.filter.startDate}" 
+                              autocomplete="off"
+                              placeholder="dd/MM/yyyy"
+                              locale="es" 
+                              showOnFocus="false"
+                              converter="datePickerConverter" pattern="dd/MM/yyyy"
+                              showIcon="true" showTime="false"
+                              monthNavigator="true" yearNavigator="true" />
+              </div>
+              <div class="field col-12">
+                <p:outputLabel for="@next" value="#{documentBundle.outputEndDate}" />
+                <p:datePicker value="#{documentFinderBean.filter.endDate}" 
+                              autocomplete="off"
+                              placeholder="dd/MM/yyyy"
+                              locale="es" 
+                              showOnFocus="false"
+                              converter="datePickerConverter" pattern="dd/MM/yyyy"
+                              showIcon="true" showTime="false"
+                              monthNavigator="true" yearNavigator="true" />
+              </div>
+            </div>
+          </p:fieldset>
+          
+          <div class="field">
+            <p:outputLabel for="@next" value="#{documentBundle.outputLanguage}" />
+            <p:selectOneMenu value="#{documentFinderBean.filter.language}"                 
+                             class="inputfield w-full">
+              <f:selectItem itemValue="" itemLabel=" "/>
+              <f:selectItems value="#{documentFinderBean.languageValues}" />
+            </p:selectOneMenu>
+          </div>
+          
           <div class="field">
             <p:outputLabel for="@next" value="#{documentBundle.outputType}" />
             <emcomp:typeReference value="#{documentFinderBean.filter.docTypeId}"

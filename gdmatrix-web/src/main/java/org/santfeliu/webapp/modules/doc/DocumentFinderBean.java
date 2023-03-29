@@ -31,16 +31,22 @@
 package org.santfeliu.webapp.modules.doc;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
+import static org.santfeliu.doc.web.DocumentSearchBean.LANGUAGE_VALUES;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.BigList;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -159,6 +165,24 @@ public class DocumentFinderBean extends FinderBean
     this.firstRow = firstRow;
   }
 
+  public List<SelectItem> getLanguageValues()
+  {
+    List<SelectItem> results = new ArrayList();
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    Locale currentLocale = new Locale(userSessionBean.getViewLanguage());
+
+    List<Locale> locales = userSessionBean.getSupportedLocales();
+    for (Locale locale : locales)
+    {
+      String language = locale.getLanguage();
+      String displayLanguage = locale.getDisplayLanguage(currentLocale);
+      SelectItem item = new SelectItem(language, displayLanguage);
+      results.add(item);
+    }
+    results.sort((item1, item2) -> item1.getLabel().compareTo(item2.getLabel()));
+    return results;
+  }
+
   @Override
   public void smartFind()
   {
@@ -179,6 +203,10 @@ public class DocumentFinderBean extends FinderBean
     {
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
       filter.setDocTypeId(baseTypeId);
+    }
+    if (StringUtils.isBlank(filter.getContentSearchExpression()))
+    {
+      filter.setContentSearchExpression(null);
     }
     smartFilter = documentTypeBean.filterToQuery(filter);
     doFind(true);
