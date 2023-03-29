@@ -41,7 +41,7 @@
                        styleClass="rounded-button ui-button-flat" 
                        action="#{navigatorBean.select}"
                        rendered="#{navigatorBean.selectable}"
-                       ajax="false"
+                       ajax="false" onclick="showOverlay()"
                        title="Select" alt="Select" 
                        />  
       <p:commandButton icon="ui-icon pi pi-plus-circle" 
@@ -81,7 +81,7 @@
       </p:commandButton>
       <p:commandButton icon="ui-icon pi pi-times" 
                        action="#{navigatorBean.close}"
-                       ajax="false"
+                       ajax="false" onclick="showOverlay()"
                        immediate="true"
                        styleClass="rounded-button ui-button-flat" 
                        title="Close" alt="Close" />      
@@ -113,7 +113,7 @@
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{navigatorBean.show('Country', objectBean.country.countryId)}" 
-                           ajax="false"
+                           ajax="false" onclick="showOverlay()"
                            />
         </div>     
       </p:outputPanel>
@@ -154,7 +154,7 @@
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{navigatorBean.show('Province', objectBean.province.provinceId)}" 
-                           ajax="false"
+                           ajax="false" onclick="showOverlay()"
                            />
         </div>
       </p:outputPanel> 
@@ -183,7 +183,7 @@
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            action="#{navigatorBean.show('City', objectBean.city.cityId)}" 
-                           ajax="false"
+                           ajax="false" onclick="showOverlay()"
                            />
         </div>
       </p:outputPanel>  

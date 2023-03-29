@@ -52,15 +52,14 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseAddressesTabBean.caseAddressTypeId}"
                                 process=":mainform:search_tabs:case_addresses_dialog"
-                                type="CaseAddress"
+                                update=":mainform:search_tabs:case_addresses_dialog"
+                                type="#{caseAddressesTabBean.tabBaseTypeId != null ? caseAddressesTabBean.tabBaseTypeId : 'CaseAddress'}"
+                                showNavigatorItems="#{caseAddressesTabBean.tabBaseTypeId != 'CaseAddress' ? 'false' : 'true'}"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_addresses_store']}"
                                 requiredMessage="Type is mandatory">
-            <p:ajax event="itemSelect"
-                    process="@this"
-                    update="mainform:search_tabs:case_addresses_dialog" />
           </emcomp:typeReference>
         </div>
         
@@ -112,7 +111,7 @@
         <p:commandButton action="#{caseAddressesTabBean.cancel}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="case_addresses_dialog :mainform:growl" global="false"
+                         update="case_addresses_dialog" global="false"
                          oncomplete="PF('caseAddressesDialog').hide()"/>
       </div>
     </f:facet>

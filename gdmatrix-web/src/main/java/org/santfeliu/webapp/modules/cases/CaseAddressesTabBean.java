@@ -79,7 +79,7 @@ public class CaseAddressesTabBean extends TabBean
     String objectId = NEW_OBJECT_ID;
     List<CaseAddressView> rows;
     int firstRow = 0;
-    boolean groupedView = isGroupedViewEnabled();
+    boolean groupedView = false;
   }
 
   @Inject
@@ -199,7 +199,7 @@ public class CaseAddressesTabBean extends TabBean
 
   public boolean isGroupedView()
   {
-    return getCurrentTabInstance().groupedView;
+    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
@@ -209,8 +209,8 @@ public class CaseAddressesTabBean extends TabBean
 
   public boolean isGroupedViewEnabled()
   {
-    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
-      getProperties().getString("groupedViewEnabled"));
+    return caseObjectBean.getActiveEditTab().getProperties()
+      .getBoolean("groupedViewEnabled");
   }
 
   public String getAddressDescription()

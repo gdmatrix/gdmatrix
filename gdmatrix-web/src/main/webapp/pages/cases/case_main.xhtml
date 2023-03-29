@@ -15,18 +15,20 @@
       </div>
 
       <p:outputPanel class="field col-12 md:col-9" rendered="#{not caseObjectBean.isPropertyHidden('caseTypeId')}">
-        <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)}" 
-                       indicateRequired="true"/>
+        <p:outputLabel for="@next" 
+                       value="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)}" 
+                       indicateRequired="true" />
         <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
                               type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
+                              showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"
                               scrollHeight="200"
                               queryDelay="1000"
                               minQueryLength="3" 
                               required="#{not empty param['mainform:search_tabs:store']}"
                               requiredMessage="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)} is mandatory"
-                              process=":mainform:search_tabs:tabs">
-          <p:ajax event="itemSelect" 
-                  process="@this" update=":mainform:search_tabs:tabs" />
+                              formSelector="#{caseObjectBean.formSelector}"
+                              process=":mainform:search_tabs:tabs"
+                              update=":mainform:search_tabs:tabs">         
         </emcomp:typeReference>
       </p:outputPanel>
 

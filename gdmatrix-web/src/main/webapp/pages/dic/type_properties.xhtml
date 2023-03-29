@@ -15,11 +15,11 @@
   <h:panelGroup>      
     
     <!-- Results table -->
-    <p:dataTable id="type_acl_table" value="#{typeACLTabBean.rows}" 
+    <p:dataTable id="type_properties_table" value="#{typePropertiesTabBean.rows}" 
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true" rows="10" 
                  size="small" paginatorPosition="bottom" styleClass="mt-3"
-                 rowIndexVar="rowIndex" first="#{typeACLTabBean.firstRow}"
+                 rowIndexVar="rowIndex" first="#{typePropertiesTabBean.firstRow}"
                  rowStyleClass="#{row.modified ? (empty row.actions ? 'removed' : 'modified') : ''}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
@@ -28,40 +28,44 @@
       <f:facet name="header">
         <div class="flex justify-content-end w-12">        
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
-                           action="#{typeACLTabBean.create}"
+                           action="#{typePropertiesTabBean.create}"
                            process="@this"
-                           update="@parent:@parent:@parent:type_acl_dialog"
+                           update="@parent:@parent:@parent:type_properties_dialog"
                            resetValues="true"
-                           oncomplete="PF('typeACLDialog').show()"                                 
+                           oncomplete="PF('typePropertiesDialog').show()"                                 
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>
-      </f:facet>      
-            
-      <p:column headerText="RoleId" styleClass="col-5">
-        <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
+      </f:facet>    
+      
+      <p:column headerText="Name" styleClass="col-5">
+        <h:outputText value="#{row.type}"/>
+        <h:outputText value="#{row.name}"/>
       </p:column>      
       
-      <p:column headerText="Actions" styleClass="col-5">
-        <h:outputText value="#{row.actionsString}"/>
+      <p:column headerText="Description" styleClass="col-5">
+        <h:outputText value="#{row.description}"/>
       </p:column>
       
+      <p:column headerText="Size" styleClass="col-5">
+        <h:outputText value="#{row.size}"/>
+      </p:column>
+
+      <p:column headerText="Value" styleClass="col-5">
+        <h:outputText value="#{row.value}"/>
+      </p:column>      
+      
       <p:column styleClass="col-2 text-right">
-        <p:commandButton icon="pi pi-external-link" 
-                         styleClass="rounded-button ui-button-flat" 
-                         ajax="false" onclick="showOverlay()"
-                         rendered="#{typeACLTabBean.isPersistentRole(row.roleId)}"
-                         action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
                          styleClass="rounded-button ui-button-flat" 
-                         action="#{typeACLTabBean.edit(row)}" 
+                         action="#{typePropertiesTabBean.edit(row)}" 
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:type_acl_dialog"
+                         update="@parent:@parent:@parent:@parent:type_properties_dialog"
                          resetValues="true"
-                         oncomplete="PF('typeACLDialog').show()"
+                         oncomplete="PF('typePropertiesDialog').show()"
                          />
-        <p:commandButton action="#{typeACLTabBean.remove(row)}"
+        <p:commandButton action="#{typePropertiesTabBean.remove(row)}"
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:type_acl_dialog type_acl_table"
+                         update="@parent:@parent:@parent:@parent:type_properties_dialog type_properties_table"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
@@ -75,11 +79,12 @@
   </h:panelGroup>
 
   <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="type_acl_dialog" widgetVar="typeACLDialog" 
+
+  <p:dialog id="type_properties_dialog" widgetVar="typePropertiesDialog" 
             styleClass="edit_data_dialog" style="max-width:600px" 
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
-
+<!--  
     <f:facet name="header">
       <p:outputPanel>
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
@@ -87,28 +92,26 @@
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{typeObjectBean.activeEditTab.label}" />   
         <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{typeACLTabBean.editing.roleId}" />
+        <h:outputText value="#{typePropertiesTabBean.editing.roleId}" />
       </p:outputPanel>
     </f:facet>
 
-    <h:panelGroup styleClass="mt-2" id="type_acl_panel" layout="block"
-                  rendered="#{typeACLTabBean.editing != null}">
+    <h:panelGroup styleClass="mt-2" id="type_properties_panel" layout="block"
+                  rendered="#{typePropertiesTabBean.editing != null}">
 
       <div class="ui-fluid formgrid grid" >
 
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="Role"
-                         styleClass="w-full"
-                         indicateRequired="true"/>
-          <emcomp:objectReference value="#{typeACLTabBean.roleId}"
-                                  process=":mainform:search_tabs:tabs:type_acl_dialog"
+                         styleClass="w-full" />
+          <emcomp:objectReference value="#{typePropertiesTabBean.roleId}"
+                                  process=":mainform:search_tabs:tabs:type_properties_dialog"
                                   type="Role"
-                                  forceSelection="false"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="#{not empty param['mainform:search_tabs:tabs:type_acl_store']}"
+                                  required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
                                   renderShowButton="false"
                                   minQueryLength="3">
           </emcomp:objectReference>
@@ -117,10 +120,10 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="Actions:" />
-          <p:selectManyCheckbox value="#{typeACLTabBean.editing.actions}" 
+          <p:selectManyCheckbox value="#{typePropertiesTabBean.editing.actions}" 
                                  layout="responsive" columns="3"
                                  styleClass="savable">
-            <f:selectItems value="#{typeACLTabBean.actionSelectItems}" />
+            <f:selectItems value="#{typePropertiesTabBean.actionSelectItems}" />
           </p:selectManyCheckbox>
         </div>
                 
@@ -131,21 +134,21 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton id="type_acl_store"
-                         action="#{typeACLTabBean.accept}" 
+        <p:commandButton id="type_properties_store"
+                         action="#{typePropertiesTabBean.accept}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
-                         process="type_acl_dialog"
-                         update="type_acl_table type_acl_panel"
-                         oncomplete="if (!isFacesError()) PF('typeACLDialog').hide()"
+                         process="type_properties_dialog"
+                         update="type_properties_table type_properties_panel"
+                         oncomplete="if (!isFacesError()) PF('typePropertiesDialog').hide()"
                          />
-        <p:commandButton action="#{typeACLTabBean.cancel}" 
+        <p:commandButton action="#{typePropertiesTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="type_acl_dialog" global="false" 
-                         oncomplete="PF('typeACLDialog').hide()"/>
+                         update="type_properties_dialog" global="false" 
+                         oncomplete="PF('typePropertiesDialog').hide()"/>
       </div>      
     </f:facet>
-
+-->
   </p:dialog>  
 
 </ui:composition>

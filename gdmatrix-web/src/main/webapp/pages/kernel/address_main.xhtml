@@ -14,21 +14,27 @@
     </div>
 
     <div class="field col-12 md:col-9">
-      <p:outputLabel for="@next" value="#{kernelBundle.address_type}" />
+      <p:outputLabel for="@next" value="#{kernelBundle.address_type}" 
+                     indicateRequired="true"/>
       <p:selectOneMenu value="#{addressObjectBean.address.addressTypeId}"  
-                       filter="true">
+                       filter="true" 
+                       required="#{not empty param['mainform:search_tabs:store']}"
+                       requiredMessage="Type is mandatory">
         <f:selectItems value="#{typeTypeBean.getSelectItems('Address')}" var="item" />         
       </p:selectOneMenu>  
     </div> 
 
     <div class="field col-12 md:col-8">
-      <p:outputLabel for="@next" value="#{kernelBundle.street}"  />
+      <p:outputLabel for="@next" value="#{kernelBundle.street}" indicateRequired="true" />
       <emcomp:objectReference value="#{addressObjectBean.address.streetId}"
+                              process=":mainform:search_tabs:tabs"
                               type="Street"
                               styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3" />
+                              minQueryLength="3" 
+                              required="#{not empty param['mainform:search_tabs:store']}"
+                              requiredMessage="Street is mandatory"/>
     </div>   
 
     <div class="field col-12 md:col-2">

@@ -31,16 +31,13 @@
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
         </div>              
       </f:facet>      
-      <p:column headerText="#{kernelBundle.personContacts_type}" styleClass="w-2"
-                exportHeaderValue="#{kernelBundle.personContacts_type}">
+      <p:column headerText="#{kernelBundle.personContacts_type}" styleClass="w-2">
         <h:outputText value="#{row.contactTypeLabel}" />
       </p:column>
-      <p:column headerText="#{kernelBundle.personContacts_contact}" styleClass="w-3"
-                exportHeaderValue="#{kernelBundle.personContacts_contact}">
+      <p:column headerText="#{kernelBundle.personContacts_contact}" styleClass="w-3">
         <h:outputText value="#{row.value}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personContacts_comments}" styleClass="w-5"
-                exportHeaderValue="#{kernelBundle.personContacts_comments}">
+      <p:column headerText="#{kernelBundle.personContacts_comments}" styleClass="w-5">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
       <p:column styleClass="w-2 text-right" exportable="false">
@@ -54,7 +51,7 @@
                            resetValues="true"
                            oncomplete="PF('personContactsDialog').show()" />
           <p:commandButton action="#{personContactsTabBean.remove(row)}"
-                           ajax="true" update="contact_results_table :mainform:growl"
+                           ajax="true" update="contact_results_table"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.contactId != null}"
@@ -98,13 +95,15 @@
                          indicateRequired="true"/>          
           <emcomp:typeReference value="#{personContactsTabBean.contactTypeId}"
                                 type="Contact"
+                                showNavigatorItems="false"
+                                process=":mainform:search_tabs:tabs:person_contacts_dialog"
+                                update=":mainform:search_tabs:tabs:person_contacts_dialog"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:tabs:person_contacts_store']}"
-                                requiredMessage="Type is mandatory"
-                                process=":mainform:search_tabs:tabs:person_contacts_dialog"/>
+                                requiredMessage="Type is mandatory"/>
         </div>
 
         <div class="field col-12 md:col-6">
@@ -129,11 +128,11 @@
     <div class="field col-12 text-right">
       <p:commandButton id="person_contacts_store" action="#{personContactsTabBean.store}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
-                       update="contact_results_table contact_edit_panels :mainform:growl"
+                       update="contact_results_table contact_edit_panels"
                        oncomplete="if (args &amp;&amp; !args.validationFailed) PF('personContactsDialog').hide()" />
       <p:commandButton action="#{personContactsTabBean.cancel}" 
                        styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                       immediate="true" update="contact_edit_panels :mainform:growl" global="false" 
+                       immediate="true" update="contact_edit_panels" global="false" 
                        oncomplete="PF('personContactsDialog').hide()" />
     </div>         
 

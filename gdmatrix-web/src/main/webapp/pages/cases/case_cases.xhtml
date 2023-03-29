@@ -25,7 +25,7 @@
 
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseCasesTabBean.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseCasesTabBean.switchView}"
-                           process="@this"
+                           process="case_cases_table"
                            update="case_cases_table"
                            resetValues="true"
                            alt="#{caseCasesTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
@@ -65,7 +65,7 @@
           <p:commandButton icon="pi pi-external-link"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"
                            styleClass="rounded-button ui-button-flat"
-                           ajax="false"
+                           ajax="false" onclick="showOverlay()"
                            action="#{navigatorBean.show(row.caseTypeId, row.caseId)}" />
           <p:commandButton action="#{caseCasesTabBean.edit(row)}"
                            icon="pi pi-pencil"
@@ -78,7 +78,7 @@
                            oncomplete="if (!isFacesError()) PF('caseCasesDialog').show()" />
           <p:commandButton action="#{caseCasesTabBean.remove(row)}"
                            process="@this"
-                           update=":mainform:search_tabs:tabs :mainform:growl"
+                           update=":mainform:search_tabs:tabs"
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"

@@ -33,23 +33,21 @@
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
         </div>
       </f:facet>      
-      <p:column headerText="#{kernelBundle.personAddresses_id}" styleClass="w-1"
-                exportHeaderValue="#{kernelBundle.personAddresses_id}">
+      <p:column headerText="#{kernelBundle.personAddresses_id}" styleClass="w-1">
         <h:outputText value="#{row.address.addressId}" />
       </p:column> 
-      <p:column headerText="#{kernelBundle.personAddresses_address}" styleClass="w-9"
-                exportHeaderValue="#{kernelBundle.personAddresses_address}">
+      <p:column headerText="#{kernelBundle.personAddresses_address}" styleClass="w-9">
         <h:outputText value="#{row.address.description}"/>
       </p:column>
       <p:column styleClass="w-2 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 
-                           immediate="true" ajax="false" 
+                           immediate="true" ajax="false" onclick="showOverlay()"
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
           <p:commandButton action="#{personAddressesTabBean.remove(row)}"
-                           update="person_addresses_table :mainform:growl"
+                           update="person_addresses_table"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                            rendered="#{row.personAddressId != null}"

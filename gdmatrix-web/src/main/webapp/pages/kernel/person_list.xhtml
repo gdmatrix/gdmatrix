@@ -27,7 +27,7 @@
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.personId)}"
                        rendered="#{navigatorBean.selectable}"
-                       ajax="false"
+                       ajax="false" onclick="showOverlay()"
                        title="Select" alt="Select"
                        />
       <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 

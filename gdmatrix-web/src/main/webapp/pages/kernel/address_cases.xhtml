@@ -25,27 +25,23 @@
         <div class="flex justify-content-end w-12">                   
         </div>              
       </f:facet>      
-      <p:column headerText="#{caseBundle.case_id}" styleClass="w-1"
-                exportHeaderValue="#{caseBundle.case_id}">
+      <p:column headerText="#{caseBundle.case_id}" styleClass="w-1">
         <h:outputText value="#{row.caseObject.caseId}"/>
       </p:column>       
-      <p:column headerText="#{caseBundle.case_title}" styleClass="w-4"
-                exportHeaderValue="#{caseBundle.case_title}">
+      <p:column headerText="#{caseBundle.case_title}" styleClass="w-4">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>       
-      <p:column headerText="#{caseBundle.caseAddresses_type}" styleClass="w-3"
-                exportHeaderValue="#{caseBundle.caseAddresses_type}">
+      <p:column headerText="#{caseBundle.caseAddresses_type}" styleClass="w-3">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
       </p:column>
-      <p:column headerText="#{caseBundle.caseAddresses_comments}" styleClass="w-3"
-                exportHeaderValue="#{caseBundle.caseAddresses_comments}">
+      <p:column headerText="#{caseBundle.caseAddresses_comments}" styleClass="w-3">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
       <p:column styleClass="w-1 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show(row.caseObject.caseTypeId, row.caseObject.caseId)}" 
-                           immediate="true" ajax="false" 
+                           immediate="true" ajax="false" onclick="showOverlay()"
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"/>            
         </h:panelGroup>          

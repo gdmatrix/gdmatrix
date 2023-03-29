@@ -155,7 +155,6 @@ public class AddressPersonsTabBean extends TabBean
   public String cancel()
   {
     editing = null;
-    info("CANCEL_OBJECT");
     return null;
   }
 

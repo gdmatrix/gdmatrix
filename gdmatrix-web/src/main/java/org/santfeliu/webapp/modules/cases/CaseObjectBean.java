@@ -186,6 +186,8 @@ public class CaseObjectBean extends ObjectBean
   @Override
   public void loadObject() throws Exception
   {
+    formSelector = null;
+    
     if (!NEW_OBJECT_ID.equals(objectId))
       cas = CasesModuleBean.getPort(false).loadCase(objectId);
     else

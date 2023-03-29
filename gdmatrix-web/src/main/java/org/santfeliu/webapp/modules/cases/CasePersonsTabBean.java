@@ -86,10 +86,9 @@ public class CasePersonsTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    String typeId = getTabBaseTypeId();
     List<CasePersonView> rows;
     int firstRow = 0;
-    boolean groupedView = isGroupedViewEnabled();   
+    boolean groupedView = false;   
   }
 
   @Inject
@@ -144,7 +143,7 @@ public class CasePersonsTabBean extends TabBean
   
   public boolean isGroupedView()
   {
-    return getCurrentTabInstance().groupedView;
+    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
@@ -473,7 +472,7 @@ public class CasePersonsTabBean extends TabBean
         CasePersonFilter filter = new CasePersonFilter();
         filter.setCaseId(getObjectId());
         
-        String typeId = getCurrentTabInstance().typeId;
+        String typeId = getTabBaseTypeId();
         if (typeId != null)
           filter.setCasePersonTypeId(typeId);        
         
@@ -539,6 +538,7 @@ public class CasePersonsTabBean extends TabBean
       refreshHiddenTabInstances();
       load();
       editing = null;
+      info("STORE_OBJECT");
     }
     catch (Exception ex)
     {

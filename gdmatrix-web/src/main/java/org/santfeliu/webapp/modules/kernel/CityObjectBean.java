@@ -134,7 +134,8 @@ public class CityObjectBean extends TerritoryObjectBean
   public void removeObject() throws Exception
   {
     KernelModuleBean.getPort(false).removeCity(objectId);
-    cityFinderBean.doFind(false);    
+    cityFinderBean.doFind(false);
+    info("REMOVE_OBJECT");    
     navigatorBean.view("");
   }    
 

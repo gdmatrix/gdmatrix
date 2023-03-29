@@ -25,27 +25,23 @@
         <div class="flex justify-content-end w-12">                   
         </div>              
       </f:facet>      
-      <p:column headerText="#{kernelBundle.personCases_id}" styleClass="w-1"
-                exportHeaderValue="#{kernelBundle.personCases_id}">
+      <p:column headerText="#{kernelBundle.personCases_id}" styleClass="w-1">
         <h:outputText value="#{row.caseObject.caseId}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="w-4"
-                exportHeaderValue="#{kernelBundle.personCases_title}">
+      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="w-4">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personCases_type}" styleClass="w-3"
-                exportHeaderValue="#{kernelBundle.personCases_type}">
+      <p:column headerText="#{kernelBundle.personCases_type}" styleClass="w-3">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
       </p:column>
-      <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="w-3"
-                exportHeaderValue="#{kernelBundle.personCases_comments}">
+      <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="w-3">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
       <p:column styleClass="w-1 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show(row.caseObject.caseTypeId, row.caseObject.caseId)}" 
-                           immediate="true" ajax="false" 
+                           immediate="true" ajax="false" onclick="showOverlay()"
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"/>            
         </h:panelGroup>          

@@ -35,16 +35,16 @@
                          value="#{caseBundle.caseInterventions_type}"
                          styleClass="w-full" indicateRequired="true" />
           <emcomp:typeReference value="#{caseInterventionsTabBean.intTypeId}"
-                                process=":mainform:search_tabs:case_interventions_dialog"
                                 type="#{caseInterventionsTabBean.tabBaseTypeId != null ? caseInterventionsTabBean.tabBaseTypeId : 'Intervention'}"
+                                showNavigatorItems="#{caseInterventionsTabBean.tabBaseTypeId != 'Intervention' ? 'false' : 'true'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3" 
+                                process=":mainform:search_tabs:case_interventions_dialog"
+                                update=":mainform:search_tabs:case_interventions_dialog"
                                 required="#{not empty param['mainform:search_tabs:case_interventions_store']}"
-                                requiredMessage="Type is mandatory">
-          <p:ajax event="itemSelect"
-                  process="@this" update=":mainform:search_tabs:case_interventions_dialog" />
+                                requiredMessage="Type is mandatory">        
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -79,13 +79,11 @@
 
           <emcomp:objectReference value="#{caseInterventionsTabBean.personId}"
                                   type="Person"
-                                  process="@this @parent:@parent:@parent:case_interventions_dialog"
+                                  process=":mainform:search_tabs:case_interventions_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3">
-            <p:ajax event="clear" listener="#{caseInterventionsTabBean.onPersonClear}"
-                    update="@this" />
           </emcomp:objectReference>
         </p:outputPanel>
 
@@ -114,8 +112,8 @@
                        oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').hide()"/>
       <p:commandButton action="#{caseInterventionsTabBean.cancel}"
                        styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
-                       update="case_interventions_dialog :mainform:growl" global="false"
-                       immediate="true"
+                       process="@this"
+                       update="case_interventions_dialog" global="false"
                        oncomplete="PF('caseInterventionsDialog').hide()"/>
     </div>
 

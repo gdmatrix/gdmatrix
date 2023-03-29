@@ -67,10 +67,9 @@ public class CaseDocumentsTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    String typeId = getTabBaseTypeId();
     List<CaseDocumentView> rows;
     int firstRow = 0;
-    boolean groupedView = isGroupedViewEnabled();
+    boolean groupedView = false;
   }
 
   @Inject
@@ -183,7 +182,7 @@ public class CaseDocumentsTabBean extends TabBean
 
   public boolean isGroupedView()
   {
-    return getCurrentTabInstance().groupedView;
+    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
@@ -193,8 +192,8 @@ public class CaseDocumentsTabBean extends TabBean
 
   public boolean isGroupedViewEnabled()
   {
-    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
-      getProperties().getString("groupedViewEnabled"));
+    return caseObjectBean.getActiveEditTab().
+      getProperties().getBoolean("groupedViewEnabled");
   }
 
   public String getDocumentDescription()
@@ -236,7 +235,7 @@ public class CaseDocumentsTabBean extends TabBean
         filter.setCaseId(objectId);
         List<CaseDocumentView> auxList =
           CasesModuleBean.getPort(false).findCaseDocumentViews(filter);
-        String typeId = getCurrentTabInstance().typeId;
+        String typeId = getTabBaseTypeId();
         if (typeId == null)
         {
           getCurrentTabInstance().rows = auxList;
@@ -284,6 +283,7 @@ public class CaseDocumentsTabBean extends TabBean
       refreshHiddenTabInstances();
       load();
       editing = null;
+      info("STORE_OBJECT");
     }
     catch (Exception ex)
     {

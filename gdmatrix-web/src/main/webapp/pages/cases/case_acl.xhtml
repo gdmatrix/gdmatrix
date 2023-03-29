@@ -34,7 +34,7 @@
       <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
-                         ajax="false"
+                         ajax="false" onclick="showOverlay()" 
                          rendered="#{caseACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
       </p:column>
@@ -63,20 +63,18 @@
         </div>
       </f:facet>      
 
-      <p:column headerText="RoleId" styleClass="col-5"
-                exportHeaderValue="RoleId">
+      <p:column headerText="RoleId" styleClass="col-5">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
 
-      <p:column headerText="Actions" styleClass="col-5"
-                exportHeaderValue="Actions">
+      <p:column headerText="Actions" styleClass="col-5">
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
 
       <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link" 
                          styleClass="rounded-button ui-button-flat" 
-                         ajax="false"
+                         ajax="false" onclick="showOverlay()"
                          rendered="#{caseACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
@@ -89,7 +87,7 @@
                          />
         <p:commandButton action="#{caseACLTabBean.remove(row)}"
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:case_acl_dialog case_acl_table :mainform:growl"
+                         update="@parent:@parent:@parent:@parent:case_acl_dialog case_acl_table"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"

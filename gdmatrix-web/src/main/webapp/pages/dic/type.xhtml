@@ -70,17 +70,22 @@
 
             <p:outputPanel styleClass="field col-12">
               <p:outputLabel for="@next" value="TypeId" />
-              <p:inputText id="type_id" value="#{typeFinderBean.filter.typeId}" />
+              <p:inputText value="#{typeFinderBean.filter.typeId}" />
             </p:outputPanel>   
 
             <p:outputPanel styleClass="field col-12">
               <p:outputLabel for="@next" value="SuperTypeId" />
-              <p:inputText id="super_type_id" value="#{typeFinderBean.filter.superTypeId}" />
+              <p:inputText value="#{typeFinderBean.filter.superTypeId}" />
             </p:outputPanel> 
+            
+            <p:outputPanel styleClass="field col-12">
+              <p:outputLabel for="@next" value="TypePath" />
+              <p:inputText value="#{typeFinderBean.filter.typePath}" />
+            </p:outputPanel>             
 
             <p:outputPanel styleClass="field col-12">
               <p:outputLabel for="@next" value="Description" />
-              <p:inputText id="description" value="#{typeFinderBean.filter.description}" />
+              <p:inputText value="#{typeFinderBean.filter.description}" />
             </p:outputPanel>             
           </div>   
 

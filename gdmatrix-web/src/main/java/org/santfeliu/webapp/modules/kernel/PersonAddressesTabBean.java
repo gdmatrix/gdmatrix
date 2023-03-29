@@ -160,18 +160,19 @@ public class PersonAddressesTabBean extends TabBean
   {
     storeAddress();
     load();
+    info("STORE_OBJECT");
   }
 
   public void remove(PersonAddressView row)
   {
     removeAddress(row);
+    info("REMOVE_OBJECT");
     load();
   }
 
   public String cancel()
   {
     editing = null;
-    info("CANCEL_OBJECT");
     return null;
   }
 

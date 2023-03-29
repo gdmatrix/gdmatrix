@@ -7,8 +7,6 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.dic.web.resources.DictionaryBundle"
-                var="dicBundle" />
 
     <ui:repeat value="#{typeObjectBean.superTypes}" var="type">      
       <h:panelGroup class="" style="display:block">
@@ -30,11 +28,14 @@
 
     <div class="field col-12 md:col-6">
       <p:outputLabel for="@next" value="TypeId" />
-      <p:inputText value="#{typeObjectBean.objectId}" required="true"/>
+      <p:inputText value="#{typeObjectBean.objectId}" 
+                    required="#{not empty param['mainform:search_tabs:store']}"
+                    requiredMessage="Type is mandatory"                  
+                    />
     </div>
 
     <div class="field col-12 md:col-6">
-      <p:outputLabel for="@next" value="SupertypeId" />    
+      <p:outputLabel for="@next" value="SupertypeId" indicateRequired="true"/>    
       <p:autoComplete id="supertypeid"
                       value="#{typeObjectBean.superTypeSelectItem}"
                       maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
@@ -43,7 +44,8 @@
                       converter="selectItemConverter"                        
                       var="item" itemValue="#{item}" itemLabel="#{item.label}"
                       onclick="this.setSelectionRange(0, this.value.length)"
-                      required="true"> 
+                      required="#{not empty param['mainform:search_tabs:store']}"
+                      requiredMessage="Supertype is mandatory"> 
         <p:column>                 
           <h:outputText value="#{item.label}" />
         </p:column>        
@@ -51,9 +53,10 @@
     </div>   
 
     <div class="field col-12 md:col-12">
-      <p:outputLabel for="@next" value="Description" />
+      <p:outputLabel for="@next" value="Description" indicateRequired="true"/>
       <p:inputText value="#{typeObjectBean.type.description}"
-                   required="true" />
+                   required="#{not empty param['mainform:search_tabs:store']}"
+                   requiredMessage="Description is mandatory" />
     </div>    
 
     <div class="field col-12 md:col-12">

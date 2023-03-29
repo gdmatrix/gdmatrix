@@ -27,7 +27,7 @@
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.typeId)}"
                        rendered="#{navigatorBean.selectionPending}"
-                       ajax="false"
+                       ajax="false" onclick="showOverlay()"
                        immediate="true"
                        title="Select" alt="Select"
                        />      

@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.faces.component.UIComponent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,7 +48,6 @@ import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.setup.Column;
-import org.santfeliu.webapp.util.ComponentUtils;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -68,10 +66,9 @@ public class CaseInterventionsTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    String typeId = getTabBaseTypeId();
     List<DataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = isGroupedViewEnabled();
+    boolean groupedView = false;
   }
 
   private Intervention editing;
@@ -138,7 +135,7 @@ public class CaseInterventionsTabBean extends TabBean
 
   public boolean isGroupedView()
   {
-    return getCurrentTabInstance().groupedView;
+    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
@@ -148,8 +145,8 @@ public class CaseInterventionsTabBean extends TabBean
 
   public boolean isGroupedViewEnabled()
   {
-    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
-      getProperties().getString("groupedViewEnabled"));
+    return caseObjectBean.getActiveEditTab().getProperties()
+      .getBoolean("groupedViewEnabled");
   }
 
   public String getPersonId()
@@ -305,7 +302,7 @@ public class CaseInterventionsTabBean extends TabBean
         InterventionFilter filter = new InterventionFilter();
         filter.setCaseId(getObjectId());
 
-        String typeId = getCurrentTabInstance().typeId;
+        String typeId = getTabBaseTypeId();
         if (typeId != null)
           filter.setIntTypeId(typeId);
 
@@ -333,19 +330,14 @@ public class CaseInterventionsTabBean extends TabBean
     String intId = null;
     if (row != null)
       intId = row.getRowId();
+    
+    formSelector = null;
 
     try
     {
       if (intId != null)
       {
         editing = CasesModuleBean.getPort(false).loadIntervention(intId);
-
-        UIComponent panel =
-          ComponentUtils.findComponent(":mainform:search_tabs:int_dyn_form");
-        if (panel != null)
-        {
-          panel.getChildren().clear();
-        }
       }
       else
       {
@@ -367,6 +359,7 @@ public class CaseInterventionsTabBean extends TabBean
     refreshHiddenTabInstances();
     load();
     editing = null;
+    info("STORE_OBJECT");
   }
 
   public void cancel()

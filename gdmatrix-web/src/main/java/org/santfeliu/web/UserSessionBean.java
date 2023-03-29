@@ -61,7 +61,6 @@ import javax.servlet.http.HttpSession;
 import org.matrix.cms.CMSConstants;
 import org.matrix.doc.DocumentConstants;
 import org.matrix.security.SecurityConstants;
-import org.matrix.web.ControllerProxy;
 import org.santfeliu.agenda.client.AgendaManagerClient;
 import org.santfeliu.cms.CMSCache;
 import org.santfeliu.cms.CMSListener;
@@ -1138,8 +1137,13 @@ public final class UserSessionBean extends FacesBean implements Serializable
       menuItem = getExecutableMenuItem(rootMenuItem);
     }
 
-    ControllerProxy controller = new ControllerProxy(menuItem);
-    controller.visit();
+    ControllerBean controllerBean = ControllerBean.getCurrentInstance();
+    if (controllerBean.getSearchBean(menuItem) != null)
+    {
+      MenuItemCursor selectedMenuItem = getSelectedMenuItem();
+      String oldTypeId = controllerBean.getActualTypeId(selectedMenuItem);
+      controllerBean.getPageHistory().visit(menuItem.getMid(), null, oldTypeId);
+    }
 
     String action = menuItem.getAction();
 

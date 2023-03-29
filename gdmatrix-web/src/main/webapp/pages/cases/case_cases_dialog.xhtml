@@ -56,14 +56,15 @@
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseCasesTabBean.caseCaseTypeId}"
                                 process=":mainform:search_tabs:case_cases_dialog"
+                                update=":mainform:search_tabs:case_cases_dialog"
                                 type="#{caseCasesTabBean.tabBaseTypeId != null ? caseCasesTabBean.tabBaseTypeId : 'CaseCase'}"
+                                showNavigatorItems="#{caseCasesTabBean.tabBaseTypeId != 'CaseCase' ? 'false' : 'true'}"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_cases_store']}"
-                                requiredMessage="Type is mandatory">
-          <p:ajax event="itemSelect"
-                  process="@this" update=":mainform:search_tabs:case_cases_dialog" />
+                                requiredMessage="Type is mandatory"
+                                formSelector="#{caseCasesTabBean.formSelector}">         
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -111,8 +112,8 @@
                        oncomplete="if (!isFacesError()) PF('caseCasesDialog').hide()"/>
       <p:commandButton action="#{caseCasesTabBean.cancel}"
                        styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
-                       update="case_cases_dialog :mainform:growl" global="false"
-                       immediate="true"
+                       process="@this"
+                       update="case_cases_dialog" global="false"
                        oncomplete="PF('caseCasesDialog').hide()"/>
     </div>
 

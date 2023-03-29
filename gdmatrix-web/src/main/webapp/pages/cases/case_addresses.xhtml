@@ -47,31 +47,26 @@
       </p:headerRow>
 
       <p:column headerText="#{caseBundle.caseAddresses_id}" 
-                exportHeaderValue="#{caseBundle.caseAddresses_id}"
                 styleClass="col-1">
         <h:outputText value="#{row.addressView.addressId}" />
       </p:column>
 
       <p:column headerText="#{caseBundle.caseAddresses_address}" 
-                exportHeaderValue="#{caseBundle.caseAddresses_address}"
                 styleClass="col-5">
         <h:outputText value="#{row.addressView.description} (#{row.addressView.city})"/>
       </p:column>
       
       <p:column headerText="#{caseBundle.caseAddresses_comments}"
-                exportHeaderValue="#{caseBundle.caseAddresses_comments}"
                 styleClass="col-2">
         <h:outputText value="#{row.comments}"/>
       </p:column>         
       
       <p:column headerText="#{caseBundle.caseAddresses_startDate}" 
-                exportHeaderValue="#{caseBundle.caseAddresses_startDate}"
                 styleClass="col-1 text-center">
         <h:outputText value="#{row.startDate}" converter="dateConverter"/>
       </p:column>
 
       <p:column headerText="#{caseBundle.caseAddresses_endDate}" 
-                exportHeaderValue="#{caseBundle.caseAddresses_endDate}"
                 styleClass="col-1 text-center">
         <h:outputText value="#{row.endDate}" converter="dateConverter"/>
       </p:column>
@@ -79,7 +74,7 @@
       <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
-                         ajax="false"
+                         ajax="false" onclick="showOverlay()"
                          action="#{navigatorBean.show('Address', row.addressView.addressId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
@@ -92,7 +87,7 @@
                          oncomplete="if (!isFacesError()) PF('caseAddressesDialog').show()" />
         <p:commandButton action="#{caseAddressesTabBean.remove(row)}"
                          process="@this"
-                         update=":mainform:search_tabs:tabs :mainform:growl"
+                         update=":mainform:search_tabs:tabs"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"

@@ -65,10 +65,9 @@ public class CaseEventsTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    String typeId = getTabBaseTypeId();
     List<CaseEventView> rows;
     int firstRow = 0;
-    boolean groupedView = isGroupedViewEnabled();
+    boolean groupedView = false;
   }
 
   @Inject
@@ -188,7 +187,7 @@ public class CaseEventsTabBean extends TabBean
 
   public boolean isGroupedView()
   {
-    return getCurrentTabInstance().groupedView;
+    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
@@ -198,8 +197,8 @@ public class CaseEventsTabBean extends TabBean
 
   public boolean isGroupedViewEnabled()
   {
-    return Boolean.parseBoolean(caseObjectBean.getActiveEditTab().
-      getProperties().getString("groupedViewEnabled"));
+    return caseObjectBean.getActiveEditTab().getProperties()
+      .getBoolean("groupedViewEnabled");
   }
 
   public String getEventDescription()
@@ -253,7 +252,7 @@ public class CaseEventsTabBean extends TabBean
     {
       try
       {
-        String typeId = getCurrentTabInstance().typeId;
+        String typeId = getTabBaseTypeId();
         CaseEventFilter filter = new CaseEventFilter();
         filter.setCaseId(caseObjectBean.getObjectId());
         filter.setCaseEventTypeId(typeId);

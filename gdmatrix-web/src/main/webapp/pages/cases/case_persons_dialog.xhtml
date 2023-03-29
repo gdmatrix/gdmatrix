@@ -40,6 +40,7 @@
                                indicateRequired="true" />
                 <emcomp:objectReference value="#{casePersonsTabBean.personId}"
                                         process=":mainform:search_tabs:case_persons_dialog"
+                                        update=":mainform:search_tabs:case_persons_dialog"
                                         type="Person"
                                         styleClass="w-full"
                                         scrollHeight="200"
@@ -47,8 +48,6 @@
                                         required="#{not empty param['mainform:search_tabs:case_persons_store']}"
                                         requiredMessage="Person is mandatory"
                                         minQueryLength="3">
-                  <p:ajax event="itemSelect" listener="#{casePersonsTabBean.onPersonSelect}" 
-                          process="@this" update="@parent:@parent:@parent:@id(person_data_panel)" />
                 </emcomp:objectReference>
               </div>              
 
@@ -59,7 +58,9 @@
                                indicateRequired="true" />
                 <emcomp:typeReference value="#{casePersonsTabBean.casePersonTypeId}"
                                       process=":mainform:search_tabs:case_persons_dialog"
+                                      update=":mainform:search_tabs:case_persons_dialog"
                                       type="#{casePersonsTabBean.tabBaseTypeId != null ? casePersonsTabBean.tabBaseTypeId : 'CasePerson'}"
+                                      showNavigatorItems="#{casePersonsTabBean.tabBaseTypeId != 'CasePerson' ? 'false' : 'true'}"
                                       scrollHeight="200"
                                       queryDelay="1000"
                                       minQueryLength="3" 
@@ -191,13 +192,12 @@
                                styleClass="w-full" />
                 <emcomp:objectReference value="#{casePersonsTabBean.representantPersonId}"
                                         process=":mainform:search_tabs:case_persons_dialog"
+                                        update=":mainform:search_tabs:case_persons_dialog"
                                         type="Person"
                                         styleClass="w-full"
                                         scrollHeight="200"
                                         queryDelay="1000"
-                                        minQueryLength="3">
-                  <p:ajax event="itemSelect" listener="#{casePersonsTabBean.onRepresentantSelect}" 
-                          process="@this" update="@parent:@parent:@parent:representant_data_panel" />                
+                                        minQueryLength="3">               
                 </emcomp:objectReference>
               </div> 
 
@@ -329,7 +329,7 @@
         <p:commandButton action="#{casePersonsTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="case_persons_dialog :mainform:growl" global="false" 
+                         update="case_persons_dialog" global="false" 
                          oncomplete="PF('casePersonsDialog').hide()"/>
       </div>  
 

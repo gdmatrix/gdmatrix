@@ -45,18 +45,15 @@
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="#{caseBundle.casePersons_id}" styleClass="col-1"
-                exportHeaderValue="#{caseBundle.casePersons_id}">
+      <p:column headerText="#{caseBundle.casePersons_id}" styleClass="col-1">
         <h:outputText value="#{row.personView.personId}" />
       </p:column>
 
-      <p:column headerText="#{caseBundle.casePersons_person}" styleClass="col-6"
-                exportHeaderValue="#{caseBundle.casePersons_person}">
+      <p:column headerText="#{caseBundle.casePersons_person}" styleClass="col-6">
         <h:outputText value="#{row.personView.fullName}"/>
       </p:column>      
       
       <p:column headerText="#{caseBundle.casePersons_type}" styleClass="col-3"
-                exportHeaderValue="#{caseBundle.casePersons_type}"
                 rendered="#{!casePersonsTabBean.groupedView}">
         <h:outputText value="#{typeTypeBean.getDescription(row.casePersonTypeId)}"/>
       </p:column>
@@ -64,7 +61,7 @@
       <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
-                         ajax="false"
+                         ajax="false" onclick="showOverlay()"
                          action="#{navigatorBean.show('Person', row.personView.personId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
@@ -77,7 +74,7 @@
                          alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
         <p:commandButton action="#{casePersonsTabBean.remove(row)}"
                          process="@this"
-                         update=":mainform:search_tabs:tabs :mainform:growl"
+                         update=":mainform:search_tabs:tabs"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"

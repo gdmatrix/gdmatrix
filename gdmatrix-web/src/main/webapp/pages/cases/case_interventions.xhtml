@@ -22,7 +22,7 @@
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseInterventionsTabBean.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseInterventionsTabBean.switchView}"
-                           process="@this"
+                           process="case_interventions_table"
                            update="case_interventions_table"
                            resetValues="true"
                            alt="#{caseInterventionsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
@@ -40,7 +40,7 @@
 
       <p:headerRow expandable="true" groupBy="#{row.typeId}"
                    expanded="true" rendered="#{caseInterventionsTabBean.groupedView}">
-        <p:column colspan="6" >
+        <p:column colspan="5">
           <h:outputText styleClass="ml-2" value="#{typeTypeBean.getDescription(row.typeId)}"/>
         </p:column>
       </p:headerRow>
@@ -65,7 +65,7 @@
                            oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').show()" />
           <p:commandButton action="#{caseInterventionsTabBean.remove(row)}"
                            process="@this"
-                           update=":mainform:search_tabs:tabs :mainform:growl"
+                           update=":mainform:search_tabs:tabs"
                            resetValues="true"
                            icon="pi pi-trash"
                            alt="#{objectBundle.delete}" title="#{objectBundle.delete}"

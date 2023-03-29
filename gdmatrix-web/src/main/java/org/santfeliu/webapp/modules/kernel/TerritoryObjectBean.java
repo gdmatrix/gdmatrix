@@ -101,6 +101,7 @@ public abstract class TerritoryObjectBean extends ObjectBean
   public void cancel()
   {
     load();
+    info("CANCEL_OBJECT");    
   }
       
   @Override
@@ -135,7 +136,7 @@ public abstract class TerritoryObjectBean extends ObjectBean
   {
     try
     {
-      removeObject();
+      removeObject();    
       info("REMOVE_OBJECT");
     }
     catch(Exception ex)

@@ -42,11 +42,11 @@
     <p:column styleClass="col-2 text-right">
       <p:commandButton icon="pi pi-external-link"  
                        action="#{navigatorBean.show('Person', row.person.personId)}" 
-                       immediate="true" ajax="false" 
+                       immediate="true" ajax="false" onclick="showOverlay()"
                        styleClass="rounded-button ui-button-flat"
                        alt="#{objectBundle.show}" title="#{objectBundle.show}" />          
       <p:commandButton action="#{addressPersonsTabBean.remove(row)}"
-                       update="address_persons_table :mainform:growl"
+                       update="address_persons_table"
                        icon="pi pi-trash"
                        alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                        rendered="#{row.personAddressId != null}"
@@ -111,7 +111,7 @@
                          oncomplete="if (!isFacesError()) PF('addressPersonsDialog').hide()"/>
         <p:commandButton action="#{addressPersonsTabBean.cancel}" 
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update=" address_persons_panel" global="false" 
+                         immediate="true" update="address_persons_panel" global="false" 
                          oncomplete="PF('addressPersonsDialog').hide()"/>
       </div> 
     </f:facet>      
