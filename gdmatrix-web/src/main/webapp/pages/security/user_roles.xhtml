@@ -30,13 +30,11 @@
         </div>
       </f:facet>      
 
-      <p:column headerText="roleId" styleClass="col-3"
-                exportHeaderValue="roleId">
+      <p:column headerText="roleId" styleClass="col-3">
         <h:outputText value="#{row.role.roleId}" />
       </p:column> 
 
-      <p:column headerText="#{securityBundle.role_name}" styleClass="col-7"
-                exportHeaderValue="#{securityBundle.role_name}">
+      <p:column headerText="#{securityBundle.role_name}" styleClass="col-7">
         <h:outputText value="#{row.role.name}" />
       </p:column>       
       
@@ -57,7 +55,7 @@
                          />
         <p:commandButton action="#{userRolesTabBean.remove(row)}"
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:user_roles_dialog user_roles_table :mainform:growl"
+                         update="@parent:@parent:@parent:@parent:user_roles_dialog user_roles_table"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"

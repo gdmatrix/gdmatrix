@@ -73,6 +73,7 @@
         <p:commandButton icon="ui-icon pi pi-trash"
                          styleClass="rounded-button ui-button-flat"
                          action="#{objectBean.remove}"
+                         rendered="#{not objectBean.isNew()}"
                          process="@this"
                          update=":mainform:search_tabs :mainform:context_panel"
                          resetValues="true"

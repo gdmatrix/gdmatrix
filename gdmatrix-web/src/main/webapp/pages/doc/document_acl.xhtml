@@ -72,8 +72,7 @@
         </div>
       </f:facet>      
 
-      <p:column headerText="RoleId" styleClass="col-5"
-                exportHeaderValue="RoleId">
+      <p:column headerText="RoleId" styleClass="col-5">
         <h:outputText value="#{roleTypeBean.getDescription(row.roleId)}"/>
       </p:column>      
 
@@ -99,7 +98,7 @@
                          />
         <p:commandButton action="#{documentACLTabBean.remove(row)}"
                          process="@this" 
-                         update="@parent:@parent:@parent:@parent:document_acl_dialog document_acl_table :mainform:growl"
+                         update="@parent:@parent:@parent:@parent:document_acl_dialog document_acl_table"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"

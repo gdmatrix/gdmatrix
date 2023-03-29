@@ -125,6 +125,14 @@ public class RoleObjectBean extends ObjectBean
   }
 
   @Override
+  public void removeObject() throws Exception
+  {
+    getPort(false).removeRole(role.getRoleId());
+
+    roleFinderBean.outdate();
+  }
+
+  @Override
   public Serializable saveState()
   {
     return role;

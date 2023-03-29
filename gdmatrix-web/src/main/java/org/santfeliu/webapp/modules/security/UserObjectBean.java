@@ -124,6 +124,14 @@ public class UserObjectBean extends ObjectBean
     userFinderBean.outdate();
   }
 
+  @Override
+  public void removeObject() throws Exception
+  {
+    getPort(false).removeUser(user.getUserId());
+
+    userFinderBean.outdate();
+  }
+
   public boolean isLocked()
   {
     return user.isLocked() != null && user.isLocked();

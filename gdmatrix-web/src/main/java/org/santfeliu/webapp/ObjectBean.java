@@ -32,16 +32,10 @@ package org.santfeliu.webapp;
 
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.util.WebUtils;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -308,38 +302,40 @@ public abstract class ObjectBean extends BaseBean
 
   public void storeTabs() throws Exception
   {
-    BeanManager beanManager = CDI.current().getBeanManager();
     for (EditTab tab : getEditTabs())
     {
       String beanName = tab.getBeanName();
-      if (beanName != null)
-      {
-        Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
-        if (iter.hasNext())
-        {
-          Bean<?> bean = iter.next();
-          Class<? extends Annotation> scope = bean.getScope();
-          Context context = beanManager.getContext(scope);
-          Object beanInstance = context.get(bean);
+      if (beanName == null) continue;
 
-          if (beanInstance instanceof TabBean)
-          {
-            TabBean tabBean = (TabBean)beanInstance;
-            if (tabBean.isModified())
-            {
-              System.out.println(">>> storeTabs: store tabBean: " +
-                tabBean.getClass().getName());
-              tabBean.store();
-            }
-          }
-        }
+      TabBean tabBean = WebUtils.getBean(beanName);
+      if (tabBean.isModified())
+      {
+        System.out.println(">>> storeTabs: store tabBean: " + beanName);
+        tabBean.store();
       }
     }
   }
 
   public void remove()
   {
-    error("NOT_IMPLEMENTED");
+    try
+    {
+      removeObject();
+
+      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+      navigatorBean.remove();
+
+      info("REMOVE_OBJECT");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void removeObject() throws Exception
+  {
+    throw new Exception("NOT_IMPLEMENTED");
   }
 
   public void cancel()
