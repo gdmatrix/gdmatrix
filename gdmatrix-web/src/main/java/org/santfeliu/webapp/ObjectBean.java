@@ -35,13 +35,13 @@ import org.santfeliu.webapp.util.WebUtils;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
-import javax.faces.view.ViewScoped;
 import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -225,15 +225,13 @@ public abstract class ObjectBean extends BaseBean
       }
     }
 
-    ObjectSetup defaultSetup = getTypeBean().getObjectSetup();
-    if (setupName != null)
+    if (setupName == null)
     {
-      objectSetup = ObjectSetupCache.getConfig(setupName);
-      objectSetup.merge(defaultSetup);
+      objectSetup = getTypeBean().getObjectSetup();
     }
     else
     {
-      objectSetup = defaultSetup;
+      objectSetup = ObjectSetupCache.getConfig(setupName);
     }
   }
 
@@ -357,37 +355,19 @@ public abstract class ObjectBean extends BaseBean
 
   private void clear()
   {
-    BeanManager beanManager = CDI.current().getBeanManager();
-    Context context = beanManager.getContext(ViewScoped.class);
-
+    HashSet<TabBean> tabBeans = new HashSet<>();
     for (EditTab tab : getEditTabs())
     {
       String beanName = tab.getBeanName();
       if (beanName == null) continue;
 
-      Iterator<Bean<?>> iter = beanManager.getBeans(beanName).iterator();
-      if (iter.hasNext())
-      {
-        Bean<?> bean = iter.next();
-        Object beanInstance = context.get(bean);
-        if (beanInstance instanceof TabBean)
-        {
-          TabBean tabBean = (TabBean)beanInstance;
-          if (!tabBean.isNew())
-          {
-            System.out.println(">>> Clearing " + beanName);
-            tabBean.setObjectId(NEW_OBJECT_ID);
-            try
-            {
-              tabBean.load();
-            }
-            catch (Exception ex)
-            {
-              // ignore
-            }
-          }
-        }
-      }
+      TabBean tabBean = WebUtils.getBean(beanName);
+      tabBeans.add(tabBean);
+    }
+
+    for (TabBean tabBean : tabBeans)
+    {
+      tabBean.clear();
     }
   }
 }

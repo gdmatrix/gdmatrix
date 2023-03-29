@@ -45,11 +45,22 @@ import java.util.Set;
  */
 public class ObjectSetup implements Serializable
 {
+  private String typeId;
   private String viewId;
   private String label;
   private List<SearchTab> searchTabs = new ArrayList<>();
   private List<EditTab> editTabs = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
+
+  public String getTypeId()
+  {
+    return typeId;
+  }
+
+  public void setTypeId(String typeId)
+  {
+    this.typeId = typeId;
+  }
 
   public String getViewId()
   {

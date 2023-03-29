@@ -106,4 +106,17 @@ public abstract class TabBean extends BaseBean
     return id;
   }
 
+  public void clear()
+  {
+    setObjectId(NEW_OBJECT_ID);
+    try
+    {
+      load();
+    }
+    catch (Exception ex)
+    {
+      // ignore
+    }
+  }
+
 }

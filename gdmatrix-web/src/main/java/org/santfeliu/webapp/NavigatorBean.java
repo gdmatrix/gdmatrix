@@ -249,8 +249,8 @@ public class NavigatorBean extends WebBean implements Serializable
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
     if (baseTypeInfo == null) return;
 
-    baseTypeInfo.getRecentObjectIdList().remove(baseTypeInfo.getObjectId());
     baseTypeInfo.unmarkAsFavorite();
+    baseTypeInfo.getRecentObjectIdList().remove(baseTypeInfo.getObjectId());
 
     updateCount++;
 

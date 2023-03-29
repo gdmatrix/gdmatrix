@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.Property;
 import org.matrix.doc.Content;
 import org.matrix.doc.Document;
@@ -49,6 +50,7 @@ import org.santfeliu.doc.client.CachedDocumentManagerClient;
 import org.santfeliu.doc.client.DocumentManagerClient;
 import org.santfeliu.doc.util.DocumentUtils;
 import org.santfeliu.util.MatrixConfig;
+import org.santfeliu.webapp.TypeBean;
 
 /**
  *
@@ -78,6 +80,13 @@ public class ObjectSetupCache
       try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8))
       {
         objectSetup = ObjectSetup.read(reader);
+        String typeId = objectSetup.getTypeId();
+        if (!StringUtils.isBlank(typeId))
+        {
+          TypeBean typeBean = TypeBean.getInstance(typeId);
+          ObjectSetup defaultSetup = typeBean.getObjectSetup();
+          objectSetup.merge(defaultSetup);
+        }
         cache.put(setupName, objectSetup);
       }
     }
