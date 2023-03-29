@@ -30,12 +30,14 @@
  */
 package org.santfeliu.webapp.modules.cases;
 
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import org.matrix.cases.CaseManagerPort;
 import org.matrix.cases.CaseManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 
@@ -47,6 +49,24 @@ import org.santfeliu.web.UserSessionBean;
 @ApplicationScoped
 public class CasesModuleBean
 {
+  private static final String FIND_AS_ADMIN_FOR_PROPERTY = "findAsAdminFor";
+  private static final String ALL_USERS = "%";
+
+  public static boolean isFindAsAdmin()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    String userId = userSessionBean.getUserId();
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    List<String> userIdList =
+      cursor.getMultiValuedProperty(FIND_AS_ADMIN_FOR_PROPERTY);
+    return (userIdList.contains(userId) || userIdList.contains(ALL_USERS));
+  }
+
+  public static CaseManagerPort getPort() throws Exception
+  {
+    return getPort(isFindAsAdmin());
+  }
+
   public static CaseManagerPort getPort(String userId, String password)
   {
     WSDirectory wsDirectory = WSDirectory.getInstance();

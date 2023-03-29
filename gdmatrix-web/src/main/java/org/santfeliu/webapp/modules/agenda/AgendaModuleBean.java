@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.agenda;
 
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import org.matrix.agenda.AgendaManagerPort;
@@ -37,6 +38,7 @@ import org.matrix.agenda.AgendaManagerService;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
 import org.santfeliu.agenda.client.AgendaManagerClient;
+import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.MatrixConfig;
 import org.santfeliu.web.UserSessionBean;
 
@@ -48,6 +50,30 @@ import org.santfeliu.web.UserSessionBean;
 @ApplicationScoped
 public class AgendaModuleBean
 {
+  private static final String RUN_AS_ADMIN_FOR_PROPERTY = "runAsAdminFor";
+  private static final String FIND_AS_ADMIN_FOR_PROPERTY = "findAsAdminFor";
+  private static final String ALL_USERS = "%";
+
+  public static boolean isRunAsAdmin()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    String userId = userSessionBean.getUserId();
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    List<String> userIdList =
+      cursor.getMultiValuedProperty(RUN_AS_ADMIN_FOR_PROPERTY);
+    return userIdList.contains(userId);
+  }
+
+  public static boolean isFindAsAdmin()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    String userId = userSessionBean.getUserId();
+    MenuItemCursor cursor = userSessionBean.getSelectedMenuItem();
+    List<String> userIdList =
+      cursor.getMultiValuedProperty(FIND_AS_ADMIN_FOR_PROPERTY);
+    return (userIdList.contains(userId) || userIdList.contains(ALL_USERS));
+  }
+
   public static AgendaManagerPort getPort(String userId, String password)
   {
     WSDirectory wsDirectory = WSDirectory.getInstance();
@@ -73,11 +99,15 @@ public class AgendaModuleBean
     return getPort(userId, password);
   }
   
+  public static AgendaManagerClient getClient() throws Exception
+  {
+    return getClient(isRunAsAdmin() || isFindAsAdmin());
+  }
+
   public static AgendaManagerClient getClient(String userId, 
     String password)
   {
-    AgendaManagerClient client = new AgendaManagerClient(userId, password);
-    return client;
+    return new AgendaManagerClient(userId, password);
   }
   
   public static AgendaManagerClient getClient(boolean asAdmin) 
