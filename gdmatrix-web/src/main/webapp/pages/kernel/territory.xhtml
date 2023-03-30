@@ -1,90 +1,95 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
-
-  <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
-                var="kernelBundle" />
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:p="http://primefaces.org/ui">
 
   <p:outputPanel id="object_header" class="flex flex-wrap card-container m-2">
-
     <p:outputPanel class="flex flex-grow-0 justify-content-start align-self-center"
                    rendered="#{objectBean.finderBean.isScrollEnabled()}">
-      <p:commandButton icon="ui-icon pi pi-step-backward" 
-                       styleClass="rounded-button ui-button-flat mr-2" 
-                       action="#{objectBean.finderBean.viewPrevious}"
-                       process="@this"
-                       update=":mainform:context_panel :mainform:search_tabs"
-                       resetValues="true"
-                       disabled="#{not objectBean.finderBean.hasPrevious()}"
-                       title="Previous" alt="Previous" 
-                       />
-      <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}" 
-                    styleClass="align-self-center" />
-      <p:commandButton icon="ui-icon pi pi-step-forward" 
-                       styleClass="rounded-button ui-button-flat ml-2 mr-2" 
-                       action="#{objectBean.finderBean.viewNext}"
-                       process="@this"
-                       update=":mainform:context_panel :mainform:search_tabs"
-                       resetValues="true"
-                       disabled="#{not objectBean.finderBean.hasNext()}"
-                       title="Next" alt="Next" 
-                       />
-    </p:outputPanel>    
+        <p:commandButton icon="ui-icon pi pi-step-backward"
+                         styleClass="rounded-button ui-button-flat mr-2"
+                         action="#{objectBean.finderBean.viewPrevious}"
+                         process="@this"
+                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasPrevious()}"
+                         title="#{objectBundle.previous}" alt="#{objectBundle.previous}"
+                         />
+        <h:outputText value="#{objectBean.finderBean.objectPosition + 1} / #{objectBean.finderBean.objectCount}"
+                      styleClass="align-self-center" />
+        <p:commandButton icon="ui-icon pi pi-step-forward"
+                         styleClass="rounded-button ui-button-flat ml-2 mr-2"
+                         action="#{objectBean.finderBean.viewNext}"
+                         process="@this"
+                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         resetValues="true"
+                         disabled="#{not objectBean.finderBean.hasNext()}"
+                         title="#{objectBundle.next}" alt="#{objectBundle.next}"
+                         />
+    </p:outputPanel>   
     <div class="flex flex-grow-1 justify-content-start align-self-center">
       <h:outputText value="#{objectBean.objectId}" />
       <strong><h:outputText value="#{objectBean.description}" class="ml-2"/></strong>
     </div>
     <div class="flex flex-grow-1 justify-content-end">
-      <p:commandButton icon="ui-icon pi pi-arrow-circle-left" 
-                       styleClass="rounded-button ui-button-flat" 
-                       action="#{navigatorBean.select}"
-                       rendered="#{navigatorBean.selectable}"
-                       ajax="false" onclick="showOverlay()"
-                       title="Select" alt="Select" 
-                       />  
-      <p:commandButton icon="ui-icon pi pi-plus-circle" 
-                       styleClass="rounded-button ui-button-flat" 
-                       action="#{navigatorBean.view('')}"
-                       rendered="#{not objectBean.isNew()}"
-                       process="@this"
-                       update=":mainform:search_tabs"
-                       resetValues="true"
-                       title="#{objectBundle.create}" alt="#{objectBundle.create}" 
-                       />
-      <p:commandButton icon="ui-icon pi pi-star" 
-                       styleClass="rounded-button ui-button-flat" 
-                       action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
-                       rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
-                       update="object_header" 
-                       title="Mark" alt="Mark" 
-                       />
-      <p:commandButton icon="ui-icon pi pi-star-fill" 
-                       styleClass="rounded-button ui-button-flat" 
-                       action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
-                       rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
-                       update="object_header" 
-                       title="Unmark" alt="Unmark" 
-                       />
-      <p:commandButton icon="ui-icon pi pi-trash" 
-                       styleClass="rounded-button ui-button-flat" 
-                       action="#{objectBean.remove}" 
-                       rendered="#{not objectBean.isNew()}"
-                       process="@this"
-                       update=":mainform:search_tabs" 
-                       resetValues="true"
-                       title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
+        <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{navigatorBean.select}"
+                         rendered="#{navigatorBean.selectable}"
+                         ajax="false"
+                         immediate="true"
+                         onclick="showOverlay()"
+                         title="#{objectBundle.select}" alt="#{objectBundle.select}"
+                         />
+        <p:commandButton icon="ui-icon pi pi-plus-circle"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{navigatorBean.view('')}"
+                         process="@this"
+                         update=":mainform:context_panel :mainform:search_tabs:obj_tabs"
+                         resetValues="true"
+                         title="#{objectBundle.create}" alt="#{objectBundle.create}"
+                         rendered="#{objectBean.rootTypeId != 'Country'}"
+                         />
+        <p:commandButton icon="ui-icon pi pi-star"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{navigatorBean.baseTypeInfo.markAsFavorite}"
+                         rendered="#{not objectBean.isNew() and not navigatorBean.baseTypeInfo.markedAsFavorite}"
+                         process="@this"
+                         partialSubmit="true"
+                         update="object_header :mainform:context_panel"
+                         title="#{objectBundle.favorite}" alt="#{objectBundle.favorite}"
+                         />
+        <p:commandButton icon="ui-icon pi pi-star-fill"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{navigatorBean.baseTypeInfo.unmarkAsFavorite}"
+                         rendered="#{not objectBean.isNew() and navigatorBean.baseTypeInfo.markedAsFavorite}"
+                         process="@this"
+                         partialSubmit="true"
+                         update="object_header :mainform:context_panel"
+                         title="#{objectBundle.noFavorite}" alt="#{objectBundle.noFavorite}"
+                         />
+        <p:commandButton icon="ui-icon pi pi-trash"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{objectBean.remove}"
+                         rendered="#{not objectBean.isNew()}"
+                         process="@this"
+                         update=":mainform:search_tabs :mainform:context_panel"
+                         resetValues="true"
+                         title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
             <p:confirm header="#{objectBundle.confirm_remove_header}" 
                        message="#{objectBundle.confirm_remove_message}" 
                        icon="pi pi-info-circle" />
-      </p:commandButton>
-      <p:commandButton icon="ui-icon pi pi-times" 
-                       action="#{navigatorBean.close}"
-                       ajax="false" onclick="showOverlay()"
-                       immediate="true"
-                       styleClass="rounded-button ui-button-flat" 
-                       title="Close" alt="Close" />      
+        </p:commandButton>
+        <p:commandButton icon="ui-icon pi pi-times"
+                         action="#{navigatorBean.close}"
+                         ajax="false"
+                         immediate="true"
+                         onclick="showOverlay()"
+                         styleClass="rounded-button ui-button-flat"
+                         title="#{objectBundle.close}" alt="#{objectBundle.close}" />
     </div>
   </p:outputPanel>  
 
@@ -134,14 +139,14 @@
           <p:inputText id="language" value="#{objectBean.country.language}" />
         </div>        
       </h:panelGroup>         
-      
+
       <!-- Province -->
       <p:outputPanel class="field col-12" 
                      rendered="#{objectBean.rootTypeId == 'City'
                                  or objectBean.rootTypeId == 'Street'}">
         <p:outputLabel for="@next" value="#{kernelBundle.province}"  />
         <div class="ui-inputgroup"> 
-          
+
           <p:selectOneMenu id="province_selector" value="#{objectBean.province.provinceId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="true">
@@ -149,7 +154,7 @@
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{provinceTypeBean.getProvinceSelectItems(objectBean.country.countryId)}"/>
           </p:selectOneMenu>
-         
+
           <p:commandButton rendered="#{not empty objectBean.province.provinceId}"
                            icon="pi pi-pencil"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
@@ -159,13 +164,13 @@
         </div>
       </p:outputPanel> 
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Province'}">      
-          <div class="field col-12">
-            <p:outputLabel for="@next" value="#{kernelBundle.province}" />
-            <p:inputText id="province_name" value="#{objectBean.province.name}" 
-                         required="true"/>
-          </div>         
+        <div class="field col-12">
+          <p:outputLabel for="@next" value="#{kernelBundle.province}" />
+          <p:inputText id="province_name" value="#{objectBean.province.name}" 
+                       required="true"/>
+        </div>         
       </h:panelGroup>
-      
+
       <!-- City -->
       <p:outputPanel class="field col-12" 
                      rendered="#{objectBean.rootTypeId == 'Street'}">
@@ -174,7 +179,7 @@
           <p:selectOneMenu id="city_selector" value="#{objectBean.city.cityId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
-                            required="true">
+                           required="true">
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{cityTypeBean.getCitySelectItems(streetObjectBean.province.provinceId)}"/>
           </p:selectOneMenu>
@@ -234,8 +239,8 @@
                        update="territory_panel"
                        global="false"
                        resetValues="true"
-                        />
-              
+                       />
+
     </div>    
 
   </p:outputPanel> 

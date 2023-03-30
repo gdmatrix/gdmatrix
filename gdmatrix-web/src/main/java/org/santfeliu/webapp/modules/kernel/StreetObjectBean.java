@@ -143,9 +143,7 @@ public class StreetObjectBean extends TerritoryObjectBean
   public void removeObject() throws Exception
   {
     KernelModuleBean.getPort(false).removeStreet(objectId);
-    streetFinderBean.doFind(false);  
-    info("REMOVE_OBJECT");    
-    navigatorBean.view("");
+    streetFinderBean.outdate();  
   }    
 
   @Override

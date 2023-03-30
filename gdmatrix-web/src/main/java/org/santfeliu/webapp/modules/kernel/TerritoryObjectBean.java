@@ -128,23 +128,7 @@ public abstract class TerritoryObjectBean extends ObjectBean
       error(ex);
     }
   }
-  
-  public abstract void removeObject() throws Exception;
-   
-  @Override
-  public void remove()
-  {
-    try
-    {
-      removeObject();    
-      info("REMOVE_OBJECT");
-    }
-    catch(Exception ex)
-    {
-      error(ex);
-    }
-  }
-  
+       
   protected void loadStreet(KernelManagerPort port, String streetId)
   {
     street = port.loadStreet(streetId);

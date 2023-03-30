@@ -66,14 +66,11 @@
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
-      <p:outputPanel styleClass="text-2xl">
-        <p:autoUpdate />        
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-3xl mx-2 my-1"/>       
+      <p:outputPanel>      
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
         <h:outputText value="#{addressObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{addressObjectBean.activeEditTab.label}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{addressPersonsTabBean.editing.personAddressId}" />
       </p:outputPanel>
     </f:facet>
 

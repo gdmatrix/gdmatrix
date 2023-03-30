@@ -205,6 +205,14 @@ public class CaseObjectBean extends ObjectBean
 
     caseFinderBean.outdate();
   }
+  
+  @Override
+  public void removeObject() throws Exception
+  {
+    CasesModuleBean.getPort(false).removeCase(cas.getCaseId());
+
+    caseFinderBean.outdate();
+  }  
 
   @Override
   public Serializable saveState()

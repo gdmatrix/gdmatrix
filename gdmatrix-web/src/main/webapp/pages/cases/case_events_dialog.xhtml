@@ -62,7 +62,8 @@
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_events_store']}"
-                                requiredMessage="Type is mandatory">           
+                                requiredMessage="Type is mandatory"
+                                formSelector="#{caseEventsTabBean.formSelector}">           
           </emcomp:typeReference>
         </div>
 

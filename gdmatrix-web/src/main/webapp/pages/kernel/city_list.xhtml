@@ -11,16 +11,16 @@
                rowStyleClass="#{row.cityId == cityObjectBean.objectId ? 'current' : ''}"
                rowIndexVar="rowIndex"
                rendered="true">
-    <p:column headerText="cityId" styleClass="w-1">
+    <p:column headerText="cityId" styleClass="col-1">
       <h:outputText value="#{row.cityId}" />
     </p:column>          
-    <p:column headerText="Població" styleClass="w-4">
+    <p:column headerText="Població" styleClass="col-4">
       <h:outputText value="#{row.name}" />
     </p:column> 
-    <p:column headerText="Província" styleClass="w-4">
+    <p:column headerText="Província" styleClass="col-4">
       <h:outputText value="#{row.province}" />
     </p:column>      
-    <p:column styleClass="w-1">
+    <p:column styleClass="col-1">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.docId)}"

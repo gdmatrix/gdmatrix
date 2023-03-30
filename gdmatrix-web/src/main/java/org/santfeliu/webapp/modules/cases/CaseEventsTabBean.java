@@ -230,7 +230,7 @@ public class CaseEventsTabBean extends TabBean
     if (row != null)
     {
       try
-      {
+      {      
         editing = CasesModuleBean.getPort(false).
           loadCaseEvent(row.getCaseEventId());
       }
@@ -238,6 +238,7 @@ public class CaseEventsTabBean extends TabBean
       {
         error(ex);
       }
+      formSelector = null;        
     }
     else
     {

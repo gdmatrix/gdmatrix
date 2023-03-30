@@ -123,9 +123,7 @@ public class CountryObjectBean extends TerritoryObjectBean
   public void removeObject() throws Exception
   {
     KernelModuleBean.getPort(false).removeCountry(objectId);
-    countryFinderBean.doFind(false);
-    info("REMOVE_OBJECT");    
-    navigatorBean.view("");
+    countryFinderBean.outdate();
   }  
   
   @Override

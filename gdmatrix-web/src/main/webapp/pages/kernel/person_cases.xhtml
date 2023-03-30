@@ -25,19 +25,19 @@
         <div class="flex justify-content-end w-12">                   
         </div>              
       </f:facet>      
-      <p:column headerText="#{kernelBundle.personCases_id}" styleClass="w-1">
+      <p:column headerText="#{kernelBundle.personCases_id}" styleClass="col-1">
         <h:outputText value="#{row.caseObject.caseId}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="w-4">
+      <p:column headerText="#{kernelBundle.personCases_title}" styleClass="col-4">
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>       
-      <p:column headerText="#{kernelBundle.personCases_type}" styleClass="w-3">
+      <p:column headerText="#{kernelBundle.personCases_type}" styleClass="col-3">
         <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}" />
       </p:column>
-      <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="w-3">
+      <p:column headerText="#{kernelBundle.personCases_comments}" styleClass="col-3">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
-      <p:column styleClass="w-1 text-right" exportable="false">
+      <p:column styleClass="col-1 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show(row.caseObject.caseTypeId, row.caseObject.caseId)}" 

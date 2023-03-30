@@ -330,19 +330,18 @@ public class CaseInterventionsTabBean extends TabBean
     String intId = null;
     if (row != null)
       intId = row.getRowId();
-    
-    formSelector = null;
-
+       
     try
     {
       if (intId != null)
-      {
+      {       
         editing = CasesModuleBean.getPort(false).loadIntervention(intId);
       }
       else
       {
         create();
       }
+      formSelector = null;        
     }
     catch (Exception ex)
     {

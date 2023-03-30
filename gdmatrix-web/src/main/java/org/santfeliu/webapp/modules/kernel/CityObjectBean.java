@@ -134,50 +134,8 @@ public class CityObjectBean extends TerritoryObjectBean
   public void removeObject() throws Exception
   {
     KernelModuleBean.getPort(false).removeCity(objectId);
-    cityFinderBean.doFind(false);
-    info("REMOVE_OBJECT");    
-    navigatorBean.view("");
+    cityFinderBean.outdate();   
   }    
-
-    
-//  public List<SelectItem> getCitySelectItems()
-//  {
-//    if (citySelectItems == null)
-//    {
-//      try
-//      {
-//        loadCitySelectItems();
-//      }
-//      catch (Exception ex)
-//      {
-//        error(ex);
-//      }
-//    }
-//
-//    return citySelectItems;
-//  }
-
-//  public void loadCitySelectItems() throws Exception
-//  {
-//    citySelectItems = new ArrayList<>();
-//    CityFilter filter = new CityFilter();
-//    String provinceId = provinceObjectBean.getProvince().getProvinceId();
-//
-//    if (!StringUtils.isBlank(provinceId))
-//    {
-//      filter.setProvinceId(provinceId);
-//
-//      List<City> cities
-//        = KernelModuleBean.getPort(false).findCities(filter);
-//
-//      for (City c : cities)
-//      {
-//        SelectItem item
-//          = new SelectItem(c.getCityId(), c.getName());
-//        citySelectItems.add(item);
-//      }
-//    }
-//  }
 
   @Override
   public Serializable saveState()

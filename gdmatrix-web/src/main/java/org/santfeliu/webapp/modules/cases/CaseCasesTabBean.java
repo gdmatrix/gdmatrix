@@ -312,6 +312,7 @@ public class CaseCasesTabBean extends TabBean
       {
         create();
       }
+      formSelector = null;  
     }
     catch (Exception ex)
     {

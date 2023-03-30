@@ -46,20 +46,20 @@
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="#{caseBundle.caseDocuments_id}" styleClass="w-1">
+      <p:column headerText="#{caseBundle.caseDocuments_id}" styleClass="col-1">
         <h:outputText value="#{row.document.docId}" />
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="w-7">
+      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-7">
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseDocuments_type}" styleClass="w-2"
+      <p:column headerText="#{caseBundle.caseDocuments_type}" styleClass="col-2"
                 rendered="#{!caseDocumentsTabBean.groupedView}">
         <h:outputText value="#{caseDocumentsTabBean.caseDocumentTypeDescription}"/>
       </p:column>
 
-      <p:column styleClass="w-2 text-right">
+      <p:column styleClass="col-2 text-right">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
                          ajax="false" onclick="showOverlay()"

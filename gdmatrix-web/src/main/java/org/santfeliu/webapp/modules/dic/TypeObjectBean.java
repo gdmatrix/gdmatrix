@@ -115,6 +115,14 @@ public class TypeObjectBean extends ObjectBean
   {
     type = DicModuleBean.getPort(false).storeType(type);
   }
+  
+  @Override
+  public void removeObject() throws Exception
+  {
+    DicModuleBean.getPort(false).removeType(type.getTypeId());
+
+    typeFinderBean.outdate();
+  }    
 
   //Person selection
   public SelectItem getSuperTypeSelectItem()

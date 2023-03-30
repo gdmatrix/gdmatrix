@@ -20,7 +20,7 @@
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{caseObjectBean.activeEditTab.label}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{caseInterventionsTabBean.editing.getIntId()}" />
+        <h:outputText value="#{caseInterventionsTabBean.editing.getIntId()} #{interventionTypeBean.getDescription(caseInterventionsTabBean.editing.getIntId())}" />
       </p:outputPanel>
     </f:facet>
 
@@ -41,10 +41,11 @@
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3" 
-                                process=":mainform:search_tabs:case_interventions_dialog"
-                                update=":mainform:search_tabs:case_interventions_dialog"
                                 required="#{not empty param['mainform:search_tabs:case_interventions_store']}"
-                                requiredMessage="Type is mandatory">        
+                                requiredMessage="Type is mandatory"
+                                formSelector="#{caseInterventionsTabBean.formSelector}"
+                                process=":mainform:search_tabs:case_interventions_dialog"
+                                update=":mainform:search_tabs:case_interventions_dialog">        
           </emcomp:typeReference>
         </p:outputPanel>
 

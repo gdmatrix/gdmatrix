@@ -33,13 +33,13 @@
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />                        
         </div>
       </f:facet>      
-      <p:column headerText="#{kernelBundle.personAddresses_id}" styleClass="w-1">
+      <p:column headerText="#{kernelBundle.personAddresses_id}" styleClass="col-1">
         <h:outputText value="#{row.address.addressId}" />
       </p:column> 
-      <p:column headerText="#{kernelBundle.personAddresses_address}" styleClass="w-9">
+      <p:column headerText="#{kernelBundle.personAddresses_address}" styleClass="col-9">
         <h:outputText value="#{row.address.description}"/>
       </p:column>
-      <p:column styleClass="w-2 text-right" exportable="false">
+      <p:column styleClass="col-2 text-right" exportable="false">
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 
@@ -69,14 +69,11 @@
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
-      <p:outputPanel styleClass="text-2xl">
-        <p:autoUpdate />        
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} text-3xl mx-2 my-1"/>       
+      <p:outputPanel>     
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
         <h:outputText value="#{personObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{personObjectBean.activeEditTab.label}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
-        <h:outputText value="#{personAddressesTabBean.pageObjectDescription}" />
       </p:outputPanel>
     </f:facet>
 

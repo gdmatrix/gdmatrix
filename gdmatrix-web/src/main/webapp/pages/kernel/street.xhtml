@@ -6,9 +6,12 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="/pages/obj/object_3col.xhtml"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
+  
   <ui:define name="filter"> 
 
+    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
+                  var="kernelBundle" />     
+    
     <p:outputPanel id="filter_panel">
 
       <p:tabView id="find_selector"
@@ -52,8 +55,7 @@
             <h:outputText value="#{objectBundle.advanced}" /> 
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
-          <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
-                        var="kernelBundle" /> 
+
 
           <div class="ui-fluid formgrid grid">             
 
@@ -63,7 +65,7 @@
               <emcomp:objectReference type="City" value="#{streetFinderBean.filter.cityId}"
                                       queryDelay="1000"
                                       minQueryLength="3"
-                                      process=":mainform:search_tabs:tabs">
+                                      process=":mainform:filter_panel">
               </emcomp:objectReference>
             </div>            
 
@@ -112,13 +114,14 @@
       }
     </script>
     <p:remoteCommand name="updateResults"
-                     action="#{addressFinderBean.update}"
+                     action="#{streetFinderBean.update}"
                      process="@this" 
                      update=":mainform:search_tabs:result_list" />      
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                activeIndex="#{streetObjectBean.searchTabSelector}"
-               touchable="false">
+               touchable="false"
+               onTabShow="onTabShow()">
 
       <p:tab>
         <f:facet name="title">

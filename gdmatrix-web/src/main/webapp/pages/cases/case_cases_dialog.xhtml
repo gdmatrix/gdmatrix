@@ -55,8 +55,6 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{caseCasesTabBean.caseCaseTypeId}"
-                                process=":mainform:search_tabs:case_cases_dialog"
-                                update=":mainform:search_tabs:case_cases_dialog"
                                 type="#{caseCasesTabBean.tabBaseTypeId != null ? caseCasesTabBean.tabBaseTypeId : 'CaseCase'}"
                                 showNavigatorItems="#{caseCasesTabBean.tabBaseTypeId != 'CaseCase' ? 'false' : 'true'}"
                                 scrollHeight="200"
@@ -64,7 +62,9 @@
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_cases_store']}"
                                 requiredMessage="Type is mandatory"
-                                formSelector="#{caseCasesTabBean.formSelector}">         
+                                formSelector="#{caseCasesTabBean.formSelector}"
+                                process=":mainform:search_tabs:case_cases_dialog"
+                                update=":mainform:search_tabs:case_cases_dialog">         
           </emcomp:typeReference>
         </p:outputPanel>
 

@@ -6,8 +6,11 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="/pages/obj/object_3col.xhtml"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
+  
   <ui:define name="filter"> 
+    
+    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+                  var="kernelBundle" />      
 
     <p:outputPanel id="filter_panel">
 
@@ -53,9 +56,6 @@
           </f:facet>
 
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" /> 
-
-          <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
-                        var="kernelBundle" /> 
 
           <div class="ui-fluid formgrid grid"> 
             

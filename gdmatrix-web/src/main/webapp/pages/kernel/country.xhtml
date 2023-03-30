@@ -61,13 +61,14 @@
       }
     </script>
     <p:remoteCommand name="updateResults"
-                     action="#{addressFinderBean.update}"
+                     action="#{countryFinderBean.update}"
                      process="@this" 
                      update=":mainform:search_tabs:result_list" />  
     <p:tabView id="search_tabs" 
                widgetVar="searchTabs" 
                activeIndex="#{countryObjectBean.searchTabSelector}"
-               touchable="false">
+               touchable="false"
+               onTabShow="onTabShow()">
 
       <p:tab>
         <f:facet name="title">

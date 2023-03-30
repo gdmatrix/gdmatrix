@@ -12,20 +12,20 @@
                rowStyleClass="#{row.countryId == countryObjectBean.objectId ? 'current' : ''}"
                rowIndexVar="rowIndex"
                rendered="true">
-    <p:column headerText="Id" styleClass="w-1">
+    <p:column headerText="Id" styleClass="col-1">
       <h:outputText value="#{row.countryId}" />
     </p:column>   
-    <p:column headerText="Nom" styleClass="w-7">
+    <p:column headerText="Nom" styleClass="col-7">
       <h:outputText value="#{row.name}" />
     </p:column> 
-    <p:column headerText="ISO code" styleClass="w-2">
+    <p:column headerText="ISO code" styleClass="col-2">
       <h:outputText value="#{row.getISOCode()}" />
     </p:column> 
-    <p:column headerText="Idioma" styleClass="w-2">
+    <p:column headerText="Idioma" styleClass="col-2">
       <h:outputText value="#{row.language}" />
     </p:column>     
         
-    <p:column styleClass="w-1">
+    <p:column styleClass="col-1">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.docId)}"

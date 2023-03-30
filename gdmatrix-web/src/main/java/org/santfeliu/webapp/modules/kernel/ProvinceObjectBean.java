@@ -131,9 +131,7 @@ public class ProvinceObjectBean extends TerritoryObjectBean
   public void removeObject() throws Exception
   {
     KernelModuleBean.getPort(false).removeProvince(objectId);
-    provinceFinderBean.doFind(false);
-    info("REMOVE_OBJECT");    
-    navigatorBean.view("");
+    provinceFinderBean.outdate();
   }
       
   @Override
