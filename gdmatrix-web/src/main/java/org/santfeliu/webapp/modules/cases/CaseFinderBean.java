@@ -39,17 +39,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
-import org.matrix.dic.PropertyDefinition;
-import org.santfeliu.dic.Type;
-import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.Column;
-import org.santfeliu.webapp.setup.ObjectSetup;
-import org.santfeliu.webapp.setup.ObjectSetupCache;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -66,7 +61,6 @@ public class CaseFinderBean extends FinderBean
   private int firstRow;
   private boolean finding;
   private boolean outdated;
-  private transient ObjectSetup objectSetup;
  
   @Inject
   NavigatorBean navigatorBean;
@@ -311,32 +305,6 @@ public class CaseFinderBean extends FinderBean
       error(ex);
     }
   }
-  
-  public void loadObjectSetup() throws Exception
-  {
-    String setupName = getProperty("objectSetup");
-    if (setupName == null)
-    {
-      String typeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      Type type = TypeCache.getInstance().getType(typeId);
-      PropertyDefinition propdef = type.getPropertyDefinition("objectSetup");
-      if (propdef != null && !propdef.getValue().isEmpty())
-      {
-        setupName = propdef.getValue().get(0);
-      }
-    }
-
-    ObjectSetup defaultSetup = caseTypeBean.getObjectSetup();
-    if (setupName != null)
-    {
-      objectSetup = ObjectSetupCache.getConfig(setupName);
-      objectSetup.merge(defaultSetup);
-    }
-    else
-    {
-      objectSetup = defaultSetup;
-    }
-  }  
     
   private List<DataTableRow> toDataTableRows(List<Case> cases) 
     throws Exception

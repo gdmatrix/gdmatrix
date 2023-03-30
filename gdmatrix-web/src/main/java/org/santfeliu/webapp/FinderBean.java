@@ -30,7 +30,12 @@
  */
 package org.santfeliu.webapp;
 
+import org.matrix.dic.PropertyDefinition;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.setup.ObjectSetup;
+import org.santfeliu.webapp.setup.ObjectSetupCache;
 import org.santfeliu.webapp.util.WebUtils;
 
 /**
@@ -41,6 +46,7 @@ public abstract class FinderBean extends BaseBean
 {
   private int filterTabSelector;
   private int objectPosition = -1;
+  protected transient ObjectSetup objectSetup;  
 
   public int getFilterTabSelector()
   {
@@ -124,4 +130,30 @@ public abstract class FinderBean extends BaseBean
       view(objectPosition - 1);
     }
   }
+  
+  public void loadObjectSetup() throws Exception
+  {
+    String setupName = getProperty("objectSetup");
+    if (setupName == null)
+    {
+      NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+      String typeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      Type type = TypeCache.getInstance().getType(typeId);
+      PropertyDefinition propdef = type.getPropertyDefinition("objectSetup");
+      if (propdef != null && !propdef.getValue().isEmpty())
+      {
+        setupName = propdef.getValue().get(0);
+      }
+    }
+
+    ObjectSetup defaultSetup = getObjectBean().getTypeBean().getObjectSetup();
+    if (setupName != null)
+    {
+      objectSetup = ObjectSetupCache.getConfig(setupName);
+    }
+    else
+    {
+      objectSetup = defaultSetup;
+    }
+  }   
 }
