@@ -50,6 +50,7 @@ import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentConstants;
+import static org.matrix.doc.DocumentConstants.DELETE_OLD_VERSIONS;
 import org.matrix.doc.DocumentFilter;
 import org.matrix.doc.DocumentManagerPort;
 import org.matrix.doc.OrderByProperty;
@@ -66,6 +67,7 @@ import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.HttpUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
 
 /**
  *
@@ -168,9 +170,13 @@ public class DocumentObjectBean extends ObjectBean
 
   public String getVersionLabel()
   {
-    // TODO: localize text
     int version = document.getVersion();
-    return version > 0 ? "Version " + version : "New version";
+    ResourceBundle bundle = ResourceBundle.getBundle(
+      "org.santfeliu.doc.web.resources.DocumentBundle", getLocale());
+
+    return version > 0 ?
+      bundle.getString("document_version") + " " + version :
+      bundle.getString("document_newVersion");
   }
 
   public String getContentSize()
@@ -305,7 +311,7 @@ public class DocumentObjectBean extends ObjectBean
 
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      document = DocModuleBean.getPort(false).loadDocument(
+      document = getPort(false).loadDocument(
         objectId, 0, ContentInfo.METADATA);
     }
     else
@@ -342,7 +348,7 @@ public class DocumentObjectBean extends ObjectBean
       contentIdToStore = null;
     }
 
-    document = DocModuleBean.getPort(false).storeDocument(document);
+    document = getPort(false).storeDocument(document);
     setObjectId(document.getDocId());
 
     documentFinderBean.outdate();
@@ -359,7 +365,7 @@ public class DocumentObjectBean extends ObjectBean
   @Override
   public void removeObject() throws Exception
   {
-    DocumentManagerPort port = DocModuleBean.getPort(false);
+    DocumentManagerPort port = getPort(false);
     port.removeDocument(document.getDocId(), DocumentConstants.DELETE_ALL_VERSIONS);
 
     documentFinderBean.outdate();
@@ -369,7 +375,7 @@ public class DocumentObjectBean extends ObjectBean
   {
     try
     {
-      DocumentManagerPort port = DocModuleBean.getPort(false);
+      DocumentManagerPort port = getPort(false);
       port.lockDocument(document.getDocId(), document.getVersion());
       document = port.loadDocument(document.getDocId(), document.getVersion(),
         ContentInfo.METADATA);
@@ -385,7 +391,7 @@ public class DocumentObjectBean extends ObjectBean
   {
     try
     {
-      DocumentManagerPort port = DocModuleBean.getPort(false);
+      DocumentManagerPort port = getPort(false);
       port.unlockDocument(document.getDocId(), document.getVersion());
       document = port.loadDocument(document.getDocId(), document.getVersion(),
         ContentInfo.METADATA);
@@ -425,41 +431,65 @@ public class DocumentObjectBean extends ObjectBean
 
   public void loadVersions()
   {
-    if (versions == null)
+    try
     {
-      try
+      if (isNew())
       {
-        if (isNew())
-        {
-          versions = Collections.EMPTY_LIST;
-        }
-        else
-        {
-          DocumentFilter filter = new DocumentFilter();
-          filter.getDocId().add(document.getDocId());
-          filter.setVersion(-1);
-          filter.setIncludeContentMetadata(false);
-          filter.getStates().add(State.DRAFT);
-          filter.getStates().add(State.COMPLETE);
-          filter.getStates().add(State.RECORD);
-          filter.getStates().add(State.DELETED);
-          OrderByProperty order = new OrderByProperty();
-          order.setName(DocumentConstants.VERSION);
-          order.setDescending(false);
-          filter.getOrderByProperty().add(order);
-          versions = DocModuleBean.getPort(false).findDocuments(filter);
-        }
+        versions = Collections.EMPTY_LIST;
       }
-      catch (Exception ex)
+      else
       {
-        error(ex);
+        DocumentFilter filter = new DocumentFilter();
+        filter.getDocId().add(document.getDocId());
+        filter.setVersion(-1);
+        filter.setIncludeContentMetadata(false);
+        filter.getStates().add(State.DRAFT);
+        filter.getStates().add(State.COMPLETE);
+        filter.getStates().add(State.RECORD);
+        filter.getStates().add(State.DELETED);
+        OrderByProperty order = new OrderByProperty();
+        order.setName(DocumentConstants.VERSION);
+        order.setDescending(true);
+        filter.getOrderByProperty().add(order);
+        versions = getPort(false).findDocuments(filter);
       }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
     }
   }
 
   public List<Document> getVersions()
   {
     return versions;
+  }
+
+  public void purgeVersions()
+  {
+    try
+    {
+      getPort(false).removeDocument(objectId, DELETE_OLD_VERSIONS);
+      versions = null;
+      loadVersion(0);
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void showVersions()
+  {
+    if (versions == null)
+    {
+      loadVersions();
+    }
+  }
+
+  public boolean isVersionDeleted(Document document)
+  {
+    return document.getState().equals(State.DELETED);
   }
 
   public void newVersion()
@@ -473,13 +503,28 @@ public class DocumentObjectBean extends ObjectBean
     {
       try
       {
-        document = DocModuleBean.getPort(false).loadDocument(
-          objectId, version, ContentInfo.METADATA);
+        document = getPort(false).loadDocument(
+          objectId, -version, ContentInfo.METADATA);
       }
       catch (Exception ex)
       {
         error(ex);
       }
+    }
+  }
+
+  public void removeVersion(int version)
+  {
+    try
+    {
+      getPort(false).removeDocument(objectId, version);
+      versions = null;
+      loadVersion(0);
+      info("REMOVE_OBJECT");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
     }
   }
 

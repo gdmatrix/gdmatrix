@@ -12,7 +12,7 @@
       <div class="w-full m-0 flex justify-content-end">
         <p:commandLink value="#{documentObjectBean.versionLabel}" 
                        process="@this"
-                       action="#{documentObjectBean.loadVersions}"
+                       action="#{documentObjectBean.showVersions}"
                        update=":mainform:versions_panel"
                        oncomplete="PF('versionsPanel').show()"/>
       </div>      

@@ -6,9 +6,6 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
-                var="documentBundle" />
-
   <h:panelGroup>      
 
     <!-- Results table -->
@@ -43,9 +40,9 @@
         <h:outputText value="#{row.caseObject.title}"/>
       </p:column>
 
-      <p:column headerText="Type" 
+      <p:column headerText="#{documentBundle.document_docType}" 
                 styleClass="col-3">
-        <h:outputText value="#{caseTypeBean.getDescription(row.caseObject.caseTypeId)}"/>
+        <h:outputText value="#{typeTypeBean.getDescription(row.caseObject.caseTypeId)}"/>
       </p:column>
 
       <p:column styleClass="col-2 text-right">

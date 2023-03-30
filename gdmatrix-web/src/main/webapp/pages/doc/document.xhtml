@@ -7,12 +7,11 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/obj/object_3col.xhtml">
-
-  <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
-                var="documentBundle" />    
   
   <ui:define name="filter">
-
+    <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                  var="documentBundle" />    
+    
     <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector" 
                  activeIndex="#{documentFinderBean.filterTabSelector}">
@@ -170,6 +169,9 @@
   </ui:define>
 
   <ui:define name="object">
+    <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
+                  var="documentBundle" />    
+
     <script>
       function onTabShow()
       {
@@ -221,32 +223,60 @@
               resizable="false"
               header="Document #{documentObjectBean.objectId} versions"
               closeOnEscape="true">
+
       <p:dataTable value="#{documentObjectBean.versions}" 
-                   var="docVersion"
-                   >
-        <p:column headerText="Version">
+                   var="docVersion" rowIndexVar="rowIndex">
+        <p:column headerText="#{documentBundle.document_version}">
           <h:outputText value="#{docVersion.version}" />
         </p:column>
-        <p:column headerText="Title">
+        <p:column headerText="#{documentBundle.document_title}">
           <p:commandLink value="#{docVersion.title}" 
                          action="#{documentObjectBean.loadVersion(docVersion.version)}" 
                          process="@this"
                          update=":mainform:search_tabs"
+                         style="#{documentObjectBean.isVersionDeleted(docVersion) ? 'text-decoration:line-through' : ''}"
                          oncomplete="PF('versionsPanel').hide()"
                          />
         </p:column>
-        <p:column headerText="Creation">
-          <h:outputText value="#{docVersion.creationDate}" />
+        <p:column headerText="#{documentBundle.document_creationDate}">
+          <h:outputText value="#{docVersion.creationDate}000000">
+            <f:converter converterId="DateTimeConverter" />
+            <f:attribute name="userFormat" value="dd/MM/yyyy" />
+          </h:outputText>
+        </p:column>
+        <p:column styleClass="pt-0 pb-0">
+          <p:commandButton icon="ui-icon pi pi-trash"
+                           styleClass="rounded-button ui-button-flat m-0"
+                           action="#{documentObjectBean.removeVersion(docVersion.version)}"
+                           process="@this"
+                           update=":mainform:search_tabs"
+                           rendered="#{rowIndex gt 0 and not documentObjectBean.isVersionDeleted(docVersion)}"
+                           oncomplete="PF('versionsPanel').hide()"                       
+                           title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
+              <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                         message="#{objectBundle.confirm_remove}" 
+                         icon="pi pi-info-circle" />
+          </p:commandButton>
         </p:column>
       </p:dataTable>
       <f:facet name="footer">
-        <p:commandButton value="New version" 
+        <p:commandButton value="#{documentBundle.document_newVersion}" 
                          action="#{documentObjectBean.newVersion}" 
                          process="@this"
                          update=":mainform:search_tabs"
                          rendered="#{not documentObjectBean.isNew()}"
                          oncomplete="PF('versionsPanel').hide()"                       
                          /> 
+        <p:commandButton value="#{documentBundle.purge}" 
+                         action="#{documentObjectBean.purgeVersions}" 
+                         process="@this"
+                         update=":mainform:search_tabs"
+                         rendered="#{not documentObjectBean.isNew()}"
+                         oncomplete="PF('versionsPanel').hide()">
+              <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                         message="#{objectBundle.confirm_remove}" 
+                         icon="pi pi-info-circle" />
+        </p:commandButton>
       </f:facet>
     </p:dialog>
     
