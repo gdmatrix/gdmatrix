@@ -9,8 +9,8 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />  
-  
+                var="agendaBundle" />
+
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
@@ -20,10 +20,10 @@
 
         <p:tab id="smart_search">
           <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="#{objectBundle.quick}" /> 
-          </f:facet>          
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />    
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="#{objectBundle.value}" />
@@ -53,10 +53,10 @@
 
         <p:tab id="advanced_search">
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
           </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
           <!-- EventId -->
           <p:outputPanel styleClass="field">
@@ -76,17 +76,17 @@
           <!-- TypeId -->
           <div class="field">
             <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
-            <p:selectOneMenu value="#{eventFinderBean.searchEventTypeId}"
-                             styleClass="inputfield w-full" filter="true"
-                             filterMatchMode="contains"
-                             style="min-width:inherit !important">
-              <f:selectItem itemValue="" itemLabel="#{agendaBundle.eventSearch_all}" />
-              <f:selectItems value="#{eventObjectBean.selectItems}"
-                             var="item"/>
-              <p:column>
-                <h:outputText value="#{item.label}" />
-              </p:column>
-            </p:selectOneMenu>
+            <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
+                                  type="Event"
+                                  styleClass="w-full"
+                                  scrollHeight="200"
+                                  queryDelay="1000"
+                                  minQueryLength="3"
+                                  renderShowButton="false"
+                                  process=":mainform:find_selector"
+                                  update=":mainform:find_selector"
+                                  maxResults="20">
+            </emcomp:typeReference>
           </div>
 
           <!-- Dates -->
@@ -140,11 +140,13 @@
             <p:outputLabel for="@next" value="#{agendaBundle.event_personId}" />
             <emcomp:objectReference value="#{eventFinderBean.filter.personId}"
                                     type="Person"
-                                    process=":mainform:filter_panel"
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"
-                                    minQueryLength="3">
+                                    minQueryLength="3"
+                                    renderShowButton="false"
+                                    process=":mainform:find_selector"
+                                    update=":mainform:find_selector">
             </emcomp:objectReference>
           </p:outputPanel>
 
@@ -153,11 +155,13 @@
             <p:outputLabel for="@next" value="#{agendaBundle.event_place}" />
             <emcomp:objectReference value="#{eventFinderBean.filter.roomId}"
                                     type="Room"
-                                    process=":mainform:filter_panel"
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"
-                                    minQueryLength="3">
+                                    minQueryLength="3"
+                                    renderShowButton="false"
+                                    process=":mainform:find_selector"
+                                    update=":mainform:find_selector">
             </emcomp:objectReference>
           </p:outputPanel>
 

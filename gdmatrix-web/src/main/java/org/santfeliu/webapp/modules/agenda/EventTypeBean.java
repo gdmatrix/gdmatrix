@@ -94,6 +94,7 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
   public ObjectSetup createObjectSetup()
   {
     ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setTypeId(getRootTypeId());
     objectSetup.setViewId("/pages/agenda/event.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();

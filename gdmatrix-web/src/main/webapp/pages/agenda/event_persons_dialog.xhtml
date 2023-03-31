@@ -35,27 +35,32 @@
                          styleClass="w-full" indicateRequired="true" />
           <emcomp:objectReference value="#{eventPersonsTabBean.personId}"
                                   type="Person"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:event_persons_dialog"
+                                  update=":mainform:search_tabs:event_persons_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
-                                  required="true">
+                                  required="#{not empty param['mainform:search_tabs:event_persons_store']}">
           </emcomp:objectReference>
-        </div>        
-        
+        </div>
+
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="#{agendaBundle.attendants_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventPersonsTabBean.attendantTypeId}"
-                                process="@(.savable)"
+                                process=":mainform:search_tabs:event_persons_dialog"
+                                update=":mainform:search_tabs:event_persons_dialog"
                                 type="#{eventPersonsTabBean.tabBaseTypeId != null ? eventPersonsTabBean.tabBaseTypeId : 'Attendant'}"
+                                showNavigatorItems="#{eventPersonsTabBean.tabBaseTypeId != 'Attendant' ? 'false' : 'true'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true">
+                                requiredMessage="El tipus és obligatori"
+                                required="#{not empty param['mainform:search_tabs:event_persons_store']}"
+                                maxResults="20">
           </emcomp:typeReference>
         </div>
 
@@ -63,8 +68,7 @@
                        rendered="#{eventPersonsTabBean.editing.personId != null}">
           <p:selectBooleanCheckbox value="#{eventPersonsTabBean.hidden}"
                                    itemLabel="#{agendaBundle.attendants_hidden}"
-                                   disabled="#{!eventObjectBean.editable}"
-                                   styleClass="savable"/>
+                                   disabled="#{!eventObjectBean.editable}" />
         </p:outputPanel>
 
         <div class="field col-12 md:col-6">
@@ -72,8 +76,7 @@
                          value="#{agendaBundle.attendants_attended}" />
           <p:selectOneMenu id="attended"
                            value="#{eventPersonsTabBean.editing.attended}"
-                           disabled="#{!eventObjectBean.editable}" autoWidth="false"
-                           styleClass="savable">
+                           disabled="#{!eventObjectBean.editable}" autoWidth="false">
             <f:selectItem itemLabel=" " itemValue="" />
             <f:selectItems value="#{eventPersonsTabBean.attendedSelectItems}" />
           </p:selectOneMenu>
@@ -86,8 +89,7 @@
           <p:inputTextarea id="comments" value="#{eventPersonsTabBean.editing.comments}"
                            autoResize="false"
                            onkeypress="checkMaxLength(this, #{attendantsBean.propertySize.comments})"
-                           readonly="#{not eventObjectBean.editable}"
-                           styleClass="savable" />
+                           readonly="#{not eventObjectBean.editable}" />
         </p:outputPanel>
 
       </div>
@@ -97,7 +99,8 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{eventPersonsTabBean.store}"
+        <p:commandButton id="event_persons_store"
+                         action="#{eventPersonsTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"

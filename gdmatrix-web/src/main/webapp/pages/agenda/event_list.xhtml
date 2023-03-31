@@ -15,7 +15,7 @@
       <h:outputText value="#{row.eventId}" />
     </p:column>
     <p:column headerText="#{agendaBundle.event_type}" styleClass="col-2">
-      <h:outputText value="#{row.eventTypeId}" />
+      <h:outputText value="#{eventFinderBean.getEventTypeDescription(row)}" />
     </p:column>
     <p:column headerText="#{agendaBundle.event_startDate}" styleClass="col-2">
       <h:outputText value="#{row.startDateTime}" converter="DateTimeConverter" />
@@ -33,7 +33,7 @@
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
-                       onclick="showOverlay()"                                              
+                       onclick="showOverlay()"
                        title="#{objectBundle.select}" alt="#{objectBundle.select}" />
       <p:commandButton icon="pi pi-external-link"
                        styleClass="rounded-button ui-button-flat"

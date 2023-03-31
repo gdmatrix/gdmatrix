@@ -36,12 +36,12 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{eventCasesTabBean.caseId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:event_cases_dialog"
                                   type="Case"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:event_cases_store']}"
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
@@ -53,16 +53,18 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventCasesTabBean.caseEventTypeId}"
-                                process="@(.savable)"
+                                formSelector="#{eventCasesTabBean.formSelector}"
+                                process=":mainform:search_tabs:event_cases_dialog"
+                                update=":mainform:search_tabs:event_cases_dialog"
                                 type="#{eventCasesTabBean.tabBaseTypeId != null ? eventCasesTabBean.tabBaseTypeId : 'CaseEvent'}"
+                                showNavigatorItems="#{eventCasesTabBean.tabBaseTypeId != 'CaseEvent' ? 'false' : 'true'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true">
-            <p:ajax event="itemSelect"
-                    process="@this"
-                    update="@parent:@parent:@parent:event_cases_dialog" />
+                                requiredMessage="El tipus és obligatori"
+                                required="#{not empty param['mainform:search_tabs:event_cases_store']}"
+                                maxResults="20">
           </emcomp:typeReference>
         </div>
 
@@ -70,9 +72,7 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{agendaBundle.eventCases_comments}" />
-          <p:inputTextarea
-            styleClass="savable"
-            value="#{eventCasesTabBean.editing.comments}" />
+          <p:inputTextarea value="#{eventCasesTabBean.editing.comments}" />
         </div>
 
       </div>
@@ -86,7 +86,8 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{eventCasesTabBean.store}"
+        <p:commandButton id="event_cases_store"
+                         action="#{eventCasesTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="event_cases_dialog"
                          update=":mainform:search_tabs:tabs event_cases_panel"

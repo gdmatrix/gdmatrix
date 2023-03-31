@@ -10,8 +10,8 @@
 
   <ui:define name="filter">
 
-    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle" 
-              var="kernelBundle" /> 
+    <f:loadBundle basename="org.santfeliu.kernel.web.resources.KernelBundle"
+              var="kernelBundle" />
 
     <p:outputPanel id="filter_panel">
 
@@ -20,10 +20,10 @@
 
         <p:tab id="smart_search">
           <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="#{objectBundle.quick}" /> 
-          </f:facet>          
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />    
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="#{objectBundle.value}" />
@@ -37,7 +37,7 @@
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"                             
+                             resetValues="true"
                              />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
@@ -53,17 +53,17 @@
 
         <p:tab id="advanced_search">
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
           </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
           <!-- RoomId -->
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_id}" />
             <p:chips value="#{roomFinderBean.roomId}"
                      addOnPaste="true" separator=","
-                     class="inputfield w-full"/>            
+                     class="inputfield w-full"/>
           </div>
 
           <!-- Name -->
@@ -73,7 +73,7 @@
                          class="inputfield w-full" />
           </div>
 
-          <!-- TypeId -->    
+          <!-- TypeId -->
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
             <emcomp:typeReference value="#{roomFinderBean.filter.roomTypeId}"
@@ -81,45 +81,49 @@
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  minQueryLength="3">
-              <p:ajax event="itemSelect"
-                      process="@this" update=":mainform:search_tabs:tabs" />
+                                  minQueryLength="3"
+                                  renderShowButton="false"
+                                  process=":mainform:find_selector"
+                                  update=":mainform:find_selector"
+                                  maxResults="20">
             </emcomp:typeReference>
-          </div>                         
+          </div>
 
           <!-- AddressId -->
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_address}" />
             <emcomp:objectReference value="#{roomFinderBean.filter.addressId}"
                                     type="Address"
-                                    process=":mainform:filter_panel"
                                     styleClass="w-full"
                                     scrollHeight="200"
                                     queryDelay="1000"
-                                    minQueryLength="3">
+                                    minQueryLength="3"
+                                    renderShowButton="false"
+                                    process=":mainform:find_selector"
+                                    update=":mainform:find_selector">
             </emcomp:objectReference>
           </div>
 
-          <!-- Capacity -->          
+          <!-- Capacity -->
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
-            <p:inputText id="roomCapacity" value="#{roomFinderBean.filter.capacity}" 
-                         class="inputfield w-full" />            
+            <p:inputText id="roomCapacity" value="#{roomFinderBean.filter.capacity}"
+                         class="inputfield w-full" />
           </div>
 
-          <!-- SpaceId -->          
+          <!-- SpaceId -->
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
-            <p:inputText id="roomSpaceId" value="#{roomFinderBean.filter.spaceId}" 
-                         class="inputfield w-full" />            
-          </div>          
+            <p:inputText id="roomSpaceId" value="#{roomFinderBean.filter.spaceId}"
+                         class="inputfield w-full" />
+          </div>
 
-          <!-- Comments -->          
+          <!-- Comments -->
           <div class="field">
             <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
-            <p:inputText id="roomComments" value="#{roomFinderBean.filter.comments}" 
-                         class="inputfield w-full" />            
-          </div>          
+            <p:inputText id="roomComments" value="#{roomFinderBean.filter.comments}"
+                         class="inputfield w-full" />
+          </div>
 
           <div class="text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -159,8 +163,8 @@
     </script>
     <p:remoteCommand name="updateResults"
                      action="#{roomFinderBean.update}"
-                     process="@this" 
-                     update=":mainform:search_tabs:result_list" />    
+                     process="@this"
+                     update=":mainform:search_tabs:result_list" />
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
@@ -186,7 +190,7 @@
         <h:panelGroup id="obj_tabs">
           <ui:param name="objectBean" value="#{roomObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
-        </h:panelGroup>        
+        </h:panelGroup>
       </p:tab>
 
     </p:tabView>

@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
@@ -130,17 +131,21 @@ public class EventThemesTabBean extends TabBean
   @Override
   public void load()
   {
-    try
+    if (!isNew())
     {
-      EventThemeFilter filter = new EventThemeFilter();
-      filter.setEventId(eventObjectBean.getObjectId());
-      rows = AgendaModuleBean.getClient(false).
-        findEventThemeViewsFromCache(filter);
+      try
+      {
+        EventThemeFilter filter = new EventThemeFilter();
+        filter.setEventId(eventObjectBean.getObjectId());
+        rows = AgendaModuleBean.getClient(false).
+          findEventThemeViewsFromCache(filter);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
     }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    else rows = Collections.EMPTY_LIST;
   }
 
   public void create()
@@ -151,16 +156,53 @@ public class EventThemesTabBean extends TabBean
   @Override
   public void store()
   {
-    storeTheme();
-    load();
-    editing = null;
-    info("STORE_OBJECT");
+    try
+    {
+      if (editing != null)
+      {
+        //Person must be selected
+        if (editing.getThemeId() == null || editing.getThemeId().isEmpty())
+        {
+          throw new Exception("THEME_MUST_BE_SELECTED");
+        }
+
+        String eventId = eventObjectBean.getObjectId();
+        editing.setEventId(eventId);
+        AgendaModuleBean.getClient(false).storeEventTheme(editing);
+        editing = null;
+        hideDialog();
+        load();
+        info("STORE_OBJECT");
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+      showDialog();
+    }
   }
 
   public void remove(EventThemeView row)
   {
-    removeTheme(row);
-    load();
+    try
+    {
+      if (row == null)
+        throw new Exception("THEME_MUST_BE_SELECTED");
+
+      String rowEventThemeId = row.getEventThemeId();
+      if (editing != null && rowEventThemeId.equals(editing.getEventThemeId()))
+      {
+        editing = null;
+      }
+
+      AgendaModuleBean.getClient(false).removeEventTheme(rowEventThemeId);
+      load();
+      info("REMOVE_OBJECT");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public String cancel()
@@ -194,58 +236,6 @@ public class EventThemesTabBean extends TabBean
   private boolean isNew(EventTheme eventTheme)
   {
     return (eventTheme != null && eventTheme.getEventThemeId() == null);
-  }
-
-  private void storeTheme()
-  {
-    try
-    {
-      if (editing != null)
-      {
-        //Person must be selected
-        if (editing.getThemeId() == null || editing.getThemeId().isEmpty())
-        {
-          throw new Exception("THEME_MUST_BE_SELECTED");
-        }
-
-        String eventId = eventObjectBean.getObjectId();
-        editing.setEventId(eventId);
-        AgendaModuleBean.getClient(false).storeEventTheme(editing);
-        editing = null;
-        hideDialog();
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-      showDialog();
-    }
-  }
-
-  private String removeTheme(EventThemeView row)
-  {
-    try
-    {
-      if (row == null)
-        throw new Exception("THEME_MUST_BE_SELECTED");
-
-      String rowEventThemeId = row.getEventThemeId();
-
-      if (editing != null && rowEventThemeId.equals(editing.getEventThemeId()))
-      {
-        editing = null;
-      }
-
-      AgendaModuleBean.getClient(false).removeEventTheme(rowEventThemeId);
-
-      info("REMOVE_OBJECT");
-      return null;
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return null;
   }
 
   private void showDialog()

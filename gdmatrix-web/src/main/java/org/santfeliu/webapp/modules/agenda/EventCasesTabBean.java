@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.santfeliu.webapp.modules.cases.CaseTypeBean;
 import org.santfeliu.webapp.modules.cases.CasesModuleBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -59,6 +61,8 @@ import org.santfeliu.webapp.setup.EditTab;
 @ViewScoped
 public class EventCasesTabBean extends TabBean
 {
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
+
   private CaseEvent editing;
   Map<String, TabInstance> tabInstances = new HashMap();
   private String formSelector;
@@ -66,10 +70,9 @@ public class EventCasesTabBean extends TabBean
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    String typeId = getTabBaseTypeId();
     List<CaseEventView> rows;
     int firstRow = 0;
-    boolean groupedView = isGroupedViewEnabled();
+    boolean groupedView = true;
   }
 
   @Inject
@@ -90,13 +93,17 @@ public class EventCasesTabBean extends TabBean
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = eventObjectBean.getActiveEditTab();
-    TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
-    if (tabInstance == null)
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
     {
-      tabInstance = new TabInstance();
-      tabInstances.put(tab.getSubviewId(), tabInstance);
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
     }
-    return tabInstance;
+    else return EMPTY_TAB_INSTANCE;
   }
 
   @Override
@@ -189,7 +196,7 @@ public class EventCasesTabBean extends TabBean
 
   public boolean isGroupedView()
   {
-    return getCurrentTabInstance().groupedView;
+    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
@@ -240,6 +247,7 @@ public class EventCasesTabBean extends TabBean
       {
         error(ex);
       }
+      formSelector = null;
     }
     else
     {
@@ -254,7 +262,7 @@ public class EventCasesTabBean extends TabBean
     {
       try
       {
-        String typeId = getCurrentTabInstance().typeId;
+        String typeId = getTabBaseTypeId();
         CaseEventFilter filter = new CaseEventFilter();
         filter.setEventId(eventObjectBean.getObjectId());
         filter.setCaseEventTypeId(typeId);
@@ -341,6 +349,12 @@ public class EventCasesTabBean extends TabBean
   {
     EditTab editTab = eventObjectBean.getActiveEditTab();
     return editTab.getProperties().getString("typeId");
+  }
+
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
   }
 
   @Override

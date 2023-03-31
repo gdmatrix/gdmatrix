@@ -60,6 +60,7 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 
 /**
  *
@@ -76,7 +77,6 @@ public class EventFinderBean extends FinderBean
   private boolean finding;
   private boolean outdated;
 
-  private String searchEventTypeId;
   private String searchEventThemeId;
 
   //Schedule
@@ -94,6 +94,9 @@ public class EventFinderBean extends FinderBean
 
   @Inject
   EventTypeBean eventTypeBean;
+
+  @Inject
+  TypeTypeBean typeTypeBean;
 
   @PostConstruct
   public void init()
@@ -148,12 +151,23 @@ public class EventFinderBean extends FinderBean
 
   public String getSearchEventTypeId()
   {
-    return searchEventTypeId;
+    if (filter.getEventTypeId().isEmpty())
+    {
+      return null;
+    }
+    else
+    {
+      return filter.getEventTypeId().get(0);
+    }
   }
 
   public void setSearchEventTypeId(String searchEventTypeId)
   {
-    this.searchEventTypeId = searchEventTypeId;
+    filter.getEventTypeId().clear();
+    if (!StringUtils.isBlank(searchEventTypeId))
+    {
+      filter.getEventTypeId().add(searchEventTypeId);
+    }
   }
 
   public String getSearchEventThemeId()
@@ -344,7 +358,7 @@ public class EventFinderBean extends FinderBean
     filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
     setFromDate(new Date());
     filter.setDateComparator("1");
-    searchEventTypeId = null;
+    setSearchEventTypeId(null);
     doFind(true);
     firstRow = 0;
   }
@@ -355,12 +369,6 @@ public class EventFinderBean extends FinderBean
     finding = true;
     setFilterTabSelector(1);
     smartFilter = eventTypeBean.filterToQuery(filter);
-    filter.getEventTypeId().clear();
-    if (!StringUtils.isBlank(searchEventTypeId))
-    {
-      filter.getEventTypeId().clear();
-      filter.getEventTypeId().add(searchEventTypeId);
-    }
     if (filter.getStartDateTime() == null)
     {
       setFromDate(new Date());
@@ -395,17 +403,26 @@ public class EventFinderBean extends FinderBean
     smartFilter = null;
     setFromDate(new Date());
     filter.setDateComparator("1");
-    searchEventTypeId = null;
+    setSearchEventTypeId(null);
     searchEventThemeId = null;
     rows = null;
     finding = false;
+  }
+
+  public String getEventTypeDescription(Event event)
+  {
+    if (event != null && event.getEventTypeId() != null)
+    {
+      return typeTypeBean.getDescription(event.getEventTypeId());
+    }
+    return "";
   }
 
   @Override
   public Serializable saveState()
   {
     return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
-      searchEventTypeId, searchEventThemeId, getObjectPosition(),
+      searchEventThemeId, getObjectPosition(),
       scheduleInitialDate, scheduleView };
   }
 
@@ -422,11 +439,10 @@ public class EventFinderBean extends FinderBean
       doFind(false);
 
       firstRow = (Integer)stateArray[3];
-      searchEventTypeId = (String)stateArray[4];
-      searchEventThemeId = (String)stateArray[5];
-      setObjectPosition((Integer)stateArray[6]);
-      scheduleInitialDate = (LocalDate)stateArray[7];
-      scheduleView = (String)stateArray[8];
+      searchEventThemeId = (String)stateArray[4];
+      setObjectPosition((Integer)stateArray[5]);
+      scheduleInitialDate = (LocalDate)stateArray[6];
+      scheduleView = (String)stateArray[7];
     }
     catch (Exception ex)
     {

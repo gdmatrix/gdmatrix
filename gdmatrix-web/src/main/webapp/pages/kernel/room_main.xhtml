@@ -17,43 +17,44 @@
 
     <!--TODO: isRenderType -->
     <div class="field col-12 md:col-9">
-      <p:outputLabel for="@next" value="#{kernelBundle.room_type}" 
+      <p:outputLabel for="@next" value="#{kernelBundle.room_type}"
                      indicateRequired="true" />
       <emcomp:typeReference value="#{roomObjectBean.room.roomTypeId}"
-                            type="Room"
+                            type="#{roomObjectBean.baseTypeInfo.baseTypeId}"
+                            showNavigatorItems="#{roomObjectBean.baseTypeInfo.baseTypeId != 'Room' ? 'false' : 'true'}"
                             styleClass="w-full"
                             scrollHeight="200"
                             queryDelay="1000"
-                            minQueryLength="3" 
+                            minQueryLength="3"
                             required="#{not empty param['mainform:search_tabs:store']}"
-                            requiredMessage="Type is mandatory"
-                            process=":mainform:search_tabs:tabs">
-        <p:ajax event="itemSelect"
-                process="@this" update=":mainform:search_tabs:tabs" />
+                            requiredMessage="El tipus és obligatori"
+                            process=":mainform:search_tabs:tabs"
+                            update=":mainform:search_tabs:tabs"
+                            maxResults="20">
       </emcomp:typeReference>
     </div>
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
       <p:inputText id="name" value="#{roomObjectBean.room.name}"
-                   styleClass="inputfield w-full" 
+                   styleClass="inputfield w-full"
                    required="#{not empty param['mainform:search_tabs:store']}"
-                   requiredMessage="Name is mandatory"/>
+                   requiredMessage="El nom és obligatori"/>
     </div>
 
     <div class="field col-12">
       <p:outputLabel for="@next"
                      value="#{kernelBundle.room_address}"
-                     styleClass="w-full" 
+                     styleClass="w-full"
                      indicateRequired="true"/>
       <emcomp:objectReference value="#{roomObjectBean.room.addressId}"
                               type="Address"
                               styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3" 
+                              minQueryLength="3"
                               required="#{not empty param['mainform:search_tabs:store']}"
-                              requiredMessage="Address is mandatory"
+                              requiredMessage="L'adreça és obligatòria"
                               process=":mainform:search_tabs:tabs">
       </emcomp:objectReference>
     </div>

@@ -93,6 +93,7 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
   public ObjectSetup createObjectSetup()
   {
     ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setTypeId(getRootTypeId());
     objectSetup.setViewId("/pages/agenda/theme.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();

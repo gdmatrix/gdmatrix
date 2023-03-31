@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -176,16 +177,20 @@ public class EventPlacesTabBean extends TabBean
   @Override
   public void load()
   {
-    try
+    if (!isNew())
     {
-      EventPlaceFilter filter = new EventPlaceFilter();
-      filter.setEventId(eventObjectBean.getObjectId());
-      rows = AgendaModuleBean.getClient(false).findEventPlaceViews(filter);
+      try
+      {
+        EventPlaceFilter filter = new EventPlaceFilter();
+        filter.setEventId(eventObjectBean.getObjectId());
+        rows = AgendaModuleBean.getClient(false).findEventPlaceViews(filter);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
     }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
+    else rows = Collections.EMPTY_LIST;
   }
 
   public void create()
@@ -196,16 +201,56 @@ public class EventPlacesTabBean extends TabBean
   @Override
   public void store()
   {
-    storePlace();
-    load();
-    editing = null;
-    info("STORE_OBJECT");
+    try
+    {
+      if (editing != null)
+      {
+        //Person must be selected
+        if ((editing.getAddressId() == null || editing.getAddressId().isEmpty())
+          && (editing.getRoomId() == null || editing.getRoomId().isEmpty()))
+        {
+          throw new Exception("PLACE_MUST_BE_SELECTED");
+        }
+
+        String eventId = eventObjectBean.getObjectId();
+        editing.setEventId(eventId);
+        AgendaModuleBean.getClient(false).storeEventPlace(editing);
+        editing = null;
+        hideDialog();
+        load();
+        info("STORE_OBJECT");
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+      showDialog();
+    }
   }
 
   public void remove(EventPlaceView row)
   {
-    removePlace(row);
-    load();
+    try
+    {
+      if (row == null)
+        throw new Exception("PLACE_MUST_BE_SELECTED");
+
+      String rowEventPlaceId = row.getEventPlaceId();
+
+      if (editing != null &&
+        rowEventPlaceId.equals(editing.getEventPlaceId()))
+      {
+        editing = null;
+      }
+
+      AgendaModuleBean.getClient(false).removeEventPlace(rowEventPlaceId);
+      load();
+      info("REMOVE_OBJECT");
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public String cancel()
@@ -254,60 +299,6 @@ public class EventPlacesTabBean extends TabBean
       {
         editing = new EventPlace();
       }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-    }
-    return null;
-  }
-
-  private void storePlace()
-  {
-    try
-    {
-      if (editing != null)
-      {
-        //Person must be selected
-        if ((editing.getAddressId() == null || editing.getAddressId().isEmpty())
-          && (editing.getRoomId() == null || editing.getRoomId().isEmpty()))
-        {
-          throw new Exception("PLACE_MUST_BE_SELECTED");
-        }
-
-        String eventId = eventObjectBean.getObjectId();
-        editing.setEventId(eventId);
-        AgendaModuleBean.getClient(false).storeEventPlace(editing);
-        editing = null;
-        hideDialog();
-      }
-    }
-    catch (Exception ex)
-    {
-      error(ex);
-      showDialog();
-    }
-  }
-
-  private String removePlace(EventPlaceView row)
-  {
-    try
-    {
-      if (row == null)
-        throw new Exception("PLACE_MUST_BE_SELECTED");
-
-      String rowEventPlaceId = row.getEventPlaceId();
-
-      if (editing != null &&
-        rowEventPlaceId.equals(editing.getEventPlaceId()))
-      {
-        editing = null;
-      }
-
-      AgendaModuleBean.getClient(false).removeEventPlace(rowEventPlaceId);
-
-      info("REMOVE_OBJECT");
-      return null;
     }
     catch (Exception ex)
     {

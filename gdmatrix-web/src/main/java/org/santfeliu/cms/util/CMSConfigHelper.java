@@ -28,7 +28,7 @@
  * and 
  * https://www.gnu.org/licenses/lgpl.txt
  */
-package org.matrix.pf.cms;
+package org.santfeliu.cms.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;

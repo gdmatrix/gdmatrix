@@ -109,6 +109,7 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
   public ObjectSetup createObjectSetup()
   {
     ObjectSetup objectSetup = new ObjectSetup();
+    objectSetup.setTypeId(getRootTypeId());
     objectSetup.setViewId("/pages/kernel/room.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();

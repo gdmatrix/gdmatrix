@@ -54,6 +54,7 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.kernel.PersonTypeBean;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -63,16 +64,17 @@ import org.santfeliu.webapp.setup.EditTab;
 @ViewScoped
 public class EventPersonsTabBean extends TabBean
 {
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
+
   private Attendant editing;
   Map<String, TabInstance> tabInstances = new HashMap<>();
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
-    String typeId = getTabBaseTypeId();
     List<AttendantView> rows;
     int firstRow = 0;
-    boolean groupedView = isGroupedViewEnabled();
+    boolean groupedView = true;
   }
 
   @Inject
@@ -93,13 +95,17 @@ public class EventPersonsTabBean extends TabBean
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = eventObjectBean.getActiveEditTab();
-    TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
-    if (tabInstance == null)
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
     {
-      tabInstance = new TabInstance();
-      tabInstances.put(tab.getSubviewId(), tabInstance);
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
     }
-    return tabInstance;
+    else return EMPTY_TAB_INSTANCE;
   }
 
   @Override
@@ -182,7 +188,7 @@ public class EventPersonsTabBean extends TabBean
 
   public boolean isGroupedView()
   {
-    return getCurrentTabInstance().groupedView;
+    return isGroupedViewEnabled() && getCurrentTabInstance().groupedView;
   }
 
   public void setGroupedView(boolean groupedView)
@@ -294,7 +300,7 @@ public class EventPersonsTabBean extends TabBean
         filter.setEventId(eventObjectBean.getObjectId());
         List<AttendantView> auxList = AgendaModuleBean.getClient(false).
           findAttendantViewsFromCache(filter);
-        String typeId = getCurrentTabInstance().typeId;
+        String typeId = getTabBaseTypeId();
         if (typeId == null)
         {
           getCurrentTabInstance().rows = auxList;
@@ -393,6 +399,12 @@ public class EventPersonsTabBean extends TabBean
   {
     EditTab editTab = eventObjectBean.getActiveEditTab();
     return editTab.getProperties().getString("typeId");
+  }
+
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
   }
 
   @Override

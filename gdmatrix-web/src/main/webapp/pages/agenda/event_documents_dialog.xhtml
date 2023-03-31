@@ -36,12 +36,12 @@
                          styleClass="w-full"
                          indicateRequired="true" />
           <emcomp:objectReference value="#{eventDocumentsTabBean.docId}"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:event_documents_dialog"
                                   type="Document"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
-                                  required="true"
+                                  required="#{not empty param['mainform:search_tabs:event_documents_store']}"
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
@@ -52,13 +52,17 @@
                          value="#{agendaBundle.eventDocuments_type}"
                          indicateRequired="true" />
           <emcomp:typeReference value="#{eventDocumentsTabBean.eventDocTypeId}"
-                                process="@(.savable)"
+                                process=":mainform:search_tabs:event_documents_dialog"
+                                update=":mainform:search_tabs:event_documents_dialog"
                                 type="#{eventDocumentsTabBean.tabBaseTypeId != null ? eventDocumentsTabBean.tabBaseTypeId : 'EventDocument'}"
+                                showNavigatorItems="#{eventDocumentsTabBean.tabBaseTypeId != 'EventDocument' ? 'false' : 'true'}"
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                required="true">
+                                requiredMessage="El tipus és obligatori"
+                                required="#{not empty param['mainform:search_tabs:event_documents_store']}"
+                                maxResults="20">
           </emcomp:typeReference>
         </div>
 
@@ -66,9 +70,7 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{agendaBundle.eventDocuments_comments}" />
-          <p:inputTextarea
-            styleClass="savable"
-            value="#{eventDocumentsTabBean.editing.comments}" />
+          <p:inputTextarea value="#{eventDocumentsTabBean.editing.comments}" />
         </div>
 
       </div>
@@ -78,7 +80,8 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{eventDocumentsTabBean.store}"
+        <p:commandButton id="event_documents_store"
+                         action="#{eventDocumentsTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          process="event_documents_dialog"
                          update=":mainform:search_tabs:tabs event_documents_panel"

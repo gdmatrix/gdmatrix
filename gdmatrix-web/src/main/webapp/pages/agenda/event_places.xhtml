@@ -40,7 +40,7 @@
           <p:outputPanel rendered="#{row.roomView.addressView != null}">#{row.roomView.addressView.description}</p:outputPanel>
         </p:outputPanel>
         <p:outputPanel rendered="#{row.addressView != null}">
-          #{row.addressView.description} 
+          #{row.addressView.description}
         </p:outputPanel>
       </p:column>
 
@@ -49,7 +49,7 @@
                          action="#{navigatorBean.show('Room', row.roomView.roomId)}"
                          ajax="false"
                          immediate="true"
-                         onclick="showOverlay()"                                                
+                         onclick="showOverlay()"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          rendered="#{row.roomView != null}"
                          styleClass="rounded-button ui-button-flat" />
@@ -57,7 +57,7 @@
                          action="#{navigatorBean.show('Address', row.addressView.addressId)}"
                          ajax="false"
                          immediate="true"
-                         onclick="showOverlay()"                                                
+                         onclick="showOverlay()"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          rendered="#{row.roomView == null}"
                          styleClass="rounded-button ui-button-flat" />
@@ -112,13 +112,14 @@
           <emcomp:objectReference id="objRefAddress"
                                   value="#{eventPlacesTabBean.addressId}"
                                   type="Address"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:tabs:event_places_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
-                                  required="true"
-                                  widgetVar="objRefAddressAutocomplete">
+                                  required="#{not empty param['mainform:search_tabs:tabs:event_places_store']}"
+                                  widgetVar="objRefAddressAutocomplete"
+                                  autoUpdate="false">
             <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefRoom):autocomplete" />
             <p:ajax event="clear" process="@none" oncomplete="PF('objRefRoomAutocomplete').clear()" />
           </emcomp:objectReference>
@@ -132,12 +133,13 @@
           <emcomp:objectReference id="objRefRoom"
                                   value="#{eventPlacesTabBean.roomId}"
                                   type="Room"
-                                  process="@(.savable)"
+                                  process=":mainform:search_tabs:tabs:event_places_dialog"
                                   styleClass="w-full"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
-                                  widgetVar="objRefRoomAutocomplete">
+                                  widgetVar="objRefRoomAutocomplete"
+                                  autoUpdate="false">
             <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefAddress):autocomplete" />
             <p:ajax event="clear" process="@none" oncomplete="PF('objRefAddressAutocomplete').clear()" />
           </emcomp:objectReference>
@@ -148,7 +150,7 @@
           <p:outputLabel for="comments"
                          value="#{agendaBundle.eventPlaces_comments}"/>
           <p:inputTextarea id="comments" value="#{eventPlacesTabBean.editing.comments}"
-                           styleClass="inputfield w-full savable" autoResize="false" />
+                           styleClass="inputfield w-full" autoResize="false" />
         </div>
 
       </div>
@@ -158,7 +160,8 @@
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton action="#{eventPlacesTabBean.store}"
+        <p:commandButton id="event_places_store"
+                         action="#{eventPlacesTabBean.store}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
@@ -174,6 +177,6 @@
 
     </f:facet>
 
-  </p:dialog>  
-  
+  </p:dialog>
+
 </ui:composition>

@@ -52,7 +52,6 @@ import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.helpers.PropertyHelper;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 
@@ -282,9 +281,11 @@ public class EventObjectBean extends ObjectBean
   @Override
   public void loadObject() throws Exception
   {
+    formSelector = null;
+
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      event = AgendaModuleBean.getClient(false).loadEventFromCache(objectId);
+      event = AgendaModuleBean.getClient(false).loadEvent(objectId);
     }
     else event = new Event();
   }
