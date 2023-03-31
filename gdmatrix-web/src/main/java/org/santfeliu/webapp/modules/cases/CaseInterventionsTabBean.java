@@ -183,7 +183,10 @@ public class CaseInterventionsTabBean extends TabBean
   public List<Column> getColumns()
   {
     EditTab activeEditTab = caseObjectBean.getActiveEditTab();
-    return activeEditTab.getColumns();
+    if (activeEditTab != null)
+      return activeEditTab.getColumns();
+    else
+      return Collections.EMPTY_LIST;
   }
 
   public int getFirstRow()
