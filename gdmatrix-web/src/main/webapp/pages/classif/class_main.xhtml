@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+    
+    <div class="ui-fluid formgrid grid">   
+      
+      <div class="w-full m-0 flex justify-content-end">
+        <p:commandLink value="Històric" 
+                       process="@this"
+                       oncomplete="PF('versionsPanel')"/>
+      </div> 
+      
+      <div class="field col-12 md:col-4">
+        <p:outputLabel for="@next" value="#{classificationBundle.class_classId}" />
+        <p:inputText value="#{classObjectBean.classObject.classId}" 
+                     readonly="#{not classObjectBean.isNew()}" />
+      </div>
+
+      <div class="field col-12 md:col-4">
+        <p:outputLabel for="@next" value="#{classificationBundle.classMain_startDate}" />
+        <p:datePicker value="#{classObjectBean.classObject.startDateTime}"
+                      autocomplete="off"
+                      placeholder="dd/MM/yyyy HH:mm:ss"
+                      locale="es"
+                      showOnFocus="false"
+                      converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm:ss"
+                      showIcon="true" showTime="true"
+                      monthNavigator="true" yearNavigator="true" />
+      </div>
+
+      <div class="field col-12 md:col-4">
+        <p:outputLabel for="@next" value="#{classificationBundle.classMain_endDate}" />
+        <p:datePicker value="#{classObjectBean.classObject.endDateTime}"
+                      autocomplete="off"
+                      placeholder="dd/MM/yyyy HH:mm:ss"
+                      locale="es"
+                      showOnFocus="false"
+                      converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm:ss"
+                      showIcon="true" showTime="true"
+                      monthNavigator="true" yearNavigator="true" />
+      </div>
+      
+      <div class="field col-12 md:col-4">
+        <p:outputLabel for="@next" value="#{classificationBundle.class_superClassId}" />
+        <p:inputText value="#{classObjectBean.classObject.superClassId}" />
+      </div>
+      
+      <div class="field col-12 md:col-8">
+        <p:outputLabel for="@next" 
+                       value="#{classificationBundle.classMain_type}" 
+                       indicateRequired="true" />
+        <emcomp:typeReference value="#{classObjectBean.classObject.classTypeId}"
+                              type="Class"
+                              styleClass="w-full"
+                              scrollHeight="200"
+                              queryDelay="1000"
+                              minQueryLength="3"
+                              required="#{not empty param['mainform:search_tabs:store']}"
+                              formSelector="#{classObjectBean.formSelector}"
+                              process=":mainform:search_tabs:tabs"
+                              update=":mainform:search_tabs:tabs">
+        </emcomp:typeReference>
+      </div>
+
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="@next" value="#{classificationBundle.class_title}" 
+                       indicateRequired="true" />
+        <p:inputTextarea value="#{classObjectBean.classObject.title}" 
+                         required="#{not empty param['mainform:search_tabs:store']}" 
+                         requiredMessage="Title is mandatory"
+                         styleClass="inputfield w-full"/>
+      </div>
+
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="@next" value="#{classificationBundle.class_description}" />
+        <p:inputTextarea value="#{classObjectBean.classObject.description}" 
+                         required="#{not empty param['mainform:search_tabs:store']}" 
+                         styleClass="inputfield w-full"/>
+      </div>      
+      
+    </div>
+    
+    <emcomp:dynamicProperties typeId="#{classObjectBean.classObject.classTypeId}"
+                              formSelector="#{classObjectBean.formSelector}"
+                              properties="#{classObjectBean.classObject.property}" />
+</ui:composition>

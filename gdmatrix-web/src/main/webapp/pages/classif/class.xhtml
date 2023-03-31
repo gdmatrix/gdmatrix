@@ -1,0 +1,223 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                template="/pages/obj/object_3col.xhtml">
+
+  <ui:define name="filter">
+    <f:loadBundle basename="org.santfeliu.classif.web.resources.ClassificationBundle"
+                  var="classificationBundle" />
+
+    <p:outputPanel id="filter_panel">
+      <p:tabView id="find_selector"
+                 activeIndex="#{classFinderBean.filterTabSelector}">
+
+        <p:tab id="smart_search">
+          <f:facet name="title">
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
+
+          <div class="field">
+            <p:outputLabel for="@next" value="Valor" />
+            <p:inputText id="smartFilter" value="#{classFinderBean.smartFilter}"
+                         class="inputfield w-full ui-fluid"/>
+          </div>
+
+          <div class="buttons text-right">
+            <p:commandButton value="#{objectBundle.clear}"
+                             action="#{classFinderBean.clear}"
+                             styleClass="ui-button-raised m-1"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             resetValues="true"
+                             />
+            <p:commandButton id="smart_search_button"
+                             value="#{objectBundle.search}"
+                             action="#{classFinderBean.smartFind}"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             resetValues="true"
+                             styleClass="ui-button-raised m-1"
+                             oncomplete="endPanel('leftPanel');"/>
+          </div>
+        </p:tab>
+
+        <p:tab id="advanced_search">
+          <f:facet name="title">
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
+          </f:facet>
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+
+          <div class="ui-fluid formgrid grid pl-2 pr-2">
+            <div class="field w-full">
+              <p:outputLabel for="@next" value="ClassId" />
+              <p:inputText value="#{classFinderBean.filter.classId}" />
+            </div>
+
+            <div class="field w-full">
+              <p:outputLabel for="@next" value="#{classificationBundle.class_title}" />
+              <p:inputText value="#{classFinderBean.filter.title}" />
+            </div>
+
+            <div class="field w-full">
+              <p:outputLabel for="@next" value="#{classificationBundle.class_date}" />
+              <p:datePicker value="#{classFinderBean.filter.startDateTime}"
+                            autocomplete="off"
+                            placeholder="dd/MM/yyyy HH:mm:ss"
+                            locale="es"
+                            showOnFocus="false"
+                            converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm:ss"
+                            showIcon="true" showTime="true"
+                            monthNavigator="true" yearNavigator="true" />
+            </div>
+          </div>
+
+
+          <div class="buttons text-right">
+            <p:commandButton value="#{objectBundle.clear}"
+                             action="#{classFinderBean.clear}"
+                             process=":mainform:find_selector"
+                             styleClass="ui-button-raised m-1"
+                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             resetValues="true"
+                             />
+            <p:commandButton id="advanced_search_button"
+                             value="#{objectBundle.search}"
+                             action="#{classFinderBean.find}"
+                             process=":mainform:find_selector"
+                             update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
+                             resetValues="true"
+                             styleClass="ui-button-raised m-1"
+                             oncomplete="endPanel('leftPanel');"
+                             />
+          </div>
+
+        </p:tab>
+      </p:tabView>
+    </p:outputPanel>
+  </ui:define>
+
+  <ui:define name="object">
+    <f:loadBundle basename="org.santfeliu.classif.web.resources.ClassificationBundle"
+                  var="classificationBundle" />
+
+    <script>
+      function onTabShow()
+      {
+        var activeIndex = PF('searchTabs').getActiveIndex();
+        if (activeIndex === 0)
+        {
+          updateResults();
+          console.info("updateResults");
+        }
+      }
+    </script>
+    <p:remoteCommand name="updateResults"
+                     action="#{classFinderBean.update}"
+                     process="@this"
+                     update=":mainform:search_tabs:result_list" />
+
+    <p:tabView id="search_tabs"
+               widgetVar="searchTabs"
+               activeIndex="#{classObjectBean.searchTabSelector}"
+               touchable="false"
+               onTabShow="onTabShow()">
+
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-list mr-2"></i>
+          <h:outputText value="#{objectBundle.list}"/>
+        </f:facet>
+        <h:panelGroup id="result_list">
+          <ui:include src="class_list.xhtml" />
+        </h:panelGroup>
+      </p:tab>
+
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-pencil mr-2"></i>
+          <h:outputText value="#{objectBundle.edition}"/>
+        </f:facet>
+        <h:panelGroup id="obj_tabs">
+          <ui:param name="objectBean" value="#{classObjectBean}" />
+          <ui:include src="/pages/obj/object_standard.xhtml" />
+        </h:panelGroup>
+      </p:tab>
+    </p:tabView>
+
+    <!--
+    <p:dialog id="versions_panel"
+              widgetVar="versionsPanel"
+              modal="true"
+              height="auto"
+              resizable="false"
+              header="Class #{classObjectBean.objectId} versions"
+              closeOnEscape="true">
+
+      <p:dataTable value="#{classObjectBean.versions}"
+                   var="docVersion" rowIndexVar="rowIndex">
+        <p:column headerText="#{classificationBundle.document_version}">
+          <h:outputText value="#{docVersion.version}" />
+        </p:column>
+        <p:column headerText="#{classificationBundle.document_title}">
+          <p:commandLink value="#{docVersion.title}"
+                         action="#{classObjectBean.loadVersion(docVersion.version)}"
+                         process="@this"
+                         update=":mainform:search_tabs"
+                         style="#{classObjectBean.isVersionDeleted(docVersion) ? 'text-decoration:line-through' : ''}"
+                         oncomplete="PF('versionsPanel').hide()"
+                         />
+        </p:column>
+        <p:column headerText="#{classificationBundle.document_creationDate}">
+          <h:outputText value="#{docVersion.creationDate}000000">
+            <f:converter converterId="DateTimeConverter" />
+            <f:attribute name="userFormat" value="dd/MM/yyyy" />
+          </h:outputText>
+        </p:column>
+        <p:column styleClass="pt-0 pb-0">
+          <p:commandButton icon="ui-icon pi pi-trash"
+                           styleClass="rounded-button ui-button-flat m-0"
+                           action="#{classObjectBean.removeVersion(docVersion.version)}"
+                           process="@this"
+                           update=":mainform:search_tabs"
+                           rendered="#{rowIndex gt 0 and not classObjectBean.isVersionDeleted(docVersion)}"
+                           oncomplete="PF('versionsPanel').hide()"
+                           title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
+              <p:confirm header="#{objectBundle.confirm_remove_header}"
+                         message="#{objectBundle.confirm_remove}"
+                         icon="pi pi-info-circle" />
+          </p:commandButton>
+        </p:column>
+      </p:dataTable>
+      <f:facet name="footer">
+        <p:commandButton value="#{classificationBundle.document_newVersion}"
+                         action="#{classObjectBean.newVersion}"
+                         process="@this"
+                         update=":mainform:search_tabs"
+                         rendered="#{not classObjectBean.isNew()}"
+                         oncomplete="PF('versionsPanel').hide()"
+                         />
+        <p:commandButton value="#{classificationBundle.purge}"
+                         action="#{classObjectBean.purgeVersions}"
+                         process="@this"
+                         update=":mainform:search_tabs"
+                         rendered="#{not classObjectBean.isNew()}"
+                         oncomplete="PF('versionsPanel').hide()">
+              <p:confirm header="#{objectBundle.confirm_remove_header}"
+                         message="#{objectBundle.confirm_remove}"
+                         icon="pi pi-info-circle" />
+        </p:commandButton>
+      </f:facet>
+    </p:dialog>
+    -->
+
+  </ui:define>
+
+</ui:composition>

@@ -10,6 +10,8 @@
                paginatorPosition="bottom" size="small"
                first="#{roleFinderBean.firstRow}"
                rowStyleClass="#{row.roleId == roleObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="10"
                rowIndexVar="rowIndex">
 

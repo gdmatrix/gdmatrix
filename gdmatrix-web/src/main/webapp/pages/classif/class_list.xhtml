@@ -2,32 +2,36 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"      
-  xmlns:p="http://primefaces.org/ui">
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:f="http://xmlns.jcp.org/jsf/core">
     
-  <p:dataTable value="#{documentFinderBean.rows}" 
+  <p:dataTable value="#{classFinderBean.rows}" 
                var="row" stripedRows="true" 
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
-               first="#{documentFinderBean.firstRow}"
-               rowStyleClass="#{row.docId == documentObjectBean.objectId ? 'current' : ''}"
+               first="#{classFinderBean.firstRow}"
+               rowStyleClass="#{row.classId == classObjectBean.objectId ? 'current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="10"
                rowIndexVar="rowIndex">
 
-    <p:column headerText="docId" styleClass="w-1">
-      <h:outputText value="#{row.docId}" />
-    </p:column>   
-    <p:column headerText="Type" styleClass="w-2">
-      <h:outputText value="#{row.docTypeId}" />
-    </p:column>         
-    <p:column headerText="Title" styleClass="w-7">
+    <p:column headerText="classId" styleClass="w-1">
+      <h:outputText value="#{row.classId}" />
+    </p:column>
+    <p:column headerText="#{classificationBundle.class_title}" styleClass="w-6">
       <h:outputText value="#{row.title}" />
     </p:column>
+    <p:column headerText="#{classificationBundle.class_date}" styleClass="w-3">
+      <h:outputText value="#{row.startDateTime}">
+        <f:converter converterId="DateTimeConverter" />
+        <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm" />
+      </h:outputText>
+    </p:column>         
     <p:column styleClass="w-2 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
-                       action="#{navigatorBean.select(row.docId)}"
+                       action="#{navigatorBean.select(row.classId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
@@ -36,7 +40,7 @@
                        />
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat"  
-                       action="#{documentFinderBean.view(rowIndex)}"
+                       action="#{classFinderBean.view(rowIndex)}"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
