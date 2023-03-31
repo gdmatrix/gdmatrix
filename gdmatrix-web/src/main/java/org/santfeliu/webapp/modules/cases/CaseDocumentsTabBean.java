@@ -52,6 +52,7 @@ import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -63,13 +64,14 @@ public class CaseDocumentsTabBean extends TabBean
 {
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseDocumentView> rows;
     int firstRow = 0;
-    boolean groupedView = false;
+    boolean groupedView = true;
   }
 
   @Inject
@@ -95,14 +97,19 @@ public class CaseDocumentsTabBean extends TabBean
 
   public TabInstance getCurrentTabInstance()
   {
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    TabInstance tabInstance = tabInstances.get(editTab.getSubviewId());
-    if (tabInstance == null)
-    {
-      tabInstance = new TabInstance();
-      tabInstances.put(editTab.getSubviewId(), tabInstance);
+    EditTab tab = caseObjectBean.getActiveEditTab();
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
+    {    
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
     }
-    return tabInstance;
+    else
+      return EMPTY_TAB_INSTANCE;
   }
 
   @Override
@@ -347,6 +354,12 @@ public class CaseDocumentsTabBean extends TabBean
       }
     }
   }
+  
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
+  }  
 
   public String getTabBaseTypeId()
   {

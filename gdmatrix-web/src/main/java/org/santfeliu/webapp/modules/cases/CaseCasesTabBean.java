@@ -57,6 +57,7 @@ import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.util.DataTableRow;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -69,13 +70,14 @@ public class CaseCasesTabBean extends TabBean
   private static final String TYPEID_SEPARATOR = ";";
 
   Map<String, TabInstance> tabInstances = new HashMap<>();
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseCasesDataTableRow> rows;
     int firstRow = 0;
-    boolean groupedView = false;
+    boolean groupedView = true;
   }
 
   private CaseCase editing;
@@ -90,13 +92,18 @@ public class CaseCasesTabBean extends TabBean
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
-    TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
-    if (tabInstance == null)
-    {
-      tabInstance = new TabInstance();
-      tabInstances.put(tab.getSubviewId(), tabInstance);
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
+    {    
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
     }
-    return tabInstance;
+    else
+      return EMPTY_TAB_INSTANCE;
   }
 
   @Override
@@ -362,6 +369,12 @@ public class CaseCasesTabBean extends TabBean
       error(ex);
     }
   }
+  
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
+  }  
 
   @Override
   public Serializable saveState()

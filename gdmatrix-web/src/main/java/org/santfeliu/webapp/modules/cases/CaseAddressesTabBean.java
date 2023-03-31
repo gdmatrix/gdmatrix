@@ -73,13 +73,14 @@ public class CaseAddressesTabBean extends TabBean
   private CaseAddress editing;
   Map<String, TabInstance> tabInstances = new HashMap();
   private boolean importPersons;
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseAddressView> rows;
     int firstRow = 0;
-    boolean groupedView = false;
+    boolean groupedView = true;
   }
 
   @Inject
@@ -100,13 +101,18 @@ public class CaseAddressesTabBean extends TabBean
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
-    TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
-    if (tabInstance == null)
-    {
-      tabInstance = new TabInstance();
-      tabInstances.put(tab.getSubviewId(), tabInstance);
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
+    {    
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
     }
-    return tabInstance;
+    else
+      return EMPTY_TAB_INSTANCE;
   }
 
   @Override
@@ -366,6 +372,12 @@ public class CaseAddressesTabBean extends TabBean
   public void cancel()
   {
     editing = null;
+  }
+  
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
   }
 
   @Override

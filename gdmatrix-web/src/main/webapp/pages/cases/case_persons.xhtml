@@ -22,7 +22,7 @@
 
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{casePersonsTabBean.groupedView ? 'ui-button-flat' : ''}"
                            action="#{casePersonsTabBean.switchView}"
-                           process="@this"
+                           process="case_persons_table"
                            update="case_persons_table"
                            resetValues="true"
                            alt="#{casePersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"

@@ -82,13 +82,14 @@ public class CasePersonsTabBean extends TabBean
   private String representantContactValue;
   private String representantContactTypeId; 
   private int tabIndex;
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CasePersonView> rows;
     int firstRow = 0;
-    boolean groupedView = false;   
+    boolean groupedView = true;   
   }
 
   @Inject
@@ -111,15 +112,20 @@ public class CasePersonsTabBean extends TabBean
   
   public TabInstance getCurrentTabInstance()
   {
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    TabInstance tabInstance = tabInstances.get(editTab.getSubviewId());
-    if (tabInstance == null)
-    {
-      tabInstance = new TabInstance();
-      tabInstances.put(editTab.getSubviewId(), tabInstance);
+    EditTab tab = caseObjectBean.getActiveEditTab();
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
+    {    
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
     }
-    return tabInstance;
-  }  
+    else
+      return EMPTY_TAB_INSTANCE;
+  } 
 
   public List<CasePersonView> getRows()
   {
@@ -568,6 +574,12 @@ public class CasePersonsTabBean extends TabBean
       error(ex);
     }
   }
+  
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
+  }  
   
   public void addNewContact()
   {

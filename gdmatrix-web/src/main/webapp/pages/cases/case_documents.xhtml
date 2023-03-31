@@ -23,7 +23,7 @@
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseDocumentsTabBean.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseDocumentsTabBean.switchView}"
-                           process="@this"
+                           process="case_documents_table"
                            update="case_documents_table"
                            resetValues="true"
                            alt="#{caseDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"

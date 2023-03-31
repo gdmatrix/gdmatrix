@@ -49,6 +49,7 @@ import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.agenda.EventTypeBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.setup.EditTab;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -61,13 +62,14 @@ public class CaseEventsTabBean extends TabBean
   private CaseEvent editing;
   Map<String, TabInstance> tabInstances = new HashMap();
   private String formSelector;
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
 
   public class TabInstance
   {
     String objectId = NEW_OBJECT_ID;
     List<CaseEventView> rows;
     int firstRow = 0;
-    boolean groupedView = false;
+    boolean groupedView = true;
   }
 
   @Inject
@@ -88,13 +90,18 @@ public class CaseEventsTabBean extends TabBean
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
-    TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
-    if (tabInstance == null)
-    {
-      tabInstance = new TabInstance();
-      tabInstances.put(tab.getSubviewId(), tabInstance);
+    if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
+    {    
+      TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
+      if (tabInstance == null)
+      {
+        tabInstance = new TabInstance();
+        tabInstances.put(tab.getSubviewId(), tabInstance);
+      }
+      return tabInstance;
     }
-    return tabInstance;
+    else
+      return EMPTY_TAB_INSTANCE;
   }
 
   @Override
@@ -335,6 +342,12 @@ public class CaseEventsTabBean extends TabBean
   {
     editing = null;
   }
+  
+  @Override
+  public void clear()
+  {
+    tabInstances.clear();
+  }  
 
   public String getTabBaseTypeId()
   {
