@@ -39,7 +39,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
 
-import org.matrix.web.ReturnStack;
 
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.faces.beansaver.Savable;
@@ -70,7 +69,7 @@ public class ControllerBean extends FacesBean implements Savable
 
   // internal structures
   private PageHistory pageHistory = new PageHistory();
-  private ReturnStack<ReturnStackEntry> returnStack = new ReturnStack();
+  private ReturnStack returnStack = new ReturnStack();
 
   private int pageHistoryVisibility; // 0:none, 1:all
   private int RECENT_PAGES_SIZE = 5;
@@ -271,15 +270,15 @@ public class ControllerBean extends FacesBean implements Savable
       if (map.containsKey(SEARCH_BEAN_PROPERTY))
       {
         // return node is seach page
-         returnStack.push(new ReturnStackEntry(mid, returnMid,
-          null, valueBinding, beans));
+         returnStack.push(mid, returnMid,
+          null, valueBinding, beans);
       }
       else
       {
         // return node is object page
         ObjectBean returnBean = getObjectBean(returnMid);
-         returnStack.push(new ReturnStackEntry(mid, returnMid,
-          returnBean.getObjectId(), valueBinding, beans));
+         returnStack.push(mid, returnMid,
+          returnBean.getObjectId(), valueBinding, beans);
       }
     }
 
@@ -589,15 +588,15 @@ public class ControllerBean extends FacesBean implements Savable
       if (map.containsKey(SEARCH_BEAN_PROPERTY))
       {
         // return node is seach page
-        returnStack.push(new ReturnStackEntry(searchMid, returnMid,
-          null, valueBinding, beans));
+        returnStack.push(searchMid, returnMid,
+          null, valueBinding, beans);
       }
       else
       {
         // return node is object page
         ObjectBean objectBean = getObjectBean(returnMid);
-         returnStack.push(new ReturnStackEntry(searchMid, returnMid,
-          objectBean.getObjectId(), valueBinding, beans));
+         returnStack.push(searchMid, returnMid,
+          objectBean.getObjectId(), valueBinding, beans);
       }
     }
 
@@ -691,7 +690,7 @@ public class ControllerBean extends FacesBean implements Savable
   {
     if (returnStack.isEmpty()) return null;
 
-    ReturnStackEntry entry = returnStack.pop();
+    ReturnStack.Entry entry = returnStack.pop();
     String searchMid = entry.getSearchMid();
     String returnMid = entry.getReturnMid();
     String objectId = entry.getObjectId();
@@ -744,7 +743,7 @@ public class ControllerBean extends FacesBean implements Savable
   public ObjectBean getSearchObjectBean()
   {
     if (returnStack.isEmpty()) return null;
-    ReturnStackEntry entry = returnStack.peek();
+    ReturnStack.Entry entry = returnStack.peek();
 
     String searchMid = entry.getSearchMid();
     return getObjectBean(searchMid);

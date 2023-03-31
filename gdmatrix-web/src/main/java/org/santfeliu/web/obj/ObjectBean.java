@@ -42,7 +42,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import org.matrix.dic.PropertyDefinition;
-import org.matrix.web.Describable;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 
@@ -52,7 +51,7 @@ import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 
 
-public abstract class ObjectBean extends PageBean implements Describable
+public abstract class ObjectBean extends PageBean
 {
   public static final String OBJECT_TITLE_PROPERTY = "oc.objectTitle";
 

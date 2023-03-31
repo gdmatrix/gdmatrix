@@ -33,12 +33,10 @@ package org.santfeliu.web.obj;
 import java.io.Serializable;
 
 import java.util.Stack;
-import org.matrix.web.StackEntry;
 
 /**
  *
  * @author unknown
- * @deprecated use org.matrix.web.ReturnStack
  */
 public class ReturnStack implements Serializable
 {
@@ -70,7 +68,7 @@ public class ReturnStack implements Serializable
     return stack.isEmpty();
   }
   
-  public class Entry implements StackEntry
+  public class Entry implements Serializable
   {
     private String searchMid;
     private String returnMid;

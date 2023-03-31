@@ -34,8 +34,6 @@ import java.io.Serializable;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 import org.apache.commons.collections.LRUMap;
-import org.apache.commons.lang.StringUtils;
-import org.matrix.web.Describable;
 import org.santfeliu.jmx.CacheMBean;
 import org.santfeliu.jmx.JMXUtils;
 
@@ -45,9 +43,7 @@ import org.santfeliu.jmx.JMXUtils;
  */
 public class ObjectDescriptionCache implements Serializable
 {
-  private static final String PREFIX_SEPARATOR = "::";
-  
-  private static final int MAX_SIZE = 1000;
+  private static final int MAX_SIZE = 200;
   private static final ObjectDescriptionCache defaultInstance = 
     new ObjectDescriptionCache();
 
@@ -69,8 +65,8 @@ public class ObjectDescriptionCache implements Serializable
   {
     return defaultInstance;
   }
-  
-  public String getDescription(Describable describable, String objectId)
+
+  public String getDescription(ObjectBean objectBean, String objectId)
   {
     if (ControllerBean.NEW_OBJECT_ID.equals(objectId))
     {
@@ -78,14 +74,14 @@ public class ObjectDescriptionCache implements Serializable
     }
     else
     {
-      String typeId = describable.getObjectTypeId();
+      String typeId = objectBean.getObjectTypeId();
       String key = getKey(typeId, objectId);
       synchronized (map)
       {
-        String description = (String) map.get(key);
-        if (StringUtils.isBlank(description))
+        String description = (String)map.get(key);
+        if (description == null)
         {
-          description = loadDescription(describable, objectId);
+          description = loadDescription(objectBean, objectId);
           map.put(key, description);
         }
         return description;
@@ -93,9 +89,9 @@ public class ObjectDescriptionCache implements Serializable
     }
   }
 
-  public void clearDescription(Describable describable, String objectId)
+  public void clearDescription(ObjectBean objectBean, String objectId)
   {
-    String typeId = describable.getObjectTypeId();
+    String typeId = objectBean.getObjectTypeId();
     String key = getKey(typeId, objectId);
     synchronized (map)
     {
@@ -108,27 +104,22 @@ public class ObjectDescriptionCache implements Serializable
   private String getKey(String typeId, String objectId)
   {
     StringBuilder builder = new StringBuilder(typeId);
-    builder.append(";");
+    builder.append(":");
     builder.append(objectId);
     return builder.toString();
   }
 
-  private String loadDescription(Describable describable, String objectId)
+  private String loadDescription(ObjectBean objectBean, String objectId)
   {
-    String description;
-    String currentObjectId = describable.getObjectId();
+    String description = objectId;
+    String currentObjectId = objectBean.getObjectId();
     if (currentObjectId != null && currentObjectId.equals(objectId))
     {
-      description = describable.getDescription();
+      description = objectBean.getDescription();
     }
     else
     {
-      if (objectId != null && objectId.contains(PREFIX_SEPARATOR))
-      {
-        objectId = objectId.substring(objectId.indexOf(PREFIX_SEPARATOR) 
-          + PREFIX_SEPARATOR.length()); 
-      }
-      description = describable.getDescription(objectId);
+      description = objectBean.getDescription(objectId);
     }
     return description;
   }
@@ -140,32 +131,27 @@ public class ObjectDescriptionCache implements Serializable
       super(CacheMBean.class);
     }
 
-    @Override
     public String getName()
     {
       return "ObjectDescriptionCache";
     }
 
-    @Override
     public long getMaxSize()
     {
       return map.getMaximumSize();
     }
 
-    @Override
     public long getSize()
     {
       return map.size();
     }
 
-    @Override
     public String getDetails()
     {
       return "ObjectDescriptionCache: " +
         map.size() + "/" + map.getMaximumSize();
     }
 
-    @Override
     public void clear()
     {
       synchronized (map)
@@ -174,7 +160,6 @@ public class ObjectDescriptionCache implements Serializable
       }
     }
 
-    @Override
     public void update()
     {
       synchronized (map)
