@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.modules.dic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
@@ -113,6 +114,7 @@ public class TypeObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
+    //TODO: Remove marked as to Remove
     type = DicModuleBean.getPort(false).storeType(type);
   }
   
@@ -123,6 +125,19 @@ public class TypeObjectBean extends ObjectBean
 
     typeFinderBean.outdate();
   }    
+  
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[] { type };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    Object[] array = (Object[])state;
+    this.type = (Type) array[0];
+  }  
 
   //Person selection
   public SelectItem getSuperTypeSelectItem()

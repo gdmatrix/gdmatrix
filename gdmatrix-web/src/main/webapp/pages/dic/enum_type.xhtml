@@ -11,7 +11,7 @@
                   var="dicBundle" />         
     <p:outputPanel id="filter_panel">      
       <p:tabView id="find_selector"
-                 activeIndex="#{typeFinderBean.filterTabSelector}">
+                 activeIndex="#{enumTypeFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
           <f:facet name="title">
@@ -23,13 +23,13 @@
 
           <div class="buttons field">
             <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{typeFinderBean.smartFilter}"
+            <p:inputText id="smartFilter" value="#{enumTypeFinderBean.smartFilter}"
                          class="inputfield w-full ui-fluid"/>
           </div>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
-                             action="#{typeFinderBean.clear}"
+                             action="#{enumTypeFinderBean.clear}"
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
@@ -37,7 +37,7 @@
                              />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
-                             action="#{typeFinderBean.smartFind}"
+                             action="#{enumTypeFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              resetValues="true"
@@ -54,44 +54,20 @@
 
           <div class="ui-fluid formgrid grid">
 
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="Root" />
-              <p:selectOneMenu value="#{typeFinderBean.rootTypeId}"
-                               styleClass="inputfield w-full" filter="true"
-                               filterMatchMode="contains" autoWidth="false">
-                <f:selectItem itemValue="" itemLabel="" />
-                <f:selectItems value="#{typeTypeBean.rootTypeIdSelectItems}"
-                               var="item"/>
-                <p:column>
-                  <h:outputText value="#{item.label}" />
-                </p:column>
-              </p:selectOneMenu>
-            </div>
-
             <p:outputPanel styleClass="field col-12">
-              <p:outputLabel for="@next" value="TypeId" />
-              <p:inputText value="#{typeFinderBean.filter.typeId}" />
+              <p:outputLabel for="@next" value="#{dicBundle.enumType_type}" />
+              <p:chips id="case_id" value="#{enumTypeFinderBean.enumTypeIdList}" />
             </p:outputPanel>   
-
+           
             <p:outputPanel styleClass="field col-12">
-              <p:outputLabel for="@next" value="SuperTypeId" />
-              <p:inputText value="#{typeFinderBean.filter.superTypeId}" />
-            </p:outputPanel> 
-            
-            <p:outputPanel styleClass="field col-12">
-              <p:outputLabel for="@next" value="TypePath" />
-              <p:inputText value="#{typeFinderBean.filter.typePath}" />
-            </p:outputPanel>             
-
-            <p:outputPanel styleClass="field col-12">
-              <p:outputLabel for="@next" value="Description" />
-              <p:inputText value="#{typeFinderBean.filter.description}" />
+              <p:outputLabel for="@next" value="#{dicBundle.enumType_name}" />
+              <p:inputText value="#{enumTypeFinderBean.filter.name}" />
             </p:outputPanel>             
           </div>   
 
           <div class="text-right">
             <p:commandButton value="#{objectBundle.clear}"
-                             action="#{typeFinderBean.clear}"
+                             action="#{enumTypeFinderBean.clear}"
                              process=":mainform:find_selector"
                              styleClass="ui-button-raised m-1"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
@@ -99,7 +75,7 @@
                              />
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
-                             action="#{typeFinderBean.find}"
+                             action="#{enumTypeFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
                              styleClass="ui-button-raised m-1"
@@ -127,13 +103,13 @@
       }
     </script>  
     <p:remoteCommand name="updateResults"
-                     action="#{typeFinderBean.update}"
+                     action="#{enumTypeFinderBean.update}"
                      process="@this" 
                      update=":mainform:search_tabs:result_list" />
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
-               activeIndex="#{typeObjectBean.searchTabSelector}"
+               activeIndex="#{enumTypeObjectBean.searchTabSelector}"
                touchable="false"
                onTabShow="onTabShow()">
 
@@ -143,7 +119,7 @@
           <h:outputText value="#{objectBundle.list}"/>
         </f:facet>
         <h:panelGroup id="result_list">
-          <ui:include src="type_list.xhtml" />
+          <ui:include src="enum_type_list.xhtml" />
         </h:panelGroup>        
       </p:tab>
 
@@ -153,7 +129,7 @@
           <h:outputText value="#{objectBundle.edition}"/>
         </f:facet>
         <h:panelGroup id="obj_tabs">
-          <ui:param name="objectBean" value="#{typeObjectBean}" />
+          <ui:param name="objectBean" value="#{enumTypeObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
         </h:panelGroup>        
       </p:tab>      

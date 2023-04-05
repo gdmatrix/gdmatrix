@@ -305,6 +305,7 @@ public class DictionaryConstants
     rootTypeClasses.put(INTERVENTION_TYPE, Intervention.class);
     rootTypeClasses.put(CLASS_TYPE, org.matrix.classif.Class.class);
     rootTypeClasses.put(TYPE_TYPE, org.matrix.dic.Type.class);
+    rootTypeClasses.put(ENUM_TYPE_TYPE, org.matrix.dic.EnumType.class);    
     rootTypeClasses.put(POLICY_TYPE, Policy.class);
     rootTypeClasses.put(CLASS_POLICY_TYPE, ClassPolicy.class);
     rootTypeClasses.put(CASE_POLICY_TYPE, CasePolicy.class);

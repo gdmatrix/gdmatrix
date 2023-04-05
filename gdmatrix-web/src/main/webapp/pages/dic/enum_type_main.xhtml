@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:sf="http://faces.santfeliu.org"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+
+     
+  <div class="ui-fluid formgrid grid">
+    
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="#{dicBundle.enumType_enumTypeId}" />
+      <p:inputText value="#{enumTypeObjectBean.enumType.enumTypeId}" 
+                    required="#{not empty param['mainform:search_tabs:store']}"
+                    requiredMessage="EnumTypeId is mandatory"                  
+                    />
+    </div>
+    
+    <div class="field col-12 md:col-6">
+      <p:outputLabel for="@next" value="#{dicBundle.enumTypeMain_superEnumTypeId}" />
+      <p:inputText value="#{enumTypeObjectBean.enumType.superEnumTypeId}"  />
+    </div>    
+
+    <div class="field col-12 md:col-9">
+      <p:outputLabel for="@next" value="#{dicBundle.enumType_name}" 
+                     indicateRequired="true"/>
+      <p:inputText value="#{enumTypeObjectBean.enumType.name}"
+                   required="#{not empty param['mainform:search_tabs:store']}"
+                   requiredMessage="Name is mandatory" />
+    </div>    
+    
+    <div class="field col-12 md:col-3">
+      <p:outputLabel for="@next"
+                     value="#{dicBundle.enumTypeMain_itemType}" />
+      <p:selectOneMenu value="#{enumTypeObjectBean.enumType.itemType}">
+        <f:selectItems value="#{enumTypeObjectBean.propertyTypes}"  />
+      </p:selectOneMenu>
+    </div>      
+    
+    <div class="field col-12">
+      <p:selectBooleanCheckbox value="#{enumTypeObjectBean.enumType.sorted}" 
+                               styleClass="mr-2" />
+      <p:outputLabel for="@previous" value="#{dicBundle.enumTypeMain_sorted}" />
+    </div> 
+    
+    <emcomp:auditData creationDateTime="#{enumTypeObjectBean.enumType.creationDateTime}"
+                      creationUserId="#{enumTypeObjectBean.enumType.creationUserId}"
+                      changeDateTime="#{enumTypeObjectBean.enumType.changeDateTime}"
+                      changeUserId="#{enumTypeObjectBean.enumType.changeUserId}"
+                      rendered="#{!enumTypeObjectBean.new}" />    
+    
+  </div>  
+</ui:composition>

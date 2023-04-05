@@ -30,14 +30,20 @@
  */
 package org.santfeliu.webapp.modules.dic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.matrix.dic.PropertyDefinition;
-import org.santfeliu.dic.Type;
+import org.matrix.dic.PropertyType;
+import org.matrix.dic.Type;
+import org.primefaces.PrimeFaces;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TabBean;
@@ -54,9 +60,11 @@ public class TypePropertiesTabBean extends TabBean
   TypeObjectBean typeObjectBean;  
   
   private int firstRow;
-  private PropertyDefinition editing;
-  private List<PropertyDefinition> rows = new ArrayList<>();  
-  private List<Type> supertypes = new ArrayList<>();
+  private PropertyDefinitionEdit editing;
+  private PropertyDefinition backupEditing;
+  private List<org.santfeliu.dic.Type> supertypes = new ArrayList<>();
+  private Map<String, List<PropertyDefinitionEdit>> rowsMap = new HashMap<>();  
+  
 
   @Override
   public ObjectBean getObjectBean()
@@ -74,20 +82,54 @@ public class TypePropertiesTabBean extends TabBean
     this.firstRow = firstRow;
   }
 
-  public PropertyDefinition getEditing()
+  public PropertyDefinitionEdit getEditing()
   {
     return editing;
   }
 
-  public void setEditing(PropertyDefinition editing)
+  public void setEditing(PropertyDefinitionEdit editing)
   {
     this.editing = editing;
   }
-
-  public List<PropertyDefinition> getRows()
+  
+  public void setEnumTypeId(String enumTypeId)
   {
-    return rows;
+    if (editing != null)
+      editing.setEnumTypeId(enumTypeId);
+    
+    showDialog();
   }
+  
+  public String getEnumTypeId()
+  {
+    return editing == null ? NEW_OBJECT_ID : editing.getEnumTypeId();
+  }
+
+  public List<PropertyDefinitionEdit> getRows()
+  {
+    Type type = typeObjectBean.getObject();    
+    return rowsMap.get(type.getTypeId());
+  }
+  
+  public List<org.santfeliu.dic.Type> getSupertypes()
+  {
+    return supertypes;
+  }
+  
+  public List<PropertyDefinitionEdit> getTypePropertyDefinitions(
+    org.santfeliu.dic.Type type)
+  {
+    List<PropertyDefinitionEdit> result = new ArrayList();
+    if (rowsMap != null)
+      result = rowsMap.get(type.getTypeId());
+
+    return result;
+  }  
+  
+  public PropertyType[] getPropertyTypes()
+  {
+    return PropertyType.values();
+  }  
   
   @Override
   public void load()
@@ -95,12 +137,281 @@ public class TypePropertiesTabBean extends TabBean
     System.out.println("load typeProperties:" + getObjectId());
     if (!NEW_OBJECT_ID.equals(getObjectId()))
     {
-      Type type = (Type) typeObjectBean.getObject();
-      rows = type.getPropertyDefinition();
-      supertypes = type.getSuperTypes();
+      Type type = typeObjectBean.getType();
+      rowsMap.put(type.getTypeId(), getPropertyDefinitionList(type));
+      
+      supertypes = TypeCache.getInstance().getType(type.getTypeId())
+        .getSuperTypes();
+      
+      for (org.santfeliu.dic.Type superType : supertypes)
+      {
+        rowsMap.put(superType.getTypeId(), getPropertyDefinitionList(superType));
+      }      
     }          
-    else rows = Collections.EMPTY_LIST;
+  }
+
+  public void create()
+  {
+    if (editing != null) return;
+    
+    editing = new PropertyDefinitionEdit();
+    editing.setModified(true);
+    getRows().add(editing);
+  }
+  
+  public void create(PropertyDefinitionEdit row)
+  {    
+    editing = null;
+    
+    for (PropertyDefinitionEdit pde : getRows())
+    {
+      if (pde.getName().equals(row.getName()))
+      {
+        editing = row; //Edit the existent
+      }
+    }
+    
+    if (editing == null) //Not found in current rows then create as new
+    {
+      editing = new PropertyDefinitionEdit(row);
+      editing.setModified(true);  
+      getRows().add(editing);
+    }
+  }
+  
+  public void edit(PropertyDefinitionEdit row)
+  {
+    if (row == null)
+      return;
+       
+    if (row.rowId < 0)
+      create(row);
+    else
+      editing = row;
+    
+    backupEditing = new PropertyDefinitionEdit(editing.rowId, editing);
+  }
+  
+  public void remove(PropertyDefinitionEdit row)
+  {
+    row.setRemoved(true);
+    syncRows();
+  }
+  
+  public void accept()
+  {
+    if (editing == null) return;
+
+    if (!editing.isModified())
+      editing.setModified(!editing.equals(backupEditing));    
+    syncRows();
+    
+    editing = null;
+    backupEditing = null;
+  }
+  
+  public void cancel()
+  {
+    if (editing != null && editing.isNew())
+      getRows().remove(editing);
+    editing = null;
+    backupEditing = null;
+  }
+  
+  @Override
+  public void store()
+  {
+    load();
+  }
+  
+  @Override
+  public boolean isModified()
+  {
+    return true;
+  }
+  
+  private void syncRows()
+  { 
+    //Get type
+    List<PropertyDefinition> propDefList = 
+      typeObjectBean.getType().getPropertyDefinition();
+    propDefList.clear();
+        
+    String typeId = typeObjectBean.getType().getTypeId();
+    for (PropertyDefinitionEdit row : rowsMap.get(typeId))
+    {
+      if (!row.removed)
+      {
+        if (editing != null && editing.rowId == row.rowId)
+        {
+          int rowId = editing.rowId >= 0 ? editing.rowId : propDefList.size(); 
+          propDefList.add(new PropertyDefinitionEdit(rowId, editing));
+          row.rowId = rowId; //sync rowId 
+        }
+        else
+          propDefList.add(row);
+      }
+    }
+  }  
+    
+  private List<PropertyDefinitionEdit> getPropertyDefinitionList(Type type)
+  {
+    List<PropertyDefinitionEdit> results = new ArrayList();
+    List<PropertyDefinition> propDefs = type.getPropertyDefinition();
+    for (int i = 0; i < propDefs.size(); i++)
+    {
+      PropertyDefinition propDef = propDefs.get(i);
+      PropertyDefinitionEdit edit = 
+        new PropertyDefinitionEdit(i, propDef);
+      results.add(edit);
+    } 
+    return results;
+  }
+  
+  private void showDialog()
+  {
+    PrimeFaces current = PrimeFaces.current();
+    current.executeScript("PF('typePropertiesDialog').show();");
   }  
   
- 
+  @Override
+  public Serializable saveState()
+  {
+    return new Object[]{ editing, backupEditing, rowsMap, supertypes };
+  }
+
+  @Override
+  public void restoreState(Serializable state)
+  {
+    try
+    {
+      Object[] stateArray = (Object[]) state;
+      editing = (PropertyDefinitionEdit) stateArray[0];
+      backupEditing = (PropertyDefinitionEdit) stateArray[1];
+      rowsMap = (Map<String, List<PropertyDefinitionEdit>>) stateArray[2];
+      supertypes = (List<org.santfeliu.dic.Type>) stateArray[3];
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }  
+  
+  public class PropertyDefinitionEdit extends PropertyDefinition
+  {
+    private int rowId = -1;
+    private boolean modified;
+    private boolean removed;
+    
+    public PropertyDefinitionEdit()
+    {
+      this(-1, null);
+    }
+    
+    public PropertyDefinitionEdit(PropertyDefinition propDef)
+    {    
+      this(-1, propDef);
+    }
+    
+    public PropertyDefinitionEdit(int rowId, 
+      PropertyDefinition propDef)
+    {
+      this.rowId = rowId;
+      if (propDef != null)
+      {
+        name = propDef.getName();
+        description = propDef.getDescription();
+        type = propDef.getType();
+        enumTypeId = propDef.getEnumTypeId();
+        size = propDef.getSize();
+        minOccurs = propDef.getMinOccurs();
+        maxOccurs = propDef.getMaxOccurs();
+        value = new ArrayList();
+        value.addAll(propDef.getValue());
+        hidden = propDef.isHidden();
+        readOnly = propDef.isReadOnly();
+        modified = false;
+      }
+    }
+    
+    public boolean isNew()
+    {
+      return rowId == -1;
+    }
+
+    public boolean isModified()
+    {
+      return modified;
+    }
+
+    public void setModified(boolean modified)
+    {
+      this.modified = modified;
+    }
+
+    public boolean isRemoved()
+    {
+      return removed;
+    }
+
+    public void setRemoved(boolean removed)
+    {
+      this.removed = removed;
+    }
+
+    public String getStringValue()
+    {
+      if (value == null || value.isEmpty())
+        return "";
+      
+      if (value.size() == 1)
+        return value.get(0);
+      else
+        return value.toString();
+    }
+    
+    public void setStringValue(String strValue)
+    {
+      if (value == null)
+        value = new ArrayList();
+      
+      if (value.isEmpty())
+        value.add(strValue);
+      else
+        value.set(0, strValue);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      final PropertyDefinition other = (PropertyDefinition) obj;
+      if (this.size != other.getSize())
+        return false;
+      if (this.minOccurs != other.getMinOccurs())
+        return false;
+      if (this.maxOccurs != other.getMaxOccurs())
+        return false;
+      if (this.hidden != other.isHidden())
+        return false;
+      if (this.readOnly != other.isReadOnly())
+        return false;
+      if (!Objects.equals(this.name, other.getName()))
+        return false;
+      if (!Objects.equals(this.description, other.getDescription()))
+        return false;
+      if (!Objects.equals(this.enumTypeId, other.getEnumTypeId()))
+        return false;
+      if (this.type != other.getType())
+        return false;
+      return Objects.equals(this.value, other.getValue());
+    }
+    
+  }
+  
 }
