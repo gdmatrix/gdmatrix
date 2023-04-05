@@ -1,0 +1,43 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui">
+  
+  <p:dataTable value="#{enumTypeFinderBean.rows}" 
+               var="row" stripedRows="true" 
+               paginator="true" pageLinks="5"
+               paginatorPosition="bottom" size="small"
+               first="#{enumTypeFinderBean.firstRow}"
+               rowStyleClass="#{row.enumTypeId == enumTypeObjectBean.objectId ? 'current' : ''}"
+               rows="10"
+               rowIndexVar="rowIndex">
+
+    <p:column headerText="#{dicBundle.enumType_type}" styleClass="col-4">
+      <h:outputText value="#{row.enumTypeId}" />
+    </p:column>         
+    <p:column headerText="#{dicBundle.enumType_name}" styleClass="col-6">
+      <h:outputText value="#{row.name}" />
+    </p:column>  
+    <p:column styleClass="col-1">
+      <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{navigatorBean.select(row.enumTypeId)}"
+                       rendered="#{navigatorBean.selectionPending}"
+                       ajax="false" onclick="showOverlay()"
+                       immediate="true"
+                       title="Select" alt="Select"
+                       />      
+      <p:commandButton icon="pi pi-external-link" 
+                       styleClass="rounded-button ui-button-flat" 
+                       action="#{enumTypeFinderBean.view(rowIndex)}"
+                       onclick="PF('objectTabs').select(0);"
+                       resetValues="true"
+                       process="@this"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       />     
+    </p:column>
+  </p:dataTable>  
+  
+</ui:composition>
