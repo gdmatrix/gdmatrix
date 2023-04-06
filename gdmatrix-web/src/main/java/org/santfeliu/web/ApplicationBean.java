@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,7 +80,6 @@ public class ApplicationBean
 {
   private static final Logger LOGGER = Logger.getLogger("ApplicationBean");
   private static final String BUNDLE_TRANSLATION_PREFIX = "$$";
-  private static final String BUNDLE_TRANSLATION_SEPARATOR = ":";
 
   private static final String BEAN_NAME = "applicationBean";
   private static final String PARAM_RESOURCES_VERSION = "resourcesVersion";
@@ -312,21 +310,11 @@ public class ApplicationBean
       {
         if (text.startsWith(BUNDLE_TRANSLATION_PREFIX))
         {
-          String auxText = text.substring(BUNDLE_TRANSLATION_PREFIX.length());
-          int idx = auxText.indexOf(BUNDLE_TRANSLATION_SEPARATOR);
-          if (idx >= 0)
-          {
-            String bundleName = auxText.substring(0, idx);
-            String bundleKey = auxText.substring(idx + 
-              BUNDLE_TRANSLATION_SEPARATOR.length());
-            ResourceBundle bundle =
-              ResourceBundle.getBundle(bundleName, FacesUtils.getViewLocale());
-            return bundle.getString(bundleKey);
-          }
-          else 
-          {
-            return text;
-          }
+          String expr = text.substring(BUNDLE_TRANSLATION_PREFIX.length());
+          FacesContext context = FacesContext.getCurrentInstance();
+          expr = "#{" + expr + "}";
+          return context.getApplication().evaluateExpressionGet(
+            context, expr, String.class);
         }
         else
         {

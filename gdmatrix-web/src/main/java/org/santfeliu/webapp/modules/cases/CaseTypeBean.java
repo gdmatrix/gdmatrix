@@ -58,9 +58,8 @@ import org.santfeliu.webapp.setup.SearchTab;
 @ApplicationScoped
 public class CaseTypeBean extends TypeBean<Case, CaseFilter>
 {
-  private static final String BUNDLE_PREFIX = 
-    "$$org.santfeliu.cases.web.resources.CaseBundle:";  
-  
+  private static final String BUNDLE_PREFIX = "$$caseBundle.";
+
   @Override
   public String getRootTypeId()
   {
