@@ -5,6 +5,13 @@
 
 <faces-config xmlns="http://java.sun.com/JSF/Configuration">
 
+  <application>
+    <resource-bundle>
+      <base-name>org.santfeliu.kernel.web.resources.KernelBundle</base-name>
+      <var>kernelBundle</var>
+    </resource-bundle>
+  </application>
+  
   <managed-bean>
     <managed-bean-name>kernelConfigBean</managed-bean-name>
     <managed-bean-class>org.santfeliu.kernel.web.KernelConfigBean</managed-bean-class>

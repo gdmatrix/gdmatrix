@@ -3,7 +3,6 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <p:dialog id="event_persons_dialog" widgetVar="eventPersonsDialog"
@@ -41,7 +40,9 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
-                                  required="#{not empty param['mainform:search_tabs:event_persons_store']}">
+                                  required="#{not empty param['mainform:search_tabs:event_persons_store']}"
+                                  requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
+                                  disabled="#{!eventObjectBean.editable}">
           </emcomp:objectReference>
         </div>
 
@@ -58,9 +59,10 @@
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                requiredMessage="El tipus és obligatori"
                                 required="#{not empty param['mainform:search_tabs:event_persons_store']}"
-                                maxResults="20">
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                maxResults="20"
+                                disabled="#{!eventObjectBean.editable}">
           </emcomp:typeReference>
         </div>
 

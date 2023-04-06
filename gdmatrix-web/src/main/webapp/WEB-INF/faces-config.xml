@@ -9,14 +9,14 @@
       org.santfeliu.faces.MatrixExceptionHandlerFactory
     </exception-handler-factory>
   </factory>
-  
+
   <lifecycle>
-    <phase-listener>org.santfeliu.faces.beansaver.BeanSaverListener</phase-listener>    
+    <phase-listener>org.santfeliu.faces.beansaver.BeanSaverListener</phase-listener>
     <phase-listener>org.santfeliu.cms.CMSListener</phase-listener>
     <phase-listener>org.santfeliu.webapp.NavigatorPhaseListener</phase-listener>
-    <phase-listener>org.santfeliu.faces.DebugPhaseListener</phase-listener>    
+    <phase-listener>org.santfeliu.faces.DebugPhaseListener</phase-listener>
   </lifecycle>
-      
+
  <application>
   <locale-config>
    <default-locale>ca</default-locale>
@@ -33,14 +33,35 @@
    <supported-locale>ro</supported-locale>
    <supported-locale>bg</supported-locale>
   </locale-config>
+
   <message-bundle>org.santfeliu.web.resources.MessageBundle</message-bundle>
+
+  <resource-bundle>
+    <base-name>org.santfeliu.web.resources.MessageBundle</base-name>
+    <var>messageBundle</var>
+  </resource-bundle>
+
+  <resource-bundle>
+    <base-name>org.santfeliu.web.obj.resources.ObjectBundle</base-name>
+    <var>objectBundle</var>
+  </resource-bundle>
+
+  <resource-bundle>
+    <base-name>org.santfeliu.web.resources.WebBundle</base-name>
+    <var>webBundle</var>
+  </resource-bundle>
+
+  <resource-bundle>
+    <base-name>org.santfeliu.web.resources.HelpBundle</base-name>
+    <var>helpBundle</var>
+  </resource-bundle>
 
    <system-event-listener>
     <system-event-listener-class>org.santfeliu.webapp.util.PreDestroyViewMapListener</system-event-listener-class>
     <system-event-class>javax.faces.event.PreDestroyViewMapEvent</system-event-class>
    </system-event-listener>
- </application>  
-  
+ </application>
+
  <managed-bean>
   <managed-bean-name>applicationBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.web.ApplicationBean</managed-bean-class>
@@ -60,7 +81,7 @@
   <managed-bean-name>objectActionsBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.web.obj.ObjectActionsBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>  
+ </managed-bean>
 
   <navigation-rule>
     <from-view-id>*</from-view-id>
@@ -85,59 +106,59 @@
      <from-outcome>object_actions</from-outcome>
      <to-view-id>/common/obj/object_actions.xhtml</to-view-id>
     </navigation-case>
-    
-  </navigation-rule>  
-  
+
+  </navigation-rule>
+
   <component>
     <component-type>HtmlDataScroller</component-type>
     <component-class>org.santfeliu.faces.HtmlDataScroller</component-class>
-  </component>  
-  
+  </component>
+
   <component>
     <component-type>HtmlOuputText</component-type>
     <component-class>org.santfeliu.faces.component.HtmlOutputText</component-class>
-  </component> 
-  
+  </component>
+
   <component>
     <component-type>HtmlOverlay</component-type>
     <component-class>org.santfeliu.faces.component.HtmlOverlay</component-class>
-  </component> 
-  
+  </component>
+
   <component>
     <component-type>HtmlSecureCommandLink</component-type>
     <component-class>org.santfeliu.faces.component.HtmlSecureCommandLink</component-class>
-  </component>    
-  
+  </component>
+
   <component>
     <component-type>HtmlHeading</component-type>
     <component-class>org.santfeliu.faces.heading.HtmlHeading</component-class>
-  </component>          
-  
+  </component>
+
   <component>
     <component-type>UIBeanSaver</component-type>
     <component-class>org.santfeliu.faces.beansaver.UIBeanSaver</component-class>
-  </component> 
-  
+  </component>
+
   <component>
     <component-type>HtmlLanguageSelector</component-type>
     <component-class>org.santfeliu.faces.langselector.HtmlLanguageSelector</component-class>
-  </component>            
-  
+  </component>
+
   <component>
     <component-type>HtmlNavigationMenu</component-type>
     <component-class>org.santfeliu.faces.menu.view.HtmlNavigationMenu</component-class>
-  </component>  
-  
+  </component>
+
   <component>
     <component-type>HtmlCommandMenu</component-type>
     <component-class>org.santfeliu.faces.component.HtmlCommandMenu</component-class>
-  </component>     
-  
+  </component>
+
   <component>
     <component-type>HtmlSigner</component-type>
     <component-class>org.santfeliu.faces.signer.HtmlSigner</component-class>
-  </component>      
-        
+  </component>
+
   <converter>
     <converter-id>DateTimeConverter</converter-id>
     <converter-class>org.santfeliu.faces.convert.DateTimeConverter</converter-class>
@@ -161,24 +182,24 @@
   <converter>
     <converter-id>TypeIdConverter</converter-id>
     <converter-class>org.santfeliu.faces.convert.TypeIdConverter</converter-class>
-  </converter> 
-  
+  </converter>
+
   <render-kit>
     <renderer>
      <component-family>javax.faces.Panel</component-family>
      <renderer-type>org.apache.myfaces.DataScroller</renderer-type>
      <renderer-class>org.santfeliu.faces.render.myfaces.datascroller.HtmlDataScrollerRenderer</renderer-class>
-    </renderer>  
+    </renderer>
     <renderer>
      <component-family>javax.faces.Data</component-family>
      <renderer-type>org.apache.myfaces.Table</renderer-type>
      <renderer-class>org.santfeliu.faces.render.HtmlTableRenderer</renderer-class>
-    </renderer> 
+    </renderer>
     <renderer>
      <component-family>javax.faces.Input</component-family>
      <renderer-type>org.apache.myfaces.Calendar</renderer-type>
      <renderer-class>org.santfeliu.faces.render.myfaces.calendar.HtmlCalendarRenderer</renderer-class>
-    </renderer> 
+    </renderer>
     <renderer>
       <component-family>javax.faces.SelectOne</component-family>
       <renderer-type>org.apache.myfaces.Menu</renderer-type>
@@ -188,7 +209,7 @@
       <component-family>org.primefaces.component</component-family>
       <renderer-type>org.primefaces.component.DataTableRenderer</renderer-type>
       <renderer-class>org.santfeliu.faces.render.primefaces.DataTableRenderer</renderer-class>
-    </renderer>          
+    </renderer>
   </render-kit>
-                        
+
 </faces-config>

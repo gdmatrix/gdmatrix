@@ -21,7 +21,7 @@
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
-                           rendered="#{!eventObjectBean.isNew() and eventObjectBean.editable}"
+                           disabled="#{eventObjectBean.isNew() or !eventObjectBean.editable}"
                            action="#{eventCopyTabBean.reset}"
                            process=":mainform:search_tabs:tabs"
                            update="@parent:@parent:@parent:@parent:event_copy_dialog"
@@ -70,7 +70,7 @@
     </p:dataTable>
 
     <p:outputPanel id="delete_recurrences_panel"
-                   rendered="#{!empty eventRecurrencesTabBean.rows}"
+                   rendered="#{!empty eventRecurrencesTabBean.rows and eventObjectBean.editable}"
                    styleClass="eventRecurrencesDeletePanel">
       <div class="containerTitle">
         <p:outputLabel value="#{agendaBundle.eventRecurrences_deleteTitle}"/>
@@ -101,17 +101,19 @@
         <p:commandButton action="#{eventRecurrencesTabBean.deleteRecurrences}"
                          alt="#{agendaBundle.eventRecurrences_deleteRecurrences}"
                          title="#{agendaBundle.eventRecurrences_deleteRecurrences}"
-                         value="#{agendaBundle.eventRecurrences_deleteRecurrences}"
-                         disabled="#{!eventObjectBean.editable}"
+                         value="#{agendaBundle.eventRecurrences_deleteRecurrences}"                         
                          styleClass="removeButton"
                          process="delete_recurrences_panel"
-                         update="event_recurrences_table delete_recurrences_panel"
-                         onclick="return confirm('#{agendaBundle.eventRecurrences_confirmDeleteRecurrences}');" />
+                         update="event_recurrences_table delete_recurrences_panel">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{agendaBundle.eventRecurrences_confirmDeleteRecurrences}"
+                     icon="pi pi-info-circle" />
+        </p:commandButton>
       </p:outputPanel>
     </p:outputPanel>
 
     <p:dialog id="event_copy_dialog" widgetVar="eventCopyDialog"
-              styleClass="eventRecurrences dialog" 
+              styleClass="eventRecurrences dialog"
               modal="true" responsive="true" closable="false"
               appendTo="@(form)" position="center center" resizable="false">
 

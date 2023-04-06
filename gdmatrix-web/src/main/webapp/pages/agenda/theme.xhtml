@@ -2,15 +2,10 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://java.sun.com/jsf/core"
                 template="/pages/obj/object_3col.xhtml">
-  
-  <ui:define name="filter">
 
-    <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-              var="agendaBundle" />  
+  <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
 
@@ -19,10 +14,10 @@
 
         <p:tab id="smart_search">
           <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="#{objectBundle.quick}" /> 
-          </f:facet>          
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />    
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="#{objectBundle.value}" />
@@ -36,7 +31,7 @@
                              styleClass="ui-button-raised m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"                             
+                             resetValues="true"
                              />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
@@ -52,11 +47,11 @@
 
         <p:tab id="advanced_search">
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
           </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
-          
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
+
           <!-- ThemeId -->
           <p:outputPanel styleClass="field">
             <p:outputLabel for="@next" value="#{agendaBundle.theme_id}" />
@@ -100,7 +95,7 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");
@@ -109,21 +104,21 @@
     </script>
     <p:remoteCommand name="updateResults"
                      action="#{themeFinderBean.update}"
-                     process="@this" 
+                     process="@this"
                      update=":mainform:search_tabs:result_list" />
-    
+
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                activeIndex="#{themeObjectBean.searchTabSelector}"
                touchable="false"
                onTabShow="onTabShow()">
-      
+
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
           <h:outputText value="#{objectBundle.list}"/>
         </f:facet>
-        <h:panelGroup id="result_list">                
+        <h:panelGroup id="result_list">
           <ui:include src="theme_list.xhtml" />
         </h:panelGroup>
       </p:tab>
@@ -136,7 +131,7 @@
         <h:panelGroup id="obj_tabs">
           <ui:param name="objectBean" value="#{themeObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
-        </h:panelGroup>        
+        </h:panelGroup>
       </p:tab>
 
     </p:tabView>

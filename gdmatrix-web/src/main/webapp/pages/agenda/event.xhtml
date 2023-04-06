@@ -2,14 +2,9 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://java.sun.com/jsf/core"
                 template="/pages/obj/object_3col.xhtml"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
-  <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                var="agendaBundle" />
 
   <ui:define name="filter">
 
@@ -91,19 +86,18 @@
 
           <!-- Dates -->
           <p:fieldset legend="#{agendaBundle.eventSearch_date}"
-                      toggleable="true">
-            <p:outputPanel styleClass="formgrid grid">
-
-              <p:outputPanel styleClass="field col-12">
+                      toggleable="true" collapsed="true" styleClass="mb-2">
+            <div class="ui-fluid formgrid grid">
+              <div class="field col-12">
                 <p:selectOneMenu id="dateComparator" value="#{eventFinderBean.filter.dateComparator}"
                                  styleClass="inputfield w-full" style="vertical-align:middle">
                   <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="1" />
                   <f:selectItem itemLabel="#{agendaBundle.event_endDate}" itemValue="2" />
                   <f:selectItem itemLabel="#{agendaBundle.eventSearch_activeDate}" itemValue="3" />
                 </p:selectOneMenu>
-              </p:outputPanel>
+              </div>
 
-              <div class="field col-12 md:col-6">
+              <div class="field col-12">
                 <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from}" />
                 <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}"
                               locale="#{eventFinderBean.language}" inputStyleClass="w-12"
@@ -111,7 +105,8 @@
                               autocomplete="off"
                               monthNavigator="true" yearNavigator="true" />
               </div>
-              <div class="field col-12 md:col-6">
+
+              <div class="field col-12">
                 <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to}" />
                 <p:datePicker id="end_date" value="#{eventFinderBean.toDate}"
                               locale="#{eventFinderBean.language}" inputStyleClass="w-12"
@@ -119,7 +114,7 @@
                               autocomplete="off"
                               monthNavigator="true" yearNavigator="true" />
               </div>
-            </p:outputPanel>
+            </div>
           </p:fieldset>
 
           <!-- ThemeId -->

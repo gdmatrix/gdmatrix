@@ -3,7 +3,6 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <h:panelGroup>
@@ -26,6 +25,7 @@
                            update="@root:@id(event_places_dialog)"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('eventPlacesDialog').show()"
+                           disabled="#{!eventObjectBean.editable}"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
@@ -75,7 +75,11 @@
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
-                         onclick="return confirm('#{objectBundle.confirm_remove}');"/>
+                         disabled="#{!eventObjectBean.editable}">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+        </p:commandButton>
       </p:column>
 
     </p:dataTable>
@@ -118,8 +122,10 @@
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   required="#{not empty param['mainform:search_tabs:tabs:event_places_store']}"
+                                  requiredMessage="#{messageBundle.ADDRESS_MUST_BE_SELECTED}"
                                   widgetVar="objRefAddressAutocomplete"
-                                  autoUpdate="false">
+                                  autoUpdate="false"
+                                  disabled="#{!eventObjectBean.editable}">
             <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefRoom):autocomplete" />
             <p:ajax event="clear" process="@none" oncomplete="PF('objRefRoomAutocomplete').clear()" />
           </emcomp:objectReference>
@@ -139,7 +145,8 @@
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   widgetVar="objRefRoomAutocomplete"
-                                  autoUpdate="false">
+                                  autoUpdate="false"
+                                  disabled="#{!eventObjectBean.editable}">
             <p:ajax event="itemSelect" process="@this" update="@root:@id(objRefAddress):autocomplete" />
             <p:ajax event="clear" process="@none" oncomplete="PF('objRefAddressAutocomplete').clear()" />
           </emcomp:objectReference>
@@ -150,6 +157,7 @@
           <p:outputLabel for="comments"
                          value="#{agendaBundle.eventPlaces_comments}"/>
           <p:inputTextarea id="comments" value="#{eventPlacesTabBean.editing.comments}"
+                           readonly="#{!eventObjectBean.editable}"
                            styleClass="inputfield w-full" autoResize="false" />
         </div>
 

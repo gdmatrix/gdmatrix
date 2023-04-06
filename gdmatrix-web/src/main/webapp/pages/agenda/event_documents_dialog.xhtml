@@ -1,10 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <p:dialog id="event_documents_dialog" widgetVar="eventDocumentsDialog"
@@ -42,7 +40,9 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   required="#{not empty param['mainform:search_tabs:event_documents_store']}"
-                                  minQueryLength="3">
+                                  requiredMessage="#{messageBundle.DOCUMENT_MUST_BE_SELECTED}"
+                                  minQueryLength="3"
+                                  disabled="#{!eventObjectBean.editable}">
           </emcomp:objectReference>
         </div>
 
@@ -60,9 +60,10 @@
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"
-                                requiredMessage="El tipus és obligatori"
                                 required="#{not empty param['mainform:search_tabs:event_documents_store']}"
-                                maxResults="20">
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                                maxResults="20"
+                                disabled="#{!eventObjectBean.editable}">
           </emcomp:typeReference>
         </div>
 
@@ -70,7 +71,8 @@
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{agendaBundle.eventDocuments_comments}" />
-          <p:inputTextarea value="#{eventDocumentsTabBean.editing.comments}" />
+          <p:inputTextarea value="#{eventDocumentsTabBean.editing.comments}"
+                           readonly="#{!eventObjectBean.editable}" />
         </div>
 
       </div>
@@ -86,7 +88,7 @@
                          process="event_documents_dialog"
                          update=":mainform:search_tabs:tabs event_documents_panel"
                          oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').hide()"
-                         />
+                         disabled="#{!eventObjectBean.editable}" />
         <p:commandButton action="#{eventDocumentsTabBean.cancel}"
                          styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
                          process="@this"

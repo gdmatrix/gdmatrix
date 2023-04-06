@@ -1,11 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+                xmlns:p="http://primefaces.org/ui">
 
   <f:subview id="#{tab.subviewId}">
 
@@ -26,7 +23,7 @@
                            process="@this"
                            update="event_documents_table"
                            resetValues="true"
-                           alt="#{eventDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}" 
+                           alt="#{eventDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            title="#{eventDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            rendered="#{eventDocumentsTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
@@ -35,6 +32,7 @@
                            update=":mainform:search_tabs:event_documents_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').show()"
+                           disabled="#{!eventObjectBean.editable}"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
       </f:facet>
@@ -64,7 +62,7 @@
                          styleClass="rounded-button ui-button-flat"
                          ajax="false"
                          immediate="true"
-                         onclick="showOverlay()"                                                                       
+                         onclick="showOverlay()"
                          action="#{navigatorBean.show('Document', row.document.docId)}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}" />
         <p:commandButton icon="pi pi-pencil"
@@ -81,7 +79,10 @@
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
-                         onclick="return confirm('#{objectBundle.confirm_remove}');">
+                         disabled="#{!eventObjectBean.editable}">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
         </p:commandButton>
       </p:column>
     </p:dataTable>

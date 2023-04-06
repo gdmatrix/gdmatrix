@@ -5,6 +5,13 @@
 
 <faces-config xmlns="http://java.sun.com/JSF/Configuration">
 
+  <application>
+    <resource-bundle>
+      <base-name>org.santfeliu.agenda.web.resources.AgendaBundle</base-name>
+      <var>agendaBundle</var>
+    </resource-bundle>
+  </application>
+
  <managed-bean>
   <managed-bean-name>agendaBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.agenda.web.AgendaBean</managed-bean-class>

@@ -2,8 +2,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org">
+                xmlns:p="http://primefaces.org/ui">
 
   <h:panelGroup>
 
@@ -26,7 +25,8 @@
                            update="@root:@id(event_themes_dialog)"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('eventThemesDialog').show()"
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}"
+                           disabled="#{!eventObjectBean.editable}" />
         </div>
 
       </f:facet>
@@ -46,7 +46,11 @@
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
-                         onclick="return confirm('#{objectBundle.confirm_remove}');"/>
+                         disabled="#{!eventObjectBean.editable}">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+        </p:commandButton>
       </p:column>
 
     </p:dataTable>
@@ -82,7 +86,10 @@
                          styleClass="w-full" />
           <p:selectOneMenu id="theme" value="#{eventThemesTabBean.editing.themeId}"
                            styleClass="inputfield w-full" style="min-width:inherit !important"
-                           filter="true" filterMatchMode="contains" required="true">
+                           filter="true" filterMatchMode="contains"
+                           required="true"
+                           requiredMessage="#{messageBundle.THEME_MUST_BE_SELECTED}"
+                           disabled="#{!eventObjectBean.editable}">
             <f:selectItem itemLabel="" itemValue="" />
             <f:selectItems value="#{themeTypeBean.selectItems}" />
           </p:selectOneMenu>
@@ -110,6 +117,6 @@
 
     </f:facet>
 
-  </p:dialog>  
-  
+  </p:dialog>
+
 </ui:composition>

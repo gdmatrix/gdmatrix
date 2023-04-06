@@ -1,15 +1,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:pe="http://primefaces.org/ui/extensions"
-                xmlns:sf="http://faces.santfeliu.org"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-
-    <f:loadBundle basename="org.santfeliu.agenda.web.resources.AgendaBundle"
-                  var="agendaBundle" />
 
     <div class="ui-fluid formgrid grid">
 
@@ -29,11 +22,12 @@
                               queryDelay="1000"
                               minQueryLength="3"
                               required="#{not empty param['mainform:search_tabs:store']}"
-                              requiredMessage="El tipus és obligatori"
+                              requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{eventObjectBean.formSelector}"
                               process=":mainform:search_tabs:tabs"
                               update=":mainform:search_tabs:tabs"
-                              maxResults="20">
+                              maxResults="20"
+                              disabled="#{!eventObjectBean.editable}">
         </emcomp:typeReference>
       </div>
 
@@ -44,7 +38,9 @@
                        indicateRequired="true" />
         <p:inputText id="title" value="#{eventObjectBean.event.summary}"
                      required="#{not empty param['mainform:search_tabs:store']}"
-                     styleClass="inputfield w-full"/>
+                     requiredMessage="#{messageBundle.TITLE_IS_REQUIRED}"
+                     styleClass="inputfield w-full"
+                     readonly="#{!eventObjectBean.editable}"/>
       </div>
 
       <div class="field col-12 md:col-3">
@@ -54,7 +50,8 @@
                       locale="#{eventObjectBean.language}"
                       showIcon="true" showTime="true"
                       autocomplete="off"
-                      monthNavigator="true" yearNavigator="true" />
+                      monthNavigator="true" yearNavigator="true"
+                      disabled="#{!eventObjectBean.editable}"/>
       </div>
 
       <div class="field col-12 md:col-3">
@@ -64,7 +61,8 @@
                       locale="#{eventObjectBean.language}"
                       showIcon="true" showTime="true"
                       autocomplete="off"
-                      monthNavigator="true" yearNavigator="true" />
+                      monthNavigator="true" yearNavigator="true"
+                      disabled="#{!eventObjectBean.editable}"/>
       </div>
 
       <div class="field col-12 md:col-6"></div>
@@ -78,7 +76,8 @@
       <div class="field col-12">
         <p:outputLabel for="description" value="#{agendaBundle.event_description}"  />
         <p:inputTextarea id="description" value="#{eventObjectBean.event.description}"
-                         styleClass="inputfield w-full" />
+                         styleClass="inputfield w-full"
+                         readonly="#{!eventObjectBean.editable}"/>
       </div>
 
       <div class="field col-12">
@@ -88,7 +87,7 @@
                      font='Courier New'
                      fontSize='11px'
                      skin="office2013"
-                     readonly="#{not eventObjectBean.editable}"
+                     readonly="#{!eventObjectBean.editable}"
                      width="100%">
         </pe:ckEditor>
       </div>
@@ -96,17 +95,20 @@
       <div class="field col-12">
         <p:outputLabel for="comments" value="#{agendaBundle.event_hiddenComments}"  />
         <p:inputTextarea id="comments" value="#{eventObjectBean.event.comments}"
-                         styleClass="inputfield w-full" />
+                         styleClass="inputfield w-full"
+                         readonly="#{!eventObjectBean.editable}" />
       </div>
 
       <div class="field col-12">
-        <p:selectBooleanCheckbox id="onlyAttendants" value="#{eventObjectBean.onlyAttendants}" styleClass="mr-2" />
+        <p:selectBooleanCheckbox id="onlyAttendants" value="#{eventObjectBean.onlyAttendants}" styleClass="mr-2"
+                                 disabled="#{!eventObjectBean.editable}"/>
         <p:outputLabel for="onlyAttendants" value="#{agendaBundle.event_onlyAttendants}" />
       </div>
 
       <p:outputPanel styleClass="field col-12"
                      rendered="#{eventObjectBean.new}">
-        <p:selectBooleanCheckbox id="autoAttendant" value="#{eventObjectBean.autoAttendant}" styleClass="mr-2" />
+        <p:selectBooleanCheckbox id="autoAttendant" value="#{eventObjectBean.autoAttendant}" styleClass="mr-2"
+                                 disabled="#{!eventObjectBean.editable}"/>
         <p:outputLabel for="autoAttendant" value="#{agendaBundle.event_autoAttendant}" />
       </p:outputPanel>
 

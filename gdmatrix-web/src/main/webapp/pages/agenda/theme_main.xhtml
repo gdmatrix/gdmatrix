@@ -1,22 +1,19 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:pe="http://primefaces.org/ui/extensions"                
-                xmlns:sf="http://faces.santfeliu.org"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
-    
-    <div class="ui-fluid formgrid grid">   
-      
-      <p:outputPanel styleClass="field col-12" 
+                xmlns:p="http://primefaces.org/ui">
+
+    <div class="ui-fluid formgrid grid">
+
+      <p:outputPanel styleClass="field col-12"
                      rendered="true">
         <p:outputLabel for="description" value="#{agendaBundle.theme_description}" />
-        <p:inputText id="description" value="#{themeObjectBean.theme.description}" 
+        <p:inputText id="description" value="#{themeObjectBean.theme.description}"
                      required="true"
-                     styleClass="inputfield w-full"/>
+                     requiredMessage="#{messageBundle.DESCRIPTION_IS_REQUIRED}"
+                     styleClass="inputfield w-full"
+                     readonly="#{!themeObjectBean.editable}" />
       </p:outputPanel>
-      
+
     </div>
-    
+
 </ui:composition>

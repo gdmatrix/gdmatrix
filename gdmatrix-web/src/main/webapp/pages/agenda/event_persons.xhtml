@@ -2,9 +2,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:sf="http://faces.santfeliu.org"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+                xmlns:p="http://primefaces.org/ui">
 
   <f:subview id="#{tab.subviewId}">
 
@@ -26,7 +24,7 @@
                            process="@this"
                            update="event_persons_table"
                            resetValues="true"
-                           alt="#{eventPersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}" 
+                           alt="#{eventPersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            title="#{eventPersonsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            rendered="#{eventPersonsTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
@@ -35,6 +33,7 @@
                            update=":mainform:search_tabs:event_persons_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('eventPersonsDialog').show()"
+                           disabled="#{!eventObjectBean.editable}"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
 
@@ -69,7 +68,7 @@
                          action="#{navigatorBean.show('Person', row.personId)}"
                          ajax="false"
                          immediate="true"
-                         onclick="showOverlay()"                                                
+                         onclick="showOverlay()"
                          styleClass="rounded-button ui-button-flat"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"/>
         <p:commandButton action="#{eventPersonsTabBean.edit(row)}"
@@ -86,7 +85,11 @@
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                          styleClass="rounded-button ui-button-flat"
-                         onclick="return confirm('#{objectBundle.confirm_remove}');"/>
+                         disabled="#{!eventObjectBean.editable}">
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove_message}"
+                     icon="pi pi-info-circle" />
+        </p:commandButton>
       </p:column>
 
     </p:dataTable>
