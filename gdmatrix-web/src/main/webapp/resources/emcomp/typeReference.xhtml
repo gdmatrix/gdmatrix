@@ -25,11 +25,12 @@
       <composite:attribute name="update" required="false" default="@none" />
       <composite:attribute name="required" required="false" default="false" />
       <composite:attribute name="requiredMessage" required="false" />
+      <composite:attribute name="disabled" required="false" default="false" />
       <composite:attribute name="showNavigatorItems" required="false" default="true" />
       <composite:attribute name="widgetVar" required="false" />
       <composite:attribute name="renderShowButton" required="false" default="true" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
-      <composite:attribute name="formSelector" required="false" />      
+      <composite:attribute name="formSelector" required="false" />
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
       <composite:clientBehavior name="query" targets="autocomplete" event="query" />
@@ -54,6 +55,7 @@
                         scrollHeight="#{cc.attrs.scrollHeight}"
                         onclick="this.setSelectionRange(0, this.value.length)"
                         required="#{cc.attrs.required}"
+                        disabled="#{cc.attrs.disabled}"
                         widgetVar="#{cc.attrs.widgetVar}">
 
           <c:if test="#{not empty cc.attrs.requiredMessage}">
@@ -80,10 +82,11 @@
                          action="#{typeReferenceBean.show}"
                          rendered="#{cc.attrs.renderShowButton}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
-                         />
+                         disabled="#{cc.attrs.disabled}" />
         <h:commandButton style="display: none"
                          action="#{typeReferenceBean.find}"
-                         immediate="true">
+                         immediate="true"
+                         disabled="#{cc.attrs.disabled}">
         </h:commandButton>
         <p:commandButton icon="pi pi-search"
                          styleClass="ui-button-raised select-button"
@@ -91,7 +94,7 @@
                          update="#{cc.attrs.update}"
                          oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}"
-                         />
+                         disabled="#{cc.attrs.disabled}" />
       </div>
     </composite:implementation>
   </h:body>

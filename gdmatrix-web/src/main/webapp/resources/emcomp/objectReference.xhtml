@@ -25,6 +25,7 @@
       <composite:attribute name="update" required="false" default="@none" />
       <composite:attribute name="required" required="false" default="false" />
       <composite:attribute name="requiredMessage" required="false" />
+      <composite:attribute name="disabled" required="false" default="false" />
       <composite:attribute name="forceSelection" required="false" default="true" />
       <composite:attribute name="showNavigatorItems" required="false" default="true" />
       <composite:attribute name="widgetVar" required="false" />
@@ -40,7 +41,7 @@
       <div class="ui-inputgroup">
         <p:autoComplete id="autocomplete"
                         value="#{objectReferenceBean.selectItem}"
-                        maxResults="#{cc.attrs.maxResults}" 
+                        maxResults="#{cc.attrs.maxResults}"
                         forceSelection="#{cc.attrs.forceSelection}"
                         dropdown="true" dropdownMode="blank" cache="true"
                         completeMethod="#{objectReferenceBean.complete}"
@@ -54,12 +55,13 @@
                         scrollHeight="#{cc.attrs.scrollHeight}"
                         onclick="this.setSelectionRange(0, this.value.length)"
                         required="#{cc.attrs.required}"
-                        widgetVar="#{cc.attrs.widgetVar}">
+                        widgetVar="#{cc.attrs.widgetVar}"
+                        disabled="#{cc.attrs.disabled}">
 
           <c:if test="#{not empty cc.attrs.requiredMessage}">
             <f:attribute name="requiredMessage" value="#{cc.attrs.requiredMessage}" />
           </c:if>
-          
+
           <c:if test="#{cc.attrs.autoUpdate}">
             <p:ajax event="itemSelect" listener="#{objectReferenceBean.onItemSelect}"
                     process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
@@ -80,10 +82,11 @@
                          action="#{objectReferenceBean.show}"
                          rendered="#{cc.attrs.renderShowButton}"
                          alt="#{objectBundle.show}" title="#{objectBundle.show}"
-                         />
+                         disabled="#{cc.attrs.disabled}" />
         <h:commandButton style="display: none"
                          action="#{objectReferenceBean.find}"
-                         immediate="true">
+                         immediate="true"
+                         disabled="#{cc.attrs.disabled}">
         </h:commandButton>
         <p:commandButton icon="pi pi-search"
                          styleClass="ui-button-raised select-button"
@@ -91,7 +94,7 @@
                          update="#{cc.attrs.update}"
                          oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}"
-                         />
+                         disabled="#{cc.attrs.disabled}" />
       </div>
     </composite:implementation>
   </h:body>
