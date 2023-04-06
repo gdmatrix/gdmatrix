@@ -342,6 +342,7 @@ public abstract class ObjectBean extends BaseBean
   {
     setEditTabSelector(0);
     load();
+    info("CANCEL_OBJECT");
   }
 
   public void selectTabWithErrors()

@@ -205,10 +205,9 @@ public class EventThemesTabBean extends TabBean
     }
   }
 
-  public String cancel()
+  public void cancel()
   {
     editing = null;
-    return null;
   }
 
   @Override
