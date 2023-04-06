@@ -27,18 +27,23 @@
  
 
     <div class="field col-12 md:col-6">
-      <p:outputLabel for="@next" value="TypeId" />
-      <p:inputText value="#{typeObjectBean.objectId}" 
+      <p:outputLabel for="@next" value="TypeId" indicateRequired="true"/>
+      <p:inputText value="#{typeObjectBean.type.typeId}" 
                     required="#{not empty param['mainform:search_tabs:store']}"
                     requiredMessage="Type is mandatory"                  
                     />
     </div>
 
     <div class="field col-12 md:col-6">
-      <p:outputLabel for="@next" value="SupertypeId" indicateRequired="true"/>    
+      <p:outputLabel for="@next" value="SupertypeId" indicateRequired="true"/>
+      <p:inputText value="#{typeObjectBean.type.superTypeId}" 
+                    required="#{not empty param['mainform:search_tabs:store']}"
+                    requiredMessage="Supertype is mandatory"                  
+                    />      
+      <!--
       <p:autoComplete id="supertypeid"
                       value="#{typeObjectBean.superTypeSelectItem}"
-                      maxResults="5" dropdown="true" dropdownMode="blank" cache="true"
+                      maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
                       minQueryLength="3" queryDelay="1000"
                       completeMethod="#{typeObjectBean.complete}"
                       converter="selectItemConverter"                        
@@ -49,7 +54,8 @@
         <p:column>                 
           <h:outputText value="#{item.label}" />
         </p:column>        
-      </p:autoComplete>          
+      </p:autoComplete> 
+      -->
     </div>   
 
     <div class="field col-12 md:col-12">
@@ -75,35 +81,11 @@
       <p:outputLabel for="restricted" value="Restricted properties" />
     </div>        
 
-    <p:outputPanel styleClass="field col-12 md:col-3" 
-                   rendered="#{typeObjectBean.type.creationDateTime != null}">
-      <p:outputLabel for="@next" value="Creació"/>
-      <p:datePicker  id="creation_date_time" value="#{typeObjectBean.type.creationDateTime}"
-                     pattern="dd/MM/yyyy HH:mm:ss"
-                     locale="es" converter="datePickerConverter"
-                     showIcon="false" disabled="true" showTime="true" />          
-    </p:outputPanel> 
-    
-    <p:outputPanel styleClass="field col-12 md:col-3" 
-                   rendered="#{typeObjectBean.type.creationDateTime != null}">        
-      <p:outputLabel for="@next" value="Usuari creador" />
-      <p:inputText id="creation_user_id" value="#{typeObjectBean.type.creationUserId}" disabled="true"/>
-    </p:outputPanel>     
-
-    <p:outputPanel styleClass="field col-12 md:col-3"
-                   rendered="#{typeObjectBean.type.changeDateTime != null}">
-      <p:outputLabel value="Darrera modificació"/>
-      <p:datePicker id="change_date_time" value="#{typeObjectBean.type.changeDateTime}" 
-                    pattern="dd/MM/yyyy HH:mm:ss"
-                     locale="es" converter="datePickerConverter"
-                     showIcon="false" disabled="true" showTime="true" />          
-    </p:outputPanel>       
-    
-    <p:outputPanel styleClass="field col-12 md:col-3"
-                   rendered="#{typeObjectBean.type.changeDateTime != null}">        
-      <p:outputLabel for="@next" value="Usuari modificador" />
-      <p:inputText id="change_user_id" value="#{typeObjectBean.type.changeUserId}" disabled="true"/>
-    </p:outputPanel>       
+    <emcomp:auditData creationDateTime="#{typeObjectBean.type.creationDateTime}"
+                      creationUserId="#{typeObjectBean.type.creationUserId}"
+                      changeDateTime="#{typeObjectBean.type.changeDateTime}"
+                      changeUserId="#{typeObjectBean.type.changeUserId}"
+                      rendered="#{!typeObjectBean.new}" />      
     
   </div>  
 </ui:composition>

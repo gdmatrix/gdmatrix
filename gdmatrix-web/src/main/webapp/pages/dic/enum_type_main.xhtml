@@ -11,7 +11,8 @@
   <div class="ui-fluid formgrid grid">
     
     <div class="field col-12 md:col-6">
-      <p:outputLabel for="@next" value="#{dicBundle.enumType_enumTypeId}" />
+      <p:outputLabel for="@next" value="#{dicBundle.enumType_enumTypeId}" 
+                     indicateRequired="true"/>
       <p:inputText value="#{enumTypeObjectBean.enumType.enumTypeId}" 
                     required="#{not empty param['mainform:search_tabs:store']}"
                     requiredMessage="EnumTypeId is mandatory"                  

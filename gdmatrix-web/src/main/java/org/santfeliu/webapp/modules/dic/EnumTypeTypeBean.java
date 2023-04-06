@@ -97,6 +97,8 @@ public class EnumTypeTypeBean extends TypeBean<EnumType, EnumTypeFilter>
 
     List<EditTab> editTabs = new ArrayList<>();
     editTabs.add(new EditTab("Main", "/pages/dic/enum_type_main.xhtml"));
+    editTabs.add(new EditTab("Items", "/pages/dic/enum_type_items.xhtml", 
+      "enumTypeItemsTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

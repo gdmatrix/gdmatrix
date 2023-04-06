@@ -114,8 +114,9 @@ public class TypeObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    //TODO: Remove marked as to Remove
     type = DicModuleBean.getPort(false).storeType(type);
+    setObjectId(type.getTypeId());
+    typeFinderBean.outdate();    
   }
   
   @Override

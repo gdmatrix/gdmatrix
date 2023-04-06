@@ -273,5 +273,4 @@ public class EnumTypeFinderBean extends FinderBean
       error(ex);
     }
   }  
-  
 }

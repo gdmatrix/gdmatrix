@@ -33,6 +33,7 @@ package org.santfeliu.webapp.modules.dic;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.EnumType;
 import org.matrix.dic.PropertyType;
@@ -109,8 +110,11 @@ public class EnumTypeObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    //TODO: Remove marked as to Remove
+    if (StringUtils.isBlank(enumType.getSuperEnumTypeId()))
+      enumType.setSuperEnumTypeId(null);
     enumType = DicModuleBean.getPort(false).storeEnumType(enumType);
+    setObjectId(enumType.getEnumTypeId());
+    enumTypeFinderBean.outdate();      
   }
   
   @Override
