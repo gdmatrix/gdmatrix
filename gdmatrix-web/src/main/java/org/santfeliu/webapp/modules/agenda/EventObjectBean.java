@@ -245,12 +245,6 @@ public class EventObjectBean extends ObjectBean
     event.setOnlyAttendants(value);
   }
 
-  //TODO: Move to superclass
-  public boolean isEditable()
-  {
-    return true;
-  }
-
   //TODO Move to superclass
   public String getLanguage()
   {
@@ -312,6 +306,13 @@ public class EventObjectBean extends ObjectBean
   {
     event = AgendaModuleBean.getClient(false).storeEvent(event);
     setObjectId(event.getEventId());
+    eventFinderBean.outdate();
+  }
+
+  @Override
+  public void removeObject() throws Exception
+  {
+    AgendaModuleBean.getClient(false).removeEvent(event.getEventId());
     eventFinderBean.outdate();
   }
 

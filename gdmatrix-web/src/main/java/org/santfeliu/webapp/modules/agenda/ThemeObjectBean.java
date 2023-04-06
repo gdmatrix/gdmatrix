@@ -31,7 +31,6 @@
 package org.santfeliu.webapp.modules.agenda;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,7 +38,6 @@ import org.matrix.agenda.Theme;
 import org.matrix.dic.DictionaryConstants;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
-import org.santfeliu.webapp.setup.EditTab;
 
 /**
  *
@@ -125,6 +123,13 @@ public class ThemeObjectBean extends ObjectBean
     {
       error(ex);
     }
+  }
+
+  @Override
+  public void removeObject() throws Exception
+  {
+    AgendaModuleBean.getClient(false).removeTheme(theme.getThemeId());
+    themeFinderBean.outdate();
   }
 
   @Override

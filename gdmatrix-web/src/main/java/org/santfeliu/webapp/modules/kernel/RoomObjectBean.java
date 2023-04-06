@@ -135,6 +135,13 @@ public class RoomObjectBean extends ObjectBean
     roomFinderBean.outdate();
   }
 
+  @Override
+  public void removeObject() throws Exception
+  {
+    KernelModuleBean.getPort(false).removeRoom(room.getRoomId());
+    roomFinderBean.outdate();
+  }
+
   public String getAdminRole()
   {
     return KernelConstants.KERNEL_ADMIN_ROLE;
