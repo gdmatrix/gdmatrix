@@ -46,30 +46,30 @@
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                      rowsPerPageTemplate="5,10,25,50">
 
-          <p:column headerText="Name" styleClass="col-2">
+          <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2">
             <i class="mr-2 pi pi-#{srow.type == 'TEXT' ? 'sort-alpha-down' : (srow.type == 'DATE' ? 'calendar' : (srow.type == 'NUMERIC' ? 'sort-numeric-down' : (srow.type == 'BOOLEAN' ? 'flag' : '')))}"></i>
             <h:outputText value="#{srow.name}" style="#{srow.hidden ? 'color: blue' : ''}" />
           </p:column>      
 
-          <p:column headerText="Description" styleClass="col-3">
+          <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3">
             <h:outputText value="#{srow.description}"/>
           </p:column>
           
-          <p:column headerText="EnumType" styleClass="col-1">
+          <p:column headerText="#{dicBundle.typeProperties_enumType}" styleClass="col-1">
             <h:outputText value="#{srow.enumTypeId}"/>
           </p:column>            
 
-          <p:column headerText="Size" styleClass="col-1 text-center">
+          <p:column headerText="#{dicBundle.typeProperties_size}" styleClass="col-1 text-center">
             <h:outputText value="#{srow.size}"/>
           </p:column>
 
-          <p:column headerText="Occurs" styleClass="col-1 text-center">
+          <p:column headerText="#{dicBundle.typeProperties_occurs}" styleClass="col-1 text-center">
             <h:outputText value="#{srow.minOccurs == srow.maxOccurs ? '' : srow.minOccurs}
                           #{srow.minOccurs == srow.maxOccurs ? '' : '..'}
                           #{srow.maxOccurs == '0' ? '*' : srow.maxOccurs}" />
           </p:column>          
 
-          <p:column headerText="Value" styleClass="col-1 text-center">
+          <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-1 text-center">
             <h:outputText value="#{srow.stringValue}"/>
           </p:column>      
 
@@ -114,30 +114,30 @@
         </div>
       </f:facet>    
 
-      <p:column headerText="Name" styleClass="col-2">
+      <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2">
         <i class="mr-2 pi pi-#{row.type == 'TEXT' ? 'sort-alpha-down' : (row.type == 'DATE' ? 'calendar' : (row.type == 'NUMERIC' ? 'sort-numeric-down' : (row.type == 'BOOLEAN' ? 'flag' : '')))}"></i>
         <h:outputText value="#{row.name}" style="#{row.hidden ? 'color: blue' : ''}"/>
       </p:column>      
 
-      <p:column headerText="Description" styleClass="col-3">
+      <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3">
         <h:outputText value="#{row.description}"/>
       </p:column>
       
-      <p:column headerText="EnumType" styleClass="col-1">
+      <p:column headerText="#{dicBundle.typeProperties_enumType}" styleClass="col-1">
         <h:outputText value="#{row.enumTypeId}"/>
       </p:column>      
 
-      <p:column headerText="Size" styleClass="col-1 text-center">
+      <p:column headerText="#{dicBundle.typeProperties_size}" styleClass="col-1 text-center">
         <h:outputText value="#{row.size}"/>
       </p:column>
 
-      <p:column headerText="Occurs" styleClass="col-1 text-center">
+      <p:column headerText="#{dicBundle.typeProperties_occurs}" styleClass="col-1 text-center">
         <h:outputText value="#{row.minOccurs == row.maxOccurs ? '' : row.minOccurs}
                       #{row.minOccurs == row.maxOccurs ? '' : '..'}
                       #{row.maxOccurs == '0' ? '*' : row.maxOccurs}"/>   
       </p:column>        
 
-      <p:column headerText="Value" styleClass="col-1 text-center">
+      <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-1 text-center">
         <h:outputText value="#{row.stringValue}"/>
       </p:column>      
 

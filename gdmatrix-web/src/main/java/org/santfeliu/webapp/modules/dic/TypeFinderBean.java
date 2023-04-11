@@ -159,13 +159,21 @@ public class TypeFinderBean extends FinderBean
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     if (typeTypeBean.getRootTypeId().equals(baseTypeId))
       baseTypeId = null;
-    if (!StringUtils.isBlank(rootTypeId))
+       
+    String typePath = StringUtils.isBlank(filter.getTypePath()) ? rootTypeId :
+      filter.getTypePath();
+    
+    if (!StringUtils.isBlank(typePath))
     {
-      String typePath = (rootTypeId != null && rootTypeId.trim().length() > 0) ?
-       DictionaryConstants.TYPE_PATH_SEPARATOR + rootTypeId +
-       DictionaryConstants.TYPE_PATH_SEPARATOR + "%" : null;
-      filter.setTypePath(typePath);
+      if (! typePath.startsWith("%" + DictionaryConstants.TYPE_PATH_SEPARATOR) 
+        || !typePath.endsWith(DictionaryConstants.TYPE_PATH_SEPARATOR + "%"))
+      {
+        typePath = "%" + DictionaryConstants.TYPE_PATH_SEPARATOR + typePath +
+          DictionaryConstants.TYPE_PATH_SEPARATOR + "%";
+      }
     }
+    filter.setTypePath(typePath);
+
     smartFilter = typeTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;

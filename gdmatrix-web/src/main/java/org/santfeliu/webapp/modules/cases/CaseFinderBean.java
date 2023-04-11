@@ -37,6 +37,7 @@ import java.util.List;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
 import org.santfeliu.util.BigList;
@@ -61,6 +62,7 @@ public class CaseFinderBean extends FinderBean
   private int firstRow;
   private boolean finding;
   private boolean outdated;
+  private String formSelector;  
  
   @Inject
   NavigatorBean navigatorBean;
@@ -132,6 +134,16 @@ public class CaseFinderBean extends FinderBean
   {
     this.rows = rows;
   }
+
+  public String getFormSelector()
+  {
+    return formSelector;
+  }
+
+  public void setFormSelector(String formSelector)
+  {
+    this.formSelector = formSelector;
+  }
   
   public List<Column> getColumns()
   {
@@ -174,8 +186,11 @@ public class CaseFinderBean extends FinderBean
   {
     finding = true;
     setFilterTabSelector(1);
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter.setCaseTypeId(baseTypeId);
+    if (StringUtils.isBlank(filter.getCaseTypeId()))
+    {
+      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      filter.setCaseTypeId(baseTypeId);
+    }
     smartFilter = caseTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
@@ -200,13 +215,14 @@ public class CaseFinderBean extends FinderBean
     smartFilter = null;
     rows = null;
     finding = false;
+    formSelector = null;
   }
 
   @Override
   public Serializable saveState()
   {
     return new Object[]{ finding, getFilterTabSelector(), filter, firstRow, 
-      getObjectPosition() };
+      getObjectPosition(), formSelector };
   }
 
   @Override
@@ -219,6 +235,7 @@ public class CaseFinderBean extends FinderBean
       setFilterTabSelector((Integer)stateArray[1]);
       filter = (CaseFilter)stateArray[2];
       smartFilter = caseTypeBean.filterToQuery(filter);
+      formSelector = (String)stateArray[5];
 
       doFind(false);
 
