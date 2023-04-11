@@ -5,6 +5,13 @@
 
 <faces-config xmlns="http://java.sun.com/JSF/Configuration">
 
+  <application>
+    <resource-bundle>
+      <base-name>org.santfeliu.doc.web.resources.DocumentBundle</base-name>
+      <var>documentBundle</var>
+    </resource-bundle>
+  </application>  
+  
  <managed-bean>
   <managed-bean-name>documentConfigBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.doc.web.DocumentConfigBean</managed-bean-class>

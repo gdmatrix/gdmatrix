@@ -9,9 +9,6 @@
                 template="/pages/obj/object_3col.xhtml">
   
   <ui:define name="filter">
-    <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
-                  var="documentBundle" />    
-    
     <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector" 
                  activeIndex="#{documentFinderBean.filterTabSelector}">
@@ -167,9 +164,6 @@
   </ui:define>
 
   <ui:define name="object">
-    <f:loadBundle basename="org.santfeliu.doc.web.resources.DocumentBundle"
-                  var="documentBundle" />    
-
     <script>
       function onTabShow()
       {

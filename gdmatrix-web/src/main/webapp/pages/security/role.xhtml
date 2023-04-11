@@ -7,9 +7,6 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="/pages/obj/object_3col.xhtml">
 
-  <f:loadBundle basename="org.santfeliu.security.web.resources.SecurityBundle"
-                var="securityBundle" />
-  
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
@@ -53,9 +50,7 @@
             <span class="pi pi-cog mr-2"/> 
             <h:outputText value="#{objectBundle.advanced}" /> 
           </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
-          <f:loadBundle basename="org.santfeliu.security.web.resources.SecurityBundle" 
-                        var="securityBundle" />
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
           <!-- roleId -->
           <div class="field">

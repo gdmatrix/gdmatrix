@@ -9,9 +9,6 @@
                 template="/pages/obj/object_3col.xhtml">
 
   <ui:define name="filter">
-    <f:loadBundle basename="org.santfeliu.classif.web.resources.ClassificationBundle"
-                  var="classificationBundle" />
-
     <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector"
                  activeIndex="#{classFinderBean.filterTabSelector}">
@@ -105,9 +102,6 @@
   </ui:define>
 
   <ui:define name="object">
-    <f:loadBundle basename="org.santfeliu.classif.web.resources.ClassificationBundle"
-                  var="classificationBundle" />
-
     <script>
       function onTabShow()
       {

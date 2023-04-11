@@ -4,76 +4,98 @@
   "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
 
 <faces-config xmlns="http://java.sun.com/JSF/Configuration">
- <managed-bean>
+
+  <application>
+    <resource-bundle>
+      <base-name>org.santfeliu.security.web.resources.SecurityBundle</base-name>
+      <var>securityBundle</var>
+    </resource-bundle>
+  </application>
+
+  <managed-bean>
   <managed-bean-name>loginBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.LoginBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>registerBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RegisterBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>passwordBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.PasswordBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>userBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.UserBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
-  <managed-bean-name>userSearchBean</managed-bean-name>
+   <managed-bean-name>userSearchBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.UserSearchBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>userMainBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.UserMainBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>userRolesBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.UserRolesBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>userRolesTreeBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.UserRolesTreeBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>roleBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RoleBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>roleSearchBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RoleSearchBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>roleMainBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RoleMainBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>roleUsersBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RoleUsersBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>roleRolesBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RoleRolesBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>roleRolesTreeBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.RoleRolesTreeBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+
  <managed-bean>
   <managed-bean-name>validBean</managed-bean-name>
   <managed-bean-class>org.santfeliu.security.web.ValidBean</managed-bean-class>
