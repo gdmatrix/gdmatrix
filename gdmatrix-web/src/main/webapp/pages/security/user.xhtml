@@ -52,18 +52,44 @@
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" /> 
 
-          <div class="field">
-            <p:outputLabel for="@next" value="UserId" />
-            <p:chips value="#{userFinderBean.userIdList}"
-                     class="inputfield w-full" />
+          <div class="ui-fluid formgrid grid">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="UserId" />
+              <p:chips value="#{userFinderBean.userIdList}"
+                       class="inputfield w-full" />
+            </div>          
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{securityBundle.user_displayName}" />        
+              <p:inputText value="#{userFinderBean.filter.displayName}" 
+                           class="inputfield w-full" />
+            </div>
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{securityBundle.user_startDate}" />
+              <p:datePicker value="#{userFinderBean.filter.startDateTime}" 
+                            autocomplete="off"
+                            placeholder="dd/MM/yyyy HH:mm:ss"
+                            locale="es" 
+                            showOnFocus="false"
+                            converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm:ss"
+                            showIcon="true" showTime="true"
+                            monthNavigator="true" yearNavigator="true" />
+            </div>
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{securityBundle.user_endDate}" />
+              <p:datePicker value="#{userFinderBean.filter.endDateTime}" 
+                            autocomplete="off"
+                            placeholder="dd/MM/yyyy HH:mm:ss"
+                            locale="es" 
+                            showOnFocus="false"
+                            converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm:ss"
+                            showIcon="true" showTime="true"
+                            monthNavigator="true" yearNavigator="true" />
+            </div>
           </div>          
           
-          <div class="field">
-            <p:outputLabel for="@next" value="Display name" />        
-            <p:inputText value="#{userFinderBean.filter.displayName}" 
-                         class="inputfield w-full" />
-          </div>  
-
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{userFinderBean.clear}"

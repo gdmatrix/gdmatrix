@@ -106,7 +106,14 @@
                            rendered="#{documentObjectBean.document.lockUserId != null}" /> 
         </p:outputPanel>
       </div> 
-            
+
+      <emcomp:auditData creationDateTime="#{documentObjectBean.document.captureDateTime}"
+                        creationDateTimeLabel="#{documentBundle.document_captureDate}"
+                        creationUserId="#{documentObjectBean.document.captureUserId}"
+                        creationUserIdLabel="#{documentBundle.document_captureBy}"
+                        changeDateTime="#{documentObjectBean.document.changeDateTime}"
+                        changeUserId="#{documentObjectBean.document.changeUserId}" />      
+      
     </div>
     
     <emcomp:dynamicProperties typeId="#{documentObjectBean.document.docTypeId}"
