@@ -26,54 +26,55 @@
       </div>
 
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="name" value="#{kernelBundle.person_name}" />
-        <p:inputText id="name" value="#{personObjectBean.person.name}" required="true" />
+        <p:outputLabel for="@next" value="#{kernelBundle.person_name}" />
+        <p:inputText value="#{personObjectBean.person.name}" required="true" 
+                     requiredMessage="#{messageBundle.NAME_IS_REQUIRED}"/>
       </div>
 
       <div class="field col-12 md:col-3 xl:col-2">
-        <p:outputLabel for="first_particle" value="#{kernelBundle.person_particle}" />
-        <p:selectOneMenu id="first_particle" value="#{personObjectBean.person.firstParticle}">
+        <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
+        <p:selectOneMenu value="#{personObjectBean.person.firstParticle}">
           <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
         </p:selectOneMenu>
       </div>
 
       <div class="field col-12 md:col-9 xl:col-4">
-        <p:outputLabel for="surname1" value="#{kernelBundle.person_surname1}" />
-        <p:inputText id="surname1" value="#{personObjectBean.person.firstSurname}" />
+        <p:outputLabel for="@next" value="#{kernelBundle.person_surname1}" />
+        <p:inputText value="#{personObjectBean.person.firstSurname}" />
       </div>
 
       <div class="field col-12 md:col-3 xl:col-2">
-        <p:outputLabel for="second_particle" value="#{kernelBundle.person_particle}" />
-        <p:selectOneMenu id="second_particle" value="#{personObjectBean.person.secondParticle}">
+        <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
+        <p:selectOneMenu value="#{personObjectBean.person.secondParticle}">
           <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
         </p:selectOneMenu>
       </div>
 
       <div class="field col-12 md:col-9 xl:col-4">
-        <p:outputLabel for="surname2" value="#{kernelBundle.person_surname2}" />
-        <p:inputText id="surname2" value="#{personObjectBean.person.secondSurname}" />
+        <p:outputLabel for="@next" value="#{kernelBundle.person_surname2}" />
+        <p:inputText value="#{personObjectBean.person.secondSurname}" />
       </div>
 
       <div class="field col-12 md:col-3">
-        <p:outputLabel for="nif" value="#{kernelBundle.person_nif}" />
-        <p:inputText id="nif" value="#{personObjectBean.person.nif}" />
+        <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
+        <p:inputText value="#{personObjectBean.person.nif}" />
       </div>
 
       <div class="field col-12 md:col-3">
-        <p:outputLabel for="passport" value="#{kernelBundle.person_passport}" />
-        <p:inputText id="passport" value="#{personObjectBean.person.passport}" />
+        <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
+        <p:inputText value="#{personObjectBean.person.passport}" />
       </div>
 
       <div class="field col-12 md:col-3">
-        <p:outputLabel for="sex" value="#{kernelBundle.person_sex}" />
-        <p:selectOneMenu id="sex" value="#{personObjectBean.person.sex}">
+        <p:outputLabel for="@next" value="#{kernelBundle.person_sex}" />
+        <p:selectOneMenu value="#{personObjectBean.person.sex}">
           <f:selectItems value="#{personObjectBean.sexSelectItems}" />
         </p:selectOneMenu>
       </div>
 
       <div class="field col-12 md:col-3">
-        <p:outputLabel for="birth_date" value="#{kernelBundle.person_birthDate}" />
-        <p:datePicker id="birth_date" value="#{personObjectBean.person.birthDate}" 
+        <p:outputLabel for="@next" value="#{kernelBundle.person_birthDate}" />
+        <p:datePicker value="#{personObjectBean.person.birthDate}" 
                       autocomplete="off" placeholder="dd/MM/aaaa" locale="es" 
                       showOnFocus="false" touchUI="true" 
                       converter="datePickerConverter" pattern="dd/MM/yyyy" 

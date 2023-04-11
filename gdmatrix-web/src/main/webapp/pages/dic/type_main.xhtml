@@ -27,58 +27,42 @@
  
 
     <div class="field col-12 md:col-6">
-      <p:outputLabel for="@next" value="TypeId" indicateRequired="true"/>
+      <p:outputLabel for="@next" value="#{dicBundle.type_typeId}" indicateRequired="true"/>
       <p:inputText value="#{typeObjectBean.type.typeId}" 
                     required="#{not empty param['mainform:search_tabs:store']}"
-                    requiredMessage="Type is mandatory"                  
+                    requiredMessage="#{messageBundle.TYPEID_IS_REQUIRED}"                  
                     />
     </div>
 
     <div class="field col-12 md:col-6">
-      <p:outputLabel for="@next" value="SupertypeId" indicateRequired="true"/>
+      <p:outputLabel for="@next" value="#{dicBundle.type_superTypeId}" indicateRequired="true"/>
       <p:inputText value="#{typeObjectBean.type.superTypeId}" 
                     required="#{not empty param['mainform:search_tabs:store']}"
-                    requiredMessage="Supertype is mandatory"                  
+                    requiredMessage="#{messageBundle.SUPERTYPEID_IS_REQUIRED}"                  
                     />      
-      <!--
-      <p:autoComplete id="supertypeid"
-                      value="#{typeObjectBean.superTypeSelectItem}"
-                      maxResults="10" dropdown="true" dropdownMode="blank" cache="true"
-                      minQueryLength="3" queryDelay="1000"
-                      completeMethod="#{typeObjectBean.complete}"
-                      converter="selectItemConverter"                        
-                      var="item" itemValue="#{item}" itemLabel="#{item.label}"
-                      onclick="this.setSelectionRange(0, this.value.length)"
-                      required="#{not empty param['mainform:search_tabs:store']}"
-                      requiredMessage="Supertype is mandatory"> 
-        <p:column>                 
-          <h:outputText value="#{item.label}" />
-        </p:column>        
-      </p:autoComplete> 
-      -->
     </div>   
 
     <div class="field col-12 md:col-12">
-      <p:outputLabel for="@next" value="Description" indicateRequired="true"/>
+      <p:outputLabel for="@next" value="#{dicBundle.type_description}" indicateRequired="true"/>
       <p:inputText value="#{typeObjectBean.type.description}"
                    required="#{not empty param['mainform:search_tabs:store']}"
-                   requiredMessage="Description is mandatory" />
+                   requiredMessage="#{messageBundle.DESCRIPTION_IS_REQUIRED}" />
     </div>    
 
     <div class="field col-12 md:col-12">
-      <p:outputLabel for="@next" value="Detail" />
+      <p:outputLabel for="@next" value="#{dicBundle.type_detail}" />
       <p:inputTextarea value="#{typeObjectBean.type.detail}"
                        />
     </div>  
     
     <div class="field col-12">
-      <p:selectBooleanCheckbox id="instantiable" value="#{typeObjectBean.type.instantiable}" styleClass="mr-2" />
-      <p:outputLabel for="instantiable" value="Instantiable" />
+      <p:selectBooleanCheckbox value="#{typeObjectBean.type.instantiable}" styleClass="mr-2" />
+      <p:outputLabel for="@previous" value="#{dicBundle.typeMain_instantiable}" />
     </div>    
 
     <div class="field col-12">
       <p:selectBooleanCheckbox id="restricted" value="#{typeObjectBean.type.restricted}" styleClass="mr-2" />
-      <p:outputLabel for="restricted" value="Restricted properties" />
+      <p:outputLabel for="@previous" value="#{dicBundle.typeMain_restricted}" />
     </div>        
 
     <emcomp:auditData creationDateTime="#{typeObjectBean.type.creationDateTime}"

@@ -142,7 +142,7 @@
 
         <div class="field col-12">
           <p:outputLabel for="@next"
-                         value="Actions:" />
+                         value="#{caseBundle.caseACL_actions}" />
           <p:selectManyCheckbox value="#{caseACLTabBean.editing.actions}" 
                                 layout="responsive" columns="3">
             <f:selectItems value="#{caseACLTabBean.actionSelectItems}" />

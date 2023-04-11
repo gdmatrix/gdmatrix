@@ -59,44 +59,44 @@
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_id}" />
-              <p:chips id="personId" value="#{personFinderBean.filterPersonId}"
+              <p:chips value="#{personFinderBean.filterPersonId}"
                        addOnPaste="true" separator=","
                        />
             </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_full_name}" />        
-              <p:inputText id="fullname" value="#{personFinderBean.filter.fullName}" 
+              <p:inputText value="#{personFinderBean.filter.fullName}" 
                            />
             </div>      
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_name}" />        
-              <p:inputText id="name" value="#{personFinderBean.filter.name}" 
+              <p:inputText value="#{personFinderBean.filter.name}" 
                            />
             </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_surname1}" />        
-              <p:inputText id="surname1" value="#{personFinderBean.filter.firstSurname}" 
+              <p:inputText value="#{personFinderBean.filter.firstSurname}" 
                            />
             </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.person_surname2}" />
-              <p:inputText id="surname2" value="#{personFinderBean.filter.secondSurname}" 
+              <p:inputText value="#{personFinderBean.filter.secondSurname}" 
                            />
             </div> 
 
             <div class="field col-12">    
               <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
-              <p:inputText id="nif" value="#{personFinderBean.filter.nif}"
+              <p:inputText value="#{personFinderBean.filter.nif}"
                            /> 
             </div>
 
             <div class="field col-12">    
               <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
-              <p:inputText id="passport" value="#{personFinderBean.filter.passport}"
+              <p:inputText value="#{personFinderBean.filter.passport}"
                            /> 
             </div>            
           </div>

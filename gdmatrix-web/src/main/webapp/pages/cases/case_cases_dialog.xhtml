@@ -44,7 +44,7 @@
                                   queryDelay="1000"
                                   minQueryLength="3"
                                   required="#{not empty param['mainform:search_tabs:case_cases_store']}"
-                                  requiredMessage="Case is mandatory">
+                                  requiredMessage="#{messageBundle.CASE_MUST_BE_SELECTED}">
           </emcomp:objectReference>
         </p:outputPanel>
 
@@ -61,7 +61,7 @@
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_cases_store']}"
-                                requiredMessage="Type is mandatory"
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
                                 process=":mainform:search_tabs:case_cases_dialog"
                                 update=":mainform:search_tabs:case_cases_dialog">         

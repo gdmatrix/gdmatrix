@@ -108,7 +108,8 @@
                            value="#{objectBean.country.countryId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
-                           required="true">
+                           required="true"
+                           requiredMessage="#{messageBundle.COUNTRY_MUST_BE_SELECTED}">
             <p:ajax update="province_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
             <f:selectItems value="#{countryTypeBean.selectItems}" />
@@ -125,18 +126,18 @@
 
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Country'}">      
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" value="Name" />
-          <p:inputText id="country_name" value="#{objectBean.country.name}" required="true"/>
+          <p:outputLabel for="@next" value="#{kernelBundle.country_name}" />
+          <p:inputText value="#{objectBean.country.name}" required="true" requiredMessage="#{messageBundle.NAME_IS_REQUIRED}"/>
         </div>     
 
         <div class="field col-12 md:col-3">
-          <p:outputLabel for="@next" value="ISO Code" />
-          <p:inputText id="iso_code" value="#{objectBean.country.ISOCode}" />
+          <p:outputLabel for="@next" value="#{kernelBundle.country_ISOcode}" />
+          <p:inputText value="#{objectBean.country.ISOCode}" />
         </div>
 
         <div class="field col-12 md:col-3">
-          <p:outputLabel for="@next" value="Language" />
-          <p:inputText id="language" value="#{objectBean.country.language}" />
+          <p:outputLabel for="@next" value="#{kernelBundle.country_language}" />
+          <p:inputText value="#{objectBean.country.language}" />
         </div>        
       </h:panelGroup>         
 
@@ -149,7 +150,8 @@
 
           <p:selectOneMenu id="province_selector" value="#{objectBean.province.provinceId}" 
                            filter="true"
-                           disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="true">
+                           disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="true"
+                           requiredMessage="#{messageBundle.PROVINCE_MUST_BE_SELECTED}">
             <p:ajax update="city_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{provinceTypeBean.getProvinceSelectItems(objectBean.country.countryId)}"/>
@@ -167,7 +169,8 @@
         <div class="field col-12">
           <p:outputLabel for="@next" value="#{kernelBundle.province}" />
           <p:inputText id="province_name" value="#{objectBean.province.name}" 
-                       required="true"/>
+                       required="true"
+                       requiredMessage="#{messageBundle.PROVINCE_IS_REQUIRED}"/>
         </div>         
       </h:panelGroup>
 
@@ -179,7 +182,8 @@
           <p:selectOneMenu id="city_selector" value="#{objectBean.city.cityId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
-                           required="true">
+                           required="true"
+                            requiredMessage="#{messageBundle.CITY_MUST_BE_SELECTED}">
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{cityTypeBean.getCitySelectItems(streetObjectBean.province.provinceId)}"/>
           </p:selectOneMenu>
@@ -195,8 +199,9 @@
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'City'}">
         <div class="field col-12">
           <p:outputLabel for="@next" value="#{kernelBundle.city}" />
-          <p:inputText id="city_name" value="#{objectBean.city.name}" 
-                       required="true"/>
+          <p:inputText value="#{objectBean.city.name}" 
+                       required="true"
+                       requiredMessage="#{messageBundle.CITY_IS_REQUIRED}"/>
         </div>          
       </h:panelGroup>
 
@@ -204,19 +209,21 @@
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Street'}">
         <div class="field col-12 md:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
-          <p:inputText id="street_type_id" value="#{objectBean.street.streetTypeId}" 
-                       required="true"/>
+          <p:inputText value="#{objectBean.street.streetTypeId}" 
+                       required="true"
+                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"/>
         </div>     
 
         <div class="field col-12 md:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
-          <p:inputText id="street_particle" value="#{objectBean.street.particle}" />
+          <p:inputText value="#{objectBean.street.particle}" />
         </div>
 
         <div class="field col-12 md:col-8">
           <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
-          <p:inputText id="street_name" value="#{objectBean.street.name}" 
-                       required="true"/>
+          <p:inputText value="#{objectBean.street.name}" 
+                       required="true"
+                       requiredMessage="#{messageBundle.STREET_IS_REQUIRED}"/>
         </div>   
       </h:panelGroup>
 

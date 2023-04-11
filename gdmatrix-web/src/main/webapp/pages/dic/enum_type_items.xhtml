@@ -121,10 +121,11 @@
                              indicateRequired="true"/>
               <p:inputText value="#{enumTypeItemsTabBean.editing.label}"                                   
                            required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                           requiredMessage="Label is mandatory" />
+                           requiredMessage="#{messageBundle.LABEL_IS_REQUIRED}" />
             </div>    
             
             <p:importEnum type="org.matrix.dic.PropertyType" var="PropertyType" allSuffix="ALL_TYPES"/>
+            
             <div class="field col-12">
               <p:outputLabel for="@next"
                              value="#{dicBundle.enumTypeItems_value}"
@@ -132,11 +133,11 @@
               <p:inputText value="#{enumTypeItemsTabBean.editing.value}"                                   
                            rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.TEXT or enumTypeObjectBean.enumType.itemType == PropertyType.STRUCT}"
                            required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                           requiredMessage="Value is mandatory" />
+                           requiredMessage="#{messageBundle.LABEL_IS_REQUIRED}" />
               <p:spinner value="#{enumTypeItemsTabBean.editing.value}"                                   
                          rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.NUMERIC}"
                          required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                         requiredMessage="Value is mandatory" />  
+                         requiredMessage="#{messageBundle.LABEL_IS_REQUIRED}" />  
               <p:datePicker value="#{enumTypeItemsTabBean.editing.value}"
                             autocomplete="off" converter="datePickerConverter"
                             placeholder="dd/MM/yyyy HH:mm:ss"

@@ -4,7 +4,14 @@
   "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
 
 <faces-config xmlns="http://java.sun.com/JSF/Configuration">
-
+          
+  <application>
+    <resource-bundle>
+      <base-name>org.santfeliu.cases.web.resources.CaseBundle</base-name>
+      <var>caseBundle</var>
+    </resource-bundle>
+  </application>
+            
   <managed-bean>
     <managed-bean-name>caseConfigBean</managed-bean-name>
     <managed-bean-class>org.santfeliu.cases.web.CaseConfigBean</managed-bean-class>

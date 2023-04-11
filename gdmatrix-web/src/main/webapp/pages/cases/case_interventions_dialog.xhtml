@@ -42,7 +42,7 @@
                                 queryDelay="1000"
                                 minQueryLength="3" 
                                 required="#{not empty param['mainform:search_tabs:case_interventions_store']}"
-                                requiredMessage="Type is mandatory"
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseInterventionsTabBean.formSelector}"
                                 process=":mainform:search_tabs:case_interventions_dialog"
                                 update=":mainform:search_tabs:case_interventions_dialog">        

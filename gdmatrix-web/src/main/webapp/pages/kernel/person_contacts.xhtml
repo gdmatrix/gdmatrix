@@ -103,7 +103,7 @@
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:tabs:person_contacts_store']}"
-                                requiredMessage="Type is mandatory"/>
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"/>
         </div>
 
         <div class="field col-12 md:col-6">
@@ -112,13 +112,13 @@
                          indicateRequired="true"/>
           <p:inputText value="#{personContactsTabBean.editing.value}"
                        required="#{not empty param['mainform:search_tabs:tabs:person_contacts_store']}"
-                       requiredMessage="Contact is mandatory"/>
+                       requiredMessage="#{messageBundle.CONTACT_MUST_BE_SELECTED}"/>
         </div>
 
         <div class="field col-12">
           <p:outputLabel for="@next" 
                          value="#{kernelBundle.personContacts_comments}"/>
-          <p:inputTextarea id="comments" value="#{personContactsTabBean.editing.comments}"
+          <p:inputTextarea value="#{personContactsTabBean.editing.comments}"
                            styleClass="savable"/>
         </div> 
 

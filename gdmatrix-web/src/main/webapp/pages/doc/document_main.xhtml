@@ -44,7 +44,7 @@
                        indicateRequired="true" />
         <p:inputTextarea value="#{documentObjectBean.document.title}" 
                          required="#{not empty param['mainform:search_tabs:store']}" 
-                         requiredMessage="Title is mandatory"
+                         requiredMessage="#{messageBundle.TITLE_IS_REQUIRED}"
                          styleClass="inputfield w-full"/>
       </div>       
       

@@ -15,7 +15,7 @@
                      indicateRequired="true"/>
       <p:inputText value="#{enumTypeObjectBean.enumType.enumTypeId}" 
                     required="#{not empty param['mainform:search_tabs:store']}"
-                    requiredMessage="EnumTypeId is mandatory"                  
+                    requiredMessage="#{messageBundle.TYPEID_IS_REQUIRED}"                  
                     />
     </div>
     
@@ -29,7 +29,7 @@
                      indicateRequired="true"/>
       <p:inputText value="#{enumTypeObjectBean.enumType.name}"
                    required="#{not empty param['mainform:search_tabs:store']}"
-                   requiredMessage="Name is mandatory" />
+                   requiredMessage="#{messageBundle.NAME_IS_REQUIRED}" />
     </div>    
     
     <div class="field col-12 md:col-3">

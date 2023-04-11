@@ -19,7 +19,7 @@
       <p:selectOneMenu value="#{addressObjectBean.address.addressTypeId}"  
                        filter="true" 
                        required="#{not empty param['mainform:search_tabs:store']}"
-                       requiredMessage="Type is mandatory">
+                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
         <f:selectItems value="#{typeTypeBean.getSelectItems('Address')}" var="item" />         
       </p:selectOneMenu>  
     </div> 
@@ -34,91 +34,91 @@
                               queryDelay="1000"
                               minQueryLength="3" 
                               required="#{not empty param['mainform:search_tabs:store']}"
-                              requiredMessage="Street is mandatory"/>
+                              requiredMessage="#{messageBundle.STREET_MUST_BE_SELECTED}"/>
     </div>   
 
     <div class="field col-12 md:col-2">
       <p:outputLabel for="@next" value="Km" />
-      <p:inputText id="km" value="#{addressObjectBean.address.km}" 
+      <p:inputText value="#{addressObjectBean.address.km}" 
                    />
     </div> 
 
     <div class="field col-8 md:col-2">
       <p:outputLabel for="@next" value="#{kernelBundle.address_number} 1" />
-      <p:inputText id="number1" value="#{addressObjectBean.address.number1}" 
+      <p:inputText value="#{addressObjectBean.address.number1}" 
                    />
     </div>  
 
     <div class="field col-4 md:col-1">          
       <p:outputLabel for="@next" value="#{kernelBundle.address_bis}" />
-      <p:inputText id="bis1" value="#{addressObjectBean.address.bis1}" 
+      <p:inputText value="#{addressObjectBean.address.bis1}" 
                    />          
     </div>  
 
     <div class="field col-8 md:col-2">
       <p:outputLabel for="@next" value="#{kernelBundle.address_number} 2" />
-      <p:inputText id="number2" value="#{addressObjectBean.address.number2}" 
+      <p:inputText value="#{addressObjectBean.address.number2}" 
                    />
     </div>  
 
     <div class="field col-4 md:col-1">            
       <p:outputLabel for="@next" value="#{kernelBundle.address_bis}" />
-      <p:inputText id="bis2" value="#{addressObjectBean.address.bis2}" 
+      <p:inputText value="#{addressObjectBean.address.bis2}" 
                    />          
     </div> 
 
 
     <div class="field col-12 md:col-1">
       <p:outputLabel for="@next" value="#{kernelBundle.address_block}" />
-      <p:inputText id="block" value="#{addressObjectBean.address.block}" 
+      <p:inputText value="#{addressObjectBean.address.block}" 
                    />
     </div> 
 
     <div class="field col-12 md:col-1">          
       <p:outputLabel for="@next" value="#{kernelBundle.address_entrance_hall}" />
-      <p:inputText id="entrance_hall" value="#{addressObjectBean.address.entranceHall}" 
+      <p:inputText value="#{addressObjectBean.address.entranceHall}" 
                    />    
     </div> 
 
     <div class="field col-12 md:col-1">          
       <p:outputLabel for="@next" value="#{kernelBundle.address_stair}" />
-      <p:inputText id="stair" value="#{addressObjectBean.address.stair}" 
+      <p:inputText value="#{addressObjectBean.address.stair}" 
                    />             
     </div> 
 
     <div class="field col-12 md:col-1">
       <p:outputLabel for="@next" value="#{kernelBundle.address_floor}" />
-      <p:inputText id="floor" value="#{addressObjectBean.address.floor}" 
+      <p:inputText value="#{addressObjectBean.address.floor}" 
                    />
     </div> 
 
     <div class="field col-12 md:col-1">          
       <p:outputLabel for="@next" value="#{kernelBundle.address_door}" />
-      <p:inputText id="door" value="#{addressObjectBean.address.door}" 
+      <p:inputText value="#{addressObjectBean.address.door}" 
                    />          
     </div> 
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="#{kernelBundle.address_postal_code}" />
-      <p:inputText id="postal_code" value="#{addressObjectBean.address.postalCode}" 
+      <p:inputText value="#{addressObjectBean.address.postalCode}" 
                    />
     </div> 
 
     <div class="field col-12 md:col-3">          
       <p:outputLabel for="@next" value="#{kernelBundle.address_post_office_box}" />
-      <p:inputText id="post_office_box" value="#{addressObjectBean.address.postOfficeBox}" 
+      <p:inputText value="#{addressObjectBean.address.postOfficeBox}" 
                    />          
     </div> 
 
     <div class="field col-12 md:col-3">
       <p:outputLabel for="@next" value="#{kernelBundle.address_gis_reference}" />
-      <p:inputText id="gis_reference" value="#{addressObjectBean.address.gisReference}" 
+      <p:inputText value="#{addressObjectBean.address.gisReference}" 
                    />
     </div> 
 
     <div class="field col-12">
       <p:outputLabel for="@next" value="#{kernelBundle.address_comments}" />
-      <p:inputText id="comments" value="#{addressObjectBean.address.comments}" 
+      <p:inputText value="#{addressObjectBean.address.comments}" 
                    />
     </div> 
 

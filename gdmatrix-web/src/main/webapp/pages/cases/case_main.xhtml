@@ -25,7 +25,7 @@
                               queryDelay="1000"
                               minQueryLength="3" 
                               required="#{not empty param['mainform:search_tabs:store']}"
-                              requiredMessage="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)} is mandatory"
+                              requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{caseObjectBean.formSelector}"
                               process=":mainform:search_tabs:tabs"
                               update=":mainform:search_tabs:tabs">         
@@ -38,7 +38,7 @@
                        indicateRequired="true"/>
         <p:inputTextarea value="#{caseObjectBean.case.title}"
                          required="#{not empty param['mainform:search_tabs:store']}"
-                         requiredMessage="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)} is mandatory"
+                         requiredMessage="'#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}'  #{messageBundle.IS_REQUIRED}"
                          readonly="#{!caseObjectBean.editable}" 
                          class="inputfield w-full"/>
       </div>

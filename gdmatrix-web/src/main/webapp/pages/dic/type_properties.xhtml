@@ -195,7 +195,7 @@
                              indicateRequired="true"/>
               <p:inputText value="#{typePropertiesTabBean.editing.name}"                                   
                            required="#{not empty param['mainform:search_tabs:tabs:type_properties_store']}"
-                           requiredMessage="Name is mandatory" />
+                           requiredMessage="#{messageBundle.NAME_IS_REQUIRED}" />
             </div>         
             
             <div class="field col-12">
@@ -214,7 +214,7 @@
 
             <div class="field col-12">
               <p:outputLabel for="@next"
-                             value="Enumtype" />
+                             value="#{dicBundle.typeProperties_enumType}" />
               <emcomp:objectReference value="#{typePropertiesTabBean.enumTypeId}"
                                     process=":mainform:search_tabs:tabs:type_properties_dialog"
                                     type="EnumType"

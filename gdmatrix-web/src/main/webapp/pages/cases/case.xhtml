@@ -53,34 +53,32 @@
             <h:outputText value="#{objectBundle.advanced}" /> 
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
-          <f:loadBundle basename="org.santfeliu.cases.web.resources.CaseBundle"
-                        var="caseBundle" />
 
           <!-- CaseId -->
           <div class="field">
             <p:outputLabel for="@next" value="#{caseBundle.case_id}" />
-            <p:chips id="case_id" value="#{caseFinderBean.caseIdList}"
+            <p:chips value="#{caseFinderBean.caseIdList}"
                      class="inputfield w-full" />
           </div>          
           
           <!-- Title -->
           <div class="field">
             <p:outputLabel for="@next" value="#{caseBundle.case_title}" />
-            <p:inputText id="title" value="#{caseFinderBean.filter.title}"
+            <p:inputText value="#{caseFinderBean.filter.title}"
                          class="inputfield w-full" />
           </div>
 
           <!-- Description -->
           <div class="field">
             <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
-            <p:inputText id="description" value="#{caseFinderBean.filter.description}"
+            <p:inputText value="#{caseFinderBean.filter.description}"
                          class="inputfield w-full" />
           </div>
 
           <!-- searchExpression -->
           <div class="field">
             <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}" />
-            <p:inputText id="searchExpression" value="#{caseFinderBean.filter.searchExpression}"
+            <p:inputText value="#{caseFinderBean.filter.searchExpression}"
                          styleClass="inputfield w-full"/>
           </div>
 

@@ -42,7 +42,7 @@
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   required="#{not empty param['mainform:search_tabs:case_events_store']}"
-                                  requiredMessage="Event is mandatory"
+                                  requiredMessage="#{messageBundle.EVENT_MUST_BE_SELECTED}"
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
@@ -62,7 +62,7 @@
                                 queryDelay="1000"
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:case_events_store']}"
-                                requiredMessage="Type is mandatory"
+                                requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseEventsTabBean.formSelector}">           
           </emcomp:typeReference>
         </div>

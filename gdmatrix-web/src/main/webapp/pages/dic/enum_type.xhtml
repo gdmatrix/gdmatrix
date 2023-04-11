@@ -7,8 +7,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 template="/pages/obj/object_3col.xhtml">
   <ui:define name="filter">
-    <f:loadBundle basename="org.santfeliu.dic.web.resources.DictionaryBundle"
-                  var="dicBundle" />         
+        
     <p:outputPanel id="filter_panel">      
       <p:tabView id="find_selector"
                  activeIndex="#{enumTypeFinderBean.filterTabSelector}">
@@ -56,7 +55,7 @@
 
             <p:outputPanel styleClass="field col-12">
               <p:outputLabel for="@next" value="#{dicBundle.enumType_type}" />
-              <p:chips id="case_id" value="#{enumTypeFinderBean.enumTypeIdList}" />
+              <p:chips value="#{enumTypeFinderBean.enumTypeIdList}" />
             </p:outputPanel>   
            
             <p:outputPanel styleClass="field col-12">
