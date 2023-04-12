@@ -41,8 +41,6 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.Address;
 import org.matrix.kernel.AddressFilter;
-import org.matrix.kernel.KernelList;
-import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -220,24 +218,5 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
       return Collections.EMPTY_LIST;
     }
   }
-
-  private List<SelectItem> getStreetTypeSelectItems()
-  {
-    if (streetTypeSelectItems == null)
-    {
-      try
-      {
-        streetTypeSelectItems = FacesUtils.getListSelectItems(
-          KernelModuleBean.getPort(false).listKernelListItems(
-            KernelList.STREET_TYPE), "itemId", "description", true);
-      }
-      catch (Exception ex)
-      {
-        streetTypeSelectItems = Collections.EMPTY_LIST;
-      }
-    }
-    return streetTypeSelectItems;
-  }
-
 
 }

@@ -209,9 +209,11 @@
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Street'}">
         <div class="field col-12 md:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
-          <p:inputText value="#{objectBean.street.streetTypeId}" 
-                       required="true"
-                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"/>
+          <p:selectOneMenu value="#{objectBean.street.streetTypeId}" filter="true"
+                           required="true"
+                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
+            <f:selectItems value="#{streetTypeBean.streetTypeSelectItems}" />
+          </p:selectOneMenu>
         </div>     
 
         <div class="field col-12 md:col-2">

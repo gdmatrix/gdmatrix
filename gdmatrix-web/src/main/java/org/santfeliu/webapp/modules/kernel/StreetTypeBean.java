@@ -42,8 +42,10 @@ import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.kernel.City;
 import org.matrix.kernel.CityFilter;
+import org.matrix.kernel.KernelList;
 import org.matrix.kernel.Street;
 import org.matrix.kernel.StreetFilter;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.ObjectSetup;
@@ -251,5 +253,22 @@ public class StreetTypeBean extends TypeBean<Street, StreetFilter>
 
     return items;
   }
+  
+  public List<SelectItem> getStreetTypeSelectItems()
+  {
+    List<SelectItem> selectItems = new ArrayList<>();    
+    try
+    {
+      selectItems = FacesUtils.getListSelectItems(
+        KernelModuleBean.getPort(false).listKernelListItems(
+          KernelList.STREET_TYPE), "itemId", "description", true);
+    }
+    catch (Exception ex)
+    {
+      selectItems = Collections.EMPTY_LIST;
+    }
+
+    return selectItems;
+  }  
 
 }

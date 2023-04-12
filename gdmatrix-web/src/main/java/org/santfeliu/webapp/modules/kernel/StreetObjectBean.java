@@ -134,8 +134,10 @@ public class StreetObjectBean extends TerritoryObjectBean
   {
     if (!city.getCityId().equals(street.getCityId()))
       street.setCityId(city.getCityId());
+    String streetTypeId = street.getStreetTypeId();
     street = KernelModuleBean.getPort(false).storeStreet(street);
     setObjectId(street.getStreetId());
+    street.setStreetTypeId(streetTypeId);
     streetFinderBean.outdate();
   }
   
