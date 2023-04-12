@@ -32,6 +32,7 @@ package org.santfeliu.webapp.modules.dic;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,8 +108,11 @@ public class TypePropertiesTabBean extends TabBean
 
   public List<PropertyDefinitionEdit> getRows()
   {
-    Type type = typeObjectBean.getObject();    
-    return rowsMap.get(type.getTypeId());
+    Type type = typeObjectBean.getObject(); 
+    if (type != null)
+      return rowsMap.get(type.getTypeId());
+    else
+      return Collections.EMPTY_LIST;
   }
   
   public List<org.santfeliu.dic.Type> getSupertypes()
