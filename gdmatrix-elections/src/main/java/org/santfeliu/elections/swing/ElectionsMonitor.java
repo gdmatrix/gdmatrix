@@ -83,7 +83,7 @@ public class ElectionsMonitor extends JFrame
     try
     {
       //Default Values
-      String propertiesFileURL = "http://www.santfeliu.cat/documents/101303";
+      String propertiesFileURL = "https://www.santfeliu.cat/documents/101303";
 
       if (args.length > 0)
         propertiesFileURL = args[0];
