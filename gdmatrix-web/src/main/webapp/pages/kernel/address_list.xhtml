@@ -32,7 +32,8 @@
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.addressId)}"
-                       rendered="#{navigatorBean.selectable}"
+                       rendered="#{navigatorBean.selectionPending}"
+                       immediate="true"
                        ajax="false" onclick="showOverlay()"
                        title="Select" alt="Select"
                        />

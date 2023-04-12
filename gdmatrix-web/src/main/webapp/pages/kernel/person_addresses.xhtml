@@ -37,7 +37,7 @@
         <h:outputText value="#{row.address.addressId}" />
       </p:column> 
       <p:column headerText="#{kernelBundle.personAddresses_address}" styleClass="col-9">
-        <h:outputText value="#{row.address.description}"/>
+        <h:outputText value="#{row.address.description} (#{row.address.city})"/>
       </p:column>
       <p:column styleClass="col-2 text-right" exportable="false">
         <h:panelGroup>
