@@ -179,11 +179,6 @@ body .ui-button
   color: black;
 }
 
-body .ui-button.ui-button-raised
-{
-  box-shadow: none;
-}
-
 body .ui-inputfield,
 body .ui-selectonemenu .ui-selectonemenu-label
 {

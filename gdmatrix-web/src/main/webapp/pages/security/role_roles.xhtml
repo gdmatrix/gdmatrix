@@ -108,13 +108,13 @@
       <div class="field col-12 text-right">
         <p:commandButton id="role_roles_store"
                          action="#{roleRolesTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          process="role_roles_dialog"
                          update="role_roles_table role_roles_panel"
                          oncomplete="if (!isFacesError()) PF('roleRolesDialog').hide()"
                          />
         <p:commandButton action="#{roleRolesTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="role_roles_dialog" global="false"
                          oncomplete="PF('roleRolesDialog').hide()"/>

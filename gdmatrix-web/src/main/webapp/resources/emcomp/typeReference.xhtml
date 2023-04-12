@@ -76,7 +76,7 @@
         </p:autoComplete>
         <p:commandButton id="show_button"
                          icon="pi pi-external-link"
-                         styleClass="ui-button-raised select-button"
+                         styleClass="select-button"
                          ajax="false"
                          immediate="true"
                          action="#{typeReferenceBean.show}"
@@ -89,7 +89,7 @@
                          disabled="#{cc.attrs.disabled}">
         </h:commandButton>
         <p:commandButton icon="pi pi-search"
-                         styleClass="ui-button-raised select-button"
+                         styleClass="select-button"
                          process="#{cc.attrs.process}"
                          update="#{cc.attrs.update}"
                          oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"

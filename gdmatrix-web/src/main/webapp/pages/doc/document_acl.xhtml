@@ -169,13 +169,13 @@
       <div class="field col-12 text-right">
         <p:commandButton id="document_acl_store"
                          action="#{documentACLTabBean.accept}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
                          process="document_acl_dialog"
                          update="document_acl_table document_acl_panel"
                          oncomplete="if (!isFacesError()) PF('documentACLDialog').hide()"
                          />
         <p:commandButton action="#{documentACLTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="document_acl_dialog" global="false" 
                          oncomplete="PF('documentACLDialog').hide()"/>

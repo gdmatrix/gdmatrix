@@ -148,13 +148,13 @@
       <div class="field col-12 text-right">
         <p:commandButton id="document_documents_store"
                          action="#{documentDocumentsTabBean.accept}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
+                         styleClass="m-1" value="#{objectBundle.accept}"
                          process="document_documents_dialog"
                          update="document_documents_table document_documents_panel"
                          oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').hide()"
                          />
         <p:commandButton action="#{documentDocumentsTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="document_documents_dialog" global="false" 
                          oncomplete="PF('documentDocumentsDialog').hide()"/>
