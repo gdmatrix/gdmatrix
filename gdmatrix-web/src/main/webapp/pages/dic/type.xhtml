@@ -20,10 +20,11 @@
 
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="buttons field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{typeFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
+          <div class="ui-fluid formgrid grid"> 
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{typeFinderBean.smartFilter}" />
+            </div>
           </div>
 
           <div class="buttons text-right">
@@ -56,7 +57,7 @@
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{dicBundle.type_rootType}" />
               <p:selectOneMenu value="#{typeFinderBean.rootTypeId}"
-                               styleClass="inputfield w-full" filter="true"
+                               filter="true"
                                filterMatchMode="contains" autoWidth="false">
                 <f:selectItem itemValue="" itemLabel="" />
                 <f:selectItems value="#{typeTypeBean.rootTypeIdSelectItems}"

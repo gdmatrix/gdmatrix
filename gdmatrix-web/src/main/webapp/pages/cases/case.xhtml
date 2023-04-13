@@ -21,11 +21,12 @@
             <h:outputText value="#{objectBundle.quick}" /> 
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
-          
-          <div class="buttons field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
+
+          <div class="ui-fluid formgrid grid"> 
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"/>
+            </div>
           </div>
 
           <div class="buttons text-right">
@@ -55,94 +56,95 @@
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-          <!-- CaseId -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
-            <p:chips value="#{caseFinderBean.caseIdList}"
-                     class="inputfield w-full" />
-          </div>  
-          
-          <!-- TypeId -->
-          <p:outputPanel class="field" rendered="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Case'}">
-            <p:outputLabel for="@next" value="#{caseBundle.case_caseTypeId}" />
-            <emcomp:typeReference value="#{caseFinderBean.filter.caseTypeId}"
-                                  type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
-                                  styleClass="w-full"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  minQueryLength="3"
-                                  renderShowButton="false"
-                                  process=":mainform:find_selector"
-                                  update=":mainform:find_selector"
-                                  maxResults="20">
-            </emcomp:typeReference>
-          </p:outputPanel>          
-          
-          <!-- Title -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{caseBundle.case_title}" />
-            <p:inputText value="#{caseFinderBean.filter.title}"
-                         class="inputfield w-full" />
-          </div>
+          <div class="ui-fluid formgrid grid">
 
-          <!-- Description -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
-            <p:inputText value="#{caseFinderBean.filter.description}"
-                         class="inputfield w-full" />
-          </div>
-          
-          <p:fieldset legend="#{caseBundle.caseSearch_date}"
-                      toggleable="true" collapsed="true" styleClass="mb-2">
-            <div class="ui-fluid formgrid grid">
+            <!-- CaseId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
+              <p:chips value="#{caseFinderBean.caseIdList}"/>
+            </div>  
 
-              <div class="field col-12">
-                <p:selectOneMenu id="dateComparator" 
-                                 value="#{caseFinderBean.filter.dateComparator}"
-                                 styleClass="inputfield w-full" style="vertical-align:middle">
-                  <f:selectItem itemLabel="#{caseBundle.caseSearch_startDate}" itemValue="1" />
-                  <f:selectItem itemLabel="#{caseBundle.caseSearch_endDate}" itemValue="2" />
-                  <f:selectItem itemLabel="#{caseBundle.caseSearch_activeDate}" itemValue="3" />
-                </p:selectOneMenu>
-              </div>
+            <!-- TypeId -->
+            <p:outputPanel class="field col-12" rendered="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Case'}">
+              <p:outputLabel for="@next" value="#{caseBundle.case_caseTypeId}" />
+              <emcomp:typeReference value="#{caseFinderBean.filter.caseTypeId}"
+                                    type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
+                                    styleClass="w-full"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3"
+                                    renderShowButton="false"
+                                    process=":mainform:find_selector"
+                                    update=":mainform:find_selector"
+                                    maxResults="20">
+              </emcomp:typeReference>
+            </p:outputPanel>          
 
-              <div class="field col-12">
-                <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputStartDate}" />
-                <p:datePicker value="#{caseFinderBean.filter.fromDate}" 
-                              autocomplete="off"
-                              placeholder="dd/MM/yyyy"
-                              locale="es" 
-                              showOnFocus="false"
-                              converter="datePickerConverter" pattern="dd/MM/yyyy"
-                              showIcon="true" showTime="false"
-                              monthNavigator="true" yearNavigator="true" />
-              </div>
-              <div class="field col-12">
-                <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputEndDate}" />
-                <p:datePicker value="#{caseFinderBean.filter.toDate}" 
-                              autocomplete="off"
-                              placeholder="dd/MM/yyyy"
-                              locale="es" 
-                              showOnFocus="false"
-                              converter="datePickerConverter" pattern="dd/MM/yyyy"
-                              showIcon="true" showTime="false"
-                              monthNavigator="true" yearNavigator="true" />
-              </div>
+            <!-- Title -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{caseBundle.case_title}" />
+              <p:inputText value="#{caseFinderBean.filter.title}" />
             </div>
-          </p:fieldset>          
 
-          <!-- searchExpression -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}" />
-            <p:inputText value="#{caseFinderBean.filter.searchExpression}"
-                         styleClass="inputfield w-full"/>
+            <!-- Description -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{caseBundle.case_description}" />
+              <p:inputText value="#{caseFinderBean.filter.description}" />
+            </div>
+
+            <div class="field col-12">
+              <p:fieldset legend="#{caseBundle.caseSearch_date}"
+                          toggleable="true" collapsed="true" >
+
+                <div class="field col-12">
+                  <p:selectOneMenu id="dateComparator" 
+                                   value="#{caseFinderBean.filter.dateComparator}"
+                                   style="vertical-align:middle">
+                    <f:selectItem itemLabel="#{caseBundle.caseSearch_startDate}" itemValue="1" />
+                    <f:selectItem itemLabel="#{caseBundle.caseSearch_endDate}" itemValue="2" />
+                    <f:selectItem itemLabel="#{caseBundle.caseSearch_activeDate}" itemValue="3" />
+                  </p:selectOneMenu>
+                </div>
+
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputStartDate}" />
+                  <p:datePicker value="#{caseFinderBean.filter.fromDate}" 
+                                autocomplete="off"
+                                placeholder="dd/MM/yyyy"
+                                locale="es" 
+                                showOnFocus="false"
+                                converter="datePickerConverter" pattern="dd/MM/yyyy"
+                                showIcon="true" showTime="false"
+                                monthNavigator="true" yearNavigator="true" />
+                </div>
+                <div class="field col-12">
+                  <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputEndDate}" />
+                  <p:datePicker value="#{caseFinderBean.filter.toDate}" 
+                                autocomplete="off"
+                                placeholder="dd/MM/yyyy"
+                                locale="es" 
+                                showOnFocus="false"
+                                converter="datePickerConverter" pattern="dd/MM/yyyy"
+                                showIcon="true" showTime="false"
+                                monthNavigator="true" yearNavigator="true" />
+                </div>
+
+              </p:fieldset>   
+            </div>
+
+            <!-- searchExpression -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{caseBundle.case_searchExpression}" />
+              <p:inputText value="#{caseFinderBean.filter.searchExpression}"/>
+            </div>
+
           </div>
-          
+
           <emcomp:dynamicProperties typeId="#{caseFinderBean.filter.caseTypeId}"
                                     formSelector="#{caseFinderBean.formSelector}"
                                     formBuilderPrefix="searchtype"
                                     options="#{dynamicPropertiesBean.filterOptions}"
-                                    properties="#{caseFinderBean.filter.property}" />          
+                                    properties="#{caseFinderBean.filter.property}" />           
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -173,7 +175,7 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");
@@ -184,13 +186,13 @@
                      action="#{caseFinderBean.update}"
                      process="@this" 
                      update=":mainform:search_tabs:result_list" />
-    
+
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                activeIndex="#{caseObjectBean.searchTabSelector}"
                touchable="false"
                onTabShow="onTabShow()">
-            
+
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
@@ -200,7 +202,7 @@
           <ui:include src="case_list.xhtml" />
         </h:panelGroup>        
       </p:tab>
-      
+
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>
@@ -211,7 +213,7 @@
           <ui:include src="/pages/obj/object_standard.xhtml" />
         </h:panelGroup>        
       </p:tab>
-      
+
     </p:tabView>
 
   </ui:define>
