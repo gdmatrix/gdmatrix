@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.composite;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import javax.el.ValueExpression;
 import javax.enterprise.context.ApplicationScoped;
@@ -60,7 +61,31 @@ public class ObjectReferenceBean
     TypeBean typeBean = TypeBean.getInstance(typeId);
     if (typeBean == null) return Collections.EMPTY_LIST;
 
-    return typeBean.getSelectItems(query, typeId, showNavigatorItems, true);
+    List<SelectItem> selectItems =
+      typeBean.getSelectItems(query, typeId, showNavigatorItems, true);
+
+    if (showNavigatorItems)
+    {
+      String objectId = WebUtils.getValue("#{cc.attrs.value}");
+      if (!StringUtils.isBlank(objectId))
+      {
+        boolean found = false;
+        Iterator<SelectItem> iter = selectItems.iterator();
+        while (iter.hasNext() && !found)
+        {
+          if (iter.next().getValue().equals(objectId))
+          {
+            found = true;
+          }
+        }
+        if (!found)
+        {
+          selectItems.add(0,
+            new SelectItem(objectId, typeBean.getDescription(objectId)));
+        }
+      }
+    }
+    return selectItems;
   }
 
   public SelectItem getSelectItem()
