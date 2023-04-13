@@ -1,6 +1,5 @@
 package org.santfeliu.webapp.util;
 
-import org.santfeliu.webapp.util.WebUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
@@ -44,13 +43,14 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
       currentMid = mic.getMid();
       mic = WebUtils.getTopWebMenuItem(mic);
 
-      super.getElements().addAll(
+      getElements().addAll(
         getElements(mic.hasChildren() ? mic.getFirstChild() : mic));
-
-      generateUniqueIds();
     }  
   }
-
+  
+  @Override
+  public void generateUniqueIds() {}  
+  
   private List<MenuElement> getElements(MenuItemCursor mic)
   {
     List<MenuElement> items = new ArrayList();
@@ -72,6 +72,7 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
       DefaultSubMenu submenu = builder.build();
 
       submenu.getElements().addAll(getElements(mic.getFirstChild()));
+      submenu.setId(mic.getMid());
       items.add(submenu);
     }
     else
@@ -81,12 +82,7 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
         MatrixMenuItem.Builder builder = MatrixMenuItem.builder(mic)
           .value(label);
 
-        if (mic.getAction() != null && mic.getAction().equals("blank"))
-        {
-          builder.command("#{templateBacking.searchBacking.show()}"); //TODO
-          builder.onclick(encodeGoFunction(mic.getMid()));              
-        }
-        else if (mic.getAction() != null && !mic.getAction().equals("blank"))
+        if (mic.getAction() != null)
         {
           builder.url(mic.getActionURL());
           builder.onclick(encodeGoFunction(mic.getMid()));     
@@ -109,7 +105,7 @@ public class MatrixMenuModel extends DefaultMenuModel implements Savable
           builder.styleClass("current");
 
         MatrixMenuItem item = builder.build();
-
+        item.setId(mic.getMid());
         items.add(item);
       }
     }
