@@ -103,13 +103,13 @@
 
       <div class="field col-12 text-right">
         <p:commandButton id="case_addresses_store" action="#{caseAddressesTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          process="case_addresses_dialog"
                          update=":mainform:search_tabs:tabs case_addresses_panel"
                          oncomplete="if (!isFacesError()) PF('caseAddressesDialog').hide()"
                          />
         <p:commandButton action="#{caseAddressesTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="case_addresses_dialog" global="false"
                          oncomplete="PF('caseAddressesDialog').hide()"/>

@@ -31,7 +31,7 @@
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{addressFinderBean.clear}"
-                             styleClass="ui-button-raised m-1"
+                             styleClass="m-1"
                              resetValues="true"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list" />
@@ -41,7 +41,7 @@
                              resetValues="true"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             styleClass="ui-button-raised m-1"
+                             styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"/>
           </div>          
         </p:tab>  
@@ -120,7 +120,7 @@
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{addressFinderBean.clear}"
                              process=":mainform:find_selector"
-                             styleClass="ui-button-raised m-1"
+                             styleClass="m-1"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
                              resetValues="true"
                              />
@@ -129,7 +129,7 @@
                              action="#{addressFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             styleClass="ui-button-raised m-1"
+                             styleClass="m-1"
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"
                              />

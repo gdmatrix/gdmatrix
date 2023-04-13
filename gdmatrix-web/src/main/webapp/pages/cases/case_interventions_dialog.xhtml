@@ -107,12 +107,12 @@
 
     <div class="field col-12 text-right">
       <p:commandButton id="case_interventions_store" action="#{caseInterventionsTabBean.store}"
-                       styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                       styleClass="m-1" value="#{objectBundle.store}"
                        process="case_interventions_dialog"
                        update=":mainform:search_tabs:tabs case_interventions_panel"
                        oncomplete="if (!isFacesError()) PF('caseInterventionsDialog').hide()"/>
       <p:commandButton action="#{caseInterventionsTabBean.cancel}"
-                       styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                       styleClass="m-1" value="#{objectBundle.cancel}"
                        process="@this"
                        update="case_interventions_dialog" global="false"
                        oncomplete="PF('caseInterventionsDialog').hide()"/>

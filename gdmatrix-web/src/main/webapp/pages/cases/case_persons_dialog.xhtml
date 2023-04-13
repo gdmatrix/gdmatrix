@@ -168,7 +168,6 @@
                   <p:inputText id="new_contact_value" value="#{casePersonsTabBean.contactValue}" />  
 
                   <p:commandButton icon="pi pi-plus-circle" 
-                                   styleClass="ui-button-raised"
                                    action="#{casePersonsTabBean.addNewContact}"
                                    process="@this new_contact_type_id new_contact_value" 
                                    update="@parent:@parent:@parent:contacts_panel"
@@ -284,7 +283,6 @@
                   <p:inputText value="#{casePersonsTabBean.representantContactValue}" />  
 
                   <p:commandButton icon="pi pi-plus-circle" 
-                                   styleClass="ui-button-raised"
                                    action="#{casePersonsTabBean.addNewRepresentantContact}"
                                    process="@this new_representant_contact_type_id new_representant_contact_value" 
                                    update="representant_contacts_panel"/> 
@@ -321,13 +319,13 @@
 
       <div class="field col-12 text-right">
         <p:commandButton id="case_persons_store" action="#{casePersonsTabBean.store}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          process="case_persons_dialog"
                          update=":mainform:search_tabs:tabs case_persons_panel"
                          oncomplete="if (!isFacesError()) PF('casePersonsDialog').hide()"
                          />
         <p:commandButton action="#{casePersonsTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="case_persons_dialog" global="false" 
                          oncomplete="PF('casePersonsDialog').hide()"/>

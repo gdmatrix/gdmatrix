@@ -268,12 +268,12 @@
           <div class="field col-12 text-right">
             <p:commandButton id="type_properties_store"
                              action="#{typePropertiesTabBean.accept}" 
-                             styleClass="ui-button-raised m-1" value="#{objectBundle.accept}"
+                             styleClass="m-1" value="#{objectBundle.accept}"
                              process="type_properties_dialog"
                              update="type_properties_table type_properties_panel"
                              oncomplete="if (!isFacesError()) PF('typePropertiesDialog').hide()" />
             <p:commandButton action="#{typePropertiesTabBean.cancel}" 
-                             styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                             styleClass="m-1" value="#{objectBundle.cancel}"
                              process="@this"
                              update="type_properties_dialog" global="false" 
                              oncomplete="PF('typePropertiesDialog').hide()" />

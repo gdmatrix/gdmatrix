@@ -30,7 +30,7 @@
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{personFinderBean.clear}"
-                             styleClass="ui-button-raised m-1"
+                             styleClass="m-1"
                              resetValues="true"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
@@ -41,7 +41,7 @@
                              resetValues="true"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             styleClass="ui-button-raised m-1"
+                             styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"
                              disableOnAjax="true"/>
           </div>          
@@ -105,7 +105,7 @@
                              action="#{personFinderBean.clear}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             styleClass="ui-button-raised m-1"
+                             styleClass="m-1"
                              resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
@@ -113,7 +113,7 @@
                              action="#{personFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             styleClass="ui-button-raised m-1"
+                             styleClass="m-1"
                              resetValues="true"
                              oncomplete="endPanel('leftPanel');"
                              />

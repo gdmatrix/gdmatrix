@@ -89,13 +89,13 @@
       <div class="field col-12 text-right">
         <p:commandButton id="case_documents_store"
                          action="#{caseDocumentsTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          process="case_documents_dialog"
                          update=":mainform:search_tabs:tabs case_documents_panel"
                          oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').hide()"
                          />
         <p:commandButton action="#{caseDocumentsTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="case_documents_dialog" global="false"
                          oncomplete="PF('caseDocumentsDialog').hide()"/>

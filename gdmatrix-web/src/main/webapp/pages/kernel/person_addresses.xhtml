@@ -107,12 +107,12 @@
     <f:facet name="footer">
       <div class="field col-12 text-right">
         <p:commandButton id="person_addresses_store" action="#{personAddressesTabBean.store}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          disabled="#{!personBean.editable}"
                          update="person_addresses_table person_addresses_panel" 
                          oncomplete="if (!isFacesError()) PF('personAddressesDialog').hide()"/>
         <p:commandButton action="#{personAddressesTabBean.cancel}" 
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}" 
+                         styleClass="m-1" value="#{objectBundle.cancel}" 
                          immediate="true" update="person_addresses_panel" global="false" 
                          oncomplete="PF('personAddressesDialog').hide()"/>
       </div>          
