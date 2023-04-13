@@ -31,18 +31,21 @@
 package org.santfeliu.webapp.modules.classif;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
-import org.matrix.doc.Document;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import static org.santfeliu.webapp.modules.classif.ClassifModuleBean.getPort;
 import org.matrix.classif.Class;
+import org.matrix.classif.ClassFilter;
+import org.santfeliu.classif.ClassCache;
 import org.santfeliu.util.TextUtils;
 
 /**
@@ -54,7 +57,7 @@ import org.santfeliu.util.TextUtils;
 public class ClassObjectBean extends ObjectBean
 {
   private Class classObject = new Class();
-  private transient List<Document> versions;
+  private transient List<Class> history;
   private String formSelector;
 
   @Inject
@@ -103,18 +106,6 @@ public class ClassObjectBean extends ObjectBean
     this.formSelector = formSelector;
   }
 
-//  public String getVersionLabel()
-//  {
-//    int version = document.getVersion();
-//    ResourceBundle bundle = ResourceBundle.getBundle(
-//      "org.santfeliu.doc.web.resources.DocumentBundle", getLocale());
-//
-//    return version > 0 ?
-//      bundle.getString("document_version") + " " + version :
-//      bundle.getString("document_newVersion");
-//  }
-
-
   @Override
   public String getDescription()
   {
@@ -134,7 +125,7 @@ public class ClassObjectBean extends ObjectBean
   @Override
   public void loadObject() throws Exception
   {
-    versions = null;
+    history = null;
     formSelector = null;
 
     if (!NEW_OBJECT_ID.equals(objectId))
@@ -151,12 +142,17 @@ public class ClassObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
+    if (StringUtils.isBlank(classObject.getSuperClassId()))
+    {
+      classObject.setSuperClassId(null);
+    }
+
     classObject = getPort(false).storeClass(classObject);
     setObjectId(classObject.getClassId());
 
     classFinderBean.outdate();
 
-    versions = null;
+    history = null;
   }
 
   @Override
@@ -167,72 +163,82 @@ public class ClassObjectBean extends ObjectBean
     classFinderBean.outdate();
   }
 
-//  public void loadVersions()
-//  {
-//    try
-//    {
-//      if (isNew())
-//      {
-//        versions = Collections.EMPTY_LIST;
-//      }
-//      else
-//      {
-//        DocumentFilter filter = new DocumentFilter();
-//        filter.getDocId().add(document.getDocId());
-//        filter.setVersion(-1);
-//        filter.setIncludeContentMetadata(false);
-//        filter.getStates().add(State.DRAFT);
-//        filter.getStates().add(State.COMPLETE);
-//        filter.getStates().add(State.RECORD);
-//        filter.getStates().add(State.DELETED);
-//        OrderByProperty order = new OrderByProperty();
-//        order.setName(DocumentConstants.VERSION);
-//        order.setDescending(true);
-//        filter.getOrderByProperty().add(order);
-//        versions = getPort(false).findDocuments(filter);
-//      }
-//    }
-//    catch (Exception ex)
-//    {
-//      error(ex);
-//    }
-//  }
-
-  public List<Document> getVersions()
+  public void loadHistory()
   {
-    return versions;
+    try
+    {
+      if (isNew())
+      {
+        history = Collections.EMPTY_LIST;
+      }
+      else
+      {
+        ClassFilter filter = new ClassFilter();
+        filter.setClassId(objectId);
+        history = getPort(false).findClasses(filter);
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
-//  public void loadVersion(int version)
-//  {
-//    if (!NEW_OBJECT_ID.equals(objectId) && document.getVersion() != version)
-//    {
-//      try
-//      {
-//        document = getPort(false).loadDocument(
-//          objectId, -version, ContentInfo.METADATA);
-//      }
-//      catch (Exception ex)
-//      {
-//        error(ex);
-//      }
-//    }
-//  }
+  public void showHistory()
+  {
+    if (history == null)
+    {
+      loadHistory();
+    }
+  }
 
-//  public void removeVersion(int version)
-//  {
-//    try
-//    {
-//      getPort(false).removeDocument(objectId, version);
-//      versions = null;
-//      loadVersion(0);
-//      info("REMOVE_OBJECT");
-//    }
-//    catch (Exception ex)
-//    {
-//      error(ex);
-//    }
-//  }
+  public List<Class> getHistory()
+  {
+    return history;
+  }
+
+  public void loadClassHistory(String startDateTime)
+  {
+    if (!NEW_OBJECT_ID.equals(objectId) &&
+      !classObject.getStartDateTime().equals(startDateTime))
+    {
+      try
+      {
+        classObject = getPort(false).loadClass(objectId, startDateTime);
+      }
+      catch (Exception ex)
+      {
+        error(ex);
+      }
+    }
+  }
+
+  public String getPathDateTime()
+  {
+    return StringUtils.isBlank(classObject.getStartDateTime()) ?
+      TextUtils.formatDate(new Date(), "yyyyMMddHHmmss") :
+      classObject.getStartDateTime();
+  }
+
+  public List<org.santfeliu.classif.Class> getSuperClasses()
+  {
+    String superClassId = classObject.getSuperClassId();
+    if (StringUtils.isBlank(superClassId)) return Collections.EMPTY_LIST;
+
+    ClassCache cache = ClassCache.getInstance(getPathDateTime());
+    org.santfeliu.classif.Class superClass = cache.getClass(superClassId);
+    List<org.santfeliu.classif.Class> superClasses;
+    if (superClass == null)
+    {
+      superClasses = Collections.EMPTY_LIST;
+    }
+    else
+    {
+      superClasses = superClass.getSuperClasses();
+      superClasses.add(superClass);
+    }
+    return superClasses;
+  }
 
   @Override
   public Serializable saveState()

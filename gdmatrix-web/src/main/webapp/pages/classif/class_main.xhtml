@@ -6,14 +6,33 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-    
+     
     <div class="ui-fluid formgrid grid">   
       
       <div class="w-full m-0 flex justify-content-end">
-        <p:commandLink value="Històric" 
+        <p:commandLink value="#{classificationBundle.class_history}" 
                        process="@this"
-                       oncomplete="PF('versionsPanel')"/>
+                       rendered="#{not classObjectBean.isNew()}"
+                       action="#{classObjectBean.showHistory}"
+                       update=":mainform:history_panel"
+                       oncomplete="PF('historyPanel').show()"/>
       </div> 
+
+      <div class="field col-12 mb-0">
+        <ui:repeat value="#{classObjectBean.superClasses}" var="superClass">      
+          <h:panelGroup class="" layout="block">
+            <span class="pi pi-tag mr-2" />
+            <p:commandLink action="#{navigatorBean.view(superClass.classId)}" 
+                           process="@this"
+                           update=":mainform:search_tabs:obj_tabs :mainform:context_panel">
+              <h:outputText value="#{superClass.classId} : #{superClass.title}" />
+            </p:commandLink>
+          </h:panelGroup>
+          <h:panelGroup>
+            <span class="pi pi-arrow-up mr-2" />
+          </h:panelGroup>
+        </ui:repeat>
+      </div>
       
       <div class="field col-12 md:col-4">
         <p:outputLabel for="@next" value="#{classificationBundle.class_classId}" />
@@ -47,7 +66,13 @@
       
       <div class="field col-12 md:col-4">
         <p:outputLabel for="@next" value="#{classificationBundle.class_superClassId}" />
-        <p:inputText value="#{classObjectBean.classObject.superClassId}" />
+        <emcomp:objectReference value="#{classObjectBean.classObject.superClassId}"
+                                type="Class"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3" 
+                                renderShowButton="false"
+                                process=":mainform:search_tabs:tabs"/>
       </div>
       
       <div class="field col-12 md:col-8">
@@ -56,10 +81,10 @@
                        indicateRequired="true" />
         <emcomp:typeReference value="#{classObjectBean.classObject.classTypeId}"
                               type="Class"
-                              styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
                               minQueryLength="3"
+                              showNavigatorItems="false"
                               required="#{not empty param['mainform:search_tabs:store']}"
                               formSelector="#{classObjectBean.formSelector}"
                               process=":mainform:search_tabs:tabs"
@@ -70,19 +95,42 @@
       <div class="field col-12 md:col-12">
         <p:outputLabel for="@next" value="#{classificationBundle.class_title}" 
                        indicateRequired="true" />
-        <p:inputTextarea value="#{classObjectBean.classObject.title}" 
-                         required="#{not empty param['mainform:search_tabs:store']}" 
-                         requiredMessage="#{messageBundle.TITLE_IS_REQUIRED}"
-                         styleClass="inputfield w-full"/>
+        <p:inputText value="#{classObjectBean.classObject.title}" 
+                     required="#{not empty param['mainform:search_tabs:store']}" 
+                     requiredMessage="#{messageBundle.TITLE_IS_REQUIRED}" />
       </div>
 
       <div class="field col-12 md:col-12">
         <p:outputLabel for="@next" value="#{classificationBundle.class_description}" />
         <p:inputTextarea value="#{classObjectBean.classObject.description}" 
-                         required="#{not empty param['mainform:search_tabs:store']}" 
                          styleClass="inputfield w-full"/>
       </div>      
+
+      <div class="field col-12 md:col-9">
+        <p:outputLabel for="@next" value="#{classificationBundle.classMain_acUserId}" />
+        <emcomp:objectReference value="#{classObjectBean.classObject.accessControlUserId}"
+                                type="User"
+                                scrollHeight="200"
+                                queryDelay="1000"
+                                minQueryLength="3" 
+                                process=":mainform:search_tabs:tabs"/>
+      </div>
+
+      <div class="field col-12 md:col-3">
+        <p:outputLabel for="@next" value="#{classificationBundle.classMain_offlineDownload}" />
+        <p:toggleSwitch value="#{classObjectBean.classObject.offlineDownload}" styleClass="block" />
+      </div>
+
+      <div class="field col-12 md:col-12">
+        <p:outputLabel for="@next" value="#{classificationBundle.classMain_changeReason}" />
+        <p:inputTextarea value="#{classObjectBean.classObject.changeReason}" />
+      </div>
       
+      <emcomp:auditData creationDateTime="#{classObjectBean.classObject.creationDateTime}"
+                        creationUserId="#{classObjectBean.classObject.creationUserId}"
+                        changeDateTime="#{classObjectBean.classObject.changeDateTime}"
+                        changeUserId="#{classObjectBean.classObject.changeUserId}" />
+
     </div>
     
     <emcomp:dynamicProperties typeId="#{classObjectBean.classObject.classTypeId}"

@@ -16,19 +16,22 @@
                rows="10"
                rowIndexVar="rowIndex">
 
-    <p:column headerText="classId" styleClass="w-1">
+    <p:column headerText="classId" styleClass="col-1">
       <h:outputText value="#{row.classId}" />
     </p:column>
-    <p:column headerText="#{classificationBundle.class_title}" styleClass="w-6">
+    <p:column headerText="#{classificationBundle.class_title}" styleClass="col-5">
       <h:outputText value="#{row.title}" />
     </p:column>
-    <p:column headerText="#{classificationBundle.class_date}" styleClass="w-3">
+    <p:column headerText="#{classificationBundle.classMain_startDate}" styleClass="col-3">
       <h:outputText value="#{row.startDateTime}">
         <f:converter converterId="DateTimeConverter" />
-        <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm" />
+        <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
       </h:outputText>
     </p:column>         
-    <p:column styleClass="w-2 text-right">
+    <p:column headerText="#{classificationBundle.class_superClassId}" styleClass="col-1">
+      <h:outputText value="#{row.superClassId}" />
+    </p:column>
+    <p:column styleClass="col-2 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.classId)}"

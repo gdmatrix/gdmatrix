@@ -53,17 +53,34 @@
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
           <div class="ui-fluid formgrid grid pl-2 pr-2">
-            <div class="field w-full">
+            <div class="field col-12">
               <p:outputLabel for="@next" value="ClassId" />
               <p:inputText value="#{classFinderBean.filter.classId}" />
             </div>
 
-            <div class="field w-full">
+            <div class="field col-12">
               <p:outputLabel for="@next" value="#{classificationBundle.class_title}" />
               <p:inputText value="#{classFinderBean.filter.title}" />
             </div>
 
-            <div class="field w-full">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{classificationBundle.class_description}" />
+              <p:inputText value="#{classFinderBean.filter.description}" />
+            </div>            
+            
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{classificationBundle.class_superClassId}" />
+              <emcomp:objectReference value="#{classFinderBean.filter.superClassId}"
+                                      type="Class"
+                                      scrollHeight="200"
+                                      queryDelay="1000"
+                                      minQueryLength="3" 
+                                      renderShowButton="false"
+                                      process=":mainform:find_selector"
+                                      update=":mainform:find_selector" />
+            </div>            
+            
+            <div class="field col-12">
               <p:outputLabel for="@next" value="#{classificationBundle.class_date}" />
               <p:datePicker value="#{classFinderBean.filter.startDateTime}"
                             autocomplete="off"
@@ -75,7 +92,6 @@
                             monthNavigator="true" yearNavigator="true" />
             </div>
           </div>
-
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -146,71 +162,43 @@
       </p:tab>
     </p:tabView>
 
-    <!--
-    <p:dialog id="versions_panel"
-              widgetVar="versionsPanel"
+    <p:dialog id="history_panel"
+              widgetVar="historyPanel"
               modal="true"
               height="auto"
               resizable="false"
-              header="Class #{classObjectBean.objectId} versions"
               closeOnEscape="true">
+      
+      <f:facet name="header">
+        <h:outputFormat value="#{classificationBundle.class_history_title}">
+          <f:param value="#{classObjectBean.objectId}" />
+        </h:outputFormat>
+      </f:facet>
 
-      <p:dataTable value="#{classObjectBean.versions}"
-                   var="docVersion" rowIndexVar="rowIndex">
-        <p:column headerText="#{classificationBundle.document_version}">
-          <h:outputText value="#{docVersion.version}" />
-        </p:column>
-        <p:column headerText="#{classificationBundle.document_title}">
-          <p:commandLink value="#{docVersion.title}"
-                         action="#{classObjectBean.loadVersion(docVersion.version)}"
+      <p:dataTable value="#{classObjectBean.history}"
+                   var="classHistory" rowIndexVar="rowIndex">
+        <p:column headerText="#{classificationBundle.class_title}">
+          <p:commandLink value="#{classHistory.title}"
+                         action="#{classObjectBean.loadClassHistory(classHistory.startDateTime)}"
                          process="@this"
                          update=":mainform:search_tabs"
-                         style="#{classObjectBean.isVersionDeleted(docVersion) ? 'text-decoration:line-through' : ''}"
-                         oncomplete="PF('versionsPanel').hide()"
+                         oncomplete="PF('historyPanel').hide()"
                          />
         </p:column>
-        <p:column headerText="#{classificationBundle.document_creationDate}">
-          <h:outputText value="#{docVersion.creationDate}000000">
+        <p:column headerText="#{classificationBundle.classMain_startDate}">
+          <h:outputText value="#{classHistory.startDateTime}">
             <f:converter converterId="DateTimeConverter" />
-            <f:attribute name="userFormat" value="dd/MM/yyyy" />
+            <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
           </h:outputText>
         </p:column>
-        <p:column styleClass="pt-0 pb-0">
-          <p:commandButton icon="ui-icon pi pi-trash"
-                           styleClass="rounded-button ui-button-flat m-0"
-                           action="#{classObjectBean.removeVersion(docVersion.version)}"
-                           process="@this"
-                           update=":mainform:search_tabs"
-                           rendered="#{rowIndex gt 0 and not classObjectBean.isVersionDeleted(docVersion)}"
-                           oncomplete="PF('versionsPanel').hide()"
-                           title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
-              <p:confirm header="#{objectBundle.confirm_remove_header}"
-                         message="#{objectBundle.confirm_remove}"
-                         icon="pi pi-info-circle" />
-          </p:commandButton>
+        <p:column headerText="#{classificationBundle.classMain_endDate}">
+          <h:outputText value="#{classHistory.endDateTime}">
+            <f:converter converterId="DateTimeConverter" />
+            <f:attribute name="userFormat" value="dd/MM/yyyy HH:mm:ss" />
+          </h:outputText>
         </p:column>
       </p:dataTable>
-      <f:facet name="footer">
-        <p:commandButton value="#{classificationBundle.document_newVersion}"
-                         action="#{classObjectBean.newVersion}"
-                         process="@this"
-                         update=":mainform:search_tabs"
-                         rendered="#{not classObjectBean.isNew()}"
-                         oncomplete="PF('versionsPanel').hide()"
-                         />
-        <p:commandButton value="#{classificationBundle.purge}"
-                         action="#{classObjectBean.purgeVersions}"
-                         process="@this"
-                         update=":mainform:search_tabs"
-                         rendered="#{not classObjectBean.isNew()}"
-                         oncomplete="PF('versionsPanel').hide()">
-              <p:confirm header="#{objectBundle.confirm_remove_header}"
-                         message="#{objectBundle.confirm_remove}"
-                         icon="pi pi-info-circle" />
-        </p:commandButton>
-      </f:facet>
     </p:dialog>
-    -->
 
   </ui:define>
 
