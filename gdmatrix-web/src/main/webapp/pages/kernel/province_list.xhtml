@@ -10,6 +10,8 @@
                rows="10" 
                first="#{provinceFinderBean.firstRow}"
                rowStyleClass="#{row.provinceId == provinceObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
                rowIndexVar="rowIndex"
                rendered="true">
     <p:column headerText="Id" styleClass="col-1">

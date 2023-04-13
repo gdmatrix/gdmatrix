@@ -9,6 +9,8 @@
                paginatorPosition="bottom" size="small"
                rows="10" first="#{roomFinderBean.firstRow}"
                rowStyleClass="#{row.roomId == roomObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
                rowIndexVar="rowIndex"               
                rendered="true">
     <p:column headerText="#{kernelBundle.room_id}" styleClass="col-1">

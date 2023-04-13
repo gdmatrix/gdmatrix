@@ -9,6 +9,8 @@
                paginatorPosition="bottom" size="small"
                rows="10" first="#{cityFinderBean.firstRow}"
                rowStyleClass="#{row.cityId == cityObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"                 
                rowIndexVar="rowIndex"
                rendered="true">
     <p:column headerText="cityId" styleClass="col-1">
