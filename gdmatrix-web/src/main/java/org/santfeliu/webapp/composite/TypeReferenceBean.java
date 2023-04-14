@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.composite;
 
+import java.util.Iterator;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.el.CompositeComponentExpressionHolder;
@@ -64,7 +65,31 @@ public class TypeReferenceBean extends ObjectReferenceBean
     String typeId = getTypeId();
     boolean showNavigatorItems = isShowNavigatorItems();
 
-    return typeTypeBean.getSelectItems(query, typeId, showNavigatorItems, true);
+    List<SelectItem> selectItems =
+      typeTypeBean.getSelectItems(query, typeId, showNavigatorItems, true);
+
+    if (showNavigatorItems)
+    {
+      String objectId = WebUtils.getValue("#{cc.attrs.value}");
+      if (!StringUtils.isBlank(objectId))
+      {
+        boolean found = false;
+        Iterator<SelectItem> iter = selectItems.iterator();
+        while (iter.hasNext() && !found)
+        {
+          if (iter.next().getValue().equals(objectId))
+          {
+            found = true;
+          }
+        }
+        if (!found)
+        {
+          selectItems.add(0,
+            new SelectItem(objectId, typeTypeBean.getDescription(objectId)));
+        }
+      }
+    }
+    return selectItems;
   }
 
   @Override
