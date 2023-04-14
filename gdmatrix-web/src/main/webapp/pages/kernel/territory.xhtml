@@ -207,21 +207,22 @@
 
       <!-- Street -->
       <h:panelGroup rendered="#{objectBean.rootTypeId == 'Street'}">
-        <div class="field col-12 md:col-2">
+        <div class="field col-8 md:col-6 lg:col-3">
           <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />
           <p:selectOneMenu value="#{objectBean.street.streetTypeId}" filter="true"
+                           autoWidth="false"
                            required="true"
-                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
+                           requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
             <f:selectItems value="#{streetTypeBean.streetTypeSelectItems}" />
           </p:selectOneMenu>
         </div>     
 
-        <div class="field col-12 md:col-2">
+        <div class="field col-4 md:col-6 lg:col-2">
           <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
           <p:inputText value="#{objectBean.street.particle}" />
         </div>
 
-        <div class="field col-12 md:col-8">
+        <div class="field col-12 lg:col-7">
           <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />
           <p:inputText value="#{objectBean.street.name}" 
                        required="true"
