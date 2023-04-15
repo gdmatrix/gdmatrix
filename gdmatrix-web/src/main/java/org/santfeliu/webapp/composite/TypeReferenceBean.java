@@ -68,7 +68,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
     List<SelectItem> selectItems =
       typeTypeBean.getSelectItems(query, typeId, showNavigatorItems, true);
 
-    if (showNavigatorItems)
+    if (StringUtils.isBlank(query) && showNavigatorItems)
     {
       String objectId = WebUtils.getValue("#{cc.attrs.value}");
       if (!StringUtils.isBlank(objectId))

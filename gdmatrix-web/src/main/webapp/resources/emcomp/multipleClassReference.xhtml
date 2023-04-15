@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+  <h:head>
+    <title>Class reference component</title>
+  </h:head>
+  <h:body>
+    <composite:interface>
+      <composite:attribute name="value" required="true" />
+      <composite:attribute name="newClassId" required="true" />
+      <composite:attribute name="minQueryLength" required="false" default="2" />
+      <composite:attribute name="maxResults" required="false" default="20" />
+      <composite:attribute name="queryDelay" required="false" default="1000" />
+      <composite:attribute name="style" required="false" default="" />
+      <composite:attribute name="styleClass" required="false" default="" />
+      <composite:attribute name="scrollHeight" required="false" default="200" />
+      <composite:attribute name="size" required="false" />
+      <composite:attribute name="process" required="false" default="@form" />
+      <composite:attribute name="update" required="false" default="@none" />
+      <composite:attribute name="required" required="false" default="false" />
+      <composite:attribute name="requiredMessage" required="false" />
+      <composite:attribute name="disabled" required="false" default="false" />
+      <composite:attribute name="widgetVar" required="false" />
+      <composite:attribute name="autoUpdate" required="false" default="true" />
+      <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
+      <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
+      <composite:clientBehavior name="query" targets="autocomplete" event="query" />
+      <composite:clientBehavior name="clear" targets="autocomplete" event="clear" />
+    </composite:interface>
+
+    <composite:implementation>
+      <div class="ui-inputgroup">
+        <p:autoComplete id="autocomplete"
+                        value="#{multipleClassReferenceBean.classIdList}"
+                        multiple="true"
+                        maxResults="#{cc.attrs.maxResults}"
+                        forceSelection="true"
+                        dropdown="false" dropdownMode="blank" cache="true"
+                        completeMethod="#{multipleClassReferenceBean.complete}"
+                        var="classId" 
+                        itemValue="#{classId}" 
+                        itemLabel="#{classTypeBean.getDescription(classId)}"
+                        minQueryLength="#{cc.attrs.minQueryLength}"
+                        queryDelay="#{cc.attrs.queryDelay}"
+                        style="#{cc.attrs.style}"
+                        styleClass="#{cc.attrs.styleClass}"
+                        size="#{cc.attrs.size}"
+                        scrollHeight="#{cc.attrs.scrollHeight}"
+                        onclick="this.setSelectionRange(0, this.value.length)"
+                        required="#{cc.attrs.required}"
+                        widgetVar="#{cc.attrs.widgetVar}"
+                        disabled="#{cc.attrs.disabled}">
+
+          <c:if test="#{not empty cc.attrs.requiredMessage}">
+            <f:attribute name="requiredMessage" value="#{cc.attrs.requiredMessage}" />
+          </c:if>
+
+          <c:if test="#{cc.attrs.autoUpdate}">
+            <p:ajax event="itemSelect" listener="#{multipleClassReferenceBean.onItemSelect}"
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
+
+            <p:ajax event="itemUnselect"
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
+          </c:if>
+
+          <p:column>
+            <h:outputText value="#{classTypeBean.getDescription(classId)}" />
+          </p:column>
+        </p:autoComplete>
+        <p:commandButton id="show_button"
+                         icon="pi pi-external-link"
+                         styleClass="select-button"
+                         style="height:28px"
+                         ajax="false"
+                         immediate="true"
+                         action="#{multipleClassReferenceBean.show}"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}" />
+        <h:commandButton style="display: none"
+                         action="#{multipleClassReferenceBean.find}"
+                         immediate="true"
+                         disabled="#{cc.attrs.disabled}">
+        </h:commandButton>
+        <p:commandButton icon="pi pi-search"
+                         styleClass="select-button"
+                         style="height:28px"
+                         process="#{cc.attrs.process}"
+                         update="#{cc.attrs.update}"
+                         oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
+                         alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                         disabled="#{cc.attrs.disabled}" />
+      </div>
+    </composite:implementation>
+  </h:body>
+</html>

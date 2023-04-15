@@ -193,7 +193,15 @@ public abstract class ObjectBean extends BaseBean
     }
     catch (Exception ex)
     {
-      error(ex);
+      if (!NEW_OBJECT_ID.endsWith(objectId))
+      {
+        // show error
+        error(ex);
+
+        // show empty object
+        objectId = NEW_OBJECT_ID;
+        load();
+      }
     }
   }
 

@@ -7,12 +7,12 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 template="/pages/obj/object_3col.xhtml">
-  
+
   <ui:define name="filter">
     <p:outputPanel id="filter_panel">
       <p:tabView id="find_selector" 
                  activeIndex="#{documentFinderBean.filterTabSelector}">
-        
+
         <p:tab id="smart_search">
           <f:facet name="title">
             <span class="pi pi-bolt mr-2"/> 
@@ -52,27 +52,25 @@
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
 
-          <div class="field">
-            <p:outputLabel for="@next" value="DocId" />
-            <p:chips value="#{documentFinderBean.docIdList}"
-                     class="inputfield w-full" />
-          </div>          
-          
-          <div class="field">
-            <p:outputLabel for="@next" value="#{documentBundle.outputTitle}" />
-            <p:inputText value="#{documentFinderBean.filter.title}" 
-                         class="inputfield w-full" />
-          </div>  
+          <div class="ui-fluid formgrid grid">
 
-          <div class="field">
-            <p:outputLabel for="@next" value="#{documentBundle.outputContents}" />
-            <p:inputText value="#{documentFinderBean.filter.contentSearchExpression}" 
-                         class="inputfield w-full" />
-          </div>
-                    
-          <p:fieldset legend="#{documentBundle.documentSearch_date}"
-                      toggleable="true" collapsed="true" styleClass="mb-2">
-            <div class="ui-fluid formgrid grid">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="DocId" />
+              <p:chips value="#{documentFinderBean.docIdList}" />
+            </div>          
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{documentBundle.outputTitle}" />
+              <p:inputText value="#{documentFinderBean.filter.title}" />
+            </div>  
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{documentBundle.outputContents}" />
+              <p:inputText value="#{documentFinderBean.filter.contentSearchExpression}"  />
+            </div>
+
+            <p:fieldset legend="#{documentBundle.documentSearch_date}"
+                        toggleable="true" collapsed="true" styleClass="mb-2 w-full">
 
               <div class="field col-12">
                 <p:selectOneMenu id="dateComparator" 
@@ -106,39 +104,49 @@
                               showIcon="true" showTime="false"
                               monthNavigator="true" yearNavigator="true" />
               </div>
+            </p:fieldset>
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{documentBundle.outputLanguage}" />
+              <p:selectOneMenu value="#{documentFinderBean.filter.language}">
+                <f:selectItem itemValue="" itemLabel=" "/>
+                <f:selectItems value="#{documentFinderBean.languageValues}" />
+              </p:selectOneMenu>
             </div>
-          </p:fieldset>
-          
-          <div class="field">
-            <p:outputLabel for="@next" value="#{documentBundle.outputLanguage}" />
-            <p:selectOneMenu value="#{documentFinderBean.filter.language}"                 
-                             class="inputfield w-full">
-              <f:selectItem itemValue="" itemLabel=" "/>
-              <f:selectItems value="#{documentFinderBean.languageValues}" />
-            </p:selectOneMenu>
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{documentBundle.document_classification}" />
+              <emcomp:objectReference value="#{documentFinderBean.classId}"
+                                      type="Class"
+                                      scrollHeight="200"
+                                      queryDelay="1000"
+                                      minQueryLength="3" 
+                                      renderShowButton="false"
+                                      process=":mainform:find_selector" />
+            </div>
+
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{documentBundle.outputType}" />
+              <emcomp:typeReference value="#{documentFinderBean.filter.docTypeId}"
+                                    type="Document"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3"
+                                    renderShowButton="false"
+                                    formSelector="#{documentFinderBean.formSelector}"
+                                    process=":mainform:find_selector"
+                                    update=":mainform:find_selector">
+              </emcomp:typeReference>
+            </div>
+
           </div>
-          
-          <div class="field">
-            <p:outputLabel for="@next" value="#{documentBundle.outputType}" />
-            <emcomp:typeReference value="#{documentFinderBean.filter.docTypeId}"
-                                  type="Document"
-                                  styleClass="w-full"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  minQueryLength="3"
-                                  renderShowButton="false"
-                                  formSelector="#{documentFinderBean.formSelector}"
-                                  process=":mainform:find_selector"
-                                  update=":mainform:find_selector">
-            </emcomp:typeReference>
-          </div>
-          
+
           <emcomp:dynamicProperties typeId="#{documentFinderBean.filter.docTypeId}"
                                     formSelector="#{documentFinderBean.formSelector}"
                                     formBuilderPrefix="searchtype"
                                     options="#{dynamicPropertiesBean.filterOptions}"
                                     properties="#{documentFinderBean.filter.property}" />
-          
+
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{documentFinderBean.clear}"
@@ -168,7 +176,7 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");
@@ -185,7 +193,7 @@
                activeIndex="#{documentObjectBean.searchTabSelector}"
                touchable="false"                
                onTabShow="onTabShow()">
-      
+
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
@@ -207,14 +215,19 @@
         </h:panelGroup>        
       </p:tab>
     </p:tabView>
-    
+
     <p:dialog id="versions_panel"
               widgetVar="versionsPanel" 
               modal="true"
               height="auto"
               resizable="false"
-              header="Document #{documentObjectBean.objectId} versions"
               closeOnEscape="true">
+      
+      <f:facet name="header">
+        <h:outputFormat value="#{documentBundle.document_versions_title}">
+          <f:param value="#{documentObjectBean.objectId}" />
+        </h:outputFormat>
+      </f:facet>
 
       <p:dataTable value="#{documentObjectBean.versions}" 
                    var="docVersion" rowIndexVar="rowIndex">
@@ -245,9 +258,9 @@
                            rendered="#{rowIndex gt 0 and not documentObjectBean.isVersionDeleted(docVersion)}"
                            oncomplete="PF('versionsPanel').hide()"                       
                            title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
-              <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                         message="#{objectBundle.confirm_remove}" 
-                         icon="pi pi-info-circle" />
+            <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                       message="#{objectBundle.confirm_remove}" 
+                       icon="pi pi-info-circle" />
           </p:commandButton>
         </p:column>
       </p:dataTable>
@@ -265,13 +278,13 @@
                          update=":mainform:search_tabs"
                          rendered="#{not documentObjectBean.isNew()}"
                          oncomplete="PF('versionsPanel').hide()">
-              <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                         message="#{objectBundle.confirm_remove}" 
-                         icon="pi pi-info-circle" />
+          <p:confirm header="#{objectBundle.confirm_remove_header}" 
+                     message="#{objectBundle.confirm_remove}" 
+                     icon="pi pi-info-circle" />
         </p:commandButton>
       </f:facet>
     </p:dialog>
-    
+
   </ui:define>
 
 </ui:composition>

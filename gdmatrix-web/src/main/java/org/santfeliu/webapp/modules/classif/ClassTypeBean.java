@@ -77,8 +77,8 @@ public class ClassTypeBean extends TypeBean<Class, ClassFilter>
   {
     try
     {
-      String now = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-      return getPort(true).loadClass(objectId, now);
+      String dateTime = getDefaultDateTime();
+      return getPort(true).loadClass(objectId, dateTime);
     }
     catch (Exception ex)
     {
@@ -148,6 +148,9 @@ public class ClassTypeBean extends TypeBean<Class, ClassFilter>
   {
     try
     {
+      String dateTime = getDefaultDateTime();
+      filter.setStartDateTime(dateTime);
+      filter.setEndDateTime(dateTime);
       return getPort(true).findClasses(filter);
     }
     catch (Exception ex)
@@ -159,5 +162,10 @@ public class ClassTypeBean extends TypeBean<Class, ClassFilter>
   public String getValue(Object object)
   {
     return String.valueOf(object);
+  }
+
+  private String getDefaultDateTime()
+  {
+    return TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
   }
 }

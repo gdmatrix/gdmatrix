@@ -190,6 +190,17 @@ body .ui-selectonemenu .ui-selectonemenu-trigger
   background-color: var(--secondary-color);
 }
 
+body .ui-autocomplete-token
+{
+  white-space: normal;
+  margin: 1px;
+}
+
+body .ui-autocomplete .ui-autocomplete-multiple-container .ui-autocomplete-input-token input
+{
+  font-family: Montserrat;
+}
+
 /* Scrollbars */
 div, ul
 {

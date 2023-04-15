@@ -32,6 +32,7 @@ package org.santfeliu.webapp.composite;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +48,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.validator.Validator;
+import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
@@ -56,6 +59,7 @@ import org.primefaces.component.outputlabel.OutputLabel;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.PropertyConverter;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.form.FormDescriptor;
 import org.santfeliu.form.FormFactory;
 import org.santfeliu.form.builder.TypeFormBuilder;
@@ -78,6 +82,7 @@ public class DynamicPropertiesBean implements Serializable
   {
     FILTER_OPTIONS.put("stacked", "true");
   }
+  static final JsonValidator JSON_VALIDATOR = new JsonValidator();
 
   private final Map<String, List<SelectItem>> selectItemMap = new HashMap<>();
   private PropertyHelper propertyHelper;
@@ -257,6 +262,7 @@ public class DynamicPropertiesBean implements Serializable
             (InputTextarea)application.createComponent(InputTextarea.COMPONENT_TYPE);
           textArea.setStyleClass("field col-12");
           textArea.setStyle("font-family:monospace");
+          textArea.addValidator(JSON_VALIDATOR);
           textArea.setValueExpression("value",
             WebUtils.createValueExpression("#{dynamicPropertiesBean.propertyJson}", String.class));
           group.getChildren().add(textArea);
@@ -317,5 +323,25 @@ public class DynamicPropertiesBean implements Serializable
       if (formSelector.equals(selectItem.getValue())) return true;
     }
     return false;
+  }
+
+  public static class JsonValidator implements Validator<String>
+  {
+    @Override
+    public void validate (FacesContext facesContext, UIComponent component,
+      String json)
+    {
+      try
+      {
+        if (!StringUtils.isBlank(json))
+        {
+          JsonParser.parseString(json);
+        }
+      }
+      catch (Exception ex)
+      {
+        throw new ValidatorException(FacesUtils.getFacesMessage(ex));
+      }
+    }
   }
 }

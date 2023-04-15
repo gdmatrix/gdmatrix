@@ -43,8 +43,6 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
-import static org.santfeliu.doc.web.DocumentSearchBean.LANGUAGE_VALUES;
-import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.util.BigList;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
@@ -145,6 +143,22 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
+  public String getClassId()
+  {
+    if (filter.getClassId().isEmpty()) return null;
+    return filter.getClassId().get(0);
+  }
+
+  public void setClassId(String classId)
+  {
+    filter.getClassId().clear();
+
+    if (!StringUtils.isBlank(classId))
+    {
+      filter.getClassId().add(classId);
+    }
+  }
+
   public List<Document> getRows()
   {
     return rows;
@@ -203,10 +217,6 @@ public class DocumentFinderBean extends FinderBean
     {
       String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
       filter.setDocTypeId(baseTypeId);
-    }
-    if (StringUtils.isBlank(filter.getContentSearchExpression()))
-    {
-      filter.setContentSearchExpression(null);
     }
     smartFilter = documentTypeBean.filterToQuery(filter);
     doFind(true);
@@ -268,6 +278,11 @@ public class DocumentFinderBean extends FinderBean
       }
       else
       {
+        if (StringUtils.isBlank(filter.getContentSearchExpression()))
+        {
+          filter.setContentSearchExpression(null);
+        }
+
         rows = new BigList(20, 10)
         {
           @Override

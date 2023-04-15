@@ -131,7 +131,7 @@ public class ClassObjectBean extends ObjectBean
     if (!NEW_OBJECT_ID.equals(objectId))
     {
       String now = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-      classObject = getPort(false).loadClass(objectId, now);
+        classObject = getPort(false).loadClass(objectId, now);
     }
     else
     {

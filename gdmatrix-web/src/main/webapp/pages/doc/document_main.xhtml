@@ -6,7 +6,7 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-    
+      
     <div class="ui-fluid formgrid grid">   
       
       <div class="w-full m-0 flex justify-content-end">
@@ -46,7 +46,17 @@
                          required="#{not empty param['mainform:search_tabs:store']}" 
                          requiredMessage="#{messageBundle.TITLE_IS_REQUIRED}"
                          styleClass="inputfield w-full"/>
-      </div>       
+      </div>
+      
+      <div class="field col-12">
+        <p:outputLabel for="@next" value="#{documentBundle.document_classification}" />
+        <emcomp:multipleClassReference value="#{documentObjectBean.document.classId}"
+                                       newClassId="#{documentObjectBean.newClassId}"
+                                       scrollHeight="200"
+                                       queryDelay="1000"
+                                       minQueryLength="3" 
+                                       process=":mainform:search_tabs:tabs" />
+      </div>
       
       <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="@next" value="#{documentBundle.document_language}" />

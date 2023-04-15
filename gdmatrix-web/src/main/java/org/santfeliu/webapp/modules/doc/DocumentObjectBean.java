@@ -230,6 +230,18 @@ public class DocumentObjectBean extends ObjectBean
     this.document = document;
   }
 
+  public void setNewClassId(String classId)
+  {
+    if (!StringUtils.isBlank(classId))
+    {
+      List<String> currentClassIdList = document.getClassId();
+      if (!currentClassIdList.contains(classId))
+      {
+        currentClassIdList.add(classId);
+      }
+    }
+  }
+
   public String getDocumentURL(boolean withContentId, boolean downloadable,
     boolean fullUrl, int maxFilenameLength)
   {
