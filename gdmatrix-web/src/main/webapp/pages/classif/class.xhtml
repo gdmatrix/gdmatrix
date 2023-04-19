@@ -124,16 +124,24 @@
         var activeIndex = PF('searchTabs').getActiveIndex();
         if (activeIndex === 0)
         {
-          updateResults();
-          console.info("updateResults");
+          updateList();
+        }
+        else if (activeIndex === 1)
+        {
+          updateTree();
         }
       }
     </script>
-    <p:remoteCommand name="updateResults"
-                     action="#{classFinderBean.update}"
+    <p:remoteCommand name="updateList"
+                     action="#{classFinderBean.updateList}"
                      process="@this"
                      update=":mainform:search_tabs:result_list" />
 
+    <p:remoteCommand name="updateTree"
+                     action="#{classFinderBean.updateTree}"
+                     process="@this"
+                     update=":mainform:search_tabs:result_tree" />
+    
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                activeIndex="#{classObjectBean.searchTabSelector}"
@@ -150,6 +158,16 @@
         </h:panelGroup>
       </p:tab>
 
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-sitemap mr-2"></i>
+          <h:outputText value="#{objectBundle.tree}"/>
+        </f:facet>
+        <h:panelGroup id="result_tree">
+          <ui:include src="class_tree.xhtml" />
+        </h:panelGroup>
+      </p:tab>
+      
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>

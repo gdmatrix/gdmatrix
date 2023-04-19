@@ -47,6 +47,7 @@ import org.matrix.classif.Class;
 import org.matrix.classif.ClassFilter;
 import org.santfeliu.classif.ClassCache;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -112,6 +113,12 @@ public class ClassObjectBean extends ObjectBean
     return isNew() ? "" : classObject.getTitle();
   }
 
+  @Override
+  public int getEditModeSelector()
+  {
+    return 2;
+  }
+
   public Class getClassObject()
   {
     return classObject;
@@ -130,8 +137,8 @@ public class ClassObjectBean extends ObjectBean
 
     if (!NEW_OBJECT_ID.equals(objectId))
     {
-      String now = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-        classObject = getPort(false).loadClass(objectId, now);
+      String dateTime = WebUtils.getValue("#{classFinderBean.filterDateTime}");
+        classObject = getPort(false).loadClass(objectId, dateTime);
     }
     else
     {
@@ -148,7 +155,16 @@ public class ClassObjectBean extends ObjectBean
     }
 
     classObject = getPort(false).storeClass(classObject);
-    setObjectId(classObject.getClassId());
+    if (StringUtils.isBlank(classObject.getTitle()))
+    {
+      // WebService returns Class object with classId when period is removed
+      setObjectId(NEW_OBJECT_ID);
+      classObject = new Class();
+    }
+    else
+    {
+      setObjectId(classObject.getClassId());
+    }
 
     classFinderBean.outdate();
 
@@ -200,7 +216,7 @@ public class ClassObjectBean extends ObjectBean
   public void loadClassHistory(String startDateTime)
   {
     if (!NEW_OBJECT_ID.equals(objectId) &&
-      !classObject.getStartDateTime().equals(startDateTime))
+      !startDateTime.equals(classObject.getStartDateTime()))
     {
       try
       {

@@ -45,9 +45,17 @@
                        styleClass="rounded-button ui-button-flat"  
                        action="#{classFinderBean.view(rowIndex)}"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                        />     
+      <p:commandButton icon="ui-icon pi pi-sitemap"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{classFinderBean.viewNodeInTree(row.classId)}"
+                       process="@this"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       title="Tree" alt="Tree"
+                       />
     </p:column>
   </p:dataTable>  
 

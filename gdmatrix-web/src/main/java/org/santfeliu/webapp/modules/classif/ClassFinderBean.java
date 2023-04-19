@@ -31,10 +31,11 @@
 package org.santfeliu.webapp.modules.classif;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -46,7 +47,14 @@ import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.matrix.classif.Class;
+import org.primefaces.event.NodeCollapseEvent;
+import org.primefaces.event.NodeExpandEvent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
+import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.util.TextUtils;
+import static org.santfeliu.webapp.modules.classif.ClassifModuleBean.getPort;
+import org.santfeliu.webapp.util.WebUtils;
 
 /**
  *
@@ -63,6 +71,7 @@ public class ClassFinderBean extends FinderBean
   private boolean finding;
   private boolean outdated;
   private String formSelector;
+  private DefaultTreeNode rootsNode = new DefaultTreeNode("roots");
 
   @Inject
   NavigatorBean navigatorBean;
@@ -157,6 +166,7 @@ public class ClassFinderBean extends FinderBean
     filter = classTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
     firstRow = 0;
+    rootsNode.getChildren().clear();
   }
 
   @Override
@@ -165,14 +175,9 @@ public class ClassFinderBean extends FinderBean
     finding = true;
     setFilterTabSelector(1);
     smartFilter = classTypeBean.filterToQuery(filter);
-    if (StringUtils.isBlank(filter.getStartDateTime()))
-    {
-      String now = TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
-      filter.setStartDateTime(now);
-    }
-    filter.setEndDateTime(filter.getStartDateTime());
     doFind(true);
     firstRow = 0;
+    rootsNode.getChildren().clear();
   }
 
   public void outdate()
@@ -180,11 +185,27 @@ public class ClassFinderBean extends FinderBean
     outdated = true;
   }
 
-  public void update()
+  public void updateList()
   {
     if (outdated)
     {
       doFind(false);
+      rootsNode.getChildren().clear();
+    }
+  }
+
+  public void updateTree()
+  {
+    if (outdated)
+    {
+      doFind(false);
+      rootsNode.getChildren().clear();
+    }
+
+    String classId = classObjectBean.getObjectId();
+    if (!StringUtils.isBlank(classId))
+    {
+      expandNode(classId);
     }
   }
 
@@ -195,6 +216,7 @@ public class ClassFinderBean extends FinderBean
     rows = null;
     finding = false;
     formSelector = null;
+    rootsNode.getChildren().clear();
   }
 
   @Override
@@ -230,6 +252,10 @@ public class ClassFinderBean extends FinderBean
       }
       else
       {
+        String dateTime = getFilterDateTime();
+        filter.setStartDateTime(dateTime);
+        filter.setEndDateTime(dateTime);
+
         rows = new BigList(20, 10)
         {
           @Override
@@ -283,6 +309,190 @@ public class ClassFinderBean extends FinderBean
     catch (Exception ex)
     {
       error(ex);
+    }
+  }
+
+  public TreeNode getRootsNode()
+  {
+    return rootsNode;
+  }
+
+  public void onNodeExpand(NodeExpandEvent event)
+  {
+    ClassTreeNode treeNode = (ClassTreeNode)event.getTreeNode();
+    treeNode.load();
+  }
+
+  public void onNodeCollapse(NodeCollapseEvent event)
+  {
+//    ClassTreeNode treeNode = (ClassTreeNode)event.getTreeNode();
+  }
+
+  public void expandNode(String classId)
+  {
+    try
+    {
+      List<Class> classPath = getClassPath(classId);
+
+      ClassTreeNode node = null;
+
+      if (rootsNode.getChildCount() > 0)
+      {
+        node = (ClassTreeNode)rootsNode.getChildren().get(0);
+        node.setExpanded(true);
+      }
+
+      if (node == null ||
+          !classPath.get(0).getClassId().equals(node.getData().getClassId()))
+      {
+        rootsNode.getChildren().clear();
+        node = new ClassTreeNode(new ClassData(classPath.get(0)));
+        node.load();
+        node.setExpanded(true);
+        rootsNode.getChildren().add(node);
+      }
+
+      for (int level = 1; level < classPath.size() - 1 && node != null; level++)
+      {
+        node = node.expandChild(classPath.get(level).getClassId());
+      }
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void viewNodeInTree(String classId)
+  {
+    navigatorBean.view(classId);
+    expandNode(classId);
+  }
+
+  public String getFilterDateTime()
+  {
+    if (StringUtils.isBlank(filter.getStartDateTime()))
+    {
+      return TextUtils.formatDate(new Date(), "yyyyMMddHHmmss");
+    }
+    return filter.getStartDateTime();
+  }
+
+  private List<Class> getClassPath(String classId) throws Exception
+  {
+    List<Class> classPath = new ArrayList<>();
+    String dateTime = getFilterDateTime();
+    while (!StringUtils.isBlank(classId))
+    {
+      Class classObject = getPort(true).loadClass(classId, dateTime);
+      classPath.add(classObject);
+      classId = classObject.getSuperClassId();
+    }
+    Collections.reverse(classPath);
+    return classPath;
+  }
+
+  public static class ClassTreeNode extends DefaultTreeNode<ClassData>
+  {
+    protected boolean loaded;
+
+    public ClassTreeNode(ClassData classData)
+    {
+      super(classData);
+    }
+
+    @Override
+    public boolean isLeaf()
+    {
+      load();
+
+      return super.isLeaf();
+    }
+
+    public ClassTreeNode expandChild(String classId)
+    {
+      load();
+      setExpanded(true);
+      Iterator<TreeNode<ClassData>> iter = getChildren().iterator();
+      while (iter.hasNext())
+      {
+        TreeNode<ClassData> next = iter.next();
+        if (next.getData().getClassId().equals(classId))
+        {
+          next.setExpanded(true);
+          return (ClassTreeNode)next;
+        }
+      }
+      return null;
+    }
+
+    private void load()
+    {
+      if (!loaded)
+      {
+        try
+        {
+          loaded = true;
+
+          ClassData data = getData();
+          String classId = data.getClassId();
+
+          String dateTime =
+            WebUtils.getValue("#{classFinderBean.filterDateTime}");
+
+          ClassFilter filter = new ClassFilter();
+          filter.setSuperClassId(classId);
+          filter.setStartDateTime(dateTime);
+          filter.setEndDateTime(dateTime);
+          List<Class> classList = getPort(true).findClasses(filter);
+          for (Class cls : classList)
+          {
+            getChildren().add(new ClassTreeNode(new ClassData(cls)));
+          }
+        }
+        catch (Exception ex)
+        {
+          FacesUtils.addMessage(ex);
+        }
+      }
+    }
+  }
+
+  public static class ClassData implements Serializable
+  {
+    private String classId;
+    private String title;
+
+    public ClassData(String classId, String title)
+    {
+      this.classId = classId;
+      this.title = title;
+    }
+
+    public ClassData(Class cls)
+    {
+      this.classId = cls.getClassId();
+      this.title = cls.getTitle();
+    }
+
+    public String getClassId()
+    {
+      return classId;
+    }
+
+    public void setClassId(String classId)
+    {
+      this.classId = classId;
+    }
+
+    public String getTitle()
+    {
+      return title;
+    }
+
+    public void setTitle(String title)
+    {
+      this.title = title;
     }
   }
 

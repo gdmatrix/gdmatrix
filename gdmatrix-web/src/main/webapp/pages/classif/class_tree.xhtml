@@ -1,0 +1,29 @@
+<ui:composition 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+  <style>
+    .current { font-weight: bold; }
+    .ui-tree.class_tree { border : none; padding: 0; }
+  </style>
+  
+  <p:tree value="#{classFinderBean.rootsNode}" 
+          var="data" dynamic="true" animate="true" cache="false"
+          class="class_tree">
+    <p:ajax event="expand" listener="#{classFinderBean.onNodeExpand}" />
+    <p:ajax event="collapse" listener="#{classFinderBean.onNodeCollapse}" />
+    <p:treeNode>
+      <span class="pi pi-tag mr-2" />
+      <p:commandLink action="#{navigatorBean.view(data.classId)}" 
+                     update=":mainform:central_column :mainform:context_panel">
+        <h:outputText value="#{data.classId}: #{data.title}"
+                      styleClass="#{data.classId == classObjectBean.objectId ? 'current' : ''}" />
+      </p:commandLink>
+    </p:treeNode>
+  </p:tree>
+  
+</ui:composition> 
+
