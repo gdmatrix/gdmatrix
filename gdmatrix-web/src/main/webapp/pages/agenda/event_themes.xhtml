@@ -102,14 +102,14 @@
 
       <div class="field col-12 text-right">
         <p:commandButton action="#{eventThemesTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_themes_dialog"
                          update="event_themes_table event_themes_panel"
                          oncomplete="if (!isFacesError()) PF('eventThemesDialog').hide()" />
         <p:commandButton action="#{eventThemesTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="event_themes_dialog" global="false"
                          oncomplete="PF('eventThemesDialog').hide()" />

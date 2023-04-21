@@ -90,13 +90,13 @@
       <div class="field col-12 text-right">
         <p:commandButton id="event_cases_store"
                          action="#{eventCasesTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          process="event_cases_dialog"
                          update=":mainform:search_tabs:tabs event_cases_panel"
                          oncomplete="if (!isFacesError()) PF('eventCasesDialog').hide()"
                          disabled="#{!eventObjectBean.editable}" />
         <p:commandButton action="#{eventCasesTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="event_cases_dialog" global="false"
                          oncomplete="PF('eventCasesDialog').hide()"/>

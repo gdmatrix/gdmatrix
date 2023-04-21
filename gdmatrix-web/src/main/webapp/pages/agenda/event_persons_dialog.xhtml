@@ -103,14 +103,14 @@
       <div class="field col-12 text-right">
         <p:commandButton id="event_persons_store"
                          action="#{eventPersonsTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_persons_dialog"
                          update=":mainform:search_tabs:tabs event_persons_panel"
                          oncomplete="if (!isFacesError()) PF('eventPersonsDialog').hide()" />
         <p:commandButton action="#{eventPersonsTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="event_persons_dialog" global="false"
                          oncomplete="PF('eventPersonsDialog').hide()" />

@@ -170,14 +170,14 @@
       <div class="field col-12 text-right">
         <p:commandButton id="event_places_store"
                          action="#{eventPlacesTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          icon="pi pi-save"
                          disabled="#{!eventObjectBean.editable}"
                          process="event_places_dialog"
                          update="event_places_table event_places_panel"
                          oncomplete="if (!isFacesError()) PF('eventPlacesDialog').hide()" />
         <p:commandButton action="#{eventPlacesTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="event_places_dialog" global="false"
                          oncomplete="PF('eventPlacesDialog').hide()" />

@@ -132,11 +132,11 @@
                      value="#{agendaBundle.eventRecurrences_copyRecurrences}"
                      rendered="#{eventCopyTabBean.rows != null and eventCopyTabBean.rowCount > 0}"
                      icon="pi pi-save"
-                     styleClass="ui-button-raised m-1"
+                     styleClass="m-1"
                      process="@this event_copy_preview_table"
                      update="event_recurrences_panel" />
     <p:commandButton action="#{eventCopyTabBean.reset}"
-                     styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                     styleClass="m-1" value="#{objectBundle.cancel}"
                      process="@this"
                      update="event_copy_dialog" global="false"
                      oncomplete="PF('eventCopyDialog').hide()" />

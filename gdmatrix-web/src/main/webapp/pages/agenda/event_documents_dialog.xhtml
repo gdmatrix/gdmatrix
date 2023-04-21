@@ -84,13 +84,13 @@
       <div class="field col-12 text-right">
         <p:commandButton id="event_documents_store"
                          action="#{eventDocumentsTabBean.store}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.store}"
+                         styleClass="m-1" value="#{objectBundle.store}"
                          process="event_documents_dialog"
                          update=":mainform:search_tabs:tabs event_documents_panel"
                          oncomplete="if (!isFacesError()) PF('eventDocumentsDialog').hide()"
                          disabled="#{!eventObjectBean.editable}" />
         <p:commandButton action="#{eventDocumentsTabBean.cancel}"
-                         styleClass="ui-button-raised m-1" value="#{objectBundle.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
                          update="event_documents_dialog" global="false"
                          oncomplete="PF('eventDocumentsDialog').hide()"/>
