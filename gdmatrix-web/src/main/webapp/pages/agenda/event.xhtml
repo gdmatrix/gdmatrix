@@ -20,11 +20,12 @@
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{eventFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          <div class="ui-fluid formgrid grid">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{eventFinderBean.smartFilter}" />
+            </div>
+          </div>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -53,114 +54,117 @@
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-          <!-- EventId -->
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_id}" />
-            <p:chips id="eventId" value="#{eventFinderBean.eventId}"
-                     addOnPaste="true" separator=","
-                     class="inputfield w-full"/>
-          </p:outputPanel>
+          <div class="ui-fluid formgrid grid">
 
-          <!-- Content -->
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="content" value="#{agendaBundle.event_content}" />
-            <p:inputText id="content" value="#{eventFinderBean.filter.content}"
-                         class="inputfield w-full" />
-          </p:outputPanel>
-
-          <!-- TypeId -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
-            <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
-                                  type="Event"
-                                  styleClass="w-full"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  minQueryLength="3"
-                                  renderShowButton="false"
-                                  process=":mainform:find_selector"
-                                  update=":mainform:find_selector"
-                                  maxResults="20">
-            </emcomp:typeReference>
-          </div>
-
-          <!-- Dates -->
-          <p:fieldset legend="#{agendaBundle.eventSearch_date}"
-                      toggleable="true" collapsed="true" styleClass="mb-2">
-            <div class="ui-fluid formgrid grid">
-              <div class="field col-12">
-                <p:selectOneMenu id="dateComparator" value="#{eventFinderBean.filter.dateComparator}"
-                                 styleClass="inputfield w-full" style="vertical-align:middle">
-                  <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="1" />
-                  <f:selectItem itemLabel="#{agendaBundle.event_endDate}" itemValue="2" />
-                  <f:selectItem itemLabel="#{agendaBundle.eventSearch_activeDate}" itemValue="3" />
-                </p:selectOneMenu>
-              </div>
-
-              <div class="field col-12">
-                <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from}" />
-                <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}"
-                              locale="#{eventFinderBean.language}" inputStyleClass="w-12"
-                              styleClass="inputfield w-full" showIcon="false"
-                              autocomplete="off"
-                              monthNavigator="true" yearNavigator="true" />
-              </div>
-
-              <div class="field col-12">
-                <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to}" />
-                <p:datePicker id="end_date" value="#{eventFinderBean.toDate}"
-                              locale="#{eventFinderBean.language}" inputStyleClass="w-12"
-                              styleClass="inputfield w-full" showIcon="false"
-                              autocomplete="off"
-                              monthNavigator="true" yearNavigator="true" />
-              </div>
+            <!-- EventId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{agendaBundle.event_id}" />
+              <p:chips id="eventId" value="#{eventFinderBean.eventId}"
+                       addOnPaste="true" separator="," />
             </div>
-          </p:fieldset>
 
-          <!-- ThemeId -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}" />
-            <p:selectOneMenu value="#{eventFinderBean.searchEventThemeId}"
-                             styleClass="inputfield w-full"
-                             style="min-width:inherit !important"
-                             filter="true"
-                             filterMatchMode="contains">
-              <f:selectItem itemValue="" itemLabel="#{agendaBundle.eventSearch_all}" />
-              <f:selectItems value="#{themeTypeBean.selectItems}" />
-            </p:selectOneMenu>
+            <!-- Content -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{agendaBundle.event_content}" />
+              <p:inputText id="content" value="#{eventFinderBean.filter.content}" />
+            </div>
+
+            <!-- TypeId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
+              <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
+                                    type="Event"
+                                    scrollHeight="200"
+                                    queryDelay="1000"
+                                    minQueryLength="3"
+                                    renderShowButton="false"
+                                    process=":mainform:find_selector"
+                                    update=":mainform:find_selector"
+                                    maxResults="20">
+              </emcomp:typeReference>
+            </div>
+
+            <!-- Dates -->
+            <div class="field col-12">
+              <p:fieldset legend="#{agendaBundle.eventSearch_date}"
+                          toggleable="true" collapsed="true">
+                
+                  <div class="field col-12">
+                    <p:selectOneMenu id="dateComparator" 
+                                     value="#{eventFinderBean.filter.dateComparator}"
+                                     style="vertical-align:middle">
+                      <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="1" />
+                      <f:selectItem itemLabel="#{agendaBundle.event_endDate}" itemValue="2" />
+                      <f:selectItem itemLabel="#{agendaBundle.eventSearch_activeDate}" itemValue="3" />
+                    </p:selectOneMenu>
+                  </div>
+
+                  <div class="field col-12">
+                    <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from}" />
+                    <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}"
+                                  locale="#{eventFinderBean.language}" inputStyleClass="w-12"
+                                  showIcon="false"
+                                  autocomplete="off"
+                                  monthNavigator="true" yearNavigator="true" />
+                  </div>
+
+                  <div class="field col-12">
+                    <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to}" />
+                    <p:datePicker id="end_date" value="#{eventFinderBean.toDate}"
+                                  locale="#{eventFinderBean.language}" inputStyleClass="w-12"
+                                  showIcon="false"
+                                  autocomplete="off"
+                                  monthNavigator="true" yearNavigator="true" />
+                  </div>
+                
+              </p:fieldset>
+            </div>
+            
+            <!-- ThemeId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}" />
+              <p:selectOneMenu value="#{eventFinderBean.searchEventThemeId}"                               
+                               style="min-width:inherit !important"
+                               filter="true"
+                               filterMatchMode="contains">
+                <f:selectItem itemValue="" itemLabel="#{agendaBundle.eventSearch_all}" />
+                <f:selectItems value="#{themeTypeBean.selectItems}" />
+              </p:selectOneMenu>
+            </div>
+
+            <!-- PersonId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{agendaBundle.event_personId}" />
+              <emcomp:objectReference value="#{eventFinderBean.filter.personId}"
+                                      type="Person"
+                                      scrollHeight="200"
+                                      queryDelay="1000"
+                                      minQueryLength="3"
+                                      renderShowButton="false"
+                                      process=":mainform:find_selector"
+                                      update=":mainform:find_selector"
+                                      maxResults="20">
+              </emcomp:objectReference>
+            </div>
+
+            <!-- Room -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{agendaBundle.event_place}" />
+              <emcomp:objectReference value="#{eventFinderBean.filter.roomId}"
+                                      type="Room"
+                                      scrollHeight="200"
+                                      queryDelay="1000"
+                                      minQueryLength="3"
+                                      renderShowButton="false"
+                                      process=":mainform:find_selector"
+                                      update=":mainform:find_selector"
+                                      maxResults="20">
+              </emcomp:objectReference>
+            </div>
+
           </div>
-
-          <!-- PersonId -->
-          <p:outputPanel styleClass="field" rendered="true">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_personId}" />
-            <emcomp:objectReference value="#{eventFinderBean.filter.personId}"
-                                    type="Person"
-                                    styleClass="w-full"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3"
-                                    renderShowButton="false"
-                                    process=":mainform:find_selector"
-                                    update=":mainform:find_selector">
-            </emcomp:objectReference>
-          </p:outputPanel>
-
-          <!-- Room -->
-          <p:outputPanel styleClass="field" rendered="true">
-            <p:outputLabel for="@next" value="#{agendaBundle.event_place}" />
-            <emcomp:objectReference value="#{eventFinderBean.filter.roomId}"
-                                    type="Room"
-                                    styleClass="w-full"
-                                    scrollHeight="200"
-                                    queryDelay="1000"
-                                    minQueryLength="3"
-                                    renderShowButton="false"
-                                    process=":mainform:find_selector"
-                                    update=":mainform:find_selector">
-            </emcomp:objectReference>
-          </p:outputPanel>
-
-          <div class="text-right">
+          
+          <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{eventFinderBean.clear}"
                              styleClass="m-1"

@@ -19,11 +19,12 @@
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{themeFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          <div class="ui-fluid formgrid grid">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{themeFinderBean.smartFilter}" />
+            </div>
+          </div>  
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -52,21 +53,23 @@
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-          <!-- ThemeId -->
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{agendaBundle.theme_id}" />
-            <p:inputText id="themeId" value="#{themeFinderBean.filter.themeId}"
-                         class="inputfield w-full" />
-          </p:outputPanel>
+          <div class="ui-fluid formgrid grid">          
+          
+            <!-- ThemeId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{agendaBundle.theme_id}" />
+              <p:inputText id="themeId" value="#{themeFinderBean.filter.themeId}" />
+            </div>
 
-          <!-- Description -->
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{agendaBundle.theme_description}" />
-            <p:inputText id="description" value="#{themeFinderBean.filter.description}"
-                         class="inputfield w-full" />
-          </p:outputPanel>
+            <!-- Description -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{agendaBundle.theme_description}" />
+              <p:inputText id="description" value="#{themeFinderBean.filter.description}" />
+            </div>
 
-          <div class="text-right">
+          </div>
+          
+          <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{themeFinderBean.clear}"
                              styleClass="m-1"

@@ -20,11 +20,12 @@
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <p:outputPanel styleClass="field">
-            <p:outputLabel for="@next" value="#{objectBundle.value}" />
-            <p:inputText id="smartFilter" value="#{roomFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
-          </p:outputPanel>
+          <div class="ui-fluid formgrid grid"> 
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{roomFinderBean.smartFilter}" />
+            </div>
+          </div>
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -53,74 +54,72 @@
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
-          <!-- RoomId -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_id}" />
-            <p:chips value="#{roomFinderBean.roomId}"
-                     addOnPaste="true" separator=","
-                     class="inputfield w-full"/>
-          </div>
+          <div class="ui-fluid formgrid grid">          
+          
+            <!-- RoomId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.room_id}" />
+              <p:chips value="#{roomFinderBean.roomId}"
+                       addOnPaste="true" separator="," />
+            </div>
 
-          <!-- Name -->
-          <div Class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
-            <p:inputText value="#{roomFinderBean.filter.roomName}"
-                         class="inputfield w-full" />
-          </div>
+            <!-- Name -->
+            <div Class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.room_name}" />
+              <p:inputText value="#{roomFinderBean.filter.roomName}" />
+            </div>
 
-          <!-- TypeId -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
-            <emcomp:typeReference value="#{roomFinderBean.filter.roomTypeId}"
-                                  type="Room"
-                                  styleClass="w-full"
-                                  scrollHeight="200"
-                                  queryDelay="1000"
-                                  minQueryLength="3"
-                                  renderShowButton="false"
-                                  process=":mainform:find_selector"
-                                  update=":mainform:find_selector"
-                                  maxResults="20">
-            </emcomp:typeReference>
-          </div>
-
-          <!-- AddressId -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_address}" />
-            <emcomp:objectReference value="#{roomFinderBean.filter.addressId}"
-                                    type="Address"
-                                    styleClass="w-full"
+            <!-- TypeId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
+              <emcomp:typeReference value="#{roomFinderBean.filter.roomTypeId}"
+                                    type="Room"
                                     scrollHeight="200"
                                     queryDelay="1000"
                                     minQueryLength="3"
                                     renderShowButton="false"
                                     process=":mainform:find_selector"
-                                    update=":mainform:find_selector">
-            </emcomp:objectReference>
-          </div>
+                                    update=":mainform:find_selector"
+                                    maxResults="20">
+              </emcomp:typeReference>
+            </div>
 
-          <!-- Capacity -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
-            <p:inputText id="roomCapacity" value="#{roomFinderBean.filter.capacity}"
-                         class="inputfield w-full" />
-          </div>
+            <!-- AddressId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.room_address}" />
+              <emcomp:objectReference value="#{roomFinderBean.filter.addressId}"
+                                      type="Address"
+                                      scrollHeight="200"
+                                      queryDelay="1000"
+                                      minQueryLength="3"
+                                      renderShowButton="false"
+                                      process=":mainform:find_selector"
+                                      update=":mainform:find_selector"
+                                      maxResults="20">
+              </emcomp:objectReference>
+            </div>
 
-          <!-- SpaceId -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
-            <p:inputText id="roomSpaceId" value="#{roomFinderBean.filter.spaceId}"
-                         class="inputfield w-full" />
-          </div>
+            <!-- Capacity -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.room_capacity}" />
+              <p:inputText id="roomCapacity" value="#{roomFinderBean.filter.capacity}" />
+            </div>
 
-          <!-- Comments -->
-          <div class="field">
-            <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
-            <p:inputText id="roomComments" value="#{roomFinderBean.filter.comments}"
-                         class="inputfield w-full" />
-          </div>
+            <!-- SpaceId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.room_spaceId}" />
+              <p:inputText id="roomSpaceId" value="#{roomFinderBean.filter.spaceId}" />
+            </div>
 
-          <div class="text-right">
+            <!-- Comments -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{kernelBundle.room_comments}" />
+              <p:inputText id="roomComments" value="#{roomFinderBean.filter.comments}" />
+            </div>
+
+          </div>
+          
+          <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{roomFinderBean.clear}"
                              process=":mainform:find_selector"
