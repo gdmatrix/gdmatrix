@@ -504,6 +504,7 @@ public class HtmlNewsCarousel extends UIComponentBase
         writer.writeAttribute("src", docURL, null);
       }
       writer.writeAttribute("alt", newView.getHeadline(), null);
+      writer.endElement("img");
     }
     writer.endElement("div");
   }

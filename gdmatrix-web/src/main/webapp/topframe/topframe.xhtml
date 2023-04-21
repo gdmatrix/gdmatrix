@@ -80,13 +80,13 @@
 
         <ui:include src="/topframe/toolbar.xhtml" />
 
-        <div styleClass="bannerWrapper warnmsg" rendered="#{userSessionBean.selectedMenuItem.properties['webWarning.message'] != null}">
-          <div styleClass="webWarningMessage#{userSessionBean.selectedMenuItem.properties['webWarning.fixed'] == 'false' ? '' : ' bannerFixed'}">
+        <t:div styleClass="bannerWrapper warnmsg" rendered="#{userSessionBean.selectedMenuItem.properties['webWarning.message'] != null}">
+          <div class="webWarningMessage#{userSessionBean.selectedMenuItem.properties['webWarning.fixed'] == 'false' ? '' : ' bannerFixed'}">
             <sf:outputText escape="false" value="#{userSessionBean.selectedMenuItem.properties['webWarning.message']}"
               translator="#{userSessionBean.translator}"
               translationGroup="#{userSessionBean.translationGroup}" />          
           </div>          
-        </div>
+        </t:div>
 
         <script>
           checkFixedBanners();        

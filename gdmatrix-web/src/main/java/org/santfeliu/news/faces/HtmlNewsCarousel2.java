@@ -536,9 +536,9 @@ public class HtmlNewsCarousel2 extends UIComponentBase
   @Override
   public void encodeBegin(FacesContext context) throws IOException
   {
-    if (!isRendered()) return;
+    if (!isRendered()) return;    
     String clientId = getClientId(context);
-    ResponseWriter writer = context.getResponseWriter();
+    ResponseWriter writer = context.getResponseWriter();    
     try
     {
       SectionFilter filter = new SectionFilter();
@@ -671,10 +671,10 @@ public class HtmlNewsCarousel2 extends UIComponentBase
 
     int index = 1;
     for (NewView newView : news)
-    {
+    {      
       encodeImageLayer(newView, writer, index);
       index++;
-    }
+    }    
     encodeInfoLayer(news, writer, translator, clientId);
     encodeBottomLayer(writer, translator, news.size());
     
@@ -757,7 +757,8 @@ public class HtmlNewsCarousel2 extends UIComponentBase
       writer.writeAttribute("id", "newsCarouselNewImage" + index, null);
       writer.writeAttribute("class", "image", null);
       writer.writeAttribute("src", docURL, null);
-      writer.writeAttribute("alt", trHeadline, null);      
+      writer.writeAttribute("alt", trHeadline, null);
+      writer.endElement("img");
       if (newURL != null)
       {
         writer.endElement("a");
@@ -909,7 +910,8 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     writer.writeAttribute("title", pauseLabel, null);    
     writer.startElement("img", this);
     writer.writeAttribute("src", getPauseIconURL(), null);
-    writer.writeAttribute("alt", pauseLabel, null);    
+    writer.writeAttribute("alt", pauseLabel, null);
+    writer.endElement("img");
     writer.endElement("a");
     writer.endElement("div");    
 
@@ -923,7 +925,8 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     writer.writeAttribute("title", playLabel, null);
     writer.startElement("img", this);
     writer.writeAttribute("src", getPlayIconURL(), null);
-    writer.writeAttribute("alt", playLabel, null);   
+    writer.writeAttribute("alt", playLabel, null);
+    writer.endElement("img");    
     writer.endElement("a");
     writer.endElement("div");    
 
@@ -947,7 +950,8 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     //writer.write("&nbsp;");
     writer.startElement("img", this);
     writer.writeAttribute("src", getPrevBlockIconURL(), null);
-    writer.writeAttribute("alt", prevLabel, null);    
+    writer.writeAttribute("alt", prevLabel, null);
+    writer.endElement("img");    
     writer.endElement("a");
     writer.endElement("div");
     
@@ -979,7 +983,7 @@ public class HtmlNewsCarousel2 extends UIComponentBase
     writer.startElement("img", this);
     writer.writeAttribute("src", getNextBlockIconURL(), null);
     writer.writeAttribute("alt", nextLabel, null);
-    
+    writer.endElement("img");
     writer.endElement("a");
     writer.endElement("div");
     
