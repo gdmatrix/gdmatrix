@@ -55,14 +55,12 @@
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="UserId" />
-              <p:chips value="#{userFinderBean.userIdList}"
-                       class="inputfield w-full" />
+              <p:chips value="#{userFinderBean.userIdList}" />
             </div>          
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{securityBundle.user_displayName}" />        
-              <p:inputText value="#{userFinderBean.filter.displayName}" 
-                           class="inputfield w-full" />
+              <p:inputText value="#{userFinderBean.filter.displayName}"  />
             </div>
 
             <div class="field col-12">

@@ -36,7 +36,6 @@ import javax.el.ValueExpression;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.el.CompositeComponentExpressionHolder;
 import javax.inject.Named;
-import org.apache.commons.lang.StringUtils;
 import static org.matrix.dic.DictionaryConstants.CLASS_TYPE;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.NavigatorBean;
@@ -44,7 +43,6 @@ import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.modules.classif.ClassTypeBean;
 import org.santfeliu.webapp.util.WebUtils;
 import org.matrix.classif.Class;
-import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
