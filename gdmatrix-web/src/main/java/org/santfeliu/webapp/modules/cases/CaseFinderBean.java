@@ -124,6 +124,22 @@ public class CaseFinderBean extends FinderBean
       filter.getCaseId().addAll(caseIdList);
     }
   }
+  
+  public String getClassId()
+  {
+    if (filter.getClassId().isEmpty()) return null;
+    return filter.getClassId().get(0);
+  }
+
+  public void setClassId(String classId)
+  {
+    filter.getClassId().clear();
+
+    if (!StringUtils.isBlank(classId))
+    {
+      filter.getClassId().add(classId);
+    }
+  }  
 
   public List getRows()
   {

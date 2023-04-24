@@ -41,6 +41,16 @@
                          requiredMessage="'#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}'  #{messageBundle.IS_REQUIRED}"
                          readonly="#{!caseObjectBean.editable}" />
       </div>
+      
+      <div class="field col-12">
+        <p:outputLabel for="@next" value="#{caseBundle.case_class}" />
+        <emcomp:multipleClassReference value="#{caseObjectBean.case.classId}"
+                                       newClassId="#{caseObjectBean.newClassId}"
+                                       scrollHeight="200"
+                                       queryDelay="1000"
+                                       minQueryLength="3" 
+                                       process=":mainform:search_tabs:tabs" />
+      </div>      
 
       <div class="field col-12 md:col-3">
         <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startDate', caseBundle.case_startDate)}" />

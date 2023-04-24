@@ -37,6 +37,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -114,6 +115,8 @@ public class TypeObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
+    if (StringUtils.isBlank(type.getSuperTypeId()))
+      type.setSuperTypeId(null);
     type = DicModuleBean.getPort(false).storeType(type);
     setObjectId(type.getTypeId());
     typeFinderBean.outdate();    

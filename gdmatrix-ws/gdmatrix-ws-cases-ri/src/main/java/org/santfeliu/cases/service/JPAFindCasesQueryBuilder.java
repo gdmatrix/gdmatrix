@@ -282,7 +282,7 @@ public class JPAFindCasesQueryBuilder extends FindCasesQueryBuilder
     List<String> classIds = filter.getClassId();
     if (classIds != null && classIds.size() > 0)
     {
-      appendPropertyFilter(buffer, "classId", classIds, "class");
+      appendPropertyFilter(buffer, "classId", classIds, "clsprop");
     }
   }
 

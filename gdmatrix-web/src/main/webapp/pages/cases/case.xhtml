@@ -63,6 +63,24 @@
               <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
               <p:chips value="#{caseFinderBean.caseIdList}"/>
             </div>  
+            
+            <!-- Title -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{caseBundle.case_title}" />
+              <p:inputText value="#{caseFinderBean.filter.title}" />
+            </div>
+            
+            <!-- ClassId -->
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{caseBundle.case_classId}" />
+              <emcomp:objectReference value="#{caseFinderBean.classId}"
+                                      type="Class"
+                                      scrollHeight="200"
+                                      queryDelay="1000"
+                                      minQueryLength="3" 
+                                      renderShowButton="false"
+                                      process=":mainform:find_selector" />
+            </div>            
 
             <!-- TypeId -->
             <p:outputPanel class="field col-12" rendered="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Case'}">
@@ -78,13 +96,7 @@
                                     update=":mainform:find_selector"
                                     maxResults="20">
               </emcomp:typeReference>
-            </p:outputPanel>          
-
-            <!-- Title -->
-            <div class="field col-12">
-              <p:outputLabel for="@next" value="#{caseBundle.case_title}" />
-              <p:inputText value="#{caseFinderBean.filter.title}" />
-            </div>
+            </p:outputPanel>              
 
             <!-- Description -->
             <div class="field col-12">

@@ -30,16 +30,12 @@
       <p:outputLabel for="@next" value="#{dicBundle.type_typeId}" indicateRequired="true"/>
       <p:inputText value="#{typeObjectBean.type.typeId}" 
                     required="#{not empty param['mainform:search_tabs:store']}"
-                    requiredMessage="#{messageBundle.TYPEID_IS_REQUIRED}"                  
-                    />
+                    requiredMessage="#{messageBundle.TYPEID_IS_REQUIRED}" />
     </div>
 
     <div class="field col-12 md:col-6">
       <p:outputLabel for="@next" value="#{dicBundle.type_superTypeId}" indicateRequired="true"/>
-      <p:inputText value="#{typeObjectBean.type.superTypeId}" 
-                    required="#{not empty param['mainform:search_tabs:store']}"
-                    requiredMessage="#{messageBundle.SUPERTYPEID_IS_REQUIRED}"                  
-                    />      
+      <p:inputText value="#{typeObjectBean.type.superTypeId}" />      
     </div>   
 
     <div class="field col-12 md:col-12">

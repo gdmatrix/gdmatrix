@@ -32,10 +32,12 @@ package org.santfeliu.webapp.modules.cases;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.dic.DictionaryConstants;
 import org.santfeliu.util.TextUtils;
@@ -114,7 +116,18 @@ public class CaseObjectBean extends ObjectBean
   {
     this.cas = cas;
   }
-
+  
+  public void setNewClassId(String classId)
+  {
+    if (!StringUtils.isBlank(classId))
+    {
+      List<String> currentClassIdList = cas.getClassId();
+      if (!currentClassIdList.contains(classId))
+      {
+        currentClassIdList.add(classId);
+      }
+    }
+  }
   public Date getStartDateTime()
   {
     if (cas != null && cas.getStartDate() != null)
