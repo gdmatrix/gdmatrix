@@ -48,6 +48,8 @@ import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.util.DataTableRow;
 
 /**
  *
@@ -59,7 +61,7 @@ public class DocumentFinderBean extends FinderBean
 {
   private String smartFilter;
   private DocumentFilter filter = new DocumentFilter();
-  private List<Document> rows;
+  private List<DataTableRow> rows;
   private int firstRow;
   private boolean finding;
   private boolean outdated;
@@ -117,10 +119,25 @@ public class DocumentFinderBean extends FinderBean
     this.formSelector = formSelector;
   }
 
+  public List<Column> getColumns()
+  {
+    try
+    {
+      if (objectSetup == null)
+        loadObjectSetup();
+
+      return objectSetup.getSearchTabs().get(0).getColumns();
+    }
+    catch (Exception ex)
+    {
+      return Collections.emptyList();
+    }
+  }
+
   @Override
   public String getObjectId(int position)
   {
-    return rows == null ? NEW_OBJECT_ID : rows.get(position).getDocId();
+    return rows == null ? NEW_OBJECT_ID : rows.get(position).getRowId();
   }
 
   @Override
@@ -159,12 +176,12 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
-  public List<Document> getRows()
+  public List<DataTableRow> getRows()
   {
     return rows;
   }
 
-  public void setRows(List<Document> rows)
+  public void setRows(List<DataTableRow> rows)
   {
     this.rows = rows;
   }
@@ -306,7 +323,15 @@ public class DocumentFinderBean extends FinderBean
             {
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
-              return DocModuleBean.getPort(false).findDocuments(filter);
+              List<Column> columns = getColumns();
+              for (Column column : columns)
+              {
+                filter.getOutputProperty().add(column.getName());
+              }
+              List<Document> documents =
+                DocModuleBean.getPort(false).findDocuments(filter);
+
+              return toDataTableRows(documents);
             }
             catch (Exception ex)
             {
@@ -322,7 +347,7 @@ public class DocumentFinderBean extends FinderBean
         {
           if (rows.size() == 1)
           {
-            navigatorBean.view(rows.get(0).getDocId());
+            navigatorBean.view(rows.get(0).getRowId());
             documentObjectBean.setSearchTabSelector(
               documentObjectBean.getEditModeSelector());
           }
@@ -339,4 +364,19 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
+
+  private List<DataTableRow> toDataTableRows(List<Document> documents)
+    throws Exception
+  {
+    List<DataTableRow> convertedRows = new ArrayList();
+    for (Document document : documents)
+    {
+      DataTableRow dataTableRow =
+        new DataTableRow(document.getDocId(), document.getDocTypeId());
+      dataTableRow.setValues(this, document, getColumns());
+      convertedRows.add(dataTableRow);
+    }
+
+    return convertedRows;
+  }
 }

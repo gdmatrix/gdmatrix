@@ -9,25 +9,23 @@
                paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                first="#{documentFinderBean.firstRow}"
-               rowStyleClass="#{row.docId == documentObjectBean.objectId ? 'current' : ''}"
+               rowStyleClass="#{row.rowId == documentObjectBean.objectId ? 'current' : ''}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rows="10"
                rowIndexVar="rowIndex">
 
-    <p:column headerText="docId" styleClass="w-1">
-      <h:outputText value="#{row.docId}" />
-    </p:column>   
-    <p:column headerText="Type" styleClass="w-2">
-      <h:outputText value="#{row.docTypeId}" />
-    </p:column>         
-    <p:column headerText="Title" styleClass="w-7">
-      <h:outputText value="#{row.title}" />
-    </p:column>
+    <p:columns value="#{documentFinderBean.columns}" var="column"  columnIndexVar="i"
+               filterable="false" sortable="false" resizable="false"
+               headerText="#{applicationBean.translate(column.label)}" 
+               field="#{column.name}" styleClass="#{column.styleClass}">
+      <h:outputText value="#{row.values[i]}" />
+    </p:columns>
+
     <p:column styleClass="w-2 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
-                       action="#{navigatorBean.select(row.docId)}"
+                       action="#{navigatorBean.select(row.rowId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"

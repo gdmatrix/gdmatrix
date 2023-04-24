@@ -43,6 +43,8 @@ import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
+import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.SearchTab;
 
 /**
  *
@@ -52,6 +54,8 @@ import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
 @ApplicationScoped
 public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
 {
+  private static final String BUNDLE_PREFIX = "$$documentBundle.";
+
   @Override
   public String getRootTypeId()
   {
@@ -95,12 +99,25 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
     ObjectSetup objectSetup = new ObjectSetup();
     objectSetup.setViewId("/pages/doc/document.xhtml");
 
+    List<SearchTab> searchTabs = new ArrayList();
+    SearchTab searchTab =
+      new SearchTab("List", "/pages/doc/document_list.xhtml");
+    searchTab.getColumns().add(new Column("docId",
+      BUNDLE_PREFIX + "documentSearch_docId", "col-1"));
+    searchTab.getColumns().add(new Column("docTypeId",
+      BUNDLE_PREFIX + "documentSearch_docTypeId", "col-3"));
+    searchTab.getColumns().add(new Column("title",
+      BUNDLE_PREFIX + "documentSearch_title", "col-6"));
+    searchTabs.add(searchTab);
+
+    objectSetup.setSearchTabs(searchTabs);
+
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Main", "/pages/doc/document_main.xhtml"));
-    editTabs.add(new EditTab("Content", "/pages/doc/document_content.xhtml"));
-    editTabs.add(new EditTab("Cases", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
-    editTabs.add(new EditTab("Documents", "/pages/doc/document_documents.xhtml", "documentDocumentsTabBean"));
-    editTabs.add(new EditTab("ACL", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/doc/document_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_content", "/pages/doc/document_content.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", "/pages/doc/document_cases.xhtml", "documentCasesTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents", "/pages/doc/document_documents.xhtml", "documentDocumentsTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl", "/pages/doc/document_acl.xhtml", "documentACLTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;
