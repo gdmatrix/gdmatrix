@@ -90,6 +90,8 @@ public class ComponentUtils
   {
     if (options == null) options = Collections.emptyMap();
 
+    boolean isStacked = "true".equals(options.get("stacked"));
+
     FacesContext facesContext = FacesContext.getCurrentInstance();
     Application application = facesContext.getApplication();
 
@@ -128,10 +130,34 @@ public class ComponentUtils
       }
       else if (Field.BOOLEAN.equals(fieldType))
       {
-        ToggleSwitch toogleSwitch =
-          (ToggleSwitch)application.createComponent(ToggleSwitch.COMPONENT_TYPE);
-        toogleSwitch.setStyleClass("block");
-        component = toogleSwitch;
+        if (isStacked || field.getMinOccurs() == 0)
+        {
+          SelectOneMenu selectOneMenu =
+            (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
+
+          UISelectItem selectItem = new UISelectItem();
+          selectItem.setItemValue(null);
+          selectItem.setItemLabel("");
+          selectOneMenu.getChildren().add(selectItem);
+
+          selectItem = new UISelectItem();
+          selectItem.setItemValue(false);
+          selectItem.setItemLabel("FALSE");
+          selectOneMenu.getChildren().add(selectItem);
+
+          selectItem = new UISelectItem();
+          selectItem.setItemValue(true);
+          selectItem.setItemLabel("TRUE");
+          selectOneMenu.getChildren().add(selectItem);
+          component = selectOneMenu;
+        }
+        else
+        {
+          ToggleSwitch toogleSwitch =
+            (ToggleSwitch)application.createComponent(ToggleSwitch.COMPONENT_TYPE);
+          toogleSwitch.setStyleClass("block");
+          component = toogleSwitch;
+        }
       }
       else
       {
@@ -207,7 +233,7 @@ public class ComponentUtils
 
         HtmlPanelGroup group =
           (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-        if ("true".equals(options.get("stacked")))
+        if (isStacked)
         {
           styleClass = "col-12";
         }
