@@ -266,7 +266,7 @@ public class DocumentFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ finding, getFilterTabSelector(),
-      filter, firstRow, getObjectPosition(), formSelector };
+      filter, firstRow, getObjectPosition(), formSelector, rows };
   }
 
   @Override
@@ -276,12 +276,10 @@ public class DocumentFinderBean extends FinderBean
     finding = (Boolean)stateArray[0];
     setFilterTabSelector((Integer)stateArray[1]);
     filter = (DocumentFilter)stateArray[2];
+    firstRow = (Integer)stateArray[3];
     smartFilter = documentTypeBean.filterToQuery(filter);
     formSelector = (String)stateArray[5];
-
-    doFind(false);
-
-    firstRow = (Integer)stateArray[3];
+    rows = (List<DataTableRow>)stateArray[6];
     setObjectPosition((Integer)stateArray[4]);
   }
 
@@ -363,7 +361,6 @@ public class DocumentFinderBean extends FinderBean
       error(ex);
     }
   }
-
 
   private List<DataTableRow> toDataTableRows(List<Document> documents)
     throws Exception
