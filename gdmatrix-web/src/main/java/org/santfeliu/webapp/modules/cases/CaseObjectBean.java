@@ -40,6 +40,7 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -189,7 +190,21 @@ public class CaseObjectBean extends ObjectBean
   {
     return caseTypeBean.isPropertyHidden(cas, propName);
   }
-
+  
+  /**
+   * Not rendered when base Type has "classId" PropertyDefinition with default 
+   * value set, minium occurrences greater than zero, and read only.
+   */
+  public boolean isRenderClassId()
+  {    
+    String typeId = getBaseTypeInfo().getBaseTypeId();
+    PropertyDefinition pd = 
+      caseTypeBean.getPropertyDefinition(typeId, "classId");
+    
+    return !(pd != null && pd.getValue() != null && pd.getMinOccurs() > 0 
+      && pd.isReadOnly());
+  }
+  
   private Date getDate(String date, String time)
   {
     String dateTime = TextUtils.concatDateAndTime(date, time);
@@ -218,7 +233,7 @@ public class CaseObjectBean extends ObjectBean
 
     caseFinderBean.outdate();
   }
-  
+    
   @Override
   public void removeObject() throws Exception
   {

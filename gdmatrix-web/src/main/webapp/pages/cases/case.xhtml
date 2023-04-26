@@ -71,7 +71,7 @@
             </div>
             
             <!-- ClassId -->
-            <div class="field col-12">
+            <p:outputPanel class="field col-12" rendered="#{caseObjectBean.renderClassId}">
               <p:outputLabel for="@next" value="#{caseBundle.case_classId}" />
               <emcomp:objectReference value="#{caseFinderBean.classId}"
                                       type="Class"
@@ -80,7 +80,7 @@
                                       minQueryLength="3" 
                                       renderShowButton="false"
                                       process=":mainform:find_selector" />
-            </div>            
+            </p:outputPanel>            
 
             <!-- TypeId -->
             <p:outputPanel class="field col-12" rendered="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Case'}">

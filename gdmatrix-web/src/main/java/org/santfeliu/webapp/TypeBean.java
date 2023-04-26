@@ -235,6 +235,29 @@ public abstract class TypeBean<T, F> extends WebBean
       return !Boolean.parseBoolean(value);
 
     return pd.isHidden(); 
+  } 
+  
+  public PropertyDefinition getPropertyDefinition(String typeId,
+    String propName)
+  {
+    Type type = TypeCache.getInstance().getType(typeId);
+    if (type != null)
+    {
+      List<PropertyDefinition> pds = type.getPropertyDefinition();
+      for (PropertyDefinition pd : pds)
+      {
+        if (pd.getName().equals(propName))
+        {
+          return pd;
+        }
+      }
+      String superTypeId = type.getSuperTypeId();
+      if (superTypeId != null)
+      {
+        return getPropertyDefinition(superTypeId, propName);
+      }
+    }
+    return null;
   }   
 
   protected void addNavigatorItems(List<SelectItem> items, String typeId)
@@ -274,27 +297,6 @@ public abstract class TypeBean<T, F> extends WebBean
     });
   }
     
-  protected PropertyDefinition getPropertyDefinition(String typeId,
-    String propName)
-  {
-    Type type = TypeCache.getInstance().getType(typeId);
-    if (type != null)
-    {
-      List<PropertyDefinition> pds = type.getPropertyDefinition();
-      for (PropertyDefinition pd : pds)
-      {
-        if (pd.getName().equals(propName))
-        {
-          return pd;
-        }
-      }
-      String superTypeId = type.getSuperTypeId();
-      if (superTypeId != null)
-      {
-        return getPropertyDefinition(superTypeId, propName);
-      }
-    }
-    return null;
-  }  
+ 
 
 }
