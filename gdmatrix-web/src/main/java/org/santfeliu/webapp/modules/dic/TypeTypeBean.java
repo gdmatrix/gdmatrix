@@ -59,6 +59,8 @@ import org.santfeliu.webapp.util.WebUtils;
 @ApplicationScoped
 public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 {
+  private static final String BUNDLE_PREFIX = "$$dicBundle.";
+  
   private List<SelectItem> rootTypeIdSelectItems;
 
   @PostConstruct
@@ -120,9 +122,12 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     objectSetup.setViewId("/pages/dic/type.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Main", "/pages/dic/type_main.xhtml"));
-    editTabs.add(new EditTab("Properties", "/pages/dic/type_properties.xhtml", "typePropertiesTabBean"));
-    editTabs.add(new EditTab("ACL", "/pages/dic/type_acl.xhtml", "typeACLTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+      "/pages/dic/type_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_properties", 
+      "/pages/dic/type_properties.xhtml", "typePropertiesTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl", 
+      "/pages/dic/type_acl.xhtml", "typeACLTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

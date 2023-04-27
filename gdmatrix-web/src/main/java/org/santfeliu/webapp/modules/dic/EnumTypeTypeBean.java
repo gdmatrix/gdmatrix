@@ -51,7 +51,8 @@ import org.santfeliu.webapp.setup.ObjectSetup;
 @ApplicationScoped
 public class EnumTypeTypeBean extends TypeBean<EnumType, EnumTypeFilter>
 {
-
+  private static final String BUNDLE_PREFIX = "$$dicBundle.";
+  
   @Override
   public String getRootTypeId()
   {
@@ -96,8 +97,10 @@ public class EnumTypeTypeBean extends TypeBean<EnumType, EnumTypeFilter>
     objectSetup.setViewId("/pages/dic/enum_type.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Main", "/pages/dic/enum_type_main.xhtml"));
-    editTabs.add(new EditTab("Items", "/pages/dic/enum_type_items.xhtml", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+      "/pages/dic/enum_type_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_items", 
+      "/pages/dic/enum_type_items.xhtml", 
       "enumTypeItemsTabBean"));
     objectSetup.setEditTabs(editTabs);
 

@@ -54,6 +54,7 @@ import org.santfeliu.webapp.setup.ObjectSetup;
 public class AddressTypeBean extends TypeBean<Address, AddressFilter>
 {
   private static final String DEFAULT_CITY_NAME = "defaultCityName";
+  private static final String BUNDLE_PREFIX = "$$kernelBundle.";  
 
   @Inject
   StreetTypeBean streetTypeBean;
@@ -119,9 +120,12 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
     objectSetup.setViewId("/pages/kernel/address.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Main", "/pages/kernel/address_main.xhtml"));
-    editTabs.add(new EditTab("Persons", "/pages/kernel/address_persons.xhtml", "addressPersonsTabBean"));
-    editTabs.add(new EditTab("Cases", "/pages/kernel/address_cases.xhtml", "addressCasesTabBean"));    
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+      "/pages/kernel/address_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_persons", 
+      "/pages/kernel/address_persons.xhtml", "addressPersonsTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", 
+      "/pages/kernel/address_cases.xhtml", "addressCasesTabBean"));    
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

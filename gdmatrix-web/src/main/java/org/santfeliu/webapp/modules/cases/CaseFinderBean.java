@@ -238,7 +238,7 @@ public class CaseFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ finding, getFilterTabSelector(), filter, firstRow, 
-      getObjectPosition(), formSelector };
+      getObjectPosition(), formSelector, rows };
   }
 
   @Override
@@ -251,12 +251,11 @@ public class CaseFinderBean extends FinderBean
       setFilterTabSelector((Integer)stateArray[1]);
       filter = (CaseFilter)stateArray[2];
       smartFilter = caseTypeBean.filterToQuery(filter);
-      formSelector = (String)stateArray[5];
-
-      doFind(false);
-
       firstRow = (Integer)stateArray[3];
-      setObjectPosition((Integer)stateArray[4]);
+      setObjectPosition((Integer)stateArray[4]);      
+      formSelector = (String)stateArray[5];
+      rows = (List<DataTableRow>) stateArray[6];
+
       
     }
     catch (Exception ex)

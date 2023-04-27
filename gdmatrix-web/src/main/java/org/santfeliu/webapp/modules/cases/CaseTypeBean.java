@@ -119,38 +119,43 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
 
     List<EditTab> editTabs = new ArrayList<>();
     
-    EditTab mainTab = new EditTab("Main", "/pages/cases/case_main.xhtml");
+    EditTab mainTab = 
+      new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/cases/case_main.xhtml");
     mainTab.getReadRoles().add("EVERYONE");
     mainTab.getWriteRoles().add("EVERYONE");
     editTabs.add(mainTab);
     
-    EditTab personsTab = new EditTab("Persons", 
-      "/pages/cases/case_persons.xhtml", "casePersonsTabBean", "persons1", 
-      "/pages/cases/case_persons_dialog.xhtml");
+    EditTab personsTab = 
+      new EditTab(BUNDLE_PREFIX + "tab_persons", 
+        "/pages/cases/case_persons.xhtml", "casePersonsTabBean", "persons1", 
+        "/pages/cases/case_persons_dialog.xhtml");
     personsTab.getProperties().put("typeId", CASE_PERSON_TYPE);
     personsTab.getReadRoles().add("EVERYONE");
     personsTab.getWriteRoles().add("EVERYONE");    
     editTabs.add(personsTab);
     
-    EditTab addressesTab = new EditTab("Addresses", 
-      "/pages/cases/case_addresses.xhtml", "caseAddressesTabBean", "addresses1",
-      "/pages/cases/case_addresses_dialog.xhtml");
+    EditTab addressesTab = 
+      new EditTab(BUNDLE_PREFIX + "tab_addresses", 
+        "/pages/cases/case_addresses.xhtml", "caseAddressesTabBean", 
+        "addresses1", "/pages/cases/case_addresses_dialog.xhtml");
     addressesTab.getProperties().put("typeId", CASE_ADDRESS_TYPE);
     addressesTab.getReadRoles().add("EVERYONE");
     addressesTab.getWriteRoles().add("EVERYONE");      
     editTabs.add(addressesTab);
     
-    EditTab documentsTab = new EditTab("Documents", 
-      "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
-      "/pages/cases/case_documents_dialog.xhtml");
+    EditTab documentsTab = 
+      new EditTab(BUNDLE_PREFIX + "tab_documents", 
+        "/pages/cases/case_documents.xhtml", "caseDocumentsTabBean", "docs1", 
+        "/pages/cases/case_documents_dialog.xhtml");
     documentsTab.getProperties().put("typeId", CASE_DOCUMENT_TYPE);
     documentsTab.getReadRoles().add("EVERYONE");
     documentsTab.getWriteRoles().add("EVERYONE");      
     editTabs.add(documentsTab);
     
-    EditTab intEditTab = new EditTab("Actuacions", 
-      "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", 
-      "act1", "/pages/cases/case_interventions_dialog.xhtml");
+    EditTab intEditTab = 
+      new EditTab(BUNDLE_PREFIX + "tab_interventions", 
+        "/pages/cases/case_interventions.xhtml", "caseInterventionsTabBean", 
+        "act1", "/pages/cases/case_interventions_dialog.xhtml");
     intEditTab.getColumns().add(new Column("intId", 
       BUNDLE_PREFIX + "caseInterventions_id", "col-1")); 
     intEditTab.getColumns().add(new Column("intTypeId", 
@@ -164,8 +169,9 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     intEditTab.getWriteRoles().add("EVERYONE");       
     editTabs.add(intEditTab);
     
-    EditTab casesEditTab = new EditTab("Cases", "/pages/cases/case_cases.xhtml", 
-      "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml");   
+    EditTab casesEditTab = 
+      new EditTab(BUNDLE_PREFIX + "tab_cases", "/pages/cases/case_cases.xhtml", 
+        "caseCasesTabBean", "cases1", "/pages/cases/case_cases_dialog.xhtml");   
     casesEditTab.getColumns().add(new Column("caseId", 
       BUNDLE_PREFIX + "caseCases_id", "col-1"));
     casesEditTab.getColumns().add(new Column("caseTitle", 
@@ -181,13 +187,14 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     casesEditTab.getWriteRoles().add("EVERYONE");     
     editTabs.add(casesEditTab);
     
-    EditTab aclTab = new EditTab("ACL", "/pages/cases/case_acl.xhtml", 
-      "caseACLTabBean");
+    EditTab aclTab = 
+      new EditTab(BUNDLE_PREFIX + "tab_acl", "/pages/cases/case_acl.xhtml", 
+        "caseACLTabBean");
     aclTab.getReadRoles().add("EVERYONE");
     aclTab.getWriteRoles().add("EVERYONE");      
     editTabs.add(aclTab);
     
-    EditTab eventsEditTab = new EditTab("Events", 
+    EditTab eventsEditTab = new EditTab(BUNDLE_PREFIX + "tab_events", 
       "/pages/cases/case_events.xhtml", "caseEventsTabBean", "events1", 
       "/pages/cases/case_events_dialog.xhtml");
     eventsEditTab.getReadRoles().add("EVERYONE");

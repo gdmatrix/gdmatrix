@@ -52,6 +52,8 @@ import static org.santfeliu.webapp.modules.kernel.KernelModuleBean.getPort;
 @ApplicationScoped
 public class PersonTypeBean extends TypeBean<Person, PersonFilter>
 {
+  private static final String BUNDLE_PREFIX = "$$kernelBundle.";  
+  
   @Override
   public String getRootTypeId()
   {
@@ -108,12 +110,16 @@ public class PersonTypeBean extends TypeBean<Person, PersonFilter>
     objectSetup.setViewId("/pages/kernel/person.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Main", "/pages/kernel/person_main.xhtml"));
-    editTabs.add(new EditTab("Addresses", "/pages/kernel/person_addresses.xhtml",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+      "/pages/kernel/person_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_addresses", 
+      "/pages/kernel/person_addresses.xhtml",
       "personAddressesTabBean"));
-    editTabs.add(new EditTab("Contacts", "/pages/kernel/person_contacts.xhtml",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_contacts", 
+      "/pages/kernel/person_contacts.xhtml",
       "personContactsTabBean"));
-    editTabs.add(new EditTab("Cases", "/pages/kernel/person_cases.xhtml",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", 
+      "/pages/kernel/person_cases.xhtml",
       "personCasesTabBean"));
     objectSetup.setEditTabs(editTabs);
 
