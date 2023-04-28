@@ -182,10 +182,8 @@ public class AddressFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]
-    {
-      finding, getFilterTabSelector(), filter, firstRow, getObjectPosition()
-    };
+    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow, 
+      getObjectPosition(), rows };
   }
 
   @Override
@@ -197,11 +195,9 @@ public class AddressFinderBean extends FinderBean
       finding = (Boolean) stateArray[0];
       setFilterTabSelector((Integer) stateArray[1]);
       filter = (AddressFilter) stateArray[2];
-
-      doFind(false);
-
       firstRow = (Integer) stateArray[3];
       setObjectPosition((Integer) stateArray[4]);
+      rows = (List<AddressView>) stateArray[5];
     }
     catch (Exception ex)
     {
