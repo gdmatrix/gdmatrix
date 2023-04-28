@@ -64,9 +64,9 @@ public class TypePropertiesTabBean extends TabBean
   private PropertyDefinitionEdit editing;
   private PropertyDefinition backupEditing;
   private List<org.santfeliu.dic.Type> supertypes = new ArrayList<>();
-  private Map<String, List<PropertyDefinitionEdit>> rowsMap = new HashMap<>();  
+  private Map<String, List<PropertyDefinitionEdit>> rowsMap = new HashMap<>();
+  private List<PropertyDefinitionEdit> filteredRows;
   
-
   @Override
   public ObjectBean getObjectBean()
   {
@@ -92,6 +92,17 @@ public class TypePropertiesTabBean extends TabBean
   {
     this.editing = editing;
   }
+  
+
+  public List<PropertyDefinitionEdit> getFilteredRows()
+  {
+    return filteredRows;
+  }
+
+  public void setFilteredRows(List<PropertyDefinitionEdit> filteredRows)
+  {
+    this.filteredRows = filteredRows;
+  }  
   
   public void setEnumTypeId(String enumTypeId)
   {

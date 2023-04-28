@@ -44,7 +44,8 @@
                      rowIndexVar="rowIndex" first="#{typePropertiesTabBean.firstRow}"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                     rowsPerPageTemplate="5,10,25,50">
+                     rowsPerPageTemplate="5,10,25,50"
+                     >
 
           <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2">
             <i class="mr-2 pi pi-#{srow.type == 'TEXT' ? 'sort-alpha-down' : (srow.type == 'DATE' ? 'calendar' : (srow.type == 'NUMERIC' ? 'sort-numeric-down' : (srow.type == 'BOOLEAN' ? 'flag' : '')))}"></i>
@@ -69,7 +70,7 @@
                           #{srow.maxOccurs == '0' ? '*' : srow.maxOccurs}" />
           </p:column>          
 
-          <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-1 text-center">
+          <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-2 text-center">
             <h:outputText value="#{srow.stringValue}"/>
           </p:column>      
 
@@ -100,10 +101,13 @@
                  rowIndexVar="rowIndex" first="#{typePropertiesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
-                 rowsPerPageTemplate="5,10,25,50">
+                 rowsPerPageTemplate="5,10,25,50" widgetVar="typePropertiesTable"
+                 filteredValue="#{typePropertiesTabBean.filteredRows}" globalFilterOnly="true">
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">        
+        <div class="flex justify-content-end w-12">
+          <p:inputText id="globalFilter" onkeyup="PF('typePropertiesTable').filter()" style="width:10rem"
+                       placeholder="#{dicBundle.typeProperties_name} | #{dicBundle.typeProperties_description}"/>
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
                            action="#{typePropertiesTabBean.create}"
                            process="@this"
@@ -114,12 +118,12 @@
         </div>
       </f:facet>    
 
-      <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2">
+      <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2" filterBy="#{row.name}" filterMatchMode="contains">
         <i class="mr-2 pi pi-#{row.type == 'TEXT' ? 'sort-alpha-down' : (row.type == 'DATE' ? 'calendar' : (row.type == 'NUMERIC' ? 'sort-numeric-down' : (row.type == 'BOOLEAN' ? 'flag' : '')))}"></i>
         <h:outputText value="#{row.name}" style="#{row.hidden ? 'color: blue' : ''}"/>
       </p:column>      
 
-      <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3">
+      <p:column headerText="#{dicBundle.typeProperties_description}" styleClass="col-3" filterBy="#{row.description}" filterMatchMode="contains">
         <h:outputText value="#{row.description}"/>
       </p:column>
       
@@ -137,7 +141,7 @@
                       #{row.maxOccurs == '0' ? '*' : row.maxOccurs}"/>   
       </p:column>        
 
-      <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-1 text-center">
+      <p:column headerText="#{dicBundle.typeProperties_value}" styleClass="col-2 text-center">
         <h:outputText value="#{row.stringValue}"/>
       </p:column>      
 
@@ -178,7 +182,7 @@
             <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
             <h:outputText value="#{typeObjectBean.description}" />
             <i class="pi pi-angle-right mx-2"></i>
-            <h:outputText value="#{typeObjectBean.activeEditTab.label}" />   
+            <h:outputText value="#{applicationBean.translate(typeObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />   
             <i class="pi pi-angle-right mx-2"></i> 
             <h:outputText value="#{typePropertiesTabBean.editing.name}" />
           </p:outputPanel>
