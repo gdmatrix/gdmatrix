@@ -17,7 +17,7 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{caseObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{caseObjectBean.activeEditTab.label}" />
+        <h:outputText value="#{applicationBean.translate(caseObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{caseDocumentsTabBean.documentDescription}" />
       </p:outputPanel>

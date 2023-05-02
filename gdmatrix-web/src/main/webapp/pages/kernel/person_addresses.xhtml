@@ -73,7 +73,7 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
         <h:outputText value="#{personObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{personObjectBean.activeEditTab.label}" />   
+        <h:outputText value="#{applicationBean.translate(personObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />   
       </p:outputPanel>
     </f:facet>
 
