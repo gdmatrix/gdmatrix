@@ -31,9 +31,7 @@
 package org.santfeliu.webapp.setup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -48,6 +46,7 @@ public class SearchTab
 
   public SearchTab(String label, String viewId)
   {
+    this.label = label;
     this.viewId = viewId;
   }
 
