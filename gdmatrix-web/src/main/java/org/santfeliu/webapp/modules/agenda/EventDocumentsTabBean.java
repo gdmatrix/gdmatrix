@@ -230,7 +230,7 @@ public class EventDocumentsTabBean extends TabBean
       try
       {
         editing = AgendaModuleBean.getClient(false).
-          loadEventDocumentFromCache(row.getEventDocId());
+          loadEventDocument(row.getEventDocId());
       }
       catch (Exception ex)
       {

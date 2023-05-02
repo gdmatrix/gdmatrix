@@ -276,7 +276,7 @@ public class EventPersonsTabBean extends TabBean
       try
       {
         editing = AgendaModuleBean.getClient(false).
-          loadAttendantFromCache(row.getAttendantId());
+          loadAttendant(row.getAttendantId());
       }
       catch (Exception ex)
       {
