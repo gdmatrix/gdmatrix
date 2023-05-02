@@ -44,6 +44,8 @@ import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.agenda.AgendaModuleBean.getClient;
+import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.SearchTab;
 
 /**
  *
@@ -53,6 +55,8 @@ import static org.santfeliu.webapp.modules.agenda.AgendaModuleBean.getClient;
 @ApplicationScoped
 public class EventTypeBean extends TypeBean<Event, EventFilter>
 {
+  private static final String BUNDLE_PREFIX = "$$agendaBundle.";
+
   @Override
   public String getRootTypeId()
   {
@@ -94,24 +98,48 @@ public class EventTypeBean extends TypeBean<Event, EventFilter>
   public ObjectSetup createObjectSetup()
   {
     ObjectSetup objectSetup = new ObjectSetup();
-    objectSetup.setTypeId(getRootTypeId());
     objectSetup.setViewId("/pages/agenda/event.xhtml");
 
+    List<SearchTab> searchTabs = new ArrayList();
+    SearchTab searchTab =
+      new SearchTab("Llistat", "/pages/agenda/event_list.xhtml");
+    searchTab.getColumns().add(new Column("eventId",
+      BUNDLE_PREFIX + "event_id", "col-1"));
+    searchTab.getColumns().add(new Column("eventTypeId",
+      BUNDLE_PREFIX + "event_type", "col-2"));
+    searchTab.getColumns().add(new Column("startDateTime",
+      BUNDLE_PREFIX + "event_startDate", "col-2"));
+    searchTab.getColumns().add(new Column("endDateTime",
+      BUNDLE_PREFIX + "event_endDate", "col-2"));
+    searchTab.getColumns().add(new Column("summary",
+      BUNDLE_PREFIX + "event_summary", "col-4"));
+    searchTabs.add(searchTab);
+    objectSetup.setSearchTabs(searchTabs);
+
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Principal", "/pages/agenda/event_main.xhtml"));
-    editTabs.add(new EditTab("Assistents", "/pages/agenda/event_persons.xhtml",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main",
+      "/pages/agenda/event_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_persons",
+      "/pages/agenda/event_persons.xhtml",
       "eventPersonsTabBean", "persons1",
       "/pages/agenda/event_persons_dialog.xhtml"));
-    editTabs.add(new EditTab("Llocs", "/pages/agenda/event_places.xhtml",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_places",
+      "/pages/agenda/event_places.xhtml",
       "eventPlacesTabBean"));
-    editTabs.add(new EditTab("Temes", "/pages/agenda/event_themes.xhtml",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_themes",
+      "/pages/agenda/event_themes.xhtml",
       "eventThemesTabBean"));
-    editTabs.add(new EditTab("Documents", "/pages/agenda/event_documents.xhtml",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_documents",
+      "/pages/agenda/event_documents.xhtml",
       "eventDocumentsTabBean", "docs1",
       "/pages/agenda/event_documents_dialog.xhtml"));
-    editTabs.add(new EditTab("Expedients", "/pages/agenda/event_cases.xhtml",
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases",
+      "/pages/agenda/event_cases.xhtml",
       "eventCasesTabBean", "cases1",
       "/pages/agenda/event_cases_dialog.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_recurrences",
+      "/pages/agenda/event_recurrences.xhtml",
+      "eventRecurrencesTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

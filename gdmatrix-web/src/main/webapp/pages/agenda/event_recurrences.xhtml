@@ -62,7 +62,7 @@
                          onclick="PF('objectTabs').select(0);"
                          resetValues="true"
                          process="@this"
-                         oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
+                         oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
                          update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                          title="#{objectBundle.show}" alt="#{objectBundle.show}" />
       </p:column>
@@ -101,7 +101,7 @@
         <p:commandButton action="#{eventRecurrencesTabBean.deleteRecurrences}"
                          alt="#{agendaBundle.eventRecurrences_deleteRecurrences}"
                          title="#{agendaBundle.eventRecurrences_deleteRecurrences}"
-                         value="#{agendaBundle.eventRecurrences_deleteRecurrences}"                         
+                         value="#{agendaBundle.eventRecurrences_deleteRecurrences}"
                          styleClass="removeButton"
                          process="delete_recurrences_panel"
                          update="event_recurrences_table delete_recurrences_panel">

@@ -52,6 +52,8 @@ import static org.santfeliu.webapp.modules.agenda.AgendaModuleBean.getClient;
 @ApplicationScoped
 public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
 {
+  private static final String BUNDLE_PREFIX = "$$agendaBundle.";
+
   @Override
   public String getRootTypeId()
   {
@@ -93,11 +95,11 @@ public class ThemeTypeBean extends TypeBean<Theme, ThemeFilter>
   public ObjectSetup createObjectSetup()
   {
     ObjectSetup objectSetup = new ObjectSetup();
-    objectSetup.setTypeId(getRootTypeId());
     objectSetup.setViewId("/pages/agenda/theme.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Principal", "/pages/agenda/theme_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main",
+      "/pages/agenda/theme_main.xhtml"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;

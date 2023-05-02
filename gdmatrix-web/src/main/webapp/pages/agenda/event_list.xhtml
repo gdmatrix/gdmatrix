@@ -8,28 +8,22 @@
                stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                rows="10" first="#{eventFinderBean.firstRow}"
-               rowStyleClass="#{row.eventId == eventObjectBean.objectId ? 'current' : ''}"
+               rowStyleClass="#{row.rowId == eventObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rowIndexVar="rowIndex"
                rendered="true">
-    <p:column headerText="#{agendaBundle.event_id}" styleClass="col-1">
-      <h:outputText value="#{row.eventId}" />
-    </p:column>
-    <p:column headerText="#{agendaBundle.event_type}" styleClass="col-2">
-      <h:outputText value="#{eventFinderBean.getEventTypeDescription(row)}" />
-    </p:column>
-    <p:column headerText="#{agendaBundle.event_startDate}" styleClass="col-2">
-      <h:outputText value="#{row.startDateTime}" converter="DateTimeConverter" />
-    </p:column>
-    <p:column headerText="#{agendaBundle.event_endDate}" styleClass="col-2">
-      <h:outputText value="#{row.endDateTime}" converter="DateTimeConverter" />
-    </p:column>
-    <p:column headerText="#{agendaBundle.event_summary}" styleClass="col-4">
-      <h:outputText value="#{row.summary}" />
-    </p:column>
+    <p:columns value="#{eventFinderBean.columns}" var="column"  columnIndexVar="i"
+               filterable="false" sortable="false" resizable="false"
+               headerText="#{applicationBean.translate(column.label)}"
+               field="#{column.name}" styleClass="#{column.styleClass}">
+      <h:outputText value="#{row.values[i]}" />
+    </p:columns>
+
     <p:column styleClass="col-1 text-right">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
-                       action="#{navigatorBean.select(row.eventId)}"
+                       action="#{navigatorBean.select(row.rowId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
@@ -41,7 +35,7 @@
                        onclick="PF('objectTabs').select(0);"
                        resetValues="true"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                        title="#{objectBundle.show}" alt="#{objectBundle.show}" />
     </p:column>

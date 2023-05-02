@@ -1,0 +1,64 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:p="http://primefaces.org/ui">
+
+  <h:outputStylesheet library="css" name="agenda.css" />
+
+  <p:dataView value="#{eventFinderBean.rows}" var="row"
+               paginator="true" pageLinks="5"
+               paginatorPosition="bottom"
+               rows="10" first="#{eventFinderBean.firstRow}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
+               rowsPerPageTemplate="5,10,25,50"
+               rendered="true" styleClass="eventList" rowIndexVar="rowIndex">
+    <p:dataViewListItem>
+      <p:outputPanel styleClass="dayHeader"
+                     rendered="#{eventFinderBean.isDateChange(rowIndex)}">
+        <h:outputText value="#{eventFinderBean.rowStartDate}">
+          <f:convertDateTime pattern="EE dd/MM/yyyy" />
+        </h:outputText>
+      </p:outputPanel>
+      <div class="eventRow#{row.rowId == eventObjectBean.objectId ? ' current' : ''}">
+        <div class="eventHours">
+          <h:outputText value="#{eventFinderBean.rowStartDate}">
+            <f:convertDateTime pattern="HH:mm" />
+          </h:outputText>
+          <h:outputText value="-" />
+          <h:outputText value="#{eventFinderBean.rowEndDate}">
+            <f:convertDateTime pattern="HH:mm" />
+          </h:outputText>
+        </div>
+        <div class="eventDescription">
+          <h:outputText value="#{eventFinderBean.getEventTypeDescription(row)}" />
+          <h:outputText value=": " />
+          <h:outputText value="#{row.summary}" />
+        </div>
+        <div class="eventActions">
+          <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
+                           styleClass="rounded-button ui-button-flat"
+                           action="#{navigatorBean.select(row.rowId)}"
+                           rendered="#{navigatorBean.selectionPending}"
+                           ajax="false"
+                           immediate="true"
+                           onclick="showOverlay()"
+                           title="#{objectBundle.select}" alt="#{objectBundle.select}" />
+          <p:commandButton icon="pi pi-external-link"
+                           styleClass="rounded-button ui-button-flat"
+                           action="#{eventFinderBean.view(rowIndex)}"
+                           onclick="PF('objectTabs').select(0);"
+                           resetValues="true"
+                           process="@this"
+                           oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
+                           update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                           title="#{objectBundle.show}" alt="#{objectBundle.show}" />
+        </div>
+      </div>
+    </p:dataViewListItem>
+  </p:dataView>
+
+</ui:composition>
+

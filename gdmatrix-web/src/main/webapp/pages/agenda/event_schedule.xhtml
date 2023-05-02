@@ -12,7 +12,7 @@
               tooltip="true">
     <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}" />
     <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"
-            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
+            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
             process="@this"
             update=":mainform:search_tabs:obj_tabs :mainform:context_panel" />
     <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}"

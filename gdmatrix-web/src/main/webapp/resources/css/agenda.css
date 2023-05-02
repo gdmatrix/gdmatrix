@@ -1,5 +1,65 @@
 /***** AGENDA MODULE CSS *****/
 
+/*** event_list_grouped.xhtml ***/
+
+.eventList
+{
+}
+
+.eventList .ui-dataview-header
+{
+  display: none;
+}
+
+.eventList .dayHeader
+{
+  font-weight: bold;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.eventList .eventRow
+{
+  display: flex;
+  flex-direction: row;
+}
+
+.eventList .eventRow.current
+{
+  font-weight: bold;
+}
+
+.eventList .eventRow > div
+{
+  flex-grow: 0;
+  padding: 4px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.eventList .eventRow .eventHours > *,
+.eventList .eventRow .eventDescription > *
+{
+  display: inline;
+}
+
+.eventList .eventRow .eventHours
+{
+  min-width: 90px;
+}
+
+.eventList .eventRow .eventDescription
+{
+  flex-grow: 1;
+}
+
+.eventList li.ui-dataview-row
+{
+  border: 0 !important;
+}
+
+/*** event_recurrences.xhtml and event_copy_*.xhtml ***/
+
 .eventRecurrences.dialog
 {
   max-width: 800px;

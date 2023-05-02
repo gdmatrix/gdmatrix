@@ -46,7 +46,6 @@ import org.matrix.agenda.Event;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.matrix.security.SecurityConstants;
-import org.primefaces.event.TabChangeEvent;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
@@ -163,7 +162,7 @@ public class EventObjectBean extends ObjectBean
   @Override
   public int getEditModeSelector()
   {
-    return 2;
+    return getSearchTabs().size();
   }
 
   public Date getStartDateTime()
@@ -282,23 +281,6 @@ public class EventObjectBean extends ObjectBean
       event = AgendaModuleBean.getClient(false).loadEvent(objectId);
     }
     else event = new Event();
-  }
-
-  public void onTabChange(TabChangeEvent tabEvent)
-  {
-    org.primefaces.component.tabview.Tab activeTab = tabEvent.getTab();
-    if (activeTab.getId().equals("event_list_tab"))
-    {
-      setSearchTabSelector(0);
-    }
-    else if (activeTab.getId().equals("event_schedule_tab"))
-    {
-      setSearchTabSelector(1);
-    }
-    else if (activeTab.getId().equals("event_object_tab"))
-    {
-      setSearchTabSelector(2);
-    }
   }
 
   @Override

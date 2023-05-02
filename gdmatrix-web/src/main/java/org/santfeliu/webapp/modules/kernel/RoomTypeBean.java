@@ -55,7 +55,7 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
 {
 
   private static final String BUNDLE_PREFIX = "$$kernelBundle.";
-  
+
   @Override
   public String getRootTypeId()
   {
@@ -112,11 +112,10 @@ public class RoomTypeBean extends TypeBean<Room, RoomFilter>
   public ObjectSetup createObjectSetup()
   {
     ObjectSetup objectSetup = new ObjectSetup();
-    objectSetup.setTypeId(getRootTypeId());
     objectSetup.setViewId("/pages/kernel/room.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main",
       "/pages/kernel/room_main.xhtml"));
     objectSetup.setEditTabs(editTabs);
 

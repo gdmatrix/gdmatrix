@@ -40,7 +40,6 @@ import javax.inject.Named;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
 import org.matrix.dic.Property;
-import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.PojoUtils;
 import org.santfeliu.util.TextUtils;
@@ -70,6 +69,9 @@ public class EventRecurrencesTabBean extends TabBean
 
   @Inject
   EventCopyTabBean eventCopyTabBean;
+
+  @Inject
+  EventFinderBean eventFinderBean;
 
   @PostConstruct
   public void init()
@@ -175,7 +177,10 @@ public class EventRecurrencesTabBean extends TabBean
           deleteCount = deleteFutureRecurrences(deleteDateTime);
       }
       if (deleteCount > 0)
+      {
+        eventFinderBean.outdate();
         info("RECURRENCES_DELETED", new Object[]{deleteCount});
+      }
       else
         info("RECURRENCES_NOT_DELETED");
     }
@@ -271,9 +276,7 @@ public class EventRecurrencesTabBean extends TabBean
     if (eventCopyTabBean != null)
       eventCopyTabBean.copy();
     load();
-
-    PrimeFaces.current().executeScript(
-      "PF('eventRecurrencesPanel').select(0);");
+    eventFinderBean.outdate();
   }
 
   private int deleteFutureRecurrences(String deleteDateTime)

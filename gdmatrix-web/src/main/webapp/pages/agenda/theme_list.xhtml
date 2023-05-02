@@ -1,19 +1,21 @@
-<ui:composition 
+<ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets"      
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:p="http://primefaces.org/ui">
 
   <p:dataTable value="#{themeFinderBean.rows}" var="row"
-               stripedRows="true" paginator="true" pageLinks="5" 
+               stripedRows="true" paginator="true" pageLinks="5"
                paginatorPosition="bottom" size="small"
                rows="10" first="#{themeFinderBean.firstRow}"
                rowStyleClass="#{row.themeId == themeObjectBean.objectId ? 'current' : ''}"
+               paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+               currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rowIndexVar="rowIndex"
                rendered="true">
     <p:column headerText="#{agendaBundle.theme_id}" styleClass="col-1">
       <h:outputText value="#{row.themeId}" />
-    </p:column>   
+    </p:column>
     <p:column headerText="#{agendaBundle.theme_description}" styleClass="col-10">
       <h:outputText value="#{row.description}" />
     </p:column>
@@ -24,19 +26,19 @@
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
-                       onclick="showOverlay()"                                              
+                       onclick="showOverlay()"
                        title="#{objectBundle.select}" alt="#{objectBundle.select}" />
-      <p:commandButton icon="pi pi-external-link" 
-                       styleClass="rounded-button ui-button-flat" 
+      <p:commandButton icon="pi pi-external-link"
+                       styleClass="rounded-button ui-button-flat"
                        action="#{themeFinderBean.view(rowIndex)}"
                        onclick="PF('objectTabs').select(0);"
                        resetValues="true"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"                       
-                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel" 
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                        title="#{objectBundle.show}" alt="#{objectBundle.show}" />
     </p:column>
-  </p:dataTable>  
+  </p:dataTable>
 
-</ui:composition> 
+</ui:composition>
 

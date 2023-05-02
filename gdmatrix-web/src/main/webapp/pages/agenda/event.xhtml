@@ -4,7 +4,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
                 template="/pages/obj/object_3col.xhtml"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <ui:define name="filter">
 
@@ -32,7 +33,7 @@
                              action="#{eventFinderBean.clear}"
                              styleClass="m-1"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             update=":mainform:filter_panel @(.searchTabContent)"
                              resetValues="true"
                              />
             <p:commandButton id="smart_search_button"
@@ -70,7 +71,7 @@
             </div>
 
             <!-- TypeId -->
-            <div class="field col-12">
+            <p:outputPanel styleClass="field col-12" rendered="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Event'}">
               <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
               <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
                                     type="Event"
@@ -82,15 +83,15 @@
                                     update=":mainform:find_selector"
                                     maxResults="20">
               </emcomp:typeReference>
-            </div>
+            </p:outputPanel>
 
             <!-- Dates -->
             <div class="field col-12">
               <p:fieldset legend="#{agendaBundle.eventSearch_date}"
                           toggleable="true" collapsed="true">
-                
+
                   <div class="field col-12">
-                    <p:selectOneMenu id="dateComparator" 
+                    <p:selectOneMenu id="dateComparator"
                                      value="#{eventFinderBean.filter.dateComparator}"
                                      style="vertical-align:middle">
                       <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="1" />
@@ -116,14 +117,14 @@
                                   autocomplete="off"
                                   monthNavigator="true" yearNavigator="true" />
                   </div>
-                
+
               </p:fieldset>
             </div>
-            
+
             <!-- ThemeId -->
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{agendaBundle.event_themeId}" />
-              <p:selectOneMenu value="#{eventFinderBean.searchEventThemeId}"                               
+              <p:selectOneMenu value="#{eventFinderBean.searchEventThemeId}"
                                style="min-width:inherit !important"
                                filter="true"
                                filterMatchMode="contains">
@@ -163,13 +164,19 @@
             </div>
 
           </div>
-          
+
+          <emcomp:dynamicProperties typeId="#{eventFinderBean.searchEventTypeId}"
+                                    formSelector="#{eventFinderBean.formSelector}"
+                                    formBuilderPrefix="searchtype"
+                                    options="#{dynamicPropertiesBean.filterOptions}"
+                                    properties="#{eventFinderBean.filter.property}" />
+
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{eventFinderBean.clear}"
                              styleClass="m-1"
                              process=":mainform:find_selector"
-                             update=":mainform:filter_panel :mainform:search_tabs:result_list"
+                             update=":mainform:filter_panel @(.searchTabContent)"
                              resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
@@ -195,7 +202,8 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0 || activeIndex === 1)
+        if (activeIndex &gt;= 0 &amp;&amp;
+          activeIndex &lt; #{eventObjectBean.editModeSelector})
         {
           updateResults();
           console.info("updateResults");
@@ -205,7 +213,7 @@
     <p:remoteCommand name="updateResults"
                      action="#{eventFinderBean.update}"
                      process="@this"
-                     update=":mainform:search_tabs:result_list :mainform:search_tabs:result_schedule" />
+                     update="@(.searchTabContent)" />
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
@@ -213,27 +221,19 @@
                touchable="false"
                onTabShow="onTabShow()">
 
-      <p:ajax event="tabChange" listener="#{eventObjectBean.onTabChange}" />
+      <p:ajax event="tabChange" />
 
-      <p:tab id="event_list_tab">
-        <f:facet name="title">
-          <i class="pi pi-list mr-2"></i>
-          <h:outputText value="#{objectBundle.list}"/>
-        </f:facet>
-        <h:panelGroup id="result_list">
-          <ui:include src="event_list.xhtml" />
-        </h:panelGroup>
-      </p:tab>
-
-      <p:tab id="event_schedule_tab">
-        <f:facet name="title">
-          <i class="pi pi-calendar mr-2"></i>
-          <h:outputText value="#{agendaBundle.scheduleView}"/>
-        </f:facet>
-        <h:panelGroup id="result_schedule">
-          <ui:include src="event_schedule.xhtml" />
-        </h:panelGroup>
-      </p:tab>
+      <c:forEach items="#{eventObjectBean.searchTabs}" var="tab" varStatus="loop">
+        <p:tab>
+          <f:facet name="title">
+            <i class="pi pi-list mr-2"></i>
+            <h:outputText value="#{applicationBean.translate(tab.label, userSessionBean.translationGroup)}"/>
+          </f:facet>
+          <h:panelGroup id="result_list_#{loop.index}" styleClass="searchTabContent">
+            <ui:include src="#{tab.viewId}" />
+          </h:panelGroup>
+        </p:tab>
+      </c:forEach>
 
       <p:tab>
         <f:facet name="title">
