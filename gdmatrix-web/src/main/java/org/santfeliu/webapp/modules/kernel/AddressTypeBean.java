@@ -127,7 +127,7 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
     editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_cases", 
       "/pages/kernel/address_cases.xhtml", "addressCasesTabBean"));    
     objectSetup.setEditTabs(editTabs);
-
+    
     return objectSetup;
   }
 
@@ -137,56 +137,38 @@ public class AddressTypeBean extends TypeBean<Address, AddressFilter>
     AddressFilter filter = new AddressFilter();
     if (!StringUtils.isBlank(query))
     {
-      filter.setStreetName(query);
+      if (query.matches("\\d+"))
+        filter.getAddressIdList().add(query); 
+      else
+      {
+        String[] parts = query.split("\\s");
+        if (parts != null && parts.length > 1)    
+        {
+          String streetTypeId = (String)
+            streetTypeBean.getStreetTypeSelectItems().stream()
+            .filter(i -> i.getLabel().equalsIgnoreCase(parts[0]))
+            .map(SelectItem::getValue)
+            .findFirst()
+            .orElse(null);
+
+          if (streetTypeId != null)
+          {
+            filter.setStreetTypeId(streetTypeId);
+            query = query.substring(parts[0].length() + 1);
+          } 
+        }
+        
+        int index = query.indexOf(",");
+        if (index > 0)
+        {
+          String streetNumber = query.substring(index + 1).trim();
+          filter.setNumber(streetNumber);          
+          query = query.substring(0, index).trim();
+        }        
+        filter.setStreetName(query);
+      } 
     }
-
-    if (StringUtils.isBlank(typeId))
-    {
-      filter.setAddressTypeId(typeId);
-    }
-
-    // TODO: Check this routine
-//    if (query != null)
-//    {
-//      if (query.matches("\\d+"))
-//        filter.getAddressIdList().add(query);
-//      else
-//      {
-//        String[] parts = query.split("\\s");
-//        if (parts != null && parts.length > 1)
-//        {
-//          //TODO: search in street types.
-//          List<SelectItem> streetTypes = getStreetTypeSelectItems().stream()
-//            .filter(item -> item.getLabel().equalsIgnoreCase(parts[0]))
-//            .collect(Collectors.toList());
-//
-//          if (streetTypes != null && !streetTypes.isEmpty())
-//          {
-//            filter.setStreetTypeId((String) streetTypes.get(0).getValue());
-//            query = query.substring(parts[0].length() + 1);
-//          }
-//        }
-//
-//        Pattern pattern =
-//          Pattern.compile("([[a-zA-Z]|\\s|ç|']+)\\W*(\\d*)\\W*\\w*");
-//        Matcher matcher = pattern.matcher(query);
-//        if (matcher.find())
-//        {
-//          String streetName = matcher.group(1);
-//          if (streetName != null)
-//            filter.setStreetName(streetName.trim());
-//
-//          String streetNumber = matcher.group(2);
-//          if (streetNumber != null)
-//            filter.setNumber(streetNumber.trim());
-//        }
-//
-//        String defaultCityName = getProperty(DEFAULT_CITY_NAME);
-//        if (defaultCityName != null)
-//          filter.setCityName(defaultCityName);
-//      }
-//    }
-
+      
     return filter;
   }
 

@@ -77,6 +77,15 @@
                 <f:selectItems value="#{typeTypeBean.getSelectItems('Address')}" var="item" />           
               </p:selectOneMenu> 
             </div>      
+            
+            <div class="field col-12">    
+              <p:outputLabel for="@next" value="#{kernelBundle.street_type}" />           
+              <p:selectOneMenu value="#{addressFinderBean.filter.streetTypeId}"  
+                               filter="true" autoWidth="false" >
+                <f:selectItem itemLabel="" itemValue="" />
+                <f:selectItems value="#{streetTypeBean.streetTypeSelectItems}" var="item" />           
+              </p:selectOneMenu> 
+            </div>              
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{kernelBundle.street_name}" />        

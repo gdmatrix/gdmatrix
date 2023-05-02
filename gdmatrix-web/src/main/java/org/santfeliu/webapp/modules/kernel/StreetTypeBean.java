@@ -256,7 +256,7 @@ public class StreetTypeBean extends TypeBean<Street, StreetFilter>
   
   public List<SelectItem> getStreetTypeSelectItems()
   {
-    List<SelectItem> selectItems = new ArrayList<>();    
+    List<SelectItem> selectItems;    
     try
     {
       selectItems = FacesUtils.getListSelectItems(
