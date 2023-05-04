@@ -524,7 +524,8 @@
               <h:outputLabel for="legengGraphic" value="#{mapViewerBundle.legend}:" styleClass="outputText" />
               <h:inputText id="legengGraphic" value="#{mapEditorBean.editingLayer.legendGraphic}"
                 styleClass="layerLegendGraphic" />
-              <h:outputText value="(auto or image id)" />
+              <h:outputText value=" ( auto | true | false | &lt;imageId&gt; | large:&lt;imageId&gt; )" 
+               styleClass="layerLegendGraphic" />
             </t:div>
             <t:div>
               <h:outputLabel for="layerSLD" value="SLD:" styleClass="outputText" />

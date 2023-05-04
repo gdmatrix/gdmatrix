@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.misc.mapviewer.web;
@@ -87,7 +87,7 @@ public class MapViewerBean extends WebBean
   @CMSProperty
   public static final String PRINT_REPORTS_PROPERTY = "printReports";
   @CMSProperty
-  public static final String METADATA_FORM_SELECTOR_PROPERTY = 
+  public static final String METADATA_FORM_SELECTOR_PROPERTY =
     "metadataFormSelector";
 
   public static final String MAP_NAME_PARAMETER = "map_name";
@@ -146,7 +146,7 @@ public class MapViewerBean extends WebBean
       .append(translate("Overlays" ,"map:" + map.getName()))
       .append("</legend>")
       .append("<ul class=\"baseLayers\">");
-    
+
     buffer.append("<li><ul class=\"overlays\">");
     addLayersToLegend(map, null, false, expandGroups, buffer);
     for (Group group : map.getGroups())
@@ -165,7 +165,7 @@ public class MapViewerBean extends WebBean
     MapBean mapBean = MapBean.getInstance();
     String baseUrl = mapBean.getBaseUrl();
     String serviceUrl = layer.getService().getUrl();
-    
+
     String url = baseUrl + "/proxy?url=" + serviceUrl +
     "&service=WMS&version=1.0.0&request=GetLegendGraphic&layer=" + name +
     "&format=image/png&width=24&strict=false";
@@ -250,7 +250,7 @@ public class MapViewerBean extends WebBean
   {
     try
     {
-      registerAccess(mapName, getFacesContext().getExternalContext());            
+      registerAccess(mapName, getFacesContext().getExternalContext());
       MapBean mapBean = MapBean.getInstance();
       mapBean.loadMap(mapName);
       MapEditorBean mapEditorBean = (MapEditorBean)getBean("mapEditorBean");
@@ -263,7 +263,7 @@ public class MapViewerBean extends WebBean
     {
       error(ex);
       return "map_error";
-    } 
+    }
   }
 
   public String showCatalogue()
@@ -277,7 +277,7 @@ public class MapViewerBean extends WebBean
         userSessionBean.getMenuModel().getMenuItem(mid);
       if (!menuItem.isNull()) menuItem.select();
     }
-    MapCatalogueBean mapCatalogueBean = 
+    MapCatalogueBean mapCatalogueBean =
       (MapCatalogueBean)getBean("mapCatalogueBean");
     return mapCatalogueBean.refresh();
   }
@@ -295,11 +295,11 @@ public class MapViewerBean extends WebBean
       }
       formFactory.clearForm(formSelector);
     }
-    String formSelector = 
+    String formSelector =
       getProperty(MapViewerBean.METADATA_FORM_SELECTOR_PROPERTY);
     if (formSelector != null)
     {
-      formFactory.clearForm(formSelector);      
+      formFactory.clearForm(formSelector);
     }
   }
 
@@ -337,7 +337,7 @@ public class MapViewerBean extends WebBean
 
       property.setName(JS_PROPERTY_NAME);
       filter.getProperty().add(property);
-      StringTokenizer tokenizer = 
+      StringTokenizer tokenizer =
         new StringTokenizer(scriptsBuffer.toString(), ",");
       while (tokenizer.hasMoreTokens())
       {
@@ -352,7 +352,7 @@ public class MapViewerBean extends WebBean
         UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
         String userId = userSessionBean.getUserId();
         String password = userSessionBean.getPassword();
-        DocumentManagerClient client = 
+        DocumentManagerClient client =
           new DocumentManagerClient(userId, password);
         filter.setDocTypeId(JS_DOCUMENT_TYPE);
         filter.getOutputProperty().add(JS_PROPERTY_NAME);
@@ -405,7 +405,7 @@ public class MapViewerBean extends WebBean
     title = title.replace("\"", "\\\"");
     buffer.append("var mapTitle = \"").append(title).append("\";\n");
     /* language */
-    String language = 
+    String language =
       FacesContext.getCurrentInstance().getViewRoot().getLocale().getLanguage();
     buffer.append("var language = \"").append(language).append("\";\n");
     /* searchEnabled */
@@ -451,7 +451,7 @@ public class MapViewerBean extends WebBean
     buffer.append("var printReports = ").
       append(printReports).append(";\n");
     /* isPublic */
-    boolean isPublic = 
+    boolean isPublic =
       map.getReadRoles().contains(SecurityConstants.EVERYONE_ROLE);
     buffer.append("var isPublic = ").append(isPublic).append(";\n");
 
@@ -470,7 +470,7 @@ public class MapViewerBean extends WebBean
       cssTheme = "default";
     }
     buffer.append("var cssTheme = '").append(cssTheme).append("';\n");
-    
+
     buffer.append("var exportFormats = [");
     String exportFormats =
       properties.get(MapBean.EXPORT_FORMATS_PROPERTY);
@@ -555,10 +555,10 @@ public class MapViewerBean extends WebBean
       buffer.append(");\n");
     }
   }
-  
+
   private void registerAccess(String mapName, ExternalContext context)
   {
-    String value = 
+    String value =
       MatrixConfig.getProperty("org.santfeliu.mapviewer.logAccess");
     if (!"true".equals(value)) return;
     try
@@ -593,7 +593,7 @@ public class MapViewerBean extends WebBean
       finally
       {
         conn.close();
-      }      
+      }
     }
     catch (Exception ex)
     {
@@ -616,13 +616,13 @@ public class MapViewerBean extends WebBean
         buffer.append("<ul>");
       }
       else
-      {        
+      {
         buffer.append("<div>");
         String groupName = group.getName();
 
         // expand/collapase group button
         String buttonClass = expandGroups ? "collapse" : "expand";
-        buffer.append("<a title=\"").append(getSwitchGroupTitle(group, map)). 
+        buffer.append("<a title=\"").append(getSwitchGroupTitle(group, map)).
           append("\" class=\"").append(buttonClass).
           append("\" value=\"#\" onclick=\"groupClicked('").
           append(groupName).append("',this);\"></a>");
@@ -678,11 +678,12 @@ public class MapViewerBean extends WebBean
             if (!StringUtils.isBlank(legendGraphic) &&
               !"auto".equals(legendGraphic) &&
               !"true".equals(legendGraphic) &&
-              !"false".equals(legendGraphic))
+              !"false".equals(legendGraphic) &&
+              !legendGraphic.startsWith("large:"))
             {
               // legend graphic is a docId
               String contextPath = MatrixConfig.getProperty("contextPath");
-              String imageURI = contextPath + "/documents/" + 
+              String imageURI = contextPath + "/documents/" +
                 legendGraphic + "?cache=1000000";
               buffer.append("<img src=\"").append(imageURI).
                 append("\" alt=\"\" class=\"inlineLayerIcon\">");
@@ -715,6 +716,15 @@ public class MapViewerBean extends WebBean
             {
               // paint image under layer name
               buffer.append("<img src=\"").append(getLayerLegendURL(layer)).
+                append("\" alt=\"\" class=\"layerIcon\">");
+            }
+            else if (!StringUtils.isBlank(legendGraphic) && legendGraphic.startsWith("large:"))
+            {
+              String docId = legendGraphic.substring(6);
+              String contextPath = MatrixConfig.getProperty("contextPath");
+              String imageURI = contextPath + "/documents/" +
+                docId + "?cache=1000000";
+              buffer.append("<img src=\"").append(imageURI).
                 append("\" alt=\"\" class=\"layerIcon\">");
             }
           }
@@ -778,11 +788,11 @@ public class MapViewerBean extends WebBean
     return userSessionBean.translate(text, group);
   }
 
-  private String getSwitchGroupTitle(Group group, Map map) 
+  private String getSwitchGroupTitle(Group group, Map map)
   {
     return HtmlEncoder.encode(
-      translate("Fes clic per expandir o contraure grup " + 
-      (group.getLabel() != null ? group.getLabel() : group.getName()), 
+      translate("Fes clic per expandir o contraure grup " +
+      (group.getLabel() != null ? group.getLabel() : group.getName()),
       "map:" + map.getName()));
   }
 }
