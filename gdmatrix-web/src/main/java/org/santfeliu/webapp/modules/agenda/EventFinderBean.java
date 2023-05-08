@@ -89,7 +89,6 @@ public class EventFinderBean extends FinderBean
   private String serverTimeZone = ZoneId.systemDefault().toString();
   private String scheduleView;
   private LocalDate scheduleInitialDate;
-  private LocalDateTime scheduleStart;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -335,51 +334,59 @@ public class EventFinderBean extends FinderBean
   public void onDateSelect(SelectEvent<LocalDateTime> selectEvent)
   {
     LocalDateTime localDateTime = selectEvent.getObject();
-    info(localDateTime.toString());
+    if ("dayGridMonth".equals(scheduleView))
+    {
+      setScheduleInitialDate(localDateTime.toLocalDate());
+      setScheduleView("timeGridDay");
+    }
   }
 
   public void onEventMove(ScheduleEntryMoveEvent moveEvent)
   {
-    int minutes = (moveEvent.getDayDelta() * 24 * 60) +
-      moveEvent.getMinuteDelta();
-    LocalDateTime ldtStart = moveEvent.getScheduleEvent().getStartDate();
-    ldtStart.plusMinutes(minutes);
-    LocalDateTime ldtEnd = moveEvent.getScheduleEvent().getEndDate();
-    ldtEnd.plusMinutes(minutes);
-    String eventId = moveEvent.getScheduleEvent().getId();
-    Event event = AgendaModuleBean.getClient(true).loadEventFromCache(eventId);
-    event.setStartDateTime(toDateString(ldtStart));
-    event.setEndDateTime(toDateString(ldtEnd));
-    updateEvent(event);
-    info("Esdeveniment mogut amb èxit");
+    try
+    {
+      int minutes = (moveEvent.getDayDelta() * 24 * 60) +
+        moveEvent.getMinuteDelta();
+      LocalDateTime ldtStart = moveEvent.getScheduleEvent().getStartDate();
+      ldtStart.plusMinutes(minutes);
+      LocalDateTime ldtEnd = moveEvent.getScheduleEvent().getEndDate();
+      ldtEnd.plusMinutes(minutes);
+      String eventId = moveEvent.getScheduleEvent().getId();
+      String startDateTime = toDateString(ldtStart);
+      String endDateTime = toDateString(ldtEnd);
+      updateEvent(eventId, startDateTime, endDateTime);
+      outdate();
+      info("EVENT_MOVED");
+    }
+    catch (Exception ex)
+    {
+      error("EVENT_MOVE_ERROR");
+    }
   }
 
   public void onEventResize(ScheduleEntryResizeEvent resizeEvent)
   {
-    int minutes = resizeEvent.getMinuteDeltaEnd();
-    LocalDateTime ldtEnd = resizeEvent.getScheduleEvent().getEndDate();
-    ldtEnd.plusMinutes(minutes);
-    String eventId = resizeEvent.getScheduleEvent().getId();
-    Event event = AgendaModuleBean.getClient(true).loadEventFromCache(eventId);
-    event.setEndDateTime(toDateString(ldtEnd));
-    updateEvent(event);
-    info("Esdeveniment modificat amb èxit");
+    try
+    {
+      int minutes = resizeEvent.getMinuteDeltaEnd();
+      LocalDateTime ldtEnd = resizeEvent.getScheduleEvent().getEndDate();
+      ldtEnd.plusMinutes(minutes);
+      String eventId = resizeEvent.getScheduleEvent().getId();
+      String endDateTime = toDateString(ldtEnd);
+      updateEvent(eventId, null, endDateTime);
+      outdate();
+      info("EVENT_RESIZED");
+    }
+    catch (Exception ex)
+    {
+      error("EVENT_RESIZE_ERROR");
+    }
   }
 
   public void onViewChange(SelectEvent selectEvent)
   {
     String view = (String)selectEvent.getObject();
     setScheduleView(view);
-    if ("dayGridMonth".equals(view) && scheduleStart.getDayOfMonth() != 1)
-    {
-      TemporalAdjuster ta = TemporalAdjusters.firstDayOfNextMonth();
-      LocalDate firstDayOfNextMonth = scheduleStart.with(ta).toLocalDate();
-      setScheduleInitialDate(firstDayOfNextMonth);
-    }
-    else
-    {
-      setScheduleInitialDate(scheduleStart.toLocalDate());
-    }
   }
 
   @Override
@@ -441,6 +448,8 @@ public class EventFinderBean extends FinderBean
     rows = null;
     finding = false;
     formSelector = null;
+    scheduleInitialDate = null;
+    scheduleView = "dayGridMonth";
   }
 
   public String getEventTypeDescription(EventDataTableRow row)
@@ -583,6 +592,7 @@ public class EventFinderBean extends FinderBean
         if (autoLoad)
         {
           scheduleInitialDate = null;
+          scheduleView = "dayGridMonth";
           if (rows.size() == 1)
           {
             navigatorBean.view(rows.get(0).getRowId());
@@ -630,30 +640,51 @@ public class EventFinderBean extends FinderBean
       @Override
       public void loadEvents(LocalDateTime start, LocalDateTime end)
       {
-
-        if (rows != null)
+        EventFilter scheduleFilter = cloneEventFilter(filter);
+        scheduleFilter.setFirstResult(0);
+        scheduleFilter.setMaxResults(Integer.MAX_VALUE);
+        scheduleFilter.setStartDateTime(toDateString(start));
+        scheduleFilter.setEndDateTime(toDateString(end));
+        List<Event> events =
+          AgendaModuleBean.getClient(false).findEventsFromCache(scheduleFilter);
+        for (Event row : events)
         {
-          for (EventDataTableRow row : rows)
+          if (mustIncludeEvent(row, filter.getStartDateTime(), 
+            filter.getEndDateTime()))
           {
-            if (mustIncludeEvent(row, start, end))
-            {
-              DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
-                .id(row.getRowId())
-                .title(row.getSummary())
-                .startDate(toLocalDateTime(row.getStartDateTime()))
-                .endDate(toLocalDateTime(row.getEndDateTime()))
-                .description(row.getSummary())
-                .build();
-              addEvent(event);
-            }
+            DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
+              .id(row.getEventId())
+              .title(row.getSummary())
+              .startDate(toLocalDateTime(row.getStartDateTime()))
+              .endDate(toLocalDateTime(row.getEndDateTime()))
+              .description(row.getSummary())
+              .overlapAllowed(true)
+              .build();
+            addEvent(event);
           }
         }
-        scheduleStart = start;
+        scheduleInitialDate = adjustInitialDate(start);
       }
     };
     return eventModel;
   }
 
+  private EventFilter cloneEventFilter(EventFilter filter)
+  {
+    EventFilter cloneFilter = new EventFilter();
+    cloneFilter.getEventId().addAll(filter.getEventId());
+    cloneFilter.setContent(filter.getContent());
+    cloneFilter.setDateComparator(filter.getDateComparator());
+    cloneFilter.setPersonId(filter.getPersonId());
+    cloneFilter.setRoomId(filter.getRoomId());
+    cloneFilter.getProperty().addAll(filter.getProperty());
+    cloneFilter.getEventTypeId().addAll(filter.getEventTypeId());
+    cloneFilter.setStartDateTime(filter.getStartDateTime());
+    cloneFilter.setEndDateTime(filter.getEndDateTime());
+    cloneFilter.getThemeId().addAll(filter.getThemeId());
+    return cloneFilter;
+  }
+  
   private LocalDateTime toLocalDateTime(String dateString)
   {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -666,11 +697,14 @@ public class EventFinderBean extends FinderBean
     return localDateTime.format(formatter);
   }
 
-  private void updateEvent(Event event)
+  private void updateEvent(String eventId, String startDateTime,
+    String endDateTime)
   {
+    Event event = AgendaModuleBean.getClient(true).loadEvent(eventId);
+    if (startDateTime != null) event.setStartDateTime(startDateTime);
+    if (endDateTime != null) event.setEndDateTime(endDateTime);
     AgendaModuleBean.getClient(true).storeEvent(event);
-    outdate();
-    if (event.getEventId().equals(eventObjectBean.getEvent().getEventId()))
+    if (eventId.equals(eventObjectBean.getEvent().getEventId()))
     {
       //Refresh edition tab
       try
@@ -681,15 +715,32 @@ public class EventFinderBean extends FinderBean
     }
   }
 
-  private boolean mustIncludeEvent(EventDataTableRow row,
-    LocalDateTime viewStart, LocalDateTime viewEnd)
+  private boolean mustIncludeEvent(Event event,
+    String filterStartDateTime, String filterEndDateTime)
   {
-    Date eventStartDate = TextUtils.parseInternalDate(row.getStartDateTime());
-    Date eventEndDate = TextUtils.parseInternalDate(row.getEndDateTime());
-    Date viewStartDate = TextUtils.parseInternalDate(toDateString(viewStart));
-    Date viewEndDate = TextUtils.parseInternalDate(toDateString(viewEnd));
+    Date eventStartDate = TextUtils.parseInternalDate(event.getStartDateTime());
+    Date eventEndDate = TextUtils.parseInternalDate(event.getEndDateTime());
+    Date viewStartDate = TextUtils.parseInternalDate(
+      StringUtils.defaultString(filterStartDateTime, "19000101000000"));
+    Date viewEndDate = TextUtils.parseInternalDate(
+      StringUtils.defaultString(filterEndDateTime, "99991231000000"));
     return (!eventStartDate.after(viewEndDate) &&
       eventEndDate.after(viewStartDate));
+  }
+
+  private LocalDate adjustInitialDate(LocalDateTime scheduleViewStart)
+  {
+    if ("dayGridMonth".equals(scheduleView) &&
+      scheduleViewStart.getDayOfMonth() != 1)
+    {
+      TemporalAdjuster ta = TemporalAdjusters.firstDayOfNextMonth();
+      LocalDate firstDayOfNextMonth = scheduleViewStart.with(ta).toLocalDate();
+      return firstDayOfNextMonth;
+    }
+    else
+    {
+      return scheduleViewStart.toLocalDate();
+    }
   }
 
   public class EventDataTableRow extends DataTableRow

@@ -6,23 +6,26 @@
   <p:schedule id="schedule" value="#{eventFinderBean.eventModel}"
               widgetVar="schedule"
               timeZone="#{eventFinderBean.serverTimeZone}"
-              clientTimeZone="#{eventFinderBean.serverTimeZone}"
+              clientTimeZone="#{eventFinderBean.serverTimeZone}"                       
               view="#{eventFinderBean.scheduleView}"
               initialDate="#{eventFinderBean.scheduleInitialDate}"
               tooltip="true">
-    <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}" />
-    <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"
-            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});"
+    <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}" 
             process="@this"
-            update=":mainform:search_tabs:obj_tabs :mainform:context_panel" />
+            update="schedule" />
+    <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"            
+            process="@this"
+            update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});" />
     <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}"
             process="@this"
             update=":mainform:search_tabs:obj_tabs" />
     <p:ajax event="eventResize" listener="#{eventFinderBean.onEventResize}"
             process="@this"
-            update=":mainform:search_tabs:obj_tabs" />
-    <p:ajax event="viewChange"
-            process="@this" listener="#{eventFinderBean.onViewChange}" />
+            update=":mainform:search_tabs:obj_tabs" />   
+    <p:ajax event="viewChange" listener="#{eventFinderBean.onViewChange}"
+            process="@this" 
+            update="@none" />
   </p:schedule>
 
 </ui:composition>

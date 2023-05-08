@@ -35,7 +35,7 @@
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel @(.searchTabContent)"
                              resetValues="true"
-                             />
+                             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(0);" />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
                              action="#{eventFinderBean.smartFind}"
@@ -178,7 +178,7 @@
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel @(.searchTabContent)"
                              resetValues="true"
-                             />
+                             oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(0);" />
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
                              action="#{eventFinderBean.find}"
