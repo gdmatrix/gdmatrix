@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.misc.mapviewer.io;
@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.santfeliu.misc.mapviewer.sld.SLDDebug;
 import org.santfeliu.misc.mapviewer.sld.SLDExternalGraphic;
@@ -68,7 +69,7 @@ public class SLDReader
     xmlFactory.setProperty(XMLInputFactory.IS_COALESCING, false);
     xmlFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
     xmlFactory.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, true);
-    
+
     XMLStreamReader xmlReader = xmlFactory.createXMLStreamReader(is);
     SLDRoot rootNode = null;
     SLDNode currentNode = null;
@@ -82,7 +83,7 @@ public class SLDReader
           String name = xmlReader.getLocalName();
           SLDNode node = createNode(name, rootNode);
           readAttributes(xmlReader, node);
-          if (rootNode == null) 
+          if (rootNode == null)
           {
             rootNode = (SLDRoot)node;
           }
@@ -139,7 +140,8 @@ public class SLDReader
       String attributeValue = xmlReader.getAttributeValue(i);
       String attributeName = StringUtils.isBlank(attributePrefix) ?
         attributeLocalName : attributePrefix + ":" + attributeLocalName;
-      attributes.put(attributeName, attributeValue);
+      attributes.put(StringEscapeUtils.escapeXml(attributeName),
+        StringEscapeUtils.escapeXml(attributeValue));
     }
   }
 
@@ -174,35 +176,35 @@ public class SLDReader
     SLDNode node;
     if ("StyledLayerDescriptor".equals(name))
     {
-      node = new SLDRoot(prefix, name); 
+      node = new SLDRoot(prefix, name);
     }
     else if ("NamedLayer".equals(name))
     {
-      node = new SLDNamedLayer(prefix, name); 
+      node = new SLDNamedLayer(prefix, name);
     }
     else if ("UserStyle".equals(name))
     {
-      node = new SLDUserStyle(prefix, name); 
+      node = new SLDUserStyle(prefix, name);
     }
     else if ("Rule".equals(name))
     {
-      node = new SLDRule(prefix, name); 
+      node = new SLDRule(prefix, name);
     }
     else if ("PointSymbolizer".equals(name))
     {
-      node = new SLDPointSymbolizer(prefix, name); 
+      node = new SLDPointSymbolizer(prefix, name);
     }
     else if ("LineSymbolizer".equals(name))
     {
-      node = new SLDLineSymbolizer(prefix, name); 
+      node = new SLDLineSymbolizer(prefix, name);
     }
     else if ("PolygonSymbolizer".equals(name))
     {
-      node = new SLDPolygonSymbolizer(prefix, name); 
+      node = new SLDPolygonSymbolizer(prefix, name);
     }
     else if ("TextSymbolizer".equals(name))
     {
-      node = new SLDTextSymbolizer(prefix, name); 
+      node = new SLDTextSymbolizer(prefix, name);
     }
     else if ("Stroke".equals(name))
     {
@@ -210,31 +212,31 @@ public class SLDReader
     }
     else if ("Fill".equals(name))
     {
-      node = new SLDFill(prefix, name); 
+      node = new SLDFill(prefix, name);
     }
     else if ("Halo".equals(name))
     {
-      node = new SLDHalo(prefix, name); 
+      node = new SLDHalo(prefix, name);
     }
     else if ("Font".equals(name))
     {
-      node = new SLDFont(prefix, name); 
+      node = new SLDFont(prefix, name);
     }
     else if ("Mark".equals(name))
     {
-      node = new SLDMark(prefix, name); 
+      node = new SLDMark(prefix, name);
     }
     else if ("ExternalGraphic".equals(name))
     {
-      node = new SLDExternalGraphic(prefix, name); 
+      node = new SLDExternalGraphic(prefix, name);
     }
     else if ("Graphic".equals(name))
     {
-      node = new SLDGraphic(prefix, name); 
+      node = new SLDGraphic(prefix, name);
     }
     else if ("PointPlacement".equals(name))
     {
-      node = new SLDPointPlacement(prefix, name); 
+      node = new SLDPointPlacement(prefix, name);
     }
     else if ("LinePlacement".equals(name))
     {

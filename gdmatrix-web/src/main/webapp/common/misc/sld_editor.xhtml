@@ -161,14 +161,14 @@
                       <t:div rendered="#{sldEditorBean.symbolizerExpanded}">
                         <t:div>
                           <h:outputText value="Geometry: " />
-                          <h:inputText value="#{symbolizer.geometryAsCql}" styleClass="codeBox" style="width:300px"
+                          <h:inputText value="#{symbolizer.geometryAsCql}" styleClass="codeBox" style="width:80%"
                                        onfocus="showCQLAssistant('namedLayer[#{sldEditorBean.namedLayerIndex}]', this)"
                                        onblur="hideCQLAssistant()" />
                         </t:div>
                         <t:div>
                           <h:outputText value="ExternalGraphicURL: " />
                           <h:inputText value="#{symbolizer.graphic.externalGraphic.onlineResource}"
-                                       styleClass="codeBox" style="width:300px" />
+                                       styleClass="codeBox" style="width:80%" />
                         </t:div>
                         <t:div>
                           <h:outputText value="ExternalGraphicFormat: " />
@@ -178,6 +178,7 @@
                             <f:selectItem itemLabel="image/jpeg" itemValue="image/jpeg" />
                             <f:selectItem itemLabel="image/gif" itemValue="image/gif" />
                             <f:selectItem itemLabel="image/svg+xml" itemValue="image/svg+xml" />
+                            <f:selectItem itemLabel="application/chart" itemValue="application/chart" />
                           </t:selectOneMenu>
                         </t:div>
                         <t:div>
@@ -212,19 +213,19 @@
                         </t:div>
                         <t:div>
                           <h:outputText value="Opacity: " />
-                          <h:inputText value="#{symbolizer.graphic.opacityAsCql}" styleClass="codeBox" style="width:300px"
+                          <h:inputText value="#{symbolizer.graphic.opacityAsCql}" styleClass="codeBox" style="width:80%"
                                        onfocus="showCQLAssistant('namedLayer[#{sldEditorBean.namedLayerIndex}]', this)"
                                        onblur="hideCQLAssistant()" />
                         </t:div>
                         <t:div>
                           <h:outputText value="Size: " />
-                          <h:inputText value="#{symbolizer.graphic.sizeAsCql}" styleClass="codeBox" style="width:300px"
+                          <h:inputText value="#{symbolizer.graphic.sizeAsCql}" styleClass="codeBox" style="width:80%"
                                        onfocus="showCQLAssistant('namedLayer[#{sldEditorBean.namedLayerIndex}]', this)"
                                        onblur="hideCQLAssistant()" />
                         </t:div>
                         <t:div>
                           <h:outputText value="Rotation: " />
-                          <h:inputText value="#{symbolizer.graphic.rotationAsCql}" styleClass="codeBox" style="width:300px"
+                          <h:inputText value="#{symbolizer.graphic.rotationAsCql}" styleClass="codeBox" style="width:80%"
                                        onfocus="showCQLAssistant('namedLayer[#{sldEditorBean.namedLayerIndex}]', this)"
                                        onblur="hideCQLAssistant()" />
                         </t:div>
