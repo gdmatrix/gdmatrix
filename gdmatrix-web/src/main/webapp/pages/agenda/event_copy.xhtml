@@ -2,12 +2,33 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
 
-  <p:outputPanel id="event_copy_settings" styleClass="eventCopySettings">
-    <ui:include src="/pages/agenda/event_copy_settings.xhtml" />
-  </p:outputPanel>
+  <p:accordionPanel widgetVar="eventCopyPanel">
+  
+    <p:tab title="#{agendaBundle.eventRecurrences_settings}">
+      <p:outputPanel id="event_copy_settings" styleClass="eventCopySettings">
+        <ui:include src="/pages/agenda/event_copy_settings.xhtml" />
+      </p:outputPanel> 
+    </p:tab>
 
-  <p:outputPanel id="event_copy_preview" styleClass="eventCopyPreview">
-    <ui:include src="/pages/agenda/event_copy_preview.xhtml" />
-  </p:outputPanel>
-
+    <p:tab title="#{agendaBundle.eventRecurrences_preview}">
+      <p:outputPanel id="event_copy_preview" styleClass="eventCopyPreview">        
+        <p:outputPanel rendered="#{eventCopyTabBean.rows != null}"> 
+          <ui:include src="/pages/agenda/event_copy_preview.xhtml" />
+        </p:outputPanel>
+        <p:outputPanel rendered="#{eventCopyTabBean.rows == null}">  
+          <p:outputLabel value="#{agendaBundle.eventRecurrences_noParams}" />
+        </p:outputPanel>
+      </p:outputPanel>
+    </p:tab>    
+    
+  </p:accordionPanel>
+  
+  <p:outputPanel styleClass="actionBar">
+    <p:commandButton action="#{eventCopyTabBean.reset}"
+                     styleClass="m-1" value="#{objectBundle.cancel}"
+                     process="@this"
+                     update="event_copy_dialog" global="false"
+                     oncomplete="PF('eventCopyDialog').hide()" />
+  </p:outputPanel>  
+  
 </html>

@@ -676,6 +676,7 @@ public class EventCopyTabBean extends PageBean implements Serializable
       if (rows != null)
       {
         copyRecurrences(true);
+        info("RECURRENCES_CREATED", new Object[]{rows.size()});
         resetPreview();
       }
     }

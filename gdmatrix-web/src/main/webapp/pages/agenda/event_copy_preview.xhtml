@@ -134,12 +134,7 @@
                      icon="pi pi-save"
                      styleClass="m-1"
                      process="@this event_copy_preview_table"
-                     update="event_recurrences_panel" />
-    <p:commandButton action="#{eventCopyTabBean.reset}"
-                     styleClass="m-1" value="#{objectBundle.cancel}"
-                     process="@this"
-                     update="event_copy_dialog" global="false"
-                     oncomplete="PF('eventCopyDialog').hide()" />
+                     update="mainform:search_tabs:tabs:event_recurrences_panel" />
   </p:outputPanel>
 
 </html>

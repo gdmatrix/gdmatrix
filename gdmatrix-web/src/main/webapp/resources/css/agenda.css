@@ -62,7 +62,8 @@
 
 .eventRecurrences.dialog
 {
-  max-width: 800px;
+  width: 80% !important;
+  left: 10% !important;
 }
 
 .eventRecurrences .flex
@@ -102,7 +103,6 @@
 
 .eventRecurrences .actionBar.settings
 {
-  text-align: left;
 }
 
 .eventRecurrences .actionsContainer

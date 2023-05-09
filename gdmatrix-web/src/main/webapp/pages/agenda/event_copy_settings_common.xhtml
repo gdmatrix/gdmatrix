@@ -108,7 +108,8 @@
     <p:commandButton action="#{eventCopyTabBean.show}"
                      value="#{agendaBundle.eventCopy_preview}"
                      styleClass="showButton"
-                     update="event_copy_preview" />
+                     update="event_copy_preview" 
+                     oncomplete="PF('eventCopyPanel').unselect(0);PF('eventCopyPanel').select(1);" />
     <p:commandButton action="#{eventCopyTabBean.reset}"
                      value="#{agendaBundle.eventCopy_reset}"
                      styleClass="cancelButton"
