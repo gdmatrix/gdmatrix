@@ -65,7 +65,7 @@ public class ObjectSetupCache
   public static final Logger LOGGER = Logger.getLogger(ObjectSetupCache.class);
 
   private static final Map<String, ObjectSetup> cache = new HashMap<>();
-  private static long lastRefresh;
+  private static long lastRefresh = System.currentTimeMillis();
 
   public static synchronized ObjectSetup getConfig(String setupName)
     throws Exception
