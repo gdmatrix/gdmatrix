@@ -333,9 +333,10 @@ public class EventFinderBean extends FinderBean
 
   public void onDateSelect(SelectEvent<LocalDateTime> selectEvent)
   {
-    LocalDateTime localDateTime = selectEvent.getObject();
-    if ("dayGridMonth".equals(scheduleView))
+    if ("dayGridMonth".equals(scheduleView) || 
+      "timeGridWeek".equals(scheduleView))
     {
+      LocalDateTime localDateTime = selectEvent.getObject();
       setScheduleInitialDate(localDateTime.toLocalDate());
       setScheduleView("timeGridDay");
     }
@@ -381,12 +382,6 @@ public class EventFinderBean extends FinderBean
     {
       error("EVENT_RESIZE_ERROR");
     }
-  }
-
-  public void onViewChange(SelectEvent selectEvent)
-  {
-    String view = (String)selectEvent.getObject();
-    setScheduleView(view);
   }
 
   @Override
