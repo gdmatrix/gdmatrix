@@ -114,6 +114,9 @@ public abstract class TypeBean<T, F> extends WebBean
 
   public synchronized String getDescription(String objectId)
   {
+    if (StringUtils.isBlank(objectId))
+      return "";
+    
     String description = descriptions.get(objectId);
     if (description == null)
     {

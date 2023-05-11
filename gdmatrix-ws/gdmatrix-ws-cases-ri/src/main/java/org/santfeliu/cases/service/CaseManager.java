@@ -682,11 +682,17 @@ public class CaseManager implements CaseManagerPort
       String casePersonTypeId = filter.getCasePersonTypeId();
       if (!StringUtils.isBlank(casePersonTypeId))
       {
-        ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
-        org.matrix.dic.Type type = 
-          em.find(DBType.class, typeEntity.toLocalId(casePersonTypeId));
-        filter.setCasePersonTypeId(type.getTypePath() + "%");
+        if (DictionaryConstants.CASE_PERSON_TYPE.equals(casePersonTypeId))
+          filter.setCasePersonTypeId(null);
+        else
+        {
+          ExternalEntity typeEntity = getWSEndpoint().getExternalEntity("Type");
+          org.matrix.dic.Type type = 
+            em.find(DBType.class, typeEntity.toLocalId(casePersonTypeId));
+          filter.setCasePersonTypeId(type.getTypePath() + "%");
+        } 
       }
+
       
       //execute DB findQuery
       Query query = setQueryParameters("findCasePersons", filter);
