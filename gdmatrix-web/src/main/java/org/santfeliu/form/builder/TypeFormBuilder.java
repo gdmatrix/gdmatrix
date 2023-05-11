@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.form.builder;
@@ -80,11 +80,13 @@ public class TypeFormBuilder extends MatrixFormBuilder
   public static final String SEARCH_TYPE_PROPERTY = "searchTypeId";
   public static final String VIEW_TYPE_PROPERTY = "viewTypeId";
   public static final String AUTOMATIC_FORM_PROPERTY = "_automaticFormEnabled";
-  public static final String AUTOMATIC_SEARCH_FORM_PROPERTY = 
+  public static final String AUTOMATIC_SEARCH_FORM_PROPERTY =
     "_automaticSearchFormEnabled";
-  public static final String AUTOMATIC_VIEW_FORM_PROPERTY = 
+  public static final String AUTOMATIC_VIEW_FORM_PROPERTY =
     "_automaticViewFormEnabled";
-  public static final int LABEL_COLUMN_WIDTH = 19; // percertage
+  public static final int LABEL_COLUMN_WIDTH = 19; // percentage
+  private static final String SORT_FORMS_BY_TYPE_DEPTH_PROPERTY =
+    "_sortFormsByTypeDepth";
 
   public static enum FormMode
   {
@@ -103,8 +105,12 @@ public class TypeFormBuilder extends MatrixFormBuilder
       try
       {
         List<FormDescriptor> descriptors = new ArrayList();
-        addUserForms(type, descriptors, parser);
-        Collections.reverse(descriptors);
+        boolean sortDescending = "desc".equals(getSortFormsByTypeDepth(type));
+        addUserForms(type, descriptors, parser, sortDescending);
+        if (sortDescending)
+        {
+          Collections.reverse(descriptors);
+        }
 
         addAutoForm(type, parser.getFormMode(), descriptors);
 
@@ -143,7 +149,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
     form.setRootView(bodyView);
 
     // add fields to form
-    List<PropertyDefinition> pdList = 
+    List<PropertyDefinition> pdList =
       type.getPropertyDefinition(false, true, false);
     for (PropertyDefinition pd : pdList)
     {
@@ -207,12 +213,12 @@ public class TypeFormBuilder extends MatrixFormBuilder
           inputView.setProperty("multiple", "true");
           inputView.setProperty("renderer", "checkBoxList");
           inputView.setProperty("size", "4");
-          inputView.setProperty("class", field.isReadOnly() ? 
+          inputView.setProperty("class", field.isReadOnly() ?
             "readOnlySelectBox" : "selectBox inline");
         }
         else // single-value field
         {
-          inputView.setProperty("class", field.isReadOnly() ? 
+          inputView.setProperty("class", field.isReadOnly() ?
             "readOnlySelectBox" : "selectBox");
           if (formMode.equals(FormMode.SEARCH) || property.getMinOccurs() == 0) // single-value
           {
@@ -318,8 +324,8 @@ public class TypeFormBuilder extends MatrixFormBuilder
     }
   }
 
-  void addUserForms(Type type, List<FormDescriptor> descriptors, 
-    SelectorParser parser)
+  void addUserForms(Type type, List<FormDescriptor> descriptors,
+    SelectorParser parser, boolean sortDescending)
     throws Exception
   {
     FormMode formMode = parser.getFormMode();
@@ -349,22 +355,22 @@ public class TypeFormBuilder extends MatrixFormBuilder
 
       OrderByProperty orderBy = new OrderByProperty();
       orderBy.setName(DocumentConstants.TITLE);
-      orderBy.setDescending(true);
+      orderBy.setDescending(sortDescending);
       filter.getOrderByProperty().add(orderBy);
       List<Document> documents = docClient.findDocuments(filter);
 
       for (Document document : documents)
       {
-        document = 
+        document =
           docClient.loadDocument(document.getDocId(), 0, ContentInfo.ID);
         List<AccessControl> acl = document.getAccessControl();
         User user = UserCache.getUser(parser.getUserId(), parser.getPassword());
         Set<String> roles = user.getRoles();
         String docTypeId = document.getDocTypeId();
         Type docType = TypeCache.getInstance().getType(docTypeId);
-        boolean canExecuteForm = 
-          DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, docType)     
-          || DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, docType) 
+        boolean canExecuteForm =
+          DictionaryUtils.canPerformAction(EXECUTE_ACTION, roles, acl, docType)
+          || DictionaryUtils.canPerformAction(READ_ACTION, roles, acl, docType)
           || roles.contains(DocumentConstants.DOC_ADMIN_ROLE);
         if (canExecuteForm)
         {
@@ -373,7 +379,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
           int index = title.indexOf(":"); // remove form name.
           if (index != -1)
           {
-            title = title.substring(index + 1);          
+            title = title.substring(index + 1);
           }
           if (title.length() == 0) title = type.getTypeId();
           descriptor.setTitle(title);
@@ -382,7 +388,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
           descriptors.add(descriptor);
         }
       }
-      addUserForms(type.getSuperType(), descriptors, parser);
+      addUserForms(type.getSuperType(), descriptors, parser, sortDescending);
     }
   }
 
@@ -403,7 +409,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
       if (!automaticProperty.getValue().isEmpty())
       {
         String value = automaticProperty.getValue().get(0);
-        automaticEnabled = "true".equalsIgnoreCase(value) 
+        automaticEnabled = "true".equalsIgnoreCase(value)
           || ("auto".equalsIgnoreCase(value) && descriptors.isEmpty());
       }
     }
@@ -428,7 +434,7 @@ public class TypeFormBuilder extends MatrixFormBuilder
     {
       WSDirectory wsDir = WSDirectory.getInstance();
       WSEndpoint endpoint = wsDir.getEndpoint(DictionaryManagerService.class);
-      DictionaryManagerPort port = 
+      DictionaryManagerPort port =
         endpoint.getPort(DictionaryManagerPort.class);
       return port.loadEnumType(enumTypeId);
     }
@@ -452,6 +458,21 @@ public class TypeFormBuilder extends MatrixFormBuilder
     return option;
   }
 
+  private String getSortFormsByTypeDepth(Type type)
+  {
+    String value = null;
+    if (type != null)
+    {
+      PropertyDefinition pd =
+        type.getPropertyDefinition(SORT_FORMS_BY_TYPE_DEPTH_PROPERTY);
+      if (pd != null && !pd.getValue().isEmpty())
+      {
+        value = (String)pd.getValue().get(0);
+      }
+    }
+    return ("asc".equals(value) ? "asc" : "desc");
+  }
+
   class SelectorParser
   {
     private String typeId;
@@ -461,8 +482,8 @@ public class TypeFormBuilder extends MatrixFormBuilder
 
     SelectorParser(String selector)
     {
-      String prefix = selector.startsWith(PREFIX + ":") ? PREFIX : 
-        (selector.startsWith(SEARCH_PREFIX + ":") ? SEARCH_PREFIX : 
+      String prefix = selector.startsWith(PREFIX + ":") ? PREFIX :
+        (selector.startsWith(SEARCH_PREFIX + ":") ? SEARCH_PREFIX :
         (selector.startsWith(VIEW_PREFIX + ":") ? VIEW_PREFIX : null));
       if (prefix != null)
       {
