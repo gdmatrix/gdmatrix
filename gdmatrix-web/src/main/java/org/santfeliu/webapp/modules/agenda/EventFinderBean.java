@@ -319,12 +319,6 @@ public class EventFinderBean extends FinderBean
       filter.getEventId().addAll(eventIds);
   }
 
-  //TODO Move to superclass
-  public String getLanguage()
-  {
-    return getLocale().getLanguage();
-  }
-
   public void onEventSelect(SelectEvent<ScheduleEvent<?>> selectEvent)
   {
     ScheduleEvent<?> event = selectEvent.getObject();
@@ -333,7 +327,7 @@ public class EventFinderBean extends FinderBean
 
   public void onDateSelect(SelectEvent<LocalDateTime> selectEvent)
   {
-    if ("dayGridMonth".equals(scheduleView) || 
+    if ("dayGridMonth".equals(scheduleView) ||
       "timeGridWeek".equals(scheduleView))
     {
       LocalDateTime localDateTime = selectEvent.getObject();
@@ -644,7 +638,7 @@ public class EventFinderBean extends FinderBean
           AgendaModuleBean.getClient(false).findEventsFromCache(scheduleFilter);
         for (Event row : events)
         {
-          if (mustIncludeEvent(row, filter.getStartDateTime(), 
+          if (mustIncludeEvent(row, filter.getStartDateTime(),
             filter.getEndDateTime()))
           {
             DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
@@ -679,7 +673,7 @@ public class EventFinderBean extends FinderBean
     cloneFilter.getThemeId().addAll(filter.getThemeId());
     return cloneFilter;
   }
-  
+
   private LocalDateTime toLocalDateTime(String dateString)
   {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

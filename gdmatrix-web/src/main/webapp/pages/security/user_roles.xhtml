@@ -6,61 +6,61 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <h:panelGroup>      
+  <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="user_roles_table" value="#{userRolesTabBean.rows}" 
+    <p:dataTable id="user_roles_table" value="#{userRolesTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"  rows="10"
-                 size="small" paginatorPosition="bottom" 
+                 size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{userRolesTabBean.firstRow}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">        
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
-                           action="#{userRolesTabBean.create}" 
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{userRolesTabBean.create}"
                            process=":mainform:search_tabs:tabs"
                            update="@parent:@parent:@parent:user_roles_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('userRolesDialog').show()"                                 
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+                           oncomplete="if (!isFacesError()) PF('userRolesDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
-      </f:facet>      
+      </f:facet>
 
       <p:column headerText="roleId" styleClass="col-3">
         <h:outputText value="#{row.role.roleId}" />
-      </p:column> 
+      </p:column>
 
       <p:column headerText="#{securityBundle.role_name}" styleClass="col-7">
         <h:outputText value="#{row.role.name}" />
-      </p:column>       
-      
+      </p:column>
+
       <p:column styleClass="col-2 text-right">
-        <p:commandButton icon="pi pi-external-link" 
-                         styleClass="rounded-button ui-button-flat" 
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
                          ajax="false"
                          immediate="true"
                          onclick="showOverlay()"
                          action="#{navigatorBean.show('Role', row.role.roleId)}" />
-        <p:commandButton icon="pi pi-pencil" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{userRolesTabBean.edit(row)}" 
-                         process=":mainform:search_tabs:tabs" 
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{userRolesTabBean.edit(row)}"
+                         process=":mainform:search_tabs:tabs"
                          update="@parent:@parent:@parent:@parent:user_roles_dialog"
                          resetValues="true"
                          oncomplete="if (!isFacesError()) PF('userRolesDialog').show()"
                          />
         <p:commandButton action="#{userRolesTabBean.remove(row)}"
-                         process="@this" 
+                         process="@this"
                          update="@parent:@parent:@parent:@parent:user_roles_dialog user_roles_table"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">            
-          <p:confirm header="Desvincular rol #{row.role.roleId}" 
+                         styleClass="rounded-button ui-button-flat">
+          <p:confirm header="Desvincular rol #{row.role.roleId}"
                      message="Segur que vols esborrar aquest rol?" icon="pi pi-info-circle" />
         </p:commandButton>
       </p:column>
@@ -68,19 +68,19 @@
 
   </h:panelGroup>
 
-  <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="user_roles_dialog" widgetVar="userRolesDialog" 
-            styleClass="edit_data_dialog" style="max-width:600px" 
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="user_roles_dialog" widgetVar="userRolesDialog"
+            styleClass="edit_data_dialog" style="max-width:600px"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
       <p:outputPanel>
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{userObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{userObjectBean.activeEditTab.label}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{userObjectBean.activeEditTab.label}" />
+        <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{userRolesTabBean.editing.roleId}" />
       </p:outputPanel>
     </f:facet>
@@ -90,7 +90,7 @@
 
       <div class="ui-fluid formgrid grid" >
 
-        <div class="field col-12">  
+        <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{securityBundle.role_role}"
                          styleClass="w-full" indicateRequired="true" />
@@ -104,57 +104,59 @@
                                   renderShowButton="false"
                                   minQueryLength="3">
           </emcomp:objectReference>
-        </div>              
+        </div>
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" 
+          <p:outputLabel for="@next"
                          value="#{securityBundle.userRoles_startDate}"/>
           <p:datePicker value="#{userRolesTabBean.editing.startDate}"
-                        autocomplete="off" placeholder="dd/MM/aaaa" 
-                        locale="es" showOnFocus="false" 
-                        converter="datePickerConverter" pattern="dd/MM/yyyy" 
-                        showIcon="true" showTime="false" />
+                        autocomplete="off" placeholder="dd/MM/yyyy"
+                        locale="#{userRolesTabBean.language}" showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
         </div>
 
         <div class="field col-12 md:col-6">
-          <p:outputLabel for="@next" 
+          <p:outputLabel for="@next"
                          value="#{securityBundle.userRoles_endDate}"/>
           <p:datePicker value="#{userRolesTabBean.editing.endDate}"
-                        autocomplete="off" placeholder="dd/MM/aaaa" 
-                        locale="es" showOnFocus="false" 
-                        converter="datePickerConverter" pattern="dd/MM/yyyy" 
-                        showIcon="true" showTime="false" />
+                        autocomplete="off" placeholder="dd/MM/yyyy"
+                        locale="#{userRolesTabBean.language}" showOnFocus="false"
+                        converter="datePickerConverter" pattern="dd/MM/yyyy"
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
         </div>
-        
+
         <div class="field col-12">
           <p:outputLabel for="@next"
                          value="#{securityBundle.userRoles_comments}" />
-          <p:inputTextarea 
+          <p:inputTextarea
             value="#{userRolesTabBean.editing.comments}" />
         </div>
 
       </div>
 
-    </h:panelGroup>     
+    </h:panelGroup>
 
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
         <p:commandButton id="user_roles_store"
-                         action="#{userRolesTabBean.store}" 
+                         action="#{userRolesTabBean.store}"
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="user_roles_dialog"
                          update="user_roles_table user_roles_panel"
                          oncomplete="if (!isFacesError()) PF('userRolesDialog').hide()"
                          />
-        <p:commandButton action="#{userRolesTabBean.cancel}" 
+        <p:commandButton action="#{userRolesTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="user_roles_dialog" global="false" 
+                         update="user_roles_dialog" global="false"
                          oncomplete="PF('userRolesDialog').hide()"/>
-      </div>      
+      </div>
     </f:facet>
 
-  </p:dialog>  
+  </p:dialog>
 
 </ui:composition>

@@ -117,7 +117,7 @@ public class CaseObjectBean extends ObjectBean
   {
     this.cas = cas;
   }
-  
+
   public void setNewClassId(String classId)
   {
     if (!StringUtils.isBlank(classId))
@@ -174,37 +174,31 @@ public class CaseObjectBean extends ObjectBean
       cas.setEndTime(TextUtils.formatDate(date, "HHmmss"));
     }
   }
-  
-  //TODO Move to superclass
-  public String getLanguage()
-  {
-    return getLocale().getLanguage();
-  }
-    
+
   public String getPropertyLabel(String propName, String altName)
   {
     return caseTypeBean.getPropertyLabel(cas, propName, altName);
   }
-  
+
   public boolean isPropertyHidden(String propName)
   {
     return caseTypeBean.isPropertyHidden(cas, propName);
   }
-  
+
   /**
-   * Not rendered when base Type has "classId" PropertyDefinition with default 
+   * Not rendered when base Type has "classId" PropertyDefinition with default
    * value set, minium occurrences greater than zero, and read only.
    */
   public boolean isRenderClassId()
-  {    
+  {
     String typeId = getBaseTypeInfo().getBaseTypeId();
-    PropertyDefinition pd = 
+    PropertyDefinition pd =
       caseTypeBean.getPropertyDefinition(typeId, "classId");
-    
-    return !(pd != null && pd.getValue() != null && pd.getMinOccurs() > 0 
+
+    return !(pd != null && pd.getValue() != null && pd.getMinOccurs() > 0
       && pd.isReadOnly());
   }
-  
+
   private Date getDate(String date, String time)
   {
     String dateTime = TextUtils.concatDateAndTime(date, time);
@@ -215,7 +209,7 @@ public class CaseObjectBean extends ObjectBean
   public void loadObject() throws Exception
   {
     formSelector = null;
-    
+
     if (!NEW_OBJECT_ID.equals(objectId))
       cas = CasesModuleBean.getPort(false).loadCase(objectId);
     else
@@ -233,14 +227,14 @@ public class CaseObjectBean extends ObjectBean
 
     caseFinderBean.outdate();
   }
-    
+
   @Override
   public void removeObject() throws Exception
   {
     CasesModuleBean.getPort(false).removeCase(cas.getCaseId());
 
     caseFinderBean.outdate();
-  }  
+  }
 
   @Override
   public Serializable saveState()

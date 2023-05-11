@@ -6,53 +6,53 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <p:dataTable id="enum_type_items_table" value="#{enumTypeItemsTabBean.rows}" 
+  <p:dataTable id="enum_type_items_table" value="#{enumTypeItemsTabBean.rows}"
                var="row" stripedRows="true" paginator="true" pageLinks="5"
                resizableColumns="false" showGridlines="true"  rows="#{enumTypeItemsTabBean.rowsPerPage}"
-               size="small" paginatorPosition="bottom" 
+               size="small" paginatorPosition="bottom"
                rowIndexVar="rowIndex" first="#{enumTypeItemsTabBean.firstRow}"
                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{objectBundle.results}"
                rowsPerPageTemplate="5,10,25,50" >
 
     <f:facet name="header">
-      <div class="flex justify-content-end col-12">    
-        <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
-                         action="#{enumTypeItemsTabBean.create}" 
+      <div class="flex justify-content-end col-12">
+        <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                         action="#{enumTypeItemsTabBean.create}"
                          process="@this"
                          update=":mainform:search_tabs:tabs:enum_type_items_dialog"
                          resetValues="true"
-                         oncomplete="PF('enumTypeItemsDialog').show()"                                 
-                         alt="#{objectBundle.add}" title="#{objectBundle.add}" />                     
+                         oncomplete="PF('enumTypeItemsDialog').show()"
+                         alt="#{objectBundle.add}" title="#{objectBundle.add}" />
       </div>
-    </f:facet>   
+    </f:facet>
 
     <p:column headerText="#{dicBundle.enumTypeItems_index}" styleClass="col-1">
       <h:outputText value="#{row.index}" />
-    </p:column>   
+    </p:column>
 
     <p:column headerText="#{dicBundle.enumTypeItems_label}" styleClass="col-7">
       <h:outputText value="#{row.label}" />
-    </p:column> 
+    </p:column>
 
     <p:column headerText="#{dicBundle.enumTypeItems_value}" styleClass="col-1">
       <h:outputText value="#{row.value}" />
-    </p:column>     
+    </p:column>
 
     <p:column styleClass="col-3 text-right">
-      
+
       <p:commandButton action="#{enumTypeItemsTabBean.moveUpItem(rowIndex)}"
                        update="enum_type_items_table"
                        icon="pi pi-arrow-up"
                        alt="#{objectBundle.moveUp}" title="#{objectBundle.moveUp}"
                        rendered="#{enumTypeItemsTabBean.isRenderUpButton(rowIndex)}"
-                       styleClass="rounded-button ui-button-flat"/> 
+                       styleClass="rounded-button ui-button-flat"/>
       <p:commandButton action="#{enumTypeItemsTabBean.moveDownItem(rowIndex)}"
                        update="enum_type_items_table"
                        icon="pi pi-arrow-down"
                        alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}"
                        rendered="#{enumTypeItemsTabBean.isRenderDownButton(rowIndex)}"
-                       styleClass="rounded-button ui-button-flat"/> 
+                       styleClass="rounded-button ui-button-flat"/>
       <p:commandButton action="#{enumTypeItemsTabBean.insertItem(rowIndex)}"
                        process=":mainform:search_tabs:tabs"
                        update=":mainform:search_tabs:tabs:enum_type_items_dialog"
@@ -61,9 +61,9 @@
                        rendered="#{enumTypeItemsTabBean.sortedEnumType and row.enumTypeItemId != null}"
                        styleClass="rounded-button ui-button-flat"
                        resetValues="true"
-                       oncomplete="if (!isFacesError()) PF('enumTypeItemsDialog').show()" />  
-        
-      
+                       oncomplete="if (!isFacesError()) PF('enumTypeItemsDialog').show()" />
+
+
       <p:commandButton action="#{enumTypeItemsTabBean.edit(row)}"
                        icon="pi pi-pencil"
                        styleClass="rounded-button ui-button-flat"
@@ -71,110 +71,111 @@
                        process=":mainform:search_tabs:tabs"
                        update=":mainform:search_tabs:tabs:enum_type_items_dialog"
                        resetValues="true"
-                       oncomplete="if (!isFacesError()) PF('enumTypeItemsDialog').show()" />         
+                       oncomplete="if (!isFacesError()) PF('enumTypeItemsDialog').show()" />
       <p:commandButton action="#{enumTypeItemsTabBean.remove(row)}"
                        update="enum_type_items_table"
                        icon="pi pi-trash"
                        alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
                        rendered="#{row.enumTypeItemId != null}"
-                       styleClass="rounded-button ui-button-flat">            
-        <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                   message="#{objectBundle.confirm_remove_message}" 
+                       styleClass="rounded-button ui-button-flat">
+        <p:confirm header="#{objectBundle.confirm_remove_header}"
+                   message="#{objectBundle.confirm_remove_message}"
                    icon="pi pi-info-circle" />
       </p:commandButton>
-    </p:column>    
+    </p:column>
 
-  </p:dataTable>  
+  </p:dataTable>
 
-  <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="enum_type_items_dialog" widgetVar="enumTypeItemsDialog" 
-            styleClass="edit_data_dialog" style="max-width:800px" 
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="enum_type_items_dialog" widgetVar="enumTypeItemsDialog"
+            styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
-      <p:outputPanel>      
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+      <p:outputPanel>
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{enumTypeObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{applicationBean.translate(enumTypeObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />   
+        <h:outputText value="#{applicationBean.translate(enumTypeObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{enumTypeItemsTabBean.editing.enumTypeItemId}" />        
+        <h:outputText value="#{enumTypeItemsTabBean.editing.enumTypeItemId}" />
       </p:outputPanel>
     </f:facet>
 
     <h:panelGroup id="enum_type_items_panel" layout="block"
                   rendered="#{enumTypeItemsTabBean.editing != null}"
                   styleClass="mt-2">
-      
+
           <div class="ui-fluid formgrid grid" >
-    
+
             <div class="field col-12 md:col-4">
               <p:outputLabel for="@next"
                              value="#{dicBundle.enumTypeItems_index}" />
               <p:inputText value="#{enumTypeItemsTabBean.editing.index}"  />
-            </div>         
-            
+            </div>
+
             <div class="field col-12">
               <p:outputLabel for="@next"
                              value="#{dicBundle.enumTypeItems_label}"
                              indicateRequired="true"/>
-              <p:inputText value="#{enumTypeItemsTabBean.editing.label}"                                   
+              <p:inputText value="#{enumTypeItemsTabBean.editing.label}"
                            required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
                            requiredMessage="#{messageBundle.LABEL_IS_REQUIRED}" />
-            </div>    
-            
+            </div>
+
             <p:importEnum type="org.matrix.dic.PropertyType" var="PropertyType" allSuffix="ALL_TYPES"/>
-            
+
             <div class="field col-12">
               <p:outputLabel for="@next"
                              value="#{dicBundle.enumTypeItems_value}"
                              indicateRequired="true"/>
-              <p:inputText value="#{enumTypeItemsTabBean.editing.value}"                                   
+              <p:inputText value="#{enumTypeItemsTabBean.editing.value}"
                            rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.TEXT or enumTypeObjectBean.enumType.itemType == PropertyType.STRUCT}"
                            required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
                            requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}" />
-              <p:spinner value="#{enumTypeItemsTabBean.editing.value}"                                   
+              <p:spinner value="#{enumTypeItemsTabBean.editing.value}"
                          rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.NUMERIC}"
                          required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                         requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}" />  
+                         requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}" />
               <p:datePicker value="#{enumTypeItemsTabBean.editing.value}"
                             autocomplete="off" converter="datePickerConverter"
                             placeholder="dd/MM/yyyy HH:mm:ss"
-                            locale="es"
+                            locale="#{enumTypeItemsTabBean.language}"
+                            pattern="dd/MM/yyyy HH:mm:ss"
                             showOnFocus="false"
                             showIcon="true" showTime="true" showSeconds="true"
                             monthNavigator="true" yearNavigator="true"
-                            rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.DATE}" 
+                            rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.DATE}"
                             required="#{not empty param['mainform:search_tabs:tabs:enum_type_items_store']}"
-                         requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}"/>              
+                            requiredMessage="#{messageBundle.VALUE_IS_REQUIRED}"/>
               <p:toggleSwitch value="#{enumTypeItemsTabBean.editing.value}"
-                              rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.BOOLEAN}" />             
-            </div> 
+                              rendered="#{enumTypeObjectBean.enumType.itemType == PropertyType.BOOLEAN}" />
+            </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next"
                              value="#{dicBundle.enumTypeItems_description}"/>
               <p:inputTextarea value="#{enumTypeItemsTabBean.editing.description}" />
-            </div>              
-                       
+            </div>
+
           </div>
-    </h:panelGroup>              
+    </h:panelGroup>
 
     <f:facet name="footer">
       <div class="field col-12 text-right">
-        <p:commandButton id="enum_type_items_store" action="#{enumTypeItemsTabBean.store}" 
+        <p:commandButton id="enum_type_items_store" action="#{enumTypeItemsTabBean.store}"
                          styleClass="m-1" value="#{objectBundle.store}"
                          disabled="#{!enumTypeObjectBean.editable}"
                          update="enum_type_items_table enum_type_items_panel"
                          oncomplete="if (!isFacesError()) PF('enumTypeItemsDialog').hide()"/>
-        <p:commandButton action="#{enumTypeItemsTabBean.cancel}" 
-                         styleClass="m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update="enum_type_items_panel" global="false" 
+        <p:commandButton action="#{enumTypeItemsTabBean.cancel}"
+                         styleClass="m-1" value="#{objectBundle.cancel}"
+                         immediate="true" update="enum_type_items_panel" global="false"
                          oncomplete="PF('enumTypeItemsDialog').hide()"/>
-      </div> 
-    </f:facet>      
+      </div>
+    </f:facet>
 
-  </p:dialog>    
+  </p:dialog>
 
 </ui:composition>

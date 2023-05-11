@@ -7,18 +7,18 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
-  <p:dialog id="case_persons_dialog" widgetVar="casePersonsDialog" 
-            styleClass="edit_data_dialog" style="max-width:800px" 
+  <p:dialog id="case_persons_dialog" widgetVar="casePersonsDialog"
+            styleClass="edit_data_dialog" style="max-width:800px"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
       <p:outputPanel>
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{caseObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{applicationBean.translate(caseObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{applicationBean.translate(caseObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+        <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{casePersonsTabBean.personDescription}" />
       </p:outputPanel>
     </f:facet>
@@ -32,11 +32,11 @@
           <h:panelGroup id="person_data_panel">
             <div class="ui-fluid formgrid grid" >
 
-              <!-- Person -->              
-              <div class="field col-12">  
+              <!-- Person -->
+              <div class="field col-12">
                 <p:outputLabel for="@next"
                                value="#{caseBundle.casePersons_person}"
-                               styleClass="w-full" 
+                               styleClass="w-full"
                                indicateRequired="true" />
                 <emcomp:objectReference value="#{casePersonsTabBean.personId}"
                                         process=":mainform:search_tabs:case_persons_dialog"
@@ -49,11 +49,11 @@
                                         requiredMessage="#{messageBundle.PERSON_MUST_BE_SELECTED}"
                                         minQueryLength="3">
                 </emcomp:objectReference>
-              </div>              
+              </div>
 
               <!-- Type -->
               <div class="field col-12 md:col-6">
-                <p:outputLabel for="@next" 
+                <p:outputLabel for="@next"
                                value="#{caseBundle.casePersons_type}"
                                indicateRequired="true" />
                 <emcomp:typeReference value="#{casePersonsTabBean.casePersonTypeId}"
@@ -63,33 +63,38 @@
                                       showNavigatorItems="#{casePersonsTabBean.tabBaseTypeId != 'CasePerson' ? 'false' : 'true'}"
                                       scrollHeight="200"
                                       queryDelay="1000"
-                                      minQueryLength="3" 
+                                      minQueryLength="3"
                                       required="#{not empty param['mainform:search_tabs:case_persons_store']}"
-                                      requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">            
+                                      requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
                 </emcomp:typeReference>
               </div>
 
               <!-- Dates -->
               <p:outputPanel styleClass="field col-12 md:col-3">
-                <p:outputLabel for="@next" 
+                <p:outputLabel for="@next"
                                value="#{caseBundle.casePersons_startDate}" />
-                <p:datePicker value="#{casePersonsTabBean.editing.startDate}" 
-                              locale="#{caseObjectBean.language}" converter="datePickerConverter"
-                              showIcon="true" monthNavigator="true" 
+                <p:datePicker value="#{casePersonsTabBean.editing.startDate}"
+                              locale="#{casePersonsTabBean.language}" converter="datePickerConverter"
+                              pattern="dd/MM/yyyy"
+                              placeholder="dd/MM/yyyy"
+                              showOnFocus="false" showIcon="true"
+                              monthNavigator="true"
                               yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
               </p:outputPanel>
 
               <p:outputPanel class="field col-12 md:col-3">
-                <p:outputLabel for="@next" 
+                <p:outputLabel for="@next"
                                value="#{caseBundle.casePersons_endDate}"/>
-                <p:datePicker value="#{casePersonsTabBean.editing.endDate}" 
-                              locale="#{caseObjectBean.language}" converter="datePickerConverter" 
-                              showIcon="true" 
+                <p:datePicker value="#{casePersonsTabBean.editing.endDate}"
+                              locale="#{casePersonsTabBean.language}" converter="datePickerConverter"
+                              pattern="dd/MM/yyyy"
+                              placeholder="dd/MM/yyyy"
+                              showOnFocus="false" showIcon="true"
                               monthNavigator="true" yearNavigator="true" disabled="#{!caseObjectBean.editable}" />
               </p:outputPanel>
 
               <!-- Address -->
-              <p:outputPanel styleClass="field col-12" 
+              <p:outputPanel styleClass="field col-12"
                              rendered="#{casePersonsTabBean.editing.personId != null}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
                 <emcomp:objectReference value="#{casePersonsTabBean.addressId}"
@@ -100,23 +105,23 @@
                                         queryDelay="1000"
                                         minQueryLength="3">
                 </emcomp:objectReference>
-              </p:outputPanel> 
+              </p:outputPanel>
             </div>
 
-            <!-- Contacts -->     
+            <!-- Contacts -->
             <h:panelGroup id="contacts_panel" styleClass="ui-fluid formgrid grid" rendered="#{casePersonsTabBean.editing.personId != null}">
 
-              <div class="field col-12"> 
+              <div class="field col-12">
 
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_personContacts}"/>
 
-                <p:dataTable id="selected_contacts_table" 
-                             var="sc" value="#{casePersonsTabBean.selectedContacts}" 
+                <p:dataTable id="selected_contacts_table"
+                             var="sc" value="#{casePersonsTabBean.selectedContacts}"
                              size="small" rowIndexVar="i" emptyMessage=""
-                             styleClass="invisible_header_table">   
+                             styleClass="invisible_header_table">
                   <p:column styleClass="col-10">
                     <h:outputText value="#{sc.contactTypeLabel}: #{sc.value}"/>
-                  </p:column> 
+                  </p:column>
                   <p:column styleClass="col-2 text-center">
                     <p:commandButton icon="pi pi-minus-circle" styleClass="rounded-button ui-button-flat"
                                      action="#{casePersonsTabBean.unselectContact(sc)}"
@@ -125,10 +130,10 @@
                     <p:commandButton icon="pi pi-arrow-circle-down" styleClass="rounded-button ui-button-flat"
                                      action="#{casePersonsTabBean.moveContactDown(i)}"
                                      update="@parent:@parent:@parent:contacts_panel" process="@this"
-                                     alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}" />              
+                                     alt="#{objectBundle.moveDown}" title="#{objectBundle.moveDown}" />
                   </p:column>
 
-                </p:dataTable> 
+                </p:dataTable>
 
                 <p:commandButton id="add_contacts_button" type="button" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
                                  rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}"/>
@@ -139,40 +144,40 @@
                   <h:panelGroup id="person_contacts_table">
                     <c:forEach var="pc" items="#{casePersonsTabBean.personContacts}">
                       <div class="block p-2">
-                        <p:commandLink value="#{pc.contactTypeLabel}: #{pc.value}" 
-                                       action="#{casePersonsTabBean.selectContact(pc)}" 
-                                       update="@parent:@parent:@parent:contacts_panel" 
+                        <p:commandLink value="#{pc.contactTypeLabel}: #{pc.value}"
+                                       action="#{casePersonsTabBean.selectContact(pc)}"
+                                       update="@parent:@parent:@parent:contacts_panel"
                                        process="@this"/>
-                      </div>                
+                      </div>
                     </c:forEach>
                   </h:panelGroup>
 
-                </p:overlayPanel>           
+                </p:overlayPanel>
               </div>
 
-              <p:outputPanel styleClass="field col-12 md:col-6" 
+              <p:outputPanel styleClass="field col-12 md:col-6"
                              rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">
-                <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
+                <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>
                 <p:selectOneMenu id="new_contact_type_id" value="#{casePersonsTabBean.contactTypeId}"
                                  autoWidth="false" >
-                  <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}" 
+                  <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}"
                                  var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
                 </p:selectOneMenu>
 
               </p:outputPanel>
 
               <p:outputPanel styleClass="field col-12 md:col-6"
-                             rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">   
-                <p:outputLabel for="@next" value="#{caseBundle.casePersons_contact}" />            
+                             rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">
+                <p:outputLabel for="@next" value="#{caseBundle.casePersons_contact}" />
                 <div class="ui-inputgroup">
-                  <p:inputText id="new_contact_value" value="#{casePersonsTabBean.contactValue}" />  
+                  <p:inputText id="new_contact_value" value="#{casePersonsTabBean.contactValue}" />
 
-                  <p:commandButton icon="pi pi-plus-circle" 
+                  <p:commandButton icon="pi pi-plus-circle"
                                    action="#{casePersonsTabBean.addNewContact}"
-                                   process="@this new_contact_type_id new_contact_value" 
+                                   process="@this new_contact_type_id new_contact_value"
                                    update="@parent:@parent:@parent:contacts_panel"
-                                   alt="#{objectBundle.add}" title="#{objectBundle.add}" /> 
-                </div>   
+                                   alt="#{objectBundle.add}" title="#{objectBundle.add}" />
+                </div>
               </p:outputPanel>
 
             </h:panelGroup>
@@ -184,8 +189,8 @@
         <p:tab title="#{caseBundle.casePersons_representantPerson}">
 
           <h:panelGroup id="representant_data_panel">
-            <div class="ui-fluid formgrid grid mt-2">      
-              <div class="field col-12">  
+            <div class="ui-fluid formgrid grid mt-2">
+              <div class="field col-12">
                 <p:outputLabel for="@next"
                                value="#{caseBundle.casePersons_representantPerson}"
                                styleClass="w-full" />
@@ -196,9 +201,9 @@
                                         styleClass="w-full"
                                         scrollHeight="200"
                                         queryDelay="1000"
-                                        minQueryLength="3">               
+                                        minQueryLength="3">
                 </emcomp:objectReference>
-              </div> 
+              </div>
 
               <p:outputPanel id="representant_address" styleClass="field col-12" rendered="#{casePersonsTabBean.editing.representantPersonId != null}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_address}" />
@@ -210,34 +215,34 @@
                                         queryDelay="1000"
                                         minQueryLength="3">
                 </emcomp:objectReference>
-              </p:outputPanel>           
+              </p:outputPanel>
             </div>
 
-            <!-- Representant contacts --> 
-            <p:outputPanel id="representant_contacts_panel" styleClass="ui-fluid formgrid grid" 
+            <!-- Representant contacts -->
+            <p:outputPanel id="representant_contacts_panel" styleClass="ui-fluid formgrid grid"
                            rendered="#{casePersonsTabBean.editing.representantPersonId != null}">
 
-              <div class="field col-12"> 
+              <div class="field col-12">
 
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_contacts}"/>
 
-                <p:dataTable id="selected_representant_contacts_table" 
-                             var="rsc" value="#{casePersonsTabBean.selectedRepresentantContacts}" 
-                             size="small" rowIndexVar="i" emptyMessage="" 
-                             styleClass="invisible_header_table">   
+                <p:dataTable id="selected_representant_contacts_table"
+                             var="rsc" value="#{casePersonsTabBean.selectedRepresentantContacts}"
+                             size="small" rowIndexVar="i" emptyMessage=""
+                             styleClass="invisible_header_table">
                   <p:column styleClass="col-10">
                     <h:outputText value="#{rsc.contactTypeLabel}: #{rsc.value}"/>
-                  </p:column> 
+                  </p:column>
                   <p:column styleClass="col-2 text-center">
                     <p:commandButton icon="pi pi-minus-circle" styleClass="rounded-button ui-button-flat"
                                      action="#{casePersonsTabBean.unselectRepresentantContact(rsc)}"
                                      update="@parent:@parent:@parent:representant_contacts_panel" process="@this"/>
                     <p:commandButton icon="pi pi-arrow-circle-down" styleClass="rounded-button ui-button-flat"
                                      action="#{casePersonsTabBean.moveRepresentantContactDown(i)}"
-                                     update="@parent:@parent:@parent:representant_contacts_panel" process="@this"/>              
+                                     update="@parent:@parent:@parent:representant_contacts_panel" process="@this"/>
                   </p:column>
 
-                </p:dataTable> 
+                </p:dataTable>
 
                 <p:commandButton id="add_representant_contacts_button" type="button" icon="pi pi-plus-circle" styleClass="rounded-button ui-button-flat"
                                  rendered="#{casePersonsTabBean.selectedRepresentantContacts.size() &lt; 3}"/>
@@ -248,11 +253,11 @@
                   <h:panelGroup id="representant_contacts_table">
                     <c:forEach var="rc" items="#{casePersonsTabBean.representantContacts}">
                       <div class="block p-2">
-                        <p:commandLink value="#{rc.contactTypeLabel}: #{rc.value}" 
-                                       action="#{casePersonsTabBean.selectRepresentantContact(rc)}" 
-                                       update="@parent:@parent:@parent:representant_contacts_panel" 
+                        <p:commandLink value="#{rc.contactTypeLabel}: #{rc.value}"
+                                       action="#{casePersonsTabBean.selectRepresentantContact(rc)}"
+                                       update="@parent:@parent:@parent:representant_contacts_panel"
                                        process="@this"/>
-                      </div>                
+                      </div>
                     </c:forEach>
                   </h:panelGroup>
 
@@ -261,33 +266,33 @@
 
                   </div>
 
-                </p:overlayPanel>           
+                </p:overlayPanel>
 
               </div>
 
               <p:outputPanel styleClass="field col-12 md:col-6"
                              rendered="#{casePersonsTabBean.selectedRepresentantContacts.size() &lt; 3}">
-                <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
+                <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>
                 <p:selectOneMenu value="#{casePersonsTabBean.representantContactTypeId}"
                                  autoWidth="false">
-                  <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}" 
+                  <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}"
                                  var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
                 </p:selectOneMenu>
 
               </p:outputPanel>
 
               <p:outputPanel styleClass="field col-12 md:col-6"
-                             rendered="#{casePersonsTabBean.selectedRepresentantContacts.size() &lt; 3}">   
-                <p:outputLabel for="@next" value="#{caseBundle.casePersons_contact}" />            
+                             rendered="#{casePersonsTabBean.selectedRepresentantContacts.size() &lt; 3}">
+                <p:outputLabel for="@next" value="#{caseBundle.casePersons_contact}" />
                 <div class="ui-inputgroup">
-                  <p:inputText value="#{casePersonsTabBean.representantContactValue}" />  
+                  <p:inputText value="#{casePersonsTabBean.representantContactValue}" />
 
-                  <p:commandButton icon="pi pi-plus-circle" 
+                  <p:commandButton icon="pi pi-plus-circle"
                                    action="#{casePersonsTabBean.addNewRepresentantContact}"
-                                   process="@this new_representant_contact_type_id new_representant_contact_value" 
-                                   update="representant_contacts_panel"/> 
-                </div>   
-              </p:outputPanel>            
+                                   process="@this new_representant_contact_type_id new_representant_contact_value"
+                                   update="representant_contacts_panel"/>
+                </div>
+              </p:outputPanel>
 
             </p:outputPanel>
 
@@ -298,43 +303,43 @@
           <div class="ui-fluid formgrid grid">
             <!-- Comments -->
             <p:outputPanel styleClass="field col-12" >
-              <p:outputLabel for="@next" 
+              <p:outputLabel for="@next"
                              value="#{caseBundle.casePersons_comments}"/>
               <p:inputTextarea value="#{casePersonsTabBean.editing.comments}"
                                autoResize="false" />
-            </p:outputPanel> 
+            </p:outputPanel>
 
             <!-- Import addresses -->
-            <p:outputPanel styleClass="field-checkbox col-12">            
-              <p:selectBooleanCheckbox value="#{casePersonsTabBean.importAddresses}" 
+            <p:outputPanel styleClass="field-checkbox col-12">
+              <p:selectBooleanCheckbox value="#{casePersonsTabBean.importAddresses}"
                                        itemLabel="#{caseBundle.casePersons_importAddresses}" />
-            </p:outputPanel>       
+            </p:outputPanel>
           </div>
         </p:tab>
-      </p:tabView>         
-    </h:panelGroup> 
+      </p:tabView>
+    </h:panelGroup>
 
 
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
-        <p:commandButton id="case_persons_store" action="#{casePersonsTabBean.store}" 
+        <p:commandButton id="case_persons_store" action="#{casePersonsTabBean.store}"
                          styleClass="m-1" value="#{objectBundle.store}"
                          process="case_persons_dialog"
                          update=":mainform:search_tabs:tabs case_persons_panel"
                          oncomplete="if (!isFacesError()) PF('casePersonsDialog').hide()"
                          />
-        <p:commandButton action="#{casePersonsTabBean.cancel}" 
+        <p:commandButton action="#{casePersonsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="case_persons_dialog" global="false" 
+                         update="case_persons_dialog" global="false"
                          oncomplete="PF('casePersonsDialog').hide()"/>
-      </div>  
+      </div>
 
     </f:facet>
 
 
 
-  </p:dialog>    
+  </p:dialog>
 
 </ui:composition>

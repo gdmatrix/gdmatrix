@@ -6,7 +6,7 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-  
+
     <div class="ui-fluid formgrid grid">
 
       <div class="field col-12 md:col-3">
@@ -15,25 +15,25 @@
       </div>
 
       <p:outputPanel class="field col-12 md:col-9" rendered="#{not caseObjectBean.isPropertyHidden('caseTypeId')}">
-        <p:outputLabel for="@next" 
-                       value="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)}" 
+        <p:outputLabel for="@next"
+                       value="#{caseObjectBean.getPropertyLabel('caseTypeId', caseBundle.case_type)}"
                        indicateRequired="true" />
         <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
                               type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
                               showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"
                               scrollHeight="200"
                               queryDelay="1000"
-                              minQueryLength="3" 
+                              minQueryLength="3"
                               required="#{not empty param['mainform:search_tabs:store']}"
                               requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{caseObjectBean.formSelector}"
                               process=":mainform:search_tabs:tabs"
-                              update=":mainform:search_tabs:tabs">         
+                              update=":mainform:search_tabs:tabs">
         </emcomp:typeReference>
       </p:outputPanel>
 
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" 
+        <p:outputLabel for="@next"
                        value="#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}"
                        indicateRequired="true"/>
         <p:inputTextarea value="#{caseObjectBean.case.title}"
@@ -41,16 +41,16 @@
                          requiredMessage="'#{caseObjectBean.getPropertyLabel('title', caseBundle.case_title)}'  #{messageBundle.IS_REQUIRED}"
                          readonly="#{!caseObjectBean.editable}" />
       </div>
-      
+
       <p:outputPanel class="field col-12" rendered="#{caseObjectBean.renderClassId}">
         <p:outputLabel for="@next" value="#{caseBundle.case_classification}" />
         <emcomp:multipleClassReference value="#{caseObjectBean.case.classId}"
                                        newClassId="#{caseObjectBean.newClassId}"
                                        scrollHeight="200"
                                        queryDelay="1000"
-                                       minQueryLength="3" 
+                                       minQueryLength="3"
                                        process=":mainform:search_tabs:tabs" />
-      </p:outputPanel>      
+      </p:outputPanel>
 
       <div class="field col-12 md:col-3">
         <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('startDate', caseBundle.case_startDate)}" />
@@ -58,7 +58,8 @@
         <p:datePicker value="#{caseObjectBean.startDateTime}"
                       autocomplete="off"
                       placeholder="dd/MM/yyyy HH:mm"
-                      locale="es"
+                      pattern="dd/MM/yyyy HH:mm"
+                      locale="#{caseObjectBean.language}"
                       showOnFocus="false"
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true"
@@ -71,10 +72,11 @@
         <p:datePicker value="#{caseObjectBean.endDateTime}"
                       autocomplete="off"
                       placeholder="dd/MM/yyyy HH:mm"
-                      locale="es"
+                      pattern="dd/MM/yyyy HH:mm"
+                      locale="#{caseObjectBean.language}"
                       showOnFocus="false"
                       showIcon="true" showTime="true"
-                      monthNavigator="true" yearNavigator="true" 
+                      monthNavigator="true" yearNavigator="true"
                       readonly="#{!caseObjectBean.editable}" />
       </div>
 
@@ -92,20 +94,20 @@
 
       <p:outputPanel class="field col-12 md:col-12" rendered="#{not caseObjectBean.isPropertyHidden('comments')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_comments}" />
-        <p:inputTextarea value="#{caseObjectBean.case.comments}" 
+        <p:inputTextarea value="#{caseObjectBean.case.comments}"
                          readonly="#{!caseObjectBean.editable}" />
       </p:outputPanel>
-      
+
       <emcomp:auditData creationDateTime="#{caseObjectBean.case.creationDateTime}"
                         creationUserId="#{caseObjectBean.case.creationUserId}"
                         changeDateTime="#{caseObjectBean.case.changeDateTime}"
                         changeUserId="#{caseObjectBean.case.changeUserId}"
-                        rendered="#{!caseObjectBean.new}" />  
-      
+                        rendered="#{!caseObjectBean.new}" />
+
     </div>
 
     <emcomp:dynamicProperties typeId="#{caseObjectBean.case.caseTypeId}"
                               formSelector="#{caseObjectBean.formSelector}"
-                              properties="#{caseObjectBean.case.property}" />   
-  
+                              properties="#{caseObjectBean.case.property}" />
+
 </ui:composition>

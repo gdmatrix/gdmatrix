@@ -85,10 +85,14 @@
               <p:radioButton for="deleteRecurrencesRadio" itemIndex="0"/>
               <p:outputLabel for="@previous" value="#{agendaBundle.eventRecurrences_deleteFutureRecurrences}:" />
               <p:datePicker value="#{eventRecurrencesTabBean.deleteDateTime}"
-                            locale="#{eventObjectBean.language}" converter="datePickerConverter"
+                            locale="#{eventRecurrencesTabBean.language}" converter="datePickerConverter"
                             showIcon="true" showTime="false"
                             autocomplete="off"
-                            monthNavigator="true" yearNavigator="true" styleClass="inputDate" />
+                            pattern="dd/MM/yyyy"
+                            placeholder="dd/MM/yyyy"
+                            showOnFocus="false"
+                            monthNavigator="true" yearNavigator="true"
+                            styleClass="inputDate" />
             </span>
             <span class="field-radiobutton" role="radio">
               <p:radioButton for="deleteRecurrencesRadio" itemIndex="1"/>

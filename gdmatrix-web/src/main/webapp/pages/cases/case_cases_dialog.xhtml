@@ -64,7 +64,7 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                                 formSelector="#{caseCasesTabBean.formSelector}"
                                 process=":mainform:search_tabs:case_cases_dialog"
-                                update=":mainform:search_tabs:case_cases_dialog">         
+                                update=":mainform:search_tabs:case_cases_dialog">
           </emcomp:typeReference>
         </p:outputPanel>
 
@@ -73,20 +73,22 @@
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_startDate}"/>
           <p:datePicker value="#{caseCasesTabBean.editing.startDate}"
-                        autocomplete="off" placeholder="dd/mm/aaaa"
-                        locale="es" showOnFocus="false" touchUI="true"
+                        autocomplete="off" placeholder="dd/MM/yyyy"
+                        locale="#{caseCasesTabBean.language}" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"/>
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
         </p:outputPanel>
 
         <p:outputPanel class="field col-12 md:col-3">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_endDate}"/>
           <p:datePicker value="#{caseCasesTabBean.editing.endDate}"
-                        autocomplete="off" placeholder="dd/mm/aaaa"
-                        locale="es" showOnFocus="false" touchUI="true"
+                        autocomplete="off" placeholder="dd/MM/yyyy"
+                        locale="#{caseCasesTabBean.language}" showOnFocus="false" touchUI="true"
                         converter="datePickerConverter" pattern="dd/MM/yyyy"
-                        showIcon="true" showTime="false"/>
+                        showIcon="true" showTime="false"
+                        monthNavigator="true" yearNavigator="true" />
         </p:outputPanel>
 
         <!-- Comments -->

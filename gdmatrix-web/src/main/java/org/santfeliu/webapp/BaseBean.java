@@ -51,4 +51,9 @@ public abstract class BaseBean extends WebBean implements Serializable
   {
     System.out.println(">> RESTORE STATE " + this);
   }
+
+  public String getLanguage()
+  {
+    return getLocale().getLanguage();
+  }
 }

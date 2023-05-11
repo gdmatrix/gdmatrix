@@ -18,6 +18,9 @@
                       locale="#{eventObjectBean.language}" converter="datePickerConverter"
                       showIcon="true" showTime="false"
                       autocomplete="off"
+                      pattern="dd/MM/yyyy"
+                      placeholder="dd/MM/yyyy"
+                      showOnFocus="false"
                       monthNavigator="true" yearNavigator="true"
                       styleClass="inputDate" />
       </div>
@@ -38,6 +41,9 @@
                           locale="#{eventObjectBean.language}" converter="datePickerConverter"
                           showIcon="true" showTime="false"
                           autocomplete="off"
+                          pattern="dd/MM/yyyy"
+                          placeholder="dd/MM/yyyy"
+                          showOnFocus="false"
                           monthNavigator="true" yearNavigator="true"
                           styleClass="inputDate" />
           </span>
@@ -108,7 +114,7 @@
     <p:commandButton action="#{eventCopyTabBean.show}"
                      value="#{agendaBundle.eventCopy_preview}"
                      styleClass="showButton"
-                     update="event_copy_preview" 
+                     update="event_copy_preview"
                      oncomplete="PF('eventCopyPanel').unselect(0);PF('eventCopyPanel').select(1);" />
     <p:commandButton action="#{eventCopyTabBean.reset}"
                      value="#{agendaBundle.eventCopy_reset}"

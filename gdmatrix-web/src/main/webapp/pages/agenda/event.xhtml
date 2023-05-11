@@ -104,8 +104,11 @@
                     <p:outputLabel for="@next" value="#{agendaBundle.eventSearch_from}" />
                     <p:datePicker id="start_date" value="#{eventFinderBean.fromDate}"
                                   locale="#{eventFinderBean.language}" inputStyleClass="w-12"
-                                  showIcon="false"
+                                  showIcon="true"
                                   autocomplete="off"
+                                  pattern="dd/MM/yyyy"
+                                  placeholder="dd/MM/yyyy"
+                                  showOnFocus="false"
                                   monthNavigator="true" yearNavigator="true" />
                   </div>
 
@@ -113,8 +116,11 @@
                     <p:outputLabel for="@next" value=" #{agendaBundle.eventSearch_to}" />
                     <p:datePicker id="end_date" value="#{eventFinderBean.toDate}"
                                   locale="#{eventFinderBean.language}" inputStyleClass="w-12"
-                                  showIcon="false"
+                                  showIcon="true"
                                   autocomplete="off"
+                                  pattern="dd/MM/yyyy"
+                                  placeholder="dd/MM/yyyy"
+                                  showOnFocus="false"
                                   monthNavigator="true" yearNavigator="true" />
                   </div>
 

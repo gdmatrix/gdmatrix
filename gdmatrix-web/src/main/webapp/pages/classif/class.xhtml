@@ -66,26 +66,26 @@
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{classificationBundle.class_description}" />
               <p:inputText value="#{classFinderBean.filter.description}" />
-            </div>            
-            
+            </div>
+
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{classificationBundle.class_superClassId}" />
               <emcomp:objectReference value="#{classFinderBean.filter.superClassId}"
                                       type="Class"
                                       scrollHeight="200"
                                       queryDelay="1000"
-                                      minQueryLength="3" 
+                                      minQueryLength="3"
                                       renderShowButton="false"
                                       process=":mainform:find_selector"
                                       update=":mainform:find_selector" />
-            </div>            
-            
+            </div>
+
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{classificationBundle.class_date}" />
               <p:datePicker value="#{classFinderBean.filter.startDateTime}"
                             autocomplete="off"
                             placeholder="dd/MM/yyyy HH:mm:ss"
-                            locale="es"
+                            locale="#{classFinderBean.language}"
                             showOnFocus="false"
                             converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm:ss"
                             showIcon="true" showTime="true"
@@ -141,7 +141,7 @@
                      action="#{classFinderBean.updateTree}"
                      process="@this"
                      update=":mainform:search_tabs:result_tree" />
-    
+
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                activeIndex="#{classObjectBean.searchTabSelector}"
@@ -167,7 +167,7 @@
           <ui:include src="class_tree.xhtml" />
         </h:panelGroup>
       </p:tab>
-      
+
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>
@@ -186,7 +186,7 @@
               height="auto"
               resizable="false"
               closeOnEscape="true">
-      
+
       <f:facet name="header">
         <h:outputFormat value="#{classificationBundle.class_history_title}">
           <f:param value="#{classObjectBean.objectId}" />

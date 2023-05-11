@@ -62,25 +62,29 @@
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
           </emcomp:typeReference>
         </div>
-        
+
         <!-- Dates -->
         <p:outputPanel styleClass="field col-12 md:col-3">
-          <p:outputLabel for="@next" 
+          <p:outputLabel for="@next"
                          value="#{caseBundle.caseAddresses_startDate}" />
-          <p:datePicker value="#{caseAddressesTabBean.editing.startDate}" 
-                        locale="#{caseObjectBean.language}" converter="datePickerConverter"
-                        showIcon="true" 
+          <p:datePicker value="#{caseAddressesTabBean.editing.startDate}"
+                        locale="#{caseAddressesTabBean.language}" converter="datePickerConverter"
+                        pattern="dd/MM/yyyy"
+                        placeholder="dd/MM/yyyy"
+                        showOnFocus="false" showIcon="true"
                         monthNavigator="true" yearNavigator="true"  />
         </p:outputPanel>
 
         <p:outputPanel class="field col-12 md:col-3">
-          <p:outputLabel for="@next" 
+          <p:outputLabel for="@next"
                          value="#{caseBundle.caseAddresses_endDate}"/>
-          <p:datePicker value="#{caseAddressesTabBean.editing.endDate}" 
-                        locale="#{caseObjectBean.language}" converter="datePickerConverter" 
-                        showIcon="true" 
+          <p:datePicker value="#{caseAddressesTabBean.editing.endDate}"
+                        locale="#{caseAddressesTabBean.language}" converter="datePickerConverter"
+                        pattern="dd/MM/yyyy"
+                        placeholder="dd/MM/yyyy"
+                        showOnFocus="false" showIcon="true"
                         monthNavigator="true" yearNavigator="true"  />
-        </p:outputPanel>        
+        </p:outputPanel>
 
         <!-- Comments -->
         <div class="field col-12">
@@ -88,12 +92,12 @@
                          value="#{caseBundle.caseAddresses_comments}" />
           <p:inputTextarea value="#{caseAddressesTabBean.editing.comments}" />
         </div>
-        
+
         <!-- Import persons -->
         <div class="field-checkbox col-12">
-          <p:selectBooleanCheckbox value="#{caseAddressesTabBean.importPersons}" 
+          <p:selectBooleanCheckbox value="#{caseAddressesTabBean.importPersons}"
                                    itemLabel="#{caseBundle.caseAddresses_importPersons}" />
-        </div>         
+        </div>
 
       </div>
 

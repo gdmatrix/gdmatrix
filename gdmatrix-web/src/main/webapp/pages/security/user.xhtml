@@ -10,15 +10,15 @@
   <ui:define name="filter">
 
     <p:outputPanel id="filter_panel">
-      <p:tabView id="find_selector" 
+      <p:tabView id="find_selector"
                  activeIndex="#{userFinderBean.filterTabSelector}">
- 
+
         <p:tab id="smart_search">
           <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="#{objectBundle.quick}" /> 
-          </f:facet>          
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />    
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
           <div class="field">
             <p:outputLabel for="@next" value="Valor" />
@@ -32,43 +32,43 @@
                              styleClass="m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"                                                          
-                             />      
+                             resetValues="true"
+                             />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
                              action="#{userFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             resetValues="true"                             
-                             styleClass="m-1" 
+                             resetValues="true"
+                             styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"/>
-          </div>              
+          </div>
         </p:tab>
 
-        <p:tab id="advanced_search"> 
+        <p:tab id="advanced_search">
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
           </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" /> 
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="UserId" />
               <p:chips value="#{userFinderBean.userIdList}" />
-            </div>          
+            </div>
 
             <div class="field col-12">
-              <p:outputLabel for="@next" value="#{securityBundle.user_displayName}" />        
+              <p:outputLabel for="@next" value="#{securityBundle.user_displayName}" />
               <p:inputText value="#{userFinderBean.filter.displayName}"  />
             </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{securityBundle.user_startDate}" />
-              <p:datePicker value="#{userFinderBean.filter.startDateTime}" 
+              <p:datePicker value="#{userFinderBean.filter.startDateTime}"
                             autocomplete="off"
                             placeholder="dd/MM/yyyy HH:mm:ss"
-                            locale="es" 
+                            locale="#{userFinderBean.language}"
                             showOnFocus="false"
                             converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm:ss"
                             showIcon="true" showTime="true"
@@ -77,35 +77,35 @@
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{securityBundle.user_endDate}" />
-              <p:datePicker value="#{userFinderBean.filter.endDateTime}" 
+              <p:datePicker value="#{userFinderBean.filter.endDateTime}"
                             autocomplete="off"
                             placeholder="dd/MM/yyyy HH:mm:ss"
-                            locale="es" 
+                            locale="#{userFinderBean.language}"
                             showOnFocus="false"
                             converter="datePickerConverter" pattern="dd/MM/yyyy HH:mm:ss"
                             showIcon="true" showTime="true"
                             monthNavigator="true" yearNavigator="true" />
             </div>
-          </div>          
-          
+          </div>
+
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
                              action="#{userFinderBean.clear}"
                              process=":mainform:find_selector"
                              styleClass="m-1"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"                 
+                             resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
                              action="#{userFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             resetValues="true"                             
-                             styleClass="m-1" 
+                             resetValues="true"
+                             styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"
                              />
-          </div>    
+          </div>
 
         </p:tab>
       </p:tabView>
@@ -117,24 +117,24 @@
       function onTabShow()
       {
         var activeIndex = PF('searchTabs').getActiveIndex();
-        if (activeIndex === 0) 
+        if (activeIndex === 0)
         {
           updateResults();
           console.info("updateResults");
         }
       }
     </script>
-    <p:remoteCommand name="updateResults" 
+    <p:remoteCommand name="updateResults"
                      action="#{userFinderBean.update}"
-                     process="@this" 
+                     process="@this"
                      update=":mainform:search_tabs:result_list" />
 
-    <p:tabView id="search_tabs" 
-               widgetVar="searchTabs" 
+    <p:tabView id="search_tabs"
+               widgetVar="searchTabs"
                activeIndex="#{userObjectBean.searchTabSelector}"
-               touchable="false"                
+               touchable="false"
                onTabShow="onTabShow()">
-      
+
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-list mr-2"></i>
@@ -153,10 +153,10 @@
         <h:panelGroup id="obj_tabs">
           <ui:param name="objectBean" value="#{userObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
-        </h:panelGroup>        
+        </h:panelGroup>
       </p:tab>
     </p:tabView>
-    
+
   </ui:define>
 
 </ui:composition>

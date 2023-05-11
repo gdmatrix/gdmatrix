@@ -6,25 +6,25 @@
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
-      
-    <div class="ui-fluid formgrid grid">   
-      
+
+    <div class="ui-fluid formgrid grid">
+
       <div class="w-full m-0 flex justify-content-end">
-        <p:commandLink value="#{documentObjectBean.versionLabel}" 
+        <p:commandLink value="#{documentObjectBean.versionLabel}"
                        process="@this"
                        action="#{documentObjectBean.showVersions}"
                        update=":mainform:versions_panel"
                        oncomplete="PF('versionsPanel').show()"/>
-      </div>      
-      
+      </div>
+
       <div class="field col-12 md:col-3">
         <p:outputLabel for="@next" value="DocId" />
         <p:inputText value="#{documentObjectBean.objectId}" readonly="true" />
       </div>
 
       <div class="field col-12 md:col-9">
-        <p:outputLabel for="@next" 
-                       value="#{documentBundle.document_docType}" 
+        <p:outputLabel for="@next"
+                       value="#{documentBundle.document_docType}"
                        indicateRequired="true" />
         <emcomp:typeReference value="#{documentObjectBean.document.docTypeId}"
                               type="Document"
@@ -40,24 +40,24 @@
       </div>
 
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="#{documentBundle.document_title}" 
+        <p:outputLabel for="@next" value="#{documentBundle.document_title}"
                        indicateRequired="true" />
-        <p:inputTextarea value="#{documentObjectBean.document.title}" 
-                         required="#{not empty param['mainform:search_tabs:store']}" 
+        <p:inputTextarea value="#{documentObjectBean.document.title}"
+                         required="#{not empty param['mainform:search_tabs:store']}"
                          requiredMessage="#{messageBundle.TITLE_IS_REQUIRED}"
                          styleClass="inputfield w-full"/>
       </div>
-      
+
       <div class="field col-12">
         <p:outputLabel for="@next" value="#{documentBundle.document_classification}" />
         <emcomp:multipleClassReference value="#{documentObjectBean.document.classId}"
                                        newClassId="#{documentObjectBean.newClassId}"
                                        scrollHeight="200"
                                        queryDelay="1000"
-                                       minQueryLength="3" 
+                                       minQueryLength="3"
                                        process=":mainform:search_tabs:tabs" />
       </div>
-      
+
       <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="@next" value="#{documentBundle.document_language}" />
         <p:selectOneMenu
@@ -71,20 +71,20 @@
           <f:selectItem itemValue="it" itemLabel="#{documentBundle.selectItemIT}"/>
           <f:selectItem itemValue="de" itemLabel="#{documentBundle.selectItemDE}"/>
         </p:selectOneMenu>
-      </div> 
+      </div>
 
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="@next" 
+        <p:outputLabel for="@next"
                        value="#{documentBundle.document_creationDate}" />
-        <p:datePicker value="#{documentObjectBean.document.creationDate}" 
+        <p:datePicker value="#{documentObjectBean.document.creationDate}"
                       autocomplete="off"
                       placeholder="dd/MM/yyyy"
-                      locale="es" 
+                      locale="#{documentObjectBean.language}"
                       showOnFocus="false"
                       converter="datePickerConverter" pattern="dd/MM/yyyy"
                       showIcon="true" showTime="false"
                       monthNavigator="true" yearNavigator="true" />
-      </div>         
+      </div>
 
       <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="@next" value="#{documentBundle.document_state}" />
@@ -94,38 +94,38 @@
           <f:converter converterId="EnumConverter" />
           <f:attribute name="enum" value="org.matrix.doc.State" />
         </p:selectOneMenu>
-      </div> 
-      
+      </div>
+
       <div class="field col-12 md:col-6 xl:col-3">
-        <p:outputLabel for="@next" value="#{documentBundle.document_lockUser}"  />        
+        <p:outputLabel for="@next" value="#{documentBundle.document_lockUser}"  />
         <p:outputPanel class="ui-inputgroup">
           <p:inputText value="#{documentObjectBean.document.lockUserId}"
                        disabled="true"
                        styleClass="inputfield w-full" />
-          <p:commandButton icon="pi pi-lock-open" 
+          <p:commandButton icon="pi pi-lock-open"
                            action="#{documentObjectBean.lock}"
                            process="@this"
                            update="@parent"
                            disabled="#{documentObjectBean.isNew()}"
-                           rendered="#{documentObjectBean.document.lockUserId == null}" /> 
-          <p:commandButton icon="pi pi-unlock" 
+                           rendered="#{documentObjectBean.document.lockUserId == null}" />
+          <p:commandButton icon="pi pi-unlock"
                            action="#{documentObjectBean.unlock}"
                            process="@this"
                            update="@parent"
                            disabled="#{documentObjectBean.isNew()}"
-                           rendered="#{documentObjectBean.document.lockUserId != null}" /> 
+                           rendered="#{documentObjectBean.document.lockUserId != null}" />
         </p:outputPanel>
-      </div> 
+      </div>
 
       <emcomp:auditData creationDateTime="#{documentObjectBean.document.captureDateTime}"
                         creationDateTimeLabel="#{documentBundle.document_captureDate}"
                         creationUserId="#{documentObjectBean.document.captureUserId}"
                         creationUserIdLabel="#{documentBundle.document_captureBy}"
                         changeDateTime="#{documentObjectBean.document.changeDateTime}"
-                        changeUserId="#{documentObjectBean.document.changeUserId}" />      
-      
+                        changeUserId="#{documentObjectBean.document.changeUserId}" />
+
     </div>
-    
+
     <emcomp:dynamicProperties typeId="#{documentObjectBean.document.docTypeId}"
                               formSelector="#{documentObjectBean.formSelector}"
                               properties="#{documentObjectBean.document.property}" />

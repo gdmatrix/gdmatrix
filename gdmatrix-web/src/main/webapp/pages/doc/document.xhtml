@@ -10,15 +10,15 @@
 
   <ui:define name="filter">
     <p:outputPanel id="filter_panel">
-      <p:tabView id="find_selector" 
+      <p:tabView id="find_selector"
                  activeIndex="#{documentFinderBean.filterTabSelector}">
 
         <p:tab id="smart_search">
           <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="#{objectBundle.quick}" /> 
-          </f:facet>          
-          <p:defaultCommand target="smart_search_button" scope="smart_search" />    
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
+          </f:facet>
+          <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
           <div class="field">
             <p:outputLabel for="@next" value="Valor" />
@@ -32,37 +32,37 @@
                              styleClass="m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"                                                          
-                             />      
+                             resetValues="true"
+                             />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
                              action="#{documentFinderBean.smartFind}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             resetValues="true"                             
-                             styleClass="m-1" 
+                             resetValues="true"
+                             styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"/>
-          </div>              
+          </div>
         </p:tab>
 
-        <p:tab id="advanced_search"> 
+        <p:tab id="advanced_search">
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
           </f:facet>
-          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />    
+          <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
           <div class="ui-fluid formgrid grid">
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="DocId" />
               <p:chips value="#{documentFinderBean.docIdList}" />
-            </div>          
+            </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{documentBundle.outputTitle}" />
               <p:inputText value="#{documentFinderBean.filter.title}" />
-            </div>  
+            </div>
 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{documentBundle.outputContents}" />
@@ -73,7 +73,7 @@
                         toggleable="true" collapsed="true" styleClass="mb-2 w-full">
 
               <div class="field col-12">
-                <p:selectOneMenu id="dateComparator" 
+                <p:selectOneMenu id="dateComparator"
                                  value="#{documentFinderBean.filter.dateComparator}"
                                  styleClass="inputfield w-full" style="vertical-align:middle">
                   <f:selectItem itemLabel="#{documentBundle.documentSearch_changeDateTime}" itemValue="1" />
@@ -84,10 +84,10 @@
 
               <div class="field col-12">
                 <p:outputLabel for="@next" value="#{documentBundle.outputStartDate}" />
-                <p:datePicker value="#{documentFinderBean.filter.startDate}" 
+                <p:datePicker value="#{documentFinderBean.filter.startDate}"
                               autocomplete="off"
                               placeholder="dd/MM/yyyy"
-                              locale="es" 
+                              locale="#{documentFinderBean.language}"
                               showOnFocus="false"
                               converter="datePickerConverter" pattern="dd/MM/yyyy"
                               showIcon="true" showTime="false"
@@ -95,10 +95,10 @@
               </div>
               <div class="field col-12">
                 <p:outputLabel for="@next" value="#{documentBundle.outputEndDate}" />
-                <p:datePicker value="#{documentFinderBean.filter.endDate}" 
+                <p:datePicker value="#{documentFinderBean.filter.endDate}"
                               autocomplete="off"
                               placeholder="dd/MM/yyyy"
-                              locale="es" 
+                              locale="#{documentFinderBean.language}"
                               showOnFocus="false"
                               converter="datePickerConverter" pattern="dd/MM/yyyy"
                               showIcon="true" showTime="false"
@@ -120,7 +120,7 @@
                                       type="Class"
                                       scrollHeight="200"
                                       queryDelay="1000"
-                                      minQueryLength="3" 
+                                      minQueryLength="3"
                                       renderShowButton="false"
                                       process=":mainform:find_selector" />
             </div>
@@ -153,18 +153,18 @@
                              process=":mainform:find_selector"
                              styleClass="m-1"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"                             
+                             resetValues="true"
                              />
             <p:commandButton id="advanced_search_button"
                              value="#{objectBundle.search}"
                              action="#{documentFinderBean.find}"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs :mainform:context_panel"
-                             resetValues="true"                             
-                             styleClass="m-1" 
+                             resetValues="true"
+                             styleClass="m-1"
                              oncomplete="endPanel('leftPanel');"
                              />
-          </div>    
+          </div>
 
         </p:tab>
       </p:tabView>
@@ -183,15 +183,15 @@
         }
       }
     </script>
-    <p:remoteCommand name="updateResults" 
+    <p:remoteCommand name="updateResults"
                      action="#{documentFinderBean.update}"
-                     process="@this" 
+                     process="@this"
                      update=":mainform:search_tabs:result_list" />
 
-    <p:tabView id="search_tabs" 
-               widgetVar="searchTabs" 
+    <p:tabView id="search_tabs"
+               widgetVar="searchTabs"
                activeIndex="#{documentObjectBean.searchTabSelector}"
-               touchable="false"                
+               touchable="false"
                onTabShow="onTabShow()">
 
       <p:tab>
@@ -212,31 +212,31 @@
         <h:panelGroup id="obj_tabs">
           <ui:param name="objectBean" value="#{documentObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
-        </h:panelGroup>        
+        </h:panelGroup>
       </p:tab>
     </p:tabView>
 
     <p:dialog id="versions_panel"
-              widgetVar="versionsPanel" 
+              widgetVar="versionsPanel"
               modal="true"
               height="auto"
               resizable="false"
               closeOnEscape="true">
-      
+
       <f:facet name="header">
         <h:outputFormat value="#{documentBundle.document_versions_title}">
           <f:param value="#{documentObjectBean.objectId}" />
         </h:outputFormat>
       </f:facet>
 
-      <p:dataTable value="#{documentObjectBean.versions}" 
+      <p:dataTable value="#{documentObjectBean.versions}"
                    var="docVersion" rowIndexVar="rowIndex">
         <p:column headerText="#{documentBundle.document_version}">
           <h:outputText value="#{docVersion.version}" />
         </p:column>
         <p:column headerText="#{documentBundle.document_title}">
-          <p:commandLink value="#{docVersion.title}" 
-                         action="#{documentObjectBean.loadVersion(docVersion.version)}" 
+          <p:commandLink value="#{docVersion.title}"
+                         action="#{documentObjectBean.loadVersion(docVersion.version)}"
                          process="@this"
                          update=":mainform:search_tabs"
                          style="#{documentObjectBean.isVersionDeleted(docVersion) ? 'text-decoration:line-through' : ''}"
@@ -256,30 +256,30 @@
                            process="@this"
                            update=":mainform:search_tabs"
                            rendered="#{rowIndex gt 0 and not documentObjectBean.isVersionDeleted(docVersion)}"
-                           oncomplete="PF('versionsPanel').hide()"                       
+                           oncomplete="PF('versionsPanel').hide()"
                            title="#{objectBundle.delete}" alt="#{objectBundle.delete}">
-            <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                       message="#{objectBundle.confirm_remove}" 
+            <p:confirm header="#{objectBundle.confirm_remove_header}"
+                       message="#{objectBundle.confirm_remove}"
                        icon="pi pi-info-circle" />
           </p:commandButton>
         </p:column>
       </p:dataTable>
       <f:facet name="footer">
-        <p:commandButton value="#{documentBundle.document_newVersion}" 
-                         action="#{documentObjectBean.newVersion}" 
+        <p:commandButton value="#{documentBundle.document_newVersion}"
+                         action="#{documentObjectBean.newVersion}"
                          process="@this"
                          update=":mainform:search_tabs"
                          rendered="#{not documentObjectBean.isNew()}"
-                         oncomplete="PF('versionsPanel').hide()"                       
-                         /> 
-        <p:commandButton value="#{documentBundle.purge}" 
-                         action="#{documentObjectBean.purgeVersions}" 
+                         oncomplete="PF('versionsPanel').hide()"
+                         />
+        <p:commandButton value="#{documentBundle.purge}"
+                         action="#{documentObjectBean.purgeVersions}"
                          process="@this"
                          update=":mainform:search_tabs"
                          rendered="#{not documentObjectBean.isNew()}"
                          oncomplete="PF('versionsPanel').hide()">
-          <p:confirm header="#{objectBundle.confirm_remove_header}" 
-                     message="#{objectBundle.confirm_remove}" 
+          <p:confirm header="#{objectBundle.confirm_remove_header}"
+                     message="#{objectBundle.confirm_remove}"
                      icon="pi pi-info-circle" />
         </p:commandButton>
       </f:facet>

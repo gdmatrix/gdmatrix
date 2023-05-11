@@ -17,12 +17,12 @@
 
         <p:tab id="smart_search">
           <f:facet name="title">
-            <span class="pi pi-bolt mr-2"/> 
-            <h:outputText value="#{objectBundle.quick}" /> 
+            <span class="pi pi-bolt mr-2"/>
+            <h:outputText value="#{objectBundle.quick}" />
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="ui-fluid formgrid grid"> 
+          <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
               <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"/>
@@ -35,7 +35,7 @@
                              styleClass="m-1"
                              process=":mainform:find_selector"
                              update=":mainform:filter_panel :mainform:search_tabs:result_list"
-                             resetValues="true"                             
+                             resetValues="true"
                              />
             <p:commandButton id="smart_search_button"
                              value="#{objectBundle.search}"
@@ -51,8 +51,8 @@
 
         <p:tab id="advanced_search">
           <f:facet name="title">
-            <span class="pi pi-cog mr-2"/> 
-            <h:outputText value="#{objectBundle.advanced}" /> 
+            <span class="pi pi-cog mr-2"/>
+            <h:outputText value="#{objectBundle.advanced}" />
           </f:facet>
           <p:defaultCommand target="advanced_search_button" scope="advanced_search" />
 
@@ -62,14 +62,14 @@
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.object_id}" />
               <p:chips value="#{caseFinderBean.caseIdList}"/>
-            </div>  
-            
+            </div>
+
             <!-- Title -->
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{caseBundle.case_title}" />
               <p:inputText value="#{caseFinderBean.filter.title}" />
             </div>
-            
+
             <!-- ClassId -->
             <p:outputPanel class="field col-12" rendered="#{caseObjectBean.renderClassId}">
               <p:outputLabel for="@next" value="#{caseBundle.case_classId}" />
@@ -77,10 +77,10 @@
                                       type="Class"
                                       scrollHeight="200"
                                       queryDelay="1000"
-                                      minQueryLength="3" 
+                                      minQueryLength="3"
                                       renderShowButton="false"
                                       process=":mainform:find_selector" />
-            </p:outputPanel>            
+            </p:outputPanel>
 
             <!-- TypeId -->
             <p:outputPanel class="field col-12" rendered="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Case'}">
@@ -96,7 +96,7 @@
                                     update=":mainform:find_selector"
                                     maxResults="20">
               </emcomp:typeReference>
-            </p:outputPanel>              
+            </p:outputPanel>
 
             <!-- Description -->
             <div class="field col-12">
@@ -109,7 +109,7 @@
                           toggleable="true" collapsed="true" >
 
                 <div class="field col-12">
-                  <p:selectOneMenu id="dateComparator" 
+                  <p:selectOneMenu id="dateComparator"
                                    value="#{caseFinderBean.filter.dateComparator}"
                                    style="vertical-align:middle">
                     <f:selectItem itemLabel="#{caseBundle.caseSearch_startDate}" itemValue="1" />
@@ -120,10 +120,10 @@
 
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputStartDate}" />
-                  <p:datePicker value="#{caseFinderBean.filter.fromDate}" 
+                  <p:datePicker value="#{caseFinderBean.filter.fromDate}"
                                 autocomplete="off"
                                 placeholder="dd/MM/yyyy"
-                                locale="es" 
+                                locale="#{caseFinderBean.language}"
                                 showOnFocus="false"
                                 converter="datePickerConverter" pattern="dd/MM/yyyy"
                                 showIcon="true" showTime="false"
@@ -131,17 +131,17 @@
                 </div>
                 <div class="field col-12">
                   <p:outputLabel for="@next" value="#{caseBundle.caseSearch_outputEndDate}" />
-                  <p:datePicker value="#{caseFinderBean.filter.toDate}" 
+                  <p:datePicker value="#{caseFinderBean.filter.toDate}"
                                 autocomplete="off"
                                 placeholder="dd/MM/yyyy"
-                                locale="es" 
+                                locale="#{caseFinderBean.language}"
                                 showOnFocus="false"
                                 converter="datePickerConverter" pattern="dd/MM/yyyy"
                                 showIcon="true" showTime="false"
                                 monthNavigator="true" yearNavigator="true" />
                 </div>
 
-              </p:fieldset>   
+              </p:fieldset>
             </div>
 
             <!-- searchExpression -->
@@ -156,7 +156,7 @@
                                     formSelector="#{caseFinderBean.formSelector}"
                                     formBuilderPrefix="searchtype"
                                     options="#{dynamicPropertiesBean.filterOptions}"
-                                    properties="#{caseFinderBean.filter.property}" />           
+                                    properties="#{caseFinderBean.filter.property}" />
 
           <div class="buttons text-right">
             <p:commandButton value="#{objectBundle.clear}"
@@ -196,7 +196,7 @@
     </script>
     <p:remoteCommand name="updateResults"
                      action="#{caseFinderBean.update}"
-                     process="@this" 
+                     process="@this"
                      update=":mainform:search_tabs:result_list" />
 
     <p:tabView id="search_tabs"
@@ -212,7 +212,7 @@
         </f:facet>
         <h:panelGroup id="result_list">
           <ui:include src="case_list.xhtml" />
-        </h:panelGroup>        
+        </h:panelGroup>
       </p:tab>
 
       <p:tab>
@@ -223,7 +223,7 @@
         <h:panelGroup id="obj_tabs">
           <ui:param name="objectBean" value="#{caseObjectBean}" />
           <ui:include src="/pages/obj/object_standard.xhtml" />
-        </h:panelGroup>        
+        </h:panelGroup>
       </p:tab>
 
     </p:tabView>

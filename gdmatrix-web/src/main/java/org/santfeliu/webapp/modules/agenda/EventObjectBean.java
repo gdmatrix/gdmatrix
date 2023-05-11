@@ -245,12 +245,6 @@ public class EventObjectBean extends ObjectBean
   }
 
   //TODO Move to superclass
-  public String getLanguage()
-  {
-    return getLocale().getLanguage();
-  }
-
-  //TODO Move to superclass
   public String getAdminRole()
   {
     return AgendaConstants.AGENDA_ADMIN_ROLE;
