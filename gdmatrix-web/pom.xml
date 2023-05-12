@@ -157,7 +157,17 @@
       <artifactId>javax.el</artifactId>
       <version>3.0.1-b11</version>
     </dependency>
-
+    <dependency>
+        <groupId>org.webjars.npm</groupId>
+        <artifactId>primeflex</artifactId>
+        <version>3.3.0</version>
+    </dependency>    
+    <dependency>
+       <groupId>org.webjars</groupId>
+       <artifactId>font-awesome</artifactId>
+       <version>6.2.0</version>
+    </dependency>
+    
     <!-- PDF libraries -->
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
