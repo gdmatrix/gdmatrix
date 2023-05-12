@@ -72,7 +72,7 @@ public class NavigatorBean extends WebBean implements Serializable
   public static final int DEFAULT_RECENT_LIST_SIZE = 5;
   public static final int DEFAULT_HISTORY_SIZE = 10;
 
-  private final Map<String, BaseTypeInfo> baseTypeInfoMap = new HashMap<>();
+  private final BaseTypeInfoMap baseTypeInfoMap = new BaseTypeInfoMap();
   private final History history = new History();
   private String lastBaseTypeId;
   private int contextTabSelector;
@@ -83,35 +83,30 @@ public class NavigatorBean extends WebBean implements Serializable
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
     MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();
+    MenuItemCursor topMenuItem = WebUtils.getTopWebMenuItem(selectedMenuItem);  
+    
     String baseTypeId = selectedMenuItem.getProperty(BASE_TYPEID_PROPERTY);
     if (baseTypeId == null) return null;
 
-    BaseTypeInfo baseTypeInfo = baseTypeInfoMap.get(baseTypeId);
-    if (baseTypeInfo == null)
-    {
-      baseTypeInfo = new BaseTypeInfo(selectedMenuItem.getMid());
-      baseTypeInfoMap.put(baseTypeId, baseTypeInfo);
-    }
-    return baseTypeInfo;
+    return baseTypeInfoMap.getBaseTypeInfo(topMenuItem.getMid(), baseTypeId);     
   }
 
   public BaseTypeInfo getBaseTypeInfo(String baseTypeId)
   {
-    BaseTypeInfo baseTypeInfo = baseTypeInfoMap.get(baseTypeId);
-    if (baseTypeInfo == null)
-    {
-      String baseTypeMid = findBaseTypeMid(baseTypeId);
-      if (baseTypeMid == null) return null;
-
-      baseTypeInfo = new BaseTypeInfo(baseTypeMid);
-      baseTypeInfoMap.put(baseTypeId, baseTypeInfo);
-    }
-    return baseTypeInfo;
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();    
+    MenuItemCursor topMenuItem = WebUtils.getTopWebMenuItem(selectedMenuItem);  
+    
+    return baseTypeInfoMap.getBaseTypeInfo(topMenuItem.getMid(), baseTypeId);
   }
 
   public List<String> getBaseTypeIdList()
-  {
-    return new ArrayList<>(baseTypeInfoMap.keySet());
+  { 
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    MenuItemCursor selectedMenuItem = userSessionBean.getSelectedMenuItem();    
+    MenuItemCursor topMenuItem = WebUtils.getTopWebMenuItem(selectedMenuItem);  
+    
+    return baseTypeInfoMap.getBaseTypeIdList(topMenuItem.getMid());
   }
 
   public int getUpdateCount()
@@ -389,21 +384,13 @@ public class NavigatorBean extends WebBean implements Serializable
     this.contextTabSelector = selector;
   }
 
-  private String findBaseTypeMid(String objectTypeId)
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    MenuTypesCache menuTypesCache = MenuTypesCache.getInstance();
-    MenuItemCursor typeMenuItem = menuTypesCache.get(
-      userSessionBean.getSelectedMenuItem(), objectTypeId);
 
-    return typeMenuItem.isNull() ? null : typeMenuItem.getMid();
-  }
 
   /**
    * BaseTypeInfo contains information about a base type.
    */
   public class BaseTypeInfo implements Serializable
-  {
+  {   
     String mid;
     List<String> recentObjectIdList = new ArrayList<>();
     Map<String, Serializable> beanStateMap = new HashMap<>();
@@ -848,5 +835,49 @@ public class NavigatorBean extends WebBean implements Serializable
 
       WebUtils.setValue(selectExpression, String.class, selectedObjectId);
     }
+  }
+  
+  public class BaseTypeInfoMap extends 
+    HashMap<String, Map<String, BaseTypeInfo>>
+  {
+    
+    public BaseTypeInfo getBaseTypeInfo(String topMid, String baseTypeId)
+    {
+      Map<String, BaseTypeInfo> topWebMap = this.get(topMid);
+      if (topWebMap == null)
+        topWebMap = new HashMap<>();
+      
+      BaseTypeInfo baseTypeInfo = topWebMap.get(baseTypeId);
+      if (baseTypeInfo == null)
+      {
+        String baseTypeMid = findBaseTypeMid(baseTypeId);
+        if (baseTypeMid == null) return null; 
+        
+        baseTypeInfo = new BaseTypeInfo(baseTypeMid);
+        topWebMap.put(baseTypeId, baseTypeInfo);   
+        this.put(topMid, topWebMap);        
+      }
+
+      return baseTypeInfo;
+    }
+    
+    public List<String> getBaseTypeIdList(String topMid)
+    {
+      Map<String, BaseTypeInfo> map = this.get(topMid);
+      if (map != null)
+        return new ArrayList<>(map.keySet());
+      else
+        return Collections.EMPTY_LIST;
+    }
+    
+    private String findBaseTypeMid(String objectTypeId)
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      MenuTypesCache menuTypesCache = MenuTypesCache.getInstance();
+      MenuItemCursor typeMenuItem = menuTypesCache.get(
+        userSessionBean.getSelectedMenuItem(), objectTypeId);
+
+      return typeMenuItem.isNull() ? null : typeMenuItem.getMid();
+    }    
   }
 }
