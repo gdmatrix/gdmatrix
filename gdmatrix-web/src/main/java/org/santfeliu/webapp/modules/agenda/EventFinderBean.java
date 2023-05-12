@@ -49,6 +49,7 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.schedule.ScheduleEntryMoveEvent;
 import org.primefaces.event.schedule.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
@@ -64,6 +65,7 @@ import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.setup.Column;
+import org.santfeliu.webapp.setup.SearchTab;
 import org.santfeliu.webapp.util.DataTableRow;
 
 /**
@@ -423,6 +425,13 @@ public class EventFinderBean extends FinderBean
     if (outdated)
     {
       doFind(false);
+      List<String> clientIdList = new ArrayList();
+      List<SearchTab> tabs = eventObjectBean.getSearchTabs();
+      for (int i = 0; i < tabs.size(); i++)
+      {
+        clientIdList.add("mainform:search_tabs:result_list_" + i);
+      }
+      PrimeFaces.current().ajax().update(clientIdList);
     }
   }
 

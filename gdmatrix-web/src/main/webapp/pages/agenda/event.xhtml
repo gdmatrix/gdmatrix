@@ -218,16 +218,13 @@
     </script>
     <p:remoteCommand name="updateResults"
                      action="#{eventFinderBean.update}"
-                     process="@this"
-                     update="@(.searchTabContent)" />
+                     process="@this" />
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                activeIndex="#{eventObjectBean.searchTabSelector}"
                touchable="false"
                onTabShow="onTabShow()">
-
-      <p:ajax event="tabChange" />
 
       <c:forEach items="#{eventObjectBean.searchTabs}" var="tab" varStatus="loop">
         <p:tab>
