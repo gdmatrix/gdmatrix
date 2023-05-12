@@ -272,3 +272,24 @@
   margin: 0;
   padding: 0;
 }
+
+.eventCopyPreviewTable .attNotAvailable
+{
+  color: orange;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.eventCopyPreviewTable .roomAvailable
+{
+  color: green;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.eventCopyPreviewTable .roomNotAvailable
+{
+  color: red;
+  font-size: 14px;
+  font-weight: bold;
+}

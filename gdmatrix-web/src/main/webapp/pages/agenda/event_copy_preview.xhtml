@@ -62,7 +62,7 @@
     <p:column headerText="#{agendaBundle.eventCopy_attendantsAvailable}"
               styleClass="col-1 centerElems"
               rendered="#{eventCopyTabBean.checkAttendantsAvailability}">
-      <p:graphicImage value="/common/agenda/images/warn.png"
+      <p:graphicImage styleClass="pi pi-exclamation-triangle attNotAvailable"
                       rendered="#{not row.attendantAvailable}" alt="" />
       <p:tooltip for="@previous" autoHide="false" styleClass="tooltip">
         <p:dataList value="#{row.overlappingAttendants}" var="oa" itemType="none">
@@ -73,10 +73,10 @@
 
     <p:column headerText="#{agendaBundle.eventCopy_roomAvailable}"
               styleClass="col-1 centerElems">
-      <p:graphicImage value="/common/agenda/images/accept.png"
+      <p:graphicImage styleClass="pi pi-check roomAvailable"
                       rendered="#{row.roomAvailable}"
                       alt=""/>
-      <p:graphicImage value="/common/agenda/images/cross.png"
+      <p:graphicImage styleClass="pi pi-times roomNotAvailable"
                       rendered="#{not row.roomAvailable}"
                       alt=""/>
       <p:tooltip for="@previous" autoHide="false" styleClass="tooltip">
