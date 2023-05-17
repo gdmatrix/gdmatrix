@@ -61,7 +61,7 @@ public class TypeCache
   private static Map<String, TypeCache> typeCaches =
     Collections.synchronizedMap(new HashMap<String, TypeCache>());
 
-  private int maxSize = 1000; // 1000 types
+  private int maxSize = 3000; // 3000 types
   private Map typeMap = Collections.synchronizedMap(new LRUMap(maxSize));
   private Map<String, List> childrenMap = 
     Collections.synchronizedMap(new HashMap<String, List>());

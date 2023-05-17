@@ -48,7 +48,7 @@
                      >
 
           <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2">
-            <i class="mr-2 pi pi-#{srow.type == 'TEXT' ? 'sort-alpha-down' : (srow.type == 'DATE' ? 'calendar' : (srow.type == 'NUMERIC' ? 'sort-numeric-down' : (srow.type == 'BOOLEAN' ? 'flag' : '')))}"></i>
+            <i class="mr-2 #{srow.type == 'TEXT' ? 'fa fa-font' : (srow.type == 'DATE' ? 'pi pi-calendar' : (srow.type == 'NUMERIC' ? 'fa fa-hashtag' : (srow.type == 'BOOLEAN' ? 'pi pi-flag' : '')))}"></i>
             <h:outputText value="#{srow.name}" style="#{srow.hidden ? 'color: blue' : ''}" />
           </p:column>      
 
@@ -119,7 +119,7 @@
       </f:facet>    
 
       <p:column headerText="#{dicBundle.typeProperties_name}" styleClass="col-2" filterBy="#{row.name}" filterMatchMode="contains">
-        <i class="mr-2 pi pi-#{row.type == 'TEXT' ? 'sort-alpha-down' : (row.type == 'DATE' ? 'calendar' : (row.type == 'NUMERIC' ? 'sort-numeric-down' : (row.type == 'BOOLEAN' ? 'flag' : '')))}"></i>
+        <i class="mr-2 #{row.type == 'TEXT' ? 'fa fa-font' : (row.type == 'DATE' ? 'pi pi-calendar' : (row.type == 'NUMERIC' ? 'fa fa-hashtag' : (row.type == 'BOOLEAN' ? 'pi pi-flag' : '')))}"></i>
         <h:outputText value="#{row.name}" style="#{row.hidden ? 'color: blue' : ''}"/>
       </p:column>      
 

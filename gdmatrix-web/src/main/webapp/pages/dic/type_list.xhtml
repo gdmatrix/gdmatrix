@@ -15,13 +15,13 @@
                rows="10"
                rowIndexVar="rowIndex">
 
-    <p:column headerText="#{dicBundle.type_typeId}" styleClass="col-4">
+    <p:column headerText="#{dicBundle.type_typeId}" styleClass="col-3">
       <h:outputText value="#{row.typeId}" />
     </p:column>         
     <p:column headerText="#{dicBundle.type_description}" styleClass="col-4">
       <h:outputText value="#{row.description}" />
     </p:column>
-    <p:column headerText="#{dicBundle.type_superTypeId}" styleClass="col-4">
+    <p:column headerText="#{dicBundle.type_superTypeId}" styleClass="col-3">
       <h:outputText value="#{row.superTypeId}" />
     </p:column>    
     <p:column styleClass="col-1">
@@ -39,9 +39,17 @@
                        onclick="PF('objectTabs').select(0);"
                        resetValues="true"
                        process="@this"
-                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(2);"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                        />     
+      <p:commandButton icon="ui-icon pi pi-sitemap"
+                       styleClass="rounded-button ui-button-flat"
+                       action="#{typeFinderBean.viewNodeInTree(row.typeId)}"
+                       process="@this"
+                       oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
+                       update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
+                       title="Tree" alt="Tree"
+                       />      
     </p:column>
   </p:dataTable>  
   

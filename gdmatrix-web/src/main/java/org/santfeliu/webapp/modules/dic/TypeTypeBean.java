@@ -134,27 +134,25 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   }
 
   @Override
-  public TypeFilter queryToFilter(String query, String typeId)
+  public TypeFilter queryToFilter(String query, String baseTypeId)
   {
     TypeFilter filter = new TypeFilter();
     String typePath = null;
 
-    if (!StringUtils.isBlank(typeId))
+    if (!StringUtils.isBlank(baseTypeId))
     {
-      typePath = TYPE_PATH_SEPARATOR + typeId + TYPE_PATH_SEPARATOR + "%";
-      org.santfeliu.dic.Type type = TypeCache.getInstance().getType(typeId);
-      if (type != null && !type.isRootType())
-      {
+      typePath = TYPE_PATH_SEPARATOR + baseTypeId + TYPE_PATH_SEPARATOR + "%";
+      org.santfeliu.dic.Type baseType = 
+        TypeCache.getInstance().getType(baseTypeId);
+      if (baseType != null && !baseType.isRootType())
         typePath = "%" + typePath;
-      }
     }
 
     // TODO: more intelligent search
     if (query != null && query.contains(":"))
     {
-      query = query.substring(query.indexOf(":") + 1) + "%";
-      typePath = (typePath != null ? typePath : "") + "%" +
-        TYPE_PATH_SEPARATOR + query + TYPE_PATH_SEPARATOR + "%";
+      String typeId = query.substring(query.indexOf(":") + 1);
+      filter.setTypeId(typeId);
     }
     else
       filter.setDescription(query);
@@ -169,11 +167,13 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   {
     String query = "";
 
-    if (filter.getDescription() != null)
+    if (filter.getTypeId() != null)
+    {
+      query = filter.getTypeId();
+    }
+    else if (filter.getDescription() != null)
     {
       query = filter.getDescription();
-      if (query.startsWith("%")) query = query.substring(1);
-      if (query.endsWith("%")) query = query.substring(query.length() - 1);
     }
     return query;
   }

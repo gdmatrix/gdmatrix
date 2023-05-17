@@ -102,6 +102,12 @@ public class TypeObjectBean extends ObjectBean
   {
     return isNew() ? "" : type.getDescription();
   }
+  
+  @Override
+  public int getEditModeSelector()
+  {
+    return 2;
+  }
 
   @Override
   public void loadObject() throws Exception

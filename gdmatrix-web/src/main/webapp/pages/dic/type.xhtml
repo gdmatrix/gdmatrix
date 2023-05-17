@@ -65,6 +65,7 @@
                 <p:column>
                   <h:outputText value="#{item.label}" />
                 </p:column>
+                <p:ajax event="itemSelect" listener="#{typeFinderBean.onRootTypeChange}" update="type_path" />
               </p:selectOneMenu>
             </div>
 
@@ -78,7 +79,7 @@
               <p:inputText value="#{typeFinderBean.filter.superTypeId}" />
             </p:outputPanel> 
             
-            <p:outputPanel styleClass="field col-12">
+            <p:outputPanel id="type_path" styleClass="field col-12">
               <p:outputLabel for="@next" value="#{dicBundle.type_typePath}" />
               <p:inputText value="#{typeFinderBean.filter.typePath}" />
             </p:outputPanel>             
@@ -122,20 +123,31 @@
         if (activeIndex === 0)
         {
           updateResults();
-          console.info("updateResults");
         }
+        else if (activeIndex === 1)
+        {
+          updateTree();
+        }        
       }
+           
     </script>  
     <p:remoteCommand name="updateResults"
                      action="#{typeFinderBean.update}"
                      process="@this" 
                      update=":mainform:search_tabs:result_list" />
+    
+    <p:remoteCommand name="updateTree"
+                     action="#{typeFinderBean.updateTree}"
+                     process="@this"
+                     update=":mainform:search_tabs:result_tree" />    
 
     <p:tabView id="search_tabs"
                widgetVar="searchTabs"
                activeIndex="#{typeObjectBean.searchTabSelector}"
                touchable="false"
                onTabShow="onTabShow()">
+      
+      <p:ajax event="tabChange" />      
 
       <p:tab>
         <f:facet name="title">
@@ -147,6 +159,16 @@
         </h:panelGroup>        
       </p:tab>
 
+      <p:tab>
+        <f:facet name="title">
+          <i class="pi pi-sitemap mr-2"></i>
+          <h:outputText value="#{objectBundle.tree}"/>
+        </f:facet>
+        <h:panelGroup id="result_tree">
+          <ui:include src="type_tree.xhtml" />
+        </h:panelGroup>
+      </p:tab>
+      
       <p:tab>
         <f:facet name="title">
           <i class="pi pi-pencil mr-2"></i>
