@@ -3,7 +3,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:sf="http://faces.santfeliu.org"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:p="http://primefaces.org/ui">
 
   <ui:composition template="/templates/#{userSessionBean.template}/template.xhtml">
     <ui:param name="css" value="/common/misc/css/query.css" />
@@ -92,9 +93,12 @@
         <t:inputTextarea id="query_sql" forceId="true"
           value="#{queryBean.query.sql}" />
       </t:div>
-
-      <t:panelTabbedPane styleClass="tabbed_panel">
-        <t:panelTab label="#{queryBundle.classification}">
+        
+      <p:tabView styleClass="tabbed_panel" activeIndex="#{queryEditorBean.selectedTab}">
+        
+        <p:ajax event="tabChange" process="@this" oncomplete="refreshEditors();" />
+        
+        <p:tab title="#{queryBundle.classification}">
           <t:div id="classification_panel" forceId="true">
             <t:div>
               <t:outputLabel value="#{queryBundle.query_scope}:" styleClass="output_label" for="query_scope" />
@@ -130,9 +134,9 @@
                 styleClass="big_button" forceId="true" />
             </t:div>
           </t:div>
-        </t:panelTab>
+        </p:tab>
 
-        <t:panelTab label="#{queryBundle.connection}">
+        <p:tab title="#{queryBundle.connection}">
           <t:div id="connection_panel" forceId="true">
             <t:div>
               <t:outputLabel value="#{queryBundle.driver}:" styleClass="output_label" for="conn_driver" />
@@ -155,9 +159,9 @@
                 styleClass="input_text" forceId="true" redisplay="true" />
             </t:div>
           </t:div>
-        </t:panelTab>
+        </p:tab>
 
-        <t:panelTab label="#{queryBundle.parameters}" onclick="refreshEditor(parameterEditor);">
+        <p:tab title="#{queryBundle.parameters}">
           <t:div styleClass="edit_panel parameters">
             <t:div styleClass="left">
               <t:dataList value="#{queryBean.query.parameters}" var="parameter">
@@ -211,9 +215,9 @@
             action="#{queryEditorBean.moveParameterDown}" styleClass="small_button" alt="#{queryBundle.move_down}" title="#{queryBundle.move_down}" />      
           <t:commandButton image="/common/misc/images/sort.png" 
             action="#{queryBean.query.sortParameters}" styleClass="small_button" alt="#{queryBundle.sort}" title="#{queryBundle.sort}" />
-        </t:panelTab>
+        </p:tab>
 
-        <t:panelTab label="#{queryBundle.predicates}" onclick="refreshEditor(predicateEditor);">
+        <p:tab title="#{queryBundle.predicates}">
           <t:div styleClass="edit_panel predicates">
             <t:div styleClass="left">
               <t:dataList
@@ -255,9 +259,9 @@
             action="#{queryEditorBean.movePredicateDown}" styleClass="small_button" alt="#{queryBundle.move_down}" title="#{queryBundle.move_down}" />
           <t:commandButton image="/common/misc/images/sort.png" 
             action="#{queryBean.query.sortPredicates}" styleClass="small_button" alt="#{queryBundle.sort}" title="#{queryBundle.sort}" />
-        </t:panelTab>
+        </p:tab>
 
-        <t:panelTab label="#{queryBundle.outputs}" onclick="refreshEditor(outputEditor);">
+        <p:tab title="#{queryBundle.outputs}">
           <t:div styleClass="edit_panel outputs">
             <t:div styleClass="left">
               <t:dataList 
@@ -300,9 +304,9 @@
             action="#{queryEditorBean.moveOutputDown}" styleClass="small_button" alt="#{queryBundle.move_down}" title="#{queryBundle.move_down}" />
           <t:commandButton image="/common/misc/images/sort.png" 
             action="#{queryBean.query.sortOutputs}" styleClass="small_button" alt="#{queryBundle.sort}" title="#{queryBundle.sort}" />
-        </t:panelTab>
+        </p:tab>
 
-        <t:panelTab label="#{queryBundle.roles}">
+        <p:tab title="#{queryBundle.roles}">
           <t:div>
             <t:outputLabel value="#{queryBundle.read_roles}:" styleClass="output_label" for="read_roles" />
           </t:div>
@@ -313,9 +317,9 @@
           </t:div>
           <t:inputTextarea id="write_roles" value="#{queryBean.writeRolesString}" rows="4" 
             styleClass="input_text roles" />
-        </t:panelTab>
+        </p:tab>
 
-      </t:panelTabbedPane>
+      </p:tabView>
 
       <f:verbatim>
         <script type="text/javascript" src="/plugins/codemirror/codemirror.js">
@@ -358,9 +362,9 @@
             elem.parentNode.scrollTop = topPos;
           }
 
-          function refreshEditor(editor)
+          function refreshEditors()
           {
-            setTimeout(function() { editor.refresh(); }, 0);
+            setTimeout(function() { parameterEditor.refresh(); predicateEditor.refresh(); outputEditor.refresh(); }, 0);            
           }
         </script>
       </f:verbatim>
