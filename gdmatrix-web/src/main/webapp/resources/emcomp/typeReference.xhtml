@@ -67,7 +67,8 @@
                     process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
 
             <p:ajax event="clear" listener="#{typeReferenceBean.onClear}"
-                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" />
+                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" 
+                    oncomplete="var ac=document.getElementById(this.source).firstChild;ac.setSelectionRange(0, ac.value.length)" />
           </c:if>
 
           <p:column>
