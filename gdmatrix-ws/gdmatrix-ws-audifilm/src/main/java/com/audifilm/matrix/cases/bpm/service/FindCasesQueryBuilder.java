@@ -1,7 +1,6 @@
 package com.audifilm.matrix.cases.bpm.service;
 
 import com.audifilm.matrix.security.service.DBGrupUsuari;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -14,17 +13,23 @@ import org.matrix.dic.Property;
 import org.santfeliu.jpa.JPAQuery;
 import com.audifilm.matrix.security.service.SecurityManager;
 import java.util.Iterator;
+import javax.persistence.Query;
+import org.santfeliu.jpa.QueryBuilder;
 
 /**
  *
  * @author blanquepa
  */
-public class FindCasesQueryBuilder
+public class FindCasesQueryBuilder extends QueryBuilder
 {
-  protected static final Logger log = Logger.getLogger(FindCasesQueryBuilder.class.getName());
+  private static final String CASESTATE_CLASS = 
+    "com.audifilm.matrix.cases.service.DBCaseState";
+  private static final String SITUACIO_CLASS = 
+    "com.audifilm.matrix.cases.service.DBSituacio";
+  
+  protected static final Logger log
+    = Logger.getLogger(FindCasesQueryBuilder.class.getName());
 
-
-  private HashMap<String, Object> parameters = new HashMap<String, Object>();
   private List<String> userRoles;
   private String userId;
   private boolean counterQuery;
@@ -32,20 +37,23 @@ public class FindCasesQueryBuilder
   private CaseFilter caseFilter;
   private SecurityManager securityManager;
 
+  final static private String FIND_CASES_WHERE
+    = " WHERE "
+    + "  trim(ap.aplId) = 'SDE' "
+    + "  AND trim(ap.docorigen) = 'EXPED' "
+    + "  AND e.caseTypeId = ap.docId ";
 
-  final static private String FIND_CASES_WHERE =
-      " WHERE " +
-      "  trim(ap.aplId) = 'SDE' " +
-      "  AND trim(ap.docorigen) = 'EXPED' " +
-      "  AND e.caseTypeId = ap.docId ";
+  private final StringBuilder select
+    = new StringBuilder("SELECT ");
+  private final StringBuilder from
+    = new StringBuilder(" FROM Case e, AplDocument ap ");
+  private final StringBuilder where
+    = new StringBuilder(FIND_CASES_WHERE);
+  private final StringBuilder orderBy
+    = new StringBuilder(" ORDER BY e.caseId ");
 
-  private StringBuilder select = new StringBuilder("SELECT ");
-  private StringBuilder from = new StringBuilder(" FROM Case e, AplDocument ap ");
-  private StringBuilder where = new StringBuilder(FIND_CASES_WHERE);
-  private StringBuilder orderBy = new StringBuilder(" ORDER BY e.caseId ");
-
-
-  public FindCasesQueryBuilder(CaseFilter caseFilter,SecurityManager securityManager, org.santfeliu.security.User user)
+  public FindCasesQueryBuilder(CaseFilter caseFilter,
+    SecurityManager securityManager, org.santfeliu.security.User user)
   {
     this.caseFilter = caseFilter;
     this.securityManager = securityManager;
@@ -53,14 +61,11 @@ public class FindCasesQueryBuilder
     this.userRoles = user.getRolesList();
   }
 
-
   public List<Property> getPropertiesFilter()
   {
     return caseFilter.getProperty();
   }
 
-
-  
   public boolean isCounterQuery()
   {
     return counterQuery;
@@ -100,7 +105,7 @@ public class FindCasesQueryBuilder
   {
     return caseFilter;
   }
-  
+
   public JPAQuery getFilterCasesQuery(EntityManager em) throws Exception
   {
     StringBuilder buffer = new StringBuilder();
@@ -110,8 +115,9 @@ public class FindCasesQueryBuilder
     appendWhereTitle();
     appendWhereDescription();
     appendWhereDates();
-    if (!appendWhereTypeIds()) return null;
-    //if (!appendWhereSecurityFilter()) return null;
+    if (!appendWhereTypeIds())
+      return null;
+
     appendWhereClassId();
     appendWhereProperties();
     appendAditionalSearchExpression();
@@ -119,7 +125,8 @@ public class FindCasesQueryBuilder
     buffer.append(select);
     buffer.append(from);
     buffer.append(where);
-    if (!isCounterQuery()) buffer.append(orderBy);
+    if (!isCounterQuery())
+      buffer.append(orderBy);
 
     System.out.println("FilterCasesQuery: SQL " + buffer);
     System.out.println("FilterCasesQuery: SQL " + parameters.toString());
@@ -149,63 +156,71 @@ public class FindCasesQueryBuilder
     }
   }
 
-  private boolean appendWhereSecurityFilter() {
+  private boolean appendWhereSecurityFilter()
+  {
 
-    if (isCaseAdmin()) return true;
+    if (isCaseAdmin())
+      return true;
 
     StringBuilder whereSecurity = new StringBuilder();
-    List<DBGrupUsuari> grups = securityManager.findGrupsUsuari(userId , null, null, null);
+    List<DBGrupUsuari> grups
+      = securityManager.findGrupsUsuari(userId, null, null, null);
 
-    if (grups.size()>0) {
-        StringBuilder areaGrupDeps = new StringBuilder();
-        boolean primer=true;
-        for(DBGrupUsuari grup: grups) {
+    if (!grups.isEmpty())
+    {
+      StringBuilder areaGrupDeps = new StringBuilder();
+      boolean primer = true;
+      for (DBGrupUsuari grup : grups)
+      {
 
-          areaGrupDeps.append(primer?"'":", '");
-          areaGrupDeps.append(grup.getAreaId().trim());
-          areaGrupDeps.append(grup.getDepartamentId().trim());
-          areaGrupDeps.append(grup.getGrupId().trim());
-          areaGrupDeps.append("'");
+        areaGrupDeps.append(primer ? "'" : ", '");
+        areaGrupDeps.append(grup.getAreaId().trim());
+        areaGrupDeps.append(grup.getDepartamentId().trim());
+        areaGrupDeps.append(grup.getGrupId().trim());
+        areaGrupDeps.append("'");
 
-          primer = false;
-        }
+        primer = false;
+      }
 
-        whereSecurity.append("e.caseId IN (");
+      whereSecurity.append("e.caseId IN (");
 
-        
-        whereSecurity.append("SELECT distinct cs.caseId FROM CaseState cs ");
-        //whereSecurity.append(" LEFT JOIN cs.responsibles csr ");
-        whereSecurity.append(" WHERE cs.caseId = e.caseId AND concat(trim(cs.areaId),concat(trim(cs.departamentId),trim(cs.grupId))) IN (").append(areaGrupDeps).append(")");
-        //whereSecurity.append(" OR concat(trim(csr.areaId),concat(trim(csr.departamentId),trim(csr.grupId))) IN (").append(areaGrupDeps).append(")");
-        whereSecurity.append(")"); 
+      whereSecurity.append("SELECT distinct cs.caseId FROM CaseState cs ");
+      whereSecurity.append(" WHERE cs.caseId = e.caseId ")
+        .append("AND concat(trim(cs.areaId),concat(trim(cs.departamentId),")
+        .append("trim(cs.grupId))) IN (")
+        .append(areaGrupDeps).append(")");
+      whereSecurity.append(")");
 
-        
-        
-        where.append(" AND (").append(whereSecurity).append(") ");
-        return true;
-    } else {
-        where.append(" AND (2=3)");
-        return false;
+      where.append(" AND (").append(whereSecurity).append(") ");
+      return true;
+    }
+    else
+    {
+      where.append(" AND (2=3)");
+      return false;
     }
 
   }
 
-
   private boolean appendWhereTypeIds()
   {
     String filterTypeId = caseFilter.getCaseTypeId();
-    if (filterTypeId!=null && filterTypeId.equals("SDE")) {
+    if (filterTypeId != null && filterTypeId.equals("SDE"))
+    {
       filterTypeId = null;
     }
 
-
-
-    if (isCaseAdmin()) {
-      if (filterTypeId!=null) {
-        where.append("  AND (trim(e.caseTypeId) = :caseTypeId OR :caseTypeId IS NULL)");
+    if (isCaseAdmin())
+    {
+      if (filterTypeId != null)
+      {
+        where.append("  AND (trim(e.caseTypeId) = :caseTypeId ")
+          .append("OR :caseTypeId IS NULL)");
         parameters.put("caseTypeId", filterTypeId);
       }
-    } else {
+    }
+    else
+    {
 
       Set<String> typeIds = getTypeIds();
       int i = 0;
@@ -216,7 +231,7 @@ public class FindCasesQueryBuilder
           where.append(" AND trim(e.caseTypeId) = :caseTypeId" + i);
           parameters.put("caseTypeId" + i, filterTypeId);
         }
-        else 
+        else
         {
           where.append(" AND 1=0");
           return false;
@@ -231,10 +246,11 @@ public class FindCasesQueryBuilder
           Iterator it = typeIds.iterator();
           while (it.hasNext())
           {
-            if (i != 0) where.append(" OR ");
+            if (i != 0)
+              where.append(" OR ");
 
             where.append(" trim(e.caseTypeId) = :caseTypeId" + i);
-            parameters.put("caseTypeId" + i, (String)it.next());
+            parameters.put("caseTypeId" + i, (String) it.next());
             i++;
           }
           where.append(")");
@@ -247,74 +263,77 @@ public class FindCasesQueryBuilder
       }
     }
     return true;
-     
+
   }
 
   private void appendWhereCaseId()
   {
     List<String> caseIdList = caseFilter.getCaseId();
-    if (caseIdList!=null && caseIdList.size()>0)
-    {
-      where.append("AND (locate(concat(',', concat(trim(e.caseId), ',')), :caseId) > 0 or :caseId is null) " );
-      parameters.put("caseId", caseFilter.getCaseId());
-    } 
+    if (caseIdList != null && !caseIdList.isEmpty())
+    {      
+      appendOperator(where, "AND");
+      appendOperator(where, "e.caseId", ":", "caseId", caseIdList);      
+    }
   }
 
   private void appendWhereDates()
   {
-    /*
-    parameters.put("registryFromDate", caseFilter.getFromDate());
-    parameters.put("registryToDate", caseFilter.getToDate());
-    parameters.put("registryDateComparator", caseFilter.getDateComparator());
-    */
-    /*
-      "  AND (((:registryFromDate <= e.registryDate or :registryFromDate IS NULL) " +
-      "    and (:registryToDate >= e.registryDate or :registryToDate IS NULL) " +
-      "    and :registryDateComparator = '1') or :registryDateComparator = '0') " +
-     */
-
-    if (caseFilter.getDateComparator()==null || caseFilter.getDateComparator().equals("0")) {
+    if (caseFilter.getDateComparator() == null
+      || caseFilter.getDateComparator().equals("0"))
+    {
       return;
     }
 
-    if (caseFilter.getDateComparator().equals("1")) {
-      if (caseFilter.getFromDate()!=null) {
+    if (caseFilter.getDateComparator().equals("1"))
+    {
+      if (caseFilter.getFromDate() != null)
+      {
         where.append("AND (e.registryDate>=:registryFromDate)");
         parameters.put("registryFromDate", caseFilter.getFromDate());
       }
-      if (caseFilter.getToDate()!=null) {
+      if (caseFilter.getToDate() != null)
+      {
         where.append("AND (e.registryDate<=:registryToDate)");
         parameters.put("registryToDate", caseFilter.getToDate());
       }
     }
 
-    if (caseFilter.getDateComparator().equals("2")) {
+    if (caseFilter.getDateComparator().equals("2"))
+    {
       //DATA TANCAMENT
-      where.append("AND (EXISTS (SELECT csd.endDate FROM CaseState csd WHERE csd.caseId = e.caseId AND csd.stateId='9999' ");
+      where.append("AND (EXISTS (SELECT csd.endDate FROM CaseState csd ")
+        .append("WHERE csd.caseId = e.caseId AND csd.stateId='9999' ");
 
-      if (caseFilter.getFromDate()!=null) {
+      if (caseFilter.getFromDate() != null)
+      {
         where.append(" AND csd.endDate >= :registryFromDate ");
         parameters.put("registryFromDate", caseFilter.getFromDate());
       }
 
-      if (caseFilter.getToDate()!=null) {
+      if (caseFilter.getToDate() != null)
+      {
         where.append(" AND csd.endDate <= :registryToDate ");
         parameters.put("registryToDate", caseFilter.getToDate());
       }
       where.append("))");
     }
-    
-    if (caseFilter.getDateComparator().equals("3")) {
+
+    if (caseFilter.getDateComparator().equals("3"))
+    {
       //PERIODE ACTIU
       //DataObertura <= ToDate && DataTancament >= FromDate
-      if (caseFilter.getFromDate()!=null) {
+      if (caseFilter.getFromDate() != null)
+      {
         where.append("AND (");
-        where.append("NOT EXISTS (SELECT csd.endDate FROM CaseState csd WHERE csd.caseId = e.caseId and csd.stateId='9999' and csd.endDate<:registryFromDate)");
-        where.append(")");
+        where.append("NOT EXISTS (SELECT csd.endDate FROM CaseState csd ")
+          .append("WHERE csd.caseId = e.caseId and csd.stateId='9999' ")
+          .append("and csd.endDate<:registryFromDate)")
+          .append(")");
         parameters.put("registryFromDate", caseFilter.getFromDate());
       }
 
-      if (caseFilter.getToDate()!=null) {
+      if (caseFilter.getToDate() != null)
+      {
         where.append("AND (e.registryDate<=:registryToDate)");
         parameters.put("registryToDate", caseFilter.getToDate());
       }
@@ -322,11 +341,13 @@ public class FindCasesQueryBuilder
 
   }
 
-
   private void appendWhereTitle()
   {
-    if (caseFilter.getTitle()!=null && !caseFilter.getTitle().equals("")) {
-      String whereTitle = CaseManager.evalFieldExpression("CaseFilter.title", this, "UPPER(e.caseTypeNum) like :title", "");
+    if (caseFilter.getTitle() != null && !caseFilter.getTitle().equals(""))
+    {
+      String whereTitle = 
+        CaseManager.evalFieldExpression("CaseFilter.title", this, 
+          "UPPER(e.caseTypeNum) like :title", "");
       where.append(" AND (" + whereTitle + ")");
       parameters.put("title", caseFilter.getTitle().toUpperCase());
     }
@@ -334,13 +355,16 @@ public class FindCasesQueryBuilder
 
   private void appendWhereDescription()
   {
-    if (caseFilter.getDescription()!=null && !caseFilter.getDescription().equals("")) {
-      String whereTitle = CaseManager.evalFieldExpression("CaseFilter.description", this, "UPPER(e.sdetext) like :description", "");
+    if (caseFilter.getDescription() != null 
+      && !caseFilter.getDescription().equals(""))
+    {
+      String whereTitle = 
+        CaseManager.evalFieldExpression("CaseFilter.description", this, 
+          "UPPER(e.sdetext) like :description", "");
       where.append(" AND (" + whereTitle + ")");
       parameters.put("description", caseFilter.getDescription().toUpperCase());
     }
   }
-
 
   private Set<String> getTypeIds()
   {
@@ -363,85 +387,93 @@ public class FindCasesQueryBuilder
     boolean filterBySituacio = false;
     int filterByVariableCount = 0;
 
-    for( Property prop : caseFilter.getProperty() ) {
+    for (Property prop : caseFilter.getProperty())
+    {
 
       String name = prop.getName();
-      String value = (prop.getValue()!=null)?prop.getValue().get(0):null;
+      String value = (prop.getValue() != null) ? prop.getValue().get(0) : null;
 
       DBCaseProperty cp = null;
-      try{ cp = DBCaseProperty.valueOf(name); } 
-      catch (IllegalArgumentException ex) {};
-      if (cp!=null) {
-        where.append(" AND (" + cp.filterJPAObjectAlias + "." + cp.fieldName + " =:" + name + " OR :" + name + " IS NULL)");
+      try
+      {
+        cp = DBCaseProperty.valueOf(name);
+      }
+      catch (IllegalArgumentException ex)
+      {
+      };
+      if (cp != null)
+      {
+        where.append(" AND (").append(cp.filterJPAObjectAlias).append(".")
+          .append(cp.fieldName).append(" =:").append(name)
+          .append(" OR :").append(name).append(" IS NULL)");
         parameters.put(name, value);
-        if (cp.className.equals("com.audifilm.matrix.cases.service.DBCaseState")) filterByCaseState = true;
-        else if (cp.className.equals("com.audifilm.matrix.cases.service.DBSituacio")) filterBySituacio = true;
-      
-      } else if (name.startsWith("VAR")) {
+        
+        if (cp.className.equals(CASESTATE_CLASS))
+          filterByCaseState = true;
+        else if (cp.className.equals(SITUACIO_CLASS))
+          filterBySituacio = true;
+
+      }
+      else if (name.startsWith("VAR"))
+      {
         filterByVariableCount++;
-        from.append(", CaseVariable cv" + filterByVariableCount);
+        from.append(", CaseVariable cv").append(filterByVariableCount);
 
-        where.append(" AND (")
-             .append(" cv" + filterByVariableCount + ".caseId=e.caseId")
-             .append(" AND cv" + filterByVariableCount + ".variableId=:variableId" + filterByVariableCount)
-             .append(" AND UPPER(cv" + filterByVariableCount + ".value) LIKE :varvalue" + filterByVariableCount)
-             .append(" )");
+        where.append(" AND (").append(" cv")
+          .append(filterByVariableCount)
+          .append(".caseId=e.caseId").append(" AND cv")
+          .append(filterByVariableCount)
+          .append(".variableId=:variableId")
+          .append(filterByVariableCount)
+          .append(" AND UPPER(cv")
+          .append(filterByVariableCount)
+          .append(".value) LIKE :varvalue")
+          .append(filterByVariableCount)
+          .append(" )");
 
-        parameters.put("variableId" + filterByVariableCount, name.substring(3));
-        parameters.put("varvalue" + filterByVariableCount, value==null?null:value.toUpperCase());
+        parameters.put("variableId" + filterByVariableCount, 
+          name.substring(3));
+        parameters.put("varvalue" + filterByVariableCount, 
+          value == null ? null : value.toUpperCase());
       }
     }
-    if (filterByCaseState) {
+    if (filterByCaseState)
+    {
       from.append(", CaseState cs");
       where.append(" AND cs.caseId = c.caseId");
     }
-    if (filterBySituacio) {
+    if (filterBySituacio)
+    {
       from.append(", Situacio s");
-      where.append(" AND (e.caseId = s.caseId AND UPPER(s.propertyValue) LIKE :situacio" );
-      where.append(")");
+      where.append(" AND (e.caseId = s.caseId ")
+        .append("AND UPPER(s.propertyValue) LIKE :situacio")
+        .append(")");
     }
-
 
   }
 
   private void appendAditionalSearchExpression()
   {
     String searchExpression = caseFilter.getSearchExpression();
-    if (searchExpression !=null && !searchExpression.equals("") && !searchExpression.toUpperCase().contains("ORDER BY")) 
+    if (searchExpression != null && !searchExpression.equals("")
+      && !searchExpression.toUpperCase().contains("ORDER BY"))
     {
       where.append(" AND (").append(searchExpression).append(")");
     }
   }
 
-
   private void appendWhereClassId()
   {
-    if (caseFilter.getClassId() != null && caseFilter.getClassId().size() > 0)
+    List<String> classIds = caseFilter.getClassId();
+    if (classIds != null && !classIds.isEmpty())
     {
-      //String classIds = PKUtil.globalIdListToLocalString(caseEntity, filter.getClassId());
-      where.append(" AND (locate(concat(',', concat(trim(ap.classId), ',')), :classId) > 0)");
-      parameters.put("classId", caseFilter.getClassId());
+      appendOperator(where, "AND");
+      appendOperator(where, "ap.classId", ":", "classId", classIds);
     }
   }
 
-
-private void setCaseFilterParameters(JPAQuery query) throws Exception
+  private void setCaseFilterParameters(JPAQuery query) throws Exception
   {
-   /*
-    if (caseFilter.getCaseId() != null && caseFilter.getCaseId().size() > 0)
-    {
-      //String caseIds = PKUtil.globalIdListToLocalString(caseEntity, filter.getCaseId());
-      query.setIdParameter("caseId", caseFilter.getCaseId());
-    }
-    else
-    {
-      query.setParameter("caseId", null);
-    } 
-
-    query.setParameter("registryFromDate", caseFilter.getFromDate());
-    query.setParameter("registryToDate", caseFilter.getToDate());
-    query.setParameter("registryDateComparator", caseFilter.getDateComparator());
-*/
     Set<Entry<String, Object>> paramSet = parameters.entrySet();
     for (Entry<String, Object> param : paramSet)
     {
@@ -449,8 +481,12 @@ private void setCaseFilterParameters(JPAQuery query) throws Exception
       Object value = param.getValue();
       query.setParameter(name, value);
     }
+  }
 
-    
+  @Override
+  public Query getQuery(EntityManager em) throws Exception
+  {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 }

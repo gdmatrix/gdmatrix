@@ -134,13 +134,34 @@ public abstract class QueryBuilder
   protected void appendOperator(StringBuilder buffer, 
     String field, String paramPrefix, String paramName, List values)
   {
+    int size = values.size();
+    int from = 0;
+    int to = maxInValues - 1;
+
+    buffer.append("(");
+    while (from < size)
+    {
+      if (to >= size) to = (size - 1);
+      if (from > 0)
+        buffer.append(" OR ");
+      appendValues(buffer, field, paramPrefix, paramName, values, from, to);
+      from = from + maxInValues;
+      to = to + maxInValues;
+    }
+    buffer.append(")");
+  } 
+  
+  private void appendValues(StringBuilder buffer,
+    String field, String paramPrefix, String paramName, List values,
+    int from, int to)  
+  {
     if (buffer != null)
     {
       buffer.append("(");
-      for (int i = 0; i < values.size(); i++)
+      for (int i = from; i <= to; i++)
       {
         boolean caseSensitive = true;
-        if (i != 0) buffer.append(" or ");
+        if (i != from) buffer.append(" or ");
         
         String op = " like ";
         String value = values.get(i).toString();
@@ -175,8 +196,8 @@ public abstract class QueryBuilder
         appendParameter(buffer, paramPrefix, paramName, paramIndex, paramValue);
       }
       buffer.append(")");
-    }
-  }  
+    }    
+  }
 
   protected void appendLikeOperator(StringBuilder buffer,
     String field, String paramPrefix, String paramName, List values)
