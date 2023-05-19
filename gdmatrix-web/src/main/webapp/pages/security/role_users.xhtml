@@ -30,7 +30,7 @@
         </div>
       </f:facet>
 
-      <p:column headerText="userId" styleClass="col-3">
+      <p:column headerText="#{securityBundle.user_user}" styleClass="col-3">
         <h:outputText value="#{row.user.userId}" />
       </p:column>
 
@@ -79,7 +79,7 @@
         <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{roleObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{roleObjectBean.activeEditTab.label}" />
+        <h:outputText value="#{applicationBean.translate(roleObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
         <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{roleUsersTabBean.editing.userId}" />
       </p:outputPanel>

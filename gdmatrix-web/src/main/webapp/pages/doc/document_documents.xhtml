@@ -10,14 +10,14 @@
     .modified { font-style: italic; }
     .removed { text-decoration: line-through; }
   </style>
-  
-  <h:panelGroup>      
+
+  <h:panelGroup>
 
     <!-- Results table -->
-    <p:dataTable id="document_documents_table" value="#{documentDocumentsTabBean.rows}" 
+    <p:dataTable id="document_documents_table" value="#{documentDocumentsTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
                  resizableColumns="false" showGridlines="true"  rows="10"
-                 size="small" paginatorPosition="bottom" 
+                 size="small" paginatorPosition="bottom"
                  rowIndexVar="firstRow" first="#{documentDocumentsTabBean.firstRow}"
                  rowStyleClass="#{row.state == 1 ? 'modified' : (row.state == 2 ? 'removed' : '')}"
                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -25,16 +25,16 @@
                  rowsPerPageTemplate="5,10,25,50">
 
       <f:facet name="header">
-        <div class="flex justify-content-end w-12">        
-          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat" 
-                           action="#{documentDocumentsTabBean.create}" 
+        <div class="flex justify-content-end w-12">
+          <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
+                           action="#{documentDocumentsTabBean.create}"
                            process=":mainform:search_tabs:tabs"
                            update="@parent:@parent:@parent:document_documents_dialog"
                            resetValues="true"
-                           oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').show()"                                 
-                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />                 
+                           oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').show()"
+                           alt="#{objectBundle.add}" title="#{objectBundle.add}" />
         </div>
-      </f:facet>      
+      </f:facet>
 
       <p:column headerText="#{documentBundle.relation}" styleClass="col-3">
         <h:outputText value="#{row.relatedDocument.relationType}"/>
@@ -43,34 +43,34 @@
       <p:column headerText="#{documentBundle.name}" styleClass="col-2">
         <h:outputText value="#{row.relatedDocument.name}"/>
       </p:column>
-      
+
       <p:column headerText="#{documentBundle.document}" styleClass="col-5">
         <h:outputText value="#{documentTypeBean.getDescription(row.relatedDocument.docId)}" />
-      </p:column> 
+      </p:column>
 
       <p:column styleClass="col-2 text-right">
-        <p:commandButton icon="pi pi-external-link" 
-                         styleClass="rounded-button ui-button-flat" 
+        <p:commandButton icon="pi pi-external-link"
+                         styleClass="rounded-button ui-button-flat"
                          ajax="false"
                          immediate="true"
                          onclick="showOverlay()"
                          action="#{navigatorBean.show('Document', row.relatedDocument.docId)}" />
-        <p:commandButton icon="pi pi-pencil" 
-                         styleClass="rounded-button ui-button-flat" 
-                         action="#{documentDocumentsTabBean.edit(row)}" 
-                         process=":mainform:search_tabs:tabs" 
+        <p:commandButton icon="pi pi-pencil"
+                         styleClass="rounded-button ui-button-flat"
+                         action="#{documentDocumentsTabBean.edit(row)}"
+                         process=":mainform:search_tabs:tabs"
                          update="@parent:@parent:@parent:@parent:document_documents_dialog"
                          resetValues="true"
                          oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').show()"
                          />
         <p:commandButton action="#{documentDocumentsTabBean.remove(row)}"
-                         process="@this" 
+                         process="@this"
                          update="@parent:@parent:@parent:@parent:document_documents_dialog document_documents_table"
                          resetValues="true"
                          icon="pi pi-trash"
                          alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">            
-          <p:confirm header="Desvincular expedient #{row.relatedDocument.docId}" 
+                         styleClass="rounded-button ui-button-flat">
+          <p:confirm header="Desvincular expedient #{row.relatedDocument.docId}"
                      message="Segur que vols esborrar aquest document?" icon="pi pi-info-circle" />
         </p:commandButton>
       </p:column>
@@ -78,19 +78,19 @@
 
   </h:panelGroup>
 
-  <!-- Only works appendTo="@(form)" with one single form -->    
-  <p:dialog id="document_documents_dialog" widgetVar="documentDocumentsDialog" 
-            styleClass="edit_data_dialog" style="max-width:600px" 
+  <!-- Only works appendTo="@(form)" with one single form -->
+  <p:dialog id="document_documents_dialog" widgetVar="documentDocumentsDialog"
+            styleClass="edit_data_dialog" style="max-width:600px"
             modal="true" responsive="true" closable="false"
             appendTo="@(form)" position="center center" resizable="false">
 
     <f:facet name="header">
       <p:outputPanel>
-        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>       
+        <i class="#{userSessionBean.selectedMenuItem.properties.icon} mx-2 my-1"/>
         <h:outputText value="#{documentObjectBean.description}" />
         <i class="pi pi-angle-right mx-2"></i>
-        <h:outputText value="#{documentObjectBean.activeEditTab.label}" />   
-        <i class="pi pi-angle-right mx-2"></i> 
+        <h:outputText value="#{applicationBean.translate(documentObjectBean.activeEditTab.label, userSessionBean.translationGroup)}" />
+        <i class="pi pi-angle-right mx-2"></i>
         <h:outputText value="#{documentDocumentsTabBean.editing.relatedDocument.docId}" />
       </p:outputPanel>
     </f:facet>
@@ -103,7 +103,7 @@
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="#{documentBundle.relation}" />
-          <p:selectOneMenu value="#{documentDocumentsTabBean.editing.relatedDocument.relationType}" 
+          <p:selectOneMenu value="#{documentDocumentsTabBean.editing.relatedDocument.relationType}"
                            required="true">
             <f:selectItems value="#{documentDocumentsTabBean.relationTypeSelectItems}" />
             <f:converter converterId="EnumConverter" />
@@ -113,9 +113,9 @@
 
         <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
-                         value="#{documentBundle.name}" 
+                         value="#{documentBundle.name}"
                          indicateRequired="true" />
-          <p:inputText value="#{documentDocumentsTabBean.editing.relatedDocument.name}" 
+          <p:inputText value="#{documentDocumentsTabBean.editing.relatedDocument.name}"
                        required="#{not empty param['mainform:search_tabs:tabs:document_documents_store']}" />
         </div>
 
@@ -134,33 +134,33 @@
                                   minQueryLength="3">
           </emcomp:objectReference>
         </div>
-        
-        <emcomp:auditData creationUserId="#{documentDocumentsTabBean.editing.relatedDocument.captureUserId}" 
-                          creationDateTime="#{documentDocumentsTabBean.editing.relatedDocument.captureDateTime}" 
-                          changeUserId="#{documentDocumentsTabBean.editing.relatedDocument.changeUserId}" 
+
+        <emcomp:auditData creationUserId="#{documentDocumentsTabBean.editing.relatedDocument.captureUserId}"
+                          creationDateTime="#{documentDocumentsTabBean.editing.relatedDocument.captureDateTime}"
+                          changeUserId="#{documentDocumentsTabBean.editing.relatedDocument.changeUserId}"
                           changeDateTime="#{documentDocumentsTabBean.editing.relatedDocument.changeDateTime}" />
       </div>
 
-    </h:panelGroup>     
+    </h:panelGroup>
 
     <f:facet name="footer">
 
       <div class="field col-12 text-right">
         <p:commandButton id="document_documents_store"
-                         action="#{documentDocumentsTabBean.accept}" 
+                         action="#{documentDocumentsTabBean.accept}"
                          styleClass="m-1" value="#{objectBundle.accept}"
                          process="document_documents_dialog"
                          update="document_documents_table document_documents_panel"
                          oncomplete="if (!isFacesError()) PF('documentDocumentsDialog').hide()"
                          />
-        <p:commandButton action="#{documentDocumentsTabBean.cancel}" 
+        <p:commandButton action="#{documentDocumentsTabBean.cancel}"
                          styleClass="m-1" value="#{objectBundle.cancel}"
                          process="@this"
-                         update="document_documents_dialog" global="false" 
+                         update="document_documents_dialog" global="false"
                          oncomplete="PF('documentDocumentsDialog').hide()"/>
-      </div>      
+      </div>
     </f:facet>
 
-  </p:dialog>  
+  </p:dialog>
 
 </ui:composition>

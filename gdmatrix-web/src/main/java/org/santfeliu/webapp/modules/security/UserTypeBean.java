@@ -52,6 +52,8 @@ import static org.santfeliu.webapp.modules.security.SecurityModuleBean.getPort;
 @ApplicationScoped
 public class UserTypeBean extends TypeBean<User, UserFilter>
 {
+  private static final String BUNDLE_PREFIX = "$$securityBundle.";
+  
   @Override
   public String getRootTypeId()
   {
@@ -97,8 +99,8 @@ public class UserTypeBean extends TypeBean<User, UserFilter>
     objectSetup.setViewId("/pages/security/user.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab("Main", "/pages/security/user_main.xhtml"));
-    editTabs.add(new EditTab("Roles", "/pages/security/user_roles.xhtml", "userRolesTabBean"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", "/pages/security/user_main.xhtml"));
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_roles", "/pages/security/user_roles.xhtml", "userRolesTabBean"));
     objectSetup.setEditTabs(editTabs);
 
     return objectSetup;
