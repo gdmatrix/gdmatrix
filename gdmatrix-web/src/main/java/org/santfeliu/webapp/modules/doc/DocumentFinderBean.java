@@ -43,6 +43,7 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
+import org.santfeliu.classif.ClassCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.FinderBean;
@@ -305,7 +306,17 @@ public class DocumentFinderBean extends FinderBean
           {
             try
             {
-              return DocModuleBean.getPort(false).countDocuments(filter);
+              String classId = DocumentFinderBean.this.getClassId();
+              if (classId != null)
+              {
+                List<String> classIds =
+                  ClassCache.getInstance().getTerminalClassIds(classId);
+                filter.getClassId().clear();
+                filter.getClassId().addAll(classIds);
+              }
+              int count = DocModuleBean.getPort(false).countDocuments(filter);
+              DocumentFinderBean.this.setClassId(classId);
+              return count;
             }
             catch (Exception ex)
             {
@@ -321,6 +332,14 @@ public class DocumentFinderBean extends FinderBean
             {
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
+              String classId = DocumentFinderBean.this.getClassId();
+              if (classId != null)
+              {
+                List<String> classIds =
+                  ClassCache.getInstance().getTerminalClassIds(classId);
+                filter.getClassId().clear();
+                filter.getClassId().addAll(classIds);
+              }
               List<Column> columns = getColumns();
               for (Column column : columns)
               {
@@ -328,6 +347,7 @@ public class DocumentFinderBean extends FinderBean
               }
               List<Document> documents =
                 DocModuleBean.getPort(false).findDocuments(filter);
+              DocumentFinderBean.this.setClassId(classId);
 
               return toDataTableRows(documents);
             }

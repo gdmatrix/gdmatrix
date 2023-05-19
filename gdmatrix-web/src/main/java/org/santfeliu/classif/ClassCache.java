@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
-import org.apache.commons.collections.LRUMap;
+import org.apache.commons.collections.map.LRUMap;
 import org.matrix.classif.ClassFilter;
 import org.matrix.classif.ClassificationManagerPort;
 import org.matrix.classif.ClassificationManagerService;
@@ -58,10 +58,10 @@ public class ClassCache
   private static HashMap<String, ClassCache> classCaches =
     new HashMap<String, ClassCache>();
 
-  private String dateTime;
-  private LRUMap classMap = new LRUMap(3000); // 3000 Classes
-  private HashMap<String, List> childrenMap = new HashMap<String, List>();
-  private HashMap<String, String> parentsMap = new HashMap<String, String>();
+  private final String dateTime;
+  private final LRUMap classMap = new LRUMap(3000); // 3000 Classes
+  private final HashMap<String, List> childrenMap = new HashMap<>();
+  private final HashMap<String, String> parentsMap = new HashMap<>();
 
   // sync parameters for all classCache instances
   private static long lastSyncMillis = System.currentTimeMillis();
@@ -150,14 +150,37 @@ public class ClassCache
     return classObject;
   }
 
+  public List<String> getTerminalClassIds(String superClassId)
+  {
+    return getTerminalClassIds(superClassId, null);
+  }
+
+  public List<String> getTerminalClassIds(String superClassId,
+    List<String> terminalClassIds)
+  {
+    if (terminalClassIds == null) terminalClassIds = new ArrayList<>();
+
+    List<String> subClassIds = getSubClassIds(superClassId);
+    if (subClassIds.isEmpty())
+    {
+      terminalClassIds.add(superClassId);
+    }
+    else
+    {
+      for (String subClassId : subClassIds)
+      {
+        getTerminalClassIds(subClassId, terminalClassIds);
+      }
+    }
+    return terminalClassIds;
+  }
+
   public synchronized List<String> getSubClassIds(String superClassId)
   {
     List<String> children = childrenMap.get(superClassId);
     if (children == null)
     {
-      System.out.println("\n\n>>>children NOT found for: " + superClassId);
-
-      children = new ArrayList<String>();
+      children = new ArrayList<>();
       childrenMap.put(superClassId, children);
 
       ClassFilter filter = new ClassFilter();
@@ -172,10 +195,6 @@ public class ClassCache
         children.add(subClass.getClassId());
         parentsMap.put(subClass.getClassId(), superClassId);
       }
-    }
-    else
-    {
-      System.out.println("\n\n>>>children found in cache for: " + superClassId);
     }
     return children;
   }
@@ -318,7 +337,7 @@ public class ClassCache
   private void purgeParentChildren(long nowMillis)
   {
     int removed = 0;
-    ArrayList<String> list = new ArrayList();
+    ArrayList<String> list = new ArrayList<>();
     list.addAll(childrenMap.keySet());
     for (String superClassId : list)
     {
@@ -350,31 +369,37 @@ public class ClassCache
       super(CacheMBean.class);
     }
 
+    @Override
     public String getName()
     {
       return "ClassCache(" + dateTime + ")";
     }
 
+    @Override
     public long getMaxSize()
     {
-      return classMap.getMaximumSize();
+      return classMap.maxSize();
     }
 
+    @Override
     public long getSize()
     {
       return classMap.size();
     }
 
+    @Override
     public String getDetails()
     {
       return "classMapSize=" + getSize() + "/" + getMaxSize();
     }
 
+    @Override
     public void clear()
     {
       ClassCache.this.clear();
     }
 
+    @Override
     public void update()
     {
       long nowMillis = System.currentTimeMillis();
