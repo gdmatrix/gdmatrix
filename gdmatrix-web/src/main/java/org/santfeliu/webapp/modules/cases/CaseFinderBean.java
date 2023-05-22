@@ -40,6 +40,7 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.Case;
 import org.matrix.cases.CaseFilter;
+import org.santfeliu.classif.ClassCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
@@ -281,7 +282,17 @@ public class CaseFinderBean extends FinderBean
           {
             try
             {
-              return CasesModuleBean.getPort(false).countCases(filter);
+              String classId = CaseFinderBean.this.getClassId();
+              if (classId != null)
+              {
+                List<String> classIds =
+                  ClassCache.getInstance().getTerminalClassIds(classId);
+                filter.getClassId().clear();
+                filter.getClassId().addAll(classIds);                
+              }
+              int count = CasesModuleBean.getPort(false).countCases(filter);
+              CaseFinderBean.this.setClassId(classId);
+              return count;              
             }
             catch (Exception ex)
             {
@@ -297,6 +308,16 @@ public class CaseFinderBean extends FinderBean
             {               
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
+              
+              String classId = CaseFinderBean.this.getClassId();
+              if (classId != null)
+              {
+                List<String> classIds =
+                  ClassCache.getInstance().getTerminalClassIds(classId);
+                filter.getClassId().clear();
+                filter.getClassId().addAll(classIds);                
+              }   
+              
               List<Column> columns = getColumns();
               for (Column column : columns)
               {
@@ -304,7 +325,7 @@ public class CaseFinderBean extends FinderBean
               }
               List<Case> cases = 
                 CasesModuleBean.getPort(false).findCases(filter);
-              
+              CaseFinderBean.this.setClassId(classId);
               return toDataTableRows(cases);     
             }
             catch (Exception ex)
