@@ -60,7 +60,7 @@ import org.santfeliu.webapp.util.WebUtils;
 public class TypeTypeBean extends TypeBean<Type, TypeFilter>
 {
   private static final String BUNDLE_PREFIX = "$$dicBundle.";
-  
+
   private List<SelectItem> rootTypeIdSelectItems;
 
   @PostConstruct
@@ -122,11 +122,11 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     objectSetup.setViewId("/pages/dic/type.xhtml");
 
     List<EditTab> editTabs = new ArrayList<>();
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_main",
       "/pages/dic/type_main.xhtml"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_properties", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_properties",
       "/pages/dic/type_properties.xhtml", "typePropertiesTabBean"));
-    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl", 
+    editTabs.add(new EditTab(BUNDLE_PREFIX + "tab_acl",
       "/pages/dic/type_acl.xhtml", "typeACLTabBean"));
     objectSetup.setEditTabs(editTabs);
 
@@ -142,7 +142,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     if (!StringUtils.isBlank(baseTypeId))
     {
       typePath = TYPE_PATH_SEPARATOR + baseTypeId + TYPE_PATH_SEPARATOR + "%";
-      org.santfeliu.dic.Type baseType = 
+      org.santfeliu.dic.Type baseType =
         TypeCache.getInstance().getType(baseTypeId);
       if (baseType != null && !baseType.isRootType())
         typePath = "%" + typePath;
@@ -193,11 +193,6 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       else
       {
         types = DicModuleBean.getPort(true).findTypes(filter);
-        System.out.println("typeId: " + filter.getTypeId());
-        System.out.println("desc: " + filter.getDescription());
-        System.out.println("typePath: " + filter.getTypePath());
-        System.out.println("superTypeId: " + filter.getSuperTypeId());
-        System.out.println("Total: " + types.size());
       }
     }
     catch (Exception ex)
@@ -205,6 +200,37 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       return Collections.EMPTY_LIST;
     }
     return types;
+  }
+
+  @Override
+  public List<SelectItem> getSelectItems(String query, String typeId,
+    boolean addNavigatorItems, boolean sorted)
+  {
+    List<SelectItem> items = new ArrayList<>();
+
+    if (StringUtils.isBlank(query) && addNavigatorItems)
+    {
+      if (typeId == null) typeId = getRootTypeId();
+      addNavigatorItems(items, typeId);
+    }
+    else
+    {
+      List<Type> types = findByQuery(query, typeId);
+      for (Type type : types)
+      {
+        String objectId = getObjectId(type);
+        String description = type.getDescription() +
+          " (" + type.getTypeId() + ")";
+        items.add(new SelectItem(objectId, description));
+      }
+    }
+
+    if (sorted)
+    {
+      sortSelectItems(items);
+    }
+
+    return items;
   }
 
   @Override
