@@ -116,9 +116,9 @@ public class DynamicPropertiesBean implements Serializable
     if (properties == null) return null;
 
     String typeId = getTypeId();
-    if (typeId == null) return null;
 
-    Type type = TypeCache.getInstance().getType(typeId);
+    Type type = StringUtils.isBlank(typeId) ?
+      null : TypeCache.getInstance().getType(typeId);
 
     PropertyConverter converter = new PropertyConverter(type);
     Map map = converter.toPropertyMap(properties);
@@ -129,15 +129,21 @@ public class DynamicPropertiesBean implements Serializable
 
   public void setPropertyJson(String json)
   {
-    if (StringUtils.isBlank(json)) return;
-
     String typeId = getTypeId();
-    if (typeId == null) return;
 
-    Type type = TypeCache.getInstance().getType(typeId);
+    Type type = StringUtils.isBlank(typeId) ?
+      null : TypeCache.getInstance().getType(typeId);
 
-    Gson gson = new Gson();
-    Map map = gson.fromJson(json, Map.class);
+    Map map;
+    if (StringUtils.isBlank(json))
+    {
+      map = new HashMap();
+    }
+    else
+    {
+      Gson gson = new Gson();
+      map = gson.fromJson(json, Map.class);
+    }
 
     PropertyConverter converter = new PropertyConverter(type);
     List<Property> properties = converter.toPropertyList(map);

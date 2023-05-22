@@ -135,7 +135,7 @@ public class TypeReferenceBean extends ObjectReferenceBean
   @Override
   public void onClear()
   {
-    WebUtils.setValue("#{cc.attrs.value}", String.class, getTypeId());
+    WebUtils.setValue("#{cc.attrs.value}", String.class, null);
     resetFormSelector();
   }
 

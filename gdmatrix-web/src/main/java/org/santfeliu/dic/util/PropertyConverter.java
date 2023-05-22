@@ -1,31 +1,31 @@
 /*
  * GDMatrix
- *  
+ *
  * Copyright (C) 2020, Ajuntament de Sant Feliu de Llobregat
- *  
- * This program is licensed and may be used, modified and redistributed under 
- * the terms of the European Public License (EUPL), either version 1.1 or (at 
- * your option) any later version as soon as they are approved by the European 
+ *
+ * This program is licensed and may be used, modified and redistributed under
+ * the terms of the European Public License (EUPL), either version 1.1 or (at
+ * your option) any later version as soon as they are approved by the European
  * Commission.
- *  
- * Alternatively, you may redistribute and/or modify this program under the 
- * terms of the GNU Lesser General Public License as published by the Free 
- * Software Foundation; either  version 3 of the License, or (at your option) 
- * any later version. 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *    
- * See the licenses for the specific language governing permissions, limitations 
+ *
+ * Alternatively, you may redistribute and/or modify this program under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either  version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the licenses for the specific language governing permissions, limitations
  * and more details.
- *    
- * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along 
- * with this program; if not, you may find them at: 
- *    
+ *
+ * You should have received a copy of the EUPL1.1 and the LGPLv3 licenses along
+ * with this program; if not, you may find them at:
+ *
  * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- * http://www.gnu.org/licenses/ 
- * and 
+ * http://www.gnu.org/licenses/
+ * and
  * https://www.gnu.org/licenses/lgpl.txt
  */
 package org.santfeliu.dic.util;
@@ -54,7 +54,7 @@ import org.santfeliu.util.MatrixConfig;
 public class PropertyConverter
 {
   private final Type type;
- 
+
   public static Object toObject(PropertyType type, String svalue)
   {
     Object value = null;
@@ -74,7 +74,7 @@ public class PropertyConverter
           catch (NumberFormatException ex)
           {
             value = null;
-          } 
+          }
           break;
         case BOOLEAN:
           value = Boolean.valueOf(svalue);
@@ -95,6 +95,11 @@ public class PropertyConverter
     return value == null ? null : value.toString();
   }
 
+  public PropertyConverter()
+  {
+    this(null);
+  }
+
   public PropertyConverter(Type type)
   {
     this.type = type;
@@ -108,47 +113,62 @@ public class PropertyConverter
       String propertyName = property.getName();
       Object value;
 
-      PropertyDefinition pd = type.getPropertyDefinition(propertyName);
-      if (pd == null) // free property, no definition
+      if (type == null)
       {
-        // assume type is TEXT
-        if (property.getValue().size() == 1)
+        List<String> values = property.getValue();
+        if (values.size() > 1)
         {
-          String svalue = property.getValue().get(0);
-          value = svalue;
+          map.put(propertyName, property.getValue());
         }
-        else
+        else if (values.size() == 1)
         {
-          // set all values
-          value = property.getValue();
+          map.put(propertyName, property.getValue().get(0));
         }
       }
-      else // defined property
+      else
       {
-        int maxOccurs = pd.getMaxOccurs();
-        if (maxOccurs == 1) // single value property
+        PropertyDefinition pd = type.getPropertyDefinition(propertyName);
+        if (pd == null) // free property, no definition
         {
-          if (property.getValue().isEmpty())
+          // assume type is TEXT
+          if (property.getValue().size() == 1)
           {
-            value = null;
+            String svalue = property.getValue().get(0);
+            value = svalue;
           }
           else
           {
-            String svalue = property.getValue().get(0);
-            value = toObject(pd.getType(), svalue);
+            // set all values
+            value = property.getValue();
           }
         }
-        else
+        else // defined property
         {
-          List valueList = new ArrayList();
-          for (String svalue : property.getValue())
+          int maxOccurs = pd.getMaxOccurs();
+          if (maxOccurs == 1) // single value property
           {
-            valueList.add(toObject(pd.getType(), svalue));
+            if (property.getValue().isEmpty())
+            {
+              value = null;
+            }
+            else
+            {
+              String svalue = property.getValue().get(0);
+              value = toObject(pd.getType(), svalue);
+            }
           }
-          value = valueList;
+          else
+          {
+            List valueList = new ArrayList();
+            for (String svalue : property.getValue())
+            {
+              valueList.add(toObject(pd.getType(), svalue));
+            }
+            value = valueList;
+          }
         }
+        map.put(propertyName, value);
       }
-      map.put(propertyName, value);
     }
     return map;
   }
@@ -162,45 +182,70 @@ public class PropertyConverter
       Map.Entry entry = iter.next();
       String propertyName = (String)entry.getKey();
       Object value = entry.getValue();
-      PropertyDefinition pd = type.getPropertyDefinition(propertyName);
-      PropertyType pt = (pd == null) ? PropertyType.TEXT : pd.getType();
-      Property property = new Property();
-      property.setName(propertyName);
-      if (value instanceof List)
+
+      if (type == null)
       {
-        List valueList = (List)value;
-        for (Object v : valueList)
+        Property property = new Property();
+        property.setName(propertyName);
+        if (value instanceof List)
         {
-          if (v != null)
+          List valueList = (List)value;
+          for (Object item : valueList)
           {
-            String svalue = toString(pt, v);
-            if (isHtml(svalue))
-              svalue = fixHtml(svalue);
-            property.getValue().add(svalue);
+            property.getValue().add(String.valueOf(item));
           }
+          propertyList.add(property);
+        }
+        else if (value instanceof String ||
+                 value instanceof Number ||
+                 value instanceof Boolean)
+        {
+          property.getValue().add(String.valueOf(value));
+          propertyList.add(property);
         }
       }
-      else if (value != null)
+      else
       {
-        String svalue = toString(pt, value);
-        if (isHtml(svalue))
-          svalue = fixHtml(svalue);        
-        property.getValue().add(svalue);
-      }
-      
-      if (!property.getValue().isEmpty())
-      {
-        propertyList.add(property);
+        PropertyDefinition pd = type.getPropertyDefinition(propertyName);
+        PropertyType pt = (pd == null) ? PropertyType.TEXT : pd.getType();
+        Property property = new Property();
+        property.setName(propertyName);
+        if (value instanceof List)
+        {
+          List valueList = (List)value;
+          for (Object v : valueList)
+          {
+            if (v != null)
+            {
+              String svalue = toString(pt, v);
+              if (isHtml(svalue))
+                svalue = fixHtml(svalue);
+              property.getValue().add(svalue);
+            }
+          }
+        }
+        else if (value != null)
+        {
+          String svalue = toString(pt, value);
+          if (isHtml(svalue))
+            svalue = fixHtml(svalue);
+          property.getValue().add(svalue);
+        }
+
+        if (!property.getValue().isEmpty())
+        {
+          propertyList.add(property);
+        }
       }
     }
     return propertyList;
   }
-  
+
   private boolean isHtml(String value)
   {
     return value != null && value.startsWith("<") && value.endsWith(">");
   }
-  
+
   private String fixHtml(String svalue)
   {
       String scriptName = MatrixConfig.getProperty("htmlFixer.script");
