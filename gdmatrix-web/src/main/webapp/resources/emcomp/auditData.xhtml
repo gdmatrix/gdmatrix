@@ -10,16 +10,16 @@
   <h:body>
     <composite:interface>
       <composite:attribute name="creationDateTime" required="false" />
-      <composite:attribute name="creationDateTimeLabel" required="false" default="#{objectBundle.creationDateTime}" />
+      <composite:attribute name="creationDateTimeLabel" required="false" />
       <composite:attribute name="creationDateTimeStyleClass" required="false" default="field col-12 md:col-3" />
       <composite:attribute name="creationUserId" required="false" />
-      <composite:attribute name="creationUserIdLabel" required="false" default="#{objectBundle.createdBy}" />
+      <composite:attribute name="creationUserIdLabel" required="false" />
       <composite:attribute name="creationUserIdStyleClass" required="false" default="field col-12 md:col-3" />
       <composite:attribute name="changeDateTime" required="false" />
-      <composite:attribute name="changeDateTimeLabel" required="false" default="#{objectBundle.changeDateTime}" />
+      <composite:attribute name="changeDateTimeLabel" required="false" />
       <composite:attribute name="changeDateTimeStyleClass" required="false" default="field col-12 md:col-3" />
       <composite:attribute name="changeUserId" required="false" />
-      <composite:attribute name="changeUserIdLabel" required="false" default="#{objectBundle.changedBy}" />
+      <composite:attribute name="changeUserIdLabel" required="false" />
       <composite:attribute name="changeUserIdStyleClass" required="false" default="field col-12 md:col-3" />
       <composite:attribute name="dateShowTime" required="false" default="true" />
       <composite:attribute name="dateShowIcon" required="false" default="false" />
@@ -29,7 +29,7 @@
     <composite:implementation>
       <p:outputPanel styleClass="#{cc.attrs.creationDateTimeStyleClass}"
                      rendered="#{not empty cc.attrs.creationDateTime}">
-        <p:outputLabel for="@next" value="#{cc.attrs.creationDateTimeLabel}"/>
+        <p:outputLabel for="@next" value="#{cc.attrs.creationDateTimeLabel == null ? objectBundle.creationDateTime : cc.attrs.creationDateTimeLabel}" />
         <p:datePicker  id="creation_date_time" value="#{cc.attrs.creationDateTime}"
                        pattern="#{cc.attrs.datePattern}"
                        locale="#{cc.attrs.dateLocale}" converter="datePickerConverter"
@@ -38,13 +38,13 @@
       </p:outputPanel>
       <p:outputPanel styleClass="#{cc.attrs.creationUserIdStyleClass}"
                      rendered="#{not empty cc.attrs.creationUserId}">
-        <p:outputLabel for="@next" value="#{cc.attrs.creationUserIdLabel}" />
+        <p:outputLabel for="@next" value="#{cc.attrs.creationUserIdLabel == null ? objectBundle.createdBy : cc.attrs.creationUserIdLabel}" />
         <p:inputText id="creation_user_id" value="#{cc.attrs.creationUserId}"
                      disabled="true"/>
       </p:outputPanel>
       <p:outputPanel styleClass="#{cc.attrs.changeDateTimeStyleClass}"
                      rendered="#{not empty cc.attrs.changeDateTime}">
-        <p:outputLabel for="@next" value="#{cc.attrs.changeDateTimeLabel}"/>
+        <p:outputLabel for="@next" value="#{cc.attrs.changeDateTimeLabel == null ? objectBundle.changeDateTime : cc.attrs.changeDateTimeLabel}" />
         <p:datePicker id="change_date_time" value="#{cc.attrs.changeDateTime}"
                       pattern="#{cc.attrs.datePattern}"
                       locale="#{cc.attrs.dateLocale}" converter="datePickerConverter"
@@ -53,7 +53,7 @@
       </p:outputPanel>
       <p:outputPanel styleClass="#{cc.attrs.changeUserIdStyleClass}"
                      rendered="#{not empty cc.attrs.changeUserId}">
-        <p:outputLabel for="@next" value="#{cc.attrs.changeUserIdLabel}" />
+        <p:outputLabel for="@next" value="#{cc.attrs.changeUserIdLabel == null ? objectBundle.changedBy : cc.attrs.changeUserIdLabel}" />
         <p:inputText id="change_user_id" value="#{cc.attrs.changeUserId}"
                      disabled="true"/>
       </p:outputPanel>
