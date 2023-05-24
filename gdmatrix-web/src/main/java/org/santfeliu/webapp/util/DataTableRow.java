@@ -58,6 +58,7 @@ public class DataTableRow implements Serializable
   protected String rowId;
   protected String typeId;
   protected Object[] values;
+  protected String[] icons;
   
   public DataTableRow(String rowId, String typeId)
   {
@@ -84,6 +85,16 @@ public class DataTableRow implements Serializable
   {
     this.typeId = typeId;
   }
+
+  public String[] getIcons()
+  {
+    return icons;
+  }
+
+  public void setIcons(String[] icons)
+  {
+    this.icons = icons;
+  }
   
   public Object[] getValues()
   {
@@ -99,23 +110,16 @@ public class DataTableRow implements Serializable
     throws Exception
   {   
     values = new Object[columns.size()];
+    icons = new String[columns.size()];
     for (int i = 0; i < columns.size(); i++)
     {
+      ScriptClient scriptClient = null;
       Column column = columns.get(i);
       if (column.getExpression() != null)
       {
-        ScriptClient scriptClient = new ScriptClient();
+        scriptClient = newScriptClient();
         scriptClient.put("row", row);
         scriptClient.put("baseBean", baseBean);    
-        scriptClient.put("userSessionBean", 
-          UserSessionBean.getCurrentInstance());
-        scriptClient.put("applicationBean", 
-          ApplicationBean.getCurrentInstance());
-        scriptClient.put("WebUtils", 
-          WebUtils.class.getConstructor().newInstance());   
-        scriptClient.put("DictionaryUtils", 
-          DictionaryUtils.class.getConstructor().newInstance());         
-       
         values[i] = scriptClient.execute(column.getExpression());
       }
       else
@@ -130,9 +134,35 @@ public class DataTableRow implements Serializable
         else
           values[i] = getDefaultValue(column.getName());
       }
+      
+      if (column.getIcon() != null)
+      {
+        if (scriptClient == null) 
+        {
+          scriptClient = newScriptClient();
+          scriptClient.put("row", row);          
+        } 
+        icons[i] = (String) scriptClient.execute(column.getIcon());          
+      }
     }
-  }  
+  }
+
+  protected ScriptClient newScriptClient() throws Exception
+  {
+    ScriptClient scriptClient = new ScriptClient();
+   
+    scriptClient.put("userSessionBean", 
+      UserSessionBean.getCurrentInstance());
+    scriptClient.put("applicationBean", 
+      ApplicationBean.getCurrentInstance());
+    scriptClient.put("WebUtils", 
+      WebUtils.class.getConstructor().newInstance());   
+    scriptClient.put("DictionaryUtils", 
+      DictionaryUtils.class.getConstructor().newInstance());   
     
+    return scriptClient;
+  }
+      
   protected Object getDefaultValue(String columnName)
   {
     return "";

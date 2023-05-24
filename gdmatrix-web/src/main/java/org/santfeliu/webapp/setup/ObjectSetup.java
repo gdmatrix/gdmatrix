@@ -163,20 +163,40 @@ public class ObjectSetup implements Serializable
   {
     mergeProperties(defaultSetup.getProperties(), getProperties());
 
-    for (SearchTab searchTab : searchTabs)
+    if (searchTabs.isEmpty() && !defaultSetup.getSearchTabs().isEmpty())
     {
-      SearchTab defaultSearchTab =
-        defaultSetup.findSearchTabByViewId(searchTab.getViewId());
-      if (defaultSearchTab != null)
-        mergeSearchTab(searchTab, defaultSearchTab);
+      for (SearchTab defaultEditTab : defaultSetup.getSearchTabs())
+      {
+        searchTabs.add(defaultEditTab);
+      }
+    }
+    else
+    {
+      for (SearchTab searchTab : searchTabs)
+      {
+        SearchTab defaultSearchTab =
+          defaultSetup.findSearchTabByViewId(searchTab.getViewId());
+        if (defaultSearchTab != null)
+          mergeSearchTab(searchTab, defaultSearchTab);
+      }
     }
 
-    for (EditTab editTab : editTabs)
+    if (editTabs.isEmpty() && !defaultSetup.getEditTabs().isEmpty())
     {
-      EditTab defaultEditTab =
-        defaultSetup.findEditTabByViewId(editTab.getViewId());
-      if (defaultEditTab != null)
-        mergeEditTab(defaultEditTab, editTab);
+      for (EditTab defaultEditTab : defaultSetup.getEditTabs())
+      {
+        editTabs.add(defaultEditTab);
+      }
+    }
+    else
+    {
+      for (EditTab editTab : editTabs)
+      {
+        EditTab defaultEditTab =
+          defaultSetup.findEditTabByViewId(editTab.getViewId());
+        if (defaultEditTab != null)
+          mergeEditTab(defaultEditTab, editTab);
+      }
     }
   }
 

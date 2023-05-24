@@ -274,7 +274,8 @@ public abstract class ObjectBean extends BaseBean
   public boolean isEditable()
   {
     UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
-    List<String> writeRoles = getActiveEditTab().getWriteRoles();
+    EditTab editTab = getActiveEditTab();
+    List<String> writeRoles = editTab != null ? editTab.getWriteRoles() : null;
     return writeRoles == null || writeRoles.isEmpty()
       || userSessionBean.isUserInRole(writeRoles);
   }

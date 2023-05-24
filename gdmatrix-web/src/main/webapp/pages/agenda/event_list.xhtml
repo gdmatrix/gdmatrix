@@ -17,6 +17,7 @@
                filterable="false" sortable="false" resizable="false"
                headerText="#{applicationBean.translate(column.label)}"
                field="#{column.name}" styleClass="#{column.styleClass}">
+      <i class="#{row.icons[i]}" jsf:rendered="#{column.icon != null}" />      
       <h:outputText value="#{row.values[i]}" />
     </p:columns>
 

@@ -43,6 +43,7 @@ public class Column implements Serializable, Comparable<Column>
   private String name;
   private String styleClass;
   private String expression;
+  private String icon;
   
   public Column()
   {
@@ -104,6 +105,16 @@ public class Column implements Serializable, Comparable<Column>
   public void setExpression(String expression)
   {
     this.expression = expression;
+  }
+
+  public String getIcon()
+  {
+    return icon;
+  }
+  
+  public void setIcon(String icon)
+  {
+    this.icon = icon;
   }
 
   @Override
