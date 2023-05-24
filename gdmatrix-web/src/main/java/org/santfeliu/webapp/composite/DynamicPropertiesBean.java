@@ -146,16 +146,22 @@ public class DynamicPropertiesBean implements Serializable
     }
 
     PropertyConverter converter = new PropertyConverter(type);
-    List<Property> properties = converter.toPropertyList(map);
-    propertyHelper.getProperties().clear();
-    propertyHelper.getProperties().addAll(properties);
+    List<Property> newProperties = converter.toPropertyList(map);
+    List<Property> properties = propertyHelper.getProperties();
+    if (properties != null)
+    {
+      properties.clear();
+      properties.addAll(newProperties);
+    }
   }
 
   public List<SelectItem> getSelectItems()
   {
+    String prefix = getFormBuilderPrefix();
     String typeId = getTypeId();
+    String formKey = prefix + ":" + typeId;
 
-    List<SelectItem> selectItems = selectItemMap.get(typeId);
+    List<SelectItem> selectItems = selectItemMap.get(formKey);
     if (selectItems == null)
     {
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
@@ -163,8 +169,7 @@ public class DynamicPropertiesBean implements Serializable
       selectItems = new ArrayList<>();
       if (!StringUtils.isBlank(typeId))
       {
-        String selectorBase =
-          getFormBuilderPrefix() + ":" + typeId +
+        String selectorBase = formKey +
           TypeFormBuilder.USERID + userSessionBean.getUserId() +
           TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
 
@@ -193,7 +198,7 @@ public class DynamicPropertiesBean implements Serializable
         selectItems.add(
           new SelectItem("", bundle.getString("type_without_form")));
       }
-      selectItemMap.put(typeId, selectItems);
+      selectItemMap.put(formKey, selectItems);
     }
     return selectItems;
   }
