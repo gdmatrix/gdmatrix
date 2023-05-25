@@ -63,7 +63,7 @@ public class CaseFinderBean extends FinderBean
   private int firstRow;
   private boolean finding;
   private boolean outdated;
-  private String formSelector;  
+  private String formSelector; 
  
   @Inject
   NavigatorBean navigatorBean;
@@ -140,8 +140,8 @@ public class CaseFinderBean extends FinderBean
     {
       filter.getClassId().add(classId);
     }
-  }  
-
+  } 
+  
   public List getRows()
   {
     return rows;
@@ -195,6 +195,7 @@ public class CaseFinderBean extends FinderBean
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = caseTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
+    resetWildcards(filter);
     firstRow = 0;
   }
 
@@ -282,6 +283,8 @@ public class CaseFinderBean extends FinderBean
           {
             try
             {
+              String title = filter.getTitle();
+              filter.setTitle(setWildcards(title));
               String classId = CaseFinderBean.this.getClassId();
               if (classId != null)
               {
@@ -291,6 +294,7 @@ public class CaseFinderBean extends FinderBean
                 filter.getClassId().addAll(classIds);                
               }
               int count = CasesModuleBean.getPort(false).countCases(filter);
+              filter.setTitle(title);
               CaseFinderBean.this.setClassId(classId);
               return count;              
             }
@@ -308,7 +312,8 @@ public class CaseFinderBean extends FinderBean
             {               
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
-              
+              String title = filter.getTitle();
+              filter.setTitle(setWildcards(title));
               String classId = CaseFinderBean.this.getClassId();
               if (classId != null)
               {
@@ -325,6 +330,7 @@ public class CaseFinderBean extends FinderBean
               }
               List<Case> cases = 
                 CasesModuleBean.getPort(false).findCases(filter);
+              filter.setTitle(title);
               CaseFinderBean.this.setClassId(classId);
               return toDataTableRows(cases);     
             }
@@ -372,6 +378,23 @@ public class CaseFinderBean extends FinderBean
     }
     
     return convertedRows;       
+  }
+    
+  private String setWildcards(String text)
+  {
+    if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
+      text = "%" + text.replaceAll("^%|%$", "") + "%" ;
+    else if (text != null && text.startsWith("\"") && text.endsWith("\""))
+      text = text.replaceAll("^\"|\"$", "");
+    return text;
+  } 
+  
+  private void resetWildcards(CaseFilter filter)
+  {
+    String title = filter.getTitle();
+    if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
+      title = title.replaceAll("^%+|%+$", "");
+    filter.setTitle(title);
   }
   
 }

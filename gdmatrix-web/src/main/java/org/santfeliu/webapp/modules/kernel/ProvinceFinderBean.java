@@ -104,6 +104,7 @@ public class ProvinceFinderBean
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = provinceTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
+    resetWildcards(filter);
     firstRow = 0;
   }
 
@@ -141,7 +142,11 @@ public class ProvinceFinderBean
           {
             try
             {
-              return KernelModuleBean.getPort(false).countProvinces(filter);
+              String name = filter.getProvinceName();
+              filter.setProvinceName(setWildcards(name));
+              int count = KernelModuleBean.getPort(false).countProvinces(filter);
+              filter.setProvinceName(name);
+              return count;
             }
             catch (Exception ex)
             {
@@ -159,13 +164,18 @@ public class ProvinceFinderBean
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
 
-              List<Province> streets =
+              String name = filter.getProvinceName();
+              filter.setProvinceName(setWildcards(name));
+              
+              List<Province> provinces =
                 KernelModuleBean.getPort(false).findProvinces(filter);
-              for (Province street : streets)
+
+              for (Province province : provinces)
               {
-                ProvinceView view = new ProvinceView(street);
+                ProvinceView view = new ProvinceView(province);
                 results.add(view);
               }
+              filter.setProvinceName(name);              
             }
             catch (Exception ex)
             {
@@ -255,4 +265,21 @@ public class ProvinceFinderBean
     }
 
   }
+  
+  private String setWildcards(String text)
+  {
+    if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
+      text = "%" + text.replaceAll("^%|%$", "") + "%" ;
+    else if (text != null && text.startsWith("\"") && text.endsWith("\""))
+      text = text.replaceAll("^\"|\"$", "");
+    return text;
+  } 
+  
+  private void resetWildcards(ProvinceFilter filter)
+  {
+    String title = filter.getProvinceName();
+    if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
+      title = title.replaceAll("^%+|%+$", "");
+    filter.setProvinceName(title);
+  }  
 }

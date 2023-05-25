@@ -106,6 +106,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
     filter =
       cityTypeBean.queryToFilter(smartFilter, DictionaryConstants.CITY_TYPE);
     doFind(true);
+    resetWildcards(filter);    
     firstRow = 0;
   }
 
@@ -136,6 +137,8 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
       }
       else
       {
+        String name = filter.getCityName();
+        filter.setCityName(setWildcards(name));         
         rows = new ArrayList();
         List<City> cities =
           KernelModuleBean.getPort(false).findCities(filter);
@@ -144,7 +147,8 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
           CityView view = new CityView(city);
           rows.add(view);
         }
-
+        filter.setCityName(name);
+        
         outdated = false;
 
         if (autoLoad)
@@ -264,5 +268,22 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
     }
 
   }
+  
+  private String setWildcards(String text)
+  {
+    if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
+      text = "%" + text.replaceAll("^%|%$", "") + "%" ;
+    else if (text != null && text.startsWith("\"") && text.endsWith("\""))
+      text = text.replaceAll("^\"|\"$", "");
+    return text;
+  } 
+  
+  private void resetWildcards(CityFilter filter)
+  {
+    String title = filter.getCityName();
+    if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
+      title = title.replaceAll("^%+|%+$", "");
+    filter.setCityName(title);
+  }     
 
 }

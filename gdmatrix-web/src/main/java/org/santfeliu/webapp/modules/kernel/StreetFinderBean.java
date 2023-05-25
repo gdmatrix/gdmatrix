@@ -117,6 +117,7 @@ public class StreetFinderBean
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = streetTypeBean.queryToFilter(smartFilter, baseTypeId);
     doFind(true);
+    resetWildcards(filter);
     firstRow = 0;
   }
 
@@ -150,7 +151,11 @@ public class StreetFinderBean
           {
             try
             {
-              return KernelModuleBean.getPort(false).countStreets(filter);
+              String name = filter.getStreetName();
+              filter.setStreetName(setWildcards(name));              
+              int count = KernelModuleBean.getPort(false).countStreets(filter);
+              filter.setStreetName(name);
+              return count;
             }
             catch (Exception ex)
             {
@@ -168,6 +173,8 @@ public class StreetFinderBean
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
 
+              String name = filter.getStreetName();
+              filter.setStreetName(setWildcards(name));                
               List<Street> streets =
                 KernelModuleBean.getPort(false).findStreets(filter);
               for (Street street : streets)
@@ -175,6 +182,7 @@ public class StreetFinderBean
                 StreetView view = new StreetView(street);
                 results.add(view);
               }
+              filter.setStreetName(name);
             }
             catch (Exception ex)
             {
@@ -302,5 +310,22 @@ public class StreetFinderBean
       this.city = city;
     }
   }
+  
+  private String setWildcards(String text)
+  {
+    if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
+      text = "%" + text.replaceAll("^%|%$", "") + "%" ;
+    else if (text != null && text.startsWith("\"") && text.endsWith("\""))
+      text = text.replaceAll("^\"|\"$", "");
+    return text;
+  } 
+  
+  private void resetWildcards(StreetFilter filter)
+  {
+    String title = filter.getStreetName();
+    if (title != null && !title.startsWith("\"") && !title.endsWith("\""))
+      title = title.replaceAll("^%+|%+$", "");
+    filter.setStreetName(title);
+  }   
 
 }
