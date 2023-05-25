@@ -345,6 +345,7 @@ public class DocumentFinderBean extends FinderBean
               {
                 filter.getOutputProperty().add(column.getName());
               }
+              filter.setIncludeContentMetadata(true);
               List<Document> documents =
                 DocModuleBean.getPort(false).findDocuments(filter);
               DocumentFinderBean.this.setClassId(classId);

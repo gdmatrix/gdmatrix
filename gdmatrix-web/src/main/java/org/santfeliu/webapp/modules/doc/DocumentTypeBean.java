@@ -36,6 +36,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import org.matrix.dic.DictionaryConstants;
+import org.matrix.doc.Content;
 import org.matrix.doc.ContentInfo;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
@@ -45,6 +46,7 @@ import org.santfeliu.webapp.setup.ObjectSetup;
 import static org.santfeliu.webapp.modules.doc.DocModuleBean.getPort;
 import org.santfeliu.webapp.setup.Column;
 import org.santfeliu.webapp.setup.SearchTab;
+import org.santfeliu.webapp.util.DataTableRow;
 
 /**
  *
@@ -106,8 +108,12 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
       BUNDLE_PREFIX + "documentSearch_docId", "col-1"));
     searchTab.getColumns().add(new Column("docTypeId",
       BUNDLE_PREFIX + "documentSearch_docTypeId", "col-3"));
-    searchTab.getColumns().add(new Column("title",
-      BUNDLE_PREFIX + "documentSearch_title", "col-6"));
+    Column titleColumn = new Column("title",
+      BUNDLE_PREFIX + "documentSearch_title", "col-6");
+    titleColumn.setExpression("org.santfeliu.webapp.modules.doc.DocumentTypeBean.formatTitle(row)");
+    titleColumn.setIcon("'text-xl mr-2 ' + org.santfeliu.webapp.modules.doc.DocumentTypeBean.getContentIcon(row)");
+    searchTab.getColumns().add(titleColumn);
+
     searchTabs.add(searchTab);
 
     objectSetup.setSearchTabs(searchTabs);
@@ -181,5 +187,63 @@ public class DocumentTypeBean extends TypeBean<Document, DocumentFilter>
   public String getValue(Object object)
   {
     return String.valueOf(object);
+  }
+
+  public static String formatTitle(Document document)
+  {
+    String title = document.getTitle();
+    return title.replace("_", " ");
+  }
+
+  public static String getContentIcon(Document document)
+  {
+    Content content = document.getContent();
+    if (content == null) return "fa-regular fa-file";
+    String contentType = content.getContentType();
+
+    switch (contentType)
+    {
+      case "application/java-archive":
+      case "text/html":
+      case "text/xml":
+        return "fa-regular fa-file-code";
+
+       // Excel
+      case "application/vnd.ms-excel":
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        return "fa-regular fa-file-excel";
+
+      // Word
+      case "application/msword":
+        return "fa-regular fa-file-word";
+
+      // Powerpoint
+      case "application/vnd.ms-powerpoint":
+        return "fa-regular fa-file-powerpoint";
+
+      // PDF
+      case "application/pdf":
+        return "fa-regular fa-file-pdf";
+
+      // ZIP
+      case "application/zip":
+        return "fa-regular fa-file-zipper";
+
+      // CSV
+      case "text/csv":
+        return "fa-regular fa-file-csv";
+
+      // Text
+      case "text/plain":
+        return "fa-regular fa-file-lines";
+
+      default:
+        if (contentType != null && contentType.indexOf("image/") == 0)
+          return "fa-regular fa-file-image";
+        if (contentType != null && contentType.indexOf("video/") == 0)
+          return "fa-regular fa-file-video";
+        else
+          return "fa-regular fa-file";
+    }
   }
 }
