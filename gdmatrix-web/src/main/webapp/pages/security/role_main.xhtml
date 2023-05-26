@@ -10,8 +10,10 @@
     <div class="ui-fluid formgrid grid">
             
       <div class="field col-12 md:col-4">
-        <p:outputLabel for="@next" value="RoleId" />
-        <p:inputText value="#{roleObjectBean.role.roleId}" required="true"
+        <p:outputLabel for="@next" value="RoleId" indicateRequired="true" />
+        <p:inputText value="#{roleObjectBean.role.roleId}" 
+                     required="#{not empty param['mainform:search_tabs:store']}"
+                     requiredMessage="RoleId is mandatory"
                      readonly="#{not roleObjectBean.isNew()}" />
       </div>
 
@@ -30,16 +32,17 @@
       </div>
             
       <div class="field col-12 md:col-12">
-        <p:outputLabel for="@next" value="#{securityBundle.role_name}" />
+        <p:outputLabel for="@next" value="#{securityBundle.role_name}" 
+                       indicateRequired="true" />
         <p:inputText value="#{roleObjectBean.role.name}" 
-                     required="true"
-                     styleClass="inputfield w-full"/>
+                     required="#{not empty param['mainform:search_tabs:store']}" 
+                     requiredMessage="Role name is mandatory" />
       </div>
 
       <div class="field col-12 md:col-12">
         <p:outputLabel for="@next" value="#{securityBundle.role_description}" />
         <p:inputTextarea value="#{roleObjectBean.role.description}" 
-                         styleClass="inputfield w-full"/>
+                         />
       </div>
       
       <emcomp:auditData creationUserId="#{roleObjectBean.role.creationUserId}" 

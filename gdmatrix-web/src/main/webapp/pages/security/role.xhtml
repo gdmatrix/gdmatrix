@@ -21,9 +21,11 @@
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="field">
-            <p:outputLabel for="@next" value="Valor" />
-            <p:inputText id="smartFilter" value="#{roleFinderBean.smartFilter}" />
+          <div class="ui-fluid formgrid grid">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{roleFinderBean.smartFilter}"/>
+            </div>
           </div>
 
           <div class="buttons text-right">
@@ -67,6 +69,7 @@
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{securityBundle.role_type}" />
               <emcomp:typeReference type="Role"
+                                    required="false"
                                     value="#{roleFinderBean.filter.roleTypeId}"
                                     showNavigatorItems="false"
                                     renderShowButton="false" />

@@ -33,6 +33,7 @@
                               queryDelay="1000"
                               minQueryLength="3"
                               required="#{not empty param['mainform:search_tabs:store']}"
+                              requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                               formSelector="#{documentObjectBean.formSelector}"
                               process=":mainform:search_tabs:tabs"
                               update=":mainform:search_tabs:tabs">

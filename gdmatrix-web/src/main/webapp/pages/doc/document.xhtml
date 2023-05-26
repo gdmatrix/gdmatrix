@@ -20,10 +20,11 @@
           </f:facet>
           <p:defaultCommand target="smart_search_button" scope="smart_search" />
 
-          <div class="field">
-            <p:outputLabel for="@next" value="Valor" />
-            <p:inputText id="smartFilter" value="#{documentFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
+          <div class="ui-fluid formgrid grid">
+            <div class="field col-12">
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />
+              <p:inputText id="smartFilter" value="#{documentFinderBean.smartFilter}"/>
+            </div>
           </div>
 
           <div class="buttons text-right">

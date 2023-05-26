@@ -29,12 +29,13 @@
                        ajax="false"
                        immediate="true"
                        onclick="showOverlay()"
-                       title="Select" alt="Select"
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}"
                        />
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat"  
                        action="#{userFinderBean.view(rowIndex)}"
                        process="@this"
+                       title="#{objectBundle.show}"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
                        />     

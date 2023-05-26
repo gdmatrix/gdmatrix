@@ -43,6 +43,7 @@
                          styleClass="rounded-button ui-button-flat"
                          ajax="false"
                          immediate="true"
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          onclick="showOverlay()"
                          action="#{navigatorBean.show('Role', row.includedRole.roleId)}" />
         <p:commandButton action="#{roleRolesTabBean.remove(row)}"

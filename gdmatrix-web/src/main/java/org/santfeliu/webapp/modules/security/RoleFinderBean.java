@@ -163,8 +163,6 @@ public class RoleFinderBean extends FinderBean
   {
     finding = true;
     setFilterTabSelector(1);
-    String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-    filter.setRoleTypeId(baseTypeId);
     smartFilter = roleTypeBean.filterToQuery(filter);
     doFind(true);
     firstRow = 0;
