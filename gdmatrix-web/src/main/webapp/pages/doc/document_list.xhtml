@@ -34,9 +34,19 @@
                        onclick="showOverlay()"
                        title="Select" alt="Select"
                        />
+      <p:linkButton href="#{row.viewURL}" 
+                    icon="pi pi-eye" 
+                    title="#{objectBundle.view}"
+                    styleClass="rounded-button ui-button-flat"
+                    target="_blank" />
+      <p:linkButton href="#{row.downloadURL}" 
+                    icon="pi pi-download"
+                    title="#{objectBundle.download}"
+                    styleClass="rounded-button ui-button-flat" />
       <p:commandButton icon="pi pi-external-link" 
                        styleClass="rounded-button ui-button-flat"  
                        action="#{documentFinderBean.view(rowIndex)}"
+                       title="#{objectBundle.show}"
                        process="@this"
                        oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(1);"
                        update=":mainform:search_tabs:obj_tabs :mainform:context_panel"

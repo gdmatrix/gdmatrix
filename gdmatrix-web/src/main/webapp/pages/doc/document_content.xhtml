@@ -75,13 +75,15 @@
                          value="#{documentObjectBean.getDocumentURL(false, false, true, 20)}" 
                          readonly="true"
                          class="inputfield w-full"/>
-            <p:commandButton id="doc_url_copy" icon="pi pi-copy" />
+            <p:commandButton id="doc_url_copy" icon="pi pi-copy" title="#{objectBundle.copy}" />
             <pe:clipboard trigger="doc_url_copy" action="copy" target="doc_url" />
-            <p:linkButton href="#{documentObjectBean.getDocumentURL(false, true, true, 20)}" 
-                          icon="pi pi-download" />
             <p:linkButton href="#{documentObjectBean.getDocumentURL(false, false, true, 20)}" 
-                          icon="pi pi-external-link" 
+                          icon="pi pi-eye" 
+                          title="#{objectBundle.view}"
                           target="_blank" />
+            <p:linkButton href="#{documentObjectBean.getDocumentURL(false, true, true, 20)}" 
+                          title="#{objectBundle.download}"
+                          icon="pi pi-download" />
           </div>
         </div>        
 
@@ -92,13 +94,15 @@
                          value="#{documentObjectBean.getDocumentURL(true, false, true, 20)}" 
                          readonly="true"
                          class="inputfield w-full"/>
-            <p:commandButton id="cnt_url_copy" icon="pi pi-copy" />
+            <p:commandButton id="cnt_url_copy" icon="pi pi-copy" title="#{objectBundle.copy}" />
             <pe:clipboard trigger="cnt_url_copy" action="copy" target="cnt_url" />
-            <p:linkButton href="#{documentObjectBean.getDocumentURL(true, true, true, 20)}"
-                          icon="pi pi-download"  />
             <p:linkButton href="#{documentObjectBean.getDocumentURL(true, false, true, 20)}" 
-                          icon="pi pi-external-link" 
+                          icon="pi pi-eye"
+                          title="#{objectBundle.view}"
                           target="_blank" />
+            <p:linkButton href="#{documentObjectBean.getDocumentURL(true, true, true, 20)}"
+                          title="#{objectBundle.download}"
+                          icon="pi pi-download"  />
           </div>
         </div>
         

@@ -41,11 +41,14 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
+import org.matrix.doc.Content;
 import org.matrix.doc.Document;
 import org.matrix.doc.DocumentFilter;
 import org.santfeliu.classif.ClassCache;
 import org.santfeliu.util.BigList;
+import org.santfeliu.util.MimeTypeMap;
 import org.santfeliu.web.UserSessionBean;
+import org.santfeliu.webapp.BaseBean;
 import org.santfeliu.webapp.FinderBean;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -62,7 +65,7 @@ public class DocumentFinderBean extends FinderBean
 {
   private String smartFilter;
   private DocumentFilter filter = new DocumentFilter();
-  private List<DataTableRow> rows;
+  private List<DocumentDataTableRow> rows;
   private int firstRow;
   private boolean finding;
   private boolean outdated;
@@ -177,12 +180,12 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
-  public List<DataTableRow> getRows()
+  public List<DocumentDataTableRow> getRows()
   {
     return rows;
   }
 
-  public void setRows(List<DataTableRow> rows)
+  public void setRows(List<DocumentDataTableRow> rows)
   {
     this.rows = rows;
   }
@@ -280,7 +283,7 @@ public class DocumentFinderBean extends FinderBean
     firstRow = (Integer)stateArray[3];
     smartFilter = documentTypeBean.filterToQuery(filter);
     formSelector = (String)stateArray[5];
-    rows = (List<DataTableRow>)stateArray[6];
+    rows = (List<DocumentDataTableRow>)stateArray[6];
     setObjectPosition((Integer)stateArray[4]);
   }
 
@@ -383,18 +386,65 @@ public class DocumentFinderBean extends FinderBean
     }
   }
 
-  private List<DataTableRow> toDataTableRows(List<Document> documents)
+  private List<DocumentDataTableRow> toDataTableRows(List<Document> documents)
     throws Exception
   {
-    List<DataTableRow> convertedRows = new ArrayList();
+    List<DocumentDataTableRow> convertedRows = new ArrayList<>();
     for (Document document : documents)
     {
-      DataTableRow dataTableRow =
-        new DataTableRow(document.getDocId(), document.getDocTypeId());
+      DocumentDataTableRow dataTableRow =
+        new DocumentDataTableRow(document.getDocId(), document.getDocTypeId());
       dataTableRow.setValues(this, document, getColumns());
       convertedRows.add(dataTableRow);
     }
-
     return convertedRows;
+  }
+
+  public static class DocumentDataTableRow extends DataTableRow
+  {
+    private String contentId;
+    private String contentType;
+
+    public DocumentDataTableRow(String rowId, String typeId)
+    {
+      super(rowId, typeId);
+    }
+
+    @Override
+    public void setValues(BaseBean baseBean, Object row, List<Column> columns)
+      throws Exception
+    {
+      super.setValues(baseBean, row, columns);
+      Document document = (Document)row;
+      Content content = document.getContent();
+      contentId = content.getContentId();
+      contentType = content.getContentType();
+    }
+
+    public String getContentId()
+    {
+      return contentId;
+    }
+
+    public String getContentType()
+    {
+      return contentType;
+    }
+
+    public String getViewURL()
+    {
+      String extension =
+        MimeTypeMap.getMimeTypeMap().getExtension(contentType);
+
+      return "/documents/" + contentId + "/" + rowId + "." + extension;
+    }
+
+    public String getDownloadURL()
+    {
+      String extension =
+        MimeTypeMap.getMimeTypeMap().getExtension(contentType);
+
+      return "/documents/" + contentId + "?saveas="  + rowId + "." + extension;
+    }
   }
 }

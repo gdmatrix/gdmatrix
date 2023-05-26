@@ -247,7 +247,7 @@ public class DocumentObjectBean extends ObjectBean
   {
     String url;
 
-    Content content = getContent();
+    Content content = document.getContent();
 
     if (content.getUrl() != null)
     {
