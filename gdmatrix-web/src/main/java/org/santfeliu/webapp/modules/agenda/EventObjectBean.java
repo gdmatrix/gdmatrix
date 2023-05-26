@@ -43,12 +43,17 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.AgendaConstants;
 import org.matrix.agenda.Event;
+import org.matrix.agenda.Attendant;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
+import org.matrix.dic.PropertyDefinition;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.security.User;
+import org.santfeliu.security.UserCache;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.UserSessionBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.helpers.PropertyHelper;
@@ -62,6 +67,8 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 @ViewScoped
 public class EventObjectBean extends ObjectBean
 {
+  private static final String AUTO_ATTENDANT_TYPE = "_autoAttendantTypeId";
+
   private Event event = new Event();
   private boolean autoAttendant;
   private PropertyHelper propertyHelper;
@@ -280,7 +287,29 @@ public class EventObjectBean extends ObjectBean
   @Override
   public void storeObject() throws Exception
   {
-    event = AgendaModuleBean.getClient(false).storeEvent(event);
+    event = AgendaModuleBean.getClient().storeEvent(event);
+    if (isAutoAttendant() && isNew())
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+      User user = UserCache.getUser(userSessionBean.getCredentials());
+      String personId = user.getPersonId();
+
+      Attendant attendant = new Attendant();
+      attendant.setPersonId(personId);
+      attendant.setEventId(event.getEventId());
+
+      String autoAttendantType = DictionaryConstants.ATTENDANT_TYPE;
+      Type type = TypeCache.getInstance().getType(event.getEventTypeId());
+      if (type != null)
+      {
+        PropertyDefinition autoAttendantPD =
+          type.getPropertyDefinition(AUTO_ATTENDANT_TYPE);
+        if (autoAttendantPD != null && !autoAttendantPD.getValue().isEmpty())
+          autoAttendantType = autoAttendantPD.getValue().get(0);
+      }
+      attendant.setAttendantTypeId(autoAttendantType);
+      AgendaModuleBean.getClient().storeAttendant(attendant);
+    }
     setObjectId(event.getEventId());
     eventFinderBean.outdate();
   }

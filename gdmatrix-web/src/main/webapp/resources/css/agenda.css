@@ -53,9 +53,28 @@
   flex-grow: 1;
 }
 
+.eventList .eventRow .eventActions
+{
+  min-width: 60px;
+  text-align: right;
+}
+
 .eventList li.ui-dataview-row
 {
   border: 0 !important;
+}
+
+.eventList .eventActions .publicIcon,
+.eventList .eventActions .onlyAtt
+{
+  color: #2196f3;
+  cursor: default;
+  padding: 0.5rem;
+}
+
+.eventList .eventActions .publicIcon
+{
+  font-size: 15px;
 }
 
 /*** event_recurrences.xhtml and event_copy_*.xhtml ***/
@@ -292,4 +311,16 @@
   color: red;
   font-size: 14px;
   font-weight: bold;
+}
+
+/***** event_schedule.xhtml *****/
+
+.fc-daygrid-event-dot
+{
+  display: none;
+}
+
+.fc-event-time
+{
+  margin-left: 3px;
 }

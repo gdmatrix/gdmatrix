@@ -39,6 +39,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +50,8 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.matrix.agenda.Event;
 import org.matrix.agenda.EventFilter;
+import org.matrix.dic.DictionaryConstants;
+import org.matrix.security.SecurityConstants;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.schedule.ScheduleEntryMoveEvent;
 import org.primefaces.event.schedule.ScheduleEntryResizeEvent;
@@ -57,6 +60,8 @@ import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.LazyScheduleModel;
 import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.BigList;
 import org.santfeliu.util.TextUtils;
 import org.santfeliu.webapp.FinderBean;
@@ -76,6 +81,10 @@ import org.santfeliu.webapp.util.DataTableRow;
 @ViewScoped
 public class EventFinderBean extends FinderBean
 {
+  private static final String RENDER_PUBLIC_ICON = "renderPublicIcon";
+  private static final String RENDER_ONLY_ATTENDANTS_ICON =
+    "renderOnlyAttendantsIcon";
+
   private String smartFilter;
   private EventFilter filter = new EventFilter();
   private List<EventDataTableRow> rows;
@@ -85,6 +94,7 @@ public class EventFinderBean extends FinderBean
   private String formSelector;
 
   private String searchEventThemeId;
+  private String searchEventTypeId;
 
   //Schedule
   private ScheduleModel eventModel;
@@ -182,26 +192,12 @@ public class EventFinderBean extends FinderBean
 
   public String getSearchEventTypeId()
   {
-    if (filter.getEventTypeId().isEmpty())
-    {
-      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      filter.getEventTypeId().add(baseTypeId);
-    }
-    return filter.getEventTypeId().get(0);
+    return searchEventTypeId;
   }
 
   public void setSearchEventTypeId(String searchEventTypeId)
   {
-    filter.getEventTypeId().clear();
-    if (!StringUtils.isBlank(searchEventTypeId))
-    {
-      filter.getEventTypeId().add(searchEventTypeId);
-    }
-    else
-    {
-      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
-      filter.getEventTypeId().add(baseTypeId);
-    }
+    this.searchEventTypeId = searchEventTypeId;
   }
 
   public String getSearchEventThemeId()
@@ -387,9 +383,10 @@ public class EventFinderBean extends FinderBean
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
-    setFromDate(new Date());
+    setFromDate(getDefaultFromDate());
     filter.setDateComparator("1");
     setSearchEventTypeId(null);
+    setSearchEventThemeId(null);
     doFind(true);
     firstRow = 0;
   }
@@ -400,14 +397,27 @@ public class EventFinderBean extends FinderBean
     finding = true;
     setFilterTabSelector(1);
     smartFilter = eventTypeBean.filterToQuery(filter);
+
     if (filter.getStartDateTime() == null)
     {
-      setFromDate(new Date());
+      setFromDate(getDefaultFromDate());
       filter.setDateComparator("1");
     }
+
+    filter.getEventTypeId().clear();
+    if (StringUtils.isBlank(searchEventTypeId))
+    {
+      String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+      filter.getEventTypeId().add(baseTypeId);
+    }
+    else
+    {
+      filter.getEventTypeId().add(searchEventTypeId);
+    }
+
+    filter.getThemeId().clear();
     if (!StringUtils.isBlank(searchEventThemeId))
     {
-      filter.getThemeId().clear();
       filter.getThemeId().add(searchEventThemeId);
     }
 
@@ -422,16 +432,14 @@ public class EventFinderBean extends FinderBean
 
   public void update()
   {
-    if (outdated)
+    if (outdated) //update all search pages
     {
       doFind(false);
-      List<String> clientIdList = new ArrayList();
-      List<SearchTab> tabs = eventObjectBean.getSearchTabs();
-      for (int i = 0; i < tabs.size(); i++)
-      {
-        clientIdList.add("mainform:search_tabs:result_list_" + i);
-      }
-      PrimeFaces.current().ajax().update(clientIdList);
+      PrimeFaces.current().ajax().update(getClientIdList(true));
+    }
+    else //update all list search pages, but do not update schedule
+    {
+      PrimeFaces.current().ajax().update(getClientIdList(false));
     }
   }
 
@@ -439,9 +447,9 @@ public class EventFinderBean extends FinderBean
   {
     filter = new EventFilter();
     smartFilter = null;
-    setFromDate(new Date());
+    setFromDate(getDefaultFromDate());
     filter.setDateComparator("1");
-    setSearchEventTypeId(null);
+    searchEventTypeId = null;
     searchEventThemeId = null;
     rows = null;
     finding = false;
@@ -455,6 +463,15 @@ public class EventFinderBean extends FinderBean
     if (row != null && row.getTypeId() != null)
     {
       return typeTypeBean.getDescription(row.getTypeId());
+    }
+    return "";
+  }
+
+  public String getEventTypeStyleClass(EventDataTableRow row)
+  {
+    if (row != null)
+    {
+      return getEventTypeStyleClass(row.getTypeId());
     }
     return "";
   }
@@ -506,6 +523,16 @@ public class EventFinderBean extends FinderBean
     }
   }
 
+  public boolean isRenderPublicIcon()
+  {
+    return isRender(RENDER_PUBLIC_ICON, true);
+  }
+
+  public boolean isRenderOnlyAttendantsIcon()
+  {
+    return isRender(RENDER_ONLY_ATTENDANTS_ICON, false);
+  }
+
   @Override
   public Serializable saveState()
   {
@@ -555,8 +582,7 @@ public class EventFinderBean extends FinderBean
           {
             try
             {
-              return AgendaModuleBean.getClient(false).
-                countEventsFromCache(filter);
+              return AgendaModuleBean.getClient().countEventsFromCache(filter);
             }
             catch (Exception ex)
             {
@@ -573,7 +599,7 @@ public class EventFinderBean extends FinderBean
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
               filter.setIncludeMetadata(true);
-              List<Event> events = AgendaModuleBean.getClient(false).
+              List<Event> events = AgendaModuleBean.getClient().
                 findEventsFromCache(filter);
               return toDataTableRows(events);
             }
@@ -589,7 +615,15 @@ public class EventFinderBean extends FinderBean
 
         if (autoLoad)
         {
-          scheduleInitialDate = null;
+          if (rows.isEmpty())
+          {
+            scheduleInitialDate = null;
+          }
+          else
+          {
+            scheduleInitialDate =
+              toLocalDateTime(rows.get(0).getStartDateTime()).toLocalDate();
+          }
           scheduleView = "dayGridMonth";
           if (rows.size() == 1)
           {
@@ -626,6 +660,9 @@ public class EventFinderBean extends FinderBean
       row.setStartDateTime(event.getStartDateTime());
       row.setEndDateTime(event.getEndDateTime());
       row.setSummary(event.getSummary());
+      row.setPublicRow(isPublicEvent(event));
+      row.setOnlyAttendants(event.isOnlyAttendants() == null ? false :
+        event.isOnlyAttendants());
       convertedRows.add(row);
     }
     return convertedRows;
@@ -643,23 +680,30 @@ public class EventFinderBean extends FinderBean
         scheduleFilter.setMaxResults(Integer.MAX_VALUE);
         scheduleFilter.setStartDateTime(toDateString(start));
         scheduleFilter.setEndDateTime(toDateString(end));
-        List<Event> events =
-          AgendaModuleBean.getClient(false).findEventsFromCache(scheduleFilter);
-        for (Event row : events)
+        try
         {
-          if (mustIncludeEvent(row, filter.getStartDateTime(),
-            filter.getEndDateTime()))
+          List<Event> events = AgendaModuleBean.getClient().
+            findEventsFromCache(scheduleFilter);
+          for (Event row : events)
           {
-            DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
-              .id(row.getEventId())
-              .title(row.getSummary())
-              .startDate(toLocalDateTime(row.getStartDateTime()))
-              .endDate(toLocalDateTime(row.getEndDateTime()))
-              .description(row.getSummary())
-              .overlapAllowed(true)
-              .build();
-            addEvent(event);
+            if (mustIncludeEvent(row, filter.getStartDateTime(),
+              filter.getEndDateTime()))
+            {
+              DefaultScheduleEvent<?> event = DefaultScheduleEvent.builder()
+                .id(row.getEventId())
+                .title(row.getSummary())
+                .startDate(toLocalDateTime(row.getStartDateTime()))
+                .endDate(toLocalDateTime(row.getEndDateTime()))
+                .description(row.getSummary())
+                .overlapAllowed(true)
+                .styleClass(getEventTypeStyleClass(row.getEventTypeId()))
+                .build();
+              addEvent(event);
+            }
           }
+        }
+        catch (Exception ex)
+        {
         }
         scheduleInitialDate = adjustInitialDate(start);
       }
@@ -741,11 +785,75 @@ public class EventFinderBean extends FinderBean
     }
   }
 
+  private boolean isRender(String name, boolean defValue)
+  {
+    String value = getProperty(name);
+    if (value == null)
+      return defValue;
+    else
+      return Boolean.valueOf(value);
+  }
+
+  private Date getDefaultFromDate()
+  {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(new Date());
+    cal.set(Calendar.HOUR_OF_DAY, 0);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    return cal.getTime();
+  }
+
+  private boolean isPublicEvent(Event event)
+  {
+    if (event.isOnlyAttendants() != null && event.isOnlyAttendants())
+      return false;
+
+    String eventTypeId = event.getEventTypeId();
+    if (!StringUtils.isBlank(eventTypeId))
+    {
+      Type type = TypeCache.getInstance().getType(eventTypeId);
+      if (type != null)
+      {
+        return type.canPerformAction(DictionaryConstants.READ_ACTION,
+          Collections.singleton(SecurityConstants.EVERYONE_ROLE));
+      }
+    }
+    return false;
+  }
+
+  private List<String> getClientIdList(boolean includeSchedule)
+  {
+    List<String> clientIdList = new ArrayList();
+    List<SearchTab> tabs = eventObjectBean.getSearchTabs();
+    for (int i = 0; i < tabs.size(); i++)
+    {
+      String viewId = tabs.get(i).getViewId();
+      if (includeSchedule || (!includeSchedule &&
+        !"/pages/agenda/event_schedule.xhtml".equals(viewId)))
+      {
+        clientIdList.add("mainform:search_tabs:result_list_" + i);
+      }
+    }
+    return clientIdList;
+  }
+
+  private String getEventTypeStyleClass(String eventTypeId)
+  {
+    if (eventTypeId != null)
+    {
+      return "et_" + eventTypeId.replace(':', '_').replace('.', '_');
+    }
+    return "";
+  }
+
   public class EventDataTableRow extends DataTableRow
   {
     private String startDateTime;
     private String endDateTime;
     private String summary;
+    private boolean publicRow;
+    private boolean onlyAttendants;
 
     public EventDataTableRow(String rowId, String typeId)
     {
@@ -780,6 +888,26 @@ public class EventFinderBean extends FinderBean
     public void setSummary(String summary)
     {
       this.summary = summary;
+    }
+
+    public boolean isPublicRow()
+    {
+      return publicRow;
+    }
+
+    public void setPublicRow(boolean publicRow)
+    {
+      this.publicRow = publicRow;
+    }
+
+    public boolean isOnlyAttendants()
+    {
+      return onlyAttendants;
+    }
+
+    public void setOnlyAttendants(boolean onlyAttendants)
+    {
+      this.onlyAttendants = onlyAttendants;
     }
   }
 
