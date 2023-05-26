@@ -50,6 +50,8 @@ import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
 import org.matrix.dic.DictionaryConstants;
 import org.primefaces.PrimeFaces;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
@@ -250,24 +252,17 @@ public class CaseCasesTabBean extends TabBean
     }
     return "";
   }
-
-  //TODO: get property from JSON
+  
   public String getTabBaseTypeId()
+  {    
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    return editTab.getProperties().getString("typeId");
+  }  
+  
+  public boolean isPersonRelatedConfiguration()
   {
-    String typeId;
-
-    String tabPrefix = String.valueOf(caseObjectBean.getEditTabSelector());
-    typeId = getProperty("tabs::" + tabPrefix + "::typeId");
-    if (typeId == null)
-    {
-      EditTab editTab = caseObjectBean.getActiveEditTab();
-      typeId = editTab.getProperties().getString("typeId");
-      if (typeId == null)
-      {
-        typeId = DictionaryConstants.CASE_CASE_TYPE;
-      }
-    }
-    return typeId;
+    String typeId = getTabBaseTypeId();
+    return isPersonRelatedConfiguration(typeId);
   }
 
   @Override
@@ -278,19 +273,10 @@ public class CaseCasesTabBean extends TabBean
       try
       {
         String typeId = getTabBaseTypeId();
-
-        String[] params = typeId.split(TYPEID_SEPARATOR);
-        if (params != null && params.length == 2)
-        {
-          String cpTypeId1 = params[0];
-          String cpTypeId2 = params[1];
-          getCurrentTabInstance().rows =
-            getResultsByPersons(cpTypeId1, cpTypeId2);
-        }
+        if (isPersonRelatedConfiguration(typeId))
+          getCurrentTabInstance().rows = getResultsByPersons(typeId);
         else
-        {
           getCurrentTabInstance().rows = getResultsByDefault(typeId);
-        }
       }
       catch (Exception ex)
       {
@@ -401,6 +387,12 @@ public class CaseCasesTabBean extends TabBean
       error(ex);
     }
   }
+  
+  private boolean isPersonRelatedConfiguration(String typeId)
+  {
+    Type type = TypeCache.getInstance().getType(typeId);
+    return type.isDerivedFrom(DictionaryConstants.CASE_PERSON_TYPE);    
+  }  
 
   private void showDialog()
   {
@@ -450,12 +442,11 @@ public class CaseCasesTabBean extends TabBean
     return toDataTableRows(results);
   }
 
-  private List<CaseCasesDataTableRow> getResultsByPersons(String typeId1,
-    String typeId2) throws Exception
+  private List<CaseCasesDataTableRow> getResultsByPersons(String cpType) 
+    throws Exception
   {
     CasePersonFilter filter = new CasePersonFilter();
     filter.setCaseId(getObjectId());
-    filter.setCasePersonTypeId(typeId1);
     List<CasePersonView> casePersons
       = CasesModuleBean.getPort(false).findCasePersonViews(filter);
 
@@ -466,7 +457,7 @@ public class CaseCasesTabBean extends TabBean
     {
       filter = new CasePersonFilter();
       filter.setPersonId(personId);
-      filter.setCasePersonTypeId(typeId2);
+      filter.setCasePersonTypeId(cpType);
       casePersons = CasesModuleBean.getPort(false).findCasePersonViews(filter);
       matcher.addIfMatch(casePersons);
     }
