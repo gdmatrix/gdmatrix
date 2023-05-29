@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.util;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.management.NotCompliantMBeanException;
@@ -70,7 +71,17 @@ public class MenuTypesCache
     JMXUtils.unregisterMBean("MenuTypesCache");
     instance.mids.clear();
   }
-
+  
+  public static synchronized void clear(String mid)
+  {
+    List<String> keys =
+    instance.mids.entrySet().stream()
+      .filter(e -> e.getValue().getMid().equals(mid))
+      .map(Map.Entry::getKey)
+      .collect(Collectors.toList());
+    keys.stream().forEach(k -> instance.mids.remove(k));
+  }
+    
   public MenuItemCursor get(MenuItemCursor currentMenuItem, String typeId)
   {
     MenuItemCursor menuItem;
@@ -105,31 +116,37 @@ public class MenuTypesCache
     MenuItemCursor menuItem;
     MenuItemCursor topWebMenuItem = 
       WebUtils.getTopWebMenuItem(currentMenuItem);
-    menuItem = getMenuItem(topWebMenuItem.getFirstChild(), typeId);
+    menuItem = getMenuItem(topWebMenuItem.getFirstChild(), typeId, null);
     if (!menuItem.isNull())
       mids.put(key, new MidItem(menuItem.getMid()));
     return menuItem;
   }
   
-  private MenuItemCursor getMenuItem(MenuItemCursor menuItem, String typeId)
+  private MenuItemCursor getMenuItem(MenuItemCursor menuItem, String typeId, 
+    MenuItemCursor candidate)
   {
-    int matchResult = matchTypeId(menuItem, typeId);
-    if (matchResult == 1)
+    if (menuItem.isRendered())
+    {
+      int matchResult = matchTypeId(menuItem, typeId);
+      if (matchResult == 1)
         return menuItem;
-
+      else if (matchResult == 0)
+        candidate = menuItem.getClone();
+    }
+    
     MenuItemCursor auxMenuItem = menuItem.getClone();
     if (auxMenuItem.moveFirstChild())
     {
-      auxMenuItem = getMenuItem(auxMenuItem, typeId);
+      auxMenuItem = getMenuItem(auxMenuItem, typeId, candidate);
       if (!auxMenuItem.isNull())
         return auxMenuItem;
     }
 
     auxMenuItem = menuItem.getClone();
     if (auxMenuItem.moveNext())
-      return getMenuItem(auxMenuItem, typeId);
+      return getMenuItem(auxMenuItem, typeId, candidate);
     else
-      return matchResult >= 0 ? menuItem : auxMenuItem;
+      return candidate != null ? candidate : auxMenuItem;
   }
 
   /**
@@ -183,11 +200,17 @@ public class MenuTypesCache
     }
   }
   
-  public class MenuTypesCacheMBean extends StandardMBean implements CacheMBean 
+  public interface IMenuTypesCacheMBean extends CacheMBean
+  {
+    public void clear(String mid);
+  }
+  
+  public class MenuTypesCacheMBean extends StandardMBean 
+    implements IMenuTypesCacheMBean 
   {
     public MenuTypesCacheMBean() throws NotCompliantMBeanException
     {
-      super(CacheMBean.class);
+      super(IMenuTypesCacheMBean.class);
     }    
     
     @Override
@@ -222,11 +245,17 @@ public class MenuTypesCache
     {
       MenuTypesCache.this.clear();
     }
-
+    
+    @Override
+    public void clear(String mid)
+    {
+      MenuTypesCache.clear(mid);
+    }    
+    
     @Override
     public void update()
     {
     }
-    
+        
   }
 }
