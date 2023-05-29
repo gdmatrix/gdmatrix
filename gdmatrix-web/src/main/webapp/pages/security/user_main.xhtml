@@ -13,7 +13,7 @@
         <p:outputLabel for="@next" value="userId" />
         <p:inputText value="#{userObjectBean.user.userId}" 
                      required="#{not empty param['mainform:search_tabs:store']}" 
-                     requiredMessage="UserId is mandatory"
+                     requiredMessage="#{messageBundle.USERID_IS_REQUIRED}"
                      readonly="#{not userObjectBean.isNew()}" />
       </div>
             
@@ -22,7 +22,7 @@
                        indicateRequired="true" />
         <p:inputText value="#{userObjectBean.user.displayName}" 
                      required="#{not empty param['mainform:search_tabs:store']}"
-                     requiredMessage="Display name is mandatory"
+                     requiredMessage="#{messageBundle.DISPLAY_NAME_IS_REQUIRED}"
                      maxlength="20"
                      styleClass="inputfield w-full"/>
       </div>

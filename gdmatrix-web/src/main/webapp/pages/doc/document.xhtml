@@ -22,8 +22,13 @@
 
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
-              <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <p:inputText id="smartFilter" value="#{documentFinderBean.smartFilter}"/>
+              <p:outputLabel for="@next" 
+                             value="#{objectBundle.value}" 
+                             indicateRequired="true" />
+              <p:inputText id="smartFilter" 
+                           value="#{documentFinderBean.smartFilter}"
+                           required="#{not empty param['mainform:find_selector:smart_search_button']}" 
+                           requiredMessage="#{messageBundle.FILTER_IS_EMPTY}" />
             </div>
           </div>
 

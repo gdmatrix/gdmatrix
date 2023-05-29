@@ -13,7 +13,7 @@
         <p:outputLabel for="@next" value="RoleId" indicateRequired="true" />
         <p:inputText value="#{roleObjectBean.role.roleId}" 
                      required="#{not empty param['mainform:search_tabs:store']}"
-                     requiredMessage="RoleId is mandatory"
+                     requiredMessage="#{messageBundle.ROLEID_IS_REQUIRED}"
                      readonly="#{not roleObjectBean.isNew()}" />
       </div>
 
@@ -36,7 +36,7 @@
                        indicateRequired="true" />
         <p:inputText value="#{roleObjectBean.role.name}" 
                      required="#{not empty param['mainform:search_tabs:store']}" 
-                     requiredMessage="Role name is mandatory" />
+                     requiredMessage="#{messageBundle.ROLE_NAME_IS_REQUIRED}" />
       </div>
 
       <div class="field col-12 md:col-12">
