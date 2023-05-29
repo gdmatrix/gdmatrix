@@ -132,7 +132,7 @@
                        oncomplete="if (args &amp;&amp; !args.validationFailed) PF('personContactsDialog').hide()" />
       <p:commandButton action="#{personContactsTabBean.cancel}" 
                        styleClass="m-1" value="#{objectBundle.cancel}" 
-                       immediate="true" update="contact_edit_panels" global="false" 
+                       process="@this" update="contact_edit_panels" global="false" 
                        oncomplete="PF('personContactsDialog').hide()" />
     </div>         
 

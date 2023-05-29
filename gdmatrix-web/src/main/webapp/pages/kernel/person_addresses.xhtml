@@ -113,7 +113,7 @@
                          oncomplete="if (!isFacesError()) PF('personAddressesDialog').hide()"/>
         <p:commandButton action="#{personAddressesTabBean.cancel}" 
                          styleClass="m-1" value="#{objectBundle.cancel}" 
-                         immediate="true" update="person_addresses_panel" global="false" 
+                         process="@this" update="person_addresses_panel" global="false" 
                          oncomplete="PF('personAddressesDialog').hide()"/>
       </div>          
     </f:facet>
