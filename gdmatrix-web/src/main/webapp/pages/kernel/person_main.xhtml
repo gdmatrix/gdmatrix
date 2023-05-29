@@ -16,7 +16,7 @@
       <div class="field col-12 md:col-9">
         <p:outputLabel for="@next" value="#{kernelBundle.person_type}" />
         <p:selectOneMenu value="#{personObjectBean.person.personTypeId}"
-                         filter="true">
+                         filter="true" autoWidth="false">
           <f:selectItems value="#{typeTypeBean.getSelectItems('Person')}"
                          var="item" />
           <p:column>
@@ -56,34 +56,42 @@
         <p:inputText value="#{personObjectBean.person.secondSurname}" />
       </div>
 
-      <div class="field col-12 md:col-3">
+      <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="@next" value="#{kernelBundle.person_nif}" />
         <p:inputText value="#{personObjectBean.person.nif}" />
       </div>
 
-      <div class="field col-12 md:col-3">
+      <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="@next" value="#{kernelBundle.person_passport}" />
         <p:inputText value="#{personObjectBean.person.passport}" />
       </div>
 
-      <div class="field col-12 md:col-3">
+      <div class="field col-12 md:col-6 xl:col-2">
         <p:outputLabel for="@next" value="#{kernelBundle.person_sex}" />
         <p:selectOneMenu value="#{personObjectBean.person.sex}">
           <f:selectItems value="#{personObjectBean.sexSelectItems}" />
         </p:selectOneMenu>
       </div>
 
-      <div class="field col-12 md:col-3">
+      <div class="field col-12 md:col-4 xl:col-3">
         <p:outputLabel for="@next" value="#{kernelBundle.person_birthDate}" />
         <p:datePicker value="#{personObjectBean.person.birthDate}"
                       autocomplete="off" placeholder="dd/MM/yyyy"
                       locale="#{personObjectBean.language}"
-                      showOnFocus="false" touchUI="true"
+                      showOnFocus="false"
                       converter="datePickerConverter" pattern="dd/MM/yyyy"
                       showIcon="true" showTime="false"
                       monthNavigator="true" yearNavigator="true" />
       </div>
 
+      <div class="field col-12 md:col-2 xl:col-1">
+        <p:outputLabel for="@next" value="#{kernelBundle.person_age}" />
+        <p:inputText value="#{personObjectBean.age}" readonly="true">
+          <f:convertNumber type="number"
+                           maxIntegerDigits="3"
+                           maxFractionDigits="1" />
+        </p:inputText>
+      </div>
 
       <div class="field col-12 md:col-6">
         <h:outputLabel for="@next" value="#{kernelBundle.person_birthCity}" />

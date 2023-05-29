@@ -31,6 +31,7 @@
 package org.santfeliu.webapp.modules.kernel;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
@@ -44,6 +45,7 @@ import org.matrix.kernel.Person;
 import org.matrix.kernel.Sex;
 import org.santfeliu.faces.FacesUtils;
 import org.santfeliu.kernel.web.KernelConfigBean;
+import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 
@@ -111,6 +113,18 @@ public class PersonObjectBean extends ObjectBean
   public String getDescription(String personId)
   {
     return getTypeBean().getDescription(personId);
+  }
+
+  public Double getAge()
+  {
+    String birthDate = person.getBirthDate();
+    if (birthDate == null) return null;
+
+    Date date = TextUtils.parseInternalDate(birthDate);
+    Date now = new Date();
+    long ellapsed = now.getTime() - date.getTime();
+
+    return (double)ellapsed / (1000 * 60 * 60 * 24 * 365.25);
   }
 
   @Override

@@ -2,6 +2,17 @@
 
 tr.current { font-weight: bold; }    
 
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content 
+{
+  display: block;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content *
+{
+  vertical-align: middle;
+}
+
 @media only screen and (min-width: 700px) 
 {
   .central_column
@@ -144,6 +155,11 @@ body .ui-tabs.context_tabs .ui-tree
 .recents_tree.ui-tree .ui-tree-container
 {
   white-space: normal;
+}
+
+.recents_tree.ui-tree .ui-tree-container .ui-treenode .ui-treenode-content 
+{
+  display: flex;
 }
 
 .recents_tree .ui-treenode-leaf-icon
