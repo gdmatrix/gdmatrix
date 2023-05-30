@@ -109,20 +109,45 @@
       </h:panelGroup>
 
       <h:panelGroup rendered="#{documentObjectBean.fileToStore != null}">
-        <h:outputText value="File to save: #{documentObjectBean.fileNameToStore} size: #{documentObjectBean.fileToStore.length()}" />
+        <h:outputFormat value="#{documentBundle.fileToStore}">
+          <f:param value="#{documentObjectBean.fileNameToStore}" />
+          <f:param value="#{documentObjectBean.fileToStore.length()}" />
+        </h:outputFormat>
       </h:panelGroup>
       
+      <h:panelGroup rendered="#{documentObjectBean.fileToStore == null and 
+               (documentObjectBean.document.lockUserId == null or 
+               userSessionBean.username == documentObjectBean.document.lockUserId)
+               and userSessionBean.matrixClientEnabled}"
+               styleClass="field col-2">
+
+        <p:commandButton value="#{objectBundle.edit}"                         
+           onclick="javascript:editDocument({docId:'#{documentObjectBean.document.docId}'});return false"
+           process="@this" update=":mainform:search_tabs"
+           icon="pi pi-pencil"
+           rendered="#{documentObjectBean.content.contentId != null}"
+           alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
+
+        <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
+          action="#{documentObjectBean.documentEdited}"
+          model="#{documentObjectBean.clientModel}" 
+          function="editDocument"
+          helpUrl="#{matrixClientBean.helpUrl}" />
+      </h:panelGroup>
+
       <p:tabView id="new_content" 
                  styleClass="w-full">
         <p:tab title="#{documentBundle.documentContent_file}">
           <p:fileUpload id="file_upload"
                         listener="#{documentObjectBean.handleFileUpload}"
                         mode="simple"
-                        label="Choose file"
-                        chooseButtonTitle="Choose file"
+                        label="#{documentBundle.chooseFile}"
+                        chooseButtonTitle="#{documentBundle.chooseFile}"
                         widgetVar="uploadDnd"
                         update="@root:@id(content_properties)"
-                        sizeLimit="100000000" 
+                        sizeLimit="200000000"
+                        onstart="_overlayEnabled=false;"
+                        oncomplete="_overlayEnabled=true;"
                         dropZone="file_upload">
           </p:fileUpload>
         </p:tab>

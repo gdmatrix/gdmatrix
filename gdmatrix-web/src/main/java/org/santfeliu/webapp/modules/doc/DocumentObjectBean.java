@@ -60,6 +60,7 @@ import org.primefaces.model.file.UploadedFile;
 import org.santfeliu.doc.util.DocumentUtils;
 import static org.santfeliu.doc.web.DocumentUrlBuilder.DOC_SERVLET_URL;
 import org.santfeliu.faces.FacesUtils;
+import org.santfeliu.faces.matrixclient.model.DefaultMatrixClientModel;
 import org.santfeliu.util.FileDataSource;
 import org.santfeliu.util.IOUtils;
 import org.santfeliu.util.MatrixConfig;
@@ -92,6 +93,8 @@ public class DocumentObjectBean extends ObjectBean
 
   @Inject
   DocumentFinderBean documentFinderBean;
+
+  private DefaultMatrixClientModel clientModel;
 
   @PostConstruct
   public void init()
@@ -166,6 +169,33 @@ public class DocumentObjectBean extends ObjectBean
   public Content getContent()
   {
     return document.getContent();
+  }
+
+  public DefaultMatrixClientModel getClientModel()
+  {
+    if (clientModel == null)
+    {
+      clientModel = new DefaultMatrixClientModel();
+    }
+    return clientModel;
+  }
+
+  public void setClientModel(DefaultMatrixClientModel clientModel)
+  {
+    this.clientModel = clientModel;
+  }
+
+  public void documentEdited()
+  {
+    try
+    {
+      clientModel.parseResult();
+      loadObject();
+    }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
   }
 
   public String getVersionLabel()

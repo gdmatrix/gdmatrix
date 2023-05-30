@@ -309,8 +309,12 @@ function inputTextKeyCheck(e, buttonName)
   }
 }
 
+var _overlayEnabled = true;
+
 function showOverlay()
 {
+  if (!_overlayEnabled) return;
+  
   var overlay = document.getElementById('_overlay_');
   if (overlay != null)
   {
