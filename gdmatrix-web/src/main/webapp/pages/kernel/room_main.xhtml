@@ -1,6 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <div class="ui-fluid formgrid grid">
@@ -14,20 +15,15 @@
     <div class="field col-12 md:col-9">
       <p:outputLabel for="@next" value="#{kernelBundle.room_type}"
                      indicateRequired="true" />
-      <emcomp:typeReference value="#{roomObjectBean.room.roomTypeId}"
-                            type="#{roomObjectBean.baseTypeInfo.baseTypeId}"
-                            showNavigatorItems="#{roomObjectBean.baseTypeInfo.baseTypeId != 'Room' ? 'false' : 'true'}"
-                            styleClass="w-full"
-                            scrollHeight="200"
-                            queryDelay="1000"
-                            minQueryLength="3"
-                            required="#{not empty param['mainform:search_tabs:store']}"
-                            requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
-                            process=":mainform:search_tabs:tabs"
-                            update=":mainform:search_tabs:tabs"
-                            maxResults="20"
-                            disabled="#{!roomObjectBean.editable}">
-      </emcomp:typeReference>
+      <p:selectOneMenu value="#{roomObjectBean.room.roomTypeId}"
+                       styleClass="w-full"
+                       required="#{not empty param['mainform:search_tabs:store']}"
+                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                       filter="false"                       
+                       disabled="#{!roomObjectBean.editable}">
+        <f:selectItem itemValue="" itemLabel="" />
+        <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" />
+      </p:selectOneMenu>
     </div>
 
     <div class="field col-12">
