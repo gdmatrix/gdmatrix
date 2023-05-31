@@ -391,7 +391,8 @@ public class CaseCasesTabBean extends TabBean
   private boolean isPersonRelatedConfiguration(String typeId)
   {
     Type type = TypeCache.getInstance().getType(typeId);
-    return type.isDerivedFrom(DictionaryConstants.CASE_PERSON_TYPE);    
+    return type != null && 
+      type.isDerivedFrom(DictionaryConstants.CASE_PERSON_TYPE);    
   }  
 
   private void showDialog()
@@ -442,7 +443,7 @@ public class CaseCasesTabBean extends TabBean
     return toDataTableRows(results);
   }
 
-  private List<CaseCasesDataTableRow> getResultsByPersons(String cpType) 
+  private List<CaseCasesDataTableRow> getResultsByPersons(String cpTypeId) 
     throws Exception
   {
     CasePersonFilter filter = new CasePersonFilter();
@@ -457,14 +458,14 @@ public class CaseCasesTabBean extends TabBean
     {
       filter = new CasePersonFilter();
       filter.setPersonId(personId);
-      filter.setCasePersonTypeId(cpType);
+      filter.setCasePersonTypeId(cpTypeId);
       casePersons = CasesModuleBean.getPort(false).findCasePersonViews(filter);
       matcher.addIfMatch(casePersons);
     }
 
     return toDataTableRows(matcher.getResults());
   }
-
+  
   private List<CaseCasesDataTableRow> toDataTableRows(List<CaseCaseView>
     caseCaseViews) throws Exception
   {
@@ -572,8 +573,7 @@ public class CaseCasesTabBean extends TabBean
   private class CaseMatcher
   {
     private Case mainCase;
-    private final Map<String, List<Period>> map = new HashMap<>();
-
+    private final Map<String, List<Period>> personsPeriods = new HashMap<>();
     private TreeMap<String, CaseCaseView> results = new TreeMap<>();
 
     public CaseMatcher(Case mainCase, List<CasePersonView> casePersons)
@@ -581,21 +581,13 @@ public class CaseCasesTabBean extends TabBean
       this.mainCase = mainCase;
       for (CasePersonView casePerson : casePersons)
       {
-        putToMap(casePerson);
+        storePeriods(casePerson);
       }
     }
 
     public Set<String> getPersonIds()
     {
-      return map.keySet();
-    }
-
-    public void addIfMatch(List<CasePersonView> casePersons)
-    {
-      for (CasePersonView casePerson : casePersons)
-      {
-        addIfMatch(casePerson);
-      }
+      return personsPeriods.keySet();
     }
 
     public List<CaseCaseView> getResults()
@@ -604,6 +596,14 @@ public class CaseCasesTabBean extends TabBean
       list.addAll(results.values());
       return list;
     }
+    
+    public void addIfMatch(List<CasePersonView> casePersons)
+    {
+      for (CasePersonView casePerson : casePersons)
+      {
+        addIfMatch(casePerson);
+      }
+    }    
 
     private void addIfMatch(CasePersonView casePerson)
     {
@@ -627,7 +627,7 @@ public class CaseCasesTabBean extends TabBean
     private boolean isWithinRange(CasePersonView casePerson)
     {
       String personId = casePerson.getPersonView().getPersonId();
-      List<Period> list = map.get(personId);
+      List<Period> list = personsPeriods.get(personId);
       for (Period period : list)
       {
         if (period.isWithinRange(casePerson))
@@ -638,69 +638,67 @@ public class CaseCasesTabBean extends TabBean
       return false;
     }
 
-    private void putToMap(CasePersonView casePerson)
+    private void storePeriods(CasePersonView casePerson)
     {
       String personId = casePerson.getPersonView().getPersonId();
       Period period = new Period(casePerson);
-      List<Period> list = map.get(personId);
+      List<Period> list = personsPeriods.get(personId);
       if (list == null)
       {
         list = new ArrayList<>();
       }
       list.add(period);
-      map.put(personId, list);
+      personsPeriods.put(personId, list);
     }
-  }
-
-  private class Period
-  {
-
-    private Date startDate;
-    private Date endDate;
-
-    public Period(String startDate, String endDate)
+    
+    private class Period
     {
-      if (startDate != null)
+      private Date startDate;
+      private Date endDate;
+
+      public Period(String startDate, String endDate)
       {
-        this.startDate = TextUtils.parseInternalDate(startDate);
+        if (startDate != null)
+        {
+          this.startDate = TextUtils.parseInternalDate(startDate);
+        }
+        if (endDate != null)
+        {
+          this.endDate = TextUtils.parseInternalDate(endDate);
+        }
       }
-      if (endDate != null)
+
+      public Period(CasePersonView casePerson)
       {
-        this.endDate = TextUtils.parseInternalDate(endDate);
+        this(casePerson.getStartDate(), casePerson.getEndDate());
       }
-    }
 
-    public Period(CasePersonView casePerson)
-    {
-      this(casePerson.getStartDate(), casePerson.getEndDate());
-    }
+      public Date getStartDate()
+      {
+        return startDate;
+      }
 
-    public Date getStartDate()
-    {
-      return startDate;
-    }
+      public void setStartDate(Date startDate)
+      {
+        this.startDate = startDate;
+      }
 
-    public void setStartDate(Date startDate)
-    {
-      this.startDate = startDate;
-    }
+      public Date getEndDate()
+      {
+        return endDate;
+      }
 
-    public Date getEndDate()
-    {
-      return endDate;
-    }
+      public void setEndDate(Date endDate)
+      {
+        this.endDate = endDate;
+      }
 
-    public void setEndDate(Date endDate)
-    {
-      this.endDate = endDate;
-    }
-
-    public boolean isWithinRange(CasePersonView casePerson)
-    {
-      Date cpStart = TextUtils.parseInternalDate(casePerson.getStartDate());
-      Date cpEnd = TextUtils.parseInternalDate(casePerson.getEndDate());
-      return (startDate == null || cpEnd == null || startDate.getTime() <= cpEnd.getTime())
-        && (endDate == null || cpStart == null || endDate.getTime() >= cpStart.getTime());
-    }
+      public boolean isWithinRange(CasePersonView casePerson)
+      {
+        Date cpStart = TextUtils.parseInternalDate(casePerson.getStartDate());
+        Date cpEnd = TextUtils.parseInternalDate(casePerson.getEndDate());
+        return (startDate == null || cpEnd == null || startDate.getTime() <= cpEnd.getTime())
+          && (endDate == null || cpStart == null || endDate.getTime() >= cpStart.getTime());
+      }
+    }    
   }
-}
