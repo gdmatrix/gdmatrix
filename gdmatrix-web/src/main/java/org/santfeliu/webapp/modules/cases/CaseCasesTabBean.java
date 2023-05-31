@@ -702,3 +702,4 @@ public class CaseCasesTabBean extends TabBean
       }
     }    
   }
+}
