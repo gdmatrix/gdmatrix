@@ -48,11 +48,11 @@
       <artifactId>commons-codec</artifactId>
       <version>1.11</version>
       <type>jar</type>
-    </dependency>   
+    </dependency>
     <dependency>
       <groupId>commons-net</groupId>
       <artifactId>commons-net</artifactId>
-      <version>3.0.1</version>
+      <version>3.9.0</version>
       <type>jar</type>
     </dependency>   
     <dependency>
