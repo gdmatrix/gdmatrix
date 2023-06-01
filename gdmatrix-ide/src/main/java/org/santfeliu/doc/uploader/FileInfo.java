@@ -240,7 +240,7 @@ import uk.me.jstott.jcoord.UTMRef;
               }
             }
           }
-          GpsDirectory gpsDir = md.getDirectory(GpsDirectory.class);
+          GpsDirectory gpsDir = md.getFirstDirectoryOfType(GpsDirectory.class);
           if (gpsDir != null)
           {
             GeoLocation geoLocation = gpsDir.getGeoLocation();
