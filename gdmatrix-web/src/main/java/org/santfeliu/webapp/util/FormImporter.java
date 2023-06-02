@@ -46,10 +46,13 @@ import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang.StringUtils;
+import org.primefaces.component.chips.Chips;
 import org.primefaces.component.datepicker.DatePicker;
+import org.primefaces.component.inputnumber.InputNumber;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.outputlabel.OutputLabel;
+import org.primefaces.component.password.Password;
 import org.primefaces.component.selectcheckboxmenu.SelectCheckboxMenu;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.selectoneradio.SelectOneRadio;
@@ -255,6 +258,12 @@ public class FormImporter
       datePicker.setShowOnFocus(false);
       component = datePicker;
     }
+    else if (Field.NUMBER.equals(fieldType))
+    {
+      InputNumber inputNumber =
+        (InputNumber)application.createComponent(InputNumber.COMPONENT_TYPE);
+      component = inputNumber;
+    }
     else if (Field.BOOLEAN.equals(fieldType))
     {
       if (isStacked || field.getMinOccurs() == 0)
@@ -386,10 +395,35 @@ public class FormImporter
         }
         else
         {
-          InputText inputText =
-           (InputText)application.createComponent(InputText.COMPONENT_TYPE);
-          inputText.setReadonly(field.isReadOnly());
-          component = inputText;
+          Object inputType = view == null ? null : view.getProperty("type");
+
+          if (inputType == null || "text".equals(inputType))
+          {
+            if (field.getMaxOccurs() == 1)
+            {
+              InputText inputText =
+               (InputText)application.createComponent(InputText.COMPONENT_TYPE);
+              inputText.setReadonly(field.isReadOnly());
+              component = inputText;
+            }
+            else
+            {
+              isMultiple = true;
+              Chips chips = (Chips)application.createComponent(Chips.COMPONENT_TYPE);
+              if (field.getMaxOccurs() > 1)
+              {
+                chips.setMax(field.getMaxOccurs());
+              }
+              component = chips;
+            }
+          }
+          else if ("password".equals(inputType))
+          {
+            Password password =
+             (Password)application.createComponent(Password.COMPONENT_TYPE);
+            password.setReadonly(field.isReadOnly());
+            component = password;
+          }
         }
       }
     }
