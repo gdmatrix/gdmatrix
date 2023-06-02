@@ -65,15 +65,15 @@
       <t:panelGroup styleClass="toolbar visibility">
         <t:commandLink action="#{workerWeekBean.toogleScheduleVisibility}" styleClass="button img_left"
           title="#{presenceBundle.toogleSchedule}">
-          <t:outputText value="#{presenceBundle.schedule}" styleClass="#{workerWeekBean.scheduleVisible ? 'visible' : 'hidden'}" />
+          <t:outputText value="#{presenceBundle.schedule}" styleClass="#{workerWeekBean.scheduleVisible ? 'visible' : 'hidden_elem'}" />
         </t:commandLink>
         <t:commandLink action="#{workerWeekBean.toogleEntriesVisibility}" styleClass="button img_left"
           title="#{presenceBundle.toogleEntries}">
-          <t:outputText value="#{presenceBundle.presenceEntries}" styleClass="#{workerWeekBean.entriesVisible ? 'visible' : 'hidden'}" />
+          <t:outputText value="#{presenceBundle.presenceEntries}" styleClass="#{workerWeekBean.entriesVisible ? 'visible' : 'hidden_elem'}" />
         </t:commandLink>
         <t:commandLink action="#{workerWeekBean.toogleAbsencesVisibility}" styleClass="button img_left"
           title="#{presenceBundle.toogleAbsences}">
-          <t:outputText value="#{presenceBundle.absences}" styleClass="#{workerWeekBean.absencesVisible ? 'visible' : 'hidden'}" />
+          <t:outputText value="#{presenceBundle.absences}" styleClass="#{workerWeekBean.absencesVisible ? 'visible' : 'hidden_elem'}" />
         </t:commandLink>
       </t:panelGroup>
       <h:outputText value="#{workerWeekBean.workerStatistics.workedTimeDifference}"

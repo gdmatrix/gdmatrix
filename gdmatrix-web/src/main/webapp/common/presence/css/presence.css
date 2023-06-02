@@ -401,7 +401,7 @@ input::-moz-focus-inner
   background-position: 2px center;
 }
 
-.button span.hidden
+.button span.hidden_elem
 {
   background-image: url(../images/hidden.png);
   padding-left: 20px;
@@ -2179,7 +2179,7 @@ input::-moz-focus-inner
   color: #202020;
 }
 
-.worker_calendar .day.hidden
+.worker_calendar .day.hidden_elem
 {
   color: #E0E0D0;
 }
@@ -2196,14 +2196,14 @@ input::-moz-focus-inner
   color: #CC0000;
 }
 
-.worker_calendar .day.hidden.col5,
-.worker_calendar .day.hidden.col6
+.worker_calendar .day.hidden_elem.col5,
+.worker_calendar .day.hidden_elem.col6
 {
   color: #FFD0D0;
 }
 
 .worker_calendar .day:hover,
-.worker_calendar .day.hidden:hover
+.worker_calendar .day.hidden_elem:hover
 {
   background-color: #FFFF00;
   color: black;
