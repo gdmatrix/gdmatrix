@@ -32,7 +32,7 @@
           <p:outputPanel id="leftPanel" styleClass="leftPanel">
           
             <p:outputPanel id="rootSelectionPanel" styleClass="rootSelectionPanel">
-              <p:outputLabel value="#{cmsBundle.changeRoot ? cmsBundle.changeRoot : 'Arrel'}:" 
+              <p:outputLabel value="#{cmsBundle.changeRoot ? cmsBundle.changeRoot : cmsBundle.root}:" 
                              for="rootNodeSelector" />
               <p:selectOneMenu id="rootNodeSelector" value="#{nodeEditBean.rootNodeId}">
                 <p:ajax update="@this @(.toolbarRenderingButtons) topPanel leftPanel :mainform:rightPanel" 
@@ -195,7 +195,7 @@
                 <ui:include src="./panels/forms.xhtml" />  
               </p:tab>              
 -->
-              <p:tab id="jsonTab" title="#{cmsBundle.JSONTab}">
+              <p:tab id="jsonTab" title="#{cmsBundle.jsonTab}">
                 <ui:include src="./panels/json.xhtml" />                
               </p:tab>
               

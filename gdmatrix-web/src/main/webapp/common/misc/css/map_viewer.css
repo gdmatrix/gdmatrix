@@ -1198,7 +1198,7 @@ div.olMapViewport
   color:white;
 }
 
-#mapViewer .hidden 
+#mapViewer .hidden_elem
 {position:absolute;
 left:-10000px;
 top:auto;

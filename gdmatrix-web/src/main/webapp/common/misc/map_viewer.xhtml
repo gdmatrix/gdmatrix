@@ -16,7 +16,7 @@
 
       <t:saveState value="#{mapBean.map}" />
 
-      <sf:heading level="1" styleClass="hidden">
+      <sf:heading level="1" styleClass="hidden_elem">
         <sf:outputText value="#{mapViewerBundle.mapUpper}:" />
         <sf:outputText value="#{mapBean.map.title}"
           translator="#{userSessionBean.translator}"
@@ -60,13 +60,13 @@
         </t:div>
 
         <t:div id="screenBody" forceId="true">
-          <f:verbatim><h2 class="hidden">${mapViewerBundle.searchPanel}</h2></f:verbatim>
+          <f:verbatim><h2 class="hidden_elem">${mapViewerBundle.searchPanel}</h2></f:verbatim>
           <h:outputText value="#{mapViewerBundle.searchPanel}" styleClass="element-invisible"/>
           <t:div id="leftPanel" forceId="true">
           </t:div>
 
           <sf:div id="map" forceId="true" ariaHidden="true">
-            <f:verbatim><h2 class="hidden">${mapViewerBundle.mapUpper}</h2></f:verbatim>       
+            <f:verbatim><h2 class="hidden_elem">${mapViewerBundle.mapUpper}</h2></f:verbatim>       
             <h:outputLink id="toggleLeftPanel" styleClass="leftPanelButton" onclick="toggleLeftPanel(); return false"
                title="#{mapViewerBundle.searchPanelLabel}">
               <t:outputText id="toggleLeftPanelText" forceId="true"
@@ -92,7 +92,7 @@
           </sf:div>
 
           <t:div id="rightPanel" forceId="true">
-            <f:verbatim><h2 class="hidden">${mapViewerBundle.info}</h2></f:verbatim>
+            <f:verbatim><h2 class="hidden_elem">${mapViewerBundle.info}</h2></f:verbatim>
             <t:div id="info" forceId="true">
               <t:div id="infoContent" styleClass="mapDescription" forceId="true">
                 <sf:outputText value="#{mapBean.description}"
@@ -107,7 +107,7 @@
                 url="/plugins/mapviewer/img/north-mini.png" />
               </h:outputLink>
             </t:div>
-            <f:verbatim><h2 class="hidden">${mapViewerBundle.legend}</h2></f:verbatim>        
+            <f:verbatim><h2 class="hidden_elem">${mapViewerBundle.legend}</h2></f:verbatim>        
             <t:div id="legend" forceId="true">
               <h:outputLink value="#" styleClass="infoDividerDownButton"
                 onclick="infoDividerDown()" title="#{mapViewerBundle.downPanelLabel}">
