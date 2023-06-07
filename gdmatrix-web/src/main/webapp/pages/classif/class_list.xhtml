@@ -31,7 +31,7 @@
     <p:column headerText="#{classificationBundle.class_superClassId}" styleClass="col-1">
       <h:outputText value="#{row.superClassId}" />
     </p:column>
-    <p:column styleClass="col-2 text-right">
+    <p:column styleClass="col-2 text-right white-space-nowrap">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.classId)}"
