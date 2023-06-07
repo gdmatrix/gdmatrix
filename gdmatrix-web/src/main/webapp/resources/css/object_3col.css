@@ -191,7 +191,7 @@ body .ui-tabs.context_tabs .ui-tree
 .history .return_info .pi
 {
   margin-right: 6px;
-  color: black;
+  color: var(--text-color);
 }
 
 .favorites
@@ -212,5 +212,4 @@ body .ui-tabs.context_tabs .ui-tree
 .favorites .favorite .pi
 {
   margin-right: 6px;
-  color: black;
 }      

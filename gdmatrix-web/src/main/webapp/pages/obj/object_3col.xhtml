@@ -47,7 +47,7 @@
         <!-- Central column -->
         <p:outputPanel id="central_column"
                        class="central_column flex-grow-1 m-1">
-          <h1 class="object_label">
+          <h1 class="object_label" style="color:var(--text-color)">
             <h:outputText value="" styleClass="#{userSessionBean.menuModel.selectedMenuItem.properties.icon}" />
             <h:outputText value="#{userSessionBean.menuModel.selectedMenuItem.properties.label}" styleClass="ml-2" />
           </h1>
@@ -140,12 +140,12 @@
                   <ui:repeat value="#{favoriteObjectsBean.favoriteObjects}"
                             var="favorite">
                     <div class="favorite">
+                      <span class="#{favoriteObjectsBean.icon}" />
                       <p:commandLink action="#{navigatorBean.view(favorite.objectId)}"
                                      process="@this"
                                      resetValues="true"
                                      oncomplete="endPanel('rightPanel');"
                                      update=":mainform:central_column :mainform:context_panel">
-                        <span class="#{favoriteObjectsBean.icon}" />
                         <h:outputText value="#{favorite.description}"
                                       styleClass="#{favoriteObjectsBean.isSelectedObject(favorite) ? 'current' : ''}"/>
                       </p:commandLink>

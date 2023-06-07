@@ -93,6 +93,8 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String LAYOUT = "layout";
   public static final String SECTION = "section";
   public static final String THEME = "theme";
+  public static final String PRIMEFACES_THEME = "primefacesTheme";
+
   public static final String LANGUAGE = "language";
   public static final String NODE_CSS = "nodeCSS";
   public static final String INHERIT_NODE_CSS_PATH = "inheritNodeCSSPath";
@@ -141,6 +143,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   private String view;
   private String lastPageLanguage;
   private String theme = DEFAULT_THEME;
+  private String pfTheme = DEFAULT_PRIMEFACES_THEME;
   private String browserType;
   private String loginMethod;
   private String logoutAction;
@@ -1364,34 +1367,65 @@ public final class UserSessionBean extends FacesBean implements Serializable
     changeBrowserTypeTo("mobile");
   }
 
-  public String getPrimefacesTheme()
+  public List<SelectItem> getPrimefacesThemeSelectItems()
   {
-    String pfTheme;
-    if (isEditViewSelected() || isRedirViewSelected())
+    List<SelectItem> items = new ArrayList<>();
+    List<String> pfThemes =
+      getSelectedMenuItem().getMultiValuedProperty(PRIMEFACES_THEME);
+
+    if (pfThemes.isEmpty())
     {
-      pfTheme = EDIT_PRIMEFACES_THEME;
-    }
-    else
-    {
-      pfTheme = getSelectedMenuItem().getProperty("primefacesTheme");
-    }
-    if (pfTheme != null)
-    {
-      try
-      {
-        String library = "primefaces-" + pfTheme;
-        Resource resource = getFacesContext().getApplication()
-          .getResourceHandler().createResource("theme.css", library);
-        if (resource != null)
-          return pfTheme;
-      }
-      catch (Exception ex)
-      {
-        return DEFAULT_PRIMEFACES_THEME;
-      }
+      pfThemes = Collections.singletonList(DEFAULT_PRIMEFACES_THEME);
     }
 
-    return DEFAULT_PRIMEFACES_THEME;
+    for (String pft : pfThemes)
+    {
+      String label = pft.substring(0, 1).toUpperCase() + pft.substring(1);
+      SelectItem item = new SelectItem(pft, label);
+      items.add(item);
+    }
+    return items;
+  }
+
+  public void setPrimefacesTheme(String pfTheme)
+  {
+    this.pfTheme = pfTheme;
+  }
+
+  public String getPrimefacesTheme()
+  {
+    List<String> pfThemes =
+      getSelectedMenuItem().getMultiValuedProperty(PRIMEFACES_THEME);
+
+    String currentTheme;
+    if (isEditViewSelected() || isRedirViewSelected())
+    {
+      currentTheme = EDIT_PRIMEFACES_THEME;
+    }
+    else if (pfThemes.contains(pfTheme))
+    {
+      currentTheme = pfTheme;
+    }
+    else if (!pfThemes.isEmpty())
+    {
+      currentTheme = pfThemes.get(0);
+    }
+    else currentTheme = DEFAULT_PRIMEFACES_THEME;
+
+    // load theme resource
+    try
+    {
+      String library = "primefaces-" + currentTheme;
+      Resource resource = getFacesContext().getApplication()
+        .getResourceHandler().createResource("theme.css", library);
+      if (resource != null)
+        return currentTheme;
+    }
+    catch (Exception ex)
+    {
+      currentTheme = DEFAULT_PRIMEFACES_THEME;
+    }
+    return currentTheme;
   }
 
   //Action executed from showObject command in common_script.js

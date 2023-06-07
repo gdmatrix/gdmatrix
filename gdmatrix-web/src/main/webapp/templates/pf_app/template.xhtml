@@ -4,13 +4,25 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="/frames/#{userSessionBean.frame}/frame.xhtml">
+                template="/frames/#{userSessionBean.frame}/frame.xhtml"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
   <ui:define name="template">
 
     <p:sidebar widgetVar="menu" baseZIndex="50000000" style="overflow: scroll">
-      <p:menu id="vertical_menu" styleClass="vertical_menu" 
-              model="#{templateBean.PFMenuModel}" toggleable="true" statefulGlobal="true"/>     
+      
+      <div class="mt-3 strong">
+        <p:outputLabel value="#{webBundle.themes}" for="@next" style="font-weight: bold" />
+        <p:selectOneRadio value="#{userSessionBean.primefacesTheme}" layout="grid" columns="1" styleClass="mt-2">
+          <f:selectItems value="#{userSessionBean.primefacesThemeSelectItems}" />
+          <p:ajax oncomplete="window.location.reload();" />
+        </p:selectOneRadio>      
+      </div>
+      <div class="mt-3 strong">
+        <p:outputLabel value="#{webBundle.menu}" for="@next" style="font-weight: bold" />
+        <p:menu id="vertical_menu" styleClass="vertical_menu" 
+                model="#{templateBean.PFMenuModel}" toggleable="true" statefulGlobal="true"/>
+      </div>
     </p:sidebar>
     
     <!-- header -->
