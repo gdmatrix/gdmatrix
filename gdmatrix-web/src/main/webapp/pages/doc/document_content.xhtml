@@ -119,15 +119,15 @@
                (documentObjectBean.document.lockUserId == null or 
                userSessionBean.username == documentObjectBean.document.lockUserId)
                and userSessionBean.matrixClientEnabled}"
-               styleClass="field col-2">
+               styleClass="field col-12">
 
         <p:commandButton value="#{objectBundle.edit}"                         
            onclick="javascript:editDocument({docId:'#{documentObjectBean.document.docId}'});return false"
            process="@this" update=":mainform:search_tabs"
-           icon="pi pi-pencil"
+           icon="pi pi-pencil" style="width:auto"
            rendered="#{documentObjectBean.content.contentId != null}"
            alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
-
+       
         <sf:matrixclient command="org.santfeliu.matrix.client.cmd.doc.EditDocumentCommand"
           action="#{documentObjectBean.documentEdited}"
           model="#{documentObjectBean.clientModel}" 
