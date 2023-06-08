@@ -181,14 +181,17 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   @Override
   public List<Type> find(TypeFilter filter)
   {
-    List<Type> types;
+    List<Type> types = Collections.EMPTY_LIST;
     try
     {
       String typeId = filter.getTypeId();
       if (typeId != null)
       {
-        types = Collections.singletonList(
-          TypeCache.getInstance().getType(filter.getTypeId()));
+        Type type = TypeCache.getInstance().getType(typeId);
+        if (type != null)
+        {
+          types = Collections.singletonList(type);
+        }
       }
       else
       {
@@ -197,7 +200,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     }
     catch (Exception ex)
     {
-      return Collections.EMPTY_LIST;
+      // return empty list
     }
     return types;
   }
@@ -218,6 +221,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       List<Type> types = findByQuery(query, typeId);
       for (Type type : types)
       {
+        System.out.println(">> Type:" + type);
         String objectId = getObjectId(type);
         String description = type.getDescription() +
           " (" + type.getTypeId() + ")";
