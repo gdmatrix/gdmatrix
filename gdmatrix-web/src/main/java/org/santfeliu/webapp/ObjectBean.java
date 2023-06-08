@@ -215,15 +215,17 @@ public abstract class ObjectBean extends BaseBean
     if (setupName == null)
     {
       // look in dictionary
-      if (!isNew())
+      String typeId = isNew() ? getBaseTypeInfo().getBaseTypeId() : 
+        getTypeBean().getTypeId(getObject());
+  
+      if (typeId != null)
       {
-        String typeId = getTypeBean().getTypeId(getObject());
-        Type type = TypeCache.getInstance().getType(typeId);
+        Type type = TypeCache.getInstance().getType(typeId);            
         PropertyDefinition propdef = type.getPropertyDefinition("objectSetup");
         if (propdef != null && !propdef.getValue().isEmpty())
         {
           setupName = propdef.getValue().get(0);
-        }
+        }      
       }
     }
 
