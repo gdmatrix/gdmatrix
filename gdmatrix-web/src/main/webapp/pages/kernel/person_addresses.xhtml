@@ -39,7 +39,7 @@
       <p:column headerText="#{kernelBundle.personAddresses_address}" styleClass="col-9">
         <h:outputText value="#{row.address.description} (#{row.address.city})"/>
       </p:column>
-      <p:column styleClass="col-2 text-right" exportable="false">
+      <p:column styleClass="col-2 text-right white-space-nowrap">
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"  
                            action="#{navigatorBean.show('Address', row.address.addressId)}" 

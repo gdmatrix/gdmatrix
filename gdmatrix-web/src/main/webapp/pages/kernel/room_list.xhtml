@@ -22,7 +22,7 @@
     <p:column headerText="#{kernelBundle.room_type}" styleClass="col-2">
       <h:outputText value="#{roomFinderBean.getRoomTypeDescription(row)}" />
     </p:column>         
-    <p:column styleClass="col-1 text-right">
+    <p:column styleClass="col-1 text-right white-space-nowrap">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.roomId)}"

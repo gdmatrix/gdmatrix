@@ -22,17 +22,18 @@
     <p:column headerText="Població" styleClass="col-4">
       <h:outputText value="#{row.city}" />
     </p:column>  
-    <p:column styleClass="col-1">
+    <p:column styleClass="col-1 white-space-nowrap">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
-                       action="#{navigatorBean.select(row.docId)}"
+                       action="#{navigatorBean.select(row.streetId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false"
                        immediate="true"
                        onclick="showOverlay()"
-                       title="Select" alt="Select"
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}"
                        />      
       <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
+                       title="#{objectBundle.show}" alt="#{objectBundle.show}"
                        action="#{streetFinderBean.view(rowIndex)}"
                        resetValues="true"
                        process="@this" 

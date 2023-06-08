@@ -82,6 +82,7 @@
 
       <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link" 
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false"
                          immediate="true"
@@ -89,6 +90,7 @@
                          rendered="#{documentACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          styleClass="rounded-button ui-button-flat" 
                          action="#{documentACLTabBean.edit(row)}" 
                          process=":mainform:search_tabs:tabs" 

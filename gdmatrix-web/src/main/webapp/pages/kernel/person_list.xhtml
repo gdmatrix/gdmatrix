@@ -24,16 +24,17 @@
     <p:column headerText="#{kernelBundle.person_nif}" styleClass="col-2">
       <h:outputText value="#{row.nif}" />
     </p:column>     
-    <p:column styleClass="col-2 text-right">
+    <p:column styleClass="col-2 text-right white-space-nowrap">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.personId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        immediate="true"
                        ajax="false" onclick="showOverlay()"
-                       title="Select" alt="Select"
+                       title="#{objectBundle.select}" alt="#{objectBundle.select}"
                        />
-      <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat" 
+      <p:commandButton icon="pi pi-external-link" styleClass="rounded-button ui-button-flat"
+                       title="#{objectBundle.show}" alt="#{objectBundle.show}"
                        action="#{personFinderBean.view(rowIndex)}"
                        resetValues="true"
                        process="@this"

@@ -45,13 +45,15 @@
         <h:outputText value="#{row.actionsString}"/>
       </p:column>
       
-      <p:column styleClass="col-2 text-right">
+      <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link" 
+                         alt="#{objectBundle.show}" title="#{objectBundle.show}"
                          styleClass="rounded-button ui-button-flat" 
                          ajax="false" onclick="showOverlay()"
                          rendered="#{typeACLTabBean.isPersistentRole(row.roleId)}"
                          action="#{navigatorBean.show('Role', row.roleId)}" />
         <p:commandButton icon="pi pi-pencil" 
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                          styleClass="rounded-button ui-button-flat" 
                          action="#{typeACLTabBean.edit(row)}" 
                          process="@this" 

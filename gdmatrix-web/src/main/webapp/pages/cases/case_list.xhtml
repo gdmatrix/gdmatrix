@@ -25,16 +25,17 @@
       <h:outputText value="#{row.values[i]}" escape="false"/>
     </p:columns>
 
-    <p:column styleClass="col-1 text-right">
+    <p:column styleClass="col-1 text-right white-space-nowrap">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.rowId)}"
                        rendered="#{navigatorBean.selectionPending}"
                        ajax="false" onclick="showOverlay()"
                        immediate="true"
-                       title="Select" alt="Select"
+                       alt="#{objectBundle.select}" title="#{objectBundle.select}"
                        />
       <p:commandButton icon="pi pi-external-link"
+                       alt="#{objectBundle.show}" title="#{objectBundle.show}"
                        styleClass="rounded-button ui-button-flat"
                        action="#{caseFinderBean.view(rowIndex)}"
                        onclick="PF('objectTabs').select(0);"

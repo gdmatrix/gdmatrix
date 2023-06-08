@@ -40,7 +40,7 @@
       <p:column headerText="#{kernelBundle.personContacts_comments}" styleClass="col-5">
         <h:outputText value="#{row.comments}"/>
       </p:column>          
-      <p:column styleClass="col-2 text-right" exportable="false">
+      <p:column styleClass="col-2 text-right white-space-nowrap">
         <h:panelGroup>
           <p:commandButton action="#{personContactsTabBean.edit(row)}"
                            icon="pi pi-pencil"
