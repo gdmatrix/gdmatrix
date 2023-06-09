@@ -221,7 +221,6 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
       List<Type> types = findByQuery(query, typeId);
       for (Type type : types)
       {
-        System.out.println(">> Type:" + type);
         String objectId = getObjectId(type);
         String description = type.getDescription() +
           " (" + type.getTypeId() + ")";

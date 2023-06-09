@@ -50,16 +50,21 @@
         <h:outputText value="#{row.document.docId}" />
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-7">
+      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-6">
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseDocuments_type}" styleClass="col-2"
+      <p:column headerText="#{caseBundle.caseDocuments_type}" styleClass="col-3"
                 rendered="#{!caseDocumentsTabBean.groupedView}">
         <h:outputText value="#{caseDocumentsTabBean.caseDocumentTypeDescription}"/>
       </p:column>
 
       <p:column styleClass="col-2 text-right white-space-nowrap">
+        <p:linkButton href="#{caseDocumentsTabBean.viewURL}" 
+                      icon="pi pi-eye" 
+                      title="#{objectBundle.view}"
+                      styleClass="rounded-button ui-button-flat"
+                      target="_blank" />
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
                          ajax="false" onclick="showOverlay()"

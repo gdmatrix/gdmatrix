@@ -37,9 +37,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.faces.context.ExternalContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
@@ -64,7 +66,7 @@ public class CaseDocumentsTabBean extends TabBean
 {
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
-  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();  
+  private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
 
   public class TabInstance
   {
@@ -79,9 +81,9 @@ public class CaseDocumentsTabBean extends TabBean
 
   @Inject
   DocumentTypeBean documentTypeBean;
-  
+
   @Inject
-  TypeTypeBean typeTypeBean;  
+  TypeTypeBean typeTypeBean;
 
   @PostConstruct
   public void init()
@@ -99,7 +101,7 @@ public class CaseDocumentsTabBean extends TabBean
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
     if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
-    {    
+    {
       TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
       if (tabInstance == null)
       {
@@ -138,6 +140,18 @@ public class CaseDocumentsTabBean extends TabBean
   public void setRows(List<CaseDocumentView> caseDocumentViews)
   {
     getCurrentTabInstance().rows = caseDocumentViews;
+  }
+
+  public String getViewURL()
+  {
+    CaseDocumentView docView = WebUtils.getValue("#{row}");
+    String docId = docView.getDocument().getDocId();
+
+    ExternalContext extContext = getExternalContext();
+    HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
+    String contextPath = request.getContextPath();
+    
+    return contextPath + "/documents/" + docId;
   }
 
   public CaseDocument getEditing()
@@ -225,8 +239,8 @@ public class CaseDocumentsTabBean extends TabBean
       }
     }
     return typeId;
-  }  
-  
+  }
+
   @Override
   public void load()
   {
@@ -354,12 +368,12 @@ public class CaseDocumentsTabBean extends TabBean
       }
     }
   }
-  
+
   @Override
   public void clear()
   {
     tabInstances.clear();
-  }  
+  }
 
   public String getTabBaseTypeId()
   {
