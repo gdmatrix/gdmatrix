@@ -39,7 +39,7 @@
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('caseCasesDialog').show()"
                            alt="#{objectBundle.add}" title="#{objectBundle.add}"
-                           disabled="#{caseCasesTabBean.personRelatedConfiguration}" />
+                           rendered="#{not caseCasesTabBean.relatedByPerson}" />
         </div>
       </f:facet>
 
@@ -63,7 +63,7 @@
         <h:outputText value="#{row.values[i]}" />
       </p:columns>
 
-      <p:column styleClass="col-2 text-right" exportable="false">
+      <p:column styleClass="col-2 text-right white-space-nowrap">
         <h:panelGroup>
           <p:commandButton icon="pi pi-external-link"
                            alt="#{objectBundle.show}" title="#{objectBundle.show}"

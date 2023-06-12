@@ -49,7 +49,7 @@
         <h:outputText value="#{row.personView.personId}" />
       </p:column>
 
-      <p:column headerText="#{caseBundle.casePersons_person}" styleClass="col-6">
+      <p:column headerText="#{caseBundle.casePersons_person}" styleClass="col-4">
         <h:outputText value="#{row.personView.fullName}"/>
       </p:column>      
       
@@ -57,6 +57,14 @@
                 rendered="#{!casePersonsTabBean.groupedView}">
         <h:outputText value="#{typeTypeBean.getDescription(row.casePersonTypeId)}"/>
       </p:column>
+      
+      <p:column headerText="#{caseBundle.casePersons_startDate}" styleClass="col-1 text-center">
+        <h:outputText value="#{row.startDate}"><f:converter converterId="dateConverter" /></h:outputText>
+      </p:column>  
+
+      <p:column headerText="#{caseBundle.casePersons_endDate}" styleClass="col-1 text-center">
+        <h:outputText value="#{row.endDate}"><f:converter converterId="dateConverter" /></h:outputText>
+      </p:column>        
 
       <p:column styleClass="col-2 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link"
