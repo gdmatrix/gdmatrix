@@ -354,6 +354,82 @@
     </query>
   </named-query>
   
+  <named-native-query name="findNativeCaseDocumentViews">
+    <query>
+      SELECT c.SDENUM,c.TEXPCOD,c.SDENUMTEXP,c.SDETEXT,c.sdedreg,c.sdehreg,c.stdugr,c.stdumod,c.stddgr,c.stddmod,c.stdhgr,c.stdhmod,
+        cd.APLCOD,cd.DOCORIGEN,cd.DOCCOD,cd.MODELCOD,cd.DOCNOMPC,cd.IDENTIFICADOR,cd.ID_NREG,cd.SDENUM as caseId
+      FROM
+        SDE_EXPEDIENT c, APL_DOCSAPL cd 
+      WHERE (c.sdenum = cd.sdenum AND cd.docorigen = 'EXPED'
+         AND (cd.eliminat = 0 OR cd.eliminat is null))  
+         AND (cd.docnompc not like 'tmp%')              
+         AND NOT (cd.id_nreg is NULL)                   
+         AND c.sdenum = ?caseId
+      UNION   
+      SELECT c.SDENUM,c.TEXPCOD,c.SDENUMTEXP,c.SDETEXT,c.sdedreg,c.sdehreg,c.stdugr,c.stdumod,c.stddgr,c.stddmod,c.stdhgr,c.stdhmod,
+        cd.APLCOD,cd.DOCORIGEN,cd.DOCCOD,cd.MODELCOD,cd.DOCNOMPC,cd.IDENTIFICADOR,cd.ID_NREG,cd.SDENUM as caseId
+      FROM
+        SDE_EXPEDIENT c, RES_ENTRELEXP re, APL_DOCSAPL cd 
+      WHERE (c.sdenum = re.sdenum AND re.resnume = cd.IDENTIFICADOR AND cd.docorigen = 'REGENT' 
+         AND (cd.eliminat = 0 OR cd.eliminat is null))
+         AND (cd.docnompc not like 'tmp%')
+         AND NOT (cd.id_nreg is NULL)
+         AND c.sdenum = ?caseId
+      ORDER BY SDENUM, ID_NREG, DOCNOMPC
+    </query>
+  </named-native-query>  
+  
+  <named-native-query name="findNativeDocumentCaseViews">
+    <query>
+      SELECT c.SDENUM,c.TEXPCOD,c.SDENUMTEXP,c.SDETEXT,c.sdedreg,c.sdehreg,c.stdugr,c.stdumod,c.stddgr,c.stddmod,c.stdhgr,c.stdhmod,
+        cd.APLCOD,cd.DOCORIGEN,cd.DOCCOD,cd.MODELCOD,cd.DOCNOMPC,cd.IDENTIFICADOR,cd.ID_NREG,cd.SDENUM as caseId
+      FROM
+        SDE_EXPEDIENT c, APL_DOCSAPL cd 
+      WHERE (c.sdenum = cd.sdenum AND cd.docorigen = 'EXPED'
+         AND (cd.eliminat = 0 OR cd.eliminat is null))  
+         AND (cd.docnompc not like 'tmp%')              
+         AND NOT (cd.id_nreg is NULL)                   
+         AND cd.id_nreg = ?docId   
+      UNION   
+      SELECT c.SDENUM,c.TEXPCOD,c.SDENUMTEXP,c.SDETEXT,c.sdedreg,c.sdehreg,c.stdugr,c.stdumod,c.stddgr,c.stddmod,c.stdhgr,c.stdhmod,
+        cd.APLCOD,cd.DOCORIGEN,cd.DOCCOD,cd.MODELCOD,cd.DOCNOMPC,cd.IDENTIFICADOR,cd.ID_NREG,cd.SDENUM as caseId
+      FROM
+        SDE_EXPEDIENT c, RES_ENTRELEXP re, APL_DOCSAPL cd 
+      WHERE (c.sdenum = re.sdenum AND re.resnume = cd.IDENTIFICADOR AND cd.docorigen = 'REGENT' 
+         AND (cd.eliminat = 0 OR cd.eliminat is null))
+         AND (cd.docnompc not like 'tmp%')
+         AND NOT (cd.id_nreg is NULL)
+         AND cd.id_nreg = ?docId
+      ORDER BY SDENUM, ID_NREG, DOCNOMPC
+    </query>
+  </named-native-query>  
+  
+  <named-native-query name="findNativeSingleCaseDocumentViews">
+    <query>
+      SELECT c.SDENUM,c.TEXPCOD,c.SDENUMTEXP,c.SDETEXT,c.sdedreg,c.sdehreg,c.stdugr,c.stdumod,c.stddgr,c.stddmod,c.stdhgr,c.stdhmod,
+        cd.APLCOD,cd.DOCORIGEN,cd.DOCCOD,cd.MODELCOD,cd.DOCNOMPC,cd.IDENTIFICADOR,cd.ID_NREG,cd.SDENUM as caseId
+      FROM
+        SDE_EXPEDIENT c, APL_DOCSAPL cd 
+      WHERE (c.sdenum = cd.sdenum AND cd.docorigen = 'EXPED'
+         AND (cd.eliminat = 0 OR cd.eliminat is null))  
+         AND (cd.docnompc not like 'tmp%')              
+         AND NOT (cd.id_nreg is NULL)                   
+         AND c.sdenum = ?caseId
+      UNION   
+      SELECT c.SDENUM,c.TEXPCOD,c.SDENUMTEXP,c.SDETEXT,c.sdedreg,c.sdehreg,c.stdugr,c.stdumod,c.stddgr,c.stddmod,c.stdhgr,c.stdhmod,
+        cd.APLCOD,cd.DOCORIGEN,cd.DOCCOD,cd.MODELCOD,cd.DOCNOMPC,cd.IDENTIFICADOR,cd.ID_NREG,cd.SDENUM as caseId
+      FROM
+        SDE_EXPEDIENT c, RES_ENTRELEXP re, APL_DOCSAPL cd 
+      WHERE (c.sdenum = re.sdenum AND re.resnume = cd.IDENTIFICADOR AND cd.docorigen = 'REGENT' 
+         AND (cd.eliminat = 0 OR cd.eliminat is null))
+         AND (cd.docnompc not like 'tmp%')
+         AND NOT (cd.id_nreg is NULL)
+         AND c.sdenum = ?caseId
+         AND cd.id_nreg = ?docId      
+      ORDER BY SDENUM, ID_NREG, DOCNOMPC
+    </query>
+  </named-native-query>      
+  
   <named-native-query name="findCaseAndResDocumentViews">
     <query>
       SELECT c.SDENUM,c.TEXPCOD,c.SDENUMTEXP,c.SDETEXT,c.sdedreg,c.sdehreg,c.stdugr,c.stdumod,c.stddgr,c.stddmod,c.stdhgr,c.stdhmod,
@@ -364,8 +440,7 @@
          AND (cd.eliminat = 0 OR cd.eliminat is null))  
          AND (cd.docnompc not like 'tmp%')              
          AND NOT (cd.id_nreg is NULL)                   
-         AND (?caseId is NULL OR c.sdenum = ?caseId)
-         AND (?docId is NULL OR cd.id_nreg = ?docId)   
+         AND c.sdenum = ?caseId
       UNION   
       SELECT c.SDENUM,c.TEXPCOD,c.SDENUMTEXP,c.SDETEXT,c.sdedreg,c.sdehreg,c.stdugr,c.stdumod,c.stddgr,c.stddmod,c.stdhgr,c.stdhmod,
         cd.APLCOD,cd.DOCORIGEN,cd.DOCCOD,cd.MODELCOD,cd.DOCNOMPC,cd.IDENTIFICADOR,cd.ID_NREG,cd.SDENUM as caseId
@@ -375,11 +450,10 @@
          AND (cd.eliminat = 0 OR cd.eliminat is null))
          AND (cd.docnompc not like 'tmp%')
          AND NOT (cd.id_nreg is NULL)
-         AND (?caseId is NULL OR c.sdenum = ?caseId)
-         AND (?docId is NULL OR cd.id_nreg = ?docId)
+         AND c.sdenum = ?caseId
       ORDER BY SDENUM, ID_NREG, DOCNOMPC
     </query>
-  </named-native-query>  
+  </named-native-query>    
 
 <!--
   <named-native-query name="loadExpedientEstatResponsables" >

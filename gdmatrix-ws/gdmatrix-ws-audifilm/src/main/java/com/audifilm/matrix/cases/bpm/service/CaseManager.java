@@ -62,7 +62,6 @@ import org.matrix.kernel.Person;
 import org.matrix.security.User;
 import org.matrix.util.WSDirectory;
 import org.matrix.util.WSEndpoint;
-import org.santfeliu.jpa.JPA;
 import org.santfeliu.security.UserCache;
 import org.santfeliu.security.util.Credentials;
 import org.santfeliu.security.util.SecurityUtils;
@@ -915,100 +914,122 @@ public class CaseManager implements CaseManagerPort
     String allowNativeQueries = 
       ConfigProperties.getProperty("com.audifilm.matrix.cases.allowNativeSQL", "false");
 
-    boolean isNative = Boolean.valueOf(allowNativeQueries);
+    List<CaseDocumentView> documentViewList = new ArrayList<CaseDocumentView>(); 
+    
+    boolean isNative = Boolean.parseBoolean(allowNativeQueries);
     Query query = null;
     if (!isNative)
       query = entityManager.createNamedQuery("findCaseDocumentViews");
-    else
-      query = entityManager.createNamedQuery("findCaseAndResDocumentViews");
-    
-    query.setFirstResult(filter.getFirstResult());
-    query.setMaxResults(filter.getMaxResults());
-
-    query.setParameter("caseId", filter.getCaseId());
-    query.setParameter("docId", filter.getDocId());
-    
-    List<CaseDocumentView> documentViewList = new ArrayList<CaseDocumentView>();
-    
-    FindCaseDocumentViewsList dbDocumentList = 
-      new FindCaseDocumentViewsList(isNative, query.getResultList());
-    DocumentFilter documentFilter = new DocumentFilter();
-
-    List<Object []> docViews = new ArrayList<Object[]>();
-    for(Object [] row : dbDocumentList)
+    else 
     {
-      DBCase dbCaseObj = (DBCase)row[0];
-      DBCaseDocument dbCaseDocument = (DBCaseDocument)row[1];
-      
+      String caseId = filter.getCaseId();
+      String docId = filter.getDocId();
 
-      CaseDocumentView docView = new CaseDocumentView();
-
-      docView.setCaseDocId(
-              getEndpoint().toGlobalId(CaseDocument.class,
-              dbCaseDocument.getCaseDocumentId()));
-
-      Case globalCase = new Case();
-      dbCaseObj.copyTo(getEndpoint(), globalCase);
-      docView.setCaseObject(globalCase);
-      
-      //docView.setCaseDocTypeId(DictionaryConstants.CASE_DOCUMENT_TYPE);      
-      if (REGENT.equals(dbCaseDocument.getDocorigen()))
-        docView.setCaseDocTypeId(CaseDocumentType.Types.RegistreEntrada.getTypeId());
-      else if (REGSOR.equals(dbCaseDocument.getDocorigen()))
-        docView.setCaseDocTypeId(CaseDocumentType.Types.RegistreSortida.getTypeId());
-      else
-        docView.setCaseDocTypeId(DictionaryConstants.CASE_DOCUMENT_TYPE);  
-      CaseDocumentView globalDocView = getEndpoint().toGlobal(CaseDocumentView.class, docView);
-
-      documentFilter.getDocId().add(dbCaseDocument.getDocId()); //
-
-
-      documentViewList.add(globalDocView);
-
-      docViews.add(new Object[] {dbCaseDocument.getDocId(), globalDocView});
-    }
-    
-    if (documentFilter.getDocId() != null &&
-      documentFilter.getDocId().size() > 0)
-    {
-      //Invokes document WS findDocument
-      try
+      if (caseId != null && docId == null)
       {
-        Credentials credentials = SecurityUtils.getCredentials(wsContext);
-        WSDirectory directory = WSDirectory.getInstance();
-        WSEndpoint docEndpoint =
-          directory.getEndpoint(DocumentManagerService.class);
-
-        DocumentManagerPort port = docEndpoint.getPort(
-          DocumentManagerPort.class,
-          credentials.getUserId(), credentials.getPassword());
-
-        documentFilter.setVersion(0); //obtain always last version
-        documentFilter.setFirstResult(0);
-        documentFilter.setMaxResults(0);
-        documentFilter.setIncludeContentMetadata(true);
-        List<Document> documentList = port.findDocuments(documentFilter);
-
-        Hashtable<String, Document> docs = new Hashtable<String, Document>();
-
-        //Parse WS result and completes the rowlist of the return table
-        for (Document document : documentList)
-        {
-          String localDocId = getEndpoint().toLocalId(Document.class, document.getDocId());
-          docs.put(localDocId, document);
-        }
-
-        for(Object [] docIdCaseDocumentView : docViews )
-        {
-          String docId = (String)docIdCaseDocumentView[0];
-          CaseDocumentView view = (CaseDocumentView)docIdCaseDocumentView[1];
-          if (docId!=null) view.setDocument(docs.get(docId));
-        }
-
+        query = entityManager.createNamedQuery("findNativeCaseDocumentViews");
+        query.setParameter("caseId", filter.getCaseId());        
       }
-      catch (Exception e)
+      else if (caseId == null && docId != null)
       {
-        throw new WebServiceException(e);
+        query = entityManager.createNamedQuery("findNativeDocumentCaseViews");
+        query.setParameter("docId", filter.getDocId());        
+      }
+      else if (caseId != null && docId != null)
+      {
+        query = entityManager.createNamedQuery("findNativeSingleCaseDocumentViews");
+        query.setParameter("caseId", filter.getCaseId());          
+        query.setParameter("docId", filter.getDocId());         
+      }
+      
+      if (query != null)
+      {
+        query.setFirstResult(filter.getFirstResult());
+        query.setMaxResults(filter.getMaxResults());         
+      }
+    }
+
+    if (query != null)
+    {  
+      FindCaseDocumentViewsList dbDocumentList = 
+        new FindCaseDocumentViewsList(isNative, query.getResultList());
+      DocumentFilter documentFilter = new DocumentFilter();
+
+      List<Object []> docViews = new ArrayList<Object[]>();
+      for(Object [] row : dbDocumentList)
+      {
+        DBCase dbCaseObj = (DBCase)row[0];
+        DBCaseDocument dbCaseDocument = (DBCaseDocument)row[1];
+
+        CaseDocumentView docView = new CaseDocumentView();
+
+        docView.setCaseDocId(
+                getEndpoint().toGlobalId(CaseDocument.class,
+                dbCaseDocument.getCaseDocumentId()));
+
+        Case globalCase = new Case();
+        dbCaseObj.copyTo(getEndpoint(), globalCase);
+        docView.setCaseObject(globalCase);
+
+        //docView.setCaseDocTypeId(DictionaryConstants.CASE_DOCUMENT_TYPE);      
+        if (REGENT.equals(dbCaseDocument.getDocorigen()))
+          docView.setCaseDocTypeId(CaseDocumentType.Types.RegistreEntrada.getTypeId());
+        else if (REGSOR.equals(dbCaseDocument.getDocorigen()))
+          docView.setCaseDocTypeId(CaseDocumentType.Types.RegistreSortida.getTypeId());
+        else
+          docView.setCaseDocTypeId(DictionaryConstants.CASE_DOCUMENT_TYPE);  
+        CaseDocumentView globalDocView = getEndpoint().toGlobal(CaseDocumentView.class, docView);
+
+        documentFilter.getDocId().add(dbCaseDocument.getDocId()); //
+
+
+        documentViewList.add(globalDocView);
+
+        docViews.add(new Object[] {dbCaseDocument.getDocId(), globalDocView});
+      }
+
+      if (documentFilter.getDocId() != null &&
+        documentFilter.getDocId().size() > 0)
+      {
+        //Invokes document WS findDocument
+        try
+        {
+          Credentials credentials = SecurityUtils.getCredentials(wsContext);
+          WSDirectory directory = WSDirectory.getInstance();
+          WSEndpoint docEndpoint =
+            directory.getEndpoint(DocumentManagerService.class);
+
+          DocumentManagerPort port = docEndpoint.getPort(
+            DocumentManagerPort.class,
+            credentials.getUserId(), credentials.getPassword());
+
+          documentFilter.setVersion(0); //obtain always last version
+          documentFilter.setFirstResult(0);
+          documentFilter.setMaxResults(0);
+          documentFilter.setIncludeContentMetadata(true);
+          List<Document> documentList = port.findDocuments(documentFilter);
+
+          Hashtable<String, Document> docs = new Hashtable<String, Document>();
+
+          //Parse WS result and completes the rowlist of the return table
+          for (Document document : documentList)
+          {
+            String localDocId = getEndpoint().toLocalId(Document.class, document.getDocId());
+            docs.put(localDocId, document);
+          }
+
+          for(Object [] docIdCaseDocumentView : docViews )
+          {
+            String docId = (String)docIdCaseDocumentView[0];
+            CaseDocumentView view = (CaseDocumentView)docIdCaseDocumentView[1];
+            if (docId!=null) view.setDocument(docs.get(docId));
+          }
+
+        }
+        catch (Exception e)
+        {
+          throw new WebServiceException(e);
+        }
       }
     }
     return documentViewList;
