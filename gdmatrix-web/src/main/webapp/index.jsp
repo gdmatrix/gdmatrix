@@ -20,7 +20,7 @@
 %>
 <html>
 <body>
-<h1>Matrix-2.2</h1>
+<h1>GDMatrix-3.0</h1>
 <p>WARNING: Start mid property is not defined</p>
 </body>
 </html>
