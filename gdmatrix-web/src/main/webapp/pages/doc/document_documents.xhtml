@@ -106,6 +106,7 @@
           <p:outputLabel for="@next"
                          value="#{documentBundle.relation}" />
           <p:selectOneMenu value="#{documentDocumentsTabBean.editing.relatedDocument.relationType}"
+                           touchable="true"
                            required="true">
             <f:selectItems value="#{documentDocumentsTabBean.relationTypeSelectItems}" />
             <f:converter converterId="EnumConverter" />

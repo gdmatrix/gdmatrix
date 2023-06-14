@@ -63,6 +63,7 @@
         <p:outputLabel for="@next" value="#{documentBundle.document_language}" />
         <p:selectOneMenu
           value="#{documentObjectBean.document.language}"
+          touchable="true"
           required="true">
           <f:selectItem itemValue="%%" itemLabel="universal"/>
           <f:selectItem itemValue="ca" itemLabel="#{documentBundle.selectItemCA}"/>
