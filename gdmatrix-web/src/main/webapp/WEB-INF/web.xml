@@ -725,6 +725,10 @@
   </listener>
 
   <listener>
+    <listener-class>org.santfeliu.web.SessionListener</listener-class>
+  </listener>
+
+  <listener>
     <listener-class>org.santfeliu.ws.WSServletContextListener</listener-class>
   </listener>
 

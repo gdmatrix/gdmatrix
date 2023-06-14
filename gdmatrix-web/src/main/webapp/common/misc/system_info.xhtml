@@ -3,95 +3,125 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:sf="http://faces.santfeliu.org"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:p="http://primefaces.org/ui">
 
   <ui:composition template="/topframe/topframe.xhtml">
     <ui:param name="css" value="/common/misc/css/matrix_info.css" />
     <ui:define name="page">
 
-      <div class="system_info">
-        <h1>
-          <h:outputText value="JVM Info" />
-        </h1>
+      <p:tabView dynamic="true" activeIndex="#{userSessionBean.attributes.systemInfoTabIndex}">
+        <p:ajax event="tabChange" process="@this" update="@none" />        
+        <p:tab title="JVM Info">
 
-        <h2>
-          <h:outputText value="Up Time" />
-        </h2>
-        <h:outputText value="#{systemInfoBean.upTime} (from #{systemInfoBean.startDateTime})" />
+          <div class="system_info">
+            <h2>
+              <h:outputText value="Up Time" />
+            </h2>
+            <h:outputText value="#{systemInfoBean.upTime} (from #{systemInfoBean.startDateTime})" />
 
-        <h2>
-          <h:outputText value="JVM Name" />
-        </h2>
-        <h:outputText value="#{systemInfoBean.runtimeBean.name}" />
+            <h2>
+              <h:outputText value="JVM Name" />
+            </h2>
+            <h:outputText value="#{systemInfoBean.runtimeBean.name}" />
 
-        <h2>
-          <h:outputText value="Input arguments" />
-        </h2>
-        <t:dataList value="#{systemInfoBean.runtimeBean.inputArguments}" var="row"
-                    layout="unorderedList">
-          <h:outputText value="#{row}" />
-        </t:dataList>
+            <h2>
+              <h:outputText value="JVM Specification"/>
+            </h2>
+            <ul>
+              <li><h:outputText value="Name: #{systemInfoBean.runtimeBean.specName}" /></li>
+              <li><h:outputText value="Vendor: #{systemInfoBean.runtimeBean.specVendor}" /></li>
+              <li><h:outputText value="Version: #{systemInfoBean.runtimeBean.specVersion}" /></li>
+            </ul>
 
-        <h2>
-          <h:outputText value="JVM Specification"/>
-        </h2>
-        <ul>
-          <li><h:outputText value="Name: #{systemInfoBean.runtimeBean.specName}" /></li>
-          <li><h:outputText value="Vendor: #{systemInfoBean.runtimeBean.specVendor}" /></li>
-          <li><h:outputText value="Version: #{systemInfoBean.runtimeBean.specVersion}" /></li>
-        </ul>
+            <h2>
+              <h:outputText value="JVM Implementation"/>
+            </h2>
+            <ul>
+              <li><h:outputText value="Name: #{systemInfoBean.runtimeBean.vmName}" /></li>
+              <li><h:outputText value="Vendor: #{systemInfoBean.runtimeBean.vmVendor}" /></li>
+              <li><h:outputText value="Version: #{systemInfoBean.runtimeBean.vmVersion}" /></li>
+            </ul>
 
-        <h2>
-          <h:outputText value="JVM Implementation"/>
-        </h2>
-        <ul>
-          <li><h:outputText value="Name: #{systemInfoBean.runtimeBean.vmName}" /></li>
-          <li><h:outputText value="Vendor: #{systemInfoBean.runtimeBean.vmVendor}" /></li>
-          <li><h:outputText value="Version: #{systemInfoBean.runtimeBean.vmVersion}" /></li>
-        </ul>
+            <h2>
+              <h:outputText value="Input arguments" />
+            </h2>
+            <p:dataList value="#{systemInfoBean.runtimeBean.inputArguments}" var="row">
+              <h:outputText value="#{row}" />
+            </p:dataList>            
+            
+            <h2>    
+              <h:outputText value="System properties" />
+            </h2>
+            <p:dataList value="#{systemInfoBean.systemProperties}" var="row">
+              <h:outputText value="#{row}" />
+            </p:dataList>
 
-        <h2>    
-          <h:outputText value="System properties" />
-        </h2>
-        <t:dataList value="#{systemInfoBean.systemProperties}" var="row"
-                    layout="unorderedList">
-          <h:outputText value="#{row}" />
-        </t:dataList>
+            <h2>
+              <h:outputText value="Management spec version" />
+            </h2>
+            <h:outputText value="#{systemInfoBean.runtimeBean.managementSpecVersion}" />
 
-        <h2>
-          <h:outputText value="Management spec version" />
-        </h2>
-        <h:outputText value="#{systemInfoBean.runtimeBean.managementSpecVersion}" />
+            <h2>
+              <h:outputText value="Boot classpath" />
+            </h2>
+            <p:dataList value="#{systemInfoBean.bootClassPath}" var="row">
+              <h:outputText value="#{row}" />
+            </p:dataList>
 
-        <h2>
-          <h:outputText value="Boot classpath" />
-        </h2>
-        <t:dataList value="#{systemInfoBean.bootClassPath}" var="row"
-                    layout="unorderedList">
-          <h:outputText value="#{row}" />
-        </t:dataList>
+            <h2>
+              <h:outputText value="Boot classpath supported" />
+            </h2>
+            <h:outputText value="#{systemInfoBean.runtimeBean.bootClassPathSupported}" />
 
-        <h2>
-          <h:outputText value="Boot classpath supported" />
-        </h2>
-        <h:outputText value="#{systemInfoBean.runtimeBean.bootClassPathSupported}" />
+            <h2>
+              <h:outputText value="Classpath" />
+            </h2>
+            <p:dataList value="#{systemInfoBean.classPath}" var="row">
+              <h:outputText value="#{row}" />
+            </p:dataList>
 
-        <h2>
-          <h:outputText value="Classpath" />
-        </h2>
-        <t:dataList value="#{systemInfoBean.classPath}" var="row"
-                            layout="unorderedList">
-                  <h:outputText value="#{row}" />
-        </t:dataList>
+            <h2>
+              <h:outputText value="Library path" />
+            </h2>
+            <p:dataList value="#{systemInfoBean.libraryPath}" var="row">
+              <h:outputText value="#{row}" />
+            </p:dataList>
+          </div>
+          
+        </p:tab>
+        
+        <p:tab title="Sessions">
+          <p>
+            <h:outputText value="Active sessions: #{systemInfoBean.activeSessionCount}" />
+          </p>
+          
+          <p:dataTable value="#{systemInfoBean.activeSessions}" var="row">
+            <p:column headerText="Session id">
+              <h:outputText value="#{row.id}" />            
+            </p:column>
+            <p:column headerText="UserId">
+              <h:outputText value="#{systemInfoBean.getSessionUserId(row)}" />            
+            </p:column>
+            <p:column headerText="Last access">
+              <h:outputText value="#{systemInfoBean.getLastAccessSeconds(row)} sec." />            
+            </p:column>
 
-        <h2>
-          <h:outputText value="Library path" />
-        </h2>
-        <t:dataList value="#{systemInfoBean.libraryPath}" var="row"
-                    layout="unorderedList">
-          <h:outputText value="#{row}" />
-        </t:dataList>
-      </div>
+          </p:dataTable>
+          
+          <div class="mt-2">
+            <p:commandButton value="Refresh"
+                             process="@this" update="@parent:@parent" />
+
+            <p:commandButton value="Invalidate all" styleClass="ml-2"
+                             action="#{systemInfoBean.invalidateSessions}" 
+                             process="@this" update="@parent:@parent" />
+          </div>
+
+        </p:tab>
+      </p:tabView>
+      
+
 
     </ui:define>
   </ui:composition>

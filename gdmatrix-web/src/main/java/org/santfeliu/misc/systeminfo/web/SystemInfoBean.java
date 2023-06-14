@@ -37,8 +37,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 import org.santfeliu.faces.FacesBean;
 import org.santfeliu.util.TextUtils;
+import org.santfeliu.web.SessionListener;
+import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.bean.CMSAction;
 import org.santfeliu.web.bean.CMSManagedBean;
 
@@ -77,7 +81,7 @@ public class SystemInfoBean extends FacesBean
 
   public List<String> getSystemProperties()
   {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     Map<String, String> properties = RUNTIME_MX_BEAN.getSystemProperties();
     for (String sKey : properties.keySet())
     {
@@ -90,14 +94,14 @@ public class SystemInfoBean extends FacesBean
   public List<String> getLibraryPath()
   {
     String s = RUNTIME_MX_BEAN.getLibraryPath();
-    List<String> result = TextUtils.stringToList(s, ";");
-    if (result == null) result = new ArrayList<String>();
+    List<String> result = TextUtils.stringToList(s, ";|\\,");
+    if (result == null) result = new ArrayList<>();
     return result;
   }
 
   public List<String> getBootClassPath()
   {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     if (RUNTIME_MX_BEAN.isBootClassPathSupported())
     {
       String s = RUNTIME_MX_BEAN.getBootClassPath();
@@ -110,13 +114,53 @@ public class SystemInfoBean extends FacesBean
   {
     String s = RUNTIME_MX_BEAN.getClassPath();
     List<String> result = TextUtils.stringToList(s, ";");
-    if (result == null) result = new ArrayList<String>();
+    if (result == null) result = new ArrayList<>();
     return result;
   }
 
   public RuntimeMXBean getRuntimeBean()
   {
     return RUNTIME_MX_BEAN;
+  }
+
+  public int getActiveSessionCount()
+  {
+    return SessionListener.getActiveSessionCount();
+  }
+
+  public List<HttpSession> getActiveSessions()
+  {
+    return SessionListener.getActiveSessions();
+  }
+
+  public void invalidateSessions()
+  {
+    Object currentSession =
+      FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+
+    List<HttpSession> activeSessions = SessionListener.getActiveSessions();
+    for (HttpSession activeSession : activeSessions)
+    {
+      if (activeSession != currentSession)
+      {
+        activeSession.invalidate();
+      }
+    }
+  }
+
+  public String getSessionUserId(HttpSession session)
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getInstance(session);
+    return userSessionBean.getUserId();
+  }
+
+  public long getLastAccessSeconds(HttpSession session)
+  {
+    long now = System.currentTimeMillis();
+    long lastAccess = session.getLastAccessedTime();
+    long ellapsedMillis = now - lastAccess;
+
+    return ellapsedMillis / 1000;
   }
 
   @CMSAction
