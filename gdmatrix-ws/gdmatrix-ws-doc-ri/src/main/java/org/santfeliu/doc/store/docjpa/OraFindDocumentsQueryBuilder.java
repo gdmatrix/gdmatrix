@@ -67,7 +67,7 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
     appendContentIdFilter(whereBuffer);
     appendDocIdsFilter(whereBuffer);
     appendVersionFilter(whereBuffer);
-    appendDocTypeIdFilter(fromBuffer, whereBuffer);
+    appendDocTypeIdFilter(whereBuffer);
     appendLanguageFilter(whereBuffer);
     appendTitleFilter(whereBuffer);
     appendStartDateFilter(whereBuffer);
@@ -173,16 +173,14 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
     }
   }
 
-  private void appendDocTypeIdFilter(StringBuilder fromBuffer,
-    StringBuilder whereBuffer)
+  private void appendDocTypeIdFilter(StringBuilder whereBuffer)
   {
     String typePath = filter.getDocTypeId();
     if (typePath != null && typePath.trim().length() != 0)
     {
-      fromBuffer.append(", dic_type t");
-
       appendOperator(whereBuffer, "AND");
-      whereBuffer.append("d.docTypeId = t.typeId AND t.typePath like ?typePath ESCAPE '\\'");
+      whereBuffer.append("d.docTypeId in (select typeId from dic_type where "
+        + "typePath like ?typePath ESCAPE '\\')");
       typePath = typePath.replaceAll("_", "\\\\_") + "%";
       parameters.put("typePath", typePath);
     }
