@@ -151,6 +151,7 @@ public class SystemInfoBean extends FacesBean
   public String getSessionUserId(HttpSession session)
   {
     UserSessionBean userSessionBean = UserSessionBean.getInstance(session);
+    if (userSessionBean == null) return "???";
     return userSessionBean.getUserId();
   }
 
