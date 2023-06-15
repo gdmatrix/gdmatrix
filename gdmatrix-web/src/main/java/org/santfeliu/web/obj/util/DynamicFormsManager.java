@@ -184,7 +184,19 @@ public class DynamicFormsManager extends WebBean implements Serializable
 
   private void findForm()
   {
-    if (!isTypeUndefined())
+    String newSelector = null; 
+    
+    List<String> definedFormSelectors = getAllowedFormSelectors();
+    if (definedFormSelectors != null && definedFormSelectors.size() == 1)
+    {
+      String definedSelector = definedFormSelectors.get(0);
+      if (definedSelector.startsWith("doc:"))
+        newSelector = definedSelector;
+      this.selector = newSelector;
+      updateForm(selector);     
+    }
+    
+    if (newSelector == null && !isTypeUndefined())
     {
       UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
       String selectorBase =
@@ -193,17 +205,14 @@ public class DynamicFormsManager extends WebBean implements Serializable
         TypeFormBuilder.PASSWORD + userSessionBean.getPassword();
       FormFactory formFactory = FormFactory.getInstance();
       List<FormDescriptor> descriptors = formFactory.findForms(selectorBase);
+      
       if (descriptors != null && !descriptors.isEmpty())
       {
-        String newSelector = null;
-        if (descriptors.size() > 0)
+        for (FormDescriptor descriptor : descriptors)
         {
-          for (FormDescriptor descriptor : descriptors)
-          {
-            if (matches(getAllowedFormSelectors(), descriptor.getSelector()) &&
-              newSelector == null)
-              newSelector = descriptor.getSelector();
-          }
+          if (matches(definedFormSelectors, descriptor.getSelector()) &&
+            newSelector == null)
+            newSelector = descriptor.getSelector();
         }
 
         if (newSelector == null || !newSelector.equals(selector))
@@ -219,7 +228,7 @@ public class DynamicFormsManager extends WebBean implements Serializable
         this.selector = null;
       }
     }
-    else
+    else if (isTypeUndefined())
     {
       data.clear();
       this.selector = null;
