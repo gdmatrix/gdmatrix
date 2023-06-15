@@ -3,7 +3,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:sf="http://faces.santfeliu.org"
-      xmlns:t="http://myfaces.apache.org/tomahawk">
+      xmlns:p="http://primefaces.org/ui">
 
   <ui:composition template="/topframe/topframe.xhtml">
     <ui:param name="css" value="/common/misc/css/matrix_info.css" />
@@ -22,18 +22,16 @@
         <h2>
           <h:outputText value="Properties" />
         </h2>
-        <t:dataList value="#{matrixInfoBean.matrixInfoProperties}" var="row"
-                    layout="unorderedList">
+        <p:dataList value="#{matrixInfoBean.matrixInfoProperties}" var="row">
           <h:outputText value="#{row}" />
-        </t:dataList>
+        </p:dataList>
 
         <h2>
           <h:outputText value="Team" />
         </h2>
-        <t:dataList value="#{matrixInfoBean.team}" var="row"
-                    layout="unorderedList">
+        <p:dataList value="#{matrixInfoBean.team}" var="row">
           <h:outputText value="#{row}" />
-        </t:dataList>
+        </p:dataList>
 
         <h2>
           <h:outputText value="License" />

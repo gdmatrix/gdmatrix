@@ -3,6 +3,17 @@ body
   background-color: #F3F3F3;
 }
 
+:root 
+{
+  font-size: 14px;
+  --font-family:Arial;
+}
+
+body .ui-widget 
+{
+  font-family: var(--font-family);
+}
+
 .matrixInfoLayer
 {  
   margin-left: 20px;
@@ -32,3 +43,14 @@ body
 {
 }
 
+body .ui-datatable,
+body .ui-datatable .ui-datatable-footer,
+body .ui-datatable .ui-datatable-header
+{
+  padding: 0;
+}
+
+body .ui-datalist .ui-datalist-content
+{
+  padding: 0;
+}
