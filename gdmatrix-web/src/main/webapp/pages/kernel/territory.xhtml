@@ -109,7 +109,8 @@
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
                            required="true"
-                           requiredMessage="#{messageBundle.COUNTRY_MUST_BE_SELECTED}">
+                           requiredMessage="#{messageBundle.COUNTRY_MUST_BE_SELECTED}"
+                           touchable="true">
             <p:ajax update="province_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
             <f:selectItems value="#{countryTypeBean.selectItems}" />
@@ -151,7 +152,8 @@
           <p:selectOneMenu id="province_selector" value="#{objectBean.province.provinceId}" 
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}" required="true"
-                           requiredMessage="#{messageBundle.PROVINCE_MUST_BE_SELECTED}">
+                           requiredMessage="#{messageBundle.PROVINCE_MUST_BE_SELECTED}"
+                           touchable="true">
             <p:ajax update="city_selector"/>
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{provinceTypeBean.getProvinceSelectItems(objectBean.country.countryId)}"/>
@@ -183,7 +185,8 @@
                            filter="true"
                            disabled="#{objectBean.isNew() ? 'false' : 'true'}"
                            required="true"
-                            requiredMessage="#{messageBundle.CITY_MUST_BE_SELECTED}">
+                           requiredMessage="#{messageBundle.CITY_MUST_BE_SELECTED}"
+                           touchable="true">
             <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>              
             <f:selectItems value="#{cityTypeBean.getCitySelectItems(streetObjectBean.province.provinceId)}"/>
           </p:selectOneMenu>
@@ -212,7 +215,8 @@
           <p:selectOneMenu value="#{objectBean.street.streetTypeId}" filter="true"
                            autoWidth="false"
                            required="true"
-                           requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
+                           requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                           touchable="true">
             <f:selectItems value="#{streetTypeBean.streetTypeSelectItems}" />
           </p:selectOneMenu>
         </div>     

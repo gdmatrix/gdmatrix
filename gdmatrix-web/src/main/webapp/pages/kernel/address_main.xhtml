@@ -19,7 +19,8 @@
       <p:selectOneMenu value="#{addressObjectBean.address.addressTypeId}"  
                        filter="true" 
                        required="#{not empty param['mainform:search_tabs:store']}"
-                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}">
+                       requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
+                       touchable="true">
         <f:selectItems value="#{typeTypeBean.getSelectItems('Address')}" var="item" />         
       </p:selectOneMenu>  
     </div> 

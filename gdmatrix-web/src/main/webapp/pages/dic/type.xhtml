@@ -58,7 +58,8 @@
               <p:outputLabel for="@next" value="#{dicBundle.type_rootType}" />
               <p:selectOneMenu value="#{typeFinderBean.rootTypeId}"
                                filter="true"
-                               filterMatchMode="contains" autoWidth="false">
+                               filterMatchMode="contains" autoWidth="false"
+                               touchable="true">
                 <f:selectItem itemValue="" itemLabel="" />
                 <f:selectItems value="#{typeTypeBean.rootTypeIdSelectItems}"
                                var="item"/>

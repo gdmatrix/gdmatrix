@@ -16,7 +16,7 @@
       <div class="field col-12 md:col-9">
         <p:outputLabel for="@next" value="#{kernelBundle.person_type}" />
         <p:selectOneMenu value="#{personObjectBean.person.personTypeId}"
-                         filter="true" autoWidth="false">
+                         filter="true" autoWidth="false" touchable="true">
           <f:selectItems value="#{typeTypeBean.getSelectItems('Person')}"
                          var="item" />
           <p:column>
@@ -34,7 +34,8 @@
 
       <div class="field col-12 md:col-3 xl:col-2">
         <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
-        <p:selectOneMenu value="#{personObjectBean.person.firstParticle}">
+        <p:selectOneMenu value="#{personObjectBean.person.firstParticle}"
+                         touchable="true">
           <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
         </p:selectOneMenu>
       </div>
@@ -46,7 +47,8 @@
 
       <div class="field col-12 md:col-3 xl:col-2">
         <p:outputLabel for="@next" value="#{kernelBundle.person_particle}" />
-        <p:selectOneMenu value="#{personObjectBean.person.secondParticle}">
+        <p:selectOneMenu value="#{personObjectBean.person.secondParticle}"
+                         touchable="true">
           <f:selectItems value="#{personObjectBean.personParticleSelectItems}" />
         </p:selectOneMenu>
       </div>
@@ -68,7 +70,7 @@
 
       <div class="field col-12 md:col-6 xl:col-2">
         <p:outputLabel for="@next" value="#{kernelBundle.person_sex}" />
-        <p:selectOneMenu value="#{personObjectBean.person.sex}">
+        <p:selectOneMenu value="#{personObjectBean.person.sex}" touchable="true">
           <f:selectItems value="#{personObjectBean.sexSelectItems}" />
         </p:selectOneMenu>
       </div>
@@ -108,7 +110,8 @@
         <h:outputLabel for="@next" value="#{kernelBundle.person_nationality}" />
         <p:selectOneMenu value="#{personObjectBean.person.nationalityId}"
                          filter="true"
-                         dynamic="true">
+                         dynamic="true"
+                         touchable="true">
           <f:selectItem itemLabel="" itemValue="" />
           <f:selectItems value="#{countryTypeBean.selectItems}" />
         </p:selectOneMenu>

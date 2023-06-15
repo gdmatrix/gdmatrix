@@ -58,7 +58,8 @@
               <p:selectOneMenu id="country_selector" 
                                value="#{cityFinderBean.filter.countryId}" 
                                filter="true"
-                               autoWidth="false">
+                               autoWidth="false"
+                               touchable="true">
                 <p:ajax listener="#{cityFinderBean.onCountryChange}" update="province_selector"/>
                 <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
                 <f:selectItems value="#{countryTypeBean.selectItems}" />
@@ -70,7 +71,8 @@
               <p:selectOneMenu id="province_selector" 
                                value="#{cityFinderBean.filter.provinceId}" 
                                filter="true"
-                               autoWidth="false">
+                               autoWidth="false"
+                               touchable="true">
                 <f:selectItem itemLabel="" itemValue="" noSelectionOption="true"/>
                 <f:selectItems value="#{cityFinderBean.provinceSelectItems}" />
               </p:selectOneMenu>  

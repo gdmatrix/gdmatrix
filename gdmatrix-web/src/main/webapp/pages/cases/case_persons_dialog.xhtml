@@ -159,7 +159,7 @@
                              rendered="#{casePersonsTabBean.selectedContacts.size() &lt; 3}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
                 <p:selectOneMenu id="new_contact_type_id" value="#{casePersonsTabBean.contactTypeId}"
-                                 autoWidth="false" >
+                                 autoWidth="false" touchable="true">
                   <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}" 
                                  var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
                 </p:selectOneMenu>
@@ -269,7 +269,7 @@
                              rendered="#{casePersonsTabBean.selectedRepresentantContacts.size() &lt; 3}">
                 <p:outputLabel for="@next" value="#{caseBundle.casePersons_createContact}"/>           
                 <p:selectOneMenu id="new_representant_contact_type_id" value="#{casePersonsTabBean.representantContactTypeId}"
-                                 autoWidth="false">
+                                 autoWidth="false" touchable="true">
                   <f:selectItems value="#{typeTypeBean.getSelectItems('Contact')}" 
                                  var="contact" itemValue="#{contact.value}" itemLabel="#{contact.label}"/>
                 </p:selectOneMenu>
