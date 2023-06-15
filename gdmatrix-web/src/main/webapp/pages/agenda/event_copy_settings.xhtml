@@ -97,14 +97,16 @@
             <span class="field-radiobutton" role="radio">
               <p:radioButton for="monthlyFrequency" itemIndex="1"/>
               <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_every}" />
-              <p:selectOneMenu value="#{eventCopyTabBean.monthlyWeekPosition}" styleClass="inputSelect">
+              <p:selectOneMenu value="#{eventCopyTabBean.monthlyWeekPosition}" 
+                               styleClass="inputSelect" touchable="true">
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_first}" itemValue="1" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_second}" itemValue="2" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_third}" itemValue="3" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_fourth}" itemValue="4" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_last}" itemValue="5" />
               </p:selectOneMenu>
-              <p:selectOneMenu value="#{eventCopyTabBean.monthlyDayOfWeekType}" styleClass="inputSelect">
+              <p:selectOneMenu value="#{eventCopyTabBean.monthlyDayOfWeekType}" 
+                               styleClass="inputSelect" touchable="true">
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_day}" itemValue="8" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_workingDay}" itemValue="9" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_weekendDay}" itemValue="10" />
@@ -147,21 +149,24 @@
                 <f:validateLongRange minimum="0"/>
               </p:inputText>
               <h:outputText value="#{agendaBundle.eventCopy_of}" />
-              <p:selectOneMenu value="#{eventCopyTabBean.month0}" styleClass="inputSelect">
+              <p:selectOneMenu value="#{eventCopyTabBean.month0}" 
+                               styleClass="inputSelect" touchable="true">
                 <f:selectItems value="#{eventCopyTabBean.monthsSelectItems}" />
               </p:selectOneMenu>
             </span>
             <span class="field-radiobutton" role="radio">
               <p:radioButton for="yearlyFrequency" itemIndex="1"/>
               <p:outputLabel for="@previous" value="#{agendaBundle.eventCopy_every}" />
-              <p:selectOneMenu value="#{eventCopyTabBean.yearlyWeekPosition}" styleClass="inputSelect">
+              <p:selectOneMenu value="#{eventCopyTabBean.yearlyWeekPosition}" 
+                               styleClass="inputSelect" touchable="true">
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_first}" itemValue="1" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_second}" itemValue="2" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_third}" itemValue="3" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_fourth}" itemValue="4" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_last}" itemValue="5" />
               </p:selectOneMenu>
-              <p:selectOneMenu value="#{eventCopyTabBean.yearlyDayOfWeekType}" styleClass="inputSelect">
+              <p:selectOneMenu value="#{eventCopyTabBean.yearlyDayOfWeekType}" 
+                               styleClass="inputSelect" touchable="true">
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_day}" itemValue="8" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_workingDay}" itemValue="9" />
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_weekendDay}" itemValue="10" />
@@ -174,7 +179,8 @@
                 <f:selectItem itemLabel="#{agendaBundle.eventCopy_sunday}" itemValue="1" />
               </p:selectOneMenu>
               <h:outputText value="#{agendaBundle.eventCopy_ofEvery}" />
-              <p:selectOneMenu value="#{eventCopyTabBean.month1}" styleClass="inputSelect">
+              <p:selectOneMenu value="#{eventCopyTabBean.month1}" 
+                               styleClass="inputSelect" touchable="true">
                 <f:selectItems value="#{eventCopyTabBean.monthsSelectItems}" />
               </p:selectOneMenu>
             </span>

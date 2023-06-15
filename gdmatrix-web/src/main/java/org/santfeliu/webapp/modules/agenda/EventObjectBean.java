@@ -34,7 +34,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
@@ -47,6 +49,7 @@ import org.matrix.agenda.Attendant;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.Property;
 import org.matrix.dic.PropertyDefinition;
+import org.matrix.security.AccessControl;
 import org.matrix.security.SecurityConstants;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -169,7 +172,15 @@ public class EventObjectBean extends ObjectBean
   @Override
   public int getEditModeSelector()
   {
-    return getSearchTabs().size();
+    try
+    {
+      if (getObjectSetup() == null) loadObjectSetup();
+      return getSearchTabs().size();      
+    }
+    catch (Exception ex)
+    {
+      return 1;
+    }
   }
 
   public Date getStartDateTime()
@@ -333,6 +344,42 @@ public class EventObjectBean extends ObjectBean
     Object[] array = (Object[])state;
     this.event = (Event)array[0];
     this.formSelector = (String)array[1];
+  }
+
+  @Override
+  public boolean isEditable()
+  {
+    if (UserSessionBean.getCurrentInstance().isUserInRole(
+      AgendaConstants.AGENDA_ADMIN_ROLE))
+      return true;
+
+    if (AgendaModuleBean.isRunAsAdmin()) return true;
+
+    if (!super.isEditable()) return false; //tab protection
+
+    if (event == null || event.getEventId() == null ||
+      event.getEventTypeId() == null)
+      return true;
+
+    Type currentType =
+      TypeCache.getInstance().getType(event.getEventTypeId());
+    if (currentType == null) return true;
+
+    Set<AccessControl> acls = new HashSet();
+    acls.addAll(currentType.getAccessControl());
+    acls.addAll(event.getAccessControl());
+    for (AccessControl acl : acls)
+    {
+      String action = acl.getAction();
+      if (DictionaryConstants.WRITE_ACTION.equals(action))
+      {
+        String roleId = acl.getRoleId();
+        if (UserSessionBean.getCurrentInstance().isUserInRole(roleId))
+          return true;
+      }
+    }
+
+    return false;
   }
 
   private Date getDate(String dateTime)

@@ -3,6 +3,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
                 template="/pages/obj/object_3col.xhtml">
 
   <ui:define name="filter">
@@ -21,8 +22,10 @@
 
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
-              <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <p:inputText id="smartFilter" value="#{themeFinderBean.smartFilter}" />
+              <p:outputLabel for="@next" value="#{objectBundle.value}" />              
+              <emcomp:tipInputText id="smartFilter"
+                                   value="#{themeFinderBean.smartFilter}"
+                                   tipContent="#{themeFinderBean.smartSearchTip}" />
             </div>
           </div>  
 

@@ -3,7 +3,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                template="/pages/obj/object_3col.xhtml"
+                template="/pages/obj/object_3col.xhtml"                
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
@@ -24,7 +24,9 @@
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <p:inputText id="smartFilter" value="#{eventFinderBean.smartFilter}" />
+              <emcomp:tipInputText id="smartFilter"
+                                   value="#{eventFinderBean.smartFilter}"
+                                   tipContent="#{eventFinderBean.smartSearchTip}" />
             </div>
           </div>
 
@@ -81,8 +83,7 @@
                                     renderShowButton="false"
                                     formSelector="#{eventFinderBean.formSelector}"
                                     process=":mainform:find_selector"
-                                    update=":mainform:find_selector"
-                                    maxResults="20">
+                                    update=":mainform:find_selector">
               </emcomp:typeReference>
             </p:outputPanel>
 
@@ -94,7 +95,7 @@
                   <div class="field col-12">
                     <p:selectOneMenu id="dateComparator"
                                      value="#{eventFinderBean.filter.dateComparator}"
-                                     style="vertical-align:middle">
+                                     style="vertical-align:middle" touchable="true">
                       <f:selectItem itemLabel="#{agendaBundle.event_startDate}" itemValue="1" />
                       <f:selectItem itemLabel="#{agendaBundle.event_endDate}" itemValue="2" />
                       <f:selectItem itemLabel="#{agendaBundle.eventSearch_activeDate}" itemValue="3" />
@@ -150,8 +151,7 @@
                                       minQueryLength="3"
                                       renderShowButton="false"
                                       process=":mainform:find_selector"
-                                      update=":mainform:find_selector"
-                                      maxResults="20">
+                                      update=":mainform:find_selector">
               </emcomp:objectReference>
             </div>
 
@@ -165,8 +165,7 @@
                                       minQueryLength="3"
                                       renderShowButton="false"
                                       process=":mainform:find_selector"
-                                      update=":mainform:find_selector"
-                                      maxResults="20">
+                                      update=":mainform:find_selector">
               </emcomp:objectReference>
             </div>
 

@@ -61,7 +61,6 @@
                                 minQueryLength="3"
                                 required="#{not empty param['mainform:search_tabs:event_persons_store']}"
                                 requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
-                                maxResults="20"
                                 disabled="#{!eventObjectBean.editable}">
           </emcomp:typeReference>
         </div>
@@ -78,7 +77,8 @@
                          value="#{agendaBundle.attendants_attended}" />
           <p:selectOneMenu id="attended"
                            value="#{eventPersonsTabBean.editing.attended}"
-                           disabled="#{!eventObjectBean.editable}" autoWidth="false">
+                           disabled="#{!eventObjectBean.editable}" autoWidth="false" 
+                           touchable="true">
             <f:selectItem itemLabel=" " itemValue="" />
             <f:selectItems value="#{eventPersonsTabBean.attendedSelectItems}" />
           </p:selectOneMenu>

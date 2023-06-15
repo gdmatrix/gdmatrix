@@ -101,6 +101,8 @@ public class EventFinderBean extends FinderBean
   private String serverTimeZone = ZoneId.systemDefault().toString();
   private String scheduleView;
   private LocalDate scheduleInitialDate;
+  private boolean scheduleEdit = false;
+  private boolean dateDblClick = false;
 
   @Inject
   NavigatorBean navigatorBean;
@@ -117,6 +119,11 @@ public class EventFinderBean extends FinderBean
   @PostConstruct
   public void init()
   {
+    if (!navigatorBean.getBaseTypeInfo().isBeanStateSaved(this))
+    {
+      smartFind();
+      eventObjectBean.setSearchTabSelector(0);
+    }
   }
 
   @Override
@@ -325,13 +332,28 @@ public class EventFinderBean extends FinderBean
 
   public void onDateSelect(SelectEvent<LocalDateTime> selectEvent)
   {
-    if ("dayGridMonth".equals(scheduleView) ||
-      "timeGridWeek".equals(scheduleView))
+    if (!dateDblClick) //ignore if double click
     {
-      LocalDateTime localDateTime = selectEvent.getObject();
-      setScheduleInitialDate(localDateTime.toLocalDate());
-      setScheduleView("timeGridDay");
+      if ("dayGridMonth".equals(scheduleView) ||
+        "timeGridWeek".equals(scheduleView))
+      {
+        LocalDateTime localDateTime = selectEvent.getObject();
+        setScheduleInitialDate(localDateTime.toLocalDate());
+        setScheduleView("timeGridDay");
+      }
+      PrimeFaces.current().ajax().update("mainform:search_tabs:schedule");
     }
+  }
+
+  public void onDateDblSelect(SelectEvent<LocalDateTime> selectEvent)
+  {
+    LocalDateTime localDateTime = selectEvent.getObject();
+    String startDateTime = toDateString(localDateTime);
+    String endDateTime = toDateString(localDateTime.plusHours(2));
+    navigatorBean.view(NEW_OBJECT_ID);
+    eventObjectBean.getEvent().setStartDateTime(startDateTime);
+    eventObjectBean.getEvent().setEndDateTime(endDateTime);
+    dateDblClick = true;
   }
 
   public void onEventMove(ScheduleEntryMoveEvent moveEvent)
@@ -348,7 +370,7 @@ public class EventFinderBean extends FinderBean
       String startDateTime = toDateString(ldtStart);
       String endDateTime = toDateString(ldtEnd);
       updateEvent(eventId, startDateTime, endDateTime);
-      outdate();
+      scheduleEdit = true;
       info("EVENT_MOVED");
     }
     catch (Exception ex)
@@ -367,7 +389,7 @@ public class EventFinderBean extends FinderBean
       String eventId = resizeEvent.getScheduleEvent().getId();
       String endDateTime = toDateString(ldtEnd);
       updateEvent(eventId, null, endDateTime);
-      outdate();
+      scheduleEdit = true;
       info("EVENT_RESIZED");
     }
     catch (Exception ex)
@@ -432,12 +454,20 @@ public class EventFinderBean extends FinderBean
 
   public void update()
   {
-    if (outdated) //update all search pages
+    dateDblClick = false;
+    if (outdated) //update all search pages, including schedule
     {
       doFind(false);
       PrimeFaces.current().ajax().update(getClientIdList(true));
+      scheduleEdit = false;
     }
-    else //update all list search pages, but do not update schedule
+    else if (scheduleEdit) //update only list search pages
+    {
+      doFind(false);
+      PrimeFaces.current().ajax().update(getClientIdList(false));
+      scheduleEdit = false;
+    }
+    else //update only list search pages
     {
       PrimeFaces.current().ajax().update(getClientIdList(false));
     }
@@ -533,12 +563,29 @@ public class EventFinderBean extends FinderBean
     return isRender(RENDER_ONLY_ATTENDANTS_ICON, false);
   }
 
+  public boolean isRenderSchedule()
+  {
+    return (
+      !filter.getEventId().isEmpty() ||
+      !StringUtils.isBlank(filter.getContent()) ||
+      !StringUtils.isBlank(filter.getPersonId()) ||
+      (
+        !filter.getEventTypeId().isEmpty() &&
+        !filter.getEventTypeId().contains("Event")
+      ) ||
+      !filter.getThemeId().isEmpty() ||
+      !StringUtils.isBlank(filter.getRoomId()) ||
+      !filter.getProperty().isEmpty()
+    );
+  }
+
   @Override
   public Serializable saveState()
   {
     return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
       searchEventThemeId, getObjectPosition(),
-      scheduleInitialDate, scheduleView, formSelector, rows };
+      scheduleInitialDate, scheduleView, formSelector, rows,
+      searchEventTypeId, outdated, scheduleEdit };
   }
 
   @Override
@@ -558,6 +605,15 @@ public class EventFinderBean extends FinderBean
       scheduleView = (String)stateArray[7];
       formSelector = (String)stateArray[8];
       rows = (List<EventDataTableRow>)stateArray[9];
+      searchEventTypeId = (String)stateArray[10];
+      outdated = (Boolean)stateArray[11];
+      scheduleEdit = (Boolean)stateArray[12];
+      if (outdated || scheduleEdit)
+      {
+        doFind(false);
+        scheduleEdit = false;
+      }
+      eventObjectBean.setSearchTabSelector(0);
     }
     catch (Exception ex)
     {

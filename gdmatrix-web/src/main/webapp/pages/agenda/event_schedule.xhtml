@@ -1,18 +1,24 @@
-<ui:composition
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:p="http://primefaces.org/ui">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
 
-  <p:schedule id="schedule" value="#{eventFinderBean.eventModel}"
+  <p:schedule id="schedule" 
+              rendered="#{eventFinderBean.renderSchedule}"
+              value="#{eventFinderBean.eventModel}"
               widgetVar="schedule"
               timeZone="#{eventFinderBean.serverTimeZone}"
               clientTimeZone="#{eventFinderBean.serverTimeZone}"                       
               view="#{eventFinderBean.scheduleView}"
               initialDate="#{eventFinderBean.scheduleInitialDate}"
-              tooltip="true">
+              tooltip="true">    
     <p:ajax event="dateSelect" listener="#{eventFinderBean.onDateSelect}" 
             process="@this"
-            update="schedule" />
+            delay="500" />
+    <p:ajax event="dateDblSelect" listener="#{eventFinderBean.onDateDblSelect}" 
+            process="@this" 
+            update=":mainform:search_tabs:obj_tabs :mainform:context_panel"            
+            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});" />        
     <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"            
             process="@this"
             update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
@@ -24,6 +30,10 @@
             process="@this"
             update=":mainform:search_tabs:obj_tabs" />
   </p:schedule>
+  
+  <h:outputText value="#{agendaBundle.insufficientFilter}"
+                rendered="#{not eventFinderBean.renderSchedule}" 
+                escape="false" />
 
 </ui:composition>
 

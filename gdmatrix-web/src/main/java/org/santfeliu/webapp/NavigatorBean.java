@@ -555,6 +555,12 @@ public class NavigatorBean extends WebBean implements Serializable
       return menuItem.getProperty(propertyName);
     }
 
+    public boolean isBeanStateSaved(BaseBean baseBean)
+    {
+      String beanName = WebUtils.getBeanName(baseBean);
+      return beanStateMap.containsKey(beanName);
+    }
+
     void saveBeanState(BaseBean baseBean)
     {
       Serializable state = baseBean.saveState();
