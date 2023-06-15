@@ -270,7 +270,7 @@ public class DocumentFinderBean extends FinderBean
   public Serializable saveState()
   {
     return new Object[]{ finding, getFilterTabSelector(),
-      filter, firstRow, getObjectPosition(), formSelector, rows };
+      filter, firstRow, getObjectPosition(), formSelector, rows, outdated };
   }
 
   @Override
@@ -284,6 +284,7 @@ public class DocumentFinderBean extends FinderBean
     smartFilter = documentTypeBean.filterToQuery(filter);
     formSelector = (String)stateArray[5];
     rows = (List<DocumentDataTableRow>)stateArray[6];
+    outdated = (Boolean)stateArray[7];    
     setObjectPosition((Integer)stateArray[4]);
   }
 
