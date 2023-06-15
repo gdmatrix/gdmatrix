@@ -351,6 +351,66 @@ body .edit_data_dialog
   overflow: auto;
 }
 
+.tipInputText
+{  
+  position: relative;
+}
+
+.tipInputText .tipInput
+{
+}
+
+.tipInputText button.tipIcon
+{
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.tipInputText .tipDialog
+{
+  overflow-y: hidden;
+  position: absolute;
+  left: 0 !important;
+  top: 90px !important;
+  max-height: 600px;
+  max-width: 280px !important;
+}
+
+.tipInputText .tipDialog .ui-dialog-titlebar
+{
+  display: flex;
+}
+
+.tipInputText .tipDialog .ui-dialog-titlebar span
+{
+  flex-grow: 1;
+}
+
+.tipInputText .tipDialog .ui-dialog-titlebar a
+{
+  flex-grow: 0;
+}
+
+.tipInputText .tipDialog .tipHeader
+{
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.tipInputText .tipDialog .tipContent
+{
+}
+
+.tipInputText .tipDialog .tipContent ul
+{
+  padding-left: 20px;
+}
+
+.tipInputText .tipDialog .tipContent ul li
+{
+  margin-top: 4px;
+}
+
 @media only screen and (max-width: 700px) 
 {
   .app_content

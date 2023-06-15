@@ -30,10 +30,18 @@
  */
 package org.santfeliu.webapp;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import javax.activation.DataHandler;
 import org.matrix.dic.PropertyDefinition;
+import org.matrix.doc.ContentInfo;
+import org.matrix.doc.Document;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.doc.util.DocumentUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
 import org.santfeliu.webapp.util.WebUtils;
@@ -44,9 +52,15 @@ import org.santfeliu.webapp.util.WebUtils;
  */
 public abstract class FinderBean extends BaseBean
 {
+  private static final String SMART_SEARCH_TIP_DOCID_PROPERTY =
+    "smartSearchTipDocId";
+  private static final Map<String, String> smartSearchTipContentMap =
+    new HashMap();
+  private static long lastSmartSearchTipRefresh = System.currentTimeMillis();
+
   private int filterTabSelector;
   private int objectPosition = -1;
-  protected transient ObjectSetup objectSetup;  
+  protected transient ObjectSetup objectSetup;
 
   public int getFilterTabSelector()
   {
@@ -80,6 +94,31 @@ public abstract class FinderBean extends BaseBean
   public void setObjectPosition(int objectPosition)
   {
     this.objectPosition = objectPosition;
+  }
+
+  public String getSmartSearchTip()
+  {
+    if (System.currentTimeMillis() - lastSmartSearchTipRefresh >
+      (60 * 60 * 1000))
+    {
+      smartSearchTipContentMap.clear();
+      lastSmartSearchTipRefresh = System.currentTimeMillis();
+    }
+
+    String docId = getSmartSearchTipDocId();
+    if (docId != null)
+    {
+      if (!smartSearchTipContentMap.containsKey(docId))
+      {
+        String content = getDocContent(docId);
+        smartSearchTipContentMap.put(docId, content);
+      }
+      return smartSearchTipContentMap.get(docId);
+    }
+    else
+    {
+      return null;
+    }
   }
 
   public boolean isScrollEnabled()
@@ -130,7 +169,7 @@ public abstract class FinderBean extends BaseBean
       view(objectPosition - 1);
     }
   }
-  
+
   public void loadObjectSetup() throws Exception
   {
     String setupName = getProperty("objectSetup");
@@ -155,5 +194,57 @@ public abstract class FinderBean extends BaseBean
     {
       objectSetup = defaultSetup;
     }
-  }   
+  }
+
+  private String getSmartSearchTipDocId()
+  {
+    try
+    {
+      if (objectSetup == null) loadObjectSetup();
+      String docId = (String)objectSetup.getProperties().get(
+        SMART_SEARCH_TIP_DOCID_PROPERTY);
+      if (docId == null)
+      {
+        docId = getProperty(SMART_SEARCH_TIP_DOCID_PROPERTY);
+        if (docId == null)
+        {
+          NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+          String typeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
+          Type type = TypeCache.getInstance().getType(typeId);
+          PropertyDefinition propdef =
+            type.getPropertyDefinition("_" + SMART_SEARCH_TIP_DOCID_PROPERTY);
+          if (propdef != null && !propdef.getValue().isEmpty())
+          {
+            docId = propdef.getValue().get(0);
+          }
+        }
+      }
+      return docId;
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+
+  private String getDocContent(String docId)
+  {
+    try
+    {
+      Document document = DocModuleBean.getPort(true).loadDocument(docId, 0,
+        ContentInfo.ALL);
+      DataHandler dh = DocumentUtils.getContentData(document);
+      long size = document.getContent().getSize();
+      int iSize = (int)size;
+      InputStream is = dh.getInputStream();
+      byte[] byteArray = new byte[iSize];
+      is.read(byteArray);
+      return new String(byteArray);
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+
 }

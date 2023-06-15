@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+  <h:head>
+    <title>Tip inputText component</title>
+  </h:head>
+  <h:body>
+    <composite:interface>
+      <composite:attribute name="id" required="false" />
+      <composite:attribute name="value" required="true" />
+      <composite:attribute name="tipContent" required="true" />
+      <composite:attribute name="styleClass" required="false" default="tipInputText" />
+      <composite:attribute name="inputTextStyleClass" required="false" default="tipInput" />
+      <composite:attribute name="icon" required="false" default="pi pi-question-circle" />
+      <composite:attribute name="iconStyleClass" required="false" default="tipIcon" />
+      <composite:attribute name="iconTitle" required="false" />
+      <composite:attribute name="tipStyleClass" required="false" default="tipDialog" />
+      <composite:attribute name="tipHeader" required="false" />
+    </composite:interface>
+    <composite:implementation>
+      <div class="#{cc.attrs.styleClass}">
+        <div class="ui-inputgroup">
+          <p:inputText id="#{cc.attrs.id}"
+                       value="#{cc.attrs.value}"
+                       styleClass="#{cc.attrs.inputTextStyleClass}" />
+          <p:commandButton icon="#{cc.attrs.icon}"
+                           styleClass="#{cc.attrs.iconStyleClass}"
+                           onclick="PF('tipDialog').show();return false;"
+                           rendered="#{tipInputTextBean.tipContent != null}"
+                           alt="#{cc.attrs.iconTitle != null ? cc.attrs.iconTitle : objectBundle.showTip}"
+                           title="#{cc.attrs.iconTitle != null ? cc.attrs.iconTitle : objectBundle.showTip}" />
+        </div>
+        <p:dialog widgetVar="tipDialog"
+                  rendered="#{tipInputTextBean.tipContent != null}"
+                  styleClass="#{cc.attrs.tipStyleClass}" draggable="false">
+          <f:facet name="header" class="tipHeader">
+            <h:outputText value="#{cc.attrs.tipHeader != null ? cc.attrs.tipHeader : objectBundle.tipHeader}" />
+          </f:facet>
+          <div class="tipContent">
+            <h:outputText value="#{applicationBean.translate(tipInputTextBean.tipContent, userSessionBean.translationGroup)}" escape="false" />
+          </div>
+        </p:dialog>
+      </div>
+    </composite:implementation>
+  </h:body>
+</html>
