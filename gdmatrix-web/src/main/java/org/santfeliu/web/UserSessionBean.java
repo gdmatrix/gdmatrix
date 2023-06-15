@@ -102,6 +102,7 @@ public final class UserSessionBean extends FacesBean implements Serializable
   public static final String ERROR_OUTCOME = "error";
   public static final String BLANK_OUTCOME = "blank";
   public static final String TRANSLATION_ENABLED = "translationEnabled";
+  public static final String INTRANET_ROOT = "intranetRoot";
 
   public static final String DEFAULT_FRAME = "default";
   public static final String DEFAULT_TEMPLATE = "default";
@@ -731,6 +732,16 @@ public final class UserSessionBean extends FacesBean implements Serializable
       }
     }
     return intranetRoles;
+  }
+
+  public boolean inIntranetNode()
+  {
+    MenuItemCursor cursor = getMenuModel().getSelectedMenuItem();
+    if (!cursor.isNull())
+    {
+      return "true".equals(cursor.getProperty(INTRANET_ROOT));
+    }
+    return false;
   }
 
   public HttpSession getSession()

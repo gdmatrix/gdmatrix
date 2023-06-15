@@ -341,10 +341,15 @@
                 <h:outputText value="#{webBundle.buttonSignout}" />
               </h:commandLink>
             </t:div>        
-            <t:div styleClass="intranetButtonDiv" rendered="#{userSessionBean.intranetUser}">
+            <t:div styleClass="intranetButtonDiv" rendered="#{userSessionBean.intranetUser and not userSessionBean.inIntranetNode()}">
               <h:outputLink value="/intranet" styleClass="intranetButton">
                 <h:outputText value="#{webBundle.intranet}" />
               </h:outputLink>          
+            </t:div>
+            <t:div styleClass="webButtonDiv" rendered="#{userSessionBean.intranetUser and userSessionBean.inIntranetNode()}">
+              <h:outputLink value="/" styleClass="webButton">
+                <h:outputText value="#{webBundle.web}" />
+              </h:outputLink>
             </t:div>
           </t:div>      
         </t:div>

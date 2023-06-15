@@ -232,7 +232,8 @@
 }
 
 .mobile .profileDiv .logoutButtonDiv,
-.mobile .profileDiv .intranetButtonDiv
+.mobile .profileDiv .intranetButtonDiv,
+.mobile .profileDiv .webButtonDiv
 {
   width: 45%;
   margin-left: 2.5%;
@@ -249,13 +250,15 @@
   background-color: #AC1354;
 }
 
-.mobile .profileDiv .intranetButtonDiv
+.mobile .profileDiv .intranetButtonDiv,
+.mobile .profileDiv .webButtonDiv
 {
   background-color: blue;  
 }
 
 .mobile .profileDiv .logoutButtonDiv .logoutButton,
-.mobile .profileDiv .intranetButtonDiv .intranetButton
+.mobile .profileDiv .intranetButtonDiv .intranetButton,
+.mobile .profileDiv .webButtonDiv .webButton
 {
   display: block;
   height: 100%;
