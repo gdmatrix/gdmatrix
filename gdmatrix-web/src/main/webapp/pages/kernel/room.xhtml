@@ -3,8 +3,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                template="/pages/obj/object_3col.xhtml"
-                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
+                template="/pages/obj/object_3col.xhtml">
 
   <ui:define name="filter">
 
@@ -23,7 +23,9 @@
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <p:inputText id="smartFilter" value="#{roomFinderBean.smartFilter}" />
+              <emcomp:tipInputText id="smartFilter"
+                                   value="#{roomFinderBean.smartFilter}"
+                                   tipContent="#{roomFinderBean.smartSearchTip}" />
             </div>
           </div>
 
@@ -74,7 +76,7 @@
               <p:outputLabel for="@next" value="#{kernelBundle.room_type}" />
               <p:selectOneMenu value="#{roomFinderBean.filter.roomTypeId}"
                                style="min-width:inherit !important"
-                               filter="false">
+                               filter="false" touchable="true">
                 <f:selectItem itemValue="" itemLabel="#{kernelBundle.room_allTypes}" />
                 <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" />
               </p:selectOneMenu>
@@ -90,8 +92,7 @@
                                       minQueryLength="3"
                                       renderShowButton="false"
                                       process=":mainform:find_selector"
-                                      update=":mainform:find_selector"
-                                      maxResults="20">
+                                      update=":mainform:find_selector">
               </emcomp:objectReference>
             </div>
 

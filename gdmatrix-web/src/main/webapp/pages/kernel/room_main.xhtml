@@ -20,7 +20,8 @@
                        required="#{not empty param['mainform:search_tabs:store']}"
                        requiredMessage="#{messageBundle.TYPE_MUST_BE_SELECTED}"
                        filter="false"                       
-                       disabled="#{!roomObjectBean.editable}">
+                       disabled="#{!roomObjectBean.editable}" 
+                       touchable="true">
         <f:selectItem itemValue="" itemLabel="" />
         <f:selectItems value="#{typeTypeBean.getSelectItems('Room')}" />
       </p:selectOneMenu>
