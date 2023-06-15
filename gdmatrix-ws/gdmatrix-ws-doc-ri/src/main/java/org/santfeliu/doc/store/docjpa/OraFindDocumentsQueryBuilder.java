@@ -176,7 +176,11 @@ public class OraFindDocumentsQueryBuilder extends FindDocumentsQueryBuilder
   private void appendDocTypeIdFilter(StringBuilder whereBuffer)
   {
     String typePath = filter.getDocTypeId();
-    if (typePath != null && typePath.trim().length() != 0)
+    
+    boolean avoidFilter = 
+      StringUtils.isBlank(typePath) || typePath.equals("/Document/") ;
+    
+    if (!avoidFilter)
     {
       appendOperator(whereBuffer, "AND");
       whereBuffer.append("d.docTypeId in (select typeId from dic_type where "
