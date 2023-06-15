@@ -91,7 +91,7 @@
       <div class="field col-12 md:col-6 xl:col-3">
         <p:outputLabel for="@next" value="#{documentBundle.document_state}" />
         <p:selectOneMenu value="#{documentObjectBean.document.state}"
-                         required="true">
+                         required="true" touchable="true">
           <f:selectItems value="#{documentObjectBean.documentStateSelectItems}" />
           <f:converter converterId="EnumConverter" />
           <f:attribute name="enum" value="org.matrix.doc.State" />

@@ -20,7 +20,7 @@
       <div class="ui-fluid formgrid grid">
         <div class="field col-12">
           <p:outputLabel for="@next" value="#{objectBundle.forms}:" />
-          <p:selectOneMenu value="#{cc.attrs.formSelector}" autoWidth="false">
+          <p:selectOneMenu value="#{cc.attrs.formSelector}" autoWidth="false" touchable="true">
             <p:ajax event="itemSelect" listener="#{dynamicPropertiesBean.onItemSelect}"
                     process="@this dyn_form" update="dyn_form" />
             <f:selectItems value="#{dynamicPropertiesBean.selectItems}" />
