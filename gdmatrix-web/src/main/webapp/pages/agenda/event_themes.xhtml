@@ -39,7 +39,7 @@
         <h:outputText value="#{row.description}"/>
       </p:column>
 
-      <p:column styleClass="col-1 text-right" exportable="false">
+      <p:column styleClass="col-1 text-right white-space-nowrap" exportable="false">
         <p:commandButton action="#{eventThemesTabBean.remove(row)}"
                          process="@this"
                          update="event_themes_table"

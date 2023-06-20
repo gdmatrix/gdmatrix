@@ -3,6 +3,13 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+  <script>
+    function removeFocus()
+    {
+      document.activeElement.blur(); 
+    }
+  </script>
+  
   <p:schedule id="schedule" 
               rendered="#{eventFinderBean.renderSchedule}"
               value="#{eventFinderBean.eventModel}"
@@ -18,11 +25,11 @@
     <p:ajax event="dateDblSelect" listener="#{eventFinderBean.onDateDblSelect}" 
             process="@this" 
             update=":mainform:search_tabs:obj_tabs :mainform:context_panel"            
-            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});" />        
+            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />        
     <p:ajax event="eventSelect" listener="#{eventFinderBean.onEventSelect}"            
             process="@this"
             update=":mainform:search_tabs:obj_tabs :mainform:context_panel"
-            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});" />
+            oncomplete="PF('objectTabs').select(0);PF('searchTabs').select(#{eventObjectBean.editModeSelector});removeFocus();" />
     <p:ajax event="eventMove" listener="#{eventFinderBean.onEventMove}"
             process="@this"
             update=":mainform:search_tabs:obj_tabs" />
@@ -34,6 +41,6 @@
   <h:outputText value="#{agendaBundle.insufficientFilter}"
                 rendered="#{not eventFinderBean.renderSchedule}" 
                 escape="false" />
-
+  
 </ui:composition>
 

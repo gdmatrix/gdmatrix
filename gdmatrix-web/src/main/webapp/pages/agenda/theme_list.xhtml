@@ -19,7 +19,7 @@
     <p:column headerText="#{agendaBundle.theme_description}" styleClass="col-10">
       <h:outputText value="#{row.description}" />
     </p:column>
-    <p:column styleClass="col-1 text-right">
+    <p:column styleClass="col-1 text-right white-space-nowrap">
       <p:commandButton icon="ui-icon pi pi-arrow-circle-left"
                        styleClass="rounded-button ui-button-flat"
                        action="#{navigatorBean.select(row.themeId)}"
