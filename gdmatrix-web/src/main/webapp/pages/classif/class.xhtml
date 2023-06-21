@@ -22,8 +22,10 @@
 
           <div class="field">
             <p:outputLabel for="@next" value="Valor" />
-            <p:inputText id="smartFilter" value="#{classFinderBean.smartFilter}"
-                         class="inputfield w-full ui-fluid"/>
+            <emcomp:tipInputText id="smartFilter"
+                                 value="#{classFinderBean.smartFilter}"
+                                 tipContent="#{classFinderBean.smartSearchTip}"
+                                 inputTextStyleClass="tipInput inputfield w-full ui-fluid" />
           </div>
 
           <div class="buttons text-right">

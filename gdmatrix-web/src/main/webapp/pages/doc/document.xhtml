@@ -25,10 +25,11 @@
               <p:outputLabel for="@next" 
                              value="#{objectBundle.value}" 
                              indicateRequired="true" />
-              <p:inputText id="smartFilter" 
-                           value="#{documentFinderBean.smartFilter}"
-                           required="#{not empty param['mainform:find_selector:smart_search_button']}" 
-                           requiredMessage="#{messageBundle.FILTER_IS_EMPTY}" />
+              <emcomp:tipInputText id="smartFilter"
+                                   value="#{documentFinderBean.smartFilter}"
+                                   tipContent="#{documentFinderBean.smartSearchTip}"
+                                   required="#{not empty param['mainform:find_selector:smart_search_button']}" 
+                                   requiredMessage="#{messageBundle.FILTER_IS_EMPTY}" />              
             </div>
           </div>
 

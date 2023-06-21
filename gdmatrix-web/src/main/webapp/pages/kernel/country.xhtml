@@ -5,6 +5,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:sf="http://faces.santfeliu.org"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp"                
                 template="/pages/obj/object_3col.xhtml">
 
   <ui:define name="filter">
@@ -23,7 +24,9 @@
           <div class="ui-fluid formgrid grid"> 
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <p:inputText id="smartFilter" value="#{countryFinderBean.smartFilter}" />
+              <emcomp:tipInputText id="smartFilter"
+                                   value="#{countryFinderBean.smartFilter}"
+                                   tipContent="#{countryFinderBean.smartSearchTip}" />              
             </div>
           </div>
 

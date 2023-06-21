@@ -25,7 +25,9 @@
           <div class="ui-fluid formgrid grid">
             <div class="field col-12">
               <p:outputLabel for="@next" value="#{objectBundle.value}" />
-              <p:inputText id="smartFilter" value="#{caseFinderBean.smartFilter}"/>
+              <emcomp:tipInputText id="smartFilter"
+                                   value="#{caseFinderBean.smartFilter}"
+                                   tipContent="#{caseFinderBean.smartSearchTip}" />              
             </div>
           </div>
 
