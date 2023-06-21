@@ -379,6 +379,7 @@ body .edit_data_dialog
 .tipInputText .tipDialog .ui-dialog-titlebar
 {
   display: flex;
+  padding-bottom: 0;
 }
 
 .tipInputText .tipDialog .ui-dialog-titlebar span
