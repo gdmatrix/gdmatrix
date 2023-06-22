@@ -54,6 +54,7 @@ import org.santfeliu.web.bean.CMSManagedBean;
 public class SystemInfoBean extends FacesBean
 {
   public static RuntimeMXBean RUNTIME_MX_BEAN = getRuntimeMXBean();
+  private List<Object[]> sessionList;
 
   public String getUpTime()
   {
@@ -128,9 +129,37 @@ public class SystemInfoBean extends FacesBean
     return SessionListener.getActiveSessionCount();
   }
 
-  public List<HttpSession> getActiveSessions()
+  public List<Object[]> getActiveSessions()
   {
-    return SessionListener.getActiveSessions();
+    if (sessionList == null)
+    {
+      refresh();
+    }
+    return sessionList;
+  }
+
+  public void refresh()
+  {
+    sessionList = new ArrayList<>();
+    List<HttpSession> activeSessions = SessionListener.getActiveSessions();
+    for (HttpSession activeSession : activeSessions)
+    {
+      Object[] row = new Object[4];
+      row[0] = activeSession.getId();
+
+      UserSessionBean userSessionBean = UserSessionBean.getInstance(activeSession);
+      row[1] = userSessionBean == null ? "???" : userSessionBean.getUserId();
+
+      long now = System.currentTimeMillis();
+
+      long creation = activeSession.getCreationTime();
+      row[2] = (now - creation) / 1000;
+
+      long lastAccess = activeSession.getLastAccessedTime();
+      row[3] = (now - lastAccess) / 1000;
+
+      sessionList.add(row);
+    }
   }
 
   public void invalidateSessions()
@@ -146,22 +175,6 @@ public class SystemInfoBean extends FacesBean
         activeSession.invalidate();
       }
     }
-  }
-
-  public String getSessionUserId(HttpSession session)
-  {
-    UserSessionBean userSessionBean = UserSessionBean.getInstance(session);
-    if (userSessionBean == null) return "???";
-    return userSessionBean.getUserId();
-  }
-
-  public long getLastAccessSeconds(HttpSession session)
-  {
-    long now = System.currentTimeMillis();
-    long lastAccess = session.getLastAccessedTime();
-    long ellapsedMillis = now - lastAccess;
-
-    return ellapsedMillis / 1000;
   }
 
   @CMSAction

@@ -94,29 +94,36 @@
           <p>
             <h:outputText value="Active sessions: #{systemInfoBean.activeSessionCount}" />
           </p>
-          
-          <p:dataTable value="#{systemInfoBean.activeSessions}" var="row">
-            <p:column headerText="Session id">
-              <h:outputText value="#{row.id}" />            
-            </p:column>
-            <p:column headerText="UserId">
-              <h:outputText value="#{systemInfoBean.getSessionUserId(row)}" />            
-            </p:column>
-            <p:column headerText="Last access">
-              <h:outputText value="#{systemInfoBean.getLastAccessSeconds(row)} sec." />            
-            </p:column>
 
-          </p:dataTable>
-          
-          <div class="mt-2">
+          <div class="mt-2 mb-2">
             <p:commandButton value="Refresh"
+                             action="#{systemInfoBean.refresh}"
                              process="@this" update="@parent:@parent" />
 
             <p:commandButton value="Invalidate all" styleClass="ml-2"
                              action="#{systemInfoBean.invalidateSessions}" 
                              process="@this" update="@parent:@parent" />
           </div>
-
+          
+          <p:dataTable value="#{systemInfoBean.activeSessions}" var="row" 
+                       sortMode="multiple">
+            <p:column headerText="Session id"
+                      sortBy="#{row[0]}">
+              <h:outputText value="#{row[0]}" />            
+            </p:column>
+            <p:column headerText="UserId"
+                      sortBy="#{row[1]}">
+              <h:outputText value="#{row[1]}" />            
+            </p:column>
+            <p:column headerText="Creation (sec.)" 
+                      sortBy="#{row[2]}" style="text-align: right">
+              <h:outputText value="#{row[2]}" />            
+            </p:column>
+            <p:column headerText="Last access (sec.)"
+                      sortBy="#{row[3]}" style="text-align: right">
+              <h:outputText value="#{row[3]}" />            
+            </p:column>
+          </p:dataTable>
         </p:tab>
       </p:tabView>
       

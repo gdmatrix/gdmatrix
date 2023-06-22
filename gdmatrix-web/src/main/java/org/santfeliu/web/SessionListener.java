@@ -35,9 +35,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+import java.util.logging.Logger;
+import org.matrix.security.SecurityConstants;
 
 /**
  *
@@ -45,14 +49,42 @@ import javax.servlet.http.HttpSessionListener;
  */
 public class SessionListener implements HttpSessionListener
 {
+  public static final String SESSION_PURGE_PERIOD = "SESSION_PURGE_PERIOD";
+  public static final String ANONYMOUS_SESSION_TIMEOUT = "ANONYMOUS_SESSION_TIMEOUT";
+  public static final String ANONYMOUS_SESSION_INTERVAL = "ANONYMOUS_SESSION_INTERVAL";
+
+  private static final Logger LOGGER = Logger.getLogger("SessionListener");
+
   private static final Set<HttpSession> SESSIONS =
     Collections.synchronizedSet(new HashSet<>());
+
+  private boolean initialized;
+  private int sessionPurgePeriod = 1; // minutes
+  private int anonymousSessionTimeout = 3; // minutes
+  private int anonymousSessionInterval = 10000; // millis
+  private long lastPurgeMillis;
 
   @Override
   public void sessionCreated(HttpSessionEvent hse)
   {
     HttpSession session = hse.getSession();
     SESSIONS.add(session);
+
+    if (!initialized)
+    {
+      initialiaze(session.getServletContext());
+      initialized = true;
+    }
+
+    synchronized (SESSIONS)
+    {
+      long now = System.currentTimeMillis();
+      if (now - lastPurgeMillis > sessionPurgePeriod)
+      {
+        purgeSessions();
+        lastPurgeMillis = now;
+      }
+    }
   }
 
   @Override
@@ -64,9 +96,74 @@ public class SessionListener implements HttpSessionListener
 
   public static int getActiveSessionCount()
   {
-    synchronized (SESSIONS)
+    return SESSIONS.size();
+  }
+
+  private void initialiaze(ServletContext context)
+  {
+    String value = context.getInitParameter(SESSION_PURGE_PERIOD);
+    try
     {
-      return SESSIONS.size();
+      if (value != null)
+      {
+        sessionPurgePeriod = Integer.parseInt(value);
+      }
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.WARNING, "Invalid SESSION_PURGE_PERIOD: {0}", value);
+    }
+
+    value = context.getInitParameter(ANONYMOUS_SESSION_TIMEOUT);
+    try
+    {
+      if (value != null)
+      {
+        anonymousSessionTimeout = Integer.parseInt(value);
+      }
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.WARNING, "Invalid ANONYMOUS_SESSION_TIMEOUT: {0}", value);
+    }
+
+    value = context.getInitParameter(ANONYMOUS_SESSION_INTERVAL);
+    try
+    {
+      if (value != null)
+      {
+        anonymousSessionInterval = Integer.parseInt(value);
+      }
+    }
+    catch (Exception ex)
+    {
+      LOGGER.log(Level.WARNING, "Invalid ANONYMOUS_SESSION_INTERVAL: {0}", value);
+    }
+  }
+
+  private void purgeSessions()
+  {
+    long now = System.currentTimeMillis();
+    for (HttpSession session : SESSIONS)
+    {
+      UserSessionBean userSessionBean = UserSessionBean.getInstance(session);
+      if (userSessionBean != null)
+      {
+        String userId = userSessionBean.getUserId();
+        if (SecurityConstants.ANONYMOUS.equals(userId))
+        {
+          long ellapsedMinutes = (now - session.getLastAccessedTime()) / 60000;
+          if (ellapsedMinutes >= anonymousSessionTimeout)
+          {
+            long interval = session.getLastAccessedTime() - session.getCreationTime();
+            if (interval < anonymousSessionInterval)
+            {
+              session.invalidate();
+              LOGGER.log(Level.INFO, "Invalidate session: {0}", session.getId());
+            }
+          }
+        }
+      }
     }
   }
 
