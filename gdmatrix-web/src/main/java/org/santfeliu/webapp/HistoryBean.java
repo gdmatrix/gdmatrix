@@ -85,7 +85,7 @@ public class HistoryBean implements Serializable
 
   public void view(DirectLeap leap)
   {
-    navigatorBean.view(leap.getObjectId());
+    navigatorBean.view(leap.getObjectId(), 0, true);
   }
 
   public String show(DirectLeap leap)

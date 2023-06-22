@@ -93,7 +93,7 @@
                                    onclick="showOverlay()">
                       <h:outputText value="#{data.description}" />
                     </p:commandLink>
-                    <p:commandLink action="#{navigatorBean.view(data.objectId)}"
+                    <p:commandLink action="#{navigatorBean.view(data.objectId, 0, true)}"
                                    rendered="#{recentObjectsBean.isCurrentBaseType(node)}"
                                    process=":mainform:context_panel"
                                    resetValues="true"
@@ -141,7 +141,7 @@
                             var="favorite">
                     <div class="favorite">
                       <span class="#{favoriteObjectsBean.icon}" />
-                      <p:commandLink action="#{navigatorBean.view(favorite.objectId)}"
+                      <p:commandLink action="#{navigatorBean.view(favorite.objectId, 0, true)}"
                                      process="@this"
                                      resetValues="true"
                                      oncomplete="endPanel('rightPanel');"
