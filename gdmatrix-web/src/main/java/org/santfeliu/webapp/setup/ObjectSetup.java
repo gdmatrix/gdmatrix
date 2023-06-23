@@ -51,6 +51,7 @@ public class ObjectSetup implements Serializable
   private List<SearchTab> searchTabs = new ArrayList<>();
   private List<EditTab> editTabs = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
+  private ScriptActions scriptActions = new ScriptActions();
 
   public String getTypeId()
   {
@@ -110,6 +111,16 @@ public class ObjectSetup implements Serializable
   public void setProperties(PropertyMap properties)
   {
     this.properties = properties;
+  }
+
+  public ScriptActions getScriptActions()
+  {
+    return scriptActions;
+  }
+
+  public void setScriptActions(ScriptActions scriptActions)
+  {
+    this.scriptActions = scriptActions;
   }
 
   @Override

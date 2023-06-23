@@ -83,12 +83,17 @@
                        message="#{objectBundle.confirm_remove_message}" 
                        icon="pi pi-info-circle" />
         </p:commandButton>
-        <p:commandButton icon="ui-icon pi pi-cog"
-                         action="#{navigatorBean.view('')}"
-                         styleClass="rounded-button ui-button-flat"
-                         update=":mainform:search_tabs:tabs"
-                         process="@this"
-                         title="#{objectBundle.actions}" alt="#{objectBundle.actions}"/>
+
+        <p:menuButton icon="ui-icon pi pi-cog" buttonStyleClass="rounded-button ui-button-flat"
+                      title="#{objectBundle.actions}" >
+          <c:forEach items="#{objectBean.objectSetup.scriptActions.actions}" var="action" >
+            <p:menuitem icon="#{action.icon}" 
+                        value="#{action.label}" action="#{objectBean.callAction(action.name)}" 
+                        rendered="#{not empty action.label}" process="@this"
+                        update=":mainform:search_tabs:tabs"/>
+          </c:forEach>
+        </p:menuButton> 
+        
         <p:commandButton icon="ui-icon pi pi-times"
                          action="#{navigatorBean.close}"
                          ajax="false"
@@ -98,6 +103,7 @@
                          title="#{objectBundle.close}" alt="#{objectBundle.close}" />
     </div>
   </p:outputPanel>
+
 
   <f:metadata>
     <f:viewAction action="#{objectBean.selectTabWithErrors}"

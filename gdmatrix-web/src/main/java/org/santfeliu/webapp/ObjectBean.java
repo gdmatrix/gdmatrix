@@ -36,14 +36,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import org.matrix.dic.PropertyDefinition;
+import org.mozilla.javascript.Callable;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.faces.FacesUtils;
+import org.santfeliu.util.script.ScriptClient;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.webapp.NavigatorBean.BaseTypeInfo;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.setup.ObjectSetup;
 import org.santfeliu.webapp.setup.ObjectSetupCache;
+import org.santfeliu.webapp.setup.ScriptActions.Action;
+import org.santfeliu.webapp.setup.ActionObject;
+import org.santfeliu.webapp.setup.ActionObject.Message;
+import org.santfeliu.webapp.setup.ActionObject.Message.Severity;
 import org.santfeliu.webapp.setup.SearchTab;
 import org.santfeliu.webapp.util.ComponentUtils;
 
@@ -57,6 +65,7 @@ public abstract class ObjectBean extends BaseBean
   private int searchTabSelector;
   private int editTabSelector;
   private transient ObjectSetup objectSetup;
+  protected ScriptClient actionsClient;
 
   @Override
   public ObjectBean getObjectBean()
@@ -168,7 +177,7 @@ public abstract class ObjectBean extends BaseBean
   }
 
   public abstract Object getObject();
-
+  
   public BaseTypeInfo getBaseTypeInfo()
   {
     NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
@@ -183,6 +192,7 @@ public abstract class ObjectBean extends BaseBean
       loadObject();
       loadObjectSetup();
       loadActiveEditTab();
+      loadActionsClient();
 
       Object object = getObject();
       TypeBean typeBean = getTypeBean();
@@ -259,7 +269,83 @@ public abstract class ObjectBean extends BaseBean
       }
     }
   }
-
+  
+  public void loadActionsClient()
+  {
+    String actionsScriptName = 
+      (String) getObjectSetup().getScriptActions().getScriptName();
+    
+    if (actionsScriptName != null)
+    {
+      try 
+      {
+        actionsClient = new ScriptClient();
+        actionsClient.executeScript(actionsScriptName);
+      }
+      catch (Exception ex) 
+      {
+        error(ex);
+        actionsClient = null;
+      }
+    }     
+  }
+  
+  public void callAction(String actionName)
+  {
+    Action action = getObjectSetup().getScriptActions().getAction(actionName);
+    if (action != null)
+      executeAction(action.getName());
+  }
+  
+  protected ActionObject executeAction(String actionName)
+  {
+    ActionObject actionObject = new ActionObject(getObject());
+    if (actionsClient != null)
+    {    
+      Object callable = actionsClient.get(actionName);
+      if (callable instanceof Callable)
+      {     
+        actionsClient.put("actionObject", actionObject);
+        actionsClient.execute((Callable)callable);
+        actionObject = (ActionObject) actionsClient.get("actionObject");
+        if (actionObject != null)
+        {
+          setActionResult(actionObject);
+          if (actionObject.isRefresh())
+            load();
+          addFacesMessages(actionObject.getMessages());
+        }           
+      }
+    }
+    return actionObject;
+  }    
+  
+  protected void addFacesMessages(List<Message> messages)
+  {
+    for (Message message : messages)
+    {
+      String text = message.getText();
+      String[] params = message.getParams();
+      Severity severity = message.getSeverity();
+      switch(severity)
+      {
+        case ERROR: 
+          FacesUtils.addMessage(text, params, FacesMessage.SEVERITY_ERROR);
+          break;
+        case WARN:
+          FacesUtils.addMessage(text, params, FacesMessage.SEVERITY_WARN);
+          break;          
+        default:
+          FacesUtils.addMessage(text, params, FacesMessage.SEVERITY_INFO);                    
+      }
+    }
+    messages.clear();
+  }
+  
+  protected void setActionResult(ActionObject scriptObject)
+  {    
+  }    
+  
   public boolean isDisabledEditTab(EditTab tab)
   {
     return tab.getBeanName() != null && NEW_OBJECT_ID.equals(objectId);

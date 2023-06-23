@@ -44,6 +44,7 @@ import org.matrix.dic.PropertyDefinition;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
+import org.santfeliu.webapp.setup.ActionObject;
 
 /**
  *
@@ -173,6 +174,12 @@ public class CaseObjectBean extends ObjectBean
       cas.setEndDate(TextUtils.formatDate(date, "yyyyMMdd"));
       cas.setEndTime(TextUtils.formatDate(date, "HHmmss"));
     }
+    else if (date == null && cas != null)
+    {
+      cas.setEndDate(null);
+      cas.setEndTime(null);
+    }
+      
   }
 
   public String getPropertyLabel(String propName, String altName)
@@ -210,6 +217,7 @@ public class CaseObjectBean extends ObjectBean
   {
     formSelector = null;
 
+    executeAction("preLoad");
     if (!NEW_OBJECT_ID.equals(objectId))
       cas = CasesModuleBean.getPort(false).loadCase(objectId);
     else
@@ -217,24 +225,38 @@ public class CaseObjectBean extends ObjectBean
       cas = new Case();
       cas.setCaseTypeId(getBaseTypeInfo().getBaseTypeId());
     }
+    executeAction("postLoad");
   }
 
   @Override
   public void storeObject() throws Exception
   {
+    executeAction("preStore");
     cas = CasesModuleBean.getPort(false).storeCase(cas);
     setObjectId(cas.getCaseId());
-
+    executeAction("postStore");
     caseFinderBean.outdate();
   }
-
+         
   @Override
   public void removeObject() throws Exception
   {
+    executeAction("preRemove");
     CasesModuleBean.getPort(false).removeCase(cas.getCaseId());
+    executeAction("postRemove");
 
     caseFinderBean.outdate();
   }
+  
+  @Override
+  protected void setActionResult(ActionObject result)
+  {
+    if (result != null)
+    {
+      if (result.getObject() != null)
+        cas = (Case) result.getObject();      
+    }
+  }  
 
   @Override
   public Serializable saveState()
