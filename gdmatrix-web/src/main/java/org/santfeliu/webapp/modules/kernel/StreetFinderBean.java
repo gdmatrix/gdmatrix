@@ -112,7 +112,7 @@ public class StreetFinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = streetTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -124,7 +124,7 @@ public class StreetFinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter.setStreetTypeId(baseTypeId);
@@ -138,7 +138,7 @@ public class StreetFinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }
@@ -219,7 +219,7 @@ public class StreetFinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilter(), firstRow, getObjectPosition(), provinceSelectItems, citySelectItems };
+    return new Object[]{ isFinding(), getFilter(), firstRow, getObjectPosition(), provinceSelectItems, citySelectItems };
   }
 
   @Override
@@ -228,7 +228,7 @@ public class StreetFinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilter((StreetFilter) stateArray[1]);
       smartFilter = getTypeBean().filterToQuery(filter);
 

@@ -94,7 +94,7 @@ public class CountryFinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = countryTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -105,7 +105,7 @@ public class CountryFinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     smartFilter = countryTypeBean.filterToQuery(filter);
     doFind(true);
@@ -123,7 +123,7 @@ public class CountryFinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }

@@ -49,11 +49,16 @@ import javax.enterprise.inject.spi.CDI;
 import javax.faces.view.ViewScoped;
 import org.santfeliu.webapp.util.MenuTypesCache;
 import javax.inject.Named;
+import org.matrix.dic.PropertyDefinition;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.faces.menu.model.MenuItemCursor;
 import org.santfeliu.faces.menu.model.MenuModel;
 import org.santfeliu.web.UserPreferences;
 import org.santfeliu.web.UserSessionBean;
 import org.santfeliu.web.WebBean;
+import org.santfeliu.webapp.setup.ObjectSetup;
+import org.santfeliu.webapp.setup.ObjectSetupCache;
 
 /**
  *
@@ -67,6 +72,9 @@ public class NavigatorBean extends WebBean implements Serializable
   public static final String BASE_TYPEID_PROPERTY = "objectTypeId";
   public static final String RECENT_LIST_SIZE_PROPERTY = "recentListSize";
   public static final String ICON_PROPERTY = "icon";
+  public static final String DEFAULT_SEARCH_TAB_SELECTOR_PROPERTY =
+    "defaultSearchTabSelector";
+  public static final String FIND_ON_FIRST_LOAD_PROPERTY = "findOnFirstLoad";
 
   public static final String NEW_OBJECT_ID = "";
   public static final int DEFAULT_RECENT_LIST_SIZE = 5;
@@ -162,7 +170,15 @@ public class NavigatorBean extends WebBean implements Serializable
     DirectLeap leap = new DirectLeap(baseTypeInfo.getBaseTypeId());
     leap.setObjectId(objectId == null ?
       baseTypeInfo.getObjectId() : objectId);
-    leap.setSearchTabSelector(selectExpression == null ? -1 : 0);
+    if (selectExpression != null)
+    {
+      leap.setSearchTabSelector(0);
+    }
+    else
+    {
+      leap.setSearchTabSelector(objectId == null ?
+        baseTypeInfo.getDefaultSearchTabSelector() : -1);
+    }
     leap.setEditTabSelector(editTabSelector);
 
     return execute(leap, true, selectExpression);
@@ -427,6 +443,62 @@ public class NavigatorBean extends WebBean implements Serializable
       return getProperty(OBJECT_BEAN_PROPERTY);
     }
 
+    public int getDefaultSearchTabSelector()
+    {
+      try
+      {
+        String val = (String)getObjectSetup().getProperties().get(
+          DEFAULT_SEARCH_TAB_SELECTOR_PROPERTY);
+        if (val == null)
+        {
+          val = getProperty(DEFAULT_SEARCH_TAB_SELECTOR_PROPERTY);
+          if (val == null)
+          {
+            Type type = TypeCache.getInstance().getType(getBaseTypeId());
+            PropertyDefinition propdef = type.getPropertyDefinition(
+              "_" + DEFAULT_SEARCH_TAB_SELECTOR_PROPERTY);
+            if (propdef != null && !propdef.getValue().isEmpty())
+            {
+              val = propdef.getValue().get(0);
+            }
+          }
+        }
+        return Integer.parseInt(val);
+      }
+      catch (Exception ex)
+      {
+        return -1;
+      }
+    }
+
+    public boolean isFindOnFirstLoad()
+    {
+      try
+      {
+        String val = (String)getObjectSetup().getProperties().get(
+          FIND_ON_FIRST_LOAD_PROPERTY);
+        if (val == null)
+        {
+          val = getProperty(FIND_ON_FIRST_LOAD_PROPERTY);
+          if (val == null)
+          {
+            Type type = TypeCache.getInstance().getType(getBaseTypeId());
+            PropertyDefinition propdef = type.getPropertyDefinition(
+              "_" + FIND_ON_FIRST_LOAD_PROPERTY);
+            if (propdef != null && !propdef.getValue().isEmpty())
+            {
+              val = propdef.getValue().get(0);
+            }
+          }
+        }
+        return Boolean.parseBoolean(val);
+      }
+      catch (Exception ex)
+      {
+        return false;
+      }
+    }
+
     public ObjectBean getObjectBean()
     {
       String objectBeanName = getObjectBeanName();
@@ -560,10 +632,28 @@ public class NavigatorBean extends WebBean implements Serializable
       return menuItem.getProperty(propertyName);
     }
 
-    public boolean isBeanStateSaved(BaseBean baseBean)
+    public ObjectSetup getObjectSetup() throws Exception
     {
-      String beanName = WebUtils.getBeanName(baseBean);
-      return beanStateMap.containsKey(beanName);
+      String setupName = getProperty("objectSetup");
+      if (setupName == null)
+      {
+        Type type = TypeCache.getInstance().getType(getBaseTypeId());
+        PropertyDefinition propdef = type.getPropertyDefinition("objectSetup");
+        if (propdef != null && !propdef.getValue().isEmpty())
+        {
+          setupName = propdef.getValue().get(0);
+        }
+      }
+      if (setupName != null)
+      {
+        return ObjectSetupCache.getConfig(setupName);
+      }
+      else
+      {
+        ObjectSetup defaultSetup =
+          getObjectBean().getTypeBean().getObjectSetup();
+        return defaultSetup;
+      }
     }
 
     void saveBeanState(BaseBean baseBean)
@@ -786,6 +876,12 @@ public class NavigatorBean extends WebBean implements Serializable
       BaseTypeInfo baseTypeInfo = navigatorBean.getBaseTypeInfo(baseTypeId);
       FinderBean finderBean = objectBean.getFinderBean();
       baseTypeInfo.restoreBeanState(finderBean);
+
+      if (!finderBean.isFinding() && baseTypeInfo.isFindOnFirstLoad())
+      {
+        finderBean.smartFind();
+      }
+
       finderBean.setObjectPosition(-1);
       objectBean.load();
     }

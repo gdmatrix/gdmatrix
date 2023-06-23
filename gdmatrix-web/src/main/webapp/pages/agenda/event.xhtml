@@ -73,7 +73,7 @@
             </div>
 
             <!-- TypeId -->
-            <p:outputPanel styleClass="field col-12" rendered="#{caseObjectBean.baseTypeInfo.baseTypeId == 'Event'}">
+            <p:outputPanel styleClass="field col-12" rendered="#{eventObjectBean.baseTypeInfo.baseTypeId == 'Event'}">
               <p:outputLabel for="@next" value="#{agendaBundle.event_type}" />
               <emcomp:typeReference value="#{eventFinderBean.searchEventTypeId}"
                                     type="Event"

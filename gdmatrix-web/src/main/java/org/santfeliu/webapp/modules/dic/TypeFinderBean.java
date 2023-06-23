@@ -67,7 +67,6 @@ public class TypeFinderBean extends FinderBean
   
   private String smartFilter;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;  
   
   private String rootTypeId;
@@ -168,7 +167,7 @@ public class TypeFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
 
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
@@ -185,7 +184,7 @@ public class TypeFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
@@ -244,14 +243,14 @@ public class TypeFinderBean extends FinderBean
     filter = new TypeFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
     rootTypeId = null;
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       getObjectPosition(), rootTypeId };
   }
 
@@ -261,7 +260,7 @@ public class TypeFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilterTabSelector((Integer)stateArray[1]);
       filter = (TypeFilter)stateArray[2];
       smartFilter = typeTypeBean.filterToQuery(filter);
@@ -282,7 +281,7 @@ public class TypeFinderBean extends FinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.emptyList();
       }

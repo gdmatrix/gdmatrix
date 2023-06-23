@@ -57,7 +57,6 @@ public class RoleFinderBean extends FinderBean
   private RoleFilter filter = new RoleFilter();
   private List<Role> rows;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;
 
   @Inject
@@ -150,7 +149,7 @@ public class RoleFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = roleTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -161,7 +160,7 @@ public class RoleFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = roleTypeBean.filterToQuery(filter);
     doFind(true);
@@ -186,13 +185,13 @@ public class RoleFinderBean extends FinderBean
     filter = new RoleFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(),
+    return new Object[]{ isFinding(), getFilterTabSelector(),
       filter, firstRow, getObjectPosition() };
   }
 
@@ -200,7 +199,7 @@ public class RoleFinderBean extends FinderBean
   public void restoreState(Serializable state)
   {
     Object[] stateArray = (Object[])state;
-    finding = (Boolean)stateArray[0];
+    setFinding((Boolean)stateArray[0]);
     setFilterTabSelector((Integer)stateArray[1]);
     filter = (RoleFilter)stateArray[2];
     smartFilter = roleTypeBean.filterToQuery(filter);
@@ -215,7 +214,7 @@ public class RoleFinderBean extends FinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }

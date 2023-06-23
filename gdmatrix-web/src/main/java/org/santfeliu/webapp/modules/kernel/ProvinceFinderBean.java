@@ -99,7 +99,7 @@ public class ProvinceFinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = provinceTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -111,7 +111,7 @@ public class ProvinceFinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = provinceTypeBean.filterToQuery(filter);
     doFind(true);
@@ -129,7 +129,7 @@ public class ProvinceFinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }

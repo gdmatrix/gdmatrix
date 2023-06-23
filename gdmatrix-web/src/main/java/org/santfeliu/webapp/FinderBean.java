@@ -60,6 +60,7 @@ public abstract class FinderBean extends BaseBean
 
   private int filterTabSelector;
   private int objectPosition = -1;
+  private boolean finding;
   protected transient ObjectSetup objectSetup;
 
   public int getFilterTabSelector()
@@ -94,6 +95,16 @@ public abstract class FinderBean extends BaseBean
   public void setObjectPosition(int objectPosition)
   {
     this.objectPosition = objectPosition;
+  }
+
+  public boolean isFinding()
+  {
+    return finding;
+  }
+
+  public void setFinding(boolean finding)
+  {
+    this.finding = finding;
   }
 
   public String getSmartSearchTip()

@@ -48,7 +48,6 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
   protected F filter;
   protected List<V> rows;
   protected int firstRow;
-  protected boolean finding;
   protected boolean outdated;
 
   public String getSmartFilter()
@@ -111,7 +110,7 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
     createFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
   }
 
   protected abstract void doFind(boolean autoLoad);
@@ -121,7 +120,7 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilter(), firstRow, getObjectPosition() };
+    return new Object[]{ isFinding(), getFilter(), firstRow, getObjectPosition() };
   }
 
   @Override
@@ -130,7 +129,7 @@ public abstract class TerritoryFinderBean<F, V extends Serializable>
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilter((F) stateArray[1]);
       smartFilter = getTypeBean().filterToQuery(filter);
 

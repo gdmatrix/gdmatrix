@@ -59,7 +59,6 @@ public class RoomFinderBean extends FinderBean
   private RoomFilter filter = new RoomFilter();
   private List<RoomView> rows;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;
 
   @Inject
@@ -149,7 +148,7 @@ public class RoomFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = roomTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -160,7 +159,7 @@ public class RoomFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = roomTypeBean.filterToQuery(filter);
     doFind(true);
@@ -185,7 +184,7 @@ public class RoomFinderBean extends FinderBean
     filter = new RoomFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
   }
 
   public String getRoomTypeDescription(RoomView roomView)
@@ -198,7 +197,7 @@ public class RoomFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), filter,
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter,
       firstRow, getObjectPosition() };
   }
 
@@ -208,7 +207,7 @@ public class RoomFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilterTabSelector((Integer)stateArray[1]);
       filter = (RoomFilter)stateArray[2];
 
@@ -225,7 +224,7 @@ public class RoomFinderBean extends FinderBean
 
   private void doFind(boolean autoLoad)
   {
-    if (!finding)
+    if (!isFinding())
     {
       rows = Collections.EMPTY_LIST;
     }

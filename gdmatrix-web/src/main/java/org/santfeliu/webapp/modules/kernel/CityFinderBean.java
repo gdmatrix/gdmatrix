@@ -101,7 +101,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     filter =
       cityTypeBean.queryToFilter(smartFilter, DictionaryConstants.CITY_TYPE);
@@ -113,7 +113,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = cityTypeBean.filterToQuery(filter);
     doFind(true);
@@ -131,7 +131,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }
@@ -175,7 +175,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilter(), firstRow, getObjectPosition(), provinceSelectItems };
+    return new Object[]{ isFinding(), getFilter(), firstRow, getObjectPosition(), provinceSelectItems };
   }
 
   @Override
@@ -184,7 +184,7 @@ public class CityFinderBean extends TerritoryFinderBean<CityFilter, CityView>
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilter((CityFilter) stateArray[1]);
       smartFilter = getTypeBean().filterToQuery(filter);
 

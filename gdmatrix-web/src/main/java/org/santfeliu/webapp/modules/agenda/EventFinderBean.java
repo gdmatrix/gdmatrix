@@ -89,7 +89,6 @@ public class EventFinderBean extends FinderBean
   private EventFilter filter = new EventFilter();
   private List<EventDataTableRow> rows;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;
   private String formSelector;
 
@@ -119,11 +118,6 @@ public class EventFinderBean extends FinderBean
   @PostConstruct
   public void init()
   {
-    if (!navigatorBean.getBaseTypeInfo().isBeanStateSaved(this))
-    {
-      smartFind();
-      eventObjectBean.setSearchTabSelector(0);
-    }
   }
 
   @Override
@@ -401,7 +395,7 @@ public class EventFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = eventTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -412,11 +406,11 @@ public class EventFinderBean extends FinderBean
     doFind(true);
     firstRow = 0;
   }
-
+  
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = eventTypeBean.filterToQuery(filter);
 
@@ -482,7 +476,7 @@ public class EventFinderBean extends FinderBean
     searchEventTypeId = null;
     searchEventThemeId = null;
     rows = null;
-    finding = false;
+    setFinding(false);
     formSelector = null;
     scheduleInitialDate = null;
     scheduleView = "dayGridMonth";
@@ -582,7 +576,7 @@ public class EventFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       searchEventThemeId, getObjectPosition(),
       scheduleInitialDate, scheduleView, formSelector, rows,
       searchEventTypeId, outdated, scheduleEdit };
@@ -594,7 +588,7 @@ public class EventFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilterTabSelector((Integer)stateArray[1]);
       filter = (EventFilter)stateArray[2];
       smartFilter = eventTypeBean.filterToQuery(filter);
@@ -607,13 +601,12 @@ public class EventFinderBean extends FinderBean
       rows = (List<EventDataTableRow>)stateArray[9];
       searchEventTypeId = (String)stateArray[10];
       outdated = (Boolean)stateArray[11];
-      scheduleEdit = (Boolean)stateArray[12];
+      scheduleEdit = (Boolean)stateArray[12];      
       if (outdated || scheduleEdit)
       {
         doFind(false);
         scheduleEdit = false;
       }
-      eventObjectBean.setSearchTabSelector(0);
     }
     catch (Exception ex)
     {
@@ -625,7 +618,7 @@ public class EventFinderBean extends FinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }

@@ -56,7 +56,6 @@ public class ThemeFinderBean extends FinderBean
   private ThemeFilter filter = new ThemeFilter();
   private List<Theme> rows;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;
 
   @Inject
@@ -129,7 +128,7 @@ public class ThemeFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = themeTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -140,7 +139,7 @@ public class ThemeFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = themeTypeBean.filterToQuery(filter);
     doFind(true);
@@ -165,13 +164,13 @@ public class ThemeFinderBean extends FinderBean
     filter = new ThemeFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(),
+    return new Object[]{ isFinding(), getFilterTabSelector(),
       filter, firstRow, getObjectPosition() };
   }
 
@@ -181,7 +180,7 @@ public class ThemeFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilterTabSelector((Integer)stateArray[1]);
       filter = (ThemeFilter)stateArray[2];
 
@@ -200,7 +199,7 @@ public class ThemeFinderBean extends FinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }

@@ -68,7 +68,6 @@ public class ClassFinderBean extends FinderBean
   private ClassFilter filter = new ClassFilter();
   private List<Class> rows;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;
   private String formSelector;
   private DefaultTreeNode rootsNode = new DefaultTreeNode("roots");
@@ -160,7 +159,7 @@ public class ClassFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = classTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -172,7 +171,7 @@ public class ClassFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = classTypeBean.filterToQuery(filter);
     doFind(true);
@@ -214,7 +213,7 @@ public class ClassFinderBean extends FinderBean
     filter = new ClassFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
     formSelector = null;
     rootsNode.getChildren().clear();
   }
@@ -222,7 +221,7 @@ public class ClassFinderBean extends FinderBean
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(),
+    return new Object[]{ isFinding(), getFilterTabSelector(),
       filter, firstRow, getObjectPosition(), formSelector };
   }
 
@@ -230,7 +229,7 @@ public class ClassFinderBean extends FinderBean
   public void restoreState(Serializable state)
   {
     Object[] stateArray = (Object[])state;
-    finding = (Boolean)stateArray[0];
+    setFinding((Boolean)stateArray[0]);
     setFilterTabSelector((Integer)stateArray[1]);
     filter = (ClassFilter)stateArray[2];
     smartFilter = classTypeBean.filterToQuery(filter);
@@ -246,7 +245,7 @@ public class ClassFinderBean extends FinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }

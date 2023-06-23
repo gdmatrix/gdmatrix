@@ -58,7 +58,6 @@ public class EnumTypeFinderBean extends FinderBean
   
   private String smartFilter;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;  
   
   @Inject
@@ -140,7 +139,7 @@ public class EnumTypeFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     filter = enumTypeTypeBean.queryToFilter(smartFilter, 
       DictionaryConstants.ENUM_TYPE_TYPE);
@@ -151,7 +150,7 @@ public class EnumTypeFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = enumTypeTypeBean.filterToQuery(filter);
     doFind(true);
@@ -176,13 +175,13 @@ public class EnumTypeFinderBean extends FinderBean
     filter = new EnumTypeFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow,
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow,
       getObjectPosition() };
   }
 
@@ -192,7 +191,7 @@ public class EnumTypeFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilterTabSelector((Integer)stateArray[1]);
       filter = (EnumTypeFilter)stateArray[2];
       smartFilter = enumTypeTypeBean.filterToQuery(filter);
@@ -212,7 +211,7 @@ public class EnumTypeFinderBean extends FinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.emptyList();
       }

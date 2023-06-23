@@ -58,7 +58,6 @@ public class UserFinderBean extends FinderBean
   private UserFilter filter = new UserFilter();
   private List<User> rows;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;
 
   @Inject
@@ -151,7 +150,7 @@ public class UserFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     filter = userTypeBean.queryToFilter(smartFilter, DictionaryConstants.USER_TYPE);
     doFind(true);
@@ -161,7 +160,7 @@ public class UserFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = userTypeBean.filterToQuery(filter);
     doFind(true);
@@ -186,13 +185,13 @@ public class UserFinderBean extends FinderBean
     filter = new UserFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(),
+    return new Object[]{ isFinding(), getFilterTabSelector(),
       filter, firstRow, getObjectPosition() };
   }
 
@@ -200,7 +199,7 @@ public class UserFinderBean extends FinderBean
   public void restoreState(Serializable state)
   {
     Object[] stateArray = (Object[])state;
-    finding = (Boolean)stateArray[0];
+    setFinding((Boolean)stateArray[0]);
     setFilterTabSelector((Integer)stateArray[1]);
     filter = (UserFilter)stateArray[2];
     smartFilter = userTypeBean.filterToQuery(filter);
@@ -215,7 +214,7 @@ public class UserFinderBean extends FinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }

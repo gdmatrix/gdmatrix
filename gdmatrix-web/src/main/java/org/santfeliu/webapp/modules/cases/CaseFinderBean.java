@@ -61,7 +61,6 @@ public class CaseFinderBean extends FinderBean
   private CaseFilter filter = new CaseFilter();
   private List<DataTableRow> rows;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;
   private String formSelector; 
  
@@ -190,7 +189,7 @@ public class CaseFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = caseTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -202,7 +201,7 @@ public class CaseFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     if (StringUtils.isBlank(filter.getCaseTypeId()))
     {
@@ -232,14 +231,14 @@ public class CaseFinderBean extends FinderBean
     filter = new CaseFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
     formSelector = null;
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow, 
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow, 
       getObjectPosition(), formSelector, rows, outdated };
   }
 
@@ -249,7 +248,7 @@ public class CaseFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[])state;
-      finding = (Boolean)stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilterTabSelector((Integer)stateArray[1]);
       filter = (CaseFilter)stateArray[2];
       smartFilter = caseTypeBean.filterToQuery(filter);
@@ -269,7 +268,7 @@ public class CaseFinderBean extends FinderBean
   {
     try
     {        
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }

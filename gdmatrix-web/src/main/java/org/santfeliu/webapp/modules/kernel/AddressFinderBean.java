@@ -55,7 +55,6 @@ public class AddressFinderBean extends FinderBean
   private AddressFilter filter = new AddressFilter();
   private List<AddressView> rows;
   private int firstRow;
-  private boolean finding;
   private boolean outdated;
 
   @Inject
@@ -140,7 +139,7 @@ public class AddressFinderBean extends FinderBean
   @Override
   public void smartFind()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(0);
     String baseTypeId = navigatorBean.getBaseTypeInfo().getBaseTypeId();
     filter = addressTypeBean.queryToFilter(smartFilter, baseTypeId);
@@ -151,7 +150,7 @@ public class AddressFinderBean extends FinderBean
   @Override
   public void find()
   {
-    finding = true;
+    setFinding(true);
     setFilterTabSelector(1);
     smartFilter = addressTypeBean.filterToQuery(filter);
     doFind(true);
@@ -176,13 +175,13 @@ public class AddressFinderBean extends FinderBean
     filter = new AddressFilter();
     smartFilter = null;
     rows = null;
-    finding = false;
+    setFinding(false);
   }
 
   @Override
   public Serializable saveState()
   {
-    return new Object[]{ finding, getFilterTabSelector(), filter, firstRow, 
+    return new Object[]{ isFinding(), getFilterTabSelector(), filter, firstRow, 
       getObjectPosition(), rows, outdated };
   }
 
@@ -192,7 +191,7 @@ public class AddressFinderBean extends FinderBean
     try
     {
       Object[] stateArray = (Object[]) state;
-      finding = (Boolean) stateArray[0];
+      setFinding((Boolean)stateArray[0]);
       setFilterTabSelector((Integer) stateArray[1]);
       filter = (AddressFilter) stateArray[2];
       firstRow = (Integer) stateArray[3];
@@ -210,7 +209,7 @@ public class AddressFinderBean extends FinderBean
   {
     try
     {
-      if (!finding)
+      if (!isFinding())
       {
         rows = Collections.EMPTY_LIST;
       }
