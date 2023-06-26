@@ -151,8 +151,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
     // TODO: more intelligent search
     if (query != null && query.contains(":"))
     {
-      String typeId = query.substring(query.indexOf(":") + 1);
-      filter.setTypeId(typeId);
+      filter.setTypeId(query);
     }
     else
       filter.setDescription(query);
@@ -167,7 +166,7 @@ public class TypeTypeBean extends TypeBean<Type, TypeFilter>
   {
     String query = "";
 
-    if (filter.getTypeId() != null)
+    if (!StringUtils.isBlank(filter.getTypeId()))
     {
       query = filter.getTypeId();
     }

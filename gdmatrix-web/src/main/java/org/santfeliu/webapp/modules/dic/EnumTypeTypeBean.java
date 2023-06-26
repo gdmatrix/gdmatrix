@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.DictionaryConstants;
 import org.matrix.dic.EnumType;
 import org.matrix.dic.EnumTypeFilter;
@@ -111,12 +112,20 @@ public class EnumTypeTypeBean extends TypeBean<EnumType, EnumTypeFilter>
   public EnumTypeFilter queryToFilter(String query, String typeId)
   {
     EnumTypeFilter filter = new EnumTypeFilter();
-
-    if (!query.startsWith("%")) query = "%" + query;
-    if (!query.endsWith("%")) query += "%";
     
-    filter.setName(query);
-
+    // TODO: more intelligent search
+    if (query != null && query.contains(":"))
+    {
+      filter.getEnumTypeId().clear();
+      filter.getEnumTypeId().add(query);
+    }
+    else if (!StringUtils.isBlank(query))
+    {
+      if (!query.startsWith("%")) query = "%" + query;
+      if (!query.endsWith("%")) query += "%";
+      filter.setName(query);
+    }
+    
     return filter;
   }
 
@@ -125,11 +134,15 @@ public class EnumTypeTypeBean extends TypeBean<EnumType, EnumTypeFilter>
   {
     String query = "";
 
-    if (filter.getName() != null)
+    if (filter.getEnumTypeId() != null && !filter.getEnumTypeId().isEmpty())
+    {
+      query = filter.getEnumTypeId().get(0);
+    }    
+    else if (filter.getName() != null)
     {
       query = filter.getName();
       if (query.startsWith("%")) query = query.substring(1);
-      if (query.endsWith("%")) query = query.substring(query.length() - 1);
+      if (query.endsWith("%")) query = query.substring(0, query.length() - 1);
     }
     return query;
   }

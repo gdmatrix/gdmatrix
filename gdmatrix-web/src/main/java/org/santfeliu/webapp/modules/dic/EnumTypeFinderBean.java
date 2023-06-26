@@ -144,6 +144,7 @@ public class EnumTypeFinderBean extends FinderBean
     filter = enumTypeTypeBean.queryToFilter(smartFilter, 
       DictionaryConstants.ENUM_TYPE_TYPE);
     doFind(true);
+    resetWildcards(filter);
     firstRow = 0;
   }
 
@@ -154,6 +155,7 @@ public class EnumTypeFinderBean extends FinderBean
     setFilterTabSelector(1);
     smartFilter = enumTypeTypeBean.filterToQuery(filter);
     doFind(true);
+    resetWildcards(filter);    
     firstRow = 0;
   }
   
@@ -224,6 +226,8 @@ public class EnumTypeFinderBean extends FinderBean
           {
             try
             {
+              String name = filter.getName();
+              filter.setName(setWildcards(name));
               return DicModuleBean.getPort(false).countEnumTypes(filter);
             }
             catch (Exception ex)
@@ -240,7 +244,12 @@ public class EnumTypeFinderBean extends FinderBean
             {
               filter.setFirstResult(firstResult);
               filter.setMaxResults(maxResults);
-              return DicModuleBean.getPort(false).findEnumTypes(filter);
+              String name = filter.getName();
+              filter.setName(setWildcards(name));     
+              List<EnumType> result = 
+                DicModuleBean.getPort(false).findEnumTypes(filter);
+              filter.setName(name);
+              return result;
             }
             catch (Exception ex)
             {
@@ -271,5 +280,22 @@ public class EnumTypeFinderBean extends FinderBean
     {
       error(ex);
     }
+  }  
+  
+  private String setWildcards(String text)
+  {
+    if (text != null && !text.startsWith("\"") && !text.endsWith("\""))
+      text = "%" + text.replaceAll("^%|%$", "") + "%" ;
+    else if (text != null && text.startsWith("\"") && text.endsWith("\""))
+      text = text.replaceAll("^\"|\"$", "");
+    return text;
+  } 
+  
+  private void resetWildcards(EnumTypeFilter filter)
+  {
+    String name = filter.getName();
+    if (name != null && !name.startsWith("\"") && !name.endsWith("\""))
+      name = name.replaceAll("^%+|%+$", "");
+    filter.setName(name);
   }  
 }
