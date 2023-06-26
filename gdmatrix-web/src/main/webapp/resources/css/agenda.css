@@ -81,8 +81,11 @@
 
 .eventRecurrences.dialog
 {
-  width: 80% !important;
-  left: 10% !important;
+  width: 90% !important;
+  max-width: 850px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 100001 !important;
 }
 
 .eventRecurrences .flex
