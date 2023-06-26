@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.util.logging.Logger;
 import org.matrix.security.SecurityConstants;
+import static org.matrix.security.SecurityConstants.ANONYMOUS;
 
 /**
  *
@@ -147,20 +148,18 @@ public class SessionListener implements HttpSessionListener
     for (HttpSession session : SESSIONS)
     {
       UserSessionBean userSessionBean = UserSessionBean.getInstance(session);
-      if (userSessionBean != null)
+      String userId = userSessionBean == null ?
+        ANONYMOUS : userSessionBean.getUserId();
+      if (ANONYMOUS.equals(userId))
       {
-        String userId = userSessionBean.getUserId();
-        if (SecurityConstants.ANONYMOUS.equals(userId))
+        long ellapsedMinutes = (now - session.getLastAccessedTime()) / 60000;
+        if (ellapsedMinutes >= anonymousSessionTimeout)
         {
-          long ellapsedMinutes = (now - session.getLastAccessedTime()) / 60000;
-          if (ellapsedMinutes >= anonymousSessionTimeout)
+          long interval = session.getLastAccessedTime() - session.getCreationTime();
+          if (interval < anonymousSessionInterval)
           {
-            long interval = session.getLastAccessedTime() - session.getCreationTime();
-            if (interval < anonymousSessionInterval)
-            {
-              session.invalidate();
-              LOGGER.log(Level.INFO, "Invalidate session: {0}", session.getId());
-            }
+            session.invalidate();
+            LOGGER.log(Level.INFO, "Invalidate session: {0}", session.getId());
           }
         }
       }

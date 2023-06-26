@@ -25,7 +25,7 @@
   </context-param>
   <context-param>
     <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-    <param-value>client</param-value>
+    <param-value>server</param-value>
   </context-param>
   <context-param>
     <param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
@@ -1036,7 +1036,7 @@
   </filter-mapping>
 
   <session-config>
-    <session-timeout>100</session-timeout>
+    <session-timeout>30</session-timeout>
   </session-config>
   <mime-mapping>
     <extension>html</extension>
