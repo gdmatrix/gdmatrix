@@ -270,6 +270,8 @@ public class FormImporter
       {
         SelectOneMenu selectOneMenu =
           (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
+        selectOneMenu.setTouchable(true);
+        selectOneMenu.setAutoWidth(false);
 
         UISelectItem selectItem = new UISelectItem();
         selectItem.setItemValue(null);
@@ -316,6 +318,7 @@ public class FormImporter
             (SelectOneMenu)application.createComponent(SelectOneMenu.COMPONENT_TYPE);
           select.setReadonly(field.isReadOnly());
           select.setAutoWidth(false);
+          select.setTouchable(true);
           component = select;
         }
 
