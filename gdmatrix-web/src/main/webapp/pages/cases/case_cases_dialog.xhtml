@@ -39,7 +39,7 @@
                          indicateRequired="true" />
           <emcomp:objectReference value="#{caseCasesTabBean.relCaseId}"
                                   process=":mainform:search_tabs:case_cases_dialog"
-                                  type="Case"
+                                  type="#{caseCasesTabBean.relCaseTypeId != null ? caseCasesTabBean.relCaseTypeId : 'Case'}"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"

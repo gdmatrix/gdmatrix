@@ -69,6 +69,7 @@ import org.santfeliu.webapp.util.WebUtils;
 public class CaseCasesTabBean extends TabBean
 {
   private static final String TYPEID_PROPERTY = "typeId";
+  private static final String CASETYPEID_PROPERTY = "caseTypeId";  
   
   private static final String TYPEID1_PROPERTY = "typeId1";
   private static final String TYPEID2_PROPERTY = "typeId2";
@@ -270,6 +271,16 @@ public class CaseCasesTabBean extends TabBean
     return typeId;
   }  
   
+  public String getRelCaseTypeId()
+  {
+    String typeId = null;
+    EditTab editTab = caseObjectBean.getActiveEditTab();
+    if (editTab != null)
+      typeId = editTab.getProperties().getString(CASETYPEID_PROPERTY);
+
+    return typeId;    
+  }
+  
   @Override
   public void load() throws Exception
   {
@@ -293,8 +304,10 @@ public class CaseCasesTabBean extends TabBean
           }
           else
           {
-            String typeId = editTab.getProperties().getString(TYPEID_PROPERTY);            
-            getCurrentTabInstance().rows = getResultsByDefault(typeId);
+            String typeId = 
+              editTab.getProperties().getString(TYPEID_PROPERTY);
+            getCurrentTabInstance().rows = 
+              getResultsByDefault(typeId);
           }
         }          
       }
