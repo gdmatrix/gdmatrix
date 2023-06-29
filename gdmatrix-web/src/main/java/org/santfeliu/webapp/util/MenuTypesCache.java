@@ -89,8 +89,9 @@ public class MenuTypesCache
 
     String key = currentMenuItem.getMid() + SEPARATOR + typeId;
     MidItem typeMid = mids.get(key);
+    MenuItemFinder miFinder = new MenuItemFinder();
     if (typeMid == null || typeMid.timeMillis + PURGE_MILLIS < now)
-      menuItem = findMenuItem(currentMenuItem, key, typeId);
+      menuItem = miFinder.find(currentMenuItem, key, typeId);
     else
     {
       menuItem = UserSessionBean.getCurrentInstance().getMenuModel()
@@ -98,7 +99,7 @@ public class MenuTypesCache
       if (menuItem.isNull()) //Auto-purge
       {
         mids.remove(key);
-        menuItem = findMenuItem(currentMenuItem, key, typeId);       
+        menuItem = miFinder.find(currentMenuItem, key, typeId);       
       }
     }
     
@@ -110,62 +111,6 @@ public class MenuTypesCache
     this.mids.clear();
   }
   
-  private MenuItemCursor findMenuItem(MenuItemCursor currentMenuItem, 
-    String key, String typeId)
-  {
-    MenuItemCursor menuItem;
-    MenuItemCursor topWebMenuItem = 
-      WebUtils.getTopWebMenuItem(currentMenuItem);
-    menuItem = getMenuItem(topWebMenuItem.getFirstChild(), typeId, null);
-    if (!menuItem.isNull())
-      mids.put(key, new MidItem(menuItem.getMid()));
-    return menuItem;
-  }
-  
-  private MenuItemCursor getMenuItem(MenuItemCursor menuItem, String typeId, 
-    MenuItemCursor candidate)
-  {
-    if (menuItem.isRendered())
-    {
-      int matchResult = matchTypeId(menuItem, typeId);
-      if (matchResult == 1)
-        return menuItem;
-      else if (matchResult == 0)
-        candidate = menuItem.getClone();
-    }
-    
-    MenuItemCursor auxMenuItem = menuItem.getClone();
-    if (auxMenuItem.moveFirstChild())
-    {
-      auxMenuItem = getMenuItem(auxMenuItem, typeId, candidate);
-      if (!auxMenuItem.isNull())
-        return auxMenuItem;
-    }
-
-    auxMenuItem = menuItem.getClone();
-    if (auxMenuItem.moveNext())
-      return getMenuItem(auxMenuItem, typeId, candidate);
-    else
-      return candidate != null ? candidate : auxMenuItem;
-  }
-
-  /**
-   * @return 1: match equals, 0: match derived from, -1 not match
-   */
-  private int matchTypeId(MenuItemCursor mic, String typeId)
-  {    
-    String nodeTypeId = mic.getProperty(NavigatorBean.BASE_TYPEID_PROPERTY);
-
-    if (typeId.equals(nodeTypeId))
-      return 1;
-      
-    Type type = TypeCache.getInstance().getType(typeId);      
-    if (type.isDerivedFrom(nodeTypeId))
-      return 0;
-    
-    return -1;
-  }
-    
   private MenuTypesCacheMBean getCacheMBean()
   {
     try
@@ -176,8 +121,127 @@ public class MenuTypesCache
     {
       return null;
     }
-  }  
+  }   
   
+  private class MenuItemFinder
+  {
+    public MenuItemCursor find(MenuItemCursor currentMenuItem, 
+      String key, String typeId)
+    {
+      MenuItemCursor menuItemCursor = null;
+      MenuItemCursor topWebMenuItem = 
+        WebUtils.getTopWebMenuItem(currentMenuItem);
+      MatchItem foundMenuItem = 
+        getMenuItem(topWebMenuItem.getFirstChild(), typeId, null);
+      
+      if (foundMenuItem != null)
+        menuItemCursor = foundMenuItem.getCursor();
+      
+      if (menuItemCursor != null && !menuItemCursor.isNull())
+        mids.put(key, new MidItem(menuItemCursor.getMid()));
+      
+      return menuItemCursor;
+    }
+
+    private MatchItem getMenuItem(MenuItemCursor menuItem, String typeId, 
+      MatchItem candidate)
+    {
+      MatchItem matchItem = null;    
+      if (menuItem.isRendered())
+      {
+        matchItem = matchTypeId(menuItem, typeId);
+        if (matchItem != null && !matchItem.isCandidate())
+          return matchItem;
+        else if (matchItem == null)
+          matchItem = candidate;
+      }
+
+      //First child
+      MenuItemCursor auxMenuItem = menuItem.getClone();
+      if (auxMenuItem.moveFirstChild())
+      {
+        matchItem = getMenuItem(auxMenuItem, typeId, matchItem);
+        if (matchItem != null && matchItem.hasMatch() && 
+          !matchItem.isCandidate())
+        {
+          return matchItem;
+        }
+      }
+
+      //Next sibling
+      auxMenuItem = menuItem.getClone();
+      if (auxMenuItem.moveNext())
+        return getMenuItem(auxMenuItem, typeId, matchItem);
+      else
+        return matchItem != null ? matchItem : new MatchItem(auxMenuItem);
+    }
+
+    /**
+     * @return 1: match equals, 0: match derived from, -1 not match
+     */
+    private MatchItem matchTypeId(MenuItemCursor mic, String typeId)
+    {    
+      String nodeTypeId = mic.getProperty(NavigatorBean.BASE_TYPEID_PROPERTY);
+
+      if (typeId.equals(nodeTypeId))
+        return new MatchItem(mic);
+
+      Type type = TypeCache.getInstance().getType(typeId);      
+      if (type.isDerivedFrom(nodeTypeId))
+      { 
+        return new MatchItem(mic.getClone(), true);
+      }
+
+      return null;
+    } 
+    
+    /**
+     * Represents an item that match with the typeId criteria. If candidate is 
+     * false is an equals match, else if candidate is true then is a derived 
+     * type.
+     */
+    private class MatchItem
+    {
+      MenuItemCursor cursor;
+      boolean candidate = false;
+
+      public MatchItem(MenuItemCursor cursor)
+      {
+        this.cursor = cursor;
+      }
+      
+      public MatchItem(MenuItemCursor cursor, boolean candidate)
+      {
+        this.candidate = candidate;
+      }
+
+      public MenuItemCursor getCursor()
+      {
+        return cursor;
+      }
+
+      public void setCursor(MenuItemCursor cursor)
+      {
+        this.cursor = cursor;
+      }
+
+      public boolean isCandidate()
+      {
+        return candidate;
+      }
+
+      public void setCandidate(boolean candidate)
+      {
+        this.candidate = candidate;
+      }
+      
+      public boolean hasMatch()
+      {
+        return cursor != null && !cursor.isNull();
+      }      
+    }    
+  }  
+    
   private class MidItem 
   {
     private String mid;
