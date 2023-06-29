@@ -1221,7 +1221,7 @@ public class CaseManager implements CaseManagerPort
 
   public List<InterventionProblemView> findInterventionProblemViews(InterventionProblemFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return Collections.EMPTY_LIST;
   }
 
   private enum EstrategiaComptador {
@@ -1327,7 +1327,7 @@ public class CaseManager implements CaseManagerPort
 
   public List<InterventionView> findInterventionViews(InterventionFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return Collections.EMPTY_LIST;
   }
 
   public Problem loadProblem(String probId)
@@ -1347,7 +1347,7 @@ public class CaseManager implements CaseManagerPort
 
   public List<ProblemView> findProblemViews(ProblemFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return Collections.EMPTY_LIST;
   }
 
   public Demand loadDemand(String demandId)
@@ -1367,7 +1367,7 @@ public class CaseManager implements CaseManagerPort
 
   public List<Demand> findDemands(DemandFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return Collections.EMPTY_LIST;
   }
 
   public CaseEvent loadCaseEvent(String caseEventId)
@@ -1392,7 +1392,7 @@ public class CaseManager implements CaseManagerPort
 
   public List<CaseEventView> findCaseEventViews(CaseEventFilter filter)
   {
-    throw new UnsupportedOperationException("Not supported yet."); 
+    return Collections.EMPTY_LIST; 
   }  
   
   private boolean validarSeguretats(String module, Action accio)
