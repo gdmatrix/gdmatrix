@@ -200,21 +200,6 @@ public class FormImporter
   {
   }
 
-//  protected void importGroupView(HtmlView view, UIComponent parent)
-//  {
-//    FacesContext facesContext = FacesContext.getCurrentInstance();
-//    Application application = facesContext.getApplication();
-//
-//    HtmlPanelGroup group =
-//      (HtmlPanelGroup)application.createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-//    group.setStyleClass("col-12");
-//    group.setLayout("block");
-//
-//    parent.getChildren().add(group);
-//
-//    importChildren(view, group);
-//  }
-
   protected void importFields()
   {
     Collection<Field> fields = form.getFields();
@@ -262,6 +247,8 @@ public class FormImporter
     {
       InputNumber inputNumber =
         (InputNumber)application.createComponent(InputNumber.COMPONENT_TYPE);
+      inputNumber.setReadonly(field.isReadOnly());
+      inputNumber.setPadControl(false);
       component = inputNumber;
     }
     else if (Field.BOOLEAN.equals(fieldType))
