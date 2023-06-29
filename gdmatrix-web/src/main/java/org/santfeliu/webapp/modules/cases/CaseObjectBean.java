@@ -187,11 +187,6 @@ public class CaseObjectBean extends ObjectBean
     return caseTypeBean.getPropertyLabel(cas, propName, altName);
   }
 
-  public boolean isPropertyHidden(String propName)
-  {
-    return caseTypeBean.isPropertyHidden(cas, propName);
-  }
-
   /**
    * Not rendered when base Type has "classId" PropertyDefinition with default
    * value set, minium occurrences greater than zero, and read only.

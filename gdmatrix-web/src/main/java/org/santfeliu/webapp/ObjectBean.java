@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.dic.PropertyDefinition;
 import org.mozilla.javascript.Callable;
 import org.santfeliu.dic.Type;
@@ -446,6 +447,16 @@ public abstract class ObjectBean extends BaseBean
   {
     ComponentUtils.selectTabWithErrors("mainform:search_tabs:tabs");
   }
+  
+  public boolean isRenderProperty(String propName)
+  {
+    propName = "render" + StringUtils.capitalize(propName);
+    Object value = objectSetup.getProperties().get(propName);
+    if (value == null)
+      return true;
+    else
+      return Boolean.parseBoolean(value.toString());
+  }  
 
   private void clear()
   {
