@@ -145,35 +145,35 @@ public class MenuTypesCache
 
     private MatchItem getMenuItem(MenuItemCursor menuItem, String typeId, 
       MatchItem candidate)
-    {
-      MatchItem matchItem = null;    
-      if (menuItem.isRendered())
-      {
-        matchItem = matchTypeId(menuItem, typeId);
-        if (matchItem != null && !matchItem.isCandidate())
-          return matchItem;
-        else if (matchItem == null)
-          matchItem = candidate;
-      }
+    {      
+      if (!menuItem.isRendered())
+        return candidate;
+      
+      MatchItem matchItem = matchTypeId(menuItem, typeId);
+      if (matchItem.hasExactMatch()) 
+        return matchItem;
+      else if (!matchItem.hasMatch()) //Spread the candidate
+        matchItem = candidate;
 
       //First child
       MenuItemCursor auxMenuItem = menuItem.getClone();
       if (auxMenuItem.moveFirstChild())
       {
         matchItem = getMenuItem(auxMenuItem, typeId, matchItem);
-        if (matchItem != null && matchItem.hasMatch() && 
-          !matchItem.isCandidate())
-        {
+        if (matchItem.hasExactMatch())
           return matchItem;
-        }
       }
 
       //Next sibling
       auxMenuItem = menuItem.getClone();
       if (auxMenuItem.moveNext())
         return getMenuItem(auxMenuItem, typeId, matchItem);
-      else
-        return matchItem != null ? matchItem : new MatchItem(auxMenuItem);
+      else if (matchItem.hasMatch())
+        return matchItem;
+      else if (candidate != null && candidate.hasCandidateMatch())
+        return candidate;
+      else 
+        return new MatchItem(auxMenuItem);
     }
 
     /**
@@ -192,7 +192,7 @@ public class MenuTypesCache
         return new MatchItem(mic.getClone(), true);
       }
 
-      return null;
+      return new MatchItem();
     } 
     
     /**
@@ -204,14 +204,20 @@ public class MenuTypesCache
     {
       MenuItemCursor cursor;
       boolean candidate = false;
+      
+      public MatchItem()
+      {
+        this(null);
+      }
 
       public MatchItem(MenuItemCursor cursor)
       {
-        this.cursor = cursor;
+        this(cursor, false);
       }
       
       public MatchItem(MenuItemCursor cursor, boolean candidate)
       {
+        this.cursor = cursor;
         this.candidate = candidate;
       }
 
@@ -238,6 +244,16 @@ public class MenuTypesCache
       public boolean hasMatch()
       {
         return cursor != null && !cursor.isNull();
+      }
+
+      public boolean hasExactMatch()
+      {
+        return hasMatch() && !isCandidate();
+      }
+      
+      public boolean hasCandidateMatch()
+      {
+        return hasMatch() && isCandidate();
       }      
     }    
   }  
