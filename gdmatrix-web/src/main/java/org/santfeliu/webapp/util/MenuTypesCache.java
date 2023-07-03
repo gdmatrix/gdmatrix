@@ -168,7 +168,7 @@ public class MenuTypesCache
       auxMenuItem = menuItem.getClone();
       if (auxMenuItem.moveNext())
         return getMenuItem(auxMenuItem, typeId, matchItem);
-      else if (matchItem.hasMatch())
+      else if (matchItem != null && matchItem.hasMatch())
         return matchItem;
       else if (candidate != null && candidate.hasCandidateMatch())
         return candidate;
