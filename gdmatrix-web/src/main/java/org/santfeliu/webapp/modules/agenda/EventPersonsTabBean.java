@@ -337,10 +337,7 @@ public class EventPersonsTabBean extends TabBean
   public void create()
   {
     editing = new Attendant();
-
-    String typeId = getTabBaseTypeId();
-    if (typeId != null)
-      editing.setAttendantTypeId(typeId);
+    editing.setAttendantTypeId(getCreationTypeId());
   }
 
   public void switchView()
@@ -393,12 +390,6 @@ public class EventPersonsTabBean extends TabBean
   public void cancel()
   {
     editing = null;
-  }
-
-  public String getTabBaseTypeId()
-  {
-    EditTab editTab = eventObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
   }
 
   @Override

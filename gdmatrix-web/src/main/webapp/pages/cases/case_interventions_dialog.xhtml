@@ -37,6 +37,7 @@
           <emcomp:typeReference value="#{caseInterventionsTabBean.intTypeId}"
                                 type="#{caseInterventionsTabBean.tabBaseTypeId != null ? caseInterventionsTabBean.tabBaseTypeId : 'Intervention'}"
                                 showNavigatorItems="#{caseInterventionsTabBean.tabBaseTypeId != 'Intervention' ? 'false' : 'true'}"
+                                showNonInstantiableItems="false"                                
                                 styleClass="w-full"
                                 scrollHeight="200"
                                 queryDelay="1000"

@@ -274,12 +274,6 @@ public class CaseInterventionsTabBean extends TabBean
     return editing == null ? NEW_OBJECT_ID : editing.getIntTypeId();
   }
 
-  public String getTabBaseTypeId()
-  {
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
-  }
-
   public void onPersonClear()
   {
     editing.setPersonId(null);
@@ -288,10 +282,7 @@ public class CaseInterventionsTabBean extends TabBean
   public void create()
   {
     editing = new Intervention();
-    editing.setCaseId(getObjectId());
-    String baseTypeId = getTabBaseTypeId();
-    if (baseTypeId != null)
-      editing.setIntTypeId(baseTypeId);
+    editing.setIntTypeId(getCreationTypeId());
   }
 
   public void switchView()

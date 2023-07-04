@@ -30,6 +30,7 @@
  */
 package org.santfeliu.webapp.composite;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -46,6 +47,8 @@ import org.santfeliu.webapp.modules.dic.TypeTypeBean;
 import org.santfeliu.webapp.util.WebUtils;
 import static org.matrix.dic.DictionaryConstants.TYPE_TYPE;
 import org.primefaces.event.SelectEvent;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 
 /**
@@ -62,12 +65,32 @@ public class TypeReferenceBean extends ObjectReferenceBean
   @Override
   public List<SelectItem> complete(String query)
   {
+    List<SelectItem> selectItems;
     String typeId = getTypeId();
     boolean showNavigatorItems = isShowNavigatorItems();
 
-    List<SelectItem> selectItems =
+    List<SelectItem> auxSelectItems =
       typeTypeBean.getSelectItems(query, typeId, showNavigatorItems, true);
 
+    if (!isShowNonInstantiableItems())
+    {
+      selectItems = new ArrayList();      
+      TypeCache typeCache = TypeCache.getInstance();      
+      for (SelectItem item : auxSelectItems)
+      {
+        String auxTypeId = (String)item.getValue();
+        Type type = typeCache.getType(auxTypeId);        
+        if (type != null && type.isInstantiable())
+        {
+          selectItems.add(item);
+        }
+      }
+    }
+    else
+    {
+      selectItems = auxSelectItems;
+    }    
+    
     if (StringUtils.isBlank(query) && showNavigatorItems)
     {
       String objectId = WebUtils.getValue("#{cc.attrs.value}");
@@ -137,6 +160,14 @@ public class TypeReferenceBean extends ObjectReferenceBean
   {
     WebUtils.setValue("#{cc.attrs.value}", String.class, null);
     resetFormSelector();
+  }
+
+  public boolean isShowNonInstantiableItems()
+  {
+    Object value = WebUtils.getValue("#{cc.attrs.showNonInstantiableItems}");
+    if (value == null) return true;
+    if (value instanceof Boolean) return ((Boolean)value);
+    return "true".equals(value);
   }
 
   protected void resetFormSelector()

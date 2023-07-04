@@ -299,21 +299,11 @@ public class CaseAddressesTabBean extends TabBean
       tabInstance.firstRow = 0;
     }
   }
-  
-  public String getTabBaseTypeId()
-  {    
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
-  }     
 
   public void create()
   {
     editing = new CaseAddress();
-    String typeId = getTabBaseTypeId();
-    if (typeId != null)
-      editing.setCaseAddressTypeId(typeId);
-    else 
-      editing.setCaseAddressTypeId(DictionaryConstants.CASE_ADDRESS_TYPE);
+    editing.setCaseAddressTypeId(getCreationTypeId());
   }
 
   public void switchView()

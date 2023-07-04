@@ -291,10 +291,7 @@ public class EventDocumentsTabBean extends TabBean
   public void create()
   {
     editing = new EventDocument();
-
-    String typeId = getTabBaseTypeId();
-    if (typeId != null)
-      editing.setEventDocTypeId(typeId);
+    editing.setEventDocTypeId(getCreationTypeId());
   }
 
   public void switchView()
@@ -348,12 +345,6 @@ public class EventDocumentsTabBean extends TabBean
   public void cancel()
   {
     editing = null;
-  }
-
-  public String getTabBaseTypeId()
-  {
-    EditTab editTab = eventObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
   }
 
   @Override

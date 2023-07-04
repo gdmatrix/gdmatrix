@@ -57,6 +57,7 @@
                                 update=":mainform:search_tabs:case_documents_dialog"
                                 type="#{caseDocumentsTabBean.tabBaseTypeId != null ? caseDocumentsTabBean.tabBaseTypeId : 'CaseDocument'}"
                                 showNavigatorItems="#{caseDocumentsTabBean.tabBaseTypeId != 'CaseDocument' ? 'false' : 'true'}"
+                                showNonInstantiableItems="false"                                
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"

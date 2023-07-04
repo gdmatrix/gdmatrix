@@ -20,6 +20,7 @@
         <emcomp:typeReference value="#{caseObjectBean.case.caseTypeId}"
                               type="#{caseObjectBean.baseTypeInfo.baseTypeId}"
                               showNavigatorItems="#{caseObjectBean.baseTypeInfo.baseTypeId != 'Case' ? 'false' : 'true'}"
+                              showNonInstantiableItems="false"
                               scrollHeight="200"
                               queryDelay="1000"
                               minQueryLength="3"

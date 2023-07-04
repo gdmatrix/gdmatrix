@@ -285,10 +285,7 @@ public class CaseEventsTabBean extends TabBean
   public void create()
   {
     editing = new CaseEvent();
-
-    String typeId = getTabBaseTypeId();
-    if (typeId != null)
-      editing.setCaseEventTypeId(typeId);
+    editing.setCaseEventTypeId(getCreationTypeId());
   }
 
   public void switchView()
@@ -348,12 +345,6 @@ public class CaseEventsTabBean extends TabBean
   {
     tabInstances.clear();
   }  
-
-  public String getTabBaseTypeId()
-  {
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
-  }
 
   @Override
   public Serializable saveState()

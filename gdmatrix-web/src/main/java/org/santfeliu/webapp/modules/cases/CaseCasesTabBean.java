@@ -240,9 +240,7 @@ public class CaseCasesTabBean extends TabBean
   {
     editing = new CaseCase();
     editing.setCaseId(getObjectId());
-    String baseTypeId = getTabBaseTypeId();
-    if (baseTypeId != null)
-      editing.setCaseCaseTypeId(baseTypeId);
+    editing.setCaseCaseTypeId(getCreationTypeId());
   }
 
   public void switchView()
@@ -264,16 +262,6 @@ public class CaseCasesTabBean extends TabBean
       }
     }
     return "";
-  }
-  
-  public String getTabBaseTypeId()
-  { 
-    String typeId = null;
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    if (editTab != null)
-      typeId = editTab.getProperties().getString(TYPEID_PROPERTY);
-
-    return typeId;
   }
   
   public String getRelCaseTypeId()

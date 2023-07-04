@@ -453,20 +453,12 @@ public class CasePersonsTabBean extends TabBean
     return "";
   }  
   
-  public String getTabBaseTypeId()
-  {    
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
-  }   
-  
   public void create()
   {
-    editing = new CasePerson();
-    String typeId = getTabBaseTypeId();
-    if (typeId != null)
-      editing.setCasePersonTypeId(typeId);
+    editing = new CasePerson(); 
+    editing.setCasePersonTypeId(getCreationTypeId());
   }
-
+  
   @Override
   public void load()
   {

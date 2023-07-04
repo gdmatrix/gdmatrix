@@ -57,6 +57,7 @@
           <emcomp:typeReference value="#{caseCasesTabBean.caseCaseTypeId}"
                                 type="#{caseCasesTabBean.tabBaseTypeId != null ? caseCasesTabBean.tabBaseTypeId : 'CaseCase'}"
                                 showNavigatorItems="#{caseCasesTabBean.tabBaseTypeId != 'CaseCase' ? 'false' : 'true'}"
+                                showNonInstantiableItems="false"                                
                                 scrollHeight="200"
                                 queryDelay="1000"
                                 minQueryLength="3"

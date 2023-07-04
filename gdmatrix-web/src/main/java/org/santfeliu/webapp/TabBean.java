@@ -32,6 +32,8 @@ package org.santfeliu.webapp;
 
 import org.santfeliu.webapp.setup.EditTab;
 import java.io.Serializable;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -117,6 +119,26 @@ public abstract class TabBean extends BaseBean
     {
       // ignore
     }
+  }
+
+  public String getTabBaseTypeId()
+  {
+    EditTab editTab = getObjectBean().getActiveEditTab();
+    return editTab.getProperties().getString("typeId");
+  }
+
+  protected String getCreationTypeId()
+  {
+    String typeId = getTabBaseTypeId();
+    if (typeId != null)
+    {
+      Type type = TypeCache.getInstance().getType(typeId);
+      if (type != null && type.isInstantiable())
+      {
+        return typeId;
+      }
+    }
+    return null;
   }
 
 }

@@ -325,10 +325,7 @@ public class CaseDocumentsTabBean extends TabBean
   public void create()
   {
     editing = new CaseDocument();
-
-    String typeId = getTabBaseTypeId();
-    if (typeId != null)
-      editing.setCaseDocTypeId(typeId);
+    editing.setCaseDocTypeId(getCreationTypeId());
   }
 
   public void switchView()
@@ -378,12 +375,6 @@ public class CaseDocumentsTabBean extends TabBean
   public void clear()
   {
     tabInstances.clear();
-  }
-
-  public String getTabBaseTypeId()
-  {
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    return editTab.getProperties().getString("typeId");
   }
 
   @Override

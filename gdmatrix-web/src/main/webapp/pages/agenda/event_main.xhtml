@@ -17,6 +17,7 @@
         <emcomp:typeReference value="#{eventObjectBean.event.eventTypeId}"
                               type="#{eventObjectBean.baseTypeInfo.baseTypeId}"
                               showNavigatorItems="#{eventObjectBean.baseTypeInfo.baseTypeId != 'Event' ? 'false' : 'true'}"
+                              showNonInstantiableItems="false"
                               styleClass="w-full"
                               scrollHeight="200"
                               queryDelay="1000"
