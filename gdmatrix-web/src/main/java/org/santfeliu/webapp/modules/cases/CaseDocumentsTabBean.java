@@ -145,13 +145,18 @@ public class CaseDocumentsTabBean extends TabBean
   public String getViewURL()
   {
     CaseDocumentView docView = WebUtils.getValue("#{row}");
-    String docId = docView.getDocument().getDocId();
+    if (docView.getDocument() != null)
+    {
+      String docId = docView.getDocument().getDocId();
 
-    ExternalContext extContext = getExternalContext();
-    HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
-    String contextPath = request.getContextPath();
+      ExternalContext extContext = getExternalContext();
+      HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
+      String contextPath = request.getContextPath();
     
-    return contextPath + "/documents/" + docId;
+      return contextPath + "/documents/" + docId;
+    }
+    else
+      return null;
   }
 
   public CaseDocument getEditing()
