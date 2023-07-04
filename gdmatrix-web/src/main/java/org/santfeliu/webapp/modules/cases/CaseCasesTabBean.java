@@ -48,7 +48,10 @@ import org.matrix.cases.CaseCaseFilter;
 import org.matrix.cases.CaseCaseView;
 import org.matrix.cases.CasePersonFilter;
 import org.matrix.cases.CasePersonView;
+import org.matrix.dic.PropertyDefinition;
 import org.primefaces.PrimeFaces;
+import org.santfeliu.dic.Type;
+import org.santfeliu.dic.TypeCache;
 import org.santfeliu.dic.util.DictionaryUtils;
 import org.santfeliu.util.TextUtils;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
@@ -68,11 +71,13 @@ import org.santfeliu.webapp.util.WebUtils;
 @ViewScoped
 public class CaseCasesTabBean extends TabBean
 {
-  private static final String TYPEID_PROPERTY = "typeId";
-  private static final String CASETYPEID_PROPERTY = "caseTypeId";  
-  
+  private static final String TYPEID_PROPERTY = "typeId";  
   private static final String TYPEID1_PROPERTY = "typeId1";
   private static final String TYPEID2_PROPERTY = "typeId2";
+  
+  private static final String SOURCE_TYPEID = "_sourceTypeId";
+  private static final String TARGET_TYPEID = "_targetTypeId";  
+  
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
 
@@ -269,18 +274,51 @@ public class CaseCasesTabBean extends TabBean
       typeId = editTab.getProperties().getString(TYPEID_PROPERTY);
 
     return typeId;
-  }  
+  }
   
   public String getRelCaseTypeId()
   {
     String typeId = null;
-    EditTab editTab = caseObjectBean.getActiveEditTab();
-    if (editTab != null)
-      typeId = editTab.getProperties().getString(CASETYPEID_PROPERTY);
+    
+    String baseTypeId = getTabBaseTypeId();
+    if (baseTypeId != null)
+    {
+      TypeCache typeCache = TypeCache.getInstance();
+      Type baseType = typeCache.getType(baseTypeId);
+      
+      PropertyDefinition pd = baseType.getPropertyDefinition(TARGET_TYPEID); 
+      if (pd != null)
+      {
+        String targetTypeId = pd.getValue().get(0);
+        String objectTypeId = caseObjectBean.getCase().getCaseTypeId(); 
+        Type objectType = typeCache.getType(objectTypeId);
+        if (!objectType.isDerivedFrom(targetTypeId)) 
+          typeId = targetTypeId;  //Target typeId is the opposite. Return target
+        else
+        {
+          //Target typeId probably is not the opposite, try reverse relation
+          pd = baseType.getPropertyDefinition(SOURCE_TYPEID); 
+          if (pd != null)
+          {
+            String sourceTypeId = pd.getValue().get(0);
+            if (!objectType.isDerivedFrom(typeId))
+            {
+              //Source typeId is the opposite. Return source.
+              typeId = sourceTypeId; 
+            }
+            else
+            {
+              //Relation between two objects of the same type it's assumed.
+              typeId = targetTypeId; 
+            }
+          }
+        }
+      }
+    }
 
     return typeId;    
   }
-  
+    
   @Override
   public void load() throws Exception
   {
@@ -352,20 +390,28 @@ public class CaseCasesTabBean extends TabBean
   @Override
   public void store() throws Exception
   {
-    String objectId = getObjectId();
-    if (editing != null)
+    try
     {
-      if (editing.getRelCaseId() == null || editing.getRelCaseId().isEmpty())
-        throw new Exception("CASE_MUST_BE_SELECTED");
+      String objectId = getObjectId();
+      if (editing != null)
+      {
+        if (editing.getRelCaseId() == null || editing.getRelCaseId().isEmpty())
+          throw new Exception("CASE_MUST_BE_SELECTED");
 
-      if (!editing.getCaseId().equals(objectId))
-        throw new Exception("CAN_NOT_STORE_REVERSE_RELATION");
+        if (!editing.getCaseId().equals(objectId))
+          throw new Exception("CAN_NOT_STORE_REVERSE_RELATION");
 
-      CasesModuleBean.getPort(false).storeCaseCase(editing);
-      refreshHiddenTabInstances();
-      load();
-      editing = null;
-      info("STORE_OBJECT");
+        CasesModuleBean.getPort(false).storeCaseCase(editing);
+        refreshHiddenTabInstances();
+        load();
+        editing = null;
+        info("STORE_OBJECT");
+      }
+    }
+    catch(Exception ex)
+    {
+      error(ex);
+      showDialog();
     }
   }
 
