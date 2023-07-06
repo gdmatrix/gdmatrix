@@ -72,7 +72,7 @@
                            action="#{navigatorBean.show(row.caseTypeId, row.caseId)}" />
           <p:commandButton action="#{caseCasesTabBean.edit(row)}"
                            icon="pi pi-pencil"
-                           rendered="#{row.rowId != null and not row.reverseRelation}"
+                           rendered="#{row.rowId != null}"
                            styleClass="rounded-button ui-button-flat"
                            alt="#{objectBundle.edit}" title="#{objectBundle.edit}"
                            process=":mainform:search_tabs:tabs"

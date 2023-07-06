@@ -71,13 +71,13 @@ import org.santfeliu.webapp.util.WebUtils;
 @ViewScoped
 public class CaseCasesTabBean extends TabBean
 {
-  private static final String TYPEID_PROPERTY = "typeId";  
+  private static final String TYPEID_PROPERTY = "typeId";
   private static final String TYPEID1_PROPERTY = "typeId1";
   private static final String TYPEID2_PROPERTY = "typeId2";
-  
+
   private static final String SOURCE_TYPEID = "_sourceTypeId";
-  private static final String TARGET_TYPEID = "_targetTypeId";  
-  
+  private static final String TARGET_TYPEID = "_targetTypeId";
+
   Map<String, TabInstance> tabInstances = new HashMap<>();
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
 
@@ -98,12 +98,12 @@ public class CaseCasesTabBean extends TabBean
 
   @Inject
   CaseTypeBean caseTypeBean;
-  
+
   public TabInstance getCurrentTabInstance()
   {
     EditTab tab = caseObjectBean.getActiveEditTab();
     if (WebUtils.getBeanName(this).equals(tab.getBeanName()))
-    {    
+    {
       TabInstance tabInstance = tabInstances.get(tab.getSubviewId());
       if (tabInstance == null)
       {
@@ -138,16 +138,16 @@ public class CaseCasesTabBean extends TabBean
   {
     return getCurrentTabInstance().rows;
   }
-  
+
   public void setRows(List<CaseCasesDataTableRow> rows)
   {
     getCurrentTabInstance().rows = rows;
   }
-  
+
   public boolean isRelatedByPerson()
   {
     return getCurrentTabInstance().relatedByPerson;
-  }  
+  }
 
   public List<Column> getColumns()
   {
@@ -217,17 +217,28 @@ public class CaseCasesTabBean extends TabBean
     return editing == null ? NEW_OBJECT_ID : editing.getCaseCaseTypeId();
   }
 
-  public void setRelCaseId(String caseId)
+  public void setRefCaseId(String caseId)
   {
     if (editing != null)
-      editing.setRelCaseId(caseId);
-
+    {
+      if (isDirectRelation())
+        editing.setRelCaseId(caseId);
+      else
+        editing.setCaseId(caseId);
+    }
     showDialog();
   }
 
-  public String getRelCaseId()
+  public String getRefCaseId()
   {
-    return editing == null ? NEW_OBJECT_ID : editing.getRelCaseId();
+    if (editing == null) return NEW_OBJECT_ID;
+    else
+    {
+      if (isDirectRelation())
+        return editing.getRelCaseId();
+      else
+        return editing.getCaseId();
+    }
   }
 
   @Override
@@ -239,8 +250,15 @@ public class CaseCasesTabBean extends TabBean
   public void create()
   {
     editing = new CaseCase();
-    editing.setCaseId(getObjectId());
     editing.setCaseCaseTypeId(getCreationTypeId());
+    if (isDirectRelation())
+    {
+      editing.setCaseId(getObjectId());
+    }
+    else
+    {
+      editing.setRelCaseId(getObjectId());
+    }
   }
 
   public void switchView()
@@ -252,61 +270,35 @@ public class CaseCasesTabBean extends TabBean
   {
     if (editing != null && !isNew(editing))
     {
-      if (editing.getCaseId().equals(getObjectId())) //direct
-      {
-        return caseTypeBean.getDescription(editing.getRelCaseId());
-      }
-      else //reverse
-      {
-        return caseTypeBean.getDescription(editing.getCaseId());
-      }
+      return caseTypeBean.getDescription(getRefCaseId());
     }
     return "";
   }
-  
-  public String getRelCaseTypeId()
-  {
-    String typeId = null;
-    
-    String baseTypeId = getTabBaseTypeId();
-    if (baseTypeId != null)
-    {
-      TypeCache typeCache = TypeCache.getInstance();
-      Type baseType = typeCache.getType(baseTypeId);
-      
-      PropertyDefinition pd = baseType.getPropertyDefinition(TARGET_TYPEID); 
-      if (pd != null)
-      {
-        String targetTypeId = pd.getValue().get(0);
-        String objectTypeId = caseObjectBean.getCase().getCaseTypeId(); 
-        Type objectType = typeCache.getType(objectTypeId);
-        if (!objectType.isDerivedFrom(targetTypeId)) 
-          typeId = targetTypeId;  //Target typeId is the opposite. Return target
-        else
-        {
-          //Target typeId probably is not the opposite, try reverse relation
-          pd = baseType.getPropertyDefinition(SOURCE_TYPEID); 
-          if (pd != null)
-          {
-            String sourceTypeId = pd.getValue().get(0);
-            if (!objectType.isDerivedFrom(typeId))
-            {
-              //Source typeId is the opposite. Return source.
-              typeId = sourceTypeId; 
-            }
-            else
-            {
-              //Relation between two objects of the same type it's assumed.
-              typeId = targetTypeId; 
-            }
-          }
-        }
-      }
-    }
 
-    return typeId;    
+  public String getRefCaseTypeId()
+  {
+    String typeIdPropertyName =
+      isDirectRelation() ? TARGET_TYPEID : SOURCE_TYPEID;
+    TypeCache typeCache = TypeCache.getInstance();
+    Type selectedType = typeCache.getType(getCaseCaseTypeId());
+    if (selectedType != null)
+    {
+      PropertyDefinition pd =
+        selectedType.getPropertyDefinition(typeIdPropertyName);
+      if (pd != null) return pd.getValue().get(0);
+    }
+    return null;
   }
-    
+
+  public boolean isLeafBaseType()
+  {
+    String baseTypeId = getTabBaseTypeId();
+    if (baseTypeId == null) return false;
+    TypeCache typeCache = TypeCache.getInstance();
+    Type baseType = typeCache.getType(baseTypeId);
+    return (baseType != null ? baseType.isLeaf() : false);
+  }
+
   @Override
   public void load() throws Exception
   {
@@ -317,11 +309,11 @@ public class CaseCasesTabBean extends TabBean
         EditTab editTab = caseObjectBean.getActiveEditTab();
         if (editTab != null)
         {
-          String typeId1 = 
+          String typeId1 =
             editTab.getProperties().getString(TYPEID1_PROPERTY);
-          String typeId2 = 
+          String typeId2 =
             editTab.getProperties().getString(TYPEID2_PROPERTY);
-            
+
           if (typeId1 != null || typeId2 != null)
           {
             TabInstance tabInstance = getCurrentTabInstance();
@@ -330,12 +322,12 @@ public class CaseCasesTabBean extends TabBean
           }
           else
           {
-            String typeId = 
+            String typeId =
               editTab.getProperties().getString(TYPEID_PROPERTY);
-            getCurrentTabInstance().rows = 
+            getCurrentTabInstance().rows =
               getResultsByDefault(typeId);
           }
-        }          
+        }
       }
       catch (Exception ex)
       {
@@ -367,7 +359,7 @@ public class CaseCasesTabBean extends TabBean
       {
         create();
       }
-      formSelector = null;  
+      formSelector = null;
     }
     catch (Exception ex)
     {
@@ -380,14 +372,11 @@ public class CaseCasesTabBean extends TabBean
   {
     try
     {
-      String objectId = getObjectId();
       if (editing != null)
       {
-        if (editing.getRelCaseId() == null || editing.getRelCaseId().isEmpty())
+        String refCaseId = getRefCaseId();
+        if (refCaseId == null || refCaseId.isEmpty())
           throw new Exception("CASE_MUST_BE_SELECTED");
-
-        if (!editing.getCaseId().equals(objectId))
-          throw new Exception("CAN_NOT_STORE_REVERSE_RELATION");
 
         CasesModuleBean.getPort(false).storeCaseCase(editing);
         refreshHiddenTabInstances();
@@ -425,12 +414,12 @@ public class CaseCasesTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   @Override
   public void clear()
   {
     tabInstances.clear();
-  }  
+  }
 
   @Override
   public Serializable saveState()
@@ -454,7 +443,7 @@ public class CaseCasesTabBean extends TabBean
       error(ex);
     }
   }
-  
+
   private void showDialog()
   {
     try
@@ -526,7 +515,7 @@ public class CaseCasesTabBean extends TabBean
 
     return toDataTableRows(matcher.getResults());
   }
-  
+
   private List<CaseCasesDataTableRow> toDataTableRows(List<CaseCaseView>
     caseCaseViews) throws Exception
   {
@@ -551,30 +540,53 @@ public class CaseCasesTabBean extends TabBean
     }
   }
 
+  private boolean isDirectRelation()
+  {
+    String caseCaseTypeId = editing.getCaseCaseTypeId();
+    if (caseCaseTypeId != null)
+    {
+      TypeCache typeCache = TypeCache.getInstance();
+      Type caseCaseType = typeCache.getType(caseCaseTypeId);
+      if (caseCaseType != null)
+      {
+        Type caseType =
+          typeCache.getType(caseObjectBean.getCase().getCaseTypeId());
+        PropertyDefinition pd =
+          caseCaseType.getPropertyDefinition(SOURCE_TYPEID);
+        if (pd != null)
+        {
+          String sourceTypeId = pd.getValue().get(0);
+          return caseType.isDerivedFrom(sourceTypeId);
+        }
+      }
+    }
+    return true;
+  }
+
   public class CaseCasesDataTableRow extends DataTableRow
   {
     private boolean reverseRelation;
-    private String caseId; 
-    private String caseTypeId;    
+    private String caseId;
+    private String caseTypeId;
     private String title;
     private String personId; //If is related by person
 
     public CaseCasesDataTableRow(CaseCaseView row)
     {
       super(row.getCaseCaseId(), row.getCaseCaseTypeId());
-      
+
       Case mainCase = row.getMainCase();
       Case relCase = row.getRelCase();
 
       String objectId = getObjectId();
-      reverseRelation = objectId.equals(relCase.getCaseId()) 
+      reverseRelation = objectId.equals(relCase.getCaseId())
         && !objectId.equals(mainCase.getCaseId());
-      
+
       caseId = reverseRelation ? mainCase.getCaseId() : relCase.getCaseId();
-      caseTypeId = reverseRelation ? mainCase.getCaseTypeId() : 
+      caseTypeId = reverseRelation ? mainCase.getCaseTypeId() :
         relCase.getCaseTypeId();
       title = reverseRelation ? mainCase.getTitle() : relCase.getTitle();
-      personId = 
+      personId =
         DictionaryUtils.getPropertyValue(row.getProperty(), "personId");
     }
 
@@ -623,7 +635,7 @@ public class CaseCasesTabBean extends TabBean
       PersonTypeBean personTypeBean = WebUtils.getBean("personTypeBean");
       return personTypeBean.getDescription(personId);
     }
-    
+
     @Override
     protected Object getDefaultValue(String columnName)
     {
@@ -633,7 +645,7 @@ public class CaseCasesTabBean extends TabBean
         {
           case "caseId":
             return getCaseId();
-          case "caseTitle":      
+          case "caseTitle":
             return getTitle();
           case "caseTypeId":
             return getCaseTypeId();
@@ -641,7 +653,7 @@ public class CaseCasesTabBean extends TabBean
             return getPerson();
           default:
             break;
-        }    
+        }
       }
       return super.getDefaultValue(columnName);
     }
@@ -673,14 +685,14 @@ public class CaseCasesTabBean extends TabBean
       list.addAll(results.values());
       return list;
     }
-    
+
     public void compare(List<CasePersonView> casePersons)
     {
       for (CasePersonView casePerson : casePersons)
       {
         addMatch(casePerson);
       }
-    }    
+    }
 
     private void addMatch(CasePersonView casePerson)
     {
@@ -732,7 +744,7 @@ public class CaseCasesTabBean extends TabBean
       list.add(period);
       personsPeriods.put(personId, list);
     }
-    
+
     private class Period
     {
       private Date startDate;
@@ -774,16 +786,16 @@ public class CaseCasesTabBean extends TabBean
       {
         this.endDate = endDate;
       }
-      
+
       public String getFormattedStartDate()
       {
         return TextUtils.formatDate(startDate, "yyyyMMdd");
       }
-      
+
       public String getFormattedEndDate()
       {
         return TextUtils.formatDate(endDate, "yyyyMMdd");
-      }      
+      }
 
       public Period isWithinRange(CasePersonView casePerson)
       {
@@ -796,11 +808,11 @@ public class CaseCasesTabBean extends TabBean
         }
         else return null;
       }
-      
+
       private Period getMergedPeriod(String startDate, String endDate)
-      {        
+      {
         Period result = new Period(startDate, endDate);
-        
+
         if (this.startDate != null)
         {
           if (result.getStartDate() == null ||
@@ -809,18 +821,18 @@ public class CaseCasesTabBean extends TabBean
             result.setStartDate(this.startDate);
           }
         }
-        
+
         if (this.endDate != null)
         {
-          if (result.getEndDate() == null || 
+          if (result.getEndDate() == null ||
             result.getEndDate().getTime() > this.endDate.getTime())
           {
             result.setEndDate(this.endDate);
           }
         }
-        
-        return result;        
+
+        return result;
       }
-    }    
+    }
   }
 }

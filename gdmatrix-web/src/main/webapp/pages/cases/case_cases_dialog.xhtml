@@ -31,15 +31,15 @@
 
       <div class="ui-fluid formgrid grid" >
 
-        <!-- Rel Case -->
-        <p:outputPanel styleClass="field col-12">
+        <!-- Ref Case -->
+        <p:outputPanel styleClass="field col-12" rendered="#{caseCasesTabBean.caseCaseTypeId != null}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_case}"
                          styleClass="w-full"
                          indicateRequired="true" />
-          <emcomp:objectReference value="#{caseCasesTabBean.relCaseId}"
+          <emcomp:objectReference value="#{caseCasesTabBean.refCaseId}"
                                   process=":mainform:search_tabs:case_cases_dialog"
-                                  type="#{caseCasesTabBean.relCaseTypeId != null ? caseCasesTabBean.relCaseTypeId : 'Case'}"
+                                  type="#{caseCasesTabBean.refCaseTypeId != null ? caseCasesTabBean.refCaseTypeId : 'Case'}"
                                   scrollHeight="200"
                                   queryDelay="1000"
                                   minQueryLength="3"
@@ -49,7 +49,7 @@
         </p:outputPanel>
 
         <!-- Type -->
-        <p:outputPanel styleClass="field col-12">
+        <p:outputPanel styleClass="field col-12" rendered="#{!caseCasesTabBean.leafBaseType}">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseCases_type}"
                          styleClass="w-full"
