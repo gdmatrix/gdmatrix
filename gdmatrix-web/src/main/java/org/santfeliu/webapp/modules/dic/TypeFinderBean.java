@@ -236,6 +236,14 @@ public class TypeFinderBean extends FinderBean
 
     if (!StringUtils.isBlank(treeTypeId))
       expandNode(treeTypeId);
+    else
+    {
+      String typeId = typeObjectBean.getObjectId();   
+      if (!StringUtils.isBlank(typeId))
+      {
+        expandNode(typeId);
+      }      
+    }
   }  
 
   public void clear()
