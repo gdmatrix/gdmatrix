@@ -187,7 +187,7 @@ public class MenuTypesCache
         return new MatchItem(mic);
 
       Type type = TypeCache.getInstance().getType(typeId);      
-      if (type.isDerivedFrom(nodeTypeId))
+      if (type != null && type.isDerivedFrom(nodeTypeId))
       { 
         return new MatchItem(mic.getClone(), true);
       }
