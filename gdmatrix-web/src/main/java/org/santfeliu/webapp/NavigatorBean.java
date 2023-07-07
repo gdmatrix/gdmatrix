@@ -447,8 +447,7 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       try
       {
-        String val = (String)getObjectSetup().getProperties().get(
-          DEFAULT_SEARCH_TAB_SELECTOR_PROPERTY);
+        String val = getObjectSetup().getDefaultSearchTabSelector();
         if (val == null)
         {
           val = getProperty(DEFAULT_SEARCH_TAB_SELECTOR_PROPERTY);
@@ -475,8 +474,7 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       try
       {
-        String val = (String)getObjectSetup().getProperties().get(
-          FIND_ON_FIRST_LOAD_PROPERTY);
+        String val = getObjectSetup().getFindOnFirstLoad();
         if (val == null)
         {
           val = getProperty(FIND_ON_FIRST_LOAD_PROPERTY);

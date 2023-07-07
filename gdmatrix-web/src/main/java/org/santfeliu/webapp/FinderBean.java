@@ -212,8 +212,7 @@ public abstract class FinderBean extends BaseBean
     try
     {
       if (objectSetup == null) loadObjectSetup();
-      String docId = (String)objectSetup.getProperties().get(
-        SMART_SEARCH_TIP_DOCID_PROPERTY);
+      String docId = objectSetup.getSmartSearchTipDocId();
       if (docId == null)
       {
         docId = getProperty(SMART_SEARCH_TIP_DOCID_PROPERTY);

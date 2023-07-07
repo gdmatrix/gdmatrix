@@ -48,6 +48,9 @@ public class ObjectSetup implements Serializable
   private String typeId;
   private String viewId;
   private String label;
+  private String findOnFirstLoad;
+  private String smartSearchTipDocId;
+  private String defaultSearchTabSelector;
   private List<SearchTab> searchTabs = new ArrayList<>();
   private List<EditTab> editTabs = new ArrayList<>();
   private PropertyMap properties = new PropertyMap();
@@ -81,6 +84,36 @@ public class ObjectSetup implements Serializable
   public void setLabel(String label)
   {
     this.label = label;
+  }
+
+  public String getFindOnFirstLoad()
+  {
+    return findOnFirstLoad;
+  }
+
+  public void setFindOnFirstLoad(String findOnFirstLoad)
+  {
+    this.findOnFirstLoad = findOnFirstLoad;
+  }
+
+  public String getSmartSearchTipDocId()
+  {
+    return smartSearchTipDocId;
+  }
+
+  public void setSmartSearchTipDocId(String smartSearchTipDocId)
+  {
+    this.smartSearchTipDocId = smartSearchTipDocId;
+  }
+
+  public String getDefaultSearchTabSelector()
+  {
+    return defaultSearchTabSelector;
+  }
+
+  public void setDefaultSearchTabSelector(String defaultSearchTabSelector)
+  {
+    this.defaultSearchTabSelector = defaultSearchTabSelector;
   }
 
   public List<SearchTab> getSearchTabs()
