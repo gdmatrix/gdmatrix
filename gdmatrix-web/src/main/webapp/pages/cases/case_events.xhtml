@@ -46,20 +46,23 @@
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="#{caseBundle.caseEvents_id}" styleClass="col-1">
+      <p:column headerText="#{caseBundle.caseEvents_id}" styleClass="col-1"
+                sortBy="#{row.event.eventId}">
         <h:outputText value="#{row.event.eventId}" />
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseEvents_event}" styleClass="col-7">
+      <p:column headerText="#{caseBundle.caseEvents_event}" styleClass="col-6"
+                sortBy="#{row.event.summary}">
         <h:outputText value="#{row.event.summary}"/>
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseEvents_type}" styleClass="col-2"
-                rendered="#{!caseEventsTabBean.groupedView}">
+      <p:column headerText="#{caseBundle.caseEvents_type}" styleClass="col-3"
+                rendered="#{!caseEventsTabBean.groupedView}" 
+                sortBy="#{caseEventsTabBean.caseEventTypeDescription}">
         <h:outputText value="#{caseEventsTabBean.caseEventTypeDescription}"/>
       </p:column>
 
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="col-1 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
                          ajax="false" onclick="showOverlay()"

@@ -66,7 +66,7 @@
                       readonly="#{!caseObjectBean.editable}" />
       </div>
 
-      <div class="field col-12 md:col-3">
+      <p:outputPanel class="field col-12 md:col-3" rendered="#{caseObjectBean.isRenderProperty('endDate')}">
         <p:outputLabel for="@next" value="#{caseObjectBean.getPropertyLabel('endDate', caseBundle.case_endDate)}" />
         <!-- TODO: disable if not editable -->
         <p:datePicker value="#{caseObjectBean.endDateTime}"
@@ -78,7 +78,7 @@
                       showIcon="true" showTime="true"
                       monthNavigator="true" yearNavigator="true"
                       readonly="#{!caseObjectBean.editable}" />
-      </div>
+      </p:outputPanel>
 
       <p:outputPanel class="field col-12 md:col-6" rendered="#{caseObjectBean.isRenderProperty('state')}">
         <p:outputLabel for="@next" value="#{caseBundle.case_state}" />

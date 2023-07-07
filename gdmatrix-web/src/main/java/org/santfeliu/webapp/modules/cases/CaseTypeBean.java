@@ -161,9 +161,9 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     intEditTab.getColumns().add(new Column("intTypeId", 
       BUNDLE_PREFIX + "caseInterventions_type", "col-7"));
     intEditTab.getColumns().add(new Column("startDate", 
-      BUNDLE_PREFIX + "caseInterventions_startDate", "col-1 text-center"));
+      BUNDLE_PREFIX + "caseInterventions_startDate", "col-1 text-center white-space-nowrap"));
     intEditTab.getColumns().add(new Column("endDate", 
-      BUNDLE_PREFIX + "caseInterventions_endDate", "col-1 text-center" ));
+      BUNDLE_PREFIX + "caseInterventions_endDate", "col-1 text-center white-space-nowrap" ));
     intEditTab.getProperties().put("typeId", INTERVENTION_TYPE);
     intEditTab.getReadRoles().add("EVERYONE");
     intEditTab.getWriteRoles().add("EVERYONE");       
@@ -179,9 +179,9 @@ public class CaseTypeBean extends TypeBean<Case, CaseFilter>
     casesEditTab.getColumns().add(new Column("caseCaseTypeId", 
       BUNDLE_PREFIX + "caseCases_type", "col-3"));    
     casesEditTab.getColumns().add(new Column("startDate", 
-      BUNDLE_PREFIX + "caseCases_startDate", "col-1 text-center"));    
+      BUNDLE_PREFIX + "caseCases_startDate", "col-1 text-center white-space-nowrap"));    
     casesEditTab.getColumns().add(new Column("endDate", 
-      BUNDLE_PREFIX + "caseCases_endDate", "col-1 text-center"));
+      BUNDLE_PREFIX + "caseCases_endDate", "col-1 text-center white-space-nowrap"));
     casesEditTab.getProperties().put("typeId", CASE_CASE_TYPE);
     casesEditTab.getReadRoles().add("EVERYONE");
     casesEditTab.getWriteRoles().add("EVERYONE");     

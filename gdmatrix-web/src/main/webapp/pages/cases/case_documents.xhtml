@@ -46,16 +46,19 @@
         </p:column>
       </p:headerRow>
 
-      <p:column headerText="#{caseBundle.caseDocuments_id}" styleClass="col-1">
+      <p:column headerText="#{caseBundle.caseDocuments_id}" styleClass="col-1"
+                sortBy="#{row.document.docId}">
         <h:outputText value="#{row.document.docId}" />
       </p:column>
 
-      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-6">
+      <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-6"
+                sortBy="#{row.document.title}">
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
       <p:column headerText="#{caseBundle.caseDocuments_type}" styleClass="col-3"
-                rendered="#{!caseDocumentsTabBean.groupedView}">
+                rendered="#{!caseDocumentsTabBean.groupedView}"
+                sortBy="#{caseDocumentsTabBean.caseDocumentTypeDescription}">
         <h:outputText value="#{caseDocumentsTabBean.caseDocumentTypeDescription}"/>
       </p:column>
 

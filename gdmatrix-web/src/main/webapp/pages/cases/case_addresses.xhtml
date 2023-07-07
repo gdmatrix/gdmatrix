@@ -47,31 +47,31 @@
       </p:headerRow>
 
       <p:column headerText="#{caseBundle.caseAddresses_id}" 
-                styleClass="col-1">
+                styleClass="col-1" sortBy="#{row.addressView.addressId}">
         <h:outputText value="#{row.addressView.addressId}" />
       </p:column>
 
       <p:column headerText="#{caseBundle.caseAddresses_address}" 
-                styleClass="col-5">
+                styleClass="col-5" sortBy="#{row.addressView.description} #{row.addressView.city}">
         <h:outputText value="#{row.addressView.description} (#{row.addressView.city})"/>
       </p:column>
       
       <p:column headerText="#{caseBundle.caseAddresses_comments}"
-                styleClass="col-2">
+                styleClass="col-2" sortBy="#{row.comments}">
         <h:outputText value="#{row.comments}"/>
       </p:column>         
       
       <p:column headerText="#{caseBundle.caseAddresses_startDate}" 
-                styleClass="col-1 text-center">
+                styleClass="col-1 text-center white-space-nowrap" sortBy="#{row.startDate}">
         <h:outputText value="#{row.startDate}" converter="dateConverter"/>
       </p:column>
 
       <p:column headerText="#{caseBundle.caseAddresses_endDate}" 
-                styleClass="col-1 text-center">
+                styleClass="col-1 text-center white-space-nowrap" sortBy="#{row.endDate}">
         <h:outputText value="#{row.endDate}" converter="dateConverter"/>
       </p:column>
       
-      <p:column styleClass="col-2 text-right white-space-nowrap">
+      <p:column styleClass="col-1 text-right white-space-nowrap">
         <p:commandButton icon="pi pi-external-link"
                          styleClass="rounded-button ui-button-flat"
                          ajax="false" onclick="showOverlay()"
