@@ -113,6 +113,14 @@ a.imageButton img:hover
   border:none;
 }
 
+@media only screen and (max-width: 1000px)
+{
+  .page .cmsEditPanel
+  {
+    flex-wrap: wrap;
+  }
+}
+
 .page .cmsEditPanel
 {
   flex-grow: 1;
