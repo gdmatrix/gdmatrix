@@ -857,6 +857,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
     selectedInstance.setMaxResults(QueryInstance.DEFAULT_MAX_RESULTS);
     clearSelectItems();
     scroll = 0;
+    instanceSelectItems = null;
     return "query_instance";
   }
 
@@ -875,6 +876,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
       clearSelectItems();
     }
     scroll = 0;
+    instanceSelectItems = null;    
     return "query_instance";
   }
 
@@ -888,6 +890,7 @@ public class QueryInstanceBean extends FacesBean implements Savable
   {
     selectedInstance.setDescription(selectedInstanceDescription);
     selectedInstanceDescription = null;
+    instanceSelectItems = null;
     return null;
   }
 
