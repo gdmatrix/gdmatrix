@@ -62,7 +62,6 @@ import org.santfeliu.kernel.web.PersonBean;
 import org.santfeliu.kernel.web.PersonSearchBean;
 import org.santfeliu.util.FilterUtils;
 import org.santfeliu.web.UserSessionBean;
-import org.santfeliu.web.obj.ControllerBean;
 import org.santfeliu.web.obj.DefaultDetailBean;
 import org.santfeliu.web.obj.DetailBean;
 import org.santfeliu.web.obj.util.ColumnDefinition;
@@ -1036,24 +1035,27 @@ public class CaseSearchBean extends DynamicTypifiedSearchBean
     }
     else
     {
-      List<Property> result = new ArrayList();      
-      for (Property property : propertyList)
-      {      
-        Property auxProperty = new Property();
-        auxProperty.setName(property.getName());
-        for (String value : property.getValue())
-        {
-          if (formWildcardProperties.contains(property.getName()))
-          {                        
-            auxProperty.getValue().add("low(" + 
-              FilterUtils.addWildcards(normalize(value)) + ")");
-          }
-          else
+      List<Property> result = new ArrayList();    
+      if (propertyList != null)
+      {
+        for (Property property : propertyList)
+        {      
+          Property auxProperty = new Property();
+          auxProperty.setName(property.getName());
+          for (String value : property.getValue())
           {
-            auxProperty.getValue().add(value);
+            if (formWildcardProperties.contains(property.getName()))
+            {                        
+              auxProperty.getValue().add("low(" + 
+                FilterUtils.addWildcards(normalize(value)) + ")");
+            }
+            else
+            {
+              auxProperty.getValue().add(value);
+            }
           }
+          result.add(auxProperty);
         }
-        result.add(auxProperty);
       }
       return result;
     }
