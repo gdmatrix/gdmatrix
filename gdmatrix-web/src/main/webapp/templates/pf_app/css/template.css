@@ -108,6 +108,11 @@ body .pi.loading-icon
   font-size: 4rem;
 }
 
+body .ui-inputfield, body .ui-selectonemenu .ui-selectonemenu-label
+{
+  font-family: var(--font-family)
+}
+
 .page-layout
 {
   display: flex;

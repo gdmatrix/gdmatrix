@@ -38,13 +38,18 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
 import org.matrix.cases.CaseDocument;
 import org.matrix.cases.CaseDocumentFilter;
 import org.matrix.cases.CaseDocumentView;
+import org.matrix.cases.CaseManagerPort;
+import org.matrix.doc.Document;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
@@ -67,6 +72,7 @@ public class CaseDocumentsTabBean extends TabBean
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
+  private final List<SelectItem> volumeSelectItems = new ArrayList<>();
 
   public class TabInstance
   {
@@ -74,6 +80,7 @@ public class CaseDocumentsTabBean extends TabBean
     List<CaseDocumentView> rows;
     int firstRow = 0;
     boolean groupedView = true;
+    String currentVolume;
   }
 
   @Inject
@@ -142,6 +149,11 @@ public class CaseDocumentsTabBean extends TabBean
     getCurrentTabInstance().rows = caseDocumentViews;
   }
 
+  public String getDocumentIcon(Document document)
+  {
+    return DocumentTypeBean.getContentIcon(document);
+  }
+
   public String getViewURL()
   {
     CaseDocumentView docView = WebUtils.getValue("#{row}");
@@ -152,7 +164,7 @@ public class CaseDocumentsTabBean extends TabBean
       ExternalContext extContext = getExternalContext();
       HttpServletRequest request = (HttpServletRequest)extContext.getRequest();
       String contextPath = request.getContextPath();
-    
+
       return contextPath + "/documents/" + docId;
     }
     else
@@ -254,13 +266,37 @@ public class CaseDocumentsTabBean extends TabBean
     {
       try
       {
+        CaseManagerPort port = CasesModuleBean.getPort(false);
+        List<String> volumes = port.findCaseVolumes(objectId);
+        Collections.sort(volumes, (s1, s2) ->
+        {
+          if (s1 == null) s1 = "";
+          if (s2 == null) s2 = "";
+          return s2.compareTo(s1);
+        });
+        volumeSelectItems.clear();
+        volumeSelectItems.add(new SelectItem(null, ""));
+        for (String value : volumes)
+        {
+          if (!StringUtils.isBlank(value))
+          {
+            SelectItem selectItem = new SelectItem(value, value);
+            volumeSelectItems.add(selectItem);
+          }
+        }
+
         CaseDocumentFilter filter = new CaseDocumentFilter();
         EditTab tab = caseObjectBean.getActiveEditTab();
         String volume = tab.getProperties().getString("volume");
-        filter.setVolume(volume);
+        if (volume != null && getCurrentVolume() == null)
+        {
+          setCurrentVolume(volume);
+        }
+
+        filter.setVolume(getCurrentVolume());
         filter.setCaseId(objectId);
         List<CaseDocumentView> auxList =
-          CasesModuleBean.getPort(false).findCaseDocumentViews(filter);
+          port.findCaseDocumentViews(filter);
         String typeId = getTabBaseTypeId();
         if (typeId == null)
         {
@@ -271,11 +307,18 @@ public class CaseDocumentsTabBean extends TabBean
           List<CaseDocumentView> result = new ArrayList();
           for (CaseDocumentView item : auxList)
           {
-            Type caseDocType =
-              TypeCache.getInstance().getType(item.getCaseDocTypeId());
-            if (caseDocType.isDerivedFrom(typeId))
+            try
             {
-              result.add(item);
+              Type caseDocType =
+                TypeCache.getInstance().getType(item.getCaseDocTypeId());
+              if (caseDocType.isDerivedFrom(typeId))
+              {
+                result.add(item);
+              }
+            }
+            catch (Exception ex)
+            {
+              // ignore: bad type?
             }
           }
           getCurrentTabInstance().rows = result;
@@ -326,6 +369,26 @@ public class CaseDocumentsTabBean extends TabBean
   {
     editing = new CaseDocument();
     editing.setCaseDocTypeId(getCreationTypeId());
+  }
+
+  public String getCurrentVolume()
+  {
+    return getCurrentTabInstance().currentVolume;
+  }
+
+  public void setCurrentVolume(String currentVolume)
+  {
+    getCurrentTabInstance().currentVolume = currentVolume;
+  }
+
+  public List<SelectItem> getVolumeSelectItems()
+  {
+    return volumeSelectItems;
+  }
+
+  public void volumeChanged(AjaxBehaviorEvent e)
+  {
+    load();
   }
 
   public void switchView()

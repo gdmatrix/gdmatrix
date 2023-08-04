@@ -68,10 +68,13 @@
 
         <!-- Volume -->
 
-        <div class="field col-12">
+        <div class="field col-12 md:col-6">
           <p:outputLabel for="@next"
                          value="#{caseBundle.caseDocuments_volume}" />
-          <p:inputText value="#{caseDocumentsTabBean.editing.volume}" />
+          <p:selectOneMenu value="#{caseDocumentsTabBean.editing.volume}" 
+                           editable="true">
+            <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
+          </p:selectOneMenu>
         </div>
 
         <!-- Comments -->

@@ -21,6 +21,15 @@
 
       <f:facet name="header">
         <div class="flex justify-content-end w-12">
+          <div>
+            <p:outputLabel value="#{caseBundle.caseDocuments_volume}: " for="@next" />
+            <p:selectOneMenu value="#{caseDocumentsTabBean.currentVolume}">
+              <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
+              <p:ajax event="valueChange" 
+                      listener="#{caseDocumentsTabBean.volumeChanged}" 
+                      update="case_documents_table" />
+            </p:selectOneMenu>
+          </div>
           <p:commandButton icon="pi pi-list" styleClass="rounded-button #{caseDocumentsTabBean.groupedView ? 'ui-button-flat' : ''}"
                            action="#{caseDocumentsTabBean.switchView}"
                            process="case_documents_table"
@@ -53,6 +62,7 @@
 
       <p:column headerText="#{caseBundle.caseDocuments_title}" styleClass="col-6"
                 sortBy="#{row.document.title}">
+        <i class="#{caseDocumentsTabBean.getDocumentIcon(row.document)} text-xl mr-1" />
         <h:outputText value="#{row.document.title}"/>
       </p:column>
 
