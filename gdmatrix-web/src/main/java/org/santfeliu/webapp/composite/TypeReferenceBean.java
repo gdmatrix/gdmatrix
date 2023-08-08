@@ -74,12 +74,12 @@ public class TypeReferenceBean extends ObjectReferenceBean
 
     if (!isShowNonInstantiableItems())
     {
-      selectItems = new ArrayList();      
-      TypeCache typeCache = TypeCache.getInstance();      
+      selectItems = new ArrayList();
+      TypeCache typeCache = TypeCache.getInstance();
       for (SelectItem item : auxSelectItems)
       {
         String auxTypeId = (String)item.getValue();
-        Type type = typeCache.getType(auxTypeId);        
+        Type type = typeCache.getType(auxTypeId);
         if (type != null && type.isInstantiable())
         {
           selectItems.add(item);
@@ -89,8 +89,8 @@ public class TypeReferenceBean extends ObjectReferenceBean
     else
     {
       selectItems = auxSelectItems;
-    }    
-    
+    }
+
     if (StringUtils.isBlank(query) && showNavigatorItems)
     {
       String objectId = WebUtils.getValue("#{cc.attrs.value}");
@@ -203,6 +203,5 @@ public class TypeReferenceBean extends ObjectReferenceBean
       objectBean.setEditTabSelector(0);
       objectBean.load();
     }
-
   }
 }

@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
+import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.TypeBean;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -146,6 +147,13 @@ public class ObjectReferenceBean
       getValueExpression().getExpressionString());
   }
 
+  public String create()
+  {
+    NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+    return navigatorBean.execute(new CreateObjectLeap(getTypeId()), true,
+      getValueExpression().getExpressionString());
+  }
+
   public String getTypeId()
   {
     return WebUtils.getValue("#{cc.attrs.type}");
@@ -166,4 +174,22 @@ public class ObjectReferenceBean
     return exprHolder.getExpression("value");
   }
 
+  public class CreateObjectLeap extends NavigatorBean.Leap
+  {
+    String typeId;
+
+    public CreateObjectLeap(String typeId)
+    {
+      super(typeId);
+    }
+
+    @Override
+    public void construct(ObjectBean objectBean)
+    {
+      objectBean.setObjectId(NEW_OBJECT_ID);
+      objectBean.setSearchTabSelector(objectBean.getEditModeSelector());
+      objectBean.setEditTabSelector(0);
+      objectBean.load();
+    }
+  }
 }

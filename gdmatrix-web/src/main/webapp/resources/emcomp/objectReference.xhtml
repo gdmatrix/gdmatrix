@@ -30,6 +30,7 @@
       <composite:attribute name="showNavigatorItems" required="false" default="true" />
       <composite:attribute name="widgetVar" required="false" />
       <composite:attribute name="renderShowButton" required="false" default="true" />
+      <composite:attribute name="renderCreateButton" required="false" default="false" />
       <composite:attribute name="autoUpdate" required="false" default="true" />
       <composite:clientBehavior name="itemSelect" targets="autocomplete" event="itemSelect" />
       <composite:clientBehavior name="itemUnselect" targets="autocomplete" event="itemUnselect" />
@@ -94,6 +95,20 @@
                          update="#{cc.attrs.update}"
                          oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
                          alt="#{objectBundle.search}" title="#{objectBundle.search}"
+                         disabled="#{cc.attrs.disabled}" />
+        <h:commandButton style="display: none"
+                         action="#{objectReferenceBean.create}"
+                         immediate="true"
+                         rendered="#{cc.attrs.renderCreateButton}"
+                         disabled="#{cc.attrs.disabled}">
+        </h:commandButton>
+        <p:commandButton icon="pi pi-plus-circle"
+                         styleClass="select-button"
+                         process="#{cc.attrs.process}"
+                         update="#{cc.attrs.update}"
+                         rendered="#{cc.attrs.renderCreateButton}"
+                         oncomplete="if (!isFacesError()) document.getElementById(this.source).previousSibling.click();"
+                         alt="#{objectBundle.create}" title="#{objectBundle.create}"
                          disabled="#{cc.attrs.disabled}" />
       </div>
     </composite:implementation>

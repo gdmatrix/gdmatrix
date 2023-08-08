@@ -23,7 +23,7 @@
         <div class="flex justify-content-end w-12">
           <div>
             <p:outputLabel value="#{caseBundle.caseDocuments_volume}: " for="@next" />
-            <p:selectOneMenu value="#{caseDocumentsTabBean.currentVolume}">
+            <p:selectOneMenu value="#{caseDocumentsTabBean.currentVolume}" touchable="true">
               <f:selectItems value="#{caseDocumentsTabBean.volumeSelectItems}" />
               <p:ajax event="valueChange" 
                       listener="#{caseDocumentsTabBean.volumeChanged}" 
@@ -39,8 +39,8 @@
                            title="#{caseDocumentsTabBean.groupedView ? objectBundle.ungroup : objectBundle.group}"
                            rendered="#{caseDocumentsTabBean.groupedViewEnabled}" />
           <p:commandButton icon="pi pi-plus-circle" styleClass="ui-button-flat"
-                           action="#{caseDocumentsTabBean.create}"
-                           process=":mainform:search_tabs:tabs"
+                        action="#{caseDocumentsTabBean.create}" 
+                        process=":mainform:search_tabs:tabs"
                            update=":mainform:search_tabs:case_documents_dialog"
                            resetValues="true"
                            oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').show()"
