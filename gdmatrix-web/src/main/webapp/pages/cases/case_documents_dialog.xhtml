@@ -171,8 +171,8 @@
         <p:commandButton id="case_documents_remove"
                          action="#{caseDocumentsTabBean.remove}"
                          styleClass="m-1" value="#{objectBundle.delete}"
-                         process="remove_document_dialog "
-                         update=":mainform:search_tabs:tabs"
+                         process="remove_document_dialog"
+                         update=":mainform:search_tabs:tabs :mainform:context_panel"
                          oncomplete="if (!isFacesError()) PF('removeDocumentDialog').hide()"
                          />
         <p:commandButton styleClass="m-1" value="#{objectBundle.cancel}"

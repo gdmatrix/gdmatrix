@@ -619,6 +619,7 @@ public class NavigatorBean extends WebBean implements Serializable
     {
       unmarkAsFavorite(objectId);
       getRecentObjectIdList().remove(objectId);
+      history.remove(getBaseTypeId(), objectId);
     }
 
     public void unmarkAsFavorite()
