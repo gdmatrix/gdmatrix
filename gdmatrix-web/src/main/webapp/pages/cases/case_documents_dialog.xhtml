@@ -109,4 +109,80 @@
 
   </p:dialog>
 
+  <p:dialog id="remove_document_dialog"
+            widgetVar="removeDocumentDialog"
+            modal="true"
+            height="auto"
+            resizable="false"
+            closable="false"
+            style="max-width:680px"
+            styleClass="ml-2 mr-2"
+            closeOnEscape="false">
+
+    <f:facet name="header">
+      <h:outputText value="#{caseBundle.caseDocuments_removeDocument}" />
+    </f:facet>
+
+    <div class="ui-fluid formgrid grid">
+
+      <div class="field col-12 md:col-2">
+        <p:outputLabel value="DocId" for="@next" />
+        <p:inputText value="#{caseDocumentsTabBean.caseDocumentToRemove.document.docId}" 
+                     readonly="true" />
+      </div>
+
+      <div class="field col-12 md:col-10">
+        <p:outputLabel value="#{documentBundle.outputTitle}" for="@next" />
+        <p:inputText value="#{caseDocumentsTabBean.caseDocumentToRemove.document.title}" 
+                     readonly="true" />
+      </div>
+
+      <div class="field col-12 mt-4">
+        <p:selectOneRadio id="removeMode" 
+                          value="#{caseDocumentsTabBean.removeMode}">
+          <f:selectItem itemValue="unlink" />
+          <f:selectItem itemValue="remove" />
+          <f:selectItem itemValue="removeAll" />
+
+          <f:facet name="custom">
+            <span class="field-radiobutton">
+              <p:radioButton for="removeMode" itemIndex="0"/>
+              <p:outputLabel for="@previous" 
+                             value="#{caseBundle.caseDocuments_removeModeUnlink}" />
+            </span>
+            <span class="field-radiobutton">
+              <p:radioButton for="removeMode" itemIndex="1"/>
+              <p:outputLabel for="@previous" style="color:red"
+                             value="#{caseBundle.caseDocuments_removeModeRemove}" />
+            </span>
+            <span class="field-radiobutton">
+              <p:radioButton for="removeMode" itemIndex="2"/>
+              <p:outputLabel for="@previous" style="color:red; font-weight:bold"
+                             value="#{caseBundle.caseDocuments_removeModeRemoveAll}" />
+            </span>
+          </f:facet>
+        </p:selectOneRadio>
+      </div>  
+    </div>
+
+    <f:facet name="footer">
+
+      <div class="field col-12 text-right">
+        <p:commandButton id="case_documents_remove"
+                         action="#{caseDocumentsTabBean.remove}"
+                         styleClass="m-1" value="#{objectBundle.delete}"
+                         process="remove_document_dialog "
+                         update=":mainform:search_tabs:tabs"
+                         oncomplete="if (!isFacesError()) PF('removeDocumentDialog').hide()"
+                         />
+        <p:commandButton styleClass="m-1" value="#{objectBundle.cancel}"
+                         action="#{caseDocumentsTabBean.cancelRemove}"
+                         process="@this"
+                         update="remove_document_dialog" global="false"
+                         onclick="PF('removeDocumentDialog').hide()"/>
+      </div>
+    </f:facet>
+
+  </p:dialog>
+  
 </ui:composition>

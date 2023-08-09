@@ -53,11 +53,13 @@ import org.matrix.doc.Document;
 import org.primefaces.PrimeFaces;
 import org.santfeliu.dic.Type;
 import org.santfeliu.dic.TypeCache;
+import org.santfeliu.webapp.NavigatorBean;
 import static org.santfeliu.webapp.NavigatorBean.NEW_OBJECT_ID;
 import org.santfeliu.webapp.ObjectBean;
 import org.santfeliu.webapp.setup.EditTab;
 import org.santfeliu.webapp.TabBean;
 import org.santfeliu.webapp.modules.dic.TypeTypeBean;
+import org.santfeliu.webapp.modules.doc.DocModuleBean;
 import org.santfeliu.webapp.modules.doc.DocumentTypeBean;
 import org.santfeliu.webapp.util.WebUtils;
 
@@ -69,8 +71,15 @@ import org.santfeliu.webapp.util.WebUtils;
 @ViewScoped
 public class CaseDocumentsTabBean extends TabBean
 {
+  public static final String UNLINK = "unlink";
+  public static final String REMOVE = "remove";
+  public static final String REMOVE_ALL = "removeAll";
+
   Map<String, TabInstance> tabInstances = new HashMap<>();
   CaseDocument editing;
+  CaseDocumentView caseDocumentToRemove;
+  String removeMode;
+
   private final TabInstance EMPTY_TAB_INSTANCE = new TabInstance();
   private final List<SelectItem> volumeSelectItems = new ArrayList<>();
 
@@ -416,28 +425,114 @@ public class CaseDocumentsTabBean extends TabBean
     }
   }
 
-  public void remove(CaseDocumentView caseDocView)
+  public void remove()
   {
-    if (caseDocView != null)
+    System.out.println("Remove mode:" + removeMode);
+    System.out.println("caseDocumentView:" + caseDocumentToRemove.getCaseDocId());
+
+    if (removeMode == null || caseDocumentToRemove == null) return;
+
+    try
     {
-      try
+      switch (removeMode)
       {
-        CasesModuleBean.getPort(false)
-          .removeCaseDocument(caseDocView.getCaseDocId());
-        refreshHiddenTabInstances();
-        load();
+        case UNLINK:
+        {
+          CasesModuleBean.getPort(false)
+            .removeCaseDocument(caseDocumentToRemove.getCaseDocId());
+        }
+        break;
+
+        case REMOVE:
+        {
+          String docId = caseDocumentToRemove.getDocument().getDocId();
+
+          CasesModuleBean.getPort(false)
+            .removeCaseDocument(caseDocumentToRemove.getCaseDocId());
+
+          CaseDocumentFilter filter = new CaseDocumentFilter();
+          filter.setDocId(docId);
+          int count =
+            CasesModuleBean.getPort(true).countCaseDocuments(filter);
+          System.out.println("Count: " + count);
+          if (count == 0)
+          {
+            DocModuleBean.getPort(false).removeDocument(docId, 0);
+            NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+            NavigatorBean.BaseTypeInfo baseTypeInfo =
+              navigatorBean.getBaseTypeInfo("Document");
+            if (baseTypeInfo != null)
+            {
+              baseTypeInfo.remove(docId);
+            }
+          }
+        }
+        break;
+
+        case REMOVE_ALL:
+        {
+          String docId = caseDocumentToRemove.getDocument().getDocId();
+          CaseDocumentFilter filter = new CaseDocumentFilter();
+          filter.setDocId(docId);
+          CaseManagerPort port = CasesModuleBean.getPort(false);
+          List<CaseDocumentView> views = port.findCaseDocumentViews(filter);
+          for (CaseDocumentView view : views)
+          {
+            port.removeCaseDocument(view.getCaseDocId());
+          }
+          DocModuleBean.getPort(false).removeDocument(docId, 0);
+          NavigatorBean navigatorBean = WebUtils.getBean("navigatorBean");
+          NavigatorBean.BaseTypeInfo baseTypeInfo =
+            navigatorBean.getBaseTypeInfo("Document");
+          if (baseTypeInfo != null)
+          {
+            baseTypeInfo.remove(docId);
+          }
+        }
+        break;
+
+        default:
+          break;
       }
-      catch (Exception ex)
-      {
-        error(ex);
-      }
+      refreshHiddenTabInstances();
+      load();
     }
+    catch (Exception ex)
+    {
+      error(ex);
+    }
+  }
+
+  public void cancelRemove()
+  {
+    this.caseDocumentToRemove = null;
   }
 
   @Override
   public void clear()
   {
     tabInstances.clear();
+  }
+
+  public CaseDocumentView getCaseDocumentToRemove()
+  {
+    return caseDocumentToRemove;
+  }
+
+  public void setCaseDocumentToRemove(CaseDocumentView caseDocumentToRemove)
+  {
+    this.caseDocumentToRemove = caseDocumentToRemove;
+    this.removeMode = "unlink";
+  }
+
+  public String getRemoveMode()
+  {
+    return removeMode;
+  }
+
+  public void setRemoveMode(String removeMode)
+  {
+    this.removeMode = removeMode;
   }
 
   @Override

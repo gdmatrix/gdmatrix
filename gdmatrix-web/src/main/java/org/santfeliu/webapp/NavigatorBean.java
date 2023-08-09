@@ -265,9 +265,7 @@ public class NavigatorBean extends WebBean implements Serializable
     BaseTypeInfo baseTypeInfo = getBaseTypeInfo();
     if (baseTypeInfo == null) return;
 
-    baseTypeInfo.unmarkAsFavorite();
-    baseTypeInfo.getRecentObjectIdList().remove(baseTypeInfo.getObjectId());
-
+    baseTypeInfo.remove();
     updateCount++;
 
     ObjectBean objectBean = baseTypeInfo.getObjectBean();
@@ -590,6 +588,11 @@ public class NavigatorBean extends WebBean implements Serializable
       String objectId = getObjectId();
       if (NEW_OBJECT_ID.equals(objectId)) return;
 
+      markAsFavorite(objectId);
+    }
+
+    public void markAsFavorite(String objectId)
+    {
       String baseTypeId = getBaseTypeId();
       UserPreferences userPreferences =
         UserSessionBean.getCurrentInstance().getUserPreferences();
@@ -604,11 +607,30 @@ public class NavigatorBean extends WebBean implements Serializable
       }
     }
 
+    public void remove()
+    {
+      String objectId = getObjectId();
+      if (NEW_OBJECT_ID.equals(objectId)) return;
+
+      remove(objectId);
+    }
+
+    public void remove(String objectId)
+    {
+      unmarkAsFavorite(objectId);
+      getRecentObjectIdList().remove(objectId);
+    }
+
     public void unmarkAsFavorite()
     {
       String objectId = getObjectId();
       if (NEW_OBJECT_ID.equals(objectId)) return;
 
+      unmarkAsFavorite(objectId);
+    }
+
+    public void unmarkAsFavorite(String objectId)
+    {
       String baseTypeId = getBaseTypeId();
       UserPreferences userPreferences =
         UserSessionBean.getCurrentInstance().getUserPreferences();

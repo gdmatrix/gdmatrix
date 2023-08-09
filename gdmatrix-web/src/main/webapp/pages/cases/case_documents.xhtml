@@ -8,7 +8,7 @@
                 xmlns:emcomp="http://xmlns.jcp.org/jsf/composite/emcomp">
 
   <f:subview id="#{tab.subviewId}">
-
+    
     <!-- Results table -->
     <p:dataTable id="case_documents_table" value="#{caseDocumentsTabBean.rows}"
                  var="row" stripedRows="true" paginator="true" pageLinks="5"
@@ -90,20 +90,16 @@
                          update=":mainform:search_tabs:case_documents_dialog"
                          resetValues="true"
                          oncomplete="if (!isFacesError()) PF('caseDocumentsDialog').show()"
-                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}" />
-        <p:commandButton action="#{caseDocumentsTabBean.remove(row)}"
-                         process="@this"
-                         update=":mainform:search_tabs:tabs"
-                         resetValues="true"
-                         icon="pi pi-trash"
-                         alt="#{objectBundle.delete}" title="#{objectBundle.delete}"
-                         styleClass="rounded-button ui-button-flat">
-          <p:confirm header="Desvincular document #{row.document.docId}"
-                     message="Segur que vols desvincular aquest document de l'expedient?" icon="pi pi-info-circle" />
-        </p:commandButton>
+                         alt="#{objectBundle.edit}" title="#{objectBundle.edit}" /> 
+        <p:commandButton icon="pi pi-trash"
+                         action="#{caseDocumentsTabBean.setCaseDocumentToRemove(row)}"
+                         process=":mainform:search_tabs:tabs"
+                         update=":mainform:search_tabs:remove_document_dialog"
+                         oncomplete="PF('removeDocumentDialog').show()"
+                         styleClass="rounded-button ui-button-flat" />
       </p:column>
     </p:dataTable>
-
+    
   </f:subview>
 
 </ui:composition>
