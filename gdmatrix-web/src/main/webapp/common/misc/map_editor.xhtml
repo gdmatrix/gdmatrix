@@ -544,6 +544,12 @@
               <h:outputText value="(0-1)" />
             </t:div>
             <t:div>
+              <h:outputLabel for="tileBuffer" value="Buffer:" styleClass="outputText" />
+              <h:inputText id="tileBuffer" value="#{mapEditorBean.editingLayer.buffer}"
+                styleClass="tileBuffer" />
+              <h:outputText value="pixels" />
+            </t:div>
+            <t:div>
               <h:outputLabel for="layerTransparent" value="#{mapViewerBundle.transparentBackground}:" 
                              styleClass="outputText" style="vertical-align: middle;" />
               <h:selectBooleanCheckbox id="layerTransparent" value="#{mapEditorBean.editingLayer.transparentBackground}"

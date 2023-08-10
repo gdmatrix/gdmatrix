@@ -961,7 +961,7 @@ function createGeometryFromEntity(entity)
 /**** Layer management functions ****/
 
 function addLayer(label, serviceIndex, name, base, group, sldUrl, style, format,
-  filter, visible, locatable, editable, snap, independent, opacity, transparent)
+  filter, visible, locatable, editable, snap, independent, opacity, buffer, transparent)
 {
   var layer =
   {
@@ -980,6 +980,7 @@ function addLayer(label, serviceIndex, name, base, group, sldUrl, style, format,
     snap: snap,
     independent: independent,
     opacity: opacity,
+    buffer: buffer,
     transparent : transparent,
     wmsLayer: null,
     wfsLayer: null
@@ -1125,11 +1126,10 @@ function createWmsLayer(layer)
   params["_CHG"] = getGroupName(layer.name);
   params["_CHR"] = "_OLSALT";
   params["_CHF"] = "image"; // only cache images
-  params["buffer"] = "" + tileBuffer;
+  params["buffer"] = "" + layer.buffer;
 
   var options =
   {
-    buffer: 0,
     transitionEffect: layer.base ? "resize" : "",
     displayOutsideMaxExtent: true,
     isBaseLayer: layer.base,

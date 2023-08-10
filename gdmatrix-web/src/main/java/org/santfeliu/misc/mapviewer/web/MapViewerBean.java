@@ -539,6 +539,7 @@ public class MapViewerBean extends WebBean
     buffer.append(layer.isSnap()).append(", ");
     buffer.append(layer.isIndependent()).append(", ");
     buffer.append(layer.getOpacity()).append(", ");
+    buffer.append(layer.getBuffer()).append(", ");
     buffer.append(layer.isTransparentBackground()).append(");\n");
   }
 

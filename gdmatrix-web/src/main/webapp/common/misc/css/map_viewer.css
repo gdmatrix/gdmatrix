@@ -1606,6 +1606,12 @@ overflow:hidden;}
   width: 60px;
 }
 
+#mapEditor .tileBuffer
+{
+  vertical-align:middle;
+  width: 60px;
+}
+
 #mapEditor .layerRoles
 {
   width:400px;
