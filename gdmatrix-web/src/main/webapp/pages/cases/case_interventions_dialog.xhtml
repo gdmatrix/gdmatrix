@@ -99,15 +99,14 @@
         </p:outputPanel>
 
       </div>
+      
+       <!-- Dynamic form -->
+      <emcomp:dynamicProperties typeId="#{caseInterventionsTabBean.editing.intTypeId}"
+                                formSelector="#{caseInterventionsTabBean.formSelector}"
+                                properties="#{caseInterventionsTabBean.editing.property}" />         
 
     </h:panelGroup>
-
-    <!-- Dynamic form -->
-
-    <emcomp:dynamicProperties typeId="#{caseInterventionsTabBean.editing.intTypeId}"
-                              formSelector="#{caseInterventionsTabBean.formSelector}"
-                              properties="#{caseInterventionsTabBean.editing.property}" />
-
+    
     <div class="field col-12 text-right">
       <p:commandButton id="case_interventions_store" action="#{caseInterventionsTabBean.store}"
                        styleClass="m-1" value="#{objectBundle.store}"

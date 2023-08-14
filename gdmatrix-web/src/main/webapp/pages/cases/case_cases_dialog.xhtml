@@ -100,12 +100,11 @@
         </p:outputPanel>
 
       </div>
-
+      
+      <emcomp:dynamicProperties typeId="#{caseCasesTabBean.editing.caseCaseTypeId}"
+                                formSelector="#{caseCasesTabBean.formSelector}"
+                                properties="#{caseCasesTabBean.editing.property}" />
     </h:panelGroup>
-
-    <emcomp:dynamicProperties typeId="#{caseCasesTabBean.editing.caseCaseTypeId}"
-                              formSelector="#{caseCasesTabBean.formSelector}"
-                              properties="#{caseCasesTabBean.editing.property}" />
 
     <div class="field col-12 text-right">
       <p:commandButton id="case_cases_store" action="#{caseCasesTabBean.store}"
