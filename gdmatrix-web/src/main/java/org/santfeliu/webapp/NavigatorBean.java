@@ -83,9 +83,12 @@ public class NavigatorBean extends WebBean implements Serializable
   private final BaseTypeInfoMap baseTypeInfoMap = new BaseTypeInfoMap();
   private final History history = new History();
   private String lastBaseTypeId;
-  private int contextTabSelector;
+  private String currentContextPanel;
   private int updateCount;
   private Leap inProgressLeap;
+
+  private static final List<String> DEFAULT_CONTEXT_PANELS =
+    List.of("recents", "history", "favorites");
 
   public BaseTypeInfo getBaseTypeInfo()
   {
@@ -115,6 +118,18 @@ public class NavigatorBean extends WebBean implements Serializable
     MenuItemCursor topMenuItem = WebUtils.getTopWebMenuItem(selectedMenuItem);
 
     return baseTypeInfoMap.getBaseTypeIdList(topMenuItem.getMid());
+  }
+
+  public List<String> getContextPanels()
+  {
+    UserSessionBean userSessionBean = UserSessionBean.getCurrentInstance();
+    List<String> contextPanels = userSessionBean.getSelectedMenuItem()
+      .getMultiValuedProperty("contextPanels");
+    if (contextPanels.isEmpty())
+    {
+      return DEFAULT_CONTEXT_PANELS;
+    }
+    return contextPanels;
   }
 
   public int getUpdateCount()
@@ -395,14 +410,24 @@ public class NavigatorBean extends WebBean implements Serializable
 
   public int getContextTabSelector()
   {
-    return contextTabSelector;
+    List<String> contextPanels = getContextPanels();
+    if (contextPanels.isEmpty()) return 0;
+
+    if (currentContextPanel == null)
+    {
+      currentContextPanel = contextPanels.get(0);
+    }
+
+    return contextPanels.indexOf(currentContextPanel);
   }
 
   public void setContextTabSelector(int selector)
   {
-    this.contextTabSelector = selector;
-  }
+    List<String> contextPanels = getContextPanels();
+    if (selector >= contextPanels.size()) return;
 
+    currentContextPanel = contextPanels.get(selector);
+  }
 
 
   /**

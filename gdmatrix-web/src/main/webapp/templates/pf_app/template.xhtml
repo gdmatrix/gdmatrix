@@ -107,6 +107,9 @@
     </p:confirmDialog>
     
     <script>
+      document.body.addEventListener("pointerdown", 
+        (event) => _pointerSource = event.srcElement);
+  
       function onResize()
       {
         var elems = document.getElementsByClassName("webtoolbar");

@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+  <p:tab title="#{objectBundle.history}">
+    <div class="history">
+      <ui:repeat value="#{historyBean.entries}"
+                 var="leap">
+        <div class="return_info">
+          <p:commandLink action="#{historyBean.show(leap)}"
+                         process="@this"
+                         rendered="#{not historyBean.isCurrentBaseType(leap)}"
+                         immediate="true"
+                         ajax="false"
+                         onclick="showOverlay()">
+            <span class="#{historyBean.getIcon(leap)}" />
+            <h:outputText value="#{historyBean.getDescription(leap)}" />
+          </p:commandLink>
+          <p:commandLink action="#{historyBean.view(leap)}"
+                         process="@this"
+                         rendered="#{historyBean.isCurrentBaseType(leap)}"
+                         resetValues="true"
+                         oncomplete="endPanel('rightPanel');"
+                         update=":mainform:central_column :mainform:context_panel">
+            <span class="#{historyBean.getIcon(leap)}" />
+            <h:outputText value="#{historyBean.getDescription(leap)}" />
+          </p:commandLink>
+        </div>
+      </ui:repeat>
+    </div>
+  </p:tab>
+
+</ui:composition>
+
+
+

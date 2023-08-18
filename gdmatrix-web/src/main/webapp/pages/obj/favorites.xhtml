@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+  <p:tab id="favorites">
+    <f:facet name="title">
+      <span class="pi pi-star-fill mr-2"/>
+      <h:outputText value="#{objectBundle.favorites}" />
+    </f:facet>
+    <div class="favorites">
+      <ui:repeat value="#{favoriteObjectsBean.favoriteObjects}"
+                 var="favorite">
+        <div class="favorite">
+          <span class="#{favoriteObjectsBean.icon}" />
+          <p:commandLink action="#{navigatorBean.view(favorite.objectId, 0, true)}"
+                         process="@this"
+                         resetValues="true"
+                         oncomplete="endPanel('rightPanel');"
+                         update=":mainform:central_column :mainform:context_panel">
+            <h:outputText value="#{favorite.description}"
+                          styleClass="#{favoriteObjectsBean.isSelectedObject(favorite) ? 'current' : ''}"/>
+          </p:commandLink>
+        </div>
+      </ui:repeat>
+    </div>
+  </p:tab>
+
+</ui:composition>
+
+
+

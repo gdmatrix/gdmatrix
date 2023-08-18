@@ -74,86 +74,9 @@
 
               <p:ajax event="tabChange" process="@this" />
 
-              <p:tab title="#{objectBundle.recent}">
-                <p:tree value="#{recentObjectsBean.treeNode}"
-                        var="data" nodeVar="node"
-                        animate="true"
-                        styleClass="recents_tree" >
-                  <p:ajax event="expand" listener="#{recentObjectsBean.onNodeExpand}" />
-                  <p:ajax event="collapse" listener="#{recentObjectsBean.onNodeCollapse}" />
-                  <p:treeNode type="group">
-                    <h:outputText value="#{data.description}" />
-                  </p:treeNode>
-                  <p:treeNode icon="#{node.parent.data.icon}"
-                              styleClass="#{recentObjectsBean.isSelectedNode(node) ? 'current' : ''}">
-                    <p:commandLink action="#{navigatorBean.show(node.parent.data.baseTypeId, data.objectId)}"
-                                   rendered="#{not recentObjectsBean.isCurrentBaseType(node)}"
-                                   immediate="true"
-                                   ajax="false"
-                                   onclick="showOverlay()">
-                      <h:outputText value="#{data.description}" />
-                    </p:commandLink>
-                    <p:commandLink action="#{navigatorBean.view(data.objectId, 0, true)}"
-                                   rendered="#{recentObjectsBean.isCurrentBaseType(node)}"
-                                   process=":mainform:context_panel"
-                                   resetValues="true"
-                                   oncomplete="endPanel('rightPanel');"
-                                   update=":mainform:central_column :mainform:context_panel">
-                      <h:outputText value="#{data.description}" />
-                    </p:commandLink>
-                  </p:treeNode>
-                </p:tree>
-              </p:tab>
-              <p:tab title="#{objectBundle.history}">
-                <div class="history">
-                  <ui:repeat value="#{historyBean.entries}"
-                            var="leap">
-                    <div class="return_info">
-                      <p:commandLink action="#{historyBean.show(leap)}"
-                                     process="@this"
-                                     rendered="#{not historyBean.isCurrentBaseType(leap)}"
-                                     immediate="true"
-                                     ajax="false"
-                                     onclick="showOverlay()">
-                        <span class="#{historyBean.getIcon(leap)}" />
-                        <h:outputText value="#{historyBean.getDescription(leap)}" />
-                      </p:commandLink>
-                      <p:commandLink action="#{historyBean.view(leap)}"
-                                     process="@this"
-                                     rendered="#{historyBean.isCurrentBaseType(leap)}"
-                                     resetValues="true"
-                                     oncomplete="endPanel('rightPanel');"
-                                     update=":mainform:central_column :mainform:context_panel">
-                        <span class="#{historyBean.getIcon(leap)}" />
-                        <h:outputText value="#{historyBean.getDescription(leap)}" />
-                      </p:commandLink>
-                    </div>
-                  </ui:repeat>
-                </div>
-              </p:tab>
-              <p:tab id="favorites">
-                <f:facet name="title">
-                  <span class="pi pi-star-fill mr-2"/>
-                  <h:outputText value="#{objectBundle.favorites}" />
-                </f:facet>
-                <div class="favorites">
-                  <ui:repeat value="#{favoriteObjectsBean.favoriteObjects}"
-                            var="favorite">
-                    <div class="favorite">
-                      <span class="#{favoriteObjectsBean.icon}" />
-                      <p:commandLink action="#{navigatorBean.view(favorite.objectId, 0, true)}"
-                                     process="@this"
-                                     resetValues="true"
-                                     oncomplete="endPanel('rightPanel');"
-                                     update=":mainform:central_column :mainform:context_panel">
-                        <h:outputText value="#{favorite.description}"
-                                      styleClass="#{favoriteObjectsBean.isSelectedObject(favorite) ? 'current' : ''}"/>
-                      </p:commandLink>
-                    </div>
-                  </ui:repeat>
-                </div>
-              </p:tab>
-
+              <c:forEach items="#{navigatorBean.contextPanels}" var="contextPanel" >
+                <ui:include src="/pages/obj/#{contextPanel}.xhtml" />
+              </c:forEach>
             </p:tabView>
           </p:outputPanel>
         </p:panel>

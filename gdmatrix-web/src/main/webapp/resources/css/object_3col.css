@@ -147,6 +147,18 @@ body .ui-tabs.context_tabs .ui-tree
   padding-top: 8px;
 }
 
+.context_tree.ui-tree
+{
+  border: 0;
+}
+
+.context_tree .ui-treenode.current > div a,
+.context_tree .ui-treenode-leaf.current
+{
+  font-weight: bold;
+  color: black;
+}
+
 .recents_tree.ui-tree
 {
   border: 0;
